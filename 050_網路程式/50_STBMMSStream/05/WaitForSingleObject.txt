@@ -1,0 +1,29 @@
+	int nLen = ::GetCurrentDirectory(500,gstrCurDrt);//取得目前程式路徑
+	if( gstrCurDrt[nLen]!='\\' )
+	{
+		gstrCurDrt[nLen++] = '\\';
+		gstrCurDrt[nLen] = '\0';
+	}
+	CString StrCallWebServiceExeName;
+	StrCallWebServiceExeName=gstrCurDrt;
+	StrCallWebServiceExeName+="CallWebService.exe";
+	PROCESS_INFORMATION pi;
+	STARTUPINFO si;
+	memset(&si,0,sizeof(si));
+	si.cb=sizeof(si);
+	si.wShowWindow=SW_MINIMIZE;
+	si.dwFlags=STARTF_USESHOWWINDOW;
+	BOOL fRet=CreateProcess(NULL,
+							StrCallWebServiceExeName.GetBuffer(0),
+							NULL,
+							NULL,
+							FALSE,
+							NORMAL_PRIORITY_CLASS|CREATE_NEW_CONSOLE,
+							NULL,
+							NULL,
+							&si,
+							&pi);
+	if(fRet)
+	{
+		WaitForSingleObject(pi.hProcess,INFINITE);
+	}

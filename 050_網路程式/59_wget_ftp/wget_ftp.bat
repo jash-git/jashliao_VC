@@ -1,0 +1,10 @@
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120101.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120102.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120103.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120104.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120105.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120106.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120107.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120108.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120109.mov
+wget -c ftp://skylink:skylink2008@60.248.192.140/%%E4%%BA%%BA%%E9%%96%%93%%E8%%8F%%A9%%E6%%8F%%90/puti_20120110.mov
