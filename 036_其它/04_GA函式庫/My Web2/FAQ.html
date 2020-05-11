@@ -1,0 +1,272 @@
+<html><head><title>GAlib: FAQ</title>
+
+<!-- Copyright (c) 1999 Matthew Wall                          -->
+<!--                    all rights reserved                   -->
+
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<strong>Answers to Frequently Asked Questions about <a href="./">GAlib</a></strong><br>
+<small><i>Last modified 24 July 2003
+</i></small><br>
+
+<br>
+<br>
+
+<strong>1  General</strong><br>
+<a href="#1.1">
+1.1  Where did GAlib come from?</a><br>
+<a href="#1.2">
+1.2  Can I use GAlib for commercial purposes?</a><br>
+<a href="#1.3">
+1.3  What newsgroups/mailing lists are available for GAlib users?</a><br>
+<a href="#1.4">
+1.4  What features and options does GAlib include?</a><br>
+
+<br>
+<strong>2  Compilation Issues</strong><br>
+<a href="#2.1">
+2.1  I'm having problems with Visual C++.  What's wrong?</a><br>
+<a href="#2.2">
+2.2  How to make GAlib work with MFC?</a><br>
+
+<br>
+<strong>3  Algorithms and Optimization</strong><br>
+<a href="#3.1">
+3.1  How do I use GAlib to solve my problem?</a><br>
+<a href="#3.2">
+3.2  Should I use a binary string or a real number genome?</a><br>
+<a href="#3.3">
+3.3  How do I determine which kind of genome to use?</a><br>
+
+<br>
+<br>
+<br>
+
+
+
+<br>
+<br>
+<br>
+<a name="1.1"><strong>
+1.1  Where did GAlib come from?
+</strong></a>
+<blockquote>
+<p>
+The original GAlib implementation evolved over the course of 3 years.  I started GAlib after using a GA library written by Kazu Saito at the MIT CADlab.  As my first major C++ programming effort, GAlib started out as a programming exercise.  Eventually I found that I needed a full-featured, extensible, and reasonably fast genetic algorithm package for my doctoral work.  Since there was nothing available at the time (circa 1993) I decided to make GAlib do the job.  Others in the CADlab and various optimization courses at MIT found it useful, so I ended up making it even more extensible and cross-platform-happy.  GAlib made its first public appearance in the spring of 1995.
+</p>
+<p>
+My doctoral work was largely funded by the <a href="http://me.mit.edu/groups/lfm/">Leaders for Manufacturing Program</a>.
+</p>
+<p>
+As of 1999, I am maintaining GAlib in a fairly feature-complete state.  I continue to add minor features, fix bugs, and tweak for new platforms and compilers.  Thread safety is high on the list of additional features to be added.
+</p>
+</blockquote>
+
+
+
+<br>
+<br>
+<br>
+<a name="1.2"><strong>
+1.2  Can I use GAlib for commercial purposes?
+</strong></a>
+<blockquote>
+<p>
+Yes.  As of Fall 1999, GAlib is free for any use, commercial or otherwise.  The only stipulation is that the copyright notice be included in any derivative works.  The licensing of GAlib is now similar to that of the XWindows software, but not as restrictive (from a commercial point of view) as the GNU public license.
+</p>
+</blockquote>
+
+
+
+
+<br>
+<br>
+<br>
+<a name="1.3"><strong>
+1.3  What newsgroups/mailing lists are available for GAlib users?
+</strong></a>
+<blockquote>
+There are two GAlib mailing lists, one for announcements and the other for general questions.
+<p>
+The general GAlib mailing list is <a href="http://mailman.mit.edu/mailman/listinfo/galib">galib</a> at mit.edu.  This is an unmoderated list for questions about GAlib and how to use it.  Please read the GAlib documentation before you send your questions to this list.  To subscribe or unsubscribe, go to <a href="http://mailman.mit.edu/mailman/listinfo/galib">http://mailman.mit.edu/mailman/listinfo/galib</a>
+</p>
+<p>
+The GAlib announcement mailing list is <a href="http://mailman.mit.edu/mailman/listinfo/galib-announce">galib-announce</a> at mit.edu.  This list is used by the author of GAlib to announce new releases of GAlib.  Traffic on this list is typically two or three messages per year.  To subscribe or unsubscribe, go to <a href="http://mailman.mit.edu/mailman/listinfo/galib-announce">http://mailman.mit.edu/mailman/listinfo/galib-announce</a>
+</p>
+<p>
+The GAlib mailing list is archived at <a href="http://mailman.mit.edu/pipermail/galib">http://mailman.mit.edu/pipermail/galib</a>
+</p>
+<p>
+There is currently no newsgroup for galib.  However, the <a href="news:comp.ai.genetic">comp.ai.genetic</a> newsgroup is a good place to go for help with genetic algorithms in general and often with specific problems as well.
+</p>
+</blockquote>
+
+
+
+
+<br>
+<br>
+<br>
+<a name="1.4"><strong>
+1.4  What features and options come with GAlib?
+</strong></a>
+<blockquote>
+GAlib was designed to make it easy to try different objective functions, representations, genetic operators, and genetic algorithms.  It includes many different representations, genetic operators, genetic algorithms, stopping criteria, scaling methods, selection methods, and evaluation schemes.  For a complete list of features, see the <a href="/galib-2.4/FeatureList.html">feature list</a>.
+</blockquote>
+
+
+
+
+
+
+
+<br>
+<br>
+<br>
+<a name="2.1"><strong>
+2.1  I'm having problems with Visual C++.  Does GAlib work with Visual C++?
+</strong></a>
+<blockquote>
+<p>
+GAlib will compile under Visual C++, but Microsoft's compiler is overly strict about types without being smart.  It adheres so strictly to the ANSI standard that it becomes a real pain in the #@$! to use.
+</p>
+<p>
+In GAlib 2.4.x you will have to add explicit casts to many member functions to get the library to compile.  For example, instead of simply saying
+<pre>
+        GARealGenome mygenome(10);
+        float x = mygenome[5];
+</pre>
+you must do it this way:
+<pre>
+        GARealGenome mygenome(10);
+        float x = mygenome[(unsigned int)5];
+</pre>
+</p>
+<p>
+The compiler also warns about statements such as <code>float x = 0.0;</code>  You can disable these warnings by inserting these lines into gaconfig.h:
+       <pre>
+       #if defined(_MSC_VER)
+       #pragma warning (disable : 4244)
+       #pragma warning (disable : 4305)
+       #endif
+       </pre>
+</p>
+
+</blockquote>
+<br>
+<br>
+<br>
+
+<a name="2.2"><strong>
+2.2  How to make GAlib work with MFC?
+</strong></a>
+<blockquote>
+<p>
+You must tell GAlib to <i>not</i> use the streams library (by default it is configured to assume a command-line environment, including streams).  To turn off streams, edit the configuration file gaconfig.h and define the NO_STREAMS macro.  Or define the macro NO_STREAMS in your project settings.  (It is safer to define the macro in the header file so that you do not forget to set it in subsequent projects that use the GAlib headers.)
+</p>
+<p>
+You may have to force VCPP to ignore the LIBCD library using the ignore libraries option in your project settings on the link properties panel.
+</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+<br>
+<br>
+<a name="3.1"><strong>
+3.1  How do I use GAlib to solve my problem?
+</strong></a>
+<blockquote>
+<p>
+There is an extensive <a href="/galib-2.4/Overview.html">overview</a> included in the GAlib documentation.  It explains the basics of genetic algorithms as well as the design philosophy behind the GAlib implementation.  The distribution includes <a href="/galib-2.4/examples">many examples</a> that illustrate the use of GAlib, and the documentation includes examples of <a href="/galib-2.4/Extensions.html">how to derive your own classes</a>.
+</p>
+<p>
+In general, start with an example that is similar to your problem, then go from there.  We have found that people struggle with the following issues:  (1) learning C++ and object-oriented design in general; (2) how to represent the problem; (3) how to define then refine an objective function that will actually do what you want it to do; and (4) how to handle multiple, and often conflicting, objectives.  Please read the <a href="/galib-2.4/Overview.html">overview</a>!
+</p>
+</blockquote>
+
+
+
+<br>
+<br>
+<br>
+<a name="3.2"><strong>
+3.2  Should I use a binary string or a real number genome?
+</strong></a>
+<blockquote>
+Nine times out of ten, a real number genome will perform better than a binary string genome.  However, actual performance depends on the problem you are trying to solve.  If you use a binary genome to encode real values, then chances are the real number genome will do better.
+<p>
+Remember also that the genetic operators are closely coupled to the representation.  It is possible to choose the 'right' representation but the 'wrong' genetic operator, or vice versa.
+</p>
+</blockquote>
+
+
+
+<br>
+<br>
+<br>
+<a name="3.3"><strong>
+3.3  How do I determine which kind of genome to use?
+</strong></a>
+<blockquote>
+This depends on the problem you are trying to solve.  For any given problem, there are many different representations you could use.  Of those representations, some may work much better than others.  As you experiment with different representations, remember that the genetic operators and your evaluation function affect performance at least as much as the representation.  And they are usually all closely coupled.
+<p>
+As you work on a new problem, start with something simple.  Make simplifying assumptions if needed, but get something that works.  Then you will have something to use as a benchmark for evaluating the performance of other representations and operators.  If you manage your code properly, you can mix and match operators, representations, and objective functions so that you can evaluate the performance of each component.
+</p>
+</blockquote>
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+</body>
+</html>

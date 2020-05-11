@@ -1,0 +1,485 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.vckbase.com/document/viewdoc/?id=1447 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 用 C++ 创建简单的 Win32 服务程序</TITLE>
+<META content="text/html; charset=gb2312" http-equiv=Content-Type>
+<META content="nt,service,win32,control panel,applet,服务,监控," name=keywords>
+<META content="nt,service,win32,control panel,applet,服务,监控," 
+name=description><LINK href="VC-Servic.files/style.css" rel=stylesheet>
+<META content="MSHTML 5.00.2014.210" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 src="VC-Servic.files/vckcom.gif" 
+      width=109></TD>
+    <TD align=right height=30 vAlign=bottom><IMG height=27 
+      src="VC-Servic.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=1319"><SPAN 
+      class=small><FONT color=black>NT服务</FONT></SPAN></A></TD>
+    <TD align=right class=small width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=41"><SPAN 
+      class=small><FONT color=black>在线杂志 第41期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 height=35 width="100%">
+  <FORM action=/SYS/script/find.asp method=post name=form2>
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV align=right><INPUT class=rect maxLength=20 name=keyword size=10> 
+      <SELECT class=rect name=gclsid> <OPTION selected value=100>文档</OPTION> 
+        <OPTION value=200>代码</OPTION> <OPTION value=400>工具</OPTION></SELECT> 
+      <INPUT align=absMiddle border=0 height=15 name=imageField 
+      src="VC-Servic.files/go.gif" type=image width=21> 
+  </DIV></TD></TR></FORM></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD background=VC-Servic.files/dotline2.gif height=1></TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD height=74 width=40></TD>
+    <TD height=74 vAlign=top width=*><BR>[ <FONT color=#009900>翻译文档</FONT> 
+      本文适合中级读者 已阅读3139次 ]<BR><BR><BR>
+      <TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><B>用 C++ 创建简单的 Win32 服务程序<BR></B><BR>作者：Nigel 
+            Thomson（MSDN 技术组）<BR>翻译：<A 
+            href="mailto:northtibet@sohu.com">NorthTibet</A></P>
+            <P>原文出处：<A 
+            href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dndllpro/html/msdn_ntservic.asp" 
+            target=_blank>Creating a Simple Win32 Service in C++</A><BR><BR>下载 
+            <A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2668">NTService</A> 
+            例子源代码<BR>下载 <A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2669">NTServCpl</A> 
+            例子源代码<BR>下载 <A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2670">NTServCtrl</A> 
+            例子源代码<BR><BR><IMG src="VC-Servic.files/paragraph.gif"> 
+            <B>摘要</B><BR><BR>　　本文描述如何用 Visual C++ 创建 Windows NT 服务程序。创建该服务仅用到一个 
+            C++ 
+            类，这个类提供服务与操作系统之间一个简单的接口。使用这个类实现自己的服务非常简单，只要改写少数几个基类中的虚拟函数即可。在本文有三个源代码参考例子： 
+
+            <UL>
+              <LI>NTService 是一个简单的 Win32 服务，它就是用本文所描述的方法建立的； 
+              <LI>NTServCpl 是一个控制面版程序，用来控制 NTService 服务； 
+              <LI>NTServCtrl 是一个独立的程序例子，用它可以监控某个 Win32 服务； </LI></UL>
+            <P><IMG src="VC-Servic.files/paragraph.gif"> 
+            <B>简介</B><BR><BR>　　Windows NT 
+            中的服务实际上是一个程序，只要计算机操作系统一启动，服务就可以运行其中。它不需要用户登陆。服务程序是一种与用户无关的任务，比如目录复制，进程监控或网络上供其它机器使用的服务，比如 
+            HTTP 协议支持。<BR>　　创建&nbsp;Windows NT 
+            服务程序并不是很难。但调试某个服务程序不是一件容易的事。就我自己而言，我喜欢用 Visual C++ 编写自己的 C++ 程序。大多数 
+            Win32 服务都是用 C 写的，所以我觉得如果用某个 C++ 类来实现 Win32 服务的基本功能一定很有意思。有了这个 C++ 
+            类，谁要想用 C++ 创建 Win32 服务就是一件很简单的事情了。我为此开发了一个 C++ 基类，用它作为编写 Win32 
+            服务的起点应该没有什么大问题。<BR><BR>创建服务程序除了编写服务代码外，还必须做一些其它额外的编码工作： 
+            <UL>
+              <LI>在系统日志或应用程序日志中报告警告信息和出错信息，不能用输出到屏幕的方式，因为用户根本就没有登陆。 
+              <LI>服务程序的控制即可以通过单独的应用程序，也可以通过控制面版程序。这取决于你的服务实现什么样的通讯机制。 
+              <LI>从系统中安装和卸载服务 </LI></UL>
+            <P>　　大多数服务程序都是使用一个安装程序来安装，而用另外一个程序来卸载。本文我将这些功能内建在服务程序自身当中，使之一体化，这样只分发一个.EXE文件即可。你可以从命令行直接运行服务程序，并且可以随心所欲地安装和卸载或报告其版本信息。NTService 
+            支持下列的命令行参数： 
+            <UL>
+              <LI>-v, 报告服务的名字和版本号； 
+              <LI>-i, 安装服务； 
+              <LI>-u, 卸载服务； </LI></UL>
+            <P>默认情况下，当系统启动该服务时没有命令行参数传递。<BR><BR><IMG 
+            src="VC-Servic.files/paragraph.gif"> 
+            <B>创建应用程序框架</B><BR><BR>　　我一直都是创建基于 MFC 的应用程序。当我刚接触 Win32 服务程序时，我先是用 
+            Visual C++ AppWizard 创建一个 SDI/MFC 
+            程序。然后去掉其中的文档和视图类、图标以及其它一些无用的东西，只剩下框架。结果到最后什么都去掉了，包括主窗口（服务程序不能有这个东东），什么也没有留下，非常愚蠢。我不得不 
+            又回过头到 AppWizard，并用单个的源文件创建控制台程序，此源文件包含main 入口函数，我将这个文件命名为 
+            NTServApp.cpp。我用此 cpp 扩展而不是用 C，因为我只想用C++ 来写程序，而不是直接用 
+            C。稍后我们会讨论该文件代码实现。<BR>　　因为我想用 C++ 类来构建服务，所以我创建了 NTService.h 和 
+            NTService.cpp 文件，用它们来实现 CNTService 基类。我还创建了 MyService.h 和 
+            MyService.cpp 文件用于实现自己的服务类（CMyService），它派生于 
+            CNTService。稍后我们会看到代码。<BR>　　建立新工程时，我喜欢尽快看到运行结果，所以我决定服务程序要做的第一件事情是建立一个系统应用程序日志记录。借助这个日志记录机制，我能跟踪服务何时启动， 
+            何时停止等等。我还可以记录服务中发生的任何出错信息。创建这个日志记录比我想象的要复杂得多。<BR><BR><IMG 
+            src="VC-Servic.files/paragraph.gif"> 
+            <B>建立日志记录</B><BR>　　我想，既然日志文件是操作系统的一部分，那么肯定有应用程序编程接口（API）来支持建立日志记录。所以我开始搜索 
+            MSDN CD，直到发现 ReportEvent 
+            函数为止。如果你不熟悉这个函数，你可能会想，这个函数应该知道在哪个日志文件建立记录，以及你想要插入的文本信息。没错，这都是它要做的事情，但是为了简化出错信息的国际化，该函数有一个消息 
+            ID 
+            作为参数，并在你提供的消息表中查找消息。所以问题无非是你想将什么消息放入日志，以及如何将这些消息添加到你的应用程序中，下面我们一步一步来做： 
+            </P>
+            <OL>
+              <LI>以 .MC 为扩展名创建一个包含消息描述的文本文件。我将它命名为 
+              NTServMsg.mc。该文件的格式非常特别，具体细节参见 Platform SDK 文档； 
+              <LI>针对你的源文件运行消息编译器（mc.exe），默认情况下它创建名为 MSG00001.BIN 
+              的输出文件。编译器还创建一个头文件（在我的例子程序中，该头文件是 NTServMsg.h）和一个.RC 
+              文件（NTServMsg.rc）。只要你修改工程的 .MC 文件就必须重复这一步，所以把工具加到 Visual C++ 
+              的工具菜单里做起来会很方便； 
+              <LI>为工程创建一个 .RC 文件，将 WINDOWS.H 头文件以及消息编译器产生的 .RC 文件包含到其中； 
+              <LI>在主工程头文件中包含消息编译器产生的头文件，以便模块可以存取符号消息名； </LI></OL>
+            <P>　　下面让我们仔细一下这些文件，以便弄明白你自己需要创建什么，以及消息编译器要为你创建些什么。我们不用研究整个消息集，只要看看其中一二个如何工作的即可。下面是例子程序消息源文件 
+            NTServMsg.mc 的第一部分：</P><PRE>MessageId=100
+SymbolicName=EVMSG_INSTALLED
+Language=English
+The %1 service was installed.
+.
+
+MessageId=
+SymbolicName=EVMSG_REMOVED
+Language=English
+The %1 service was removed.
+.
+
+MessageId=
+SymbolicName=EVMSG_NOTREMOVED
+Language=English
+The %1 service could not be removed.
+.</PRE>
+            <P>　　每一条都有一个消息ID，如果不特别设置，那么 ID 
+            的取值就是指其前面所赋的值。每一条还有一个代码中使用的符号名，语言标示符以及消息文本。消息可以跨多个行，并用含有一个句号的单独一行终止。<BR>　　消息编译器输出一个库文件，该库文件被用作应用程序的资源，此外还输出两个要在代码中包含的文件。下面是我的 
+            .RC 文件：</P><PRE>// NTServApp.rc
+#include &lt;windows.h&gt;
+
+// 包含由消息编译器（MC）产生的消息表资源脚本
+#include "NTServMsg.rc"
+
+Here''s the .RC file the message compiler generated:
+
+LANGUAGE 0x9,0x1
+1 11 MSG00001.bin</PRE>
+            <P>正像你所看到的，这些文件中内容不多!<BR><BR>消息编译器产生的最后一个文件是你要包含到代码中的头文件，下面就是这个头文件的部分内容：</P><PRE>[..........]
+//
+// MessageId: EVMSG_INSTALLED
+//
+// MessageText:
+//
+// The %1 service was installed.
+//
+#define EVMSG_INSTALLED 0x00000064L
+
+//
+// MessageId: EVMSG_REMOVED
+//
+// MessageText:
+//
+// The %1 service was removed.
+//
+#define EVMSG_REMOVED 0x00000065L
+[...........]</PRE>
+            <P>　　你可能已经注意到了有几个消息包含参数替代项（如 
+            %1）。让我们看看将消息写入某个系统日志文件时如何在代码中使用消息ID和参数替代项。以事件日志中记录成功安装信息的部分安装代码为例。也就是 
+            CNTService::IsInstalled 函数部分：</P><PRE>[....]
+LogEvent(EVENTLOG_INFORMATION_TYPE, EVMSG_INSTALLED, m_szServiceName);
+[....]</PRE>
+            <P>LogEvent 是另一个 CNTService 函数，它使用事件类型（信息，警告或错误），事件消息的 
+            ID，以及形成日志消息的最多三个参数的替代串：</P><PRE>// This function makes an entry into the application event log.
+void CNTService::LogEvent(WORD wType, DWORD dwID,
+			const char* pszS1,
+			const char* pszS2,
+			const char* pszS3)
+{
+	const char* ps[3];
+	ps[0] = pszS1;
+	ps[1] = pszS2;
+	ps[2] = pszS3;
+	
+	int iStr = 0;
+	for (int i = 0; i &lt; 3; i++) {
+		if (ps[i] != NULL) iStr++;
+	}
+	
+	// Check to see if the event source has been registered,
+	// and if not then register it now.
+	if (!m_hEventSource) {
+		m_hEventSource = ::RegisterEventSource(NULL, // local machine
+			m_szServiceName); // source name
+	}
+	
+	if (m_hEventSource) {
+		::ReportEvent(m_hEventSource,
+			wType,
+			0,
+			dwID,
+			NULL, // sid
+			iStr,
+			0,
+			ps,
+			NULL);
+	}
+}		</PRE>如你所见，其主要工作是由 ReportEvent 系统函数处理。<BR><BR>　　至此，我们已经可以通过调用 
+            CNTService::LogEvent 在系统日志中记录事件了。接下来我们将考虑创建服务本身的一些代码。<BR><BR><IMG 
+            src="VC-Servic.files/paragraph.gif"><B> 
+            编写服务代码</B><BR><BR>　　为了建构一个简单的 Win32 服务，你需要知道的大多数信息都可以在 Platform SDK 
+            中找到。其中的范例代码都是用C语言写的，并且很好理解。我的 CNTService 
+            类就是基于这些代码。<BR><BR>一个服务主要包括三个函数：
+            <UL>
+              <LI>main函数，这是代码的入口。我们正是在这里解析任何命令行参数并进行服务的安装，移除，启动等等。 
+              <LI>在例子中，提供真正服务代码的入口函数叫 
+              ServiceMain。你可以随便叫它什么。在服务第一次启动的恶时候，将该函数的地址传递给服务管理器。 
+              <LI>处理来自服务管理器命令消息的函数。在例子中，这个函数叫 Handler，这个名字可以随意取。 </LI></UL>
+            <P><I>服务回调函数</I><BR>　　因为 ServiceMain 和 Handler 
+            函数都是由系统来调用，所以它们必须遵循操作系统的参数传递规范和调用规范。也就是说，它们不能简单地作为某个 C++ 
+            类的成员函数。这样就给封装带来一些不便，因为我们想把 Win32 服务的功能封装在一个 C++ 类中。为了解决这个问题，我将 
+            ServiceMain 和 Handler 函数创建成 CNTService 类的静态成员。这样就使我得以创建可以由操作系统调用的函数。 
+            但是，这样做还没有完全解决问题，因为系统不允许给被调用的函数传递任何形式的用户数据，所以我们无法确定对 C++ 对象特定实例的 
+            ServiceMain 或 Handler 的调用。用了一个非常简单但有局限的方法来解决这个问题。我创建一个包含 C++ 
+            对象指针的静态变量。这个变量是在该对象首次创建是进行初始化的。这样便限制你每个服务应用只有一个C++对象。我觉得这个限制并不过分。下面是 
+            NTService.h 文件中的声明：</P><PRE>class CNTService
+{
+    [...]
+    // 静态数据
+    static CNTService* m_pThis; // nasty hack to get object ptr
+    [...]
+};</PRE>
+            <P>下面是初始化 m_pThis 指针的方法：</P><PRE>CNTService::CNTService(const char* szServiceName)
+{
+    // Copy the address of the current object so we can access it from
+    // the static member callback functions.
+    // WARNING: This limits the application to only one CNTService object. 
+    m_pThis = this;
+    [...]
+}</PRE>
+            <P><IMG src="VC-Servic.files/paragraph.gif"><B> CNTService 
+            类</B><BR><BR>　　当我创建 C++ 对象封装 Windows 函数时，我尝试为我封装的每个 Windows API 
+            除了创建成员函数外，还做一些别的工作，我尝试让对象更容易使用，降低实现特定项目所需的代码行数。因此我的对象是基于“我想让这个对象做什么？”而不是“Windows 
+            用这些 APIs 做什么？”<BR>　　CNTService 
+            类包含一些用来解析命令行的成员函数，为了处理服务的安装和拆卸以及事件日志的记录，你得在派生类中重写一些虚拟函数来处理服务控制管理器的请求。下面我们将通过本文的例子服务实现来研究这些函数的使用。<BR>　　如果你想创建尽可能简单的服务，只需要重写 
+            CNTService::Run 即可，它是你编写代码实现具体服务任务的地方。你还需要实现 main 
+            函数。如果服务需要实现一些初始化。如从注册表读取数据，还需重写 CNTService::OnInit。如果你要向服务发送命令消息 
+            ，那么可以在服务中使用系统函数 ControlService，重写 CNTService::OnUserControl 
+            来处理请求。<BR><BR><I>在例子应用程序中使用 CNTService</I> <BR>　　NTService 在 
+            CMyService 类中实现了它的大多数功能，CMyService 由 CNTService 派生。 MyService.h 
+            头文件如下：</P><PRE>// myservice.h
+#include "ntservice.h"
+
+class CMyService : public CNTService
+{
+public:
+    CMyService();
+    virtual BOOL OnInit();
+    virtual void Run();
+    virtual BOOL OnUserControl(DWORD dwOpcode);
+
+    void SaveStatus();
+
+    // Control parameters
+    int m_iStartParam;
+    int m_iIncParam;
+
+    // Current state
+    int m_iState;
+};</PRE>
+            <P>　　正像你所看到的，CMyService 改写了 CNTService 的 OnInit、Run 和 
+            OnUserControl。它还有一个函数叫 
+            SaveStatus，这个函数被用于将数据写入注册表，那些成员变量用来保存当前状态。例子服务每隔一定的时间对一个整型变量进行增量处理。开始值和增量值都存在注册表的参数中。这样做并没有别的意图。只是为了简单示范。下面我们看看这个服务是如何实现的。<BR><BR><IMG 
+            src="VC-Servic.files/paragraph.gif"><B> 实现 main 函数</B><BR><BR>有了从 
+            CNTService 派生的 CMyService，实现 main 函数很简单，请看 NTServApp.cpp 文件：</P><PRE>int main(int argc, char* argv[])
+{
+    // 创建服务对象
+    CMyService MyService;
+    
+    // 解析标准参数 (安装, 卸载, 版本等.)
+    if (!MyService.ParseStandardArgs(argc, argv)) {
+
+        // 未发现任何标准参数，所以启动服务，
+        // 取消下面 DebugBreak 代码行的注释，
+        // 当服务启动后进入调试器，
+        //DebugBreak();
+        MyService.StartService();
+    }
+
+    // 到这里，服务已经停止
+    return MyService.m_Status.dwWin32ExitCode;
+}		</PRE>　　这里代码不多，但执行后却发生了很多事情，让我们一步一步来看。首先，我们创建一个 MyService 
+            类的实例。构造函数设置初始化状态和服务名字（MyService.cpp）：<PRE>CMyService::CMyService():CNTService("NT Service Demonstration")
+{
+    m_iStartParam = 0;
+    m_iIncParam = 1;
+    m_iState = m_iStartParam;
+}</PRE>
+            <P>　　接着调用 ParseStandardArgs 
+            检查命令行是否包含服务安装（-i）、卸载（-u）以及报告其版本号（-v）的请求。CNTService::ParseStandardArgs 
+            分别调用 CNTService::IsInstalled，CNTService::Install 和 
+            CNTService::Uninstall 来处理这些请求。如果没有可识别的命令行参数，则假设该服务控制管理器试图启动该服务并调用 
+            StartService。该函数直到服务停止运行才返回。当你调试完代码，即可把用于调试的代码行注释掉或删除。<BR><BR><I>安装和卸载服务</I><BR>　　服务的安装由 
+            CNTService::Install 处理，它用 Win32 
+            服务管理器注册服务并在注册表中建立一个条目以支持服务运行时日志消息。<BR>　　服务的卸载由 CNTService::Uninstall 
+            处理，它仅仅通知服务管理器该服务已经不再需要。CNTService::Uninstall 
+            不会删除服务实际的可执行文件。<BR><BR><IMG src="VC-Servic.files/paragraph.gif"><B> 
+            编写服务代码</B><BR><BR>　　现在我们来编写实现服务的具体代码。对于 NTService 
+            例子，有三个函数要写。他们涉及初始化，运行服务的细节和响应控制请求。<BR><BR><I>初始化</I><BR>　　注册表有一个给服务用来存储参数的地方：</P><PRE>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services</PRE>
+            <P>　　我就是选择这里来存储我的服务配置信息。我创建了一个 Parameters 
+            键，并在此存储我要保存的值。所以当服务启动时，OnInit 函数被调用；这个函数从注册表中读取初始设置。</P><PRE>BOOL CMyService::OnInit()
+{
+  // Read the registry parameters.
+  // Try opening the registry key:
+  // HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\<APPNAME>\Parameters
+  HKEY hkey;
+  char szKey[1024];
+  strcpy(szKey, "SYSTEM\\CurrentControlSet\\Services\\");
+  strcat(szKey, m_szServiceName);
+  strcat(szKey, "\\Parameters");
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+                     szKey,
+                     0,
+                     KEY_QUERY_VALUE,
+                     &amp;hkey) == ERROR_SUCCESS) {
+        // Yes we are installed.
+        DWORD dwType = 0;
+        DWORD dwSize = sizeof(m_iStartParam);
+        RegQueryValueEx(hkey,
+                        "Start",
+                        NULL,
+                        &amp;dwType,
+                        (BYTE*)&amp;m_iStartParam,
+                        &amp;dwSize);
+        dwSize = sizeof(m_iIncParam);
+        RegQueryValueEx(hkey,
+                        "Inc",
+                        NULL,
+                        &amp;dwType,
+                        (BYTE*)&amp;m_iIncParam,
+                        &amp;dwSize);
+        RegCloseKey(hkey);
+    }
+
+  // Set the initial state.
+  m_iState = m_iStartParam;
+
+  return TRUE;
+}		</PRE>现在我们有了服务参数，我们便可以运行服务了。<BR><BR><I>运行服务</I><BR>当 Run 
+            函数被调用时将执行服务的主体代码。本文例子的这部分很简单： <PRE>void CMyService::Run()
+{
+    while (m_bIsRunning) {
+
+    // Sleep for a while.
+        DebugMsg("My service is sleeping (%lu)...", m_iState);
+        Sleep(1000);
+
+    // Update the current state.
+    m_iState += m_iIncParam;
+    }
+}		</PRE>　　注意，只要服务不终止，这个函数就不会退出。<APPNAME>当有终止服务的<APPNAME>请求<APPNAME>时，CNTService::m_bIsRunning 
+            标志被置成 FALSE。<APPNAME>如果在服务终止时，你要实现清除操作，那么<APPNAME><APPNAME>你还可以改写 
+            <APPNAME>OnStop 和/或 
+            OnShutdown。<BR><BR><I>响应控制请求</I><BR>　　你可以用任何适合的方式与服务通讯——命名管道，思想交流，便条等等——对于一些简单的请求，用系统函数<APPNAME> 
+            ControlService 很容易实现。<APPNAME>CNTService 提供了一个处理器专门用于通过 
+            <APPNAME>ControlService 
+            函数发送的<APPNAME>非标准消息（也就是用户发送的消息）。本文例子用单一消息在注册表中<APPNAME>保存当前服务的状态，以便其它应用程序能看到它。我不建议用这种方法来监控服务，因为它不是最佳方法，这只是比较容易编码实现而已。<APPNAME>ControlService 
+            所能处理的用户消息必须在 <APPNAME>128 到 255 这个范围。我定义了一个常量 
+            <APPNAME>SERVICE_CONTROL_USER，128 作为基值。范围内的用户消息被发送到 
+            <APPNAME>CNTService:: OnUserControl，在例子服务中，处理此消息的细节如下：<BR><PRE>BOOL CMyService::OnUserControl(DWORD dwOpcode)
+{
+    switch (dwOpcode) {
+    case SERVICE_CONTROL_USER + 0:
+
+        // Save the current status in the registry.
+        SaveStatus();
+        return TRUE;
+
+    default:
+        break;
+    }
+    return FALSE;   // say not handled
+}		</PRE>SaveStatus 是一个局部函数，用来在注册表中存储服务状态。<BR><BR><IMG 
+            src="VC-Servic.files/paragraph.gif"><B> 调试 Win32 
+            服务</B><BR><BR>　　main 函数中包含一个对 
+            <APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME>DebugBreak 
+            的调用，当服务第一次被启动时，它会激活系统调试器。你可以监控来自调试器命令窗口中的服务调试信息。你可以在服务中用 
+            <APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME>CNTService::DebugMsg 
+            来报告调试期间感兴趣的事件。<BR>　　为了调试服务代码，你需要按照<APPNAME><APPNAME><APPNAME> 
+            Platform SDK 文档中的要求<APPNAME>安装 
+            系统调试器（<APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME>WinDbg）。你也可以用<APPNAME><APPNAME><APPNAME><APPNAME><APPNAME> 
+            Visual Studio 自带的调试器调试 Win32 
+            服务。<BR>　　有一点很重要，<APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME>那就是 
+            当它被服务管理器控制时，你不能终止服务和单步执行，因为服务管理器会让<APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME>服务请求 
+            超时并终止服务线程。所以你只能让服务吐出消息，跟踪其过程并在调试器窗口查看它们。<BR>　　当服务启动后（例如，从控制面板的“<APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME>服务”中），调试器将在服务线程的挂起后启动。你需要通过单击“Go”按钮或按 
+            F5 让继续运行。然后在调试器中观察服务的运行过程。<BR><BR>下面是启动和终止服务的调试输出例子：<PRE>Module Load: WinDebug/NTService.exe (symbol loading deferred)
+Thread Create: Process=0, Thread=0
+Module Load: C:\NT351\system32\NTDLL.DLL (symbol loading deferred)
+Module Load: C:\NT351\system32\KERNEL32.DLL (symbol loading deferred)
+Module Load: C:\NT351\system32\ADVAPI32.DLL (symbol loading deferred)
+Module Load: C:\NT351\system32\RPCRT4.DLL (symbol loading deferred)
+Thread Create: Process=0, Thread=1
+*** WARNING: symbols checksum is wrong 0x0005830f 0x0005224f for C:\NT351\symbols\dll\NTDLL.DBG
+Module Load: C:\NT351\symbols\dll\NTDLL.DBG (symbols loaded)
+Thread Terminate: Process=0, Thread=1, Exit Code=0
+Hard coded breakpoint hit
+Hard coded breakpoint hit
+[](130): CNTService::CNTService()
+Module Load: C:\NT351\SYSTEM32\RPCLTC1.DLL (symbol loading deferred)
+[NT Service Demonstration](130): Calling StartServiceCtrlDispatcher()
+Thread Create: Process=0, Thread=2
+[NT Service Demonstration](174): Entering CNTService::ServiceMain()
+[NT Service Demonstration](174): Entering CNTService::Initialize()
+[NT Service Demonstration](174): CNTService::SetStatus(3026680, 2)
+[NT Service Demonstration](174): Sleeping...
+[NT Service Demonstration](174): CNTService::SetStatus(3026680, 4)
+[NT Service Demonstration](174): Entering CNTService::Run()
+[NT Service Demonstration](174): Sleeping...
+[NT Service Demonstration](174): Sleeping...
+[NT Service Demonstration](174): Sleeping...
+[NT Service Demonstration](130): CNTService::Handler(1)
+[NT Service Demonstration](130): Entering CNTService::Stop()
+[NT Service Demonstration](130): CNTService::SetStatus(3026680, 3)
+[NT Service Demonstration](130): Leaving CNTService::Stop()
+[NT Service Demonstration](130): Updating status (3026680, 3)
+[NT Service Demonstration](174): Leaving CNTService::Run()
+[NT Service Demonstration](174): Leaving CNTService::Initialize()
+[NT Service Demonstration](174): Leaving CNTService::ServiceMain()
+[NT Service Demonstration](174): CNTService::SetStatus(3026680, 1)
+Thread Terminate: Process=0, Thread=2, Exit Code=0
+[NT Service Demonstration](130): Returned from StartServiceCtrlDispatcher()
+Module Unload: WinDebug/NTService.exe
+Module Unload: C:\NT351\system32\NTDLL.DLL
+Module Unload: C:\NT351\system32\KERNEL32.DLL
+Module Unload: C:\NT351\system32\ADVAPI32.DLL
+Module Unload: C:\NT351\system32\RPCRT4.DLL
+Module Unload: C:\NT351\SYSTEM32\RPCLTC1.DLL
+Thread Terminate: Process=0, Thread=0, Exit Code=0
+Process Terminate: Process=0, Exit Code=0
+&gt;</PRE>
+            <P><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><APPNAME><IMG 
+            src="VC-Servic.files/paragraph.gif"> <B>总结</B><BR><BR>　　也许用 C++ 创建 
+            Win32 
+      服务并不是最理想的，但使用单一的类来派生你自己的服务的确方便了你的服务开发工作。</P></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center><BR><BR>
+<TABLE border=0 cellPadding=0 cellSpacing=0 class=small height=18 width="98%">
+  <TBODY>
+  <TR vAlign=center>
+    <TD bgColor=#a0d39b width="47%"><IMG height=10 
+      src="VC-Servic.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1447" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right bgColor=#a0d39b width="53%"><IMG height=9 src="" width=9> 
+      <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1447" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 src="" 
+      width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=1447&amp;title=%d3%c3+C%2b%2b+%b4%b4%bd%a8%bc%f2%b5%a5%b5%c4+Win32+%b7%fe%ce%f1%b3%cc%d0%f2" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 src="" 
+      width=9> <A href="javascript:window.print();"><SPAN 
+      class=small>打印</SPAN></A></TD></TR></TBODY></TABLE>
+<TABLE bgColor=#ffffff border=0 cellPadding=0 cellSpacing=1 class=small 
+width="98%">
+  <TBODY>
+  <TR>
+    <TD bgColor=#ffffff><BR><IMG align=absMiddle height=11 
+      src="VC-Servic.files/doc2.gif" width=11> 
+      用vc6打开时（open&nbsp;.mak）会提示你转换。按“OK”键即可。 ( hangwire 发表于 2005-4-19 
+      15:45:00)<BR>&nbsp;<BR><IMG align=absMiddle height=11 
+      src="VC-Servic.files/doc2.gif" width=11> .mak文件可以打开工程 ( cool_ice 发表于 
+      2005-4-18 23:20:00)<BR>&nbsp;<BR><IMG align=absMiddle height=11 
+      src="VC-Servic.files/doc2.gif" width=11> 
+      你的程序被你改到怎么打开..我也不会...为什么连*.dsw文件也不见了...有人能告诉我怎么打吗? ( caicoi 发表于 2005-4-18 
+      22:55:00)<BR>&nbsp;<BR>.......................................................<BR><A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1447" 
+      target=_blank><SPAN class=small>More...</SPAN></A> 
+</TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2004 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

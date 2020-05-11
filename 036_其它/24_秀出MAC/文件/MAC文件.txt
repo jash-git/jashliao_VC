@@ -1,0 +1,73 @@
+以下程式碼
+是自己依照各位論壇前輩所測試無誤的，post出來僅供有需要的人參考
+
+第零步
+利用mfc精靈建立一個對話盒的程式介面並加入文字方塊和按鈕
+定將文字方塊和m_MAC字作連結
+第一步
+連結 NetApi32.lib 
+第二步
+加入h檔
+////////////////////////////
+#include < windows.h >
+#include < wincon.h >
+#include < stdlib.h >
+#include < stdio.h >
+#include < time.h >
+#include < nb30.h >
+///////////////////////////
+第三步
+建立結構
+typedef struct _ASTAT_{    
+	ADAPTER_STATUS adapt;    
+	NAME_BUFFER    NameBuff [30];
+}ASTAT, * PASTAT;
+ASTAT Adapter;
+/////////////////////////////////////////////////
+第四步
+加入按鈕事件程式碼
+void CShowMACDlg::OnButton1() 
+{
+	// TODO: Add your control notification handler code here
+	NCB Ncb;
+    UCHAR uRetCode;
+    //char NetName[50];
+    LANA_ENUM lenum;
+    int i;
+	char sMacAddress[100];
+    memset( &Ncb, 0, sizeof(Ncb) );
+    Ncb.ncb_command = NCBENUM;
+    Ncb.ncb_buffer = (UCHAR *)&lenum;
+    Ncb.ncb_length = sizeof(lenum);
+    uRetCode = Netbios( &Ncb );
+    for(i=0; i < lenum.length ;i++)
+    {
+		memset( &Ncb, 0, sizeof(Ncb) );
+		Ncb.ncb_command = NCBRESET;
+		Ncb.ncb_lana_num = lenum.lana[i];
+		uRetCode = Netbios( &Ncb );
+
+		memset( &Ncb, 0, sizeof (Ncb) );
+		Ncb.ncb_command = NCBASTAT;
+		Ncb.ncb_lana_num = lenum.lana[i];
+
+		strcpy( (char*)Ncb.ncb_callname, "* " );
+		Ncb.ncb_buffer = (unsigned char *) &Adapter;
+		Ncb.ncb_length = sizeof(Adapter);
+		uRetCode = Netbios( &Ncb );
+	}
+	if ( uRetCode == 0 )
+	{		
+     sprintf(sMacAddress, "MAC : %02x-%02x-%02x-%02x-%02x-%02x\n",
+     Adapter.adapt.adapter_address[0],
+     Adapter.adapt.adapter_address[1],
+     Adapter.adapt.adapter_address[2],
+     Adapter.adapt.adapter_address[3],
+     Adapter.adapt.adapter_address[4],
+     Adapter.adapt.adapter_address[5] );
+
+	}
+	UpdateData(true);
+		m_MAC=sMacAddress;
+	UpdateData(false);
+}

@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.vckbase.com/document/viewdoc/?id=1037 -->
+<HTML><HEAD><TITLE>VC知识库文章 - C++实现CD抓轨转WAV</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content=cd,wav,track,音轨,audio name=keywords>
+<META content=cd,wav,track,音轨,audio name=description><LINK 
+href="C++實現CD抓軌轉WAV.files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.3059" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD width="14%" height=78>&nbsp;<IMG height=13 
+      src="C++實現CD抓軌轉WAV.files/vckcom.gif" width=109></TD>
+    <TD align=right width="76%"><A href="http://www.sygui.com/" 
+      target=_blank><IMG height=70 src="C++實現CD抓軌轉WAV.files/sygui.gif" width=600 
+      align=middle border=0 longDesc=http://www.sygui.com></A><A 
+      href="http://www.longmai.com.cn/" target=_blank><IMG height=70 
+      src="C++實現CD抓軌轉WAV.files/longmai.gif" width=195 align=middle 
+    border=0></A></TD>
+    <TD vAlign=bottom align=right height=78><IMG height=27 
+      src="C++實現CD抓軌轉WAV.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD colSpan=2><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=707"><SPAN 
+      class=small><FONT color=black>音频技术</FONT></SPAN></A></TD>
+    <TD class=small align=right width="10%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=29"><SPAN 
+      class=small><FONT color=black>在线杂志 第29期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "image";
+google_ad_channel = "";
+//--></SCRIPT>
+
+<SCRIPT src="C++實現CD抓軌轉WAV.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+</DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background=C++實現CD抓軌轉WAV.files/dotline2.gif 
+height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合中级读者 
+            已阅读8999次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="C++實現CD抓軌轉WAV.files/go.gif" align=absMiddle border=0 
+            name=imageField> </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><B>C++实现CD抓轨转WAV<BR></B><BR><BR>作者：<A 
+            href="mailto:Email:landyu@163.com">黄利龙</A></P>
+            <P><BR><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2278">下载源代码</A><BR><BR>　　现在介绍一下C++实现CD抓轨转WAV,CD抓轨的方法有好几种，现在介绍其中一种。我们可以通过API函数CreateFile获得设备句柄，再用API函数DeviceIoControl来实现对设备的访问获取信息。再此还会用到WAVE文件结构WAVEFORMATEX，再把读到的信息写到文件里生成WAVE格式的文件。<BR><BR>我们要用到的头文件有: 
+            ntddcdrm.h(NTDDK开发包) winioctl.h 
+            Mmreg.h<BR><BR>1、搜索光驱<BR>我们可以用GetDriveType来判断设备类型,5为CDROM类型。返回类型可以参看MSDN，里面有详细介绍。<BR><BR>2、打开设备<BR>用CreateFile获得设备句柄，例子如下: 
+            </P><PRE>    HANDLE m_hDevice;
+    CString FileName=”F:”;
+    m_hDevice =CreateFile("\\\\.\\"+FileName,                // 文件名路径
+    GENERIC_READ,                                            // 读写方式
+    FILE_SHARE_READ | FILE_SHARE_WRITE,                      // 共享方式
+    NULL,                                                    // 默认的安全描述符
+    OPEN_EXISTING,                                           // 创建方式
+    0,                                                       // 不需设置文件属性
+    NULL);                                                   // 不需参照模板文件
+</PRE>3、读取CD参数<BR>得到了设备句柄，我们就可以用DeviceIoControl来获息相关信息.<BR>DeviceIoControl函数原型: 
+<PRE>    BOOL DeviceIoControl(
+    HANDLE hDevice,                                 // 设备句柄
+    DWORD dwIoControlCode,                          // 控制码
+    LPVOID lpInBuffer,                              // 输入数据缓冲区指针
+    DWORD nInBufferSize,                           // 输入数据缓冲区长度
+    LPVOID lpOutBuffer,                             // 输出数据缓冲区指针
+    DWORD nOutBufferSize,                          // 输出数据缓冲区长度
+    LPDWORD lpBytesReturned,                        // 输出数据实际长度单元长度
+    LPOVERLAPPED lpOverlapped                      // 重叠操作结构指针
+    );
+</PRE><BR>4、获取曲目<BR>使用IOCTL_CDROM_READ_TOC控制码输出CDROM_TOC结构
+            <P></P><PRE>  BOOL bResult;
+  DWORD dwOutBytes;
+  CDROM_TOC CdromTOC;               //曲目信息结构,详细请看MSDN
+  bResult=DeviceIoControl(m_hDevice,
+  			IOCTL_CDROM_READ_TOC,NULL,0,
+  			&amp;CdromTOC,
+  			sizeof(CdromTOC),
+  			&amp;dwOutBytes,  
+  			(LPOVERLAPPED)NULL);
+</PRE>5、获取曲目始点<BR><PRE>DWORD CCdToWavDlg::GetStartSector(int track)
+{
+         return (CdromTOC.TrackData[track-1].Address[1]*60*75     + 
+         		CdromTOC.TrackData[track-1].Address[2]*75 +
+         		CdromTOC.TrackData[track-1].Address[3])-150;
+}
+</PRE>6、获取曲目终点 <PRE>DWORD CCdToWavDlg::GetEndSector(int track)
+{
+      return (CdromTOC.TrackData[track].Address[1]*60*75 	+ 
+      			CdromTOC.TrackData[track].Address[2]*75 + 
+      			CdromTOC.TrackData[track].Address[3])-151;
+}
+</PRE>7、读取曲目信息<BR>使用IOCTL_CDROM_RAW_READ输入RAW_READ_INFO结构信息，输出来获取区域内容 
+<PRE>BOOL CCdToWavDlg::ReadSector(int sector,BYTE Buffer[], int NumSectors) 
+{
+	DWORD dwOutBytes;
+	RAW_READ_INFO rri; //结构详细请看MSDN
+	rri.TrackMode =(TRACK_MODE_TYPE)2;
+	rri.SectorCount = (DWORD)NumSectors;
+	rri.DiskOffset =(DWORD64)(sector*CB_CDROMSECTOR);
+	if (DeviceIoControl(m_hDevice,IOCTL_CDROM_RAW_READ,
+		&amp;rri, 
+		sizeof(rri),
+		Buffer, 
+		(DWORD)NumSectors*CB_AUDIO,&amp;dwOutBytes,
+		(LPOVERLAPPED)NULL)) return true; 
+	return false;
+}
+</PRE>8、文件生成<BR>&nbsp;　　WAVE文件是非常简单的一种RIFF文件，它的格式类型为"WAVE"。RIFF块包含两个子块，这两个子块的ID分别是"fmt"和"data",其中"fmt"子块由结构WAVEFORMATEX所组成，其子块的大小就是sizeofof(WAVEFORMATEX),数据组成就是WAVEFORMATEX结构中的数据。WAVE文件的结构如下图所示：<BR><BR>
+            <TABLE 
+            style="WIDTH: 150pt; mso-cellspacing: 0cm; mso-padding-alt: 0cm 0cm 0cm 0cm" 
+            cellSpacing=0 cellPadding=0 width=200 border=1>
+              <TBODY>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">标志符（<SPAN 
+                  lang=EN-US>RIFF）<SPAN style="COLOR: black"><O:P> 
+                  </O:P></SPAN></SPAN></SPAN></P></TD></TR>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">数据大小<SPAN 
+                  lang=EN-US style="COLOR: black"><O:P> 
+                </O:P></SPAN></SPAN></P></TD></TR>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">格式类型（<SPAN 
+                  lang=EN-US>"WAVE"）<SPAN style="COLOR: black"><O:P> 
+                  </O:P></SPAN></SPAN></SPAN></P></TD></TR>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN lang=EN-US 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">"fmt"<SPAN 
+                  style="COLOR: black"><O:P> </O:P></SPAN></SPAN></P></TD></TR>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN lang=EN-US 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">Sizeof(</SPAN><SPAN 
+                  lang=EN-US 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 12.0pt; mso-font-kerning: 0pt">WAVEFORMATEX</SPAN><SPAN 
+                  lang=EN-US 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">)<SPAN 
+                  style="COLOR: black"><O:P> </O:P></SPAN></SPAN></P></TD></TR>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN lang=EN-US 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 12.0pt; mso-font-kerning: 0pt">WAVEFORMATEX</SPAN><SPAN 
+                  lang=EN-US 
+                  style="FONT-SIZE: 9pt; COLOR: black; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial"><O:P> 
+                  </O:P></SPAN></P></TD></TR>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN lang=EN-US 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">"data"<SPAN 
+                  style="COLOR: black"><O:P> </O:P></SPAN></SPAN></P></TD></TR>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">声音数据大小<SPAN 
+                  lang=EN-US style="COLOR: black"><O:P> 
+                </O:P></SPAN></SPAN></P></TD></TR>
+              <TR>
+                <TD 
+                style="PADDING-RIGHT: 0cm; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm">
+                  <P class=MsoNormal><SPAN 
+                  style="FONT-SIZE: 9pt; FONT-FAMILY: 新宋体; mso-bidi-font-size: 10.5pt; mso-bidi-font-family: Arial">声音数据<SPAN 
+                  lang=EN-US style="COLOR: black"><O:P> 
+                </O:P></SPAN></SPAN></P></TD></TR></TBODY></TABLE>
+            <P>WAVEFORMATEX结构原型：<BR></P><PRE>  typedef struct
+  { 
+       WORD wFormatTag; //编码格式，包括WAVE_FORMAT_PCM，WAVEFORMAT_ADPCM等
+       WORD nChannels; //声道数，单声道为1，双声道为2
+       DWORD nSamplesPerSec; //采样频率
+       DWORD nAvgBytesPerSec; //每秒的数据量
+       WORD nBlockAlign; //块对齐
+       WORD wBitsPerSample; //WAVE文件的采样大小
+       WORD cbSize;
+   } WAVEFORMATEX; *PWAVEFORMATEX;
+</PRE>9、定义WAVE文件结构<PRE>    DWORD m_WaveHeaderSize = 38;
+    DWORD m_WaveFormatSize = 18;
+    DWORD m_AudioDataSize =0;
+    DWORD m_WrittenBytes = 0;
+    WAVEFORMATEX m_WaveFormatEx;
+    m_WaveFormatEx.wFormatTag=WAVE_FORMAT_PCM ;
+    m_WaveFormatEx.nSamplesPerSec=48000;
+    m_WaveFormatEx.wBitsPerSample=16;
+    m_WaveFormatEx.nChannels=2;
+    m_WaveFormatEx.cbSize=0;
+    m_WaveFormatEx.nBlockAlign=m_WaveFormatEx.nChannels*(m_WaveFormatEx.wBitsPerSample/8);
+    m_WaveFormatEx.nAvgBytesPerSec=m_WaveFormatEx.nSamplesPerSec*m_WaveFormatEx.nBlockAlign;
+</PRE>10、创建新文件<BR><PRE>    CFile m_file;
+    CFileException fileException;
+    CString m_csFileName= m_SavePath;
+    m_file.Open(m_csFileName,CFile::modeCreate|CFile::modeReadWrite, &amp;fileException);
+    int StartSect=GetStartSector(m_List.GetCurSel()+1);
+    int EndSect=GetEndSector(m_List.GetCurSel()+1);
+    DWORD Bytes2Read=(EndSect - StartSect)*CB_AUDIO;
+    m_AudioDataSize=Bytes2Read;
+    BYTE Data[CB_AUDIO*NSECTORS];
+</PRE>11、写入WAV文件头<BR>WAV文件头一定要按顺序写入<BR><PRE>  m_file.SeekToBegin();
+  m_file.Write("RIFF",4);
+  unsigned int Sec=(m_AudioDataSize + m_WaveHeaderSize);
+  m_file.Write(&amp;Sec,sizeof(Sec));
+  m_file.Write("WAVE",4);
+  m_file.Write("fmt ",4);
+  m_file.Write(&amp;m_WaveFormatSize,sizeof(m_WaveFormatSize));
+  m_file.Write(&amp;m_WaveFormatEx.wFormatTag,sizeof(m_WaveFormatEx.wFormatTag));
+  m_file.Write(&amp;m_WaveFormatEx.nChannels,sizeof(m_WaveFormatEx.nChannels));
+  m_file.Write(&amp;m_WaveFormatEx.nSamplesPerSec,sizeof(m_WaveFormatEx.nSamplesPerSec));
+  m_file.Write(&amp;m_WaveFormatEx.nAvgBytesPerSec,sizeof(m_WaveFormatEx.nAvgBytesPerSec));
+  m_file.Write(&amp;m_WaveFormatEx.nBlockAlign,sizeof(m_WaveFormatEx.nBlockAlign));
+  m_file.Write(&amp;m_WaveFormatEx.wBitsPerSample,sizeof(m_WaveFormatEx.wBitsPerSample));
+  m_file.Write(&amp;m_WaveFormatEx.cbSize,sizeof(m_WaveFormatEx.cbSize));
+  m_file.Write("data",4);
+  m_file.Write(&amp;m_AudioDataSize,sizeof(m_AudioDataSize));
+</PRE>12、写入音频数据<BR>把音频数据放到WAV文件头后写入<BR><PRE>   DWORD m_seek=46; //文件头长度为46个字，必须从46后写入
+   for (int sector = StartSect; (sector &lt; EndSect); sector+=NSECTORS)
+   {
+         int Sectors2Read = ( (sector + NSECTORS) &lt; EndSect )?NSECTORS:(EndSect-sector);
+         if (ReadSector(sector, Data, Sectors2Read)) 
+         { 
+               m_file.Write(Data,CB_AUDIO*Sectors2Read);
+               m_file.Seek(m_seek+=CB_AUDIO*Sectors2Read,CFile::begin);
+         } 
+   }
+   m_file.Close();
+</PRE>详细请看源代码。以上在 VC7+Window2000+NTDDK 
+  测试通过。</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="C++實現CD抓軌轉WAV.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="C++實現CD抓軌轉WAV.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1037" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 
+      src="C++實現CD抓軌轉WAV.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1037" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 
+      src="C++實現CD抓軌轉WAV.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=1037&amp;title=C%2b%2b%ca%b5%cf%d6CD%d7%a5%b9%ec%d7%aaWAV" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 
+      src="C++實現CD抓軌轉WAV.files/rec1.gif" width=9> <A 
+      href="javascript:window.print();"><SPAN 
+  class=small>打印</SPAN></A></TD></TR></TBODY></TABLE>
+<TABLE class=small cellSpacing=1 cellPadding=0 width="98%" bgColor=#ffffff 
+border=0>
+  <TBODY>
+  <TR>
+    <TD bgColor=#ffffff><BR><IMG height=11 src="C++實現CD抓軌轉WAV.files/doc2.gif" 
+      width=11 align=absMiddle> 试了&nbsp;有问题 ( hxhxd 发表于 2006-4-1 
+      17:06:00)<BR>&nbsp;<BR><IMG height=11 src="C++實現CD抓軌轉WAV.files/doc2.gif" 
+      width=11 align=absMiddle> 只能在2000/XP下RIP,&nbsp;能不能说一下Win98下如何实现? ( elisa 
+      发表于 2004-4-25 11:56:00)<BR>&nbsp;<BR><IMG height=11 
+      src="C++實現CD抓軌轉WAV.files/doc2.gif" width=11 align=absMiddle> 
+      再写一篇刻录的....万分期待!!! ( yjh1982 发表于 2004-4-8 13:54:00)<BR>&nbsp;<BR><IMG 
+      height=11 src="C++實現CD抓軌轉WAV.files/doc2.gif" width=11 align=absMiddle> 
+      好文，有时间试试 ( he_zc 发表于 2004-4-8 
+      11:06:00)<BR>&nbsp;<BR>.......................................................<BR><A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1037" 
+      target=_blank><SPAN class=small>More...</SPAN></A> 
+</TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2006 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

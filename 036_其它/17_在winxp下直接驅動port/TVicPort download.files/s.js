@@ -1,0 +1,1 @@
+this.onload=function(){var r,i=0,e=document.getElementsByTagName('tr');while((r=e.item(i++)))if(r.className=='l'){r.onmouseover=function(){this.className='l h';};r.onmouseout=function(){this.className='l';}}}

@@ -1,0 +1,510 @@
+<html><head><title>GAlib: Bug List</title>
+
+<!-- by matthew wall                           all rights reserved -->
+<!-- Copyright (c) 1995-1996 Massachusetts Institute of Technology -->
+<!-- Copyright (c) 1996-1999 Matthew Wall                          -->
+
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+<strong>Bugs in <a href="./">GAlib</a></strong><br>
+<small><i>Last modified 24 December 1999
+</i></small><br>
+<p>
+This page contains a list of bugs and suggested workarounds.  Please submit to <a href="mailto:galib-bugs@mit.edu">galib-bugs@mit.edu</a> a bug report if the problem you're having is not on this list.
+</p>
+<a href="#config">configuration issues</a><br>
+<a href="#version_2.4">version 2.4.x</a><br>
+<a href="#version_2.3.2">version 2.3.2</a><br>
+<a href="#version_2.3.1">version 2.3.1</a><br>
+
+
+
+
+
+<br>
+<br>
+<br>
+<a name="config">
+<strong>Compiler/Configuration Issues</strong></a><br><hr>
+<dl>
+  <dt><strong>Random number woes</strong><br>
+  <dd>If you find that the examples don't evolve properly, check the performance of the random number generator using the randtest example.  You can specify which random number generator to use by modifying the gaconfig.h file.  Note that that modifications to gaconfig.h will require a rebuild of the entire GA library. 
+</dl>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<a name="version_2.4">
+<strong>bugs in version 2.4.4</strong></a><br>
+<hr>
+<ul>
+  <li>On some platforms, the seed functions for the RAN1 and RAN2 random number generator only works half of the time, on average.  The other half of the time it generates the same random seed.  Thanks to Peter Ross and George LeCompte for finding this one.  In the file garandom.C, change the sran1 and sran2 functions so that:
+<pre>
+206  void
+207  sran1(unsigned int seed) {
+208    int j;
+209    long k;
+210
+211    idum = seed;
+212    if (idum < 1) idum=1;
+213    for (j=NTAB+7;j>=0;j--) {
+214      k=(idum)/IQ;
+215      idum=IA*(idum-k*IQ)-IR*k;
+216      if (idum < 0) idum += IM;
+217      if (j < NTAB) iv[j] = idum;
+218    }
+219    iy=iv[0];
+220  }
+
+...
+
+280  void 
+281  sran2(unsigned int seed) {
+282    int j;
+283    long k;
+284
+285    idum = STA_CAST(long,seed);
+286    if (idum < 1) idum=1;
+287    idum2=(idum);
+288    for (j=NTAB+7;j>=0;j--) {
+289      k=(idum)/IQ1;
+290      idum=IA1*(idum-k*IQ1)-k*IR1;
+291      if (idum < 0) idum += IM1;
+292      if (j < NTAB) iv[j] = idum;
+293    }
+294    iy=iv[0];
+295  }
+</pre>
+becomes this:
+<pre>
+206  void
+207  sran1(unsigned int seed) {
+208    int j;
+209    long k;
+210
+211    idum = seed;
+212    if (idum == 0) idum=1;
+       if (idum < 0) idum = -idum;
+213    for (j=NTAB+7;j>=0;j--) {
+214      k=(idum)/IQ;
+215      idum=IA*(idum-k*IQ)-IR*k;
+216      if (idum < 0) idum += IM;
+217      if (j < NTAB) iv[j] = idum;
+218    }
+219    iy=iv[0];
+220  }
+
+...
+
+280  void 
+281  sran2(unsigned int seed) {
+282    int j;
+283    long k;
+284
+285    idum = STA_CAST(long,seed);
+286    if (idum == 0) idum=1;
+       if (idum < 0) idum = -idum;
+287    idum2=(idum);
+288    for (j=NTAB+7;j>=0;j--) {
+289      k=(idum)/IQ1;
+290      idum=IA1*(idum-k*IQ1)-k*IR1;
+291      if (idum < 0) idum += IM1;
+292      if (j < NTAB) iv[j] = idum;
+293    }
+294    iy=iv[0];
+295  }
+</pre>
+
+  <li>The RAN3 random number generator has a bug in it that was included in the Numberical Recipes code but has since been fixed.  Thanks to Peter Ross for pointing this out.  The fix is as follows in garandom.C:
+<pre>
+353  mj=MSEED-idum;
+</pre>
+becomes this:
+<pre>
+353  mj=labs(MSEED-labs(idum));
+</pre>
+
+  <li>The population's pointer to the genetic algorithm that contains it is not initialized to zero.  Thanks to Harald H Soleng of the Norwegian Computing Center for finding this one.  The fix is to change GAPopulation.C so that two of the three GAPopulation constructors initialize the ga member to nil (the copy constructor does a deep copy and thus gets the genetic algorithm from the population it is cloning):
+<pre>
+76        evaldata = (GAEvalData*)0;
+77      }
+
+...
+
+104       evaldata = (GAEvalData*)0;
+105     }
+</pre>
+becomes this:
+<pre>
+76        evaldata = (GAEvalData*)0;
+          ga = (GAGeneticAlgorithm*)0;
+77      }
+
+...
+
+104       evaldata = (GAEvalData*)0;
+          ga = (GAGeneticAlgorithm*)0;
+105     }
+</pre>
+
+  <li>Boolean parameters are not read correctly from file.  Thanks to Klaus Kirchberg for finding this one..  The fix is to modify GAParameter.C as follows:
+<pre>
+313      if(ival) os << "true\n";
+314      else os << "false\n";
+</pre>
+becomes this:
+<pre>
+313      if(ival) os << "1\n";
+314      else os << "0\n";
+</pre>
+</ul>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<strong>bugs in version 2.4.3</strong><br>
+<hr>
+<ul>
+  <li>The early release of the Mac project file has a bogus struct alignment configuration for each of the examples.  Be sure that the linker is configured to PowerPC struct alignment, not 68K struct alignment.  If you use the wrong alignment, everything will compile and link just fine, but it will crash when you run it.
+</ul>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<strong>bugs in version 2.4.2</strong><br>
+<hr>
+<ul>
+  <li>Example 13 does not do what it purports to do.  There are a number of places where _numbers should be replaced with _picture, and there are some flaws in the logic.  Please use the example 13 from the 2.4.3 release.
+
+       <br>
+       <br>
+       
+  <li>GAParameter::setvalue can corrupt memory when it frees memory that it just allocated.  The result is a bogus file name and/or application crashing.  The fix is to change GAParameter.C so that this:
+<pre>
+95         case STRING:
+96           {
+97             char* ptr=0;
+</pre>
+       becomes this:
+<pre>
+95         case STRING:
+96           if(v != val.sval) {
+97             char* ptr=0;
+</pre>
+       
+  <li>GAGeneticAlgorithm::TerminateUponConvergence will stop after the first generation when doing a minimization with convergence as the stopping criterion.
+
+       <br>
+       <br>
+       
+  <li>When using a GARealGenome and an allele set with INCLUDE/EXCLUDE limits, you may find that the limits you set are ignored.  This is probably due to a bug in the GAAlleleSet&lt;&gt;::allele() function.  It may also be due to genetic operators (mutate, crossover) that ignore the allele boundary/type details.
+
+       <br>
+       <br>
+    
+  <li>GAAlleleSet&lt;&gt;::allele does not respect allele bounds.  Neither does the specialization, GAAlleleSet&lt;float&gt;::allele()  Please get a new copy of GARealGenome.C and GAAllele.C from the 2.4.3 release to fix the problems.  Note that you will have to define your own GAAlleleSet&lt;&gt;::allele() member function if you use a type other than float (use the GARealGenome.C code to as an example of how to do this)
+
+       <br>
+       <br>
+          
+  <li>There are quite a few problems with the GADemeGA object.  The problems only show themselves when you attempt to change the number of populations and/or the replacement numbers or migration numbers.  Please get a new copy of GADemeGA.C from the 2.4.3 release to fix all the problems.
+       
+       <br>
+       <br>
+       
+  <li>The <strong>resizeBehaviour</strong> method for both <strong>GA3DBinaryStringGenome</strong> and <strong>GA3DArrayGenome</strong> has two errors in it.  If you use this member function to query the resize behavior of a genome, you will always get 0 for HEIGHT and DEPTH rather than the actual HEIGHT and DEPTH values.  The fix is to modify the if statements.  In the 'if' test statements, the variable should be <code>which</code> not <code>val</code>.
+
+       <br>
+       <br>
+
+  <li>The <strong>read</strong> member function of 1D, 2D, and 3D binary string genomes will cause a segmentation fault in cases where the genome has length (width, height) of zero.  The fix is to change the <code>do...while</code> loop into a <code>while</code> loop.  This should be done in GA1DBinStringGenome.C, GA2DBinStringGenome.C, and GA3DBinStringGenome.C.
+
+       <br>
+       <br>
+       
+  <li>Examples 5 and 14 do not work correctly because the <code>_evaluated</code> flag is not properly reset in the initialize, mutate, and crossover methods.  In any custom-defined genome, you must set <code>_evaluated</code> to <code>gaFalse</code> whenever you change the state of a genome, otherwise the genome's evaluator will not be invoked (the cached score will be used instead).
+
+       <br>
+       <br>
+  
+  <li>On some platforms, using a GARealGenome with the GARealGaussianMutator will occasionally result in a crash when GAUnitGaussian takes the square root of a negative number.  To be sure this never happens, change the following code in garandom.C so that this:
+       <pre>
+101       } while(rsquare >= 1.0 || rsquare == 0.0);
+102
+103       factor = sqrt( -2.0 * log(rsquare) / rsquare );
+104
+105       cachevalue = var1 * factor;
+       </pre>
+       becomes this:
+       <pre>
+101       } while(rsquare >= 1.0 || rsquare == 0.0);
+102
+          double val = -2.0 * log(rsquare) / rsquare;
+          if(val > 0.0) factor = sqrt(val);
+          else           factor = 0.0;
+104
+105       cachevalue = var1 * factor;
+       </pre>
+       
+  <li>In the DemeGA, changing the number of populations to a larger number after the GA has been created will result in a segmentation fault.  The nPopulations member function should be modified as follows.  Insert a line of code that modifies the population in GADemeGA::nPopulations(unsigned int n) so that this:
+       <pre>
+264         }
+265         return npop;
+266       }
+
+       </pre>
+       becomes this:
+       <pre>
+264         }
+            pop->size(npop);
+265         return npop;
+266       }
+       </pre>
+       
+  <li>The PC and Mac GAlib packages have a typo in example 5.  My PERL script for converting UNIX to PC got a little carried away.  Change:
+       <pre>
+69  CompositeGenome(int element, int bond, GABin2DecPhenotype&amp; p, 
+70  		  GAGenome::Evaluator f, void* u) :
+71  		  GAGenome.cppompositeInitializer,
+72  			   CompositeMutator,
+73			   CompositeComparator) {
+       </pre>
+       to:
+       <pre>
+69  CompositeGenome(int element, int bond, GABin2DecPhenotype&amp; p, 
+70		  GAGenome::Evaluator f, void* u) :
+71		  GAGenome(CompositeInitializer,
+72			   CompositeMutator,
+73			   CompositeComparator) {
+       </pre>
+</ul>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<strong>bugs in version 2.4.1</strong></a><br>
+<small><i>fixed in release 2.4.2</i></small><br><hr>
+<ul>
+  <li>The random number seed may occasionally be set to 0, resulting in all 0s from the GARandomBit function.  This bug was introduced in the 2.4.1 release as I tried to make the seed generator more robust with respect to various implementations of 'time()' on different OSes.  To fix the problem, make the following change to random.C in the function GARandomSeed.  Change line 56 from:
+       <pre>
+56    for(unsigned int i=0; i&lt;sizeof(unsigned int); i++) {
+       </pre>
+       to:
+       <pre>
+56    for(unsigned int i=0; i&lt;BITS_IN_WORD * sizeof(unsigned int); i++) {
+       </pre>
+  <li>If you are compiling with NO_STREAMS defined, you will have to fix error.C so that it includes stdio.h.  Just move '#include &lt;stdio.h&gt;' so that it is outside of the '#ifndef NO_STREAMS ... #endif' directive.
+  <li>The filenames used in this distribution may conflict with system files.  For example, 'list.h' conflicts with Metrowerks' 'list.h' in Codewarrior 9 and later, and 'tree.h' conflicts with borland's 'tree.h' in version 5.x of their compiler.
+</ul>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<strong>bugs in version 2.4</strong><br>
+<small><i>fixed in release 2.4.1</i></small><br><hr>
+<ul>
+  <li>The default population evaluator forces unnecessary genome evaluations.  In population.C, remove 'gaTrue' from the call to the genome 'evaluate' member function in GAPopulation::DefaultEvaluator.
+  <li>The GANode and GANodeBASE classes do not have virtual destructors, so any classes derived from them do not destruct properly.
+  <li>The statistics object does not work properly with genetic algorithms that are configured to minimize.  'best' and 'worst' are reversed when minimizing and the lowest score is not always maintained.
+  <li>The simple genetic algorithm does not properly maintain the best individual when minimizing.
+</ul>
+
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<a name="version_2.3.2">
+<strong>bugs in version 2.3.2</strong></a><br><hr>
+<ul>
+  <li>The <b>remove</b> method was never defined for the GABin2DecPhenotype class in bin2dec.ph.C (it was declared in the header file).  Ooops, sorry about that.  Upgrade to version 2.4.
+       <br>
+       <br>
+       
+  <li>A population size of 1 will cause a crash when the statistics are updated.  This has been fixed in the 2.4 release.
+       <br>
+       <br>
+       
+  <li>The <b>remove</b> member of the GATree class does not properly re-set the node pointers on the subtree that is removed.  To fix this problem, make the following modifications to treetmpl.C:
+       <pre>
+69  if(node->prev != node) iter.eldest();
+70  else if(node->parent) iter.parent();
+71  else iter.node = (GANodeBASE *)0;
+72  t->insert((GANode&lt;T&gt; *)GATreeBASE::remove(node), (GANode&lt;T&gt; *)0, 
+73	    GATreeBASE::ROOT);
+74
+75  return t;
+76 }
+       </pre>
+       should be modified to
+       <pre>
+69  if(node->prev != node) iter.eldest();
+70  else if(node->parent) iter.parent();
+71  else iter.node = (GANodeBASE *)0;
+    GANode&lt;T&gt; *tmpnode = (GANode&lt;T&gt;*)GATreeBASE::remove(node);
+    tmpnode->prev = tmpnode;
+    tmpnode->next = tmpnode;
+    tmpnode->parent = (GANodeBASE *)0;
+    t->insert(tmpnode, (GANode&lt;T&gt; *)0, GATreeBASE::ROOT);
+74
+75  return t;
+76 }
+       </pre>
+       
+       
+  <li>The array swap and flip mutators have a bug in them that will prevent mutation in some cases.  To fix it, do the following.
+       <p>
+Change lines 83 and 114 in array1.op.C.  The first change is in GA1DArrayFlipMutator:
+<pre>
+83     for(n=1; n&lt;nMut; n++){
+</pre>
+should be
+<pre>
+83     for(n=0; n&lt;nMut; n++){
+</pre>
+The second change is in GA1DArraySwapMutator:
+<pre>
+114    for(n=1; n&lt;nMut; n++)
+</pre>
+should be
+<pre>
+114    for(n=0; n&lt;nMut; n++)
+</pre>
+
+
+<li>Be careful with the random number generator.  If you use GAlib right out of the box, the GARandomBit function caches bits rather than calling the random function multiple times.  This may or may not be a problem, depending on the underlying random function you use.  The default configuration for GAlib is to use your system's rand() or random() function to generate random numbers.  Typically, the system random number generators are not very robust.  The actual implementation varies from system to system, but most use some sort of linear congruential generator, and you <i>should not</i> expect the bits of the numbers these RNGs generate to be uniformly random.  For many applications, the default GAlib configuration will suffice, but if you are doing extensive statistical evaluation of results obtained using GAlib you should consider writing your own random number generator and plugging it in to replace rand() or random().  You can do this by modifying random.h to use your random function.
+<p>
+See <A HREF="http://nr.harvard.edu/nr/bookc.html">Numerical Recipes in C</a> for details about the issues of using various random number generators.  These issues have been resolved in the 2.4 release of GAlib.
+</p>
+
+
+<li>The <b>scaling</b> member function of the GAPopulation object does not properly update the scaling object when it is changed.  If you try to change the scaling during the course of an evolution, your program will crash (the selector returns nil pointers after you change the selector).  The 'evaluate' member of the scaling object must be called before the selector accesses the scaling data.
+<p>
+In the <b>scaling</b> member function in population.C, add one line of code so that
+<pre>
+275  sm->resize(n);
+276  return *sm;
+</pre>
+becomes
+<pre>
+275  sm->resize(n);
+     if(evaluated) sm->evaluate(*this);
+276  return *sm;
+</pre>
+
+
+<li>The <b>copy</b> member function of the GAPopulation object has a typo in it.  Whenever you try to copy a population, the copy member clones the worst individual in the population rather than copying each individual in the population.  To fix the problem, change [0] to [i] as shown here.
+<p>
+In population.C, change 0 to an i in line 153 so that
+<pre>
+151  ind = new GAGenome * [N];
+152  for(i=0; i&ltn; i++)
+153    ind[i] = arg.ind[<b>0</b>]-&gt;clone();
+154
+155  if(arg.sm) sm = arg.sm-&gt;clone();
+</pre>
+becomes
+<pre>
+151  ind = new GAGenome * [N];
+152  for(i=0; i&ltn; i++)
+153    ind[i] = arg.ind[<b>i</b>]-&gt;clone();
+154
+155  if(arg.sm) sm = arg.sm-&gt;clone();
+</pre>
+
+
+<li>The <b>initialize</b> member function of any GA class must be called <i>after</i> any calls to the <b>populationSize</b> member function, otherwise the scaling object does not get updated and your GA will crash on its first selection.  This means that you cannot change the population size during the course of an evolution.  To fix the problem make the following changes:
+<p>
+In population.C, insert a line and modify a line to change
+<pre>
+209  sm->resize(pops);
+210  statted = sorted = evaluated = gaFalse;
+211  n = pops;
+</pre>
+to
+<pre>
+209  sm->resize(pops);
+210  statted = sorted = gaFalse;
+211  n = pops;
+     if(evaluated == gaTrue) evaluate(gaTrue);
+</pre>
+and in the file scaling.C, insert a single line to change
+<pre>
+102  fitSum = fitAve = fitMax = fitMin = fitVar = fitDev = 0.0;
+103  return(n = popsize);
+</pre>
+to
+<pre>
+102  fitSum = fitAve = fitMax = fitMin = fitVar = fitDev = 0.0;
+     evaluated = gaFalse;
+103  return(n = popsize);
+</pre>
+</ul>
+
+
+
+
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<a name="version_2.3.1">
+<strong>bugs in version 2.3.1</strong></a><br><hr>
+<ul>
+<li>There was a typo in population.C.  In the function <code>GAGenome * GAPopulation::replace(GAGenome * repl, const int which)</code>,
+<pre><code>
+      if(sorted)
+	rawMax = ind[n-1]-&gt;score();
+      else if(orig-&gt;score() == rawMax){
+	rawMax = ind[0]-&gt;score();
+	for(i=1; i&lt;n; i++)
+	  rawMax = Min(rawMax, ind[i]-&gt;score());
+      }
+      else
+	rawMax = Max(rawMax, repl-&gt;score());
+</code></pre>
+The 'Min' should be 'Max':
+<pre><code>          rawMax = Max(rawMax, ind[i]-&gt;score());
+</code></pre>
+<li>Functions that return NULL would not compile with some compilers.  Functions that have this problem include member functions of the ListBASE and List objects in listbase.h and listtmpl.h, and the TreeBASE and Tree objects in treebase.h and treetmpl.h.  ANSI C++ requires an explicit cast of NULL.
+<li>Many of the 'for' loops will not compile with some compilers.  In some cases, the loop variable is used outside the 'for' loop.  Files with this problem include allele.h, array1.op.C, binstr3.ch.C, ga.C, list.op.C, population.C, scaling.C, selector.C, and many of the examples.  ANSI C++ specifies that a variable declared in a for loop loses scope after the loop ends.
+<li>The population object does not initialize genomes when it is resized.
+<li>SimpleGA has a bug in it that delays convergence.  A workaround is to use a SteadyStateGA with 100% replacement.  This will be only marginally slower than using a bug-free SimpleGA.
+<li>Roundoff errors in the population object could lead to negative numbers passed to the sqrt function.  The fix is to check for a sign change before the call to sqrt.  The only way a sign change can occur is if there is a roundoff error.  (There are only two calls to sqrt in population.C.  The error can only occur in the sqrt call in the function <code>GAGenome * GAPopulation::replace(GAGenome * repl, const int which)</code>)
+<li>The copy constructor for the GAObjectiveVector object did not initialize the 'a' member to NULL
+</ul>
+
+</body></html>
