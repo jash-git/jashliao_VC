@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0047)http://www.vckbase.com/document/viewdoc/?id=851 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 不重起Windows直接更改IP地址</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META 
+content=IP_ADAPTER_INFO,GetAdaptersInfo,REG_MULTI_SZ,RegSetValueEx,DhcpNotifyConfigChange,适配器,网卡,注册表 
+name=keywords>
+<META 
+content=IP_ADAPTER_INFO,GetAdaptersInfo,REG_MULTI_SZ,RegSetValueEx,DhcpNotifyConfigChange,适配器,网卡,注册表 
+name=description><LINK href="不重起Windows直接更改IP地址.files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 
+      src="不重起Windows直接更改IP地址.files/vckcom.gif" width=109></TD>
+    <TD vAlign=bottom align=right height=30><IMG height=27 
+      src="不重起Windows直接更改IP地址.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=905"><SPAN 
+      class=small><FONT color=black>局域网</FONT></SPAN></A></TD>
+    <TD class=small align=right width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=25"><SPAN 
+      class=small><FONT color=black>在线杂志 第25期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR>
+<TABLE height=108 cellSpacing=1 cellPadding=0 width="90%" bgColor=#999999 
+border=0>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE height=100 cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD class=small width=705 bgColor=#f9f9f9 height=106><FONT 
+            color=#0000ff>本站特别推荐：</FONT><BR><A href="http://www.uipower.com/" 
+            target=_blank>Skin++ 通用的界面换肤控件（Skin++ 
+            2.0于2005年11月1日发布，网站全面更新！）产品</A><BR><BR>特性：<BR>支持多种开发语言（VC++ 
+            ，VB，C#，PowerBuilder，C++Builder，Delphi，E语言等）<BR>界面和业务逻辑彻底分离，节约开发和维护时间，支持各Windows平台，包括Windows98/NT4/2000/XP/2003<BR>彻底换肤,包括标准控件，通用对话框等，支持对第三方控件的换肤，提供方便的设计工具，可自行设计皮肤。[<A 
+            href="http://www.uipower.com/" target=_blank>详情请点这里</A>]</TD>
+          <TD align=middle width=183 bgColor=#99cccc><A 
+            href="http://www.uipower.com/zp.asp" 
+            target=_blank><U>公司诚聘VC界面软件工程师</U></A></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background=不重起Windows直接更改IP地址.files/dotline2.gif 
+  height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合中级读者 
+            已阅读19604次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="不重起Windows直接更改IP地址.files/go.gif" align=absMiddle border=0 
+            name=imageField> </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P><STRONG>不重起Windows直接更改IP地址</STRONG><BR>作者：浙江省温岭电信局 王骏</P>
+            <P>注：本文适用于WINDOWS NT/2000/XP/2003<BR><BR><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2123">下载本文示例工程</A><BR><BR>源代码运行效果图如下:<BR><IMG 
+            height=207 src="不重起Windows直接更改IP地址.files/AdapterIPConfig.gif" 
+            width=363> 
+            <BR><BR>设置IP地址只需要更改注册表中关于适配器的相应设置，但更改后需要重新启动系统才能生效，而AddIPAddress函数只能添加IP而不是更改当前的IP，我们在Windows 
+            NT/2000界面上操作不需要重新启动就可以生效，那系统到底做了什么额外的工作才使IP设置直接生效呢？笔者通过跟踪explorer.exe中API的调用发现在netcfgx.dll中调用了dhcpcsvc.dll中一个未公开的API:DhcpNotifyConfigChange，现将不重新启动WINDOWS直接更改IP地址的详细方法介绍如下：<BR><BR><STRONG>一、获取适配器名称</STRONG><BR><BR>这里指的适配器名称要区别于适配器描述，比如我的一块网卡，适配器描述是：Realtek 
+            RTL8139(A) PCI Fast Ethernet 
+            Adapter，适配器名称为：{66156DC3-44A4-434C-B8A9-0E5DB4B3EEAD}。获取适配器名称的方法有多种：<BR><STRONG><BR>1.1 
+            调用IP helper API取得适配器名称</STRONG> </P><PRE>ULONG ulAdapterInfoSize = sizeof(IP_ADAPTER_INFO);
+IP_ADAPTER_INFO *pAdapterInfoBkp, *pAdapterInfo = (IP_ADAPTER_INFO*)new char[ulAdapterInfoSize];
+if( GetAdaptersInfo(pAdapterInfo, &amp;ulAdapterInfoSize) == ERROR_BUFFER_OVERFLOW ) // 缓冲区不够大
+{
+	delete pAdapterInfo;
+	pAdapterInfo = (IP_ADAPTER_INFO*)new char[ulAdapterInfoSize];
+	pAdapterInfoBkp = pAdapterInfo;
+}
+if( GetAdaptersInfo(pAdapterInfo, &amp;ulAdapterInfoSize) == ERROR_SUCCESS )
+{
+	do{ // 遍历所有适配器
+		if(pAdapterInfo-&gt;Type == MIB_IF_TYPE_ETHERNET)	// 判断是否为以太网接口
+		{
+			// pAdapterInfo-&gt;Description 是适配器描述
+			// pAdapterInfo-&gt;AdapterName 是适配器名称
+		}
+		pAdapterInfo = pAdapterInfo-&gt;Next;
+	}while(pAdapterInfo);
+}
+delete pAdapterInfoBkp;</PRE><STRONG>1.2 
+            读取注册表取得适配器名称</STRONG><BR><BR>在Windows2000中可以通过遍历 
+            HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}\000n\ 
+            (n是从0开始编号的数字)所有接口, 在Windows 
+            NT中可以读取HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows 
+            NT\CurrentVersion\NetworkCards中的信息，下面以Windows2000为例： <PRE>HKEY hKey, hSubKey, hNdiIntKey;
+
+if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+			"System\\CurrentControlSet\\Control\\Class\\{4d36e972-e325-11ce-bfc1-08002be10318}",
+			0,
+			KEY_READ,
+			&amp;hKey) != ERROR_SUCCESS)
+	return FALSE;
+
+DWORD dwIndex = 0;
+DWORD dwBufSize = 256;
+DWORD dwDataType;
+char szSubKey[256];
+unsigned char szData[256];
+
+while(RegEnumKeyEx(hKey, dwIndex++, szSubKey, &amp;dwBufSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+{
+	if(RegOpenKeyEx(hKey, szSubKey, 0, KEY_READ, &amp;hSubKey) == ERROR_SUCCESS)
+	{		
+		if(RegOpenKeyEx(hSubKey, "Ndi\\Interfaces", 0, KEY_READ, &amp;hNdiIntKey) == ERROR_SUCCESS)
+		{
+			dwBufSize = 256;
+			if(RegQueryValueEx(hNdiIntKey, "LowerRange", 0, &amp;dwDataType, szData, &amp;dwBufSize) == ERROR_SUCCESS)
+			{
+				if(strcmp((char*)szData, "ethernet") == 0)		//	判断是不是以太网卡
+				{
+					dwBufSize = 256;
+					if(RegQueryValueEx(hSubKey, "DriverDesc", 0, &amp;dwDataType, szData, &amp;dwBufSize) == ERROR_SUCCESS)
+					{
+						// szData 中便是适配器详细描述
+						dwBufSize = 256;
+						if(RegQueryValueEx(hSubKey, "NetCfgInstanceID", 0, &amp;dwDataType, szData, &amp;dwBufSize) == ERROR_SUCCESS)
+						{
+							// szData 中便是适配器名称
+						}
+					}
+				}
+			}
+			RegCloseKey(hNdiIntKey);
+		}
+		RegCloseKey(hSubKey);
+	}
+
+	dwBufSize = 256;
+}	/* end of while */
+		
+RegCloseKey(hKey);</PRE><STRONG>二、将IP信息写入注册表</STRONG><BR><BR>代码如下:<PRE>BOOL RegSetIP(LPCTSTR lpszAdapterName, LPCTSTR pIPAddress, LPCTSTR pNetMask, LPCTSTR pNetGate)
+{
+	HKEY hKey;
+	string strKeyName = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\";
+	strKeyName += lpszAdapterName;
+	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+				strKeyName.c_str(),
+				0,
+				KEY_WRITE,
+				&amp;hKey) != ERROR_SUCCESS)
+		return FALSE;
+	
+	char mszIPAddress[100];
+	char mszNetMask[100];
+	char mszNetGate[100];
+
+	strncpy(mszIPAddress, pIPAddress, 98);
+	strncpy(mszNetMask, pNetMask, 98);
+	strncpy(mszNetGate, pNetGate, 98);
+
+	int nIP, nMask, nGate;
+
+	nIP = strlen(mszIPAddress);
+	nMask = strlen(mszNetMask);
+	nGate = strlen(mszNetGate);
+
+	*(mszIPAddress + nIP + 1) = 0x00;	// REG_MULTI_SZ数据需要在后面再加个0
+	nIP += 2;
+
+	*(mszNetMask + nMask + 1) = 0x00;
+	nMask += 2;
+
+	*(mszNetGate + nGate + 1) = 0x00;
+	nGate += 2;
+	
+	RegSetValueEx(hKey, "IPAddress", 0, REG_MULTI_SZ, (unsigned char*)mszIPAddress, nIP);
+	RegSetValueEx(hKey, "SubnetMask", 0, REG_MULTI_SZ, (unsigned char*)mszNetMask, nMask);
+	RegSetValueEx(hKey, "DefaultGateway", 0, REG_MULTI_SZ, (unsigned char*)mszNetGate, nGate);
+
+	RegCloseKey(hKey);
+
+	return TRUE;
+}</PRE><BR><STRONG>三、调用DhcpNotifyConfigChange通知配置的改变</STRONG><BR><BR>未公开函数DhcpNotifyConfigChange位于 
+            dhcpcsvc.dll中，原型如下: <PRE>BOOL DhcpNotifyConfigChange(
+    LPWSTR lpwszServerName, // 本地机器为NULL
+    LPWSTR lpwszAdapterName, // 适配器名称
+    BOOL bNewIpAddress, // TRUE表示更改IP
+    DWORD dwIpIndex, // 指明第几个IP地址，如果只有该接口只有一个IP地址则为0
+    DWORD dwIpAddress, // IP地址
+    DWORD dwSubNetMask, // 子网掩码
+    int nDhcpAction ); // 对DHCP的操作 0:不修改, 1:启用 DHCP，2:禁用 DHCP
+</PRE>具体调用代码如下： <PRE>BOOL NotifyIPChange(LPCTSTR lpszAdapterName, int nIndex, LPCTSTR pIPAddress, LPCTSTR pNetMask)
+{
+	BOOL			bResult = FALSE;
+	HINSTANCE		hDhcpDll;
+	DHCPNOTIFYPROC	pDhcpNotifyProc;
+	WCHAR wcAdapterName[256];
+	
+	MultiByteToWideChar(CP_ACP, 0, lpszAdapterName, -1, wcAdapterName,256);
+
+	if((hDhcpDll = LoadLibrary("dhcpcsvc")) == NULL)
+		return FALSE;
+
+	if((pDhcpNotifyProc = (DHCPNOTIFYPROC)GetProcAddress(hDhcpDll, "DhcpNotifyConfigChange")) != NULL)
+		if((pDhcpNotifyProc)(NULL, wcAdapterName, TRUE, nIndex, inet_addr(pIPAddress), inet_addr(pNetMask), 0) == ERROR_SUCCESS)
+			bResult = TRUE;
+
+	FreeLibrary(hDhcpDll);
+	return bResult;
+}</PRE><BR>(全文完) </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="不重起Windows直接更改IP地址.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="不重起Windows直接更改IP地址.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=851" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 
+      src="不重起Windows直接更改IP地址.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=851" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 
+      src="不重起Windows直接更改IP地址.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=851&amp;title=%b2%bb%d6%d8%c6%f0Windows%d6%b1%bd%d3%b8%fc%b8%c4IP%b5%d8%d6%b7" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 
+      src="不重起Windows直接更改IP地址.files/rec1.gif" width=9> <A 
+      href="javascript:window.print();"><SPAN 
+  class=small>打印</SPAN></A></TD></TR></TBODY></TABLE>
+<TABLE class=small cellSpacing=1 cellPadding=0 width="98%" bgColor=#ffffff 
+border=0>
+  <TBODY>
+  <TR>
+    <TD bgColor=#ffffff><BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 
+      moonstone:做了两天，终于把Win98下不重启直接修改IP生效的程序写出来，我的方法比较笨：先在注册表中修改IP地址，然后禁用/使用网卡使之生效。我测试的确可以，只是速度不是很快，不知谁有更好的方法？<BR><BR>是不是可以不用手动去禁网卡的啊，我要一份源码&nbsp;先谢了<BR>127470@2299.com 
+      ( shahai 发表于 2006-1-22 11:30:00)<BR>&nbsp;<BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 
+      其实用iphelper提供的CreateIpForwardEntry/SetIpForwardEntry就可以了,这两个函数是用来设置路由表的 ( 
+      JiaxWang 发表于 2005-11-30 6:30:00)<BR>&nbsp;<BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 
+      在WINXP&nbsp;sp2下无法正确转换，似乎此未公开函数并没有完全起作用，在连接属性里可以看到ip地址和掩码都转过来了，可网关却没有，连点2次修复后才看到了正确的网关地址 
+      ( nyzj2 发表于 2005-4-15 18:26:00)<BR>&nbsp;<BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 
+      我在VB里调用DhcpNotifyConfigChange，2000和2003下都成功了，可xp下却不成功，在TCP/IP属性高级设置里，ip地址出现了乱码，为何会出现乱码呢？<BR>我的VB已升级到最新的SP6版。 
+      ( nyzj2 发表于 2005-4-3 11:21:00)<BR>&nbsp;<BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 
+      我下载了例子程序,果然很方便.<BR><BR>后来发现如果网卡没有插网线,处于未连接状态时,调用设置障碍IP的方法会报异常,但是注册表已经修改了,重新把网线插上,配置显示正常.<BR>请问,在网卡没有正确连接时,如果不想调用DhcpNotifyConfigChange方法,调用什么方法可以判断网卡当前的连接状态. 
+      ( thsqming 发表于 2005-3-20 11:38:00)<BR>&nbsp;<BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 多谢了先 ( 
+      thsqming 发表于 2005-3-20 11:38:00)<BR>&nbsp;<BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 
+      我怎么一进DhcpNotifyConfigChange就死呢？各为成功的大虾能否提供点经验，谢了先。 ( lincx 发表于 2004-11-22 
+      9:39:00)<BR>&nbsp;<BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 
+      谁能把在windows98下不用重新启动机器,更改ip地址的程序给我,不胜感谢.kaituo@whgwbn.net ( zhenghaitao 
+      发表于 2004-5-13 16:24:00)<BR>&nbsp;<BR><IMG height=11 
+      src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 align=absMiddle> 
+      果然高！我正好要用到。非常感谢。 ( duxianghe 发表于 2004-4-17 21:01:00)<BR>&nbsp;<BR><IMG 
+      height=11 src="不重起Windows直接更改IP地址.files/doc2.gif" width=11 
+      align=absMiddle> 
+      我想请问一下各位高手,我在windows&nbsp;2000操作系统下修改了ip&nbsp;地址后,&nbsp;&nbsp;就进不了局域网了,&nbsp;点击网上邻居后出现出错提示请问用什么办法解决?&nbsp;谢谢.&nbsp;<BR>( 
+      shj8847 发表于 2004-1-6 
+      19:03:00)<BR>&nbsp;<BR>.......................................................<BR><A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=851" 
+      target=_blank><SPAN class=small>More...</SPAN></A> 
+</TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2006 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

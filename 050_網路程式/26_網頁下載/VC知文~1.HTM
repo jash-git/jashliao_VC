@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0047)http://www.vckbase.com/document/viewdoc/?id=345 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 如何下载并保存网页</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content=WinInet,CInternetSession,CInternetFile,下载网页 name=keywords>
+<META content=WinInet,CInternetSession,CInternetFile,下载网页 name=description><LINK 
+href="VC知识库文章 - 如何下载并保存网页.files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.3268" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD width="14%" height=78>&nbsp;<IMG height=13 
+      src="VC知识库文章 - 如何下载并保存网页.files/vckcom.gif" width=109></TD>
+    <TD align=left width="76%"><A 
+      href="http://www.softgogo.com/zhweb/product-reclib.htm" target=_blank><IMG 
+      height=100 src="VC知识库文章 - 如何下载并保存网页.files/softgogo.gif" width=600 
+      border=0></A></TD>
+    <TD vAlign=bottom align=right height=78><IMG height=27 
+      src="VC知识库文章 - 如何下载并保存网页.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD colSpan=2><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=903"><SPAN 
+      class=small><FONT color=black>Internet与WEB服务</FONT></SPAN></A></TD>
+    <TD class=small align=right width="10%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=14"><SPAN 
+      class=small><FONT color=black>在线杂志 第14期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR><A 
+href="http://www.uipower.com/showjob.asp?jobid=20070730214939" 
+target=_blank><IMG height=116 src="VC知识库文章 - 如何下载并保存网页.files/uipower2.jpg" 
+width=990 border=0></A> <!--br>
+ <script type="text/javascript">
+google_ad_client = "pub-4159669282587342";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "image";
+google_ad_channel = "";
+</script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script--></DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background="VC知识库文章 - 如何下载并保存网页.files/dotline2.gif" 
+  height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合中级读者 
+            已阅读45318次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="VC知识库文章 - 如何下载并保存网页.files/go.gif" align=absMiddle border=0 
+            name=imageField> </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><B>如何下载并保存网页</B><BR>作者:<A 
+            href="mailto:jingzhou_xu@163.net">徐景周</A></P>
+            <P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=1517">下载示例代码</A><BR><BR>示例程序运行效果图</P>
+            <P align=center><IMG height=191 
+            src="VC知识库文章 - 如何下载并保存网页.files/helptip.gif" width=291 border=1> 
+            </P>如图所示,在设置下载网址后,程序下载并保存网页,并在小人的奔跑中不断地显示出来.<BR><BR><B><IMG 
+            height=16 src="VC知识库文章 - 如何下载并保存网页.files/paragraph.gif" width=14> 
+            基本构成思想</B>：<BR>利用WinInet类，直接打开会话，进行读取并保存网页来相关文件中。本文提供的GetSourceHtml函数封装了该功能,只要提供网址与保存文件名就可以完成全部操作,具体函数如下: 
+<PRE>BOOL GetSourceHtml(CString theUrl,CString Filename) 
+{
+ CInternetSession session;
+ CInternetFile* file = NULL;
+ try
+ {
+    // 试着连接到指定URL
+    file = (CInternetFile*) session.OpenURL(theUrl); 
+ }
+ catch (CInternetException* m_pException)
+ {
+    // 如果有错误的话，置文件为空
+    file = NULL; 
+    m_pException-&gt;Delete();
+    return FALSE;
+ }
+
+ // 用dataStore来保存读取的网页文件
+ CStdioFile dataStore;
+ if (file)
+ {
+    CString  somecode;	//也可采用LPTSTR类型，将不会删除文本中的\n回车符
+    BOOL bIsOk = dataStore.Open(strPath+"\\"+Filename,
+		CFile::modeCreate 
+		| CFile::modeWrite 
+		| CFile::shareDenyWrite 
+		| CFile::typeText);
+	
+    if (!bIsOk)
+	return FALSE;
+	
+    // 读写网页文件，直到为空
+    while (file-&gt;ReadString(somecode) != NULL) //如果采用LPTSTR类型，读取最大个数nMax置0，使它遇空字符时结束
+    {
+	dataStore.WriteString(somecode);
+	dataStore.WriteString("\n");		   //如果somecode采用LPTSTR类型,可不用此句
+    }
+	
+	file-&gt;Close();
+	delete file;
+ }
+ else
+ {
+    dataStore.WriteString(_T("到指定服务器的连接建立失败..."));	
+    return FALSE;
+ }
+ return TRUE;
+}
+
+</PRE><B><IMG height=16 
+            src="VC知识库文章 - 如何下载并保存网页.files/paragraph.gif" width=14> 
+            </B>下面让我们来看看，<B>如何使用它</B>：<BR><BR>1、 加入WinInt类，如下：<BR>#include 
+            "afxinet.h" //加入下载网页要用的头文件<BR><BR>2、 
+            加入上面下载函数到你的工程后，在使用时可用下面代码(其中第一个参数为网址，第二个参数为下载后保存的文件名)： <PRE>//获取主程序所在路径,存在全局变量strPath中
+GetModuleFileName(NULL,strPath.GetBufferSetLength (MAX_PATH+1),MAX_PATH);
+strPath.ReleaseBuffer ();
+int nPos;
+nPos=strPath.ReverseFind (''''\\'''');
+strPath=strPath.Left (nPos);
+
+BOOL m_bDownloadFailed;
+m_bDownloadFailed=GetSourceHtml("http://www.vckbase.com","News.txt");//下载提示文件的默认网址
+</PRE>其中具体实现方法，可参看下载后的示例源码既可。 
+            <P><BR>作者信息:<BR>徐景周 未来工作室(Future Studio) <BR>地址：陕西省西安市劳动路2号院六单元 
+            邮编：710082 <BR>EMAIL：jingzhou_xu@163.net 
+  </P></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="VC知识库文章 - 如何下载并保存网页.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="VC知识库文章 - 如何下载并保存网页.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=345" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 
+      src="VC知识库文章 - 如何下载并保存网页.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=345" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 
+      src="VC知识库文章 - 如何下载并保存网页.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=345&amp;title=%c8%e7%ba%ce%cf%c2%d4%d8%b2%a2%b1%a3%b4%e6%cd%f8%d2%b3" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 
+      src="VC知识库文章 - 如何下载并保存网页.files/rec1.gif" width=9> <A 
+      href="javascript:window.print();"><SPAN 
+  class=small>打印</SPAN></A></TD></TR></TBODY></TABLE>
+<TABLE class=small cellSpacing=1 cellPadding=0 width="98%" bgColor=#ffffff 
+border=0>
+  <TBODY>
+  <TR>
+    <TD bgColor=#ffffff><BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> 
+      好象只能下载静态网页<BR>我用它下载&nbsp;http://www.drweb.ru/download/update/<BR>得到的源码是不正确的 
+      ( tuxw 发表于 2007-10-17 13:59:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> 
+      Snowmud你有本事么也拿点来让我们看看么，毕竟写些东西也要时间的 ( ikohl 发表于 2007-7-14 
+      12:38:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> 
+      垃圾乎，精华乎，不想多说<BR>徐向来喜欢东拼西凑一些东西，然后在每个程序里加上中跑来跑去的东西放上来炫上一炫。都看多了，说他干嘛。<BR>喜欢做贡献的不是放这种代码上来，喜欢他的人就看，不喜欢的人多去逛逛codeproject，不要看他的浪费时间 
+      ( Snowmud 发表于 2004-3-23 16:17:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> 
+      请问为什么我用相同的方法来下载图片就不行呢？<BR>我是用二进制保存的啊,不过我用的是FILE类型来保存的而不是CStdioFile类型,这有什么关系吗? 
+      ( westnorth 发表于 2003-3-25 15:59:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> 
+      请问如何定位一个位置，读取该位置后面部分，我做了一下，但第一次读的时候速度很慢，并且数据流量很大 ( sllihui 发表于 2002-12-23 
+      16:05:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> dddd ( 
+      ddd 发表于 2002-10-9 15:56:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> dfdf ( 
+      dfd 发表于 2002-10-9 15:55:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> 
+      下载网页上的图片<BR>很容易，自己分析出来网页的URL<BR>HTML中图片以&lt;img&nbsp;src="XXXXXXX"．．．．．&gt;表示<BR>注意分析相对路径<BR>然后用得到本文的方式获取就行了，不过要注意的是要以二进制的方式保存文件．<BR>本文还可以有一些优化，在内存中设置缓冲区，下载的数据先放置到缓冲中，这样能够减少磁盘的IO 
+      ( cyberbird 发表于 2002-9-6 16:33:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> 
+      请问怎么下载网页上的图片呢？如果你知道怎么做，请你告诉我！非常着急！！！！非常感谢！！！ ( LittleB 发表于 2002-8-6 
+      15:23:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 如何下载并保存网页.files/doc2.gif" width=11 align=absMiddle> 同意 ( 
+      tom 发表于 2002-6-25 
+      9:11:00)<BR>&nbsp;<BR>.......................................................<BR><A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=345" 
+      target=_blank><SPAN class=small>More...</SPAN></A> 
+</TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2006 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

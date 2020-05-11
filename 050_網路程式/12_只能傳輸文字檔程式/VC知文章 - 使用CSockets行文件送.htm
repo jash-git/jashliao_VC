@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0047)http://www.vckbase.com/document/viewdoc/?id=321 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 使用CSockets进行文件传送</TITLE>
+<META content="text/html; charset=gb2312" http-equiv=Content-Type>
+<META content=CSockets,filetransfer,文件传送 name=keywords>
+<META content=CSockets,filetransfer,文件传送 name=description><LINK 
+href="VC知文章 - 使用CSockets行文件送.files/style.css" rel=stylesheet>
+<META content="MSHTML 5.00.2014.210" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 
+      src="VC知文章 - 使用CSockets行文件送.files/vckcom.gif" width=109></TD>
+    <TD align=right height=30 vAlign=bottom><IMG height=27 
+      src="VC知文章 - 使用CSockets行文件送.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=901"><SPAN 
+      class=small><FONT color=black>WinSock</FONT></SPAN></A></TD>
+    <TD align=right class=small width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=13"><SPAN 
+      class=small><FONT color=black>在线杂志 第13期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 height=35 width="100%">
+  <FORM action=/SYS/script/find.asp method=post name=form2>
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV align=right><INPUT class=rect maxLength=20 name=keyword size=10> 
+      <SELECT class=rect name=gclsid> <OPTION selected value=100>文档</OPTION> 
+        <OPTION value=200>代码</OPTION> <OPTION value=400>工具</OPTION></SELECT> 
+      <INPUT align=absMiddle border=0 height=15 name=imageField 
+      src="VC知文章 - 使用CSockets行文件送.files/go.gif" type=image width=21> 
+  </DIV></TD></TR></FORM></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD background="VC知文章 - 使用CSockets行文件送.files/dotline2.gif" 
+  height=1></TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD height=74 width=40></TD>
+    <TD height=74 vAlign=top width=*><BR>[ <FONT color=#009900>翻译文档</FONT> 
+      本文适合中级读者 已阅读31211次 ]<BR><BR><BR>
+      <TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><B>使用CSockets进行文件传送</B><BR>作者:Vicken Simonian 
+            翻译:DY</P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=1511">下载本文的示例工程</A><BR><BR>这是一对实现在两台计算机间传送文件的函数,我没有看到过使用CSocket进行文件传送的代码,希望此代码对你有用.代码中包含两个函数,第一个用于服务器端,第二个用于客户端.<BR>需要说明的是本文提供的方法并不适用于大型文件的传送.<BR><BR>下面给出服务器端代码:<PRE>void SendFile()
+{
+ #define PORT 34000 /// Select any free port you wish
+
+ AfxSocketInit(NULL);
+ CSocket sockSrvr; 
+ sockSrvr.Create(PORT); // Creates our server socket
+ sockSrvr.Listen(); // Start listening for the client at PORT
+ CSocket sockRecv;
+ sockSrvr.Accept(sockRecv); // Use another CSocket to accept the connection
+
+
+ CFile myFile;
+ myFile.Open("C:\\ANYFILE.EXE", CFile::modeRead | CFile::typeBinary); 
+
+ int myFileLength = myFile.GetLength(); // Going to send the correct File Size
+
+ sockRecv.Send(&amp;myFileLength, 4); // 4 bytes long
+		
+ byte* data = new byte[myFileLength]; 
+
+ myFile.Read(data, myFileLength);
+
+ sockRecv.Send(data, myFileLength); //Send the whole thing now
+
+ myFile.Close();
+ delete data;
+
+ sockRecv.Close();
+}
+
+</PRE>以下是客户端代码 <PRE>void GetFile()
+{
+ #define PORT 34000 /// Select any free port you wish
+
+ AfxSocketInit(NULL);
+ CSocket sockClient;
+ sockClient.Create();
+
+ // "127.0.0.1" is the IP to your server, same port
+ sockClient.Connect("127.0.0.1", PORT); 
+
+ int dataLength;
+ sockClient.Receive(&amp;dataLength, 4); //Now we get the File Size first
+		
+ byte* data = new byte[dataLength];
+ sockClient.Receive(data, dataLength); //Get the whole thing
+
+ CFile destFile("C:\\temp\\ANYFILE.EXE", 
+  CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
+
+ destFile.Write(data, dataLength); // Write it
+
+ destFile.Close();
+
+ delete data;
+ sockClient.Close();
+}
+</PRE>最好确认服务器端函数在客户端函数之前运行,本文的代码可以方便地添加到工程中,解决服务器/客户模型中的文件传送问题.<BR>感谢大家! 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center><BR><BR>
+<TABLE border=0 cellPadding=0 cellSpacing=0 class=small height=18 width="98%">
+  <TBODY>
+  <TR vAlign=center>
+    <TD bgColor=#a0d39b width="47%"><IMG height=10 
+      src="VC知文章 - 使用CSockets行文件送.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=321" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right bgColor=#a0d39b width="53%"><IMG height=9 src="" width=9> 
+      <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=321" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 src="" 
+      width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=321&amp;title=%ca%b9%d3%c3CSockets%bd%f8%d0%d0%ce%c4%bc%fe%b4%ab%cb%cd" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 src="" 
+      width=9> <A href="javascript:window.print();"><SPAN 
+      class=small>打印</SPAN></A></TD></TR></TBODY></TABLE>
+<TABLE bgColor=#ffffff border=0 cellPadding=0 cellSpacing=1 class=small 
+width="98%">
+  <TBODY>
+  <TR>
+    <TD bgColor=#ffffff><BR><IMG align=absMiddle height=11 
+      src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 
+      基本理论：收发一次数据包不能大于1024字节，可以收发大数据包不会发生错误是因为系统自已帮你分开数个包了。 ( chuiyun 发表于 
+      2004-12-22 14:40:00)<BR>&nbsp;<BR><IMG align=absMiddle height=11 
+      src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 
+      好象不能传exe文件，和大文件。那为朋友给个更好的代码？ ( scm 发表于 2004-12-12 
+      15:57:00)<BR>&nbsp;<BR><IMG align=absMiddle height=11 
+      src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 
+      其实根本不能实现，你传一个exe文件，看收到的能不能运行？？？不行吧，主要是里面的'\0'字符的问题没有解决好。 ( luolovegui 发表于 
+      2004-10-26 15:54:00)<BR>&nbsp;<BR><IMG align=absMiddle height=11 
+      src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 源程序可改为：<BR>// 
+      sockRecv.Send(data,&nbsp;myFileLength);&nbsp;//Send&nbsp;the&nbsp;whole&nbsp;thing&nbsp;now<BR>for(int&nbsp;i=0;i&lt;=myFileLength;i+=1024)<BR>sockRecv.Send(data+i,1024);&nbsp;//Send&nbsp;the&nbsp;whole&nbsp;thing&nbsp;now<BR>if(myFileLength%1024!=0)<BR>sockRecv.Send(data+myFileLength-myFileLength%1024,myFileLength%1024);<BR><BR><BR><BR>// 
+      sockClient.Receive(data,&nbsp;dataLength);&nbsp;//Get&nbsp;the&nbsp;whole&nbsp;thing<BR>for(int&nbsp;i=0;i&lt;=dataLength;i+=1024)<BR>sockClient.Receive(data+i,1024);&nbsp;//Send&nbsp;the&nbsp;whole&nbsp;thing&nbsp;now<BR>if(dataLength%1024!=0)<BR>sockClient.Receive(data+dataLength-dataLength%1024,dataLength%1024);<BR><BR>即可。 
+      ( sinall 发表于 2004-4-25 16:18:00)<BR>&nbsp;<BR><IMG align=absMiddle 
+      height=11 src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> h<BR>( h 
+      发表于 2002-9-20 9:53:00)<BR>&nbsp;<BR><IMG align=absMiddle height=11 
+      src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 
+      编译的时候错误：fatal&nbsp;error&nbsp;C1083:&nbsp;Cannot&nbsp;open&nbsp;precompiled&nbsp;header&nbsp;file:&nbsp;'Debug/asdfsd.pch':&nbsp;No&nbsp;such&nbsp;file&nbsp;or&nbsp;directory<BR>Error&nbsp;executing&nbsp;cl.exe.<BR>为什么？<BR>( 
+      new_coming 发表于 2002-9-12 15:05:00)<BR>&nbsp;<BR><IMG align=absMiddle 
+      height=11 src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 
+      有这么麻烦吗？<BR>我曾经直接用WINSOCK&nbsp;API还有ReadFile、WriteFile传送过100多M的文件<BR>也用命名管道和ReadFile、WriteFile传送过同样大的文件<BR>都很稳定 
+      ( snowbird 发表于 2002-7-9 9:16:00)<BR>&nbsp;<BR><IMG align=absMiddle 
+      height=11 src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 
+      为了安全起见最好&nbsp;自己定义一个类&nbsp;处理Socket通信&nbsp;因为文件传输一般是时间较长数据较多&nbsp;最好传输一次以后服务器端等待客户端一个响应信息或者等待发送缓冲区有足够的空间以后再发送&nbsp;不然会产生错误&nbsp;CSocket不是很好用&nbsp;我已经作了一个十分好用的SOCKET编程框架&nbsp;是基于包标志的自动调用机制&nbsp;我用它实现了12个客户端与一个服务器之间的同时通信&nbsp;基本没有问题&nbsp;我现在正用它实现远程计算机管理&nbsp;&nbsp;我希望通过不断的测试改进&nbsp;将它完善&nbsp;现在基本上只要写功能相关的函数&nbsp;网络通信的问题&nbsp;由我的框架解决了&nbsp;哈哈&nbsp;N天辛苦&nbsp;终于换来了高效率 
+      ( iamwuge 发表于 2002-6-5 17:52:00)<BR>&nbsp;<BR><IMG align=absMiddle 
+      height=11 src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 
+      最好从CSocket派生自己的类，然后创建新的线程，在新线程中实现类的应用，重载CSocket类的OnReceive和OnSend等消息，这样就解决了线程阻塞和不能发送大文件的问题，详情可参见示例http://www.imagevampire.com那里有一个程序。 
+      ( 张华宾 发表于 2002-6-4 10:26:00)<BR>&nbsp;<BR><IMG align=absMiddle height=11 
+      src="VC知文章 - 使用CSockets行文件送.files/doc2.gif" width=11> 
+      我想问一下,为什么用CSocket类不能建立对特定IP的连接?如:&nbsp;CSocket&nbsp;sock;sock.Create();sock.Connect("192.168.0.2",8000);<BR><BR><BR>( 
+      wangmang 发表于 2002-5-31 
+      11:08:00)<BR>&nbsp;<BR>.......................................................<BR><A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=321" 
+      target=_blank><SPAN class=small>More...</SPAN></A> 
+</TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2004 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>
