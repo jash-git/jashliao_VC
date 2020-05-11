@@ -1,0 +1,61 @@
+VC++(MFC) 繁中/簡中字串 (CString) 檔案寫入/讀取 不亂碼 [2018/08/21在VC2015測試過]
+
+
+
+資料來源: http://aigo.iteye.com/blog/2299351
+
+https://blog.csdn.net/Augusdi/article/details/8961008
+
+寫入:
+	#include <stdio.h>  
+	  
+	#ifndef _UNICODE  
+	#define _UNICODE            //使用UNICODE编码  
+	#endif  
+	  
+	#include <Afx.h>           //为了使用CString类  
+	  
+	const int UNICODE_TXT_FLG = 0xFEFF;  //UNICODE文本标示  
+	  
+	int main()  
+	{  
+		FILE* WriteF;  
+		  
+	  
+		CString Wstr = _T("一个测试写入文本");  
+		WriteF = fopen("test.txt","w+");  
+	  
+		if(WriteF)  
+		{  
+			fwrite(&UNICODE_TXT_FLG,2,1,WriteF);  //写入头部  
+			fwrite(Wstr.GetBuffer(Wstr.GetLength()),Wstr.GetLength() * 2,1,WriteF);  
+			fclose(WriteF);  
+		}         
+		 
+		return 0;  
+	}
+
+讀取:
+	CFile ReadF(L"test.txt", CFile::modeRead);
+	TCHAR* temp = new TCHAR[ReadF.GetLength() / 2 + 1];
+	ReadF.Read(temp, ReadF.GetLength());
+	temp[ReadF.GetLength() / 2] = 0;
+	ReadF.Close();
+	strVal = temp; 
+
+---------------------------------------
+
+MFC UNICODE項目CFILE寫html文件亂碼解決
+
+http://nosleep.pixnet.net/blog/post/83842947-%E7%A8%8B%E5%BC%8F%E9%96%8B%E7%99%BC-%7C-mfc-unicode%E9%A0%85%E7%9B%AEcfile%E5%AF%ABhtml%E6%96%87%E4%BB%B6%E4%BA%82%E7%A2%BC%E8%A7%A3
+
+	CFile file;
+	CString filename = D:\\;
+	filename+=L”index.html”;
+	file.Open(filename,CFile::modeCreate|CFile::modeWrite);
+	file.SeekToBegin();
+	WORD unicode = 0xFEFF; //UNICODE編碼文件頭
+	file.Write(&unicode,2);
+	file.Write(CString內容,CString內容.GetLength()*2);
+	file.Flush();
+	file.Close();	

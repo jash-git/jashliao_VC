@@ -1,0 +1,65 @@
+<html>
+<head>
+<style>
+.keyword{color:rgb(0,0,255);}
+.comment{color:rgb(0,128,0);}
+.pp{color:rgb(0,0,255);}
+</style>
+<body>
+<pre style="font-family:courier;font-size:10pt"><span class=comment>// CStringArray_Sort.cpp : Defines the entry point for the console application.
+</span><span class=comment>//
+</span>
+<span class=pp>#include</span> &quot;stdafx.h&quot;
+<span class=pp>#include</span> &quot;CStringArray_Sort.h&quot;
+<span class=comment>/////////////////////////////////
+</span><span class=pp>#include</span> &quot;SortableStringArray.h&quot;
+<span class=comment>/////////////////////////////////
+</span><span class=pp>#ifdef</span> _DEBUG
+<span class=pp>#define</span> <span class=keyword>new</span> DEBUG_NEW
+<span class=pp>#undef</span> THIS_FILE
+<span class=keyword>static</span> <span class=keyword>char</span> THIS_FILE[] = __FILE__;
+<span class=pp>#endif</span>
+
+<span class=comment>/////////////////////////////////////////////////////////////////////////////
+</span><span class=comment>// The one and only application object
+</span>
+CWinApp theApp;
+
+<span class=keyword>using</span> <span class=keyword>namespace</span> std;
+
+<span class=keyword>int</span> _tmain(<span class=keyword>int</span> argc, TCHAR* argv[], TCHAR* envp[])
+{
+    <span class=keyword>int</span> nRetCode = 0;
+
+    <span class=comment>// initialize MFC and print and error on failure
+</span>    <span class=keyword>if</span> (!AfxWinInit(::GetModuleHandle(NULL), NULL, ::GetCommandLine(), 0))
+    {
+        <span class=comment>// TODO: change error code to suit your needs
+</span>        cerr &lt;&lt; _T(&quot;Fatal Error: MFC initialization failed&quot;) &lt;&lt; endl;
+        nRetCode = 1;
+    }
+    <span class=keyword>else</span>
+    {
+        <span class=comment>// TODO: code your application's behavior here.
+</span>        CSortableStringArray SASA;
+        SASA.Add(CString(&quot;test_840K&quot;));
+        SASA.Add(CString(&quot;test_64K&quot;));
+        SASA.Add(CString(&quot;test_640K&quot;));
+        SASA.Add(CString(&quot;test_1240K&quot;));
+        <span class=keyword>for</span> (<span class=keyword>int</span> i = 0; i &lt;= SASA.GetUpperBound(); i++)
+            cout &lt;&lt; SASA[i].GetBuffer(0) &lt;&lt; endl;
+        
+        SASA.Sort();
+        cout &lt;&lt;&quot;/////////////////////////////////&quot;&lt;&lt; endl;
+
+        <span class=keyword>for</span> (<span class=keyword>int</span> j = 0; j &lt;= SASA.GetUpperBound(); j++)
+            cout &lt;&lt; SASA[j].GetBuffer(0) &lt;&lt; endl;
+
+    }
+
+    <span class=keyword>return</span> nRetCode;
+}
+
+
+</pre></body>
+</html>

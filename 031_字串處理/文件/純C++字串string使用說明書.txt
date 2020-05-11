@@ -1,0 +1,116 @@
+C++字串string使用說明書
+
+轉貼自mmpo
+
+傳統c字串使用'\0'作為結束字元,而c++字串string不使用這種方式來處理字串
+c++字串原型如下
+typedef basic_string<char>     string;         
+typedef basic_string<wchar_t>  wstring;        //寬字元
+若要使用需引入string標頭檔,basic_string這個版樣類別一般稱為基本字串類別
+
+字串的宣告
+  string s;                         空字串,string()
+  string s="";                      空字串
+  string s="String";                包含"String"的字串    
+  string s("String");               包含"String"的字串,string(char*)  
+  string s(5,'A');                  包含5個A字串的字串AAAAA,string(int,char)  
+  string s=r;                       r為string字串,複製一份r的字串做為字串,string(const string&)
+  string s(r,2,4);                  r為string字串,複製r[2]開始的4個字元做為字串,string(const string&,int,int)  
+  string s(r.begin()+2,r.end());    r為string字串,複製r[0+2]開始到末端字元做為字串,string(const string&,string::iterator,string::iterator)  
+  string s(r+2,4);                  r為傳統字串,r+2的char位置開始4個字元做為字串,string(char*,int)
+  不能使用單一字元及數字做為初始化,例:
+  string s='A';
+  string s=20;
+  
+string迭代器
+  string::iterator iter;
+  string::iterator被定義在string的公用區域裡,iter的作用有如指標一般能利用+,-,++,--改變所指向的字元,也能用*取出字元值
+  若字串為常數字串,可使用string::const_iterator,和常數特性一樣不能做為修改
+  
+string類別函式
+  string::iterator begin()      回傳開頭位置
+  string::iterator end()        回傳結束位置
+  int size()                    回傳字串長度                      
+  int length()                  回傳字串長度
+  string::npos                  其值為系統代表的最大正整數
+  operator[]                    下標運算子,與傳統字串操作的效果一樣,用在等號左邊或右邊都可以
+  at()                          與下標運算子一樣,但會檢查是否超出下標範圍,若超出會立即終止
+  operator=                     指定運算子,可指定為字元,傳統字串,或另一個string
+  c_str()                       以傳統字串型式輸出
+  operator==                    以下七個皆為用於string比較的運算子
+  operator!=
+  operator>
+  operator>=
+  operator<
+  operator<=
+  operator==
+  operator+                     用於string相加,其中一個運算元必須是string,另一個運算元可以字元或傳統字串
+  operator+=                    用於string相加,也可以是字元或傳統字串和string相加
+  append(string)                字串相加,與一個string相加
+  append(string::iterator,string::iterator)字串相加,與迭代器的範圍字串相加
+  append(string,int,int)        字串相加,與一個string相加,但指定其由第幾個足標到第幾個足標範圍內的字串相加
+  append(char*)                 字串相加,與一個傳統字串相加
+  append(char*,int)             字串相加,與一個傳統字串相加,並指定相加的字數範圍
+  append(int,char)              字串相加,相加多少個字元
+  insert(int,string)            插入字串,從第一個參數的足標開始插入
+  insert(int,string,int,int)    插入字串,以第一個參數的足標開始插入,插入的範圍是三和四參數範圍的足標
+  insert(string::iterator,string::iterator,string::iterator)插入字串,從第一個迭代器插入,插入範圍是第二和第三個迭代器的範圍
+  insert(int,char*)             插入字串,以第一個參數的足標開始插入
+  insert(int,char*,int)         插入字串,以第一個參數的足標開始插入,第三個參數為字元數
+  insert(int,int,char)          插入字串,以第一個參數的足標開始插入,此為插入n個字元
+  insert(string::iterator,char) 插入字串,以第一個參數的迭代器開始插入,此為插入一個字元
+    //除了參數中有使用迭代器的intert()以外,其他均會回傳字件參考型別
+  substr(int)                   複製子字串,由參數的足標開始到結束被複製出來
+  substr(int,int)               複製子字串,由第一個參數的走標開始第二個參數個字元數,複製出來
+  find( ,int)                   搜尋子字串,第一個參數可以是string,傳統字串或字元,第二個參數代表從第幾個足標位置開始搜尋
+  find(char*,int,int)           針對傳統字串的搜尋子字串,第三個參數代表前幾個字元,以前n個字元做為搜尋
+  rfind()                       由後方開始搜尋,參數請參考find()不同的是,第二個參數的意義為由第二個參數往前搜尋
+  find_first_of()               搜尋字元,回傳第一個找到的位置,參數請參考find()
+  find_last_of()                搜尋字元,回傳最後一個找到的位置,參數請參考find()
+  find_first_not_of()           搜尋字元,回傳第一個不是參數裡的字元的位置,參數請參考find()
+  find_last_not_of()            搜尋字元,回傳最後一個不是參數裡的字元的位置,參數請參考find()
+    //find若找不到符合條件,會回傳string::npos
+    //find()與Rfind()是搜尋字串,另外四個是搜尋字元,只要是符合第一個參數裡有的字元就算是了 例:
+    //搜尋只要是數字的第一個字元位置str.find_first_of("0123456789");
+    //搜尋各種左括號的第一個字元位置str.find_first_of("[{(<");
+  replace(int,int,string)       取代子字串,這裡的五個取代子字串前兩個參數都是從第幾個足標開始的幾個字元數開始取代
+  replace(int,int,string,int,int)取代子字串,要取代的字串是第三個參數的第幾個足標開始的幾個字元數
+  replace(int,int,char*)        用於傳統字串
+  replace(int,int,char*,int)    用於傳統字串,第四個參收是字元數
+  replace(int,int,int,char)     取代的字串為n(參3)個字元(參4)
+  replace(string::iterator,string::iterator,string)使用迭代器指定被取代的範圍
+  replace(string::iterator,string::iterator,char*)
+  replace(string::iterator,string::iterator,char*,int)最後一個參數代表字元數
+  replace(string::iterator,string::iterator,int,char)取代n個字元
+  erase()                           清除所有字串
+  erase(int)                        清除參數1足標以後的字串
+  erase(int,int)                    清除參數1足標以後的n(參2)個字元數
+  erase(string::iterator)           清除迭代器所指的以後的字串  
+  erase(string::iterator,string::iterator)清除兩迭代器所指範圍的字串
+  bool empty()                 檢查是否為空字串
+  resize(size_type n,char ch)  調整字串長度為n,如果n比原字串大則多出的字元補上ch字元,若是小則去除多餘的字串  
+  swap(string& a,string& b)    交換兩字串
+
+使用string類別處理字串雖然方便很多,但傳統的字串處理在效率上是比較好的
+若對效率有所要求還是建議使用傳統字串處理 
+////////////////////////////////////////////////////////
+而外補充
+字串（string）
+string類是用來代替char*表達字串的。string提供了基本的字元處理並且提供了一個方法讓很多使用char*的函數仍舊可以使用string。您可以使用=和+操作符賦值給string： 
+    string s;
+    s = "Hello";
+    s = s + ", world";
+s一開始是空字串（大小為0）。在第二行s的值變為“Hello”。然後“, world”被添加到了s的末端，s的值變成了“Hello, world”。 
+
+方法size()返回字串的長度。這些代碼： 
+    string s = "Hello";
+    printf("%i", s.size());
+將會輸出5。 
+
+您可以象訪問char陣列一樣訪問string中的某一個字元： 
+    string s = "Hello";
+    printf("%c", s[0]); //輸出 "H"
+    s[0] = 'h'; //s變成了"hello"
+如果一個函數要求char*參數，可以使用c_str()方法： 
+    string s = "Hello";
+    printf("%s", s.c_str()); //輸出 "Hello"
