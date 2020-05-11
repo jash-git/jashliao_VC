@@ -1,0 +1,1 @@
+document.write("<script type=\'text/javascript\' src=\'http://yeskyafp.allyes.com/main/adfshow?user=YESKYAFP|tianji_fumeiti|yesky_soft_fumeiti&db=yeskyafp&border=0&local=yes&js=ie\' charset=\'gb2312\'></script>");

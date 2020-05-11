@@ -1,0 +1,409 @@
+0:只有收資料。
+1:收資料和送資料都有。
+2~3:把收資料先在用CArray存起來最後再送資料,唯一差別在於設定傳回值的位置不同。
+4:建立一個vc2005版，並把收下來的結構變成物件存放,而且加上所有類別，並且浮點數都用double
+5:加上一個線與線的運算函數，並且修改CPointLine裡面角度是否要修正，進而修正R
+6:加上一個線與圓弧的運算函數，並且修改CCircle內判斷兩圓相交情況之判斷式的順序，使得再判斷時，一定要先把所有相切的關係式都算過，才可以去認定為不相切。
+7:加上一個圓弧與圓弧的運算函數，並且修改線與圓弧的運算函數的判斷功能
+8:開始編寫核心計算程式，但未寫完
+9:核心計算寫完但是未測試並且未加上挑角判斷
+10:有修改核心計算，並測試兩條線的狀態，但是未加上挑角判斷
+11:有修改核心計算，並測試一弧一線的狀態，但是未加上挑角判斷
+12:修改求交點，圓，圓弧，線與線的類別，加上圓弧分割和線求切圓類別，加上一個圓弧求分段點和線求切圓的函數，修改核心計算函數
+13:只修改12的CPointLine.cpp
+		m_Point3Dd=Point3DBuffer7;//求到d
+		dotvalue=Vectordot.dot(m_VectorOA,m_VectorLine1,&m_fltSita);
+		m_fltR=m_fltL/(1.0f+(float)cos((m_fltSita/180*PI)));//求到R
+/*
+		m_fltSita=(double)(asin((m_fltL/m_VectorLine1.GetDistance()))*180.f/PI);//sin-1(L/|OQ|),求到Sita
+		//////////////////////
+		if((testx1>=0 && testx2>=0)||(testx1<=0 && testx2<=0))
+		{
+			m_fltR=m_fltL/(1.0f+(float)cos((m_fltSita/180*PI)));//求到R
+		}
+		else
+		{
+			m_fltR=m_fltL/(1.0f+(float)cos(PI-(m_fltSita/180*PI)));//求到R
+			m_fltSita=180.0-m_fltSita;
+		}
+*/
+14:增加CInputData的成員變數，以及新增CCircleRightLeft類別
+15:修改CCircleRightLeft的運算函數
+16:修改CCircle的CheckExcircle函數，另外補上主計算函數中判別與其他entity相交的CArc部分
+17:修改CPointLine運算函數，使得可以計算兩個解，並且修改外部api的函數變成可以接收兩個解，最後經過判斷再輸出
+18:修改Arc分段點的函數
+19:修正EngCalculate()函數中在判斷切圓與線斷交點的運算
+/*
+if(Ansnumber!=0)
+{
+	lngCheck=0;
+	break;
+}
+//*/
+///*
+if(Ansnumber==3)//線段在圓內
+{//
+	lngCheck=0;
+	lngcount=0;
+	break;
+}
+else if(Ansnumber==2)//有兩個交點
+{
+	CLine Line2d;
+	Line2d.SetData(P3D1,P3D2); 
+	if(Line2d.GetDistance()>0.1)//判斷兩個交點是否為同一個
+{
+lngCheck=0;
+		lngcount=0;
+		break;
+	}
+	else//兩交點為同一個
+	{
+		lngcount++;
+		if(lngcount>1)
+		{
+			lngCheck=0;
+			lngcount=0;
+			break;
+		}
+	}
+}
+else if(Ansnumber==1)
+{
+	lngcount++;
+	if(lngcount>1)
+	{
+		lngCheck=0;
+		lngcount=0;
+		break;
+	}
+}
+//*/
+20:增加CPointLine的暫存變數確保資料正確性
+21:修改EngLineLineSolve函數增加當data1=0;data2=0;的判斷式
+else
+{
+	Line.SetData(RipLine.m_StartPoint,RipLine.m_EndPoint);
+	if(CC1.CheckExcircle(Line)) 
+	{
+		data1=1;
+	}
+	if(CC2.CheckExcircle(Line))
+	{
+		data2=1;
+	}
+	if((data1==1) && (data2==0))
+	{
+		AnsCircle->m_Point3DCenter=PL.GetCenter(0);
+		AnsCircle->m_fltR=PL.GetR(0);
+		return 1;
+	}
+	else if((data1==0) && (data2==1))
+	{
+		AnsCircle->m_Point3DCenter=PL.GetCenter(1);
+		AnsCircle->m_fltR=PL.GetR(1);
+		return 1;
+	}
+}
+22:修改主計算函數中判斷圓弧與切圓關係的部分
+23:修改CArc::ArcCircle(CCircle Circle),確弳度一定為正，並且修改EngCalculate()函數中的圓弧相切判斷回到原本的用圓弧的方法									
+24:新增一個CTwoPointCircle類別，用來求線上一點與線外一點的切圓
+25:新增一個CArcPoint2Circle類別，用來求弧上一點與弧外一點的切圓
+26:新增一個CNoSolution類別整合CTwoPointCircle和CArcPoint2Circle兩類別，並實際加入進運算函式工作。
+27:修改CNoSolution類，使他再計算切圓時，避開所有連接點
+28:修改主要計算函數，使他在計算與其他line entity相碰時一定要是相切，否則不要
+29:修改CNoSolution類，使他再計算圓弧相交時，利用圓的判轉式來判斷，使得一定要是相切的圓我們才要
+30:修改主要計算函數
+31:修改主要計算函數和CNoSolution類
+32:大改，新增3個類別，並修改主要計算函數
+33:只有vc60的版本有修改接收函數的資料對調，其他的部分2005和60都只有多加存檔功能，其他和32版相同。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
