@@ -1,0 +1,1503 @@
+allocmem　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+用途:allocmem 常式以段落 (16 個位元組)為單位配置記憶體。不再使用這些　　　　　
+記憶體時, 記得用 freemrm 常式把這些記憶體釋放。　　　　　　　　　　　　　　　
+語法:int allocmem(unsigned size,unsigned *segp);　　　　　　　　　　　　　　　
+呼叫法:if(allocmem(size,&segadd)!=-1) printf("Error allocating memory\n"); 　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:allocmem 常式使用 DOS 的48h 常式配置記憶體 (以段落為單位, 數量由　　　　　
+參數 size 指定)並傳回此塊記憶體的位址 (放在參數 segp 內)。偏移值一定都　　　　
+是 0。用 freemem 釋放記憶體時, 也要使用這個位址。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 -1。若記憶體不夠, 則傳回已配置的最大數量。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:allocmem 和 freemem 是 DOS 專用的。其他的記憶體配置常式 (如　　　　　
+malloc,calloc 等)都有更好的移植力。不過這些常式也是呼叫 DOS 的 48h 常式　　　
+來取得記憶體。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:freemem,setblock,calloc 　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 427 頁　　　　　　　　　　　　　　　
+bdosptr　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+用途:bdosptr 常式呼叫 DOS 常式 (可用 int 21h 呼叫的)。bdosptr 只能呼　　　　　
+叫位址 (指標)放在 DS,DX 暫存器, 參數放在 AL 暫存器的常式。　　　　　　　　　　
+語法:int bdos(int dosfun,void *argument,unsigned dosal);　　　　　　　　　　　
+呼叫法:char new_directory[]="\\INCLUDE"; bdosptr(0x3b,new_directory,0);　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:像 bdos 一樣, bdosptr 常式是存取 DOS 常式 (用 INT 21h 呼叫的)的一　　　　
+個簡單方法。對於要求把位址參數放在 DS:DX 暫存器而另一個參數放在 AL 暫存器　　
+的 DOS 常式而言, 應使用 bdosptr 常式來存取它們。bdosptr 常式首先用參數　　　　
+argument 的值設定 DS:DX 暫存器的值, 然後把無正負號整數 dosal 的值放在 AL　　　
+暫存器內。再用 INT21h 指令呼叫編號為 dosfun 的 DOS 常式。在常式結束後,　　　　
+bdosptr 把 AX 暫存器的值傳回。這些值的意義由此 DOS 常式決定。　　　　　　　　　
+基本用法:像 9h 常式 (印出一個字串),3bh 常式等要求把指標放在 DS:DX 暫存器的　　
+DOS 常式, 使用 bdosptr 常式來存取是很適合的。　　　　　　　　　　　　　　　　
+回報值: DOS 常式結束時, 會把 AX 暫存器的值傳回。此值的意義由此常式決定。　　　
+bdosptr 只是把它傳回來而已。若有錯誤, 則傳回 -1, 並把示誤碼放在公共變數　　　
+_doserrno,errno 內。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:bdos,intdosx　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 431 頁　　　　　　　　　　　　　　　　　　
+biosequip　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:biosequip 常式可取得硬體和週邊裝置的資料。這些資料是用一個無正負號的整數
+傳回來的,參看表 10.15。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int biosequip(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:equip_flag=biosequip();　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<bios.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:biosequip 常式使用 BIOS 的 11h 常式取得硬體和週邊裝置 (目前裝在電腦上的)　
+的資料。傳回值的意義參看表 10.15。　　　　　　　　　　　　　　　　　　　　　　
+傳回值:biosequip 傳回 AX 暫存器的值。各位元的意義參看表 16.11。位元 0 是最低
+位元。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:此一常式的作用有限。例如它的位元 4,5 指出初設的視訊模式,而非目前　　
+模式。但它仍能提供 RS 232 串列埠的數目, 磁碟機的數目, 印表機的數目等。　　　　
+相關常式:int86 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 參看 443 頁　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 443 頁　　　　　　　　　　　　　　　　　　
+biosmemory　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:biosmemory 常式找出電腦中記憶體的數量。程式可用此常式來決定記憶體是否　　
+足夠。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:unsigned biosmemory(void); 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:total_kilobytes=biosmemory();　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<bios.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:biosmemory 常式用 BIOS 的 12h 常式找出電腦中記憶體的數量。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:傳回以 1 K (1024 個位元組)為單位的記憶體數量。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 447 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+biosprint　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:biosprint 常式可和印表機連絡。你可用 biosprint 來設定印表機初值,　　　　　
+找出印表機狀態, 把字元送給印表機。　　　　　　　　　　　　　　　　　　　　　　
+語法:int biosprint(int cmd,int byte,int port);　　　　　　　　　　　　　　　　
+呼叫法 biosprint(0,'x',LPT1); 　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<bios.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:biosprint 常式是 BIOS 印表機常式 (用 INT 17h 呼叫)的介面。　　　　　　　
+cmd 參數指定 BIOS 常式的工作, port 參數指定印表機埠, abyte 指出送給　　　　　
+印表機的字元數目。表 10.18 列出 cmd 的值及意義。　　　　　　　　　　　　　　　
+表 10.18 P448　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:傳回值的低階位元組指出印表機的狀態, 其意義如表 10.19。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.19 p448  　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:int 86　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 448 頁　　　　　　　　　　　　 　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+biostime　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:biostime 常式可取得或設定目前的系統時間。系統計數每秒增加 18.2 次。　　　
+你可用此常式來等候 (1/18.2 秒一次)。　　　　　　　　　　　　　　　　　　　　　
+語法:long biostime(int cmd,long newtime); 　　　　　　　　　　　　　　　　　　
+呼叫法:clock_count=biostime(0,0L); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<bios.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:biostime 常式呼叫 BIOS 時間常式 (用 INT 1Ah), 來取得目前計數或重定時間。
+計數每秒加 18.2 次。因此它可當精度為 1/18.2 的計時器。　　　　　　　　　　　　
+    參數 cmd 決定動作, 表 10.20 列出 cmd 的值。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.20 　參看 p 450　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:biostime 常式可作延遲之用。　　　　　　　　　　　　　　　　　　　　　
+回報值:只有在 cmd 是 0 時, 傳回值纔有意義。此時傳回值指出目前的計數。　　　　　
+補充說明:biostime 常式由於每 1/18.2 秒纔調整一次, 因此精密度不夠高。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:int 86　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 450 頁　　　　　　　　　　　　　　　　　　
+_chmod　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+用途:_chmod 常式可取得或改變一個 DOS 檔案目前的屬性。例如可用 _chmod 來找出一
+個檔案是正常檔案或一個子目錄。也可用它把檔案藏起來, 使 DIR 命令無法把它列出。　
+語法:int _chmod(const char *pathname,int func,.../*int attr*/);　　　　　　　
+呼叫法:_chmod("secret.dat",1,FA_HIDDEN);含括檔: #include<dos.h>#include<io.h>
+說明:_chmod 常式呼叫 DOS 43h 常式, 這個常式會取得或改變檔案的屬性 (檔案　　　　
+由 pathname 指定)。DOS 檔案的屬性表示這個檔案是只讀, 子目錄等等。　　　　　　　
+    要用參數 func 指定執行的工作。若為 0 表示要取得目前檔案的屬性。1表示　　　
+要改變檔案的屬性, 新屬性由參數 attr 指定。　　　　　　　　　　　　　　　　　　
+    幾種新屬性名稱 (表 10-21 )可用 OR 運算子把它們結合起來, 產生一組屬性。　　
+屬性在 dos.h 中定義。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, _chmod 傳回目前的屬性, 不然傳回 -1。　　　　　　　　　　　　　
+    你可用表 10.21 的屬性名稱和傳回來的值作 OR 運算, 來找出傳回的屬性。　　　　
+    有時, 只需找出檔案是否有某一屬性, 例如你只想知道某一檔案是否有歸檔(　　　
+archive)屬性, 則你可把傳回的屬性和 FA_ARCH 作 AND 運算, 再把運算結果和　　　　
+FA_ARCH 相比, 如果相等, 表示有此屬性。　　　　　　　　　　　　　　　　　　　　
+    有錯誤時, 會把 errno 設定為 ENOENT (表示找不到檔案)或 EACCES (
+表示某一操作許可被拒絕。 　　　　　　　　　　　　　　　　　　
+相關常式:chmod。   範例:參看上篇第 452 頁。　　　　　　　　　　　　　　　　
+_close　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:_close 常式關掉前面打開 (用 open 或 _creat 常式)的檔案　　　　　　　　　　
+語法:int _close(int handle);　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:_close(handle); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:_close 常式呼叫 DOS 3Eh 常式 關掉檔案 (由參數 handel 指定)。此一　　　　　
+關檔動作會清除此檔案的全部 DOS 緩衝區。並釋放此識別碼使其他檔案可用。而　　　　
+檔案時間也會更新。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    此一識別碼必需是 fopen或　ˍcreat 常式傳回的。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+傳回值:成功時, 傳回 0, 不然傳回 -1,並把 errno 設定為 EBADF 表示識別碼　　　　　
+無效。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:用 open,close 的程式比較有移植性。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:_open,_creat　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 454 頁　　　　　　　　　　　　　　　　　　
+_creat　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:_creat 常式可建立新檔案或把檔案長度減為 0。　　　　　　　　　　　　　　　
+語法:int _creat(const char *path,int attribute);　　　　　　　　　　　　　　　
+呼叫法:filehandle=_creat("c:\\tmp\\tmp001",0); 　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h>,#include<io.h>　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:_creat 常式呼叫 DOS 3Ch 常式來建立檔案 (檔名由 path 指定, 屬性由　　　　　
+attribute 指定)。。若檔案已存在, 則先把舊檔案減為 0, 保留原來的屬性。　　　　　
+    屬性指定檔案是只讀, 隱藏等。可用 OR 運算子從表 10.21 中指定屬性。　　　　　
+屬性常數在 dos.h 定義。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.21　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功開檔後, 傳回此檔案的識別碼。以後都用此識別碼來呼叫檔案, 因此　　　　
+要保存起來。若有錯誤, 傳回 -1, 並把 errno 設定為表 10.22 中的一個常數。　　　　
+其意義在表內解釋。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.22　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:使用 creat 的程式有更好的移植力。DOS 中一個程式多可打開 20 個　　　　
+檔案。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:_close,creatnew 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 455 頁　　　　　　　　　　　　　　　　　　
+country　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+於 55 毫秒的延遲。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:你可用 delay 常式配合 sound 常式產生指定時間的音調。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:58　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 458 頁　　　　 　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+disable　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:disable 常式用 CLI 指令關掉 80X86 微處理機的中斷。例如在安裝中斷管制　　　
+常式時, 就需要暫時關掉中斷。而在安裝好後, 應立刻用 enable 常式恢復中斷。　　　
+語法:void disable(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:disable();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:disable 常式執行 80x80 CLI 指令。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:disable 常式可在必要時, 關掉中斷(例如程式要安裝中斷管制常式時)。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:disable 常式可使中斷管制常式能幾乎完全用 Turbo C 語言來寫, 但　　　　
+disable 常式和硬體關係密切, 因此要小心使用。在使用它以前, 應先對 80X86　　　　
+的中斷機制有所認識。 像系統計時是由中斷更新的, 因此若關掉中斷太久,　　　　　　
+會使系統時鐘亂掉。從 disable 常式可看到如何用 Turbo C 程式對電腦硬體的　　　　
+控制。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:enable　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 464 頁　　　　　　　　　　　　　　　　　　
+dosexterr　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 MSC3　 MSC4　 MSC5/QC　 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:在 DOS 3.0 及以上的版本中, 當 DOS 的常式傳回錯誤時, 用 dosexterr　　　　　
+常式來找出錯誤的正確原因, 並提供可能的處理方法。　　　　　　　　　　　　　　　
+語法:int dosexterr( struct DOSERROR *errbuf);　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:dosexterr(&errbuf); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:dosexterr 呼叫 DOS 59h 常式來處理另一個 DOS 常式傳回的錯誤。　　　　　　　
+    關於此錯誤的資料傳回一個結構 (型別為 DOSERROR), 此一結構的指標　　　　　　
+由參數 errbuf 指定。它在 Turbo C 的宣告如下:　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 465 頁　 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+此結構中的 exterror 可用表 10.23 來解釋。詳細資料參看 DOS 技術手冊。　　　　　
+表 10.23　　　 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:傳回值即 exterror 中的值 (在 AX 暫存器內)。　　　　　　　　　　　　　　
+相關常式:perror　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 465 頁　　　　　　　　　　　　　　　　　　
+dostounix　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:dostounix 常式把 DOS 常式傳回來的時間和日期轉換成 UNIX 型式。　　　　　　
+語法:long dostounix(struct date *d,struct time *t); 　　　　　　　　　　　　　
+呼叫法:getdate(&d_dos);gettime(&t_dos);t_unix=dostounix(&d_dos,&t_dos);　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:UNIX 系統的時間格式為 00:00:00 january 1,1970。dostounix 常式　　　　　　
+把 DOS 常式傳回的時間轉換成 UNIX 型式。　　　　　　　　　　　　　　　　　　　　
+    DOS 的時間放在 date,time 結構內 (其位址由參數 d,t 提供)。DOS　　　　　　　
+的時間可由 getdate,gettime 常式取得。　　　　　　　　　　　　　　　　　　　　
+基本用法:dostounix 常式可印出 UNIX 時間。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:dostounix 傳回結構  d,t 指定的時間 (用 UNIX 格式)。　　　　　　　　　　
+補充說明:time 常式可直接傳回 UNIX 時間,而不必像 dostounix 需要從 DOS　　　　　
+時間轉換。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:ctime,getdate 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 468 頁　　　　　　　　　　　　　　　　　　
+_ _emit_ _　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　　　　　　TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:_ _emit_ _ 常式把 8086 指令直接放入 Turbo C 2.0 編譯程式產生的目的　　　
+碼內。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void _ _emit_ _(arguments,...);　　　　　　　　　　　　　　　　　　　　　
+呼叫法:_ _emit((unsigned char)0x9c); 　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:_ _emit_ _ 常式 (Turbo C 2.0 提供的)把 argument 的值抄到 Turbo C 編譯程式
+產生的目的碼內。它也可以是一個運算式, 而在編譯時計算出它的值。靜態變數都　　　
+可用任何運算式當初值。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    把這個參數的的型別強定, 則可控制輸出的位元組數目。例如定為 unsigned char　
+, 則一個位元組的值會限制在 0-255 內 (加一個 DB 的組合語言敘述)。同樣的, 若定　
+為unsigned 型別則產生一個字組。你也可使用 argument 中的局部變數,而使 BP 暫存器
+中的偏移值加入。參看例子。　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:如果你對 80X86 機器指令有些認識, 並想把這些指令插入你的程式　　　　　
+內, 那就用得到 _ _emit_ _ 常式了。若要加入組合語言指令, 則使用 asm　　　　　　
+保留字, 並在編譯時選 -B 這一項。　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 470 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　
+enable　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:enable 常式使 80x86 微處理機能接受中斷。在用 disable 常式關掉中斷後,　　　
+應使用 enable 把中斷打開。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void enable(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:enable(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明 enable 常式執行 STI 命令。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:enable 常式和 disable 常式合用可保護某一段程式不會被中斷干擾。系統　　
+程式就有需要用 enable 常式來控制中斷。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:disable 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 470 頁　　　　　　　　　　　　　　　　　
+FP_OFF　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 MSC3　 MSC4　 MSC5/QC　 　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:FP_OFF 是一個 C 的巨集, 用來取得任一資料的 16 位元偏移位址。FP_OFF　　　
+需要一個 far 指標 (32 位元)作為參數, 此指標指向陣列或 C 結構的起點。例如　　　
+可用 FP_OFF 取得一個字串的偏移位址 (你希望用 DOS 9h 常式把此字串印在螢幕上　　
+)。FP_OFF 是唯一能取得偏移位址的方法。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:unsigned FP_OFF(void far *address);　　　　　　　　　　　　　　　　　　　
+呼叫法:offset_buf=FP_OFF(p_buf); 　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:FP_OFF 常式 (當巨集用)取得一個 far 指標作參數, 傳回此指標的　　　　　　　
+16 位元偏移值。使用 FP_OFF 時, 參數 address 要強定為 void far* 這　　　　　　　
+種型別。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在呼叫 DOS 常式時, 常用  FP_OFF 和 FP_SEG 產生字串和常式的　　　　　
+16 位元區段和偏移位址。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:FP_OFF 傳回 16 位元的偏移位址。　　　　　　　　　　　　　　　　　　　　
+相關常式:FP_SEG　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 477 頁　　　　　　　　　　　　　　　　　　
+FP_SEG　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 MSC3　 MSC4　 MSC5/QC　 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:FP_SEG 是一個 C 的巨集, 用來取得任一資料的 16 位元區段位址。FP_SEG　　　　
+需要一個 far 指標 (32 位元)作為參數, 此指標指向陣列或 C 結構的起點。例如　　　
+可用 FP_SEG 取得一個字串的區段位址 (你希望用 DOS 9h 常式把此字串印在螢幕上　　
+)。FP_OFF 是能取得區段位址的有效方法。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:unsigned FP_SEG(void far *address);　　　　　　　　　　　　　　　　　　　
+呼叫法:segadd_buf=FP_SEG(p_buf); 　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:FP_SEG 常式 (當巨集用)取得一個 far 指標作參數, 傳回此指標的　　　　　　　
+16 位元偏移值。使用 FP_OFF 時, 參數 address 要強定為 void far* 這　　　　　　
+種型別。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在呼叫 DOS 常式時, 常用  FP_OFF 和 FP_SEG 產生字串和常式的　　　　　
+16 位元區段和偏移位址。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:FP_SEG 傳回 16 位元的區段位址。　　　　　　　　　　　　　　　　　　　　
+相關常式:FP_OFF　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 478 頁　　　　　　　　　　　　　　　　　　
+freemem　　　　　　　　　　　　　　　　　　　　　　　 　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:freemem 常式釋放 allocmem 常式分配的記憶體。它使用 allocmem 傳回的　　　
+區段位址來決定要釋放的記憶體位址。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int freemem(unsigned segadd);　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:freemem(segment); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:freemem 常式使用 DOS 的 49h 常式釋放由 allocmem 常式配置的記憶體。　　　
+參數 segadd 指定此塊記憶體的區段位址, 偏移位址都是 0。區段位址是由　　　　　　
+allocmem 傳回來的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時傳回 0, 不然傳回 -1, 並把 errno 設定為 ENOMEM (表示區段位址不良)
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:allocmem,setblock 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 479 頁　　　　　　　　　　　　　　　　　　
+geninterrupt　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:geninterrupt 照指定的中斷編號產生一個軟體中斷。　　　　　　　　　　　　　
+語法:void geninterrupt(int interruptnum); 　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:geninterrupt(5);　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:geninterrupt 巨集用 INT 指令 (中斷編號由參數 interruptnum 指定)　　　　　
+來呼叫一個組合語言常式。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:geninterrupt 可用軟體中斷存取 BIOS 或 DOS 常式。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:處理完中斷後, 把值傳回 AX 暫存器。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:int86x,intdosx 常式也有和 geninterrupt 常式相同的能力,同時也　　　　　
+比較常用。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:disable,int86　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 481 頁　　　　　　　　　　　　　　　　　　
+getcbrk　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getcbrk 常式可用來決定 Control-Break (或 Control-C )鍵組的檢查狀態。　　　
+語法:int getcbrk(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:if(getcbrk()) printf("Control-Break checking is enableed!\n");　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:MS DOS 有一個旗號, 這個旗號的值決定 DOS 對 Control-Break (或 Control-C)　
+鍵的處理狀況。此旗號為 1 時, DOS 會檢查 Control-Break ( 或 Control-C)鍵的按下　
+狀態。如果是 Control-Break 按下, 則控制權交給 Control-Break 管制常式 (INT 23h)。
+你可用 Turbo C 的 getcbrk 常式來設計一個常式, 在 Control-Break (或 Control-C)　
+按下時, 會去呼叫此常式。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    getcbrk 常式用 DOS 的 33h 常式來檢查旗號的狀態。　　　　　　　　　　　　　
+基本用法:你可用 getcbrk 常式來取得和保存 Control-Break 鍵的檢查旗號狀態。　　　
+然後呼叫 setbrk 常式來關掉此一檢查, 這樣在重要的操作 (如磁片 I/O)時,　　　　　
+不會受到 Control-Break 鍵的干擾。在磁片 I/O 作完後, 再恢復對 Control-Break　　
+的檢查。由於旗號關掉後, 即使程式結束, 旗號都不會恢復, 因此先把旗號保留起來　　
+是很重要的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:ctrlbrk,setbrk　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 482 頁　　　　　　　　　　　　　　　　　　
+getcurdir　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getcurdir 常式可找出指定磁碟機中的目前目錄。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getcurdir(int drive,char *directory);　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:getcurdir(0,dirname); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dir.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getcurdir 常式傳回指定磁碟機 (由參數 drive 指定)中的目前目錄名稱。0　　　
+表示內定磁碟機, 1 表示 A 磁碟機等。　　　　　　　　　　　　　　　　　　　　　　
+    一定要指定一個緩衝區 (長度為 MAXDIR ,這是 dir.h 中定義的一個常數)。　　　
+來存放傳回來的目前目錄名稱。而參數 argument 則指定緩衝區的位址。目前目錄名　　
+稱不含指定磁碟機, 也不是用 \ 開始。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 0, 失敗時, 傳回 -1。　　　　　　　　　　　　　　　　　　　
+相關常式:getcwd,getdisk　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 483 頁　　　　　　　　　　　　　　　　　　
+getdate　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getdate 常式可取得 DOS 保存的系統目前日期。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void getdate(struct date *datep);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:getdate(&date); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getdate 常式使用 DOS 的 2Ah 常式來取得系統目前日期。完整的日期存放　　　
+在 date 結構內 (dos.h 定義)。此一結構在 C 中的宣告如下:　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 484 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+你必需宣告一個這樣的結構, 並用參數 datep 指定結構的位址。　　　　　　　　　　
+相關常式:setdate,dostounix。 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 484 頁 　　　　　　　　　　　　　　　　　
+getdfree　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getdfree 常式可找出磁片的總容量及還沒有用到的空間。　　　　　　　　　　　
+語法:unsigned getdfree(unsigned drive,struct dfree *dfinfo);　　　　　　　　　
+呼叫法:getdfree(0,&dfinfo);　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getdfree 常式使用 DOS 的 36h 常式取得磁碟機 (由 drive 指定)中　　　　　　
+磁片的總和可用空間。如果 drive 為 0 , 表示使用內定磁碟機, 1 表示 A　　　　　　
+磁碟機等。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    取得的資料放在一個結構內 (型別為 dfree), 結構的位址由 dfinfo 參數　　　　　
+指定。此結構在 dos.h 中定義, 在 C 程式中宣告如下:　　　　　　　　　　　　　　　
+參看 486 頁 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+傳回的空間數目以磁簇為單位 (分別存放在 df_total,df_avail 欄位內)。由於磁簇　　
+是由磁區組成的, 因此用 df_sclus 和 df_bsec 兩個欄位的值, 可算出總量及還沒有用　
+到的數量。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    有錯誤時,  df_status 欄會設定為 -1。　　　　　　　　　　　　　　　　　　　
+基本用法:getdfree 常式可用來找出磁片中可用的空間。在存放檔案時, 有必要先　　　
+算出可用的空間。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getdisk,setdisk 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 486 頁　　　　　　　　　　　　　　　　　　
+getdisk　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getdisk 常式可找出目前的內定磁碟機編號　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getdisk(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:drive_numbr=getdisk();　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dir.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getdisk 常式使用 DOS 的 19h 常式找出目前內定的磁碟機編號。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在建檔或作檔案 I/O 時, 若沒有明白指定磁碟機, 則 DOS 會使　　　　　　　
+用目前內定磁碟機。getdisk 傳回的值指出目前內定磁碟機編號。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getdisk 傳回的值中, 0 表示 A 磁碟機, 1 表示 B 磁碟機等。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:setdisk 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 487 頁　　　　　　　　　　　　　　　　　　
+getdta　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getdta 常式可取得目前磁片轉換區 (DTA)的位址。　　　　　　　　　　　　　　
+語法:char far *getdta(void);　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:cur_dta=getdta(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:DOS 有兩種檔案操作方法。一種是和 CP/M 相容的, 使用 FCB 和 DTA。另一種　　
+是和 UNIX 相容的, 使用識別碼。第 2 種是最常用也是相容度最高的。但 CP/M　　　　
+常式仍是 DOS 檔案 I/O 常式中的一部份。findfirst,findnext 常式會改變 DTA,　　　
+而 getdta 常式可在改變 DTA 前, 先把 DTA 的原來內容保存起來。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getdta 常式可保留 DTA 原來的值。　　　　　　　　　　　　　　　　　　
+回報值:getdta 傳回指向目前 DTA 的 far 指標。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:randbrd,setdta　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 488 頁　　　　　　　　　　　　　　　　　　
+getfat,getfatd　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getfat 常式可取得 FAT (檔案配置表)的資料。getfatd 取得內定磁碟機中　　　　
+的相同資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void getfat(unsigned char drive,struct fatinfo *dtable);　　　　　　　　
+　　　void getfatd(struct fatinfo *dtable);　　　　　　　　　　　　　　　　　
+呼叫法:getfat(1,&fatdata); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:檔案配置表 (FAT)指定配置給檔案的磁簇(由固定的磁區組成)數目。getfat　　　
+傳回指定的磁碟機的 FAT 資料。0 表示預定磁碟機, 1 表示 A 磁碟機等。　　　　　　
+getfatd 和 getfat 功能相同, 但它都使用內定磁碟機。　　　　　　　　　　　　　　
+    FAT 的資料傳回 fatinfo 結構 ,在 dos.h 中宣告如下:　　　　　　　　　　　　
+參看 489 頁　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+你必需配置記憶體給 fatinfo, 並用 dtable 參數指定它的位址。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getfat 傳回的資料可用來解釋 FAT 的內容, FAT 指出檔案　　　　　　　　
+的分配。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 489 頁　　　　　　　　　　　　　　　　　
+getfat,getfatd　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getfat 常式可取得 FAT (檔案配置表)的資料。getfatd 取得內定磁碟機中　　　　
+的相同資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void getfat(unsigned char drive,struct fatinfo *dtable);　　　　　　　　
+　　　void getfatd(struct fatinfo *dtable);　　　　　　　　　　　　　　　　　
+呼叫法:getfat(1,&fatdata); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:檔案配置表 (FAT)指定配置給檔案的磁簇(由固定的磁區組成)數目。getfat　　　
+傳回指定的磁碟機的 FAT 資料。0 表示內定磁碟機, 1 表示 A 磁碟機等。　　　　　　
+getfatd 和 getfat 功能相同, 但它都使用內定磁碟機。　　　　　　　　　　　　　　
+    FAT 的資料傳回 fatinfo 結構 ,在 dos.h 中宣告如下:　　　　　　　　　　　　
+參看 489 頁　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+你必需配置記憶體給 fatinfo, 並用 dtable 參數指定它的位址。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getfat 傳回的資料可用來解釋 FAT 的內容, FAT 指出檔案　　　　　　　　
+的分配。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 489 頁　　　　　　　　　　　　　　　　　
+getpsp　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getpsp 常式可取得程式的程式區段前註 (PSP)的區段位址。　　　　　　　　　　
+語法:unsigned getpsp(void); 　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:my_psp=getpsp();　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:在 DOS 中, 每一個執行中的程式, DOS 都會指定一塊 256 位元組的區域　　　　　
+給它。關於此程式的一些資料就存放在此區域內。getpsp 常式使用 DOS 的 62h　　　　
+常式取得程式(正在執行中的) PSP 的區段位址。　　　　　　　　　　　　　　　　　
+    DOS 的 62h 常式只有在 DOS 3.0 及以上版本纔有, 因此 getpsp 也只能　　　　　
+在這些版本上使用。如果你用的是 3.0 以前的版本, 則可透過公共變數 _psp　　　　　
+來取得相同的位址。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:PSP 存放呼叫此程式的命令列, 及環境設定的區段位址。getpsp 常式可取　　
+得這些資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getpsp 常式傳回 PSP 的區段位址。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 493 頁　　　　　　　　　　　　　　　　　　
+getswitchar　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getswitchar 常式 (非正式)傳回目前的選擇字元 (放在 DOS 選擇前面的字元)。
+語法:int getswitchar(void); 　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:sw_chr=getswitchar(); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getswitchar 常式使用 DOS 的 37h 常式 (非正式的)來取得選擇字元 (/)。例如　
+DOS 的 DIR/W 命令中的  / 即為選擇字元。　　　　　　　　　　　　　　　　　　　　
+    而 setswitchar 常式則設定新的選擇字元。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getswitchar 常式傳回選擇字元 (放在 DOS 選擇前面的字元)。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:getswitchar 常式由於使用非正式的 37h 常式, 因此並非 Turbo C 正　　　
+規的常式。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:setswitchar 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 495 頁　　　　　　　　　　　　　　　　　
+gettime　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:gettime 常式可取得 DOS 保存的系統時間。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void gettime(struct time *timep);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:gettime(&time_info);　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:gettime 常式使用 DOS 的 2Ch  常式取得目前的系統時間。時間的單位 (小時,　
+分, 秒, 百分之一秒) 都存放在 time 結構內。此結構在 C 中的宣告如下:　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 496 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    必需要在程式中宣告一個這樣的結構, 並用參數 timep 指定結構的位址。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:settime,getdate 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 496 頁　　　　　　　　　　　　　　　　　　
+getvect　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getvect 常式可取得某一中斷編號的中斷向量值。中斷向量是此一中斷產生　　　
+時, 會被呼叫常式的位址。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void interrupt(*getvect(int interruptno)) ();　　　　　　　　　　　　　　
+呼叫法:void interrupt(*int_handler)(); 　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getvect 常式使用 DOS 的 35h 常式取得中斷管制常式的位址, 呼叫管制常式　　
+的中斷編號是由參數 interruptno 指定的。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getvect 常式通常用來取得中斷管制常式的目前位址 (在還沒有被 setvect　　
+設定為新值前)。此常式的另一功能是可取得某些表格的位址 (這些表格可透過中斷存取　
+)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:傳回指向中斷管制常式(型別為 interrupt)的 far 指標。這個保留字可用來　　
+設計 C 的中斷管制常式 (參看第 1 章)。　　　　　　　　　　　　　　　　　　　　
+相關常式:setvect 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 497 頁　　　　　　　　　　　　　　　　　　
+getverify　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getverify 常式可取得確認旗號 (verify flag)的目前狀態。確認旗號指定　　　　
+寫入磁片的動作是否受到確認。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getverify(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:vflag=getverify();　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明: DOS 有一個確認旗號, 其值為 1 時, DOS 在每一次對磁片的寫入時, 都會讀　　
+回來確認。getverify 常式使用 DOS 54h 來找確認旗號的狀態。　　　　　　　　　　
+    setverify 常式可用來設定確認旗號。也可用 DOS 的 VERIFY 命令來找出　　　　　
+確認旗號的狀態。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getverify 常式傳回確認旗號的值。 1 表示有, 0 表示沒有確認動作。　　　　
+相關常式:setverify 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 498 頁　　　　　　　　　　　　　　　　　　
+hardresume　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:hardresume 常式把控制權從錯誤管制常式 (例如用 harderr 常式安裝的)交回　　
+DOS。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void hardresume (int returncode);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:hardresume(2);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:hardresume 常式把控制權從錯誤管制常式 (由 INT 24h 啟動, 用來處理重大　　　
+硬體錯誤 )交回 DOS。管制常式是由把常式的位址當 harderr 的參數而安裝上去的。　　
+    參數 returncode 告訴 hardresume 常式, 結束時, 要作的工作。表 10.27　　　　
+的值指定工作。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.27　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:hardresume 常式只能用在自己安裝的錯誤管制常式上, 除外, 它沒有其他用途
+相關常式:hardretn　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 504 頁　　　　　　　　　　　　　　　　　　
+hardretn　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:hardretn 常式把控制權從錯誤管制常式 (例如用 harderr 常式安裝的)交回　　　
+應用程式。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void hardretn(int errorcode);　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:hardretn(-1); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:hardretn 常式把控制權從錯誤管制常式 (由 INT 24h 啟動, 用來處理重大　　　
+硬體錯誤 )交回應用程式。管制常式是由把常式的位址當 harderr 的參數而安裝上去的。
+    在經過了 I/O 錯誤的發生點後, 呼叫 hardretn, 則控制權會交給應用程式。呼叫　
+hardretn 時, 參數 errorcode 應為適當的 DOS 示誤碼。　　　　　　　　　　　　　
+    如果錯誤發生時, DOS 常式的編號為 38h 或大於此值, 則在回到程式前, hardretn　
+會把 errorcode 的值放在 AX 暫存器內。由於整數是傳回 AX 暫存器, 因此程式可能誤以
+為這是一個 DOS 錯誤而非硬體錯誤。　　　　　　　　　　　　　　　　　　　　　　
+    如果在 DOS 37h 或以下的常式中發生錯誤, 則應用程式把傳回值當 FFh。對不能傳回
+錯誤的 DOS 常式, 應用程式不會接到錯誤的訊息。　　　　　　　　　　　　　　　　　
+補充說明:hardretn 常式只能使用在自己的錯誤管制常式。　　　　　　　　　　　　　
+相關常式:hardresume　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 505 頁　　　　　　　　　　　　　　　　　　
+intr　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:intr 常式是在 IBM PC 上產生軟體中斷的另一種方法。用 int86x 常式來產生　　
+中斷的程式比較有移植性。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void intr(int int_num,struct REGPACK *preg); 　　　　　　　　　　　　　　
+呼叫法:intr(0x10,&all_regs); 　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:intr 常式和 int86x 常式都能產生同樣的中斷。暫存器的值存放在　　　　　　　
+REGPACK 結構內 (在 dos.h 中定義):　　　　　　　　　　　　　　　　　　　　　　
+參看 518 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+這個結構一定要配置記憶體, 並把記憶體的起始位址放在參數 preg 內。intr　　　　　
+常式把 *preg 的值抄到相關的暫存器內。然後用組合語言指令 INT 產生中斷　　　　　
+(中斷編號由參數 intr_num 指定)。　　　　　　　　　　　　　　　　　　　　　　　
+    中斷處理完後, intr 把暫存器的值抄回 *preg 內。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果在 PC 及相容電腦上, 還是以 int86x 常式來產生中斷比較有　　　　　　
+移植性。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:int86x　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 518 頁　　　　　　　　　　　　　　　　　　
+MK_FP　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:MK_FP 巨集可從一個區段和一個偏移位址產生一個 far 指標。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far *MK_FP(unsigned seg,unsigned offset); 　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:ega_ram=MK_FP(0xA000,0);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:MK_FP 巨集用 seg,offset (指標的區段和偏移位址)產生一個 far 指標。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:要產生指向螢幕或 BIOS 資料區的指標, 使用 MK_FP 是很方便的。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:MK_FP 產生一個 far 指標　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式: FP_OFF,FP_SEG　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 525 頁　　　　　　　　　　　　　　　　　　
+nosound　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:nosound 常式關掉喇叭。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void nosound(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:nosound();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔+ #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 1.5 的 sound 常式可使喇叭產生一定頻率的聲音。而 nosound 常式則關
+掉喇叭。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:sound 和 nosound 常式合用可控制喇叭。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:sound 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 526 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+_open　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:_open 常式打開已有的檔案。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int _open(const char *filename,int mode);　　　　　　　　　　　　　　　　
+呼叫法:_open("data",O_DENYALL|O_RDONLY,&filehandle); 　　　　　　　　　　　　　
+含括檔: #include<fcntl.h>,#include<dos.h>　　　　　　　　　　　　　　　　　　　
+說明:_open 常式使用 DOS 的 3Dh 常式來開檔(檔案名稱由參數 filename 指定)。　　　
+參數 mode 指出可用的操作 (讀, 寫等)。表 10.28 列出各種存取及操作模式(可　　　　
+用 OR 運算結合幾種操作)。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.28　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    DOS 2.X 版只能使用表 10.29 的範圍。　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回檔案的識別碼 (以後存取此檔案時要用的)。　　　　　　　　　　
+    有問題時, 傳回 -1, 並把 errno 設定為表 10.29 中的一個值。　　　　　　　　
+表 10.29 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:open 和 close 常式的功能和 _open 相同, 但其移植性較高。在 DOS 中　　
+一次最多可打開 20 個檔案。　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:_close,_creat　 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 526 頁　　　　　　　　　　　　　　　　　　
+peek,peekb　　　　　　　　　　　　　　　　　
+相容性:TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:peek,peekb 常式用來取出某一指定位址中的內容。　　　　　　　　　　　　　　
+語法:int peek(unsigned segment,unsigned offset);　　　　　　　　　　　　　　　
+　　　char peekb(unsigned segment,unsigned offset); 　　　　　　　　　　　　　
+呼叫法:a_byte=peekb(0xA000,0); 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　an_int=peek(0x40,0);　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:peek 常式傳回一個 16 位元的字組 (其位址為 segment:offset)。peekb 常式　　
+則只傳回此位址的一個位元組。　　　　　　　　　　　　　　　　　　　　　　　　　
+    peek,peekb 在 dos.h 中的巨集及常式。如果沒有把 dos.h 含括進來或用 #undef　
+ 取消巨集, 則以常式的型式使用。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:peek,peekb 常式適合用來存取視訊記憶體和 BIOS 資料區。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:peek 傳回一個 16 位元的字組 (位址在 segment:offset), peekb 傳回此　　　
+位址的一個位元組。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:poke,pokeb　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 532 頁　　　　　　　　　　　　　　　　
+peek,peekb　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:peek,peekb 常式用來取出某一指定位址中的內容。　　　　　　　　　　　　　　
+語法:int peek(unsigned segment,unsigned offset);　　　　　　　　　　　　　　　
+　　　char peekb(unsigned segment,unsigned offset); 　　　　　　　　　　　　　
+呼叫法:a_byte=peekb(0xA000,0); 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　an_int=peek(0x40,0);　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:peek 常式傳回一個 16 位元的字組 (其位址為 segment:offset)。peekb 常式　　
+則只傳回此位址的一個位元組。　　　　　　　　　　　　　　　　　　　　　　　　　
+    peek,peekb 在 dos.h 中的巨集及常式。如果沒有把 dos.h 含括進來或用 #undef　
+ 取消巨集, 則以常式的型式使用。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:peek,peekb 常式適合用來存取視訊記憶體和 BIOS 資料區。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:peek 傳回一個 16 位元的字組 (位址在 segment:offset), peekb 傳回此　　　
+位址的一個位元組。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:poke,pokeb　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 532 頁　　　　　　　　　　　　　　　　
+poke,pokeb　　 　　　　　　　　　　　　　　　　　　　　　　　　　　　 　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:poke,pokeb 常式把字組或位元組寫入指定位址中的記憶體。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void poke(unsigned segment,unsigned offset);　　　　　　　　　　　　　　
+     void pokeb(unsigned segment,unsigned offset);
+呼叫法:pokeb(0xA000,0);poke(0x40,0); 　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:poke 常式寫入一個 16 位元的字組 (寫入位址為 segment:offset)。pokeb 常式　
+則只傳回寫入一個位元組。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    poke,pokeb 在 dos.h 中的巨集及常式。如果沒有把 dos.h 含括進來或用 #undef　
+ 取消巨集, 則以常式的型式使用。　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:poke,pokeb 常式適合用來把資料寫入視訊記憶體和 BIOS 資料區。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:poke 寫入一個 16 位元的字組 (位址在 segment:offset), pokeb 寫入　　　　
+一個位元組。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:peek,peekb　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 533 頁　　　　　　　　　　　　　　　
+poke,pokeb　　 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:poke,pokeb 常式把字組或位元組寫入指定位址中的記憶體。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void poke(unsigned segment,unsigned offset);　　　　　　　　　　　　　　
+     void pokeb(unsigned segment,unsigned offset);　　　　　　　　
+呼叫法:pokeb(0xA000,0);poke(0x40,0); 　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:poke 常式寫入一個 16 位元的字組 (寫入位址為 segment:offset)。pokeb 常式　
+則只傳回寫入一個位元組。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    poke,pokeb 在 dos.h 中的巨集及常式。如果沒有把 dos.h 含括進來或用 #undef　
+ 取消巨集, 則以常式的型式使用。　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:poke,pokeb 常式適合用來把資料寫入視訊記憶體和 BIOS 資料區。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:poke 寫入一個 16 位元的字組 (位址在 segment:offset), pokeb 寫入　　　　
+一個位元組。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:peek,peekb　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 533 頁　　　　　　　　　　　　　　　
+_read　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:_read 常式可把一組位元組從檔案寫入一個緩衝區內。在使用 _read 前, 應先取　
+得 _open,_creat 等常式傳回來的識別碼。　　　　　　　　　　　　　　　　　　　　
+語法:int _read(int filehandle,void *buffer,unsigned readcount); 　　　　　　　
+呼叫法:bytes_read=_read(filehandle,pbuf,80);　　　　　　　　　　　　　　　　　
+含括檔:#include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:_read 常式使用 DOS 的 3Fh 常式把一組位元組 (數目由 readcount 指定)從　　　
+檔案的目前位置送到緩衝區 (位址由 buffer 指定)。　　　　　　　　　　　　　　　
+    檔案的識別碼由 filehandle 指定。此識別碼是由 _open 或 _creat 傳回來的。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回實際讀取的位元組數目。不然傳回 -1, 並把 errno 設定為　　　
+EBADF (表示識別碼無效)或 EACCES (表示不能存取)。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:read 和 write 常式要比像 _read 這種專屬 DOS 的常式有更好的移植性。　　
+相關常式:_write,_open　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 535 頁　　　　　　　　　　　　　　　　　　
+segread　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 MSC3　 MSC4　 MSC5/QC　 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:segread 常式使 Turbo C 程式可取得 80X86 微處理機中暫存器 CS,DS,ES,SS　　　
+的內容。例如若要在 ES 暫存器的內容被改變前 (執行 int86x 會改變其值), 可先用　　
+segread 常式把 ES 的值取出來保存。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void segread(struct SREGS *segregs); 　　　　　　　　　　　　　　　　　　
+呼叫法:segread(&segregs);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:segread 常式把80x86 區段暫存器的值抄入 C 結構 segregs。每一個暫存器,　　　
+segregs 都有一個無正負號整數型變數以之配合。當然這些變數就稱為 cs,ds,es,ss。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:segread 常式通常在使用 int86x,intdos 前, 先把 ES暫存器的值保存起來。　
+BIOS 常式經常使用 ES 暫存器。　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:除了作低階層次的存取外, 80x86 區段暫存器的值對 C 程式並無作用。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:int86x,intdosx　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 543 頁　　　　　　　　　　　　　　　　　　
+setblock　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setblock 常式可調整記憶體的大小 (由 allocmem 常式預先配置的)。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int setblock(unsigned segadd,unsigned newsize);　　　　　　　　　　　　　
+呼叫法:setblock(segadd,5); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setblock 常式使用 DOS 的 4Ah 常式來加大記憶體 (由 allocmem 配置的)。　　　
+參數 newsize 指定新的長度 (以段落為單位)。segadd 是 allocmem 傳回的區段　　　　
+位址。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 -1。不然傳回可用的最大段落數目, 並把 errno 設定為　　　　　
+ENOMEM  (表示沒有足夠的記憶體)。　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:setblock 和 realloc 常式類似。但 setblock 只能調整 allocmem　　　　　
+配置的記憶體。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:allocmem,freemem　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 544 頁　　　　　　　　　　　　　　　　　　
+setcbrk　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setcbrk 常式可控制 DOS 對 Control-Break (或 Control-C)鍵組的檢查。　　　
+語法:int setcbrk(int value);　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:if(setcbrk(1)) printf("Control-Break checking is enabled!\n");　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:DOS 有一個旗號, 它可指出 DOS 是否會檢查 Control-Break (或 Control-C　　　
+鍵)。此旗號為 1 時, DOS 會檢查 Control-Break 鍵。若有 Control-Break 鍵按下,　　
+則控制權交給 Control-Break 管制常式 (INT 23h)。你可用 Turbo C 的 ctrlbrk　　　
+常式來設計一個常式, 在 Control-Break 鍵 (或 Control-C)按下時, 會叫用到此常式。
+    setcbrk 常式使用 DOS 的 33h 常式來改變旗號。旗號的新值由參數 value 指定。　
+基本用法:你可用 setcbrk 來關掉 Control-Break 檢查, 使重要的工作如磁片 I/O　　　
+不會受到 Control-Break 等的干擾。當然要先用 getcbrk 把旗號的值保存起來。　　　
+而在工作作完後, 再把存放的值放回原處。由於旗號關掉後, 即使程式結束, 仍在　　　
+關掉狀態, 因此還原的工作是很重要的。　　　　　　　　　　　　　　　　　　　　　
+回報值:setcbrk 傳回 value 參數。　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:Control-Break 檢查旗號不會影響標準輸出, 輸入及補助裝置的 I/O。　　　
+也就是說即使關掉 Control-Break 旗號, Control-C 仍會產生 INT 23h 中斷。　　　　
+相關常式:ctrlbrk,getcbrk 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 546 頁　　　　　　　　　　　　　　　　　　
+setdate　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setdate 常式可改變目前系統日期　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void setdate(struct date *datep);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setdate(&date_info);　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setdate 常式使用 DOS  2Bh 常式設定目前系統日期。各分量 (年, 月,日)　　　　
+是由結構 date 中的欄位指定的。此結構在 dos.h 中定義如下:　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 548 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+在 C 程式中要宣告一個這種結構, 並用參數 datep 提供其位址。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getdate,gettime 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 548 頁　　　　　　　　　　　　　　　　　　
+setdisk　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setdisk 常式可改變新的內定磁碟機。例如程式在 C 磁碟機開始, 然後把　　　　
+A 磁碟機定為新的內定磁碟機。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int setdisk(int drive);　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:maxdrives=setdisk(0);　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setdisk 常式使用 DOS 0Eh 常式設定新的內定磁碟機 (由參數 driveno 指定, 0　
+表示 A 磁碟機, 1 表示 B 磁碟機等)。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:DOS 在載入檔案時, 都使用內定磁碟機。可用 setdisk 來指定新的內定磁碟機
+。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:setdisk 常式傳回系統中邏輯磁碟機的總數。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getdisk 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 550 頁　　　　　　　　　　　　　　　　　　
+setdta　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setdta 常式可設定新的磁片轉移區(DTA)。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void setdta(char far *dta);　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:char far my_dta[4096];setdta(my_dta); 　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:DOS 有兩種檔案操作方法。一種是用 DTA 和 FCB 的 CP/M 法。一種是和 UNIX　　
+相容的檔案識別碼法。第 2 種是最流行的, 但第 1 種仍有一些用途,  DOS 仍保留　　　
+有用這種方法的常式。setdta 常式可用來設定一個 DTA (有足夠的空間來裝磁片　　　　
+的資料)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    要用參數 dta 指定此一 DTA 的位址。　　　　　　　　　　　　　　　　　　　　
+基本用法:在作 FCB 磁片操作前, 可先用 setdta 設定一個 DTA 。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:randbrd,getdta　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 551 頁　　　　　　　　　　　　　　　　　　
+setftime　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setftime 常式可改變檔案的時間和日期。你要用到 _open,或 _creat　　　　　　
+傳回來的識別碼。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int setftime(int filehandle,struct ftime *ftimep); 　　　　　　　　　　　
+呼叫法:setftime(handle,&dt_info);　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setftime 常式使用 DOS 57h 常式檔案的時間和日期, 檔案是由識別碼 (參數　　
+filenandle)指定的、時間放在 ftime 結構 (ftimep 參數指定位址)內。　　　　　　　
+    識別碼必需是由 _open 或 _creat 傳回來的。　　　　　　　　　　　　　　　　
+    時間指出檔案最近的修改時間。你必需設定 ftime 這個結構 (並用 ftimep 指定　
+位址)。ftime 在 dos.h 中定義如下:　　　　　　　　　　　　　　　　　　　　　　　
+參看 552 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+ft_year 欄是以 1980 年為起點 (其值為今年減 1980 )。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 0, 有錯誤傳回 -1, 並把 errno 設定為 EBADF (表示識別碼　　　
+無效)或 EINVFNC (表示常式編號錯誤)。　　　　　　　　　　　　　　　　　　　　　
+相關常式:getftime,_creat 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 552 頁　　　　　　　　　　　　　　　　　　
+setswitchar　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:未正式化的 setswitchar 常式設定選擇字元 (放在 DOS 命令選擇前面的字元)。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void setswitchar(char schar);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setswitchar(sw_chr);  　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setswitchar 常式使用未正式宣告的 DOS 37h 常式來設定選擇字元。通常　　　　
+選擇字元為 /。例如 DIR/W 中的 / 即是。可以把此字元設定為 -for 以便和　　　　　
+UNIX 相容。這時可把 / 當路線分隔字元。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:由於未正式公開的 DOS 37h 常式, 因此 setswitchar 也是未正式的。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getswitchar 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 554 頁　　　　　　　　　　　　　　　　　　
+settime　　 　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:settime 常式設定目前系統時間。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void settime(struct time *timep);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:settime(&time_info);　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:settime 常式使用 DOS 的 2Dh 常式來設定目前系統時間。時間的分量 (時, 分,　
+秒等)一定要放入結構 (型別為 time)的適當欄位內。在 C 程式中, 結構宣告如下:　　　
+參看 556 頁 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+你一定要宣告這樣的結構, 設定它的初值, 並用參數 timep 指定結構的位址。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:gettime,dostounix 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 556 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+setvect　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setvect 常式為某一中斷編號指定新的中斷向量(中斷向量是此中斷產生時,　　　　
+要呼叫常式的位址)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void setvect(int intno,void interrupt(*handle) ());　　　　　　　　　　　
+呼叫法:void interrupt our_handler(void);setvect(int_number,our_handler); 　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setvect 常式使用 DOS 的 25h 常式使中斷管制常式 (由參數 handler 指　　　　
+定)的位址成為某一中斷編號 (intno 指定)的中斷向量。管制常式是型別為 interrupt　
+(這是 Turbo C 的保留字, 它可允許用 Turbo C 來設計管制常式,參看第 1 章)。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:這個常式常用來安裝新的中斷管制常式。例如若你為串列埠設計一個中斷　　　
+驅動 I/O 常式, 則可用此 I/O 常式設定新的管制常式來取代原來的常式。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:在安裝新的管制常式前, 先取得中斷向量並保存是必要的, 這樣在　　　　　
+程式結束後, 可還原到原來的狀態。　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getvect 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 557 頁　　　　　　　　　　　　　　　　　　
+setverify　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setverify 常式設定檢查旗號, 告訴 DOS 是否作磁片寫入檢查。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void setverify(int vflag); 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:vflag=setverify();　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:DOS 有一個檢查旗號, 此旗號為 1 時, 則每次對磁片的寫入, 都會作一次　　　　
+讀回, 來檢查是否正確寫入。setverify 使用 DOS 2Eh 常式來設定檢查旗號的值。　　　
+1 表示有檢查, 0 沒有檢查。　　　　　　　　　　　　　　　　　　　　　　　　　　
+    getverify 常式則用來取得檢查旗號的值。也可用 DOS 的 VERIFY 來取得此值。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getverify 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 559 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+sleep　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:sleep 常式可延遲程式執行一段時間。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void sleep(unsigned seconds);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:sleep(5); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:sleep 常式會延遲一段時間。時間由參數 seconds 指定。延遲的精度不超過每秒　
+18.2 次。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:sleep 常式可用來設計展示程式, 每一個展示畫面都延遲一段時間。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:biostime　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 561 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+sound　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:sound 常式使喇叭產生一定頻率的聲音。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void sound(unsigned frequency);　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:sound(440); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:sound 常式 (Turbo C 1.5 開始)控制喇叭發出一定頻率的聲意 (頻率由參數　　　
+frequency 指定)。nosound 常式關掉喇叭。　　　　　　　　　　　　　　　　　　　　
+    如果希望發出一定的時間, 可用 sound 啟動, 再用 sleep 或 delay 拉上一段　　　
+時間。最後用 nosound 結束。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:sound 和 nosound 配合使用, 可控制喇叭的發聲。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:nosound 　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 562 頁　　　　　　　　　　　　　　　　　　
+unixtodos　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:unixtodos 常式把 UNIX 的時間 (GMT 1,1,1970,00:00:00 )轉換成 DOS 的　　　
+時間。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void unixtodos(long time,struct date*d,struct time *t); 　　　　　　　　　
+呼叫法:time(&t_unix);unixtodos(t_unix,&d_dos,&t_dos);　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:UNIX 的時間格式為 (GMT 1,1,1970,00:00:00 )。unixtodos 可把此格式轉換　　　
+ 為 DOS 的格式。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    DOS 的格式傳回結構 date,time 結構內 (位址分別由參數 d,t 指定)。參看　　　　
+getdate,gettime 常式的說明。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:unixtodos 常式可把 time 傳回的 UNIX 時間改變為 DOS 時間。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getdate,setdate 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 563 頁　　　　　　　　　　　　　　　　
+_write　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:_write 常式把緩衝區中的一組位元組寫入檔案的目前位置。在使用 _write　　　　
+前, 要先取得 _open 或 _ocreat 常式傳回的識別碼。DOS 42h 常式可用來改變檔案　　
+的目前位置。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int _write(int filehandle,void *buffer,unsigned writecount); 　　　　　　
+呼叫法:bytes_written=_write(filehandle,pbuf,80);　　　　　　　　　　　　　　　
+含括檔:#include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:_write 常式使用 DOS 40h 常式從記憶體的緩衝區 (由參數 buffer 指定)　　　　
+中送出一組位元組 (數目由參數 writecount 指定)到檔案 (由參數 filehandle　　　　
+指定)。位址是寫入檔案的目前位置, 每作一次寫入, 目前位置就會改變到新位置。　　　
+    識別碼必需是由 _open,_creat 傳回來的。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回寫際寫入的數目。不然傳回 -1, 並把 errno 設定為 EBADF　　　　
+(表示識別碼無效)或 EACCES (表示此一操作不被允許)。　　　　　　　　　　　　　　
+補充說明:read 和 write 常式有相同的能力, 但移植性較高。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:_read,_close　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典上篇第 564 頁　　　　　　　　　　　　　　　　　　
+closegraph　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:closegraph 常式釋放繪圖常式配置的記憶體, 並把螢幕還原到繪圖前的狀態。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 void far closegraph(void); 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:closegraph(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+@　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:closegraph 常式在結束繪圖前, 作清掃的工作。用 initgraph 常式進入繪圖　　
+時, 會配置記憶體來存放字體和驅動程式, 填入時, 也會配置一個緩衝區, closegraph　
+常式會呼叫 _graphfreemem 來釋放這些配置的記憶體, 並使介面卡回到繪圖前的狀態。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在結束繪圖前, 應使用 closegraph 常式來清理環境。　　　　　　　　　　
+補充說明:你可用自己設計的常式來取代 _graphfreemem  (它的工作只是呼叫 free 常式)
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph,restorecrtmode　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 229 頁　　　　　　　　　　　　　　　　　　
+detectgraph　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:detectgraph 常式可找繪圖介面卡的形式, 並取得螢幕和介面卡的最高解析度。　
+語法:void far detectgraph(int far *graphdriver,int far *graphmode); 　　　　　
+呼叫法:detectgraph(&graphdriver,&graphmode); 　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:detectgraph 常式能找出介面卡及螢幕的型式,然後它會找出適用的驅動程式　　　
+及可能的最大解析度模式。找出的結果放在兩個參數  (graphdriver,graphmode)內。　　
+    傳回的結果和表  7.8 中的值比較, 就可知道使用的驅動程式和模式。　　　　　　
+    如果你的電腦上的硬體無法繪圖, detectgraph 會傳回示誤碼 -2。　　　　　　　
+    如果呼叫 initgraph 常式時, 用 DETECT 作參數, 則 initgraph 會自動呼叫　　　
+detectgraph。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在initgraph呼叫 detectgraph 後,它照 detectgraph 傳回的值設定螢幕模式
+。若直接呼叫 detectgraph, 則可自己指定模式, 不必用傳回的模式。　　　　　　　　
+補充說明:在 detectgraph 後, 應叫用 graphresult 常式來檢查錯誤狀況。這樣在進一步
+處理前, 可決定系統是否可以繪圖。　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 230 頁　　　　　　　　　　　　　　　　　　
+getarccoords　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getarccoords 可取得弧終點 (由 arc 常式畫出的)的座標。　　　　　　　　　　
+語法:void far getaccoords(struct arccoordsbyte far *arccoords); 　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:getarccoords(&arc_ends);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getarccoords 常式取得指向結構 (arccorrdstype  型別)的指標 (arcoords)作參
+數, 並把 arc 常式畫出的弧的中心和終點座標傳回。　　　　　　　　　　　　　　　
+    arccoordstype 型別在 graphics.h 中定義如下:　　　　　　　　　　　　　　　
+參看下冊 232 頁 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在弧的後面要接一條線時,可用 getarccoords 取得此弧的終點座標。你可　　
+先畫出此弧, 再用 getarccoords 傳回的終點座標畫線。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:arc 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 232 頁　　　　　　　　　　　　　　　　　　
+getaspectratio　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getaspectratio 常式可取得螢幕的長寬比, 而使圓和方形不會變形。　　　　　　
+語法:void far getaspectratio(int far *xasp,int far *yasp);　　　　　　　　　　
+呼叫法:getaspectratio(&xasp,&yasp); 　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:長寬比是螢幕中像素的長寬比例。在大多數的螢幕上, 像素基本上是垂直　　　　　
+大於水平軸, 而產生橢圓的外形。因此若畫一條有 100 個像素的直線,  則用　　　　　
+水平畫出的比用垂直畫出的來得短些, 而螢幕上的圓看來像橢圓。解決的方法是　　　　
+用長寬比加大水平方向的量。　　　　　　　　　　　　　　　　　　　　　　　　　　
+    getaspectratio 常式傳回像素的長度和寬度 (分別放在 yasp 和 xasp 內)。　　　
+由於比例纔是重點, getaspectratio 總是把 10000 傳回 *yasp 而 *xasp 則少　　　　
+於 10000 (在大部份電腦上, 長度都大於寬度)。只有使用 VGA 的 PS/2 纔有相　　　　
+同的長度和寬度,因此 VGA 後  *xasp 也是 10000。　　　　　　　　　　　　　　　　
+    下面的例子說明你可用 *xasp 和 *yasp 的值來取得正確 的修正量。　　　　　　　
+基本用法:要畫出比例正確的圖, getaspectratio 是少不了的。　　　　　　　　　　　
+補充說明:繪圖常式如 arc,circle 等都自動使用長寬比 (不必另外呼叫 getaspectratio)
+來畫出正確的圖。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:arc,pieslice,rectangle　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 234 頁　　　　　　　　　　　　　　　　　　
+getbkcolor　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getbkcolor 常式可取得目前的背景色　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far getbkcolor(void);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:bcolor=getblcolor(); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getbkcolor 傳回作背景的像素的像素值。傳回值照表 7.12 的定義解釋。　　　
+    setbkcolor 常式可設定目前的背景色。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getbkcolor 常式可在改變背景色以前, 把目前的背景色先保存起來。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getbkcolor 傳回目前背景色的值　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:setblcolor　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 236 頁　　　　　　　　　　　　　　　　
+getcolor　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getcolor 常式取得目前所用的彩色　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far getcolor(void);　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:currentr_color=getcolor();　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getcolor 常式用來取得目前的彩色 (所有的畫線程式都使用此色)。在彩色　　　　
+沒有指定前, 內定的彩色是調色盤中編號最高的彩色。setcolor 常式可設定彩色。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getcolor 取得目前的彩色值並保存起來, 因此必要時, 可回到原來的彩色。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getcolor 傳回目前的彩色編號。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:setcolor　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 237 頁　　　　　　　　　　　　　　　　　　
+getdefaultpalette　　　　　　　　　　　　　　　　　　　　　
+相容性 　　　　　　  TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getdefaultpalette 常式取得繪圖驅動程式設定的調色盤 (驅動程式由 initgraph
+常式載入)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:struct palettetype *far getdefaultpalette(void); 　　　　　　　　　　　　
+呼叫法:p_pal=getdefaultpalette(void);　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getdefaultpalette 傳回指向結構 palettetype 的指標, 此結構含有　　　　　　
+調色盤的資料。結構在 graphics.h 中定義如下:　　　　　　　　　　　　　　　　　　
+參看 240 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+MAXCOLOR 為一常數, 其值為 15。size 欄是調色盤的彩色數目。實際的彩色值放　　　　
+在陣列 colors 內, 編號從 0 到 size-1。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getdefaultpalette 常式可取得預定調色盤,而使 setpalette 常式能　　　　
+用此資料回到原來的狀態。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getdefaultpalette 傳回指向結構 palettetype 的指標, 此結構含有　　　　　
+預定調色盤的資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph,getpalette　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 240 頁　　　　　　　　　　　　　　　　　　
+getdrivername　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　　　　　  TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getdrivername 常式取得目前繪圖驅動程式的名稱 (檔案附名為 .BGI)。　　　　　
+語法:char *far getdrivername(void); 　　　　　　　　　　　　　　　　　　　　　
+呼叫法:printf("Current graphics driver:%s\n",getdrivername()); 　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getdrivername 常式可取得繪圖驅動程式的名稱 (剛載入記憶體的)。例　　　　　
+如在 EGA,VGA 系統中, getdrivername 會傳回 EGAVGA 字串。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getdrivername 傳回一個指標, 此指標指向含有驅動程式名稱的字串。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:呼叫initgraph 時, 若以 DETECT 為參數, 則 initgraph 常式會檢查　　　　
+系統硬體, 並把適當的驅動程式載入記憶體。在 Turbo C 1.5 時, 無法取得　　　　　　
+驅動程式的名稱, 而 Turbo C 2.0 的 getdrivername 常式可取得驅動程式　　　　　　
+名稱。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 239 頁　　　　　　　　　　　　　　　　
+getfillpattern　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getfillpattern 常式可取得定義目前 8*8 花式的 8 個位元組。bar,bar3d,　　　
+fillpoly ,floodfill 等常式都要使用這些資料。參看 setfillpattern 常式的說明。
+語法:void far getfillpattern(char far *pattern);　　　　　　　　　　　　　　　
+呼叫法:getfillpattern(current_pattern);　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getfillpattern 常式取得定義目前 8*8 花式的 8 個位元組。bar,bar3d,　　　　
+fillpoly ,floodfill 等常式都要使用這些資料來填入 (用目前的彩色)。　　　　　　　
+    這些花式的第 1 個位址放在參數 pattern 內傳回。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getfillpattern 可取得並保存使用者定義的花式。在程式結束時, 可照　　　
+此值回到原來的狀態。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:Turbo C 的常式庫有一組預先定義的花式。可用 setfillpattern 常式來　　　
+選其中一種。而 getfillpattern 常式可取得花式的資料。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getfillsettings,setfillstyle　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 242 頁　　　　　　　　　　　　　　　　　　
+getfillsettings　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getfillsettings 常式可找出目前的填入花式和彩色　　　　　　　　　　　　　　
+語法:void far getfillsettings(struct fillsettingstype far *fillinfp); 　　　　
+呼叫法:getfillsettings(&fsettings);　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 繪圖常式庫有 12 個預先定義好的花式 (參看表 7.13)。getfillsettings
+常式把目前的花式和彩色傳回結構 fillsettingtype 內。此結構在 graphics.h 內定義　
+如下:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+struct fillsettingstype{ int pattern;int color;}; 　　　　　　　　　　　　　　
+程式中一定要宣告一個這樣的結構, 並用參數 fillinfo 把結構的位址傳給　　　　　　
+getfillsettings。如果用使用者定義的花式, 則結構中的 pattern 欄其值等於　　　　
+USER_FILL。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:你可用 getfillsettings 來找出是否在使用自定花式。如果你要定　　　　　
+義自己的花式, 則用 getfillpattern 來取得並保存前一個花式, 稍後, 再還原。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式: getfillpattern,setfillstyle　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 243 頁　　　　　　　　　　　　　　　　　　
+getgraphmode　　　　　　　　　　　　　　　　　　　　　
+相容性  　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用 途:getgraphmode  常式可找出目前的繪圖模式 (由 initgraph, 或 setgraphmode　　
+常式設定的)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far getgraphmode(void);　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:g_mode=getgraphmode();　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 的繪圖常式指定一組模式編號給 每一個驅動程式, 例如 CGA 卡的驅動程式
+有 5 個模式 (0-4, 名稱從 CGAC0 -CGAHI , 參看表 7.19)。getgraphmode  可取得　　
+驅動程式目前使用模式的編號。對 CGA 卡而言, 若讓 initgraph 選預設模式, 則此模式
+為 CGAHI (640*200 兩色)。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:如果要用 setgraphmode 常式來設定模式, 可先用 getgraphmode 取得並保存　
+舊模式。而在稍後, 回到原來狀態。　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getgraphmode 傳回目前的模式編號　　　　　　　　　　　　　　　　　　　　
+補充說明:Turbo C 的模式編號和 BIOS 的模式無關。對不同的驅動程式, 相同的編號　　
+也有不同的意義。例如模式 0 在 CGA 為 320*200 模式 (調色盤為 0)而在 Hercules　　
+卡中為 720*348 兩色模式。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getmaxmode,initgraph　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 245 頁　　　　　　　　　　　　　　　　　　
+getlinesettings　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getlinesettings 常式取得目前的線花式 (line,lineto,rectangle,等常式使用的
+)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法: void far getlinesettings(struct linesettingstype far *lineinfo);　　　　
+呼叫法:getlinesettings(&lsetting); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getlinesettings 常式把目前使用的線花式傳回結構 linesettingstype 內　　　
+(其位址由 lineinfo 參數指定)。此結構在 graphics.h 中定義如下:　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 247 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+linestyle 表示預定的花式 (參看表 7.14)。如果 linestyle 等於 USERBIT_LINE　　
+, 則結構中的 upattern 代表一個 16 位元的花式 (line ,lineto 常式在畫直線時　　
+, 就使用此花式)。參看 setlinestyle 的說明。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getlinesettings 常式用來取得和保存目前的花式。稍後可再回到此花式。　
+相關常式:setlinestyle　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 247 頁　　　　　　　　　　　　　　　　　　
+getmaxcolor　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getmaxcolor 常式找出目前繪圖模式中最大可用像素值。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far getmaxcolor(void); 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:max_color=getmaxcolor();　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:繪圖模式中, 最大可能的像素值是彩色總數減 1 , getmaxcolor 即傳回此值。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getmaxcolor 常式可找出有效的彩色範圍。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getmaxcolor 傳回某一繪圖模式最大可能彩色編號。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getbkcolor,getpalette 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 249 頁　　　　　　　　　　　　　　　　　　
+getmaxmode　　　　　　　　　　　　　　　　　　　　　
+相容性 　　　　　　  TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getmaxmode 常式可找出目前驅動程式的最大可用模式編號。此一常式可用在任何　
+驅動程式上, 而 getmoderange 常式只能用在 Borland 公司提供的驅動程式上。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far getmaxmode(void);　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:max_mode=getmaxmode();　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getmaxmode 常式可詢問驅動程式, 並取得設定繪圖模式的最大可用模式編號。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getmaxmode 傳回目前驅動程式可用最大模式編號。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:getmoderange 常式也有類似的功能, 但它只能用在 Borland 的驅動程式。　
+getmaxmode 常式則可用在任何繪圖驅動程式上, 包含自己的驅動程式 (使用 Borland　
+的規定)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getmodename,getmoderange　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 250 頁　　　　　　　　　　　　　　　　　　
+getmaxx　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getmaxx 常式可取得螢幕的最大 x 座標。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far getmaxx(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:xmax=getmaxx(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getmaxx 常式可找出目前驅動程式和模式下最大可能 x 座標。例如 CGA 的　　　
+640*200 模式中, getmaxx 會傳回 639。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getmaxx 和 getmaxy 可提供作比例化及中心化的資料。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getmaxx 傳回目前模式下, 螢幕最大 x 座標。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getmaxy,getx　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 252 頁　　　　　　　　　　　　　　　　　　
+getmaxy　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getmaxy 常式可取得螢幕的最大 y 座標。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far getmaxy(void); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:ymax=getmaxy(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getmaxy 常式可找出目前驅動程式和模式下最大可能 y 座標。例如 CGA 的　　　
+320*200 模式中, getmaxy 會傳回 199。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getmaxx 和 getmaxy 可提供作比例化及中心化的資料。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getmaxy 傳回目前模式下, 螢幕最大 y 座標。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getmaxx,getx,gety 　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 253 頁　　　　　　　　　　　　　　　　　　
+getmodename　　　　　　　　　　　　　　　　
+相容性 　　　　　　　TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getmodename 常式可找出目前驅動程式中繪圖模式的名稱　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:char *far getmodename(int mode_number);　　　　　　　　　　　　　　　　　
+呼叫法:printf("Current mode is :%s\n",getmodename(graphmode)); 　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getmodename 常式可取得一個字串, 此字串含有模式(由 mode_number 指定)的　　
+說明性名稱。mode_number 必需是可用的編號中的一個。你可用  getmaxmode 常式　　　
+來取得可用的最大模式編號。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:你可用這些名稱來建造一個模式清單。模式編號可用 getmoderange (　　　　
+Borland 的驅動程式)或 getmaxmode 來取得。　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getmodename 常式傳回一個字串, 繪圖模式(由 mode_number 指定)的名稱　　　
+放於此字串內。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getmaxmode,getmoderange 　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 254 頁　　　　　　　　　　　　　　　　　　
+********************************
+
+

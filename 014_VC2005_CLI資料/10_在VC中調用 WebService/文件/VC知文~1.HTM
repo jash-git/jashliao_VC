@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.vckbase.com/document/viewdoc/?id=1696 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 在VC中调用 WebService (非托管)</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content="web service,unmanaged,webservice,服务,非托管" name=keywords>
+<META content="web service,unmanaged,webservice,服务,非托管" name=description><LINK 
+href="VC知识库文章 - 在VC中调用 WebService (非托管).files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.3243" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD width="14%" height=78>&nbsp;<IMG height=13 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/vckcom.gif" width=109></TD>
+    <TD align=right width="76%"><A href="http://www.longmai.com.cn/" 
+      target=_blank><IMG height=70 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/longmai.gif" width=195 
+      align=middle border=0></A></TD>
+    <TD vAlign=bottom align=right height=78><IMG height=27 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD colSpan=2><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=1915"><SPAN 
+      class=small><FONT color=black>XML Web 服务</FONT></SPAN></A></TD>
+    <TD class=small align=right width="10%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=49"><SPAN 
+      class=small><FONT color=black>在线杂志 第49期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR><A 
+href="http://www.uipower.com/showjob.asp?jobid=20070730214939" 
+target=_blank><IMG height=116 
+src="VC知识库文章 - 在VC中调用 WebService (非托管).files/uipower2.jpg" width=990 
+border=0></A> <!--br>
+ <script type="text/javascript">
+google_ad_client = "pub-4159669282587342";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "image";
+google_ad_channel = "";
+</script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script--></DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background="VC知识库文章 - 在VC中调用 WebService (非托管).files/dotline2.gif" 
+    height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合高级读者 
+            已阅读3133次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/go.gif" align=absMiddle 
+            border=0 name=imageField> </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><B>在VC中调用 WebService (非托管) <BR></B><BR>作者：<A 
+            href="http://blog.eray.cn/">eRay Jiang</A></P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2968">下载源代码</A><BR><BR>一、使用Visual 
+            Studio.NET调用WebService
+            <P>　　很多次看到网友讨论VC中调用WebService的问题，其实在Visual 
+            Studio.Net（下称VS.NET）及其以后的版本中调用WebService已经变得相当简单。你所要做的只是“找到 
+            WebService的发布地址”，然后将其引用添加到VC项目中即可。接下来VS.NET帮你生成的代理类，会帮你搞定一大堆的麻烦事，包括：网络调用、数据传递等等；什么SOAP啊、网络啊，你都可以不管。<BR>　</P>
+            <P>二、托管还是非托管？</P>
+            <P>　　对于VS.NET生成的C++代理类，很多人都认为必须使用托管代码，其实事实并非这样。VS.NET可以生成托管和非托管两个版本的代理类，至于要不要使用托管，那是你自己的选择。<BR>　　具体地说，对于使用托管的程序，VS.NET会生成基于托管类库的代理类；你可以在生成的代码中找到类的行：public 
+            System::Web::Services::Protocols::SoapHttpClientProtocol。对于不使用托管的程序，VS.NET会生成基于ATL的代码；你可以在生成的代码中找到类似的行：template 
+            &lt;typename TClient = CSoapSocketClientT&lt;&gt; 
+            &gt;。<BR>我想，如果不是确实需要的话，大部份人会选择非托管的方式，因为这起码可以让我们的程序脱离.Net 
+            Framework运行。<BR>　</P>
+            <P>三、动态设置WebService调用地址</P>
+            <P>　　这也是网上讨论得比较多的一个问题，因为WebSercie的地址不可能一成不变，特别是在开发调试的时候。幸运的是，在两种版本的代理类中，都可以非常方便地在运行时设置WebService的地址。（具体做法参见实例）</P>
+            <P>四、程序示例（非托管）</P>
+            <P>　　由于已经有文章详细讲述了 <A 
+            href="http://www.vckbase.com/document/viewdoc/?id=1641" 
+            target=_blank>VC托管程序中调用 WebService 
+            的过程</A>，因此以下示例只描述非托管VC程中调用WebService的方法。</P>
+            <P>１、新建一个非托管的MFC应用程序，注意是非托管的，如下图（图１）</P>
+            <P><IMG 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/unmanagedWebService01.jpg"><BR>图1、建立非托管程序<BR><BR>完成后，查看VC项目属性，可以确认不使用托管</P>
+            <P><IMG 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/unmanagedWebService02.jpg"><BR>图2、查看是否使用托管</P>
+            <P>2、添加WebService引用<BR>在VC项目名称上，单击右键，选择“添加Web引用”。如下图（图3）：</P>
+            <P><IMG 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/unmanagedWebService03.jpg"><BR>图3、添加Web引用</P>
+            <P>在弹出的“添加Web引用”对话框中，填入WebSercie的引用地址， 
+            然后点击“转到按钮”，可以看到WebService的提示页面。</P>
+            <P><IMG 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/unmanagedWebService04.jpg"><BR>图4、“添加Web引用”对话框</P>
+            <P>　　点击页面上的“Service Description” 
+            链接可以看到具体的WebMethod的声明。我的这个WebService示例中，只定义了一个Web方法。该方法接受一个字符串作为用户名，并返回一个字符串作为对用户的问候语。如下图所示：</P>
+            <P><IMG 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/unmanagedWebService05.jpg"><BR>图5、查看WebMethod原型</P>
+            <P>　　在上图中填入“Web引用名”，然后点击“添加引用按钮”。（在非托管版的代理类中，这里填的“Web引用名”将没有任保实质性的作用，所以随便填入一个名字即可。但是在托管版的代理类中，“Web引用名”将成为代量类的命名空间） 
+            。接下来，VS.NET将生成一个WebService的代理类，生成完后，会自动打开WebService.h头文件：</P>
+            <P><IMG 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/unmanagedWebService06.jpg"></P>
+            <P>WebService.h并不是代理类，这个头文件其实是用于包含所有的代理类的头文件，你可以多添加几个“Web引用”试试。</P>
+            <P>3、浏览代理类<BR><BR>　　我们不妨浏览一下生成的代理类，做到有个基本的了解。切换到“类视图”，可以看到一个“Debug”命名空间，全部展开，可以看到生成的代理类的全部成员：</P>
+            <P><IMG 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/unmanagedWebService07.jpg"><BR>图6、浏览生成的代码</P>
+            <P>4、调用示例<BR><BR>首先包含头文件，并打开命名空间 </P><PRE>#include "WebService.h"
+using namespace Debug;	// 这个命名空间是自动生成的，与Web服务的实现有关          </PRE>以下是调用代码 
+<PRE>void CInvokeDemoDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	// 因为生成的代码是基于ATL的，所以要初始化COM
+	CoInitialize(NULL);
+
+	HRESULT hr = S_OK;
+	CComBSTR hiResult;
+	CComBSTR username = "vckBase";
+
+	CDebug* debug = new CDebug;	// 代理对象
+
+	// 可以调用SetUrl动态设置Web服务地址
+	// debug-&gt;SetUrl("http://blog.eray.cn/debug.asmx");
+
+	hr = debug-&gt;Hi(username,&amp;hiResult); //注意，返回值是以指针形式反回的
+
+	if(FAILED(hr))
+	{
+		MessageBox("调用失败");
+	}
+	else
+	{
+		CString str(hiResult);
+		MessageBox(str,"调用结果");
+	}
+
+	delete debug;
+	CoUninitialize();
+}          </PRE>　　由于生成的代理类是基于ATL的，所以在调用前要初始化COM调用。在上述的代码中就使用了CComBSTR而没有直接使用BSTR，因为CComBSTR属于智能类型，可以自己管理内存分配，比较方便。 
+            上述代码中有一行被注释的代码调用了SetUrl来设置WebService的调用地址。在实际的项目中，可以将这个地址写在配置文件中。<BR><BR>5、运行结果<BR><BR>来，看一下吧～
+            <P><IMG 
+            src="VC知识库文章 - 在VC中调用 WebService (非托管).files/unmanagedWebService08.jpg"> 
+            </P>
+            <P>五、结束语</P>
+            <P>　　通过以上示例可以看出，其实在VS.NET中实现非托管的C++调用WebService是相当简单的。当然，在实际的使用过程中，为了程序的徤壮，还需要更多的代码逻辑，比如错误处理等等。</P></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="VC知识库文章 - 在VC中调用 WebService (非托管).files/show_ads.js" 
+type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1696" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1696" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=1696&amp;title=%d4%daVC%d6%d0%b5%f7%d3%c3+WebService+(%b7%c7%cd%d0%b9%dc)" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/rec1.gif" width=9> <A 
+      href="javascript:window.print();"><SPAN 
+  class=small>打印</SPAN></A></TD></TR></TBODY></TABLE>
+<TABLE class=small cellSpacing=1 cellPadding=0 width="98%" bgColor=#ffffff 
+border=0>
+  <TBODY>
+  <TR>
+    <TD bgColor=#ffffff><BR><IMG height=11 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/doc2.gif" width=11 
+      align=absMiddle> 
+      按照您的方法,我调用一个系统自动生成方法,提示调用失败!<BR>我的开发环境是vs.net2005,操作系统是windows&nbsp;&nbsp;&nbsp;server&nbsp;&nbsp;&nbsp;2003<BR>见:::<BR>http://topic.csdn.net/u/20071124/18/aa358561-8720-404c-a1f4-0a9f82ce9f4b.html<BR><BR>望作者不吝赐教!<BR>3ks 
+      ( hn_cs_rengang 发表于 2007-11-28 12:01:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/doc2.gif" width=11 
+      align=absMiddle> 
+      谢谢作者！！<BR>有个问题想请教作者，我生成了WebService，我调用&nbsp;这个WebService&nbsp;时要带端口才行，不带端口就不可以，不知道为什么？如我的WebService&nbsp;是http://localhost:1065/TestWebservice/WebService.asmx<BR>我应用时去掉1065就不可以了。<BR>另答楼上：生成&nbsp;WebService&nbsp;很简单了，跟着向导就可以了。 
+      ( musicfan 发表于 2007-11-7 16:09:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/doc2.gif" width=11 
+      align=absMiddle> 请问，这样做的话，如果我的ie是通过代理访问的，那我的程序访问那个web引用，是不是也要设置代理，在程序中如何做？ 
+      ( cnd 发表于 2006-12-5 10:38:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/doc2.gif" width=11 
+      align=absMiddle> 
+      楼上的，偶那个Web&nbsp;Service的方法就是将那个Helloword稍稍改了一下，相当弱的，木有任何功能。 ( qqonline 发表于 
+      2006-11-7 10:09:00)<BR>&nbsp;<BR><IMG height=11 
+      src="VC知识库文章 - 在VC中调用 WebService (非托管).files/doc2.gif" width=11 
+      align=absMiddle> 
+      谢谢，对我很有帮助。请问楼主能不能提供你示例中用到的&nbsp;WebService&nbsp;端的代码？虽然只有一个&nbsp;Hi()&nbsp;方法，但是我很想看看你是如何生成&nbsp;WebService&nbsp;的。 
+      ( qing3962 发表于 2006-11-1 
+      15:01:00)<BR>&nbsp;<BR>.......................................................<BR><A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1696" 
+      target=_blank><SPAN class=small>More...</SPAN></A> 
+</TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2006 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

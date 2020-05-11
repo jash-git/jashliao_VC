@@ -1,0 +1,490 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0060)http://tech.it168.com/msoft/2007-12-17/200712172242170.shtml -->
+<HTML lang=zh-CN xml:lang="zh-CN" 
+xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>在VC中调用 WebService (非托管) - 技术门户 | ITPUB |</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META http-equiv=content-language content=gb2312>
+<META content="" name=description>
+<META content="在VC中调用 WebService (非托管) - 技术频道| IT168" name=keywords><LINK 
+media=screen href="在VC中调用 WebService (非托管).files/style.css" type=text/css 
+rel=StyleSheet>
+<SCRIPT language=javascript 
+src="在VC中调用 WebService (非托管).files/ycncommon.js"></SCRIPT>
+
+<SCRIPT language=javascript 
+src="在VC中调用 WebService (非托管).files/ycnevent.js"></SCRIPT>
+
+<SCRIPT language=javascript 
+src="在VC中调用 WebService (非托管).files/loginAndEmail.js"></SCRIPT>
+
+<SCRIPT src="在VC中调用 WebService (非托管).files/chkFrom.htm" 
+type=text/javascript></SCRIPT>
+
+<SCRIPT language=javascript src="在VC中调用 WebService (非托管).files/nav.js"></SCRIPT>
+
+<SCRIPT language=javascript 
+src="在VC中调用 WebService (非托管).files/resize.js"></SCRIPT>
+
+<META content="MSHTML 6.00.2900.3314" name=GENERATOR></HEAD>
+<BODY><!-- 信箱 -->
+<DIV class=emailf id=emailf>
+<DIV class=t14>商讯信箱</DIV>
+<FORM action=http://mail.it168.com/mail/login.csp method=post target=_blank>
+<DIV>用户名：<INPUT class=inp11 size=6 name=user> @ <SELECT style="WIDTH: 100px" 
+name=host> <OPTION selected>vip.it168.com</OPTION> 
+  <OPTION>free.it168.com</OPTION> <OPTION>udc.it168.com</OPTION> 
+  <OPTION>staff.it168.com</OPTION> <OPTION>it168.com</OPTION></SELECT> <IMG 
+id=emailfClose src="在VC中调用 WebService (非托管).files/close.gif"> </DIV>
+<DIV>密&nbsp;&nbsp;码：<INPUT class=inp11 type=password size=10 
+name=pass>&nbsp;&nbsp;&nbsp;<A href="http://register.it168.com/xieyi.asp" 
+target=_blank>注册</A>|<A href="http://register.it168.com/backpwd.asp" 
+target=_blank>忘记密码</A></DIV>
+<DIV style="WIDTH: 100%; TEXT-ALIGN: center"><INPUT type=image 
+src="在VC中调用 WebService (非托管).files/dlbut2.gif" 
+align=absMiddle></DIV></FORM></DIV>
+<DIV class=loginf id=loginf style="Z-INDEX: 2000">
+<DIV class=t15>登录</DIV>
+<DIV class=loginb><A class=dl1 id=personT href="javascript:void(0);">个人用户</A><A 
+class=dl01 id=corpT href="javascript:void(0);">经销商</A><IMG id=loginfClose 
+style="FLOAT: right" src="在VC中调用 WebService (非托管).files/close.gif"></DIV>
+<DIV class=lbg id=login_con></DIV>
+<DIV id=person_login_con style="DISPLAY: none">
+<FORM action=http://sso.it168.com/sso/login.do?cmd=0 method=post target=_blank>
+<DIV>用户名：<INPUT class=inp11 size=10 name=login_name> <INPUT type=image alt=登录 
+src="在VC中调用 WebService (非托管).files/dlbut2.gif" align=absMiddle></DIV>
+<DIV>密&nbsp;&nbsp;码：<INPUT class=inp11 type=password size=10 
+name=password>&nbsp;<A href="http://sso.it168.com/sso/reg_term.jsp">注册</A>|<A 
+href="http://sso.it168.com/sso/forgetPassword.jsp">忘记密码</A></DIV>
+<DIV>验证码：<INPUT class=inp11 size=6 name=rand><SPAN id=yanzhenImg><IMG id=yzimg 
+src="在VC中调用 WebService (非托管).files/Image.gif" align=absMiddle 
+border=0></SPAN><INPUT type=hidden name=return_url> <A 
+href="javascript:ReloadCheckCode();">看不清？</A></DIV><IFRAME id=zxj4 
+style="Z-INDEX: -1; LEFT: 10px; VISIBILITY: inherit; WIDTH: 254px; POSITION: absolute; TOP: 35px; HEIGHT: 110px" 
+src="javascript:void(0)" frameBorder=0></IFRAME><!-- 登陆 --></FORM></DIV>
+<DIV id=corp_login_con style="DISPLAY: none">
+<FORM action=http://business.it168.com/loginFromOther.aspx method=post 
+target=_blank><BR>
+<DIV>用户名：<INPUT class=inp11 size=10 name=username> <INPUT type=image alt=登录 
+src="在VC中调用 WebService (非托管).files/dlbut2.gif" align=absMiddle></DIV>
+<DIV>密&nbsp;&nbsp;码：<INPUT class=inp11 type=password size=10 name=pwd>&nbsp;<A 
+href="http://business.it168.com/register.asp">注册</A>|<A 
+href="http://business.it168.com/getpwd.asp">忘记密码</A></DIV><BR><IFRAME id=zxj4 
+style="Z-INDEX: -1; LEFT: 10px; VISIBILITY: inherit; WIDTH: 254px; POSITION: absolute; TOP: 35px; HEIGHT: 110px" 
+src="javascript:void(0)" frameBorder=0></IFRAME></FORM></DIV></DIV>
+<SCRIPT language=JavaScript>
+            function ReloadCheckCode(){ 
+                var CodeArea=document.getElementById("yanzhenImg"); 
+                var rnum=RndNum(10); 
+                CodeArea.innerHTML="<IMG id=\"yzimg\" alt=\"\" align=\"absmiddle\" src=\"http://sso.it168.com/sso/Image?random="+ rnum +"\" />"; 
+             } 
+		
+            function RndNum(n){ 
+                var rnd=""; 
+                for(var i=0;i<n;i++)
+                     rnd+=Math.floor(Math.random()*10);
+                return rnd;
+            }
+
+init_loginTab();
+</SCRIPT>
+
+<DIV id=tl><!--ADV|顶通--><SPAN id=ADV_TOPTL></SPAN><!--ADV|顶通--><!--ADV|通栏-->
+<DIV id=ADV_TL>
+<DIV class=divad_clear></DIV></DIV><!--ADV|通栏--></DIV>
+<DIV class=c_rim2><!-- 导航 -->
+<STYLE>#header {
+	MARGIN: 0px auto; WIDTH: 980px
+}
+#header .right {
+	PADDING-RIGHT: 5px; PADDING-LEFT: 15px; BACKGROUND: url(/images2007/bg01.gif) no-repeat; PADDING-BOTTOM: 0px; WIDTH: 812px; PADDING-TOP: 3px; HEIGHT: 75px
+}
+.logon {
+	CLEAR: both; WIDTH: 100%; HEIGHT: 23px
+}
+.logon LI {
+	FLOAT: left
+}
+.logon LI.one {
+	PADDING-LEFT: 14px; BACKGROUND: url(/images2007/icon03.gif) no-repeat left 50%; MARGIN-RIGHT: 10px; PADDING-TOP: 6px
+}
+.logon LI.two {
+	PADDING-LEFT: 19px; BACKGROUND: url(/images2007/icon04.gif) no-repeat left 50%; PADDING-TOP: 6px
+}
+.logon LI A {
+	COLOR: #0010e6
+}
+.logon LI.three {
+	PADDING-LEFT: 15px; BACKGROUND: url(/images2007/it-04.jpg) no-repeat left 50%; FLOAT: right; PADDING-TOP: 5px
+}
+.logon LI.three A {
+	COLOR: #195381
+}
+.nav {
+	WORD-SPACING: 6px; COLOR: #000; PADDING-TOP: 4px; HEIGHT: 18px
+}
+.nav A {
+	COLOR: #000
+}
+.nav A.here {
+	COLOR: #f00
+}
+.subNav {
+	WORD-SPACING: 6px; COLOR: #f4f8fc; PADDING-TOP: 6px
+}
+.subNav A {
+	COLOR: #f4f8fc
+}
+</STYLE>
+
+<DIV id=header><A href="http://www.itpub.net/" target=_blank><IMG class=left 
+height=78 src="在VC中调用 WebService (非托管).files/logo.gif" width=148 border=0></A> 
+<DIV class=right>
+<UL class=logon>
+  <LI class=one><A 
+  href="http://sso.itpub.net/Login?return_url=http://www.itpub.net/list.html">登录</A> 
+  </LI>
+  <LI class=two><A href="http://sso.itpub.net/Register">注册</A> </LI>
+  <LI class=three><A href="http://publish.itpub.net/">返回首页</A> </LI></UL>
+<DIV class=clear></DIV>
+<DIV class=nav><A href="http://publish.itpub.net/" target=_blank>门户</A> | <A 
+href="http://www.itpub.net/list.html">论坛</A> | <A 
+href="http://weblog.itpub.net/" target=_blank>Blog</A> |<A 
+href="http://publish.itpub.net/more/1211_1.shtml" target=_blank>新闻</A> | <A 
+href="http://publish.itpub.net/more/1214_1.shtml" target=_blank>文档</A> | <A 
+href="http://publish.itpub.net/tagsearch.aspx" target=_blank>Tag</A> | <A 
+href="http://tech.it168.com/msoft/2007-12-17/resource.shtml" 
+target=_blank>下载</A> | <A 
+href="http://publish.itpub.net/KnowledgeBase/default.aspx" target=_blank>搜索</A> 
+| <A href="http://edu.itpub.net/" target=_blank>培训</A> | <A 
+href="http://wiki.itpub.net/" target=_blank>WiKi</A> | <A 
+href="http://www.ixpub.net/" target=_blank>IXPUB</A> | <A 
+href="http://publish.itpub.net/tougao/" target=_blank>投稿</A> | <A 
+href="http://publish.itpub.net/zt/tech-zt/index.html" target=_blank>专题</A> 
+</DIV>
+<DIV class=subNav>频道: <A href="http://publish.itpub.net/oracle.shtm" 
+target=_blank>Oracle</A> | <A href="http://publish.itpub.net/DB2.shtm" 
+target=_blank>DB2</A> | <A 
+href="http://publish.itpub.net/database/sqlserver.shtml" target=_blank>SQL 
+Server</A> | <A href="http://publish.itpub.net/erp.aspx" target=_blank>ERP</A> | 
+<A href="http://publish.itpub.net/scm.aspx" target=_blank>SCM</A> | <A 
+href="http://publish.itpub.net/java.shtm" target=_blank>Java</A> | <A 
+href="http://publish.itpub.net/Microsoft.shtm" target=_blank>微软技术</A> | <A 
+href="http://publish.itpub.net/opensource.shtm" target=_blank>开源</A> | <A 
+href="http://publish.itpub.net/manage.shtm" target=_blank>项目管理</A> | <A 
+href="http://publish.itpub.net/soa.shtm" target=_blank>SOA</A> | <A 
+href="http://publish.itpub.net/bi.shtm" target=_blank>商业智能</A> |<A 
+href="http://www.itpub.net/ibm/" target=_blank>IBM软件技术</A> </DIV></DIV>
+<DIV class=clear></DIV></DIV><!-- 当前位置 -->
+<DIV class=top02>
+<DIV class=dqwz>您的位置：<A href="http://www.it168.com/">首页</A> &gt; <A 
+href="http://tech.it168.com/">技术频道</A> &gt; 正文</DIV></DIV></DIV><!-- 内容开始 -->
+<DIV class=w_rim><!-- left -->
+<DIV class=l1><!-- 广告 --><!--ADV|标题通栏-->
+<DIV id=ADV_BTTL>
+<DIV class=divad_clear></DIV></DIV><!--ADV|标题通栏--><!--ADV|文字链接-->
+<DIV id=ADVTXT><SPAN id=ADV_TXT1></SPAN><SPAN id=ADV_TXT2></SPAN>
+<DIV class=divad_clear></DIV></DIV><!--ADV|文字链接-->
+<DIV class=w_c1>
+<DIV class=w_t1>
+<DIV class=w_c2>
+<DIV class="l2 f16">
+<H1>在VC中调用 WebService (非托管)</H1></DIV>
+<DIV class="r2 top8">[<A 
+href="javascript:d=document;t=d.selection?(d.selection.type!='None'?d.selection.createRange().text:''):(d.getSelection?d.getSelection():'');void(keyit=window.open('http://www.365key.com/storeit.aspx?t='+escape(d.title)+'&amp;u='+escape(d.location.href)+'&amp;c='+escape(t),'keyit','scrollbars=no,width=475,height=575,left=75,top=20,status=no,resizable=yes'));keyit.focus();">收藏此页</A>] 
+[<A href="javascript:window.print();">打印</A>]</DIV></DIV>
+<DIV class=top11></DIV>
+<DIV class=w_c2>
+<DIV class=l2>作者：<B class=red>佚名</B>&nbsp;&nbsp;2007-12-18 <B 
+id=AbortBBS></B></DIV>
+<DIV class=r2>
+<DIV><B>内容导航：</B></DIV><A class=sel id=Nav1 href="javascript:;">在VC中调用 
+WebService (非托... </A>
+<DIV class=pp>
+<DIV class=p id=Nav1Menu><A class=hov1 title="在VC中调用 WebService (非托管) " 
+href="http://tech.it168.com/msoft/2007-12-17/200712172242170.shtml">第1页：<SPAN> 
+在VC中调用 WebService (非托管) </SPAN></A></DIV></DIV></DIV>
+<SCRIPT>init_Nav();</SCRIPT>
+</DIV></DIV>
+<DIV class=memo>
+<DIV id=1><FONT size=2><BR><BR>【IT168 技术文档】<BR><BR>一、使用Visual 
+Studio.NET调用WebService </FONT>
+<P><FONT size=2>　　很多次看到网友讨论VC中调用WebService的问题，其实在Visual 
+Studio.Net（下称VS.NET）及其以后的版本中调用WebService已经变得相当简单。你所要做的只是“找到 
+WebService的发布地址”，然后将其引用添加到VC项目中即可。接下来VS.NET帮你生成的代理类，会帮你搞定一大堆的麻烦事，包括：网络调用、数据传递等等；什么SOAP啊、网络啊，你都可以不管。<BR>　</FONT></P>
+<P><FONT size=2>二、托管还是非托管？</FONT></P>
+<P><FONT 
+size=2>　　对于VS.NET生成的C++代理类，很多人都认为必须使用托管代码，其实事实并非这样。VS.NET可以生成托管和非托管两个版本的代理类，至于要不要使用托管，那是你自己的选择。<BR>　　具体地说，对于使用托管的程序，VS.NET会生成基于托管类库的代理类；你可以在生成的代码中找到类的行：public 
+System::Web::Services::Protocols::SoapHttpClientProtocol。对于不使用托管的程序，VS.NET会生成基于ATL的代码；你可以在生成的代码中找到类似的行：template 
+&lt;typename TClient = CSoapSocketClientT&lt;&gt; 
+&gt;。<BR>我想，如果不是确实需要的话，大部份人会选择非托管的方式，因为这起码可以让我们的程序脱离.Net 
+Framework运行。<BR>　</FONT></P>
+<P><FONT size=2>三、动态设置WebService调用地址</FONT></P>
+<P><FONT 
+size=2>　　这也是网上讨论得比较多的一个问题，因为WebSercie的地址不可能一成不变，特别是在开发调试的时候。幸运的是，在两种版本的代理类中，都可以非常方便地在运行时设置WebService的地址。（具体做法参见实例）</FONT></P>
+<P><FONT size=2>四、程序示例（非托管）</FONT></P>
+<P><FONT size=2>　　由于已经有文章详细讲述了 </FONT><A 
+href="http://www.vckbase.com/document/viewdoc/?id=1641" target=_blank><FONT 
+size=2>VC托管程序中调用 WebService 的过程</FONT></A><FONT 
+size=2>，因此以下示例只描述非托管VC程中调用WebService的方法。</FONT></P>
+<P><FONT size=2>１、新建一个非托管的MFC应用程序，注意是非托管的，如下图（图１）<BR><IMG height=338 alt="" 
+src="在VC中调用 WebService (非托管).files/20071217221434.jpg" 
+width=531><BR><BR>图1、建立非托管程序<BR><BR>完成后，查看VC项目属性，可以确认不使用托管<BR><BR><IMG alt="" 
+src="在VC中调用 WebService (非托管).files/2007121722817.jpg"><BR><BR>图2、查看是否使用托管</FONT></P>
+<P><FONT 
+size=2>2、添加WebService引用<BR>在VC项目名称上，单击右键，选择“添加Web引用”。如下图（图3）：<BR><BR><IMG 
+height=433 alt="" src="在VC中调用 WebService (非托管).files/2007121722844.jpg" 
+width=299><BR><BR>图3、添加Web引用</FONT></P>
+<P><FONT size=2>在弹出的“添加Web引用”对话框中，填入WebSercie的引用地址， 
+然后点击“转到按钮”，可以看到WebService的提示页面。<BR><BR><IMG style="WIDTH: 600px; HEIGHT: 396px" 
+height=456 alt="" src="在VC中调用 WebService (非托管).files/2007121722912.jpg" 
+width=701><BR><BR>图4、“添加Web引用”对话框</FONT></P>
+<P><FONT size=2>　　点击页面上的“Service Description” 
+链接可以看到具体的WebMethod的声明。我的这个WebService示例中，只定义了一个Web方法。该方法接受一个字符串作为用户名，并返回一个字符串作为对用户的问候语。如下图所示：<BR><BR><IMG 
+style="WIDTH: 541px; HEIGHT: 381px" height=456 alt="" 
+src="在VC中调用 WebService (非托管).files/2007121722954.jpg" 
+width=701><BR><BR>图5、查看WebMethod原型</FONT></P>
+<P><FONT 
+size=2>　　在上图中填入“Web引用名”，然后点击“添加引用按钮”。（在非托管版的代理类中，这里填的“Web引用名”将没有任保实质性的作用，所以随便填入一个名字即可。但是在托管版的代理类中，“Web引用名”将成为代量类的命名空间） 
+。接下来，VS.NET将生成一个WebService的代理类，生成完后，会自动打开WebService.h头文件：<BR><BR><IMG height=121 
+alt="" src="在VC中调用 WebService (非托管).files/20071217221030.jpg" 
+width=391><BR><BR></FONT></P>
+<P><FONT 
+size=2>WebService.h并不是代理类，这个头文件其实是用于包含所有的代理类的头文件，你可以多添加几个“Web引用”试试。</FONT></P>
+<P><FONT 
+size=2>3、浏览代理类<BR><BR>　　我们不妨浏览一下生成的代理类，做到有个基本的了解。切换到“类视图”，可以看到一个“Debug”命名空间，全部展开，可以看到生成的代理类的全部成员：<BR><BR><IMG 
+height=480 alt="" src="在VC中调用 WebService (非托管).files/20071217221125.jpg" 
+width=544><BR><BR>图6、浏览生成的代码</FONT></P>
+<P><FONT size=2>4、调用示例<BR><BR>首先包含头文件，并打开命名空间 </FONT></P><PRE><FONT size=2>#include "WebService.h"
+using namespace Debug;	// 这个命名空间是自动生成的，与Web服务的实现有关          </FONT></PRE></DIV>
+<P><FONT size=2>以下是调用代码 </FONT></P><PRE><FONT size=2>void CInvokeDemoDlg::OnBnClickedButton1()
+{
+// TODO: 在此添加控件通知处理程序代码
+// 因为生成的代码是基于ATL的，所以要初始化COM
+CoInitialize(NULL);
+HRESULT hr = S_OK;
+CComBSTR hiResult;
+CComBSTR username = "vckBase";
+CDebug* debug = new CDebug;	// 代理对象
+// 可以调用SetUrl动态设置Web服务地址
+// debug-&gt;SetUrl("http://blog.eray.cn/debug.asmx");
+hr = debug-&gt;Hi(username,&amp;hiResult); //注意，返回值是以指针形式反回的
+if(FAILED(hr))
+{
+MessageBox("调用失败");
+}
+else
+{
+CString str(hiResult);
+MessageBox(str,"调用结果");
+}
+delete debug;
+CoUninitialize();
+}          </FONT></PRE></DIV>
+<P><FONT 
+size=2>　　由于生成的代理类是基于ATL的，所以在调用前要初始化COM调用。在上述的代码中就使用了CComBSTR而没有直接使用BSTR，因为CComBSTR属于智能类型，可以自己管理内存分配，比较方便。 
+上述代码中有一行被注释的代码调用了SetUrl来设置WebService的调用地址。在实际的项目中，可以将这个地址写在配置文件中。<BR><BR>5、运行结果<BR><BR>来，看一下吧～<BR><BR><IMG 
+height=380 alt="" src="在VC中调用 WebService (非托管).files/20071217221213.jpg" 
+width=569><BR><BR></FONT></P>
+<P><FONT size=2>五、结束语</FONT></P>
+<P><FONT 
+size=2>　　通过以上示例可以看出，其实在VS.NET中实现非托管的C++调用WebService是相当简单的。当然，在实际的使用过程中，为了程序的徤壮，还需要更多的代码逻辑，比如错误处理等等。</FONT></P></DIV>
+<DIV id=ParagraphCount style="DISPLAY: none">1</DIV></DIV>
+<DIV class="w_c2 top12">
+<DIV class="l2 r" style="FLOAT: right"><IMG height=23 alt="" 
+src="在VC中调用 WebService (非托管).files/new_54.gif" width=63 align=absMiddle> <SPAN 
+class=f14><A 
+href="http://tech.it168.com/msoft/2007-12-17/200712172242170.shtml"><B>1</B></A> 
+</SPAN><IMG height=23 alt="" src="在VC中调用 WebService (非托管).files/new_56.gif" 
+width=63 align=absMiddle> </DIV></DIV>
+<DIV class=contdh>
+<DIV class=c2>【内容导航】 
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD>第1页：<B> <A title="在VC中调用 WebService (非托管) " 
+      href="http://tech.it168.com/msoft/2007-12-17/200712172242170.shtml">在VC中调用 
+      WebService (非托管) </A></B></TD></TR></TBODY></TABLE></DIV></DIV>
+<DIV class="w_c2 top12">
+<DIV class=l2>&copy;版权所有。未经许可，不得转载。</DIV>
+<DIV class="r2 r">[责任编辑：<B class=bl><A 
+href="http://paimai.it168.com/gzmailbox/input.asp?sendto=李宁" 
+target=_blank>李宁</A></B>] </DIV></DIV><!-- 网友点评 -->
+<DIV id=iframetd1><IFRAME id=myiframe1 border=0 align=center marginWidth=0 
+marginHeight=0 src="在VC中调用 WebService (非托管).files/Article_new.htm" 
+frameBorder=no noResize width="100%" scrolling=no height="100%"></IFRAME></DIV>
+<SCRIPT language=javascript>
+function resetIframeHeight(){
+try{
+var str=window.clipboardData.getData('text');
+var obj=document.getElementById('iframetd1');
+if(str.match(/^frameHeight=\d+$/)){
+obj.style.height=parseInt(str.match(/\d+/))+'px';
+window.clipboardData.setData('text','null');
+}
+}catch(e){}
+setTimeout(resetIframeHeight,100);
+}
+resetIframeHeight();
+</SCRIPT>
+<!--ADV|底通栏-->
+<DIV id=ADV_DTL>
+<DIV class=divad_clear></DIV></DIV><!--ADV|底通栏-->
+<DIV class=bai><!-- 相关文章 --><!-- 相关论坛贴 -->
+<DIV class=top12></DIV>
+<DIV class=pl><SPAN><A href="http://www.itpub.net/" 
+target=_blank>进入论坛&gt;&gt;</A></SPAN>相关论坛贴</DIV>
+<DIV class=li>
+<UL>
+  <LI><A title="求SAP Console相关资料" 
+  href="http://www.itpub.net/thread-1001031-1-1.html" target=_blank>求SAP 
+  Console相关资料</A> </LI>
+  <LI><A title="请问在ABAP里有没有FULL OUTER JOIN 这条语句." 
+  href="http://www.itpub.net/thread-1000299-1-1.html" 
+  target=_blank>请问在ABAP里有没有FULL OUTER JOIN 这条语句.</A> </LI>
+  <LI><A title=如何使用BAPI调用SAP报表 
+  href="http://www.itpub.net/thread-1000813-1-1.html" 
+  target=_blank>如何使用BAPI调用SAP报表</A> </LI>
+  <LI><A title=懂DMS的请进 href="http://www.itpub.net/thread-1000762-1-1.html" 
+  target=_blank>懂DMS的请进</A> </LI>
+  <LI><A title=求助：内部订单问题 href="http://www.itpub.net/thread-1000721-1-1.html" 
+  target=_blank>求助：内部订单问题</A> </LI>
+  <LI><A title=关于在屏幕中隐藏子屏幕的问题~ 
+  href="http://www.itpub.net/thread-1000443-1-1.html" 
+  target=_blank>关于在屏幕中隐藏子屏幕的问题~</A> </LI></UL></DIV><!-- 精彩友情推荐 --></DIV></DIV>
+<DIV></DIV><!-- right -->
+<DIV class=r1><!--ADV|画中画-->
+<DIV id=ADV_HZH>
+<DIV class=divad_clear></DIV></DIV><!--ADV|画中画-->
+<DIV class=tj>
+<DIV class=l3>专题推荐</DIV>
+<DIV class=r3>·<A title=拥抱多核计算，提升软件性能 
+href="http://publish.itpub.net/zt/multicpu/index.html" 
+target=_blank>拥抱多核计算，提升软件性能</A><BR>·<A title=移动操作系统之世上最强：Symbian 
+href="http://tech.it168.com/zt/symbian/index.html" 
+target=_blank>移动操作系统之世上最强：Symbian</A><BR>·<A title=AJAX技术学习专题 
+href="http://publish.itpub.net/zt/ajax/index.html" 
+target=_blank>AJAX技术学习专题</A><BR>·<A title="SQL Server 2005/2008技术专题" 
+href="http://tech.it168.com/zt/sql2005/index.html" target=_blank>SQL Server 
+2005/2008技术专题</A><BR>·<A title=项目管理的艺术 
+href="http://tech.it168.com/zt/project/index.html" 
+target=_blank>项目管理的艺术</A><BR>·<A title=Tomcat技术学习专题 
+href="http://tech.it168.com/zt/tomcat/index.html" 
+target=_blank>Tomcat技术学习专题</A><BR>·<A title=Google+开源＝？？ 
+href="http://publish.itpub.net/zt/google/index.html" 
+target=_blank>Google+开源＝？？</A><BR>·<A title=SOA企业应用新专题 
+href="http://publish.itpub.net/zt/newsoa/index.html" 
+target=_blank>SOA企业应用新专题</A><BR></DIV></DIV><!--ADV|立柱1-->
+<DIV id=ADV_LZ1>
+<DIV class=divad_clear></DIV></DIV><!--ADV|立柱1--><!-- 热点文章排行 -->
+<DIV class=top8></DIV>
+<DIV class=p2>
+<DIV class=p2t>热点文章排行</DIV>
+<UL>
+  <LI class=li001><A title=微软企图跨越开源的鸿沟？ 
+  href="http://tech.it168.com/msoft/2008-04-08/200804081900044.shtml" 
+  target=_blank>微软企图跨越开源的鸿沟？</A> </LI>
+  <LI class=li002><A title="决战RIA 谷歌微软谁得Adobe相助?" 
+  href="http://tech.it168.com/msoft/2008-04-01/200804011625839.shtml" 
+  target=_blank>决战RIA 谷歌微软谁得Adobe相助?</A> </LI>
+  <LI class=li003><A title="走向标准 微软欲借IE 8取悦Web开发者？ " 
+  href="http://tech.it168.com/msoft/2008-03-26/200803260038276.shtml" 
+  target=_blank>走向标准 微软欲借IE 8取悦Web开发者？ </A></LI>
+  <LI class=li004><A title="从开发者角度分析微软Vista SP1的变化 " 
+  href="http://tech.it168.com/msoft/2008-03-25/200803251043651.shtml" 
+  target=_blank>从开发者角度分析微软Vista SP1的变化 </A></LI>
+  <LI class=li005><A title="改变形象 微软欲变身敏捷开发典范？ " 
+  href="http://tech.it168.com/msoft/2008-03-18/200803182131853.shtml" 
+  target=_blank>改变形象 微软欲变身敏捷开发典范？ </A></LI>
+  <LI class=li006><A title=专访潘海东：WIKI模式协作产生价值 
+  href="http://tech.it168.com/o/2008-04-02/200804021619651.shtml" 
+  target=_blank>专访潘海东：WIKI模式协作产生价值</A> </LI>
+  <LI class=li007><A title="化干戈为玉帛 微软与Sun携手互通" 
+  href="http://tech.it168.com/j/2008-03-31/200803311641448.shtml" 
+  target=_blank>化干戈为玉帛 微软与Sun携手互通</A> </LI>
+  <LI class=li008><A title="耿增强：三驾马车 驱动红旗Linux" 
+  href="http://tech.it168.com/o/2008-04-10/200804100924698.shtml" 
+  target=_blank>耿增强：三驾马车 驱动红旗Linux</A> </LI>
+  <LI class=li009><A title="从玩具到游戏 看另类项目激励机制" 
+  href="http://tech.it168.com/m/2008-04-14/200804140921137.shtml" 
+  target=_blank>从玩具到游戏 看另类项目激励机制</A> </LI>
+  <LI class=li010><A title=一个糟糕的SOA应用不如不用？ 
+  href="http://tech.it168.com/soa/2008-04-10/200804100909417.shtml" 
+  target=_blank>一个糟糕的SOA应用不如不用？</A> </LI></UL></DIV><!--ADV|立柱2-->
+<DIV id=ADV_LZ2>
+<DIV class=divad_clear></DIV></DIV><!--ADV|立柱2--><!--ADV|供应商-->
+<DIV id=ADV_GYS>
+<DIV class=divad_clear></DIV></DIV><!--ADV|供应商--><!--ADV|立柱3-->
+<DIV id=ADV_LZ3>
+<DIV class=divad_clear></DIV></DIV><!--ADV|立柱3--><!-- 近期热评文章 -->
+<DIV id=iframetd2><IFRAME id=myiframe2 border=0 align=center marginWidth=0 
+marginHeight=0 src="在VC中调用 WebService (非托管).files/tech_article_new.htm" 
+frameBorder=no noResize width="100%" scrolling=no height=280></IFRAME></DIV><!--ADV|立柱4-->
+<DIV id=ADV_LZ4>
+<DIV class=divad_clear></DIV></DIV><!--ADV|立柱4--><!--ADV|立柱5-->
+<DIV id=ADV_LZ5>
+<DIV class=divad_clear></DIV></DIV><!--ADV|立柱5--></DIV>
+<DIV></DIV>
+<DIV></DIV><!-- 内容结束 -->
+<DIV class=line1></DIV><!-- foot -->
+<DIV class=top8></DIV>
+<DIV class=btm>
+<UL class=btmlink>
+  <LI class=copytxt>CopyRight 1999-2006 itpub.net All Right 
+  Reserved.&nbsp;&nbsp;&nbsp;&nbsp;E-mail:Webmaster@itpub.net 
+  <LI class=copytxt>北京皓辰广域网络信息技术有限公司.&nbsp;版权所有&nbsp;&nbsp;&nbsp;&nbsp;<A 
+  href="http://www.miibeian.gov.cn/" 
+  target=_blank>京ICP证:010037号</A>&nbsp;&nbsp;&nbsp;<A 
+  href="http://www.itpub.net/contactus.php" 
+  target=_blank>联系我们</A>&nbsp;&nbsp;&nbsp;<A 
+  href="http://www.itpub.net/flgw.php" target=_blank>法律顾问</A><IMG height=1 
+  src="在VC中调用 WebService (非托管).files/itpub.gif" width=1 border=0><IMG height=1 
+  src="C:\Documents and Settings\MAX\桌面\VC_WebService\在VC中调用 WebService (非托管).files\itpub(1).gif" 
+  width=1 border=0> </LI></UL><A class=border1 
+href="http://www.bj.cyberpolice.cn/alarm/alarm.htm" target=_blank><IMG height=47 
+src="在VC中调用 WebService (非托管).files/police.jpg" width=118 border=0></A> <A 
+class=border1 
+href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202006092100005" 
+target=_blank><IMG height=48 src="在VC中调用 WebService (非托管).files/hd315.gif" 
+width=40 border=0></A></DIV><!--Publish AD START-->
+<SCRIPT src="在VC中调用 WebService (非托管).files/advs_publish_v3.js" 
+type=text/javascript></SCRIPT>
+
+<SCRIPT src="在VC中调用 WebService (非托管).files/advtmp_v1.js" 
+type=text/javascript></SCRIPT>
+
+<SCRIPT type=text/javascript>
+var adv_c="publish"//信息化专区文章页
+var adv_date="2007-03-19"
+var adv_debug="0";
+//$import("/cad/v07_adv_js_idlist.js","js")
+//$import("/cad/v07_adv_js_public.js","js")
+//$import("/cad/v07_adv_js_gys.js","js")
+</SCRIPT>
+<INPUT id=revurl type=hidden name=revurl>
+<SCRIPT type=text/javascript>
+firsturl=document.referrer;
+//firsturl="ublish.itpub.net/";
+var objxx=document.getElementById("revurl");
+objxx.value=firsturl;
+
+//暂时广告添加
+ADV_HZH.innerHTML="<div id=46059><div style='position:absolute; z-index:2; width:300; height: 250'><a href='http://adshow.it168.com/manager/files/icount.asp?cid=46059&cUrl=http://mccannafa7.allyes.com/main/adfclick?user=MccannAfa7|fy08emt_it168|IT168_Tech_Articlepage_PIP300x250_25k&db=mccannafa7&log=on&ip=59.151.56.230&bid=22123&cid=1258765&sid=21299&kv=&exp1=-157553955&exp2=6297814374&cache=561833&url=http://e.chinabyte.com/winserver/' target=_blank><img border=0 width=300 height=250  src='http://adshow.it168.com/newImage/23.gif'></a></div><OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://active.macromedia.com/flash2/cabs/swflash.cab#version=4,0,0,0' WIDTH=300 HEIGHT=250> <PARAM NAME=movie VALUE='http://adshow.it168.com/newImage/20080526/ad_17376.swf'> <PARAM NAME=quality VALUE=high> <PARAM NAME=wmode VALUE=transparent>  <EMBED src='http://adshow.it168.com/newImage/20080526/ad_17376.swf' TYPE='application/x-shockwave-flash'  PLUGINSPAGE='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwavFlash' wmode='transparent'  WIDTH=300 HEIGHT=250></EMBED></OBJECT></div>"
+
+ADV_LZ1.innerHTML="<div id=43514><div style='position:absolute; z-index:2; width:300; height: 240'><a href='http://adshow.it168.com/manager/files/icount.asp?cid=43514&cUrl=http://mccannafa7.allyes.com/main/adfclick?user=MccannAfa7|fy08sql_it168|it168_TechnologyArticle_PIP_bonus&db=mccannafa7&log=on&ip=59.151.56.230&bid=17755&cid=855555&sid=17095&kv=&exp1=-278766978&exp2=6213872680&cache=627411&url=http://www.microsoft.com/china/sql/default.mspx' target=_blank><img border=0 width=300 height=240  src='http://adshow.it168.com/newImage/23.gif'></a></div><OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://active.macromedia.com/flash2/cabs/swflash.cab#version=4,0,0,0' WIDTH=300 HEIGHT=240> <PARAM NAME=movie VALUE='http://adshow.it168.com/newImage/20080409/ad_154413.swf'> <PARAM NAME=quality VALUE=high> <PARAM NAME=wmode VALUE=transparent>  <EMBED src='http://adshow.it168.com/newImage/20080409/ad_154413.swf' TYPE='application/x-shockwave-flash'  PLUGINSPAGE='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwavFlash' wmode='transparent'  WIDTH=300 HEIGHT=240></EMBED></OBJECT></div>"
+
+//ADV_LZ2.innerHTML="<embed src='http://adshow.it168.com/newImage/20071219/ad_165336.swf' pluginspage=http://www.macromedia.com/shockwave/download/ type=application/x-shockwave-flash  wmode='transparent' width=300 height=250></embed>"
+
+ADV_LZ3.innerHTML="<table border='0' cellspacing='0' cellpadding='0'><tr><td><a href='http://adshow.it168.com/manager/files/icount.asp?cid=35780&cUrl=http://solmigprc.bizcom.com.cn/software/solaris/index.jsp?source=SOL07_IT168_BUTT7' target=_blank><img src='http://adshow.it168.com/newImage/20070926/ad_1603.gif' border=0 width=300 height=120></a></td></tr></table>"
+
+//ADV_BTTL.innerHTML="<div id=38678><div style='position:absolute; z-index:2; width:670; height: 120'><a href='http://adshow.it168.com/manager/files/icount.asp?cid=38678&cUrl=http://mccannafa7.allyes.com/main/adfclick?user=MccannAfa7|VOG20_it168|it168_Tech_inner_Page_Full_column_670x12025k&db=mccannafa7&log=on&ip=59.151.56.230&bid=13367&cid=536476&sid=12821&kv=&exp1=-912446575&exp2=7508679869&cache=717896&url=http://www.whodidit.cn' target=_blank><img border=0 width=670 height=120  src='http://adshow.it168.com/newImage/23.gif'></a></div><OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://active.macromedia.com/flash2/cabs/swflash.cab#version=4,0,0,0' WIDTH=670 HEIGHT=120> <PARAM NAME=movie VALUE='http://adshow.it168.com/newImage/20071112/38678_101151.swf'> <PARAM NAME=quality VALUE=high> <PARAM NAME=wmode VALUE=transparent>  <EMBED src='http://adshow.it168.com/newImage/20071112/38678_101151.swf' TYPE='application/x-shockwave-flash'  PLUGINSPAGE='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwavFlash' wmode='transparent'  WIDTH=670 HEIGHT=120></EMBED></OBJECT></div>"
+
+ADV_TL.innerHTML="<div id=43165><div style='position:absolute; z-index:2; width:980; height: 90'><a href='http://adshow.it168.com/manager/files/icount.asp?cid=43165&cUrl=http://mccannafa7.allyes.com/main/adfclick?user=MccannAfa7|intel_ITopia_IT168|IT168_TechITPUBarticlepage_Leaderboard_980x90_53_Xeon&db=mccannafa7&log=on&ip=61.4.182.2&bid=20253&cid=1086964&sid=19417&kv=&exp1=-864941564&exp2=6961162167&cache=273810&url=http://prcappzone.intel.com/ITopia/xeon_2.htm?cid=CPXIto1H08cn_35' target=_blank><img border=0 width=980 height=90  src='http://adshow.it168.com/newImage/23.gif'></a></div><OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://active.macromedia.com/flash2/cabs/swflash.cab#version=4,0,0,0' WIDTH=980 HEIGHT=90> <PARAM NAME=movie VALUE='http://adshow.it168.com/newImage/20080428/43165_11728.swf'> <PARAM NAME=quality VALUE=high> <PARAM NAME=wmode VALUE=transparent>  <EMBED src='http://adshow.it168.com/newImage/20080428/43165_11728.swf' TYPE='application/x-shockwave-flash'  PLUGINSPAGE='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwavFlash' wmode='transparent'  WIDTH=980 HEIGHT=90></EMBED></OBJECT></div>"
+</SCRIPT>
+ <!--Publish AD END-->
+<SCRIPT src="在VC中调用 WebService (非托管).files/count.js" 
+type=text/javascript></SCRIPT>
+
+<SCRIPT>
+   document.write("<img width=1 height=1 src=http://count.it168.com/count.dll?Type=Img2&add=1&id=93&refer="+escape(top.document.referrer)+" border=0>");
+</SCRIPT>
+</BODY></HTML>

@@ -1,0 +1,1462 @@
+chdir　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+用途:chdir 常式改變目前的工作目錄, 其作用和 DOS 的 CD 命令一樣。　　　　　　
+語法:int  chdir(const char*path); const char *path;　　　　　　　　　　　　　
+呼叫法:chdir("c:\\bin\\smaple");　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dir.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:chdir 把目前工作目錄改成由 path 指定的目錄。但它和 DOS 的 CD　　　　　　
+命令一樣, 不能改變預定的磁碟機 ( setdisk 可改變磁碟機)。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:chdir 可使程式改變目錄。　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 0,  若有問題 ,傳回 -1, 並把公共變數 errno 設定為 ENOENT　
+表示指定的路線名稱無效。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:chdir 能改變目錄, 但不能改變磁碟機, 要用 setdisk 或 system 常式纔能　
+改變磁碟機。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式: mkdir,rmdir,setdisk,system　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 233 頁。　　　　　　　　　　　　　　　　
+getcwd　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V 　　　　　　　　　　
+用途:getcwd 可取得目前目錄的完整路線名稱 (含磁碟機名稱)。　　　　　　　　　　
+語法:char *getcwd(char *path,int numchars); 　　　　　　　　　　　　　　　　　
+呼叫法:getcwd(path_buffer,80);　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dir.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getcwd 取得到目前目錄的完整路線名稱 (含磁碟機名), 取得的資料放在　　　　
+path 指定的緩衝區內。參數 numchars 指出緩衝區的最大容量。如果 path　　　　　
+是 NULL,則 getcwd 使用 malloc 常式來配置記憶體給緩衝區, 把路線名稱放在　　　
+此緩衝區。不再用時, 可用 free 常式把這一記憶體釋放。　　　　　　　　　　　　
+基本用法:getcwd 用來取得目前目錄的名稱並保存。程式如果在中途要換目錄,　　　　
+可先用 getcwd 把舊的保存起來, 稍後再還原。　　　　　　　　　　　　　　　　　　
+回報值:getcwd 傳回指到緩衝區 (路線名稱存放在此)的指標。如果 path 不是 NULL,　　
+則傳回值等於 path 或指向緩衝區的指標。若傳回 NULL 表示有問題。如果 path　　　　
+是 NULL, 而 getcwd 也無法配置記憶體, 則 errno 會被設定為 ENOMEM。如果　　　　
+路線名稱超過 numchars 指定的長度, 則 errno 被設定為 ERANGE。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:chdir　　　　　　　　　　　 　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 234 頁。　　　　　　　　　　　　　　　　
+mkdir　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　 　　　　　　　　
+用途:mkdir 建立新目錄 (有指定的路線)。　　　　　　　　　　　　　　　　　　　
+語法: int mkdir(const char *path);　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:mkdir("c:\\waite\\tcb"); 　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dir.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:mkdir 建立新目錄 (路線名稱為 path, 含磁碟機名稱及目錄/子目錄)。　　　　
+由於 mkdir 一次只能建立一個目錄, 因此除了新的目錄外, 其他上層目錄必　　　　
+需已存在, 假設 TEMP 目錄已在 C 磁碟機的根目錄內, 則路線名稱 C:\TEMP\NEW_1　　
+是可以的, 但 C:\TEMP\NEW_1\NEW_2 是不合法的 (mkdir 無法一次建立 NEW_1,　　　　
+NEW_2 這兩個目錄)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:設定用的程式常用到 mkdir 常式。例如用它來安裝編譯程式。mkdir　　　　
+也使程式可建立新目錄。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 0, 路線名稱無效, 則 errno 設定為 ENOENT, 若為 EACCES　　　
+表示路線名稱為一個磁碟機, 或目錄或已存在檔案的路線名稱。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:rmdir,chdir 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 235 頁。　　　　　　　　　　　　　　　　
+rmdir　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:int rmdir(const char *path); 　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:rmdir("c:\\temp\\last");　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dir.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:rmdir 常式除去一個目錄 (路線名稱為 path)。路線名稱可含有磁碟機名稱,　　
+目錄及子目錄名稱。像 DOS 的 RD 命令一樣, 在清除目錄前, 此目錄必需是空的。　　
+若根目錄的 TEMP 目錄是空的, 則 rmdir("C:\\TEMP")可除去 TEMP 目錄。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 0, 路線名稱無效, 則 errno 設定為 ENOENT, 若為 EACCES　　
+表示路線名稱為一個磁碟機, 或目錄或已存在檔案的路線名稱。也表示目錄不是　　　　
+空的, 或不是根目錄及目前目錄。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:mkdir,chdir 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 237 頁。　　　　　　　　　　　　　　　　　
+searchpath　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:searchpath 常式在一串目錄中尋找一個檔案, 這些目錄包含目前目錄及 PATH　　　
+指定的目錄。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:char *searchpath(const char *name);　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:buffer=searchpath("TC.EXE");　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dir.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:searchpath 先在目前目錄找檔案 (name 參數指定的)。若找不到, 則到 PATH　　　
+指定的目錄中找。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:找到時, 傳回指向此檔案路線名稱的指標, 不然傳回 NULL。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getenv,putenv 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 238 頁。　　　　　　　　　　　　　　　　　
+clearerr　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:   clearerr 常式用來清除檔案的錯誤及終點信號。此檔案由檔案指標指到　　　
+(也就是說此指標指到相關的 FILE 資料結構)。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void clearerr(FILE *file_pointer); 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:clearerr(outfile);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:clearerr 常式把 FILE 結構中的一個旗號設定為 0, 此一結構由 file_pointer　　
+指標指到。在碰到檔案終點及錯誤時, 此一旗號的值就不為 0。在 clearerr 清除以前　
+, 檔案中的錯誤指示子都維持不變。可分別用 ferror,feof 常式來檢查。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 ferror,feof 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 261 頁。　　　　　　　　　　　　　　　　　
+fclose　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+用途:fclose 常式用來關掉一個檔案, 此檔案是先前用 fopen 常式打開, 作緩衝輸出　
+及輸入用的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fclose(FILE *file_pointer);　　　　　　　　　　　　　　　　　　　　　
+呼叫法:fclose(infile); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fclose 常式關掉檔案 (此檔案由 file_pointer 指到)。這個指標是先前用　　　
+fopen 常式開檔時傳回的。如果此檔案是為寫入而開啟, 則在關檔時, 此檔案的緩衝區　
+會被清除, 然後把此緩衝區釋放。　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:為保証所有緩衝區都已清除及釋放, 而檔案已正確關掉, 對於程式中　　　　　
+不再使用到的檔案應使用 fclose 常式來關檔。　　　　　　　　　　　　　　　　　　
+回報值:如果檔案已成功關掉, fclose 常式會傳回 0。若有錯誤產生, 則傳回　　　　　
+EOF (在 stdio.h 中定義)。　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:你可用 fcloseall 同時關掉所有打開的檔案。由於 fopen 常式一次　　　　　
+只能使用 20 個檔案, 如果程式使用大量檔案, 則有必要用完一個檔案, 就把它　　　　
+用 fclose 關掉, 以讓出空間。用 setbuf,setvbuf 常式指定給位元組串檔案的緩衝區　
+不會被 fclose 常式自動釋放。　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fopen,fcloseall 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 262 頁。　　　　　　　　　　　　　　　
+fcloseall　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fcloseall 常式用來關掉作緩衝輸入及輸出的全部檔案 (它們是由　　　　　　　
+fopen 或 tmpfile 常式打開的)。　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fcloseall(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:number_closed=fcloseall();　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fcloseall 常式關掉作緩衝輸入及輸出的全部檔案 (它們是由　　　　　　　　　　
+fopen 或 tmpfile 常式打開的)。在關掉前, 緩衝區的內容都會寫到檔案內。　　　　　
+    fcloseall 常式並不關掉 stdin,stdout,stderr,stdaux,stdprn 這 5　　　　　　　
+個檔案。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:只要按一次鍵, 你就可關掉程式所打開的全部檔案。　　　　　　　　　　　　
+回報值:成功關掉時, fcloseall 傳回關掉的數目。有錯誤時, 傳回 EOF。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fopen,fclose　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 264 頁　　　　　　　　　　　　　　　　　
+feof　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:feof 巨集 ( stdio.h 中定義)用來檢查檔案的終點　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int feof(FILE *file_pointer);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 if(feof(infile)!=0) printf("File ended\n"); 　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:feof 巨集傳回一個值, 此值可決定 file_pointer 指到的檔案是否到了終點。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在讀取時, 若產生錯誤, 則可用 feof 巨集來找出錯誤發生的原因是否為　　　
+超過檔案終點。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如果已到檔案終點, 則 feof 巨集在讀到終點外的第 1 個位元組時, 傳回　　　
+一個不是 0 的值。不然傳回 0。　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:由於 feof 是一個巨集, 用它來檢查檔案終點, 並不包含呼叫常式叫內。　　
+相關常式:clearerr,rewind 　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 268 頁　　　　　　　　　　　　　　　
+ferror　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:ferror 巨集 (在 stdio.h 中定義)用來檢查前一個讀寫操作是否有錯誤產生　　　
+(檔案是以有緩衝的 I/O 打開的)。　　　　　　　　　　　　　　　　　　　　　　　
+語法:int ferror(FILE *file_pointer);　　　　　　　　　　　　　　　　　　　　　
+呼叫法:if(ferror(infile)!=0) printf("Error detected\n"); 　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:ferror 傳回一個值, 此值指出前一次的讀寫操作中是否有錯誤產生。被檢　　　　
+查的檔案由參數 file_pointer 指到。此檔案的 FILE 結構中有一個旗號欄, 終點　　　
+和錯誤資料都保存在此一欄位內。ferror 會檢查此一欄位是否和預先定義好的常數　　　
+(指出錯誤的內容)相合。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:如果你沒有在讀寫操作時,檢查傳回的錯誤,則可在操作後,用 ferror 來檢查。
+若用錯誤, 你可叫用 clearerr 常式來清除此一欄位, 重新開始也可清除此一欄位。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:在讀寫時, 若有錯誤, 則 ferror 傳回一個非 0 值, 不然傳回 0。　　　　　　
+補充說明:由於 ferror 是一個巨集, 用它來檢查錯誤, 並不是呼叫一個常式。　　　　
+相關常式:clearerr　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 271 頁　　　　　　　　　　　　　　　　
+fgetc　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fgetc 常式可從一個檔案內讀取一個字元 (檔案為緩衝式輸出)。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fgtc(FILE *file_pointer);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:char_read=fgetc(infile);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fgetc 常式從檔案目前位置讀取一個字元,然後移到下一個位置。字元以整數　　　
+的形式傳回。在 stdio.h 中定義的巨集 getc 也有這個能力。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, fgetc 傳回此一字元, 若有問題, 傳回 EOF。呼叫 ferror,feof　　　
+來找出是否真有錯誤或只是到了終點。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getc,fgetchar 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 273 頁　　　　　　　　　　　　　　　　　　
+fgetchar　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 413　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fgetchar 常式可從檔案 stdin (通常是鍵盤)取得一個字元。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 int fgetchar();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 c=fgetchar();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fgetchar 常式從 stdin 取得一個字元, 它等於 fgetc(stdin)。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:若沒有錯誤, fgetchar 傳回取得的字元, 若有錯誤, 則傳回 EOF。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fgetc,fputc,putc　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 275 頁。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+fgetpos　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　MSC5/QC　ANSI　　　　　　　　　　　　　　　
+用途:fgetpos 常式可取得檔案中目前讀寫的位置並加以保存 (檔案以緩衝式 I/O 打開)　
+語法:int fgetpos(FILE *file_pointer,fpos_t *current_pos); 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:fgetpos(infile,&curpos); 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fgetpos 常式取得檔案目前的讀/寫位置 (檔案由 file_pointer 指定)。然後　　
+把此讀/寫位置保存在一個指定地方 (由 current_pos 指定)。此位置的型別為　　　　　
+fpos_t (在 stdio.h 中定義的長整數)。　　　　　　　　　　　　　　　　　　　　　
+基本用法:fgetpos 常式和同伴 fsetpos 常式用來取得檔案的一個位置, 並在稍後傳　　
+回此一位址。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, fgetpos 傳回 0 , 若有錯誤, 則傳回非 0 值。　　　　　　　　　　
+補充說明:檔案中目前的讀/寫位置只能用在緩衝式 I/O 的常式。雖然你可取得此值,　　
+但不應對它作任何解釋。它只應作fsetpos 常式的一個參數。如果你希望用偏移值　　　
+來表示此值, 可用 ftell 常式來作。　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fsetpos 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 276 頁　　　　　　　　　　　　
+fgets　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　
+用途:fgets 常式取得檔案 (緩衝式輸入)中的一列。在碰到進列字元 \n 或到　　　　　
+指定數目時, 纔結束。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:char *fgets(char *string,int maxchar,FILE *file_pointer);　　　　　　　　
+呼叫法:fgets(buffer,80,infile);　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fgets 常式從檔案 (由 file_pointer 指到)讀取一列, 讀到的字元保存在　　　　
+緩衝區內 (由參數 string 指到)。在碰到進列字元 (\n)或到達指定的最大數目　　　　
+(maxchar )時纔結束。在緩衝區最後一個讀到字元的後面接一個 \0 , 把它轉換　　　　
+成 C 字串。進列字元也包含在此字串內。　　　　　　　　　　　　　　　　　　　　
+    gets 常式的動作也類似, 但它讀到進列字元時, 會把它換成 null 字元(因此　　　
+轉換過的字串沒有進列字元)。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:若沒有錯誤, fgets 傳回 string 參數, 不然傳回 null。你可用 ferror,　　　
+feof 常式來檢查錯誤是真的錯誤或只是到了終點。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:gets,fputs,puts 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 278 頁　　　　　　　　　　　　　　　　　
+fileno　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+用途:fileno 巨集 (在 stdio.h 中定義)可取得檔案(由指標指到)的識別碼。在執行　　
+時, 你必需有檔案識別碼, 纔能使用某些檔案 I/O 常式。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fileno(FILE *file_pointer);　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:handle=fileno(file_pointer);　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fileno 巨集傳回一個整數, 這個整數是檔案 (由 file_pointer 指到)的　　　　　
+識別碼。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    此檔案的 FILE 結構中有一個欄位保存識別碼。在呼叫 read,write 常式作　　　
+無緩衝低階 I/O 時, 需要使用到識別碼。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:fileno 傳回的整數是檔案的識別碼。如果 file_pointer 沒有指到已打　　　　
+開的檔案, 則傳回值沒有定義。　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fopen 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 280 頁　　　　　　　　　　　　　　　　
+flushall 　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+用途:flushall 常式可清除緩衝區 I/O 檔案的全部緩衝區。包含 stdin,stdout,strerr,
+stdprn ,stdaux 檔案在內。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int flushall(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:flushall(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:flushall 常式清除檔案的所有緩衝區。包含 stdin,stdout,strerr,stdaux,　　　
+stdprn  在內。如果檔案打開作寫入,則清除前會把緩衝區內容寫回檔案, 不然就　　　　
+直接清除。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    在緩衝區已滿, 檔案關掉, 程式正常結束時, 緩衝區都會自動清除。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:flushall 常式傳回清除緩衝區的數目, 其值應等於目前用來作輸出及　　　　　
+輸入檔案的總數。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 fflush,fclose 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 281 頁　　　　　　　　　　　　　　　
+fprintf　 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fprintf 常式可把格式化的字元字串, 和 C 變數值寫入指定檔案 (緩衝式輸出)。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fprintf(FILE *file_pointer,const char *format_string,...); 　　　　　
+呼叫法:fprintf(resultfile,"The result is %f\n",result);　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:像 printf 常式一樣, fprintf常式取得一組數目不定的參數, 把它們送到檔案　　
+(由 file_pointer 指到, 為緩衝式輸出檔案)。雖然 printf 用得最多, 但 fprintf　　
+有更好的能力, 它能把格式化輸出送到任一檔案, printf 只能送到 stdout 檔案。　　
+參數的格式由格式化字串(format_string)指定。格式化命令用 % 開始。命令和 printf
+的都一樣。兩個 % 放在一起, 會把一個 % 送給檔案。在此不詳談格式化, 參看表　　　
+格 9.9,9.10,9.11,9.12 及 printf 常式的說明。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:雖然能用 printf 的地方就能用 fprintf, 但 fprintf 常式常用來把　　　　
+錯誤訊息送給 stderr。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:fprintf 常式傳回它印出字元的數目。　　　　　　　　　　　　　　　　　　
+相關常式:printf,vfprintf,sprintf　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 285 頁　　　　　　　　　　　　　　　　　　
+fputc　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fputc 常式可把一個字元寫入緩衝式輸出用的檔案。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fputc(int c,FILE *file_pointer); 　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:fputc('X',p_datafile);　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fputc 常式把一個字元 (參數 c )寫入檔案內(由 file_pointer 指到)。它　　　
+寫入目前位置, 然後把位址加 1。在 stdio.h 中定義的巨集 putc 也有此能力。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:若沒有錯誤, fputc 傳回寫入的字元, 不然傳回 EOF。你應叫用 ferror　　　　
+常式來查這是一個錯誤, 或只是 c 正好等於 EOF。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:putc,fputchar,getc　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 287 頁　　　　　　　　　　　　　　　　　　
+fputchar　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fputchar 常式把一個字元寫入檔案 stdout (在程式開始時, stdout就是螢幕)。　
+若用 stdout 作參數, 則 fputchar 和 fputc 是一樣的。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fputchar(int c); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:fputchar('q'); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fputchar 常式把一個字元寫入 stdout。它等於 fputc(stdout)。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:若沒有錯誤, fputchar 傳回寫入的字元, 有錯誤, 傳回 EOF。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fputc,fgetc,getc　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 288 頁　　　　　　　　　　　　　　　　　　
+  　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+fputs　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fputs 常式把一個 c 字串(以 \0 結束的字元陣列)寫入一個緩衝式輸出檔案。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fputs(const char *string,FILE *file_pointer);　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:fputs("Sample input data",p_datafile);　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fputs 常式把一個 c 字串(參數 string)寫入一個檔案 (由 file_pointer 指到)　
+。此檔案打開來作寫入操作。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:沒有錯誤時, fputs 傳回寫入的最中一個字元, 有錯誤, 則傳回 EOF。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fgets,puts,gets 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 289 頁　　　　　　  　　　　 　　　　　　
+ 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+fread　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fread 常式從一個檔案 (緩衝式輸入)取得一組資料 (有一定長度)。在讀過後,　　
+目前位置會改變。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:size_t fread(void *buffer,size_t size,size_t count,FILE *file_pointer);　
+呼叫法:numread=fread(buffer,sizeof(char),80,infile);　　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fread 常式讀取 count 數目的資料項 (其長度為 size 位元組)。它從檔案　　　
+的目前位置讀起。在讀完後, 會改變目前位置。　　　　　　　　　　　　　　　　　　
+    在讀以前,一定要先安排一個緩衝區來放讀到的資料。此緩衝區的位址 (指向　　　
+void 型別資料的指標)即為參數 buffer。讀到的資料放在緩衝區內。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:fread 常式通常用來讀 2 位元資料項。例如若要把一個圖形保存在檔案內　　
+, 可用 fwrite 把圖形寫入檔案,而用 fread 讀出。　　　　　　　　　　　　　　　　
+回報值:成功時, fread 傳回讀到的數目。如果數目太少, 可用 ferror 和 feof　　　　
+來檢查是什麼樣的錯誤。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:fread 常式若用在文字檔案, 則 CR-LF 會被轉換成 LF。
+相關常式:fwrite,read 　　　　　　　　　　　　　　　　　  　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 291 頁　　　　　　　　　　　　　　　　　　
+freopen　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:freopen 可關掉一個檔案, 再用同一個檔案指標打開另一個檔案。例如, 你可用　
+freopen 把對 stdout 的 I/O 轉向到你指定的檔案。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:FILE freopen(const char *filename,const char *access_mode, 　　　　　　　
+　　　　　　　　　FILE *file_pointer);　　　　　　　　　　　　　　　
+呼叫法:freopen("out[ut.txt","w",stdout); 　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:freopen 關掉一個檔案 (file_pointer 指到的),然後再用 filename 參數指定　　
+的名稱打開一個新檔, 並使 file_pointer 指向此一新檔案。用 access_mode 指定　　　
+操作模式。表 9.6,9.7 說明各種可用的 access_mode 值。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:freopen 常式通常用來把對 stdout,stdin 的輸出及輸入轉向。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:若無錯誤, freopen 傳回指向新開檔案的指標。此一指標等於 file_pointer。　
+若有錯誤, 傳回 NULL。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式: fopen,fclose 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 292 頁　　　　　　　　　　　　　　　　　　
+fscanf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+用途:fscanf 常式可從一個檔案 (緩衝式 I/O)讀取字元, 然後照指定格式, 把此字串　
+轉換成 C 變數的值。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fscanf(FILE *file_pointer,const char *format_string,...);　　　　　　
+呼叫法:fscanf(infile,"Date:%d/%d/%d",&month,&day,&year);　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fscanf 常式從一個檔案 (由 file_pointer 指到)讀取一串字元。照 format_　　
+string 指定的格式轉換此串字元, 然後把它存放在 C 變數 (此變數的位址由不定長度　
+的參數表提供)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    每一個參數都指定一個相關的 format_string 。格式化命令也用 % 開始, 和 scanf
+的命令都一樣。參看 scanf 的說明。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, fscanf 傳回處理好的數目。若碰到檔案終點, 則傳回 EOF。　　　　　
+補充說明:fscanf 比 scanf 能使用的範圍更大。可用 fscanf 來讀任何檔案, 若　　　　
+把 stdin 當 fscanf 的參數, 它就等於 scanf。不過細節的說明還是在 scanf　　　　　
+那邊提到。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:scanf,cscanf,vfscanf　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 294 頁　　　　　　　　　　　　　　　　　　
+fsetpos　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fsetpos 常式可設定檔案 (緩衝式 I/O)的讀寫位置。　　　　　　　　　　　　　
+語法:int fsetpos(FILE *file_pointer,const fpos_t *current_pos); 　　　　　　　
+呼叫法:fsetpos(infile,&curpos);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fsetpos 常式設定檔案中讀寫的新位置, 檔案由 file_pointer 指到。新值由　　　
+current_pos 參數提供。此變數的型別為 fpos_t (在 stdio.h 中定義)。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:fsetpos 常式照 fgetpos 常式取得的位置, 重新設定檔案中的讀寫位置。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:由於目前的位置只對緩衝式常式有意義, 因此 fsetpos 所用的值應是　　　　　
+fgetpos 常式取得的值。如果想看這個位置的值,可用 fseek常式來取得。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式：fgetpos　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 298 頁　　　　　　　　　　　　　　　　　　
+ftell　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:ftell 常式可取得檔案(緩衝式 I/O)的目前位置。此位置以距檔案起點的偏移值　　
+表示。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:long ftell(FILE *file_pointer);　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:curpos=ftell(infile);　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:ftell 常式傳回檔案 (由 file_pointer 指到)目前的讀寫位置。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, ftell 傳回一個長整數 (偏移值)。若有錯誤, 傳回 -1L。如果　　　　
+file_pointer 指向裝置(如鍵盤), 則傳回值無意義。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:在文字模式檔案中使用 ftell, 則其傳回值和實際偏移可能有些不同。因　　
+為在文字模式中會對 CR-LF 作轉換。不過如果和 fseek 合用, 則不會有問題。　　　　
+相關常式:fseek,tell　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 300 頁　　　　　　　　　　　　　　　　　　
+fwrite　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+用途:fwrite 常式把一組資料 (有一定長度)從緩衝區寫入檔案中的目前位置。　　　　　
+在寫入後, 會改變目前位置。　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:size_t fwrite(const void *buffer,size_t size,size_t count, 　　　　　　　
+　　　　　　　　　　FILE *file_pointer);　　　　　　　　　　　　　　　　　　
+呼叫法:numwrite=fwrite(buffer,sizeof(char),80,outfile);　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fwrite 常式把 count 數目的資料 (長度為 size)寫入檔案 (由 file_pointer　　
+指到)的目前位置。在寫好後, 改變目前位置。資料是從緩衝區取得的, 緩衝區的位址　　
+由參數 buffer 提供。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:fwrite 常式最常用來把資料寫入 2 位元檔案。例如你若要保存程式的目前　
+狀態, 可用 fwrite 常式把主要的變數寫入檔案, 稍後用 fread 把它們讀回來。　　　
+回報值:fwrite 常式傳回實際寫入的數目。如果此值比預期的少, 可能有錯誤。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果在文字模式的檔案中用 fwrite 常式, 則歸零字元會被換成 CR-LF。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fread,write 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 301 頁　　　　　　　　　　　　　　　　　　
+getc　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getc 巨集可從檔案 (緩衝式輸入)取得一個字元。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getc(FILE *file_pointer);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:in_char=getc(p_txtfile);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getc 巨集從檔案 (由 file_pointer 指到)讀取一個字元。它從目前位置讀取, 讀　
+過後, 把目前位置移到下一個字元。file_pointer 一定要由前面的 fopen, 或 freopen　
+傳回。fgetc 和 getc 相同, 但它是一個常式。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getc 巨集傳回讀到的字元。若有錯誤, 則傳回 EOF。這時可呼叫 feof,　　　　
+ferror 來檢查是真的錯誤或只是到檔案終點。　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getchar,fgetc,putc　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 303 頁　　　　　　　　　　　　　　　　　　
+getchar　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getchar 巨集從已開啟的 stdin (通常是鍵盤)讀取一個字元。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getchar(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:c=getchar();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getchar 巨集從 stdin 讀取一個字元。它等於 getc(stdin)。getchar 是　　　　
+fgetchar 的巨集版。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getchar 傳回它讀到的字元。若有錯誤, 則傳回 EOF。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:getchar 只能用在有緩衝的鍵盤輸入, 若要直接取得鍵盤的輸入應使用　　　　
+getch, 或 getche。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getc　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 304 頁　　　　　　　　　　　　　　　　　　
+gets　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:gets 常式從 stdin (鍵盤)讀取一列。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:char *gets(char *buffer);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:gets(command_line); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:gets 會不斷的從鍵盤取得字元並保存在緩衝區, 直到碰到 \n 字元為止。　　　　
+在碰到 \n 後, 它把 \n 換成 null , 建立一個 C 字串。保存字元的緩衝區　　　　　
+要先配置記憶體給它。fgets 和 gets 類似, 但 fgets  把 \n 留在字串內。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:若成功, gets 傳回參數, 不然傳回 NULL, 可用 ferror,feof 來找出　　　　　
+錯誤的原因。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fgets,fputs 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 306 頁　　　　　　　　　　　　　　　　　　
+getw　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getw 常式從檔案讀取一個字組, 此檔案以緩衝式 2 位元讀取模式打開。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getw(FILE *file_pointer);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:word=getw(infile);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getw 常式從檔案的目前位置讀取一個字組。讀過後, 目前位置向前移 2 個位　　　
+元組。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, getw 傳回讀到的整數值, 不然傳回 EOF (在 stdio.h 中定義)。　　　
+這時應使用 feof 或 ferror 來檢查錯誤的原因。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:putw　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 307 頁　　　　　　　　　　　　　　　　　　
+putc　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:putc 巨集可把一個字元寫入檔案 (緩衝化輸出)。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int putc(int c,FILE *file_pointer);　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:putc('*',outfile);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:putc 巨集把字元 c 寫入檔案 (由 file_pointer 指到)的目前位置。在寫　　　　
+入後, 目前位置指向下一字元。file_pointer 一定要由前面的 fopen,或 freopen　　　
+傳回, 不然就必需是 stdout 或 stdin。　　　　　　　　　　　　　　　　　　　　　
+    putc 和 fputc 功能相同, 但 fputc 是一個常式。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:putc 巨集傳回它寫入的字元。有錯誤, 傳回 EOF。應使用 ferror 來查此一　　
+錯誤。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:putchar,fputc,getc　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 317 頁　　　　　　　　　　　　　　　　　　
+putchar　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:putchar 巨集把一個字元寫入已打開的 stdout (通常是螢幕)。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int putchar(int c);  　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:putchar('?'); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:putchar 巨集把字元寫入 stdout, 它等於 putc(stdout), 也是 fputchar　　　　
+常式的巨集。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:putchar 傳回它寫入 stdout 的字元。若有錯誤 ,傳回 EOF。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:putchar 不能把一個字元寫入控制台, 因為要完成對鍵盤的緩衝式　　　　　
+璊 寫入必需要等候 enter 鍵, 無緩衝式輸出應使用 putch, 或 putche。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:putc,fputc,putc 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 318 頁　　　　　　　　　　　　　　　　　　
+puts　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:puts 常式把一個字串輸出給 stdout。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 int puts(const char *string);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:puts("Do you reallly want to quit");　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:puts 常式把一個字串 (由參數 string 指定)寫入 stdout (通常是螢幕)。在　　　
+輸出時, 會把字串的結束 null 字元換成 \n 字元。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回輸出的最後一個字元, 不然傳回 EOF。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fgets,fputs 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 319 頁　　　　　　　　　　　　　　　　　　
+ 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+putw　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:putw 常式把一個字組 (型別為 int 的 2 位元值)寫入一個檔案 (緩衝式　　　　　
+2 位元寫入模式)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int putw(int intval,FILE *file_pointer); 　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:putw(int_value,outfile);　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:putw 常式把整數參數 intval 的 2 位元值寫入檔案 (由 file_pointer 指到)　　
+的目前位置。在大多數的 DOS 電腦上, 這是一個 2 位元組的值, 同時指標也會跟到　　
+調整。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:putw 常式傳回它寫入的值。如果傳回 EOF 表示有錯誤。然而由於 EOF　　　　　
+為有效整數, 你應用 ferror 來檢查是否確為錯誤。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getw　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 320 頁　　　　　　　　　　　　　　　　　　
+rewind　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:rewind 常式可設定檔案(緩衝式 I/O)的目前讀寫位置。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void rewind(FILE *file_pointer); 　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:rewind(input_file); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:rewind 常式從檔案 (file_pointer 指到)起點重新讀寫。並清除檔案終　　　　　
+點及錯誤指示。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:rewind 常式可把讀寫位置從檔案起點重新開始。fseek 指定適當的參數也　　
+有同樣的能力,但 fseek 不清除錯誤指示。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fseek 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 322 頁　　　　　　　　　　　　　　　　　　
+setbuf　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setbuf 常式可用來指定你自己的緩衝區, 而不必使用系統分配的緩衝區。　　　　
+語法:void setbuf(FILE *file_pointer,char *buffer); 　　　　　　　　　　　　　　
+呼叫法:setbuf(infile,mybuffer);　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setbuf 常式設定檔案 I/O 時要用的緩衝區。此檔案由 file_pointer　　　　　　
+(先前由 fopen 常式傳回的)指到。如果指到緩衝區的指標 buffer 是 NULL,　　　　　
+則setbuf 取消緩衝化的作用。如果指標不是 NULL, 則它應指向一個字元陣列　　　　　
+(有 BUFSIZE 個位元組)。BUFSIZE 是 stdio.h 中定義的常數 (內定值為 512　　　　　
+位元組)。隨後的 I/O 都使用此一緩衝區。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:在 setbuf 讓你換自己指定的緩衝區時, setvbuf 常式可使你控制　　　　　　
+緩衝區的長度及緩衝等級。例如你若希望使用超過 512 位元組的緩衝區時,就　　　　　
+可使用 setvbuf 來設定新緩衝區的長度。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:setvbuf 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 328 頁　　　　　　　　　　　　　　　　　　
+setvbuf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+用途:setvbuf 常式指定緩衝區的長度。也可用它來控制緩衝等級, 及取消。　　　　　　
+語法int setvbuf(FILE *file_pointer,char *buffer,int buf)type,size_t buf_size);
+呼叫法:setvbuf(infile,,_IOFBF,120); 　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setvbuf 常式設定檔案(由 fopen 傳回的 file_pointer 指到)的緩衝區及緩衝　　
+等級。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    setvbuf 先檢查參數 buf_type ,找出緩衝區的等級。此參數為下表中的一個。　　　
+參看 329 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果 buf_type 是 _IONBF, 則不考慮其他參數, 並把內部旗號設定為無緩衝。　　　
+如果是 _IOFBF或 _IOLBF 則會先把緩衝區選擇保存起來。然後 setvbuf 檢查指向　　　
+緩衝區的指標是否為 NULL, 如果是, 則 setvbuf 配置有 buf_size 長度的緩衝區　　　
+, 如果參數是 NULL, 則配置你指定的緩衝區長度。　　　　　　　　　　　　　　　　　
+基本用法:setvbuf 常式可用來控制檔案的緩衝區長度。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果只要改變緩衝區, 而不改變其他的設定, 則用 setbuf 比較簡單。　　　
+相關常式:setbuf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 329 頁　　　　　　　　　　　　　　　　　　
+sprintf　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:sprintf 常式可把一個 C 變數的值格式化並寫入一個字串。　　　　　　　　　　
+語法:int sprintf(char *p_string,const char *format_string,...); 　　　　　　　
+呼叫法:sprintf(buffer,"FY 88 profit=%.2f\n",profit); 　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:sprintf 常式取得一串數目不定的參數, 把這些參數轉換成字元, 保存在緩衝區內　
+(其位址由 p_string 參數提供)。sprintf 的效率和 fprintf,printf 是一樣的, 但　　
+sprintf 把輸出送給字元緩衝區而非檔案。在把字元格式化並保存在緩衝區後,　　　　　
+sprintf 在緩衝區後面加上一個 null 字元, 使此緩衝區成為 C 的一個字串。　　　　　
+    像 printf 一樣, 把變數轉換成字元是照格式化命令 (format_string)的指示來作　
+的。可用的格式化命令及選擇參看 printf 一節的說明。特別是表 9.9,9.10,9.11　　　
+,9.12 列出格式化命令中可用的字元 (都用 % 開始)。而如果要印出 % , 則用兩個　　
+%% 即可。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:sprintf 常式的一個基本用法是產生一個格式化的字串, 以便其他常式　　　
+如 outtext 可以使用。outtext 這種常式沒有格式化的能力。　　　　　　　　　　　　
+回報值:sprintf 常式傳回它保存在緩衝區中的字元數目 (但不含 null 字元)。　　　　
+相關常式:printf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 332 頁　　　　　　　　　　　　　　　　　　
+sscanf　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:sscanf 常式從緩衝區取得一個字元, 把它們照指定的格式轉換保存在 C 變數內。　
+語法:int sscanf(const char *buffer,const char *format_string,...);　　　　　　
+呼叫法:sscanf(buffer,"Name:%s Age:%d",name,&age);　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:sscanf 從緩衝區 (由 buffer 指到)讀取一串字元, 照 format_string 指定　　　
+的格式來轉換, 再把結果保存在 C 的變數內 (位址由參數串提供)。　　　　　　　　　
+    format_string 後面的參數是 C 變數的位址。每個位址在 format_string 中都　　
+指定一個格式命令。格式化命令都用 % 開始, 和 scanf 用的完全一樣, 參看 scanf　　
+的說明。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:sscanf 是字元和值在記憶體中轉換的方便工具。你會發現用 gets 或 fgets
+把字串讀入, 再用 sscanf 轉換成值是很方便的。　　　　　　　　　　　　　　　　　
+回報值:sscanf 傳回成功讀取及轉換保存的數目。在讀取結束前, 字串若已結束,　　　　
+則傳回 EOF。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:scanf,vsscanf 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 333 頁　　　　　　　　　　　　　　　　　　
+tmpfile　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:tmpfile 常式可把一個暫時性檔案保存在目前目錄, 作緩衝式 2 位元讀寫之用。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:FILE *tmpfile(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:p_tfile=tmpfile();　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明: tmpfile 常式在目前目錄中打開一個暫時性檔案。檔案以 w+b 的模式　　　　　
+(2 位元讀寫操作)打開。你不必取得暫時性檔案的檔名, 而在程式正常結束後,　　　　　
+暫時性檔案也清掉了。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:tmpfile 常式最適合在程式中打開一個暫時性檔案。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:tmpfile 傳回一個指標 (指到暫時性檔案的 FILE 結構)。　　　　　　　　　　
+補充說明:tmpfile 常式打開一個檔案 (tmpnam 只產生檔名), 在程式沒有結束前, 此　　
+檔案都存在。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:tmpnam　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 335 頁　　　　　　　　　　　　　
+tmpnam　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:　　 TC1.5　TC2　　　　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+用途:tmpnam 常式為程式的暫時性檔案產生一個檔名。　　　　　　　　　　　　　　　
+語法:char *tmpnam(char *file_name); 　　　　　　　　　　　　　　　　　　　　　
+呼叫法:tmpnam(tfilename);　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:tmpnam 常式產生一個檔名, 並送到緩衝區 file_name 內 (此緩衝區一定　　　　　
+要由使用者設定)。此緩衝區的長度不能少於 L_tmpnam (在 stdio.h 中把它的值內　　
+定為 13)。你可用 TMP_MAX (在 stdio.h 中定義其值為 32767)使tmpnam 產生　　　　　
+這麼長的檔名。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果 file_name 是 NULL,則產生的檔名保存在記憶體內, 並傳回指向此　　　　　
+檔名的指標。在對 tmpnam 另一次呼叫前, 此檔名都保存。因此在呼叫另一次　　　　　
+tmpnam 前, 若仍用此檔名, 則呼叫 tmpnam 時, 參數可為 NULL, 使用它傳　　　　　　
+回的指標即可。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:程式要產生暫時性檔案時, tmpnam 常式是很方便的工具。　　　　　　　　　
+回報值:tmpnam 常式傳回指到此暫時性檔名的指標。如果不是唯一個檔名, 則傳回 NULL。
+補充說明:暫時性檔案應使用 tepnam 產生的檔名來開檔, 也可用 tmpfile 直接開檔。　
+相關常式 tmpfile 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 336 頁　　　　　　　　　　　　　　　
+ungetc　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+用途:ungetc 常式可把任何字元 (EOF 除外)放入檔案 (緩衝式輸入用)的緩衝區。　　　
+語法:int ungetc(int c,FILE *file_pointer);　　　　　　　　　　　　　　　　　　
+呼叫法:ungetc(last_char,infile);　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:ungetc 常式把字元 (參數 c 提供的)放在檔案 (由 file_pointer 指到)　　　　　
+的緩衝區內。因此對此檔案的下一次讀取會讀到此字元。在把字元放入緩衝區前,　　　　
+至少要先作一次讀的動作,不然緩衝區無法在可用狀態。ungetc 也拒絕處理 EOF 字元。
+    由於 ungetc 把字元放在檔案緩衝區, 任何對檔案目前位置的存取 (例如　　　　　
+fflush,rewind 等)都會使此字元被除掉。　　　　　　　　　　　　　　　　　　　　
+    在不同的轉換模式, ungetc 對檔案目前位置的影響有所不同。在文字模式中,　　　
+呼叫 ungetc 前, 檔案的目前位置不變, 因此在送進來的字元被讀回或除去前,　　　　　
+檔案的位置無定義。在 2 位元模式中, 每呼叫一次 ungetc , 就把檔案的目前　　　　　
+位置減 1,減到 0 後, 在呼叫 ungetc 後, 位置仍是無定義的。　　　　　　　　　　　
+基本用法:ungetc 常式用來拒絕剛被讀取的無效字元。此字元可放回輸入緩衝區, 然　　
+後用報告錯誤的常式印出。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時,  ungetc 傳回它推回的值, 若有錯誤, 傳回 EOF。　　　　　　　　　　
+相關常式:getc,fputc　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 338 頁　　　　　　　　　　　　　　　　　　
+vfprintf　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:vfprintf 常式把格式化輸出寫入一個檔案, 它和 fprintf 的能力一樣, 但　　　　
+它使用指到變數串的指標, 而非變數串本身, 並可印出列印的數目。　　　　　　　　　
+語法:int vfprintf(FILE *file_pointer,const char *format_string,　　　　　　 　
+　　　　　　　　　va_list arg_pointer);　　　　　　　　　　　　　　　　　　
+呼叫法:vfprintf(stderr,p_format,p_arg);　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:vfprintf 常式取得一個指標 (指向 arg_pointer 中的參數), 把參數的值轉換成
+字元,寫入檔案 (由 file_pointer 指到)。　　　　　　　　　　　　　　　　　　　　
+    vfprintf 和 fprintf 唯一的不同在於vfprintf 接受指標, 而 fprintf 直接取得參數
+本身。印出的格式由 format_string 指定。關於格式化命令參看 printf 一節 (表 9.9
+,9.10,9.11,9.12)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:vfprintf 可用來印出常式中參數的值。例如設計一個特製的錯誤管制常式,　
+它可取得一串參數並印出它們的值。　　　　　　　　　　　　　　　　　　　　　　　
+回報值:vfprintf 常式傳回印出的字元數目 (不含 null 字元)。　　　　　　　　　　
+相關常式:printf,fprintf　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 340 頁　　　　　　　　　　　　　　　　　　
+vfscanf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:vfscanf 常式在檔案中讀取格式化資料, 這跟 fscanf 一樣, 但vfscanf 使　　　　
+用指向參數串的指標而不是直接使用參數本身, 因此可讀取的數目有彈性。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int vfscanfg(FILE *file_pointer,const char *format_string, 　　　　　　　
+　　　　　　　　　va_list arg_pointer);
+呼叫法:vfscanf(infile,p_format,p_arg); 　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h>,#include<stdarg.h> 　　　　　　　　　　　　　　　　　
+說明:vfscanf 常式取得指向參數串的指標 (arg_pointer), 然後從檔案 (file_pointer
+指到)讀取其中的值。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    vfscanf 和 fscanf 唯一的不同是 fscanf 直接取得參數, 而vfscanf 則使用指向　
+參數的指標。印出變數的格式由 format_string 指定 (細節參看 scanf 的說明)。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值: vfscanf 傳回成功取得,轉換和存放的數目。如果指定的參數還沒有讀到 ,　　
+已碰到檔案終點, 則傳回 EOF。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:scanf,fscanf,va_end 　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 342 頁　　　　　　　　　　　　　　　　　　
+vprintf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:vprintf 常式可把格式化輸出送到 stdout (和 printf 常式功能相同)。　　　　　
+但它使用變數的指標而非變數本身。這使 vprintf 可印出彈性數目的變數。　　　　　　
+語法:int vprintf(const char *format_string,va_list arg_pointer);　　　　　　　
+呼叫法:vprintf(p_format,p_arg);　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h>,#include<stdarg.h>　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:vprintf 常式取得一串彈性數目參數的指標 (arg_pointer), 把參數轉換成　　　　
+字元, 送入已打開的檔案 stdout (通常是螢幕)。除了使用指標外, vprintf 和　　　　
+fprintf,printf 常式的功能是一樣的。format_string 字串是格式化命令, 參看　　　　
+printf 常式的說明 (表 9.9,9.10,9.11,9.12)。　　　　　　　　　　　　　　　　　
+基本用法:如果有一串參數而要把它們印出來, 就可用 vprintf 常式。例如可用它　　　
+來設計特別的錯誤管制常式, 這種常式會接受一串參數。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:vprintf 常式傳回它印出的字元數目(不含 null 字元)。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:printf,fprintf,va_start 　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 345 頁　　　　　　　　　　　　　　　　　　
+vscanf 　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:vscanf 和 scanf 功能一樣 (從 stdin 取得格式化輸入)。但它使用　　　　　　　
+變數的指標而非變數本身。因此可讀入彈性數目的參數。　　　　　　　　　　　　　　
+語法:int vscanf(const char *format_string,va_list arg_pointer); 　　　　　　　
+呼叫法:vscanf(p_format,p_arg); 　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:vscanf 常式取得指向一串參數 (數目不定)的指標 (arg_pointer)。把它們從　　　
+已打開的檔案 stdin 讀入。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    除了使用指標名, vscanf 的功能和 scanf 一樣。formay_string 指定格式化　　　
+命令, 參看 scanf 一節。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:要讀取不定數目的參數時, 使用 vscanf 很合適。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:vscanf 常式傳回成功取得, 轉換, 存放的參數數目。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:scanf,sscanf,va_start 　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 347 頁　　　　　　　　　　　　　　　　　　
+vsprintf　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　　
+用途:vsprintf 常式把格式化輸出送給一個字串 (和 sprintf 功能相同)。但　　　　　
+vsprintf 使用指標而非變數本身。因此可使用的數目有彈性。　　　　　　　　　　　　
+語法int vsprintf(char *p_string,const char *format_string,va_list arg_pointer);
+呼叫法:vsprintf(err_msg,p_format,p_arg); 　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> ,#include<stdarg.h> 　　　　　　　　　　　　　　　　　
+說明:vsprintf 取得指向一串參數 (數目不定)的指標 (arg_pointer), 產生一個　　　　
+格式化的字元字串, 把此字中保存在記憶體中的某一地方 (由 p_string 指到)。　　　
+因此除了使用指標外, 它和 sprintf 的功能一樣。把變數的值轉換成字元字串是　　　　
+照 format_string 的命令來作的 (參看 printf 的說明, 及表 9.9,9.10,9.11,　　　　
+9.12 )。vsprintf 常式結束時, p_string 會是一個標準的 C 字串。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:vsprintf 常式把參數轉換成字串(這些參數是由一個常式取得的)。　　　　　
+其他的輸出常式 (如沒有格式化能力的 _outtext 也可使用此字串)。例如　　　　　　　
+一個能接受一串參數並印出來 (在繪圖模式中用 _outtext 印出)的錯誤管制　　　　　
+常式就可使用 vsprintf 來作。　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:vsprintf 傳回印出的字元數目(不含 null 字元)。　　　　　　　　　　　　　
+相關常式:printf,sprintf　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 349 頁　　　　　　　　　　　　　　　　　　
+vsscanf　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法int vsscanf(char *p_string,const char *format_string,va_list arg_pointer);
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:vsscanf(in_buffer,p_format,p_arg);　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h>,#include<stdarg.h> 　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:vsscanf 常式取得指向一串參數 (數目不定)的指標 (arg_pointer)。並　　　　　
+從字串中把這些參數讀入, 字串的位址由 p_string 指定。　　　　　　　　　　　　　
+    vsscanf 和 sscanf 功能一樣, 但它使用指標而非參數本身。從字元字串轉換成　　
+變數是照 format_string 指定的格式來執行的。參看 scanf 的說明。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:vsscanf 傳回成功取得, 轉換及存放的數目。如果還沒有讀完全部的　　　　　
+值以前, 已經碰到檔案終點, 則傳回 EOF。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:scanf,fscanf,va_start 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 351 頁　　　　　　　　　　　　　　　　　　
+close　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:close 常式用來關掉檔案 (由識別碼指到的, 識別碼由 fopen 常式傳回)。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int close(int handle); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:close(handle);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:close 常式關掉檔案 (由 handel 指定的)。handle 一定是前面的 fopen　　　　　
+或 creat 常式傳回來的整數。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:檔案成功關掉時, 傳回 0, 不然傳回 -1, 並把 errno 設定為 EBADF, 表示　　　
+一個無效的檔案識別碼。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:open,fopen　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 353 頁　　　　　　　　　　　　　　　　　　
+creat　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V 　　　　　　　　　　
+用途:creat 常式可用來建立新檔案或削去舊檔案。檔案由檔名 (可含指定路線)指定。　
+語法:int creat(const char *filename,int pmode); 　　　　　　　　　　　　　　　
+呼叫法:handle=creat("temp.dat",S_IREAD|S_IWRITE);　　　　　　　　　　　　　　　
+含括檔: #include<io.h>,#include<sys\types.h>,#include<sys\stat.h>　　　　　　　
+說明:creat 常式會先檢查名為 filename 的檔案是否存在。如果存在, 則打開檔案, 把
+舊資料除去, 準備寫入。如果並無舊檔案, 則建立新檔案。參數 filename 可含有檔名及
+一個指定路線。如果沒有指定路線, 則在目前目錄中建檔。因此若 filename 是 c:\\　
+temp\\test.dat, 則此檔案將在 C 磁碟機的目前目錄中建立。　　　　　　　　　　　　
+    參數 pmode 指定許可設定 (關檔時加到檔案上)。許可設定是以預定的常數來指定的
+。pmode 的設定由 umask 的設定修正。參看 umask 常式的說明。pmode 的可能值參看　
+表 9.6。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:檔案成功建立 (或除去), 則傳回此檔案的識別碼。若有錯誤, 則傳回 -1,　　　
+並把 errno (在 errno.h 中定義)設定為下列值中的一個。　　　　　　　　　　　　　
+參看 354 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:open常式使用　O_CREAT,和 O_TRUNC 作參數時, 具有 creat 常式的能力。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:,open,umask 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 354 頁　　　　　　　　　　　　　　　　　　
+creatnew 　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:creatnew 常式 (在 DOS 3.0 及以後的版本)可建立有指定屬性的新檔案。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int creatnew(const char *path,int attribute);　　　　　　　　　　　　　　
+呼叫法:if((handle=creatnew("temp.dat",0))==-1) 　　　　　　　　　　　　　　　　
+含括檔:#include<io.h>,#include<dos.h>　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:creatnew 常式用 path 參數提供的路線建立檔案 (前提是有同樣路線的檔案不　　
+存在)。新檔案具有 attribute 指定的屬性。屬性指定檔案是不為只讀或隱藏等。　　　
+可用 OR 運算子結合表 10-20 中的屬性。屬性常數在 dos.h 中定義, 0 表示正常　　　
+檔案。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:creatnew 常式可建立新檔案, 但 fopen,open 常式建立的檔案較有移植性。
+回報值:檔案成功建立時, 則傳回此檔案的識別碼。識別碼要保存, 以便參照。　　　　　
+若有錯誤則傳回 -1,並把 errno (在 errno.h 中定義)設定為表 10-21中的一個。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:creatnew 常式和 _creat 功能一樣, 但在有舊檔案時, 它會傳回一個錯誤。　
+相關常式:_creat,fopen　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 356 頁　　　　　　　　　　　　　　　　　　
+creattemp 　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+用途:creattemp 常式 (在 DOS 3.0 版以後)建立暫時性檔案 (在指定的目錄, 用指定　　
+的屬性。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int creattemp(char *path,int attribute); 　　　　　　　　　　　　　　　　
+呼叫法:if((handle=creattemp("c:\\tmp",0))==-1) perror("error in creattemp"); 　
+含括檔: #include<io.h>,#include<dos.h> 　　　　　　　　　　　　　　　　　　　　
+說明:creattemp 常式準備一個唯一的檔名, 然後在 path 指定的目錄中建立有這個　　　
+名稱的檔案。新檔案的屬性由 attribute 指定並照 _fmode 指定的轉換模式來開檔(　　
+參看介紹部份)。可用 OR 運算子來組合表 10-21 中的屬性 (在 dos.h 中定義, 0 表　
+示正常檔案)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    creattemp 常式把檔案的名稱抄到緩衝區 path 內。不再需要此一檔案時, 可把它　
+刪掉。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:creattemp 常式用來建立暫時性檔案, tmpfile 則用 ANSI 標準來作相同的　
+工作。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回一個識別碼。識別碼要保存, 以便參照。　　　　　　　　　　　　
+若有錯誤則傳回 -1,並把 errno (在 errno.h 中定義)設定為表 10-22中的一個值。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:tmpfile 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 358 頁　　　　　　　　　　　　　　　　　　
+dup　　　 　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:dup 常式建立檔案的第 2 個識別碼 (此檔案已有一個有效的識別碼)。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int dup(int handle); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:new_handle=dup(old_handle); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<io.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:dup 常式指定第 2 個識別碼給一個檔案 (已打開並有一個識別碼)。新識別碼　　　
+由 參數 handle 提供。這算是打開一個新檔案, 並受 DOS 最多可打開 20 個檔案的　　
+限制。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在 UNIX 系統中, dup 在一種交互連絡系統稱為 pipes 的執行 I/O　　　　　
+的工作。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如果成功的建立第 2 個識別碼, 則傳回此識別碼, 若有錯誤, 傳回 -1,　　　　
+並把 errno 設定為 EMFILE (超過限制數目時)或 EBADF (表示參數 handle 無效)。　　
+相關常式:open,creat　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 360 頁　　　　　　　　　　　　　　　　　　
+dup2　　　 　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:dup2 常式可強迫第 2 個識別碼參照和第 1 個識別碼相同的檔案。第 1 個　　　
+識別碼必需是有效的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int dup2(int handle1,int handle2); 　　　　　　　　　　　　　　　　　　　
+呼叫法:dup2(oldhandle,newhandle);　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:dup2 常式強迫 handle2 和 handle1 指向同一個檔案 (handle 1 是已打開檔案　　
+的有效識別碼)。如果 handle2 已是另一個檔案的識別碼, 則 dup2 會關掉此檔案,　　　
+並使 handle 2 和 handle 1 指向同一個檔案。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:dup2 常式用來使標準輸出和輸入 stdin,stdout 轉向。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如果 handle 2 已成功的指向 handle 1 所指的檔案, 則傳回 0。若有錯誤, 傳回
+-1 並把 errno 設定為 EMFILE (超過限制數目時)或 EBADF (表示參數 handle1 無效)。
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:open,creat　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 361 頁　　　　　　　　　　　　　　　　　　
+eof　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:eof 常式用來找出是否已到檔案終點 (檔案由識別碼指定)。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int eof(int handle); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:if(eof(handle)!=0) printf("File ended!\n"); 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:eof 常式會檢查是否已到檔案終點 (檔案由參數 handle 指到)。位元組串 I/O　　
+的 feof 常式具有類似的能力。許多低階 I/O 常式傳回 -1 表示有錯誤。由於　　　　　
+低階 I/O 常式通常用來讀 2 位元資料, 而資料位元組可含有 -1 (16 進位的 FF)　　　
+, 像 eof 常式可用來檢查是否確已到檔案終點或只是讀到含有 -1 的位元組。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+傳回值:對有效的識別碼, eof 傳回 1 表示已到檔案終點, 傳回 0 表示還沒有。　　　
+如果識別碼無效, 則傳回 -1, 並把 errno 設定為 EBADF。　　　　　　　　　　　　　
+相關常式:feof,ferror 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 363 頁　　　　　　　　　　　　　　　　　　
+lseek　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　　
+用途:lseek 常式可在檔案 (無緩衝或格式化 I/O )中移動位置。　　　　　　　　　　
+語法:long lseek(int handle,long offset,int orign);　　　　　　　　　　　　　　
+呼叫法:lseek(fhandle,512L,SEEK_SET); 　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<io.h>,#include<stdio.h>　　　　　　　　　　　　　　　　　　　　
+說明:lseek 常式設定檔案目前的讀寫位置, 檔案由 handle 指到, 而新位置由參數　　
+offset,origin 提供。offset 是一個長整數, 指出距離 origin 的長度。origin　　　
+(在 stdio.h 中定義)必需是下一表格中的一個值。　　　　　　　　　　　　　　　　　
+    除了不能在檔案起點前外, 可以設定在檔案的任一位置。　　　　　　　　　　　　
+參看 365 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:lseek 常式可用任意順序讀取檔案的資料 (無格式化的)。例如程式可建　　　
+立指定格式的資料, 如每一資料前面放一個 512 位元組的表頭之類。在讀這種檔案　　　
+時, 可用 lseek 跳過表頭, 直接讀取資料。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, lseek 傳回距檔案起點的偏移值。若失敗, 則傳回 -1, 並把 errno　　
+設定為 EBADF (表示識別碼無效)或設定為 EINVAL (表示位置設定超過界限)。如果　　　
+識別碼指到的裝置中, 目前位置無意義, 則傳回值也無意義。　　　　　　　　　　　　
+相關常式:tell,fseek　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 365 頁　　　　　　　　　　　　　　　　　　
+read　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:read 常式從檔案 (無緩衝式 I/O)目前位置讀取一串無格式化的位元組。　　　　　
+語法:int read(int handle,char *buffer,unsigned count);　　　　　　　　　　　　
+呼叫法:if((bytes_read=read(fhandle,bigbuffer,60000))==-1)　　　　　　　　　　　
+含括檔:#include<io.h>  　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:read 常式把一組位元組 (數目由 count 指定)從檔案 ( handle 指定)抄到　　　
+一個字元陣列 (buffer 指定)。它從目前位置(隨操作增加)讀起。如果檔案　　　　　　
+是用文字模式,則 CR-LF 會被換成 \n 而 Control-Z 會被解釋成檔案　　　　　　　　　
+終點。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:read 常式傳回實際讀取的位元組數目。若有錯誤, 傳回 -1, 並把 error 設定為
+EBADF (表示識別碼無效, 或檔案不是為寫入而打開)。在 DOS 3.0 及以上版本, 檔案鎖　
+住會產生錯誤。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:由於 read 傳回的是有正負號的整數, 因此讀的數目超過 32 K 時, 要把它　　
+轉換成無正負號的整數, 不然會成為負值。由於指定參數為無號整數, 理論上可一次　　
+讀 65536 個位元組。但 65536 等於 -1, 因此最多只能讀 65534 個位元組。　　　　　
+相關常式:creat,open,write　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 371 頁　　　　　　　　　　　　　　　　　　
+tell　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:tell 常式用來找出檔案 (由 handle 指到)的目前位置。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:long tell(int handle); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:curpos=tell(filehandle);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:tell 常式傳回檔案 (由 handle 指定)的目前位置。此位置是從檔案起點算起的　　
+偏移值 (以位元組為單位)。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:handle 有效時, tell 常式會傳回檔案的目前位置。如果 handle 無效, 則傳　　
+回 -1, 並把 errno 設定為 EBADF。如果 handle 是指到一個裝置, 而此裝置不能隨意　
+設定檔案位置, 則 tell 傳回的值無意義。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:lseek,ftell 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 376 頁　　　　　　　　　　　　　　　　　　
+write　　　　 　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　　
+用途:write 常式把一組資料 (無格式化)寫入檔案 (無格式化 I/O)的目前位置。　　　
+語法:int write(int handle,char *buffer,unsigned count); 　　　　　　　　　　　
+呼叫法:write(handle,data_buffer,1024); 　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<io.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:一個檔案用 open 常式打開準備作寫入或附加後,則可用 write 常式把　　　　　
+一組位元組 (數目由 count 指定, 它們位於由 buffer 指定的陣列內)寫入　　　　　　
+handle 指定的檔案內。寫入是從檔案目前位置開始的, 每寫入一個位元組, 則　　　　　
+把目前位置加 1 。如果檔案是打開來作附加, 則從檔案終點開始寫入。　　　　　　　　
+    如果是在文字模式, 則資料中的進列字元都會被換成 CR-LF。write 也把　　　　　
+Control-Z 當作檔案的邏輯終點。　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:write 常式傳回實際寫入的位元組數目。如果磁片空間已用完, 則傳回　　　　　
+值可能比 count 小。若傳回 -1 表示有錯誤。而 errno 的值若為 EBADF , 表示　　　　
+識別碼無效, 若為 EACCES 表示檔案並不是作寫入開檔的。　　　　　　　　　　　　　
+補充說明:若寫入的數目超過 32 K, 則傳回一個無正負號的整數, 在其他狀況下,　　　
+傳回負值。傳回 -1 表示不能一次寫入 65534 個位元組, 以及另一個可能的錯誤,　　　
+因 65535  (FFFFh)對微處理機而言, 等於 -1。　　　　　　　　　　　　　　　　　　
+相關常式:creat,sopen,read　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 378 頁　　　　　　　　　　　　　　　　　　
+cgets　　　　 　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:cgets 常式從鍵盤讀取一個字元字串。在讀到進列字元時纔停止, 而用　　　　　
+null 字元換掉進列字元, 產生了一個 C 字串。你必需配置記憶體給緩衝區, 以　　　　
+便保存字串。緩衝區的第 1 個位元組是要讀取字元的最大數目。　　　　　　　　　　　
+語法:char *cgets(char *buffer); 　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:cgets(user_input);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:cgets 常式從緩衝區 (其位址即 buffer )的第 1 個字元讀起。它把此字元　　　　
+當作要讀的最大數目。它取得按鍵, 把它們保存在 buffer 中的第 3 個位置 (buffer2)　
+。直到碰到進列字元或到達最大數目纔停止從鍵盤讀入的動作。然後 cgets 把進列字元　
+換成 null 字元, 在把讀到的字元數目放入 buffer1 後, 結束。緩衝區必需有　　　　　
+足夠的記憶體來容納所有的字元 (含 null 字元存放長度的兩個位元組)。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:cgets 常式傳回指向字串起點的指標 (即 buffer2 的位置)。　　　　　　　　　
+相關常式:cputs 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 380 頁　　　　　　　　　　　　　　　　　　
+cprintf　　　　　　　　　　　　　　　　　　　　　
+相容性: TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　 　　　　　　　　
+用途:cprintf 常式把 C 變數的值轉換成字元字串 (照指定的格式並印在螢幕上)。　　
+在控制台的輸出操作上它等於 printf 常式。　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int cprintf(const char *format_string,...); 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:cprintf("File %s has %d bytes of data\n",fname,size); 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:cprintf 常式取得一串參數和格式, 把它們印在螢幕上。格式化命令是由　　　　　
+format_string 指定的 (參看 printf 常式的說明)。　　　　　　　　　　　　　　　　
+    cprintf 常式不會把進列字元(\n)轉換成 CR-LF, 而是把 \n 解釋成進列,　　　　　
+\r 解釋成歸零。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:cprintf 常式傳回它印在控制台的數目。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:printf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 381 頁　　　　　　　　　　　　　　　　　　
+cputs　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:cputs 常式把一個字串在螢幕上印出。它不會在印出字串後,送出進列字元。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int cputs(const char *string); 　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:cputs("Are you sure (Y/N)?"); 　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔案: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:cputs 常式把參數 string 指定的字串在螢幕上印出。它不像 puts 常式, 在印出
+字串後, cputs 不會自動送出進列字元。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:cputs 常式傳回它印出的最後字元。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:cgets　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 382 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+cscanf　　　　 　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:cscanf 常式直接從鍵盤讀取字元, 照指定的格式轉換成值, 然後存放在一個　　　
+ C 變數內。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int cscanf(const char *format_string,...); 　　　　　　　　　　　　　　　
+呼叫法:cscanf("%d%d%d",&month,&day,&year); 　　　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:cscanf 常式直接從鍵盤讀取無緩衝的字元, 照 format_string 指定的格式轉　　　
+換值, 然後把此值存放在 C 變數內。這些 C 變數構成參數串。每一個變數都有一個　　
+對應的格式化指定命令。參看 scanf 常式的說明。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:cscanf 傳回成功讀取, 轉換和存放的字元數目。這個數目不含已讀取而　　　　
+沒有指定給變數的值。在碰到檔案終點時, 傳回 EOF。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:scanf,fscanf,sscanf 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 383 頁　　　　　　　　　　　　　　　　　　
+getch　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getch 常式從鍵盤讀取一個字元, 但不印在螢幕上。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getch(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:in_char=getch();　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getch 常式從鍵盤讀取一個字元 (沒有緩衝), 也不把此字元印在螢幕上。　　　　
+在呼叫 getch 時, 按下 CONTROL-C 鍵組會產生 8086 軟體中斷 23h。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getch 常式適合作立即的反應, 使用者按下一個鍵, 程式會立即取得此　　　　
+字元並作出反應。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getch 常式傳回從鍵盤讀取的字元。　　　　　　　　　　　　　　　　　　　　
+相關常式:getche,getchar　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 385 頁　　　　　　　　　　　　　　　　　　
+getche　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getche 常式從鍵盤讀取一個字元, 並印在螢幕上。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getche(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:in_char=getche(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getche 常式從鍵盤讀取一個字元 (沒有緩衝), 並把此字元印在螢幕上。　　　　　
+在呼叫 getche 時, 按下 CONTROL-C 鍵組會產生 8086 軟體中斷 23h。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getche 常式傳回從鍵盤讀取的字元。　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getch,getchar 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 386 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+getpass　　　　　 　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getpass 常式在螢幕上要求輸入一個字串, 它從鍵盤上取得此字串, 但不印在　　　
+螢幕上。此字串不能超過 8 個字元。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:char *getpass(const char *prompt); 　　　　　　　　　　　　　　　　　　　
+呼叫法:passwd=getpass("Enter password:");　　　　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getpass 常式把字串 prompt 印在螢幕上, 然後從鍵盤讀取字元 (不超過 8 個),　
+不印在螢幕上。這些字元稍後存放在一個內部字串內 (位址由 getpass 傳回)。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:可用 getpass 常式讀取密碼。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getpass 常式傳回一個指標, 此指標指向從鍵盤讀取的一個字串 (以 null　字元
+結束）。每呼叫一次　getpass,前次的字串就會被蓋掉。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getch 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 387 頁　　　　　　　　　　　　　　　　　　
+inport　　　　　　 　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:inport 常式從指定的 I/O 埠讀取一個 16 位元字組。例如可用 inport 一次　　　
+讀取兩個相連的埠。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int inport(int port);　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:word_8529=inport(0x20);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:inport 常式用組合語言指令 IN 從埠 (由 port 指定)讀取兩個位元組的資料。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:inport 常式用來一次讀取兩個相連的埠。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:inport 常式傳回一個無正負號整數 (16 位元), 這是從埠讀取的。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:inportb,outportb　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 388 頁　　　　　　　　　　　　　　　　　　
+inportb　　　　　　 　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:inportb 常式可讀取一個埠 (由參數指定位址)。例如用 inportb 讀取埠 21 h　　
+來找出目前的中斷編號。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:unsigned char inportb(int port); 　　　　　　　　　　　　　　　　　　　　
+呼叫法:byte_read=inportb(0x3f8); 　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:inportb 常式用組合語言指令 IN 從埠 (由 port 參數指定)讀取一個位元組的　　
+資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:inportb 常式用來控制輸出/輸入裝置。這些裝置的暫存器可用組合語言指令　
+IN,OUT 來存取, 而 inportb 則是 IN 指令的 C 語言介面。　　　　　　　　　　　　　
+回報值:inportb 常式傳回讀取的位元組。　　　　　　　　　　　　　　　　　　　　　
+補充說明:在 IBM PC 中, 我們都用 DOS 和 BIOS 來存取週邊裝置 (鍵盤,螢幕)等。　　
+但像串列埠, 喇叭則沒有足夠的支援。這時用 inportb,outportb 常式可很容易　　　　
+的操作這種裝置。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:inport,outportb 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 389 頁　　　　　　　　　　　　　　　　　
+kbhit　　　　　　　 　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:控制台 I/O 常式 kbhit 用來檢查是否有按鍵在等候讀取。由於 kbhit 不等候　　
+按鍵, 因此程式可繼續執行正常的工作, 直到使用者按下一個鍵, 中斷此程式為止。　　
+語法:int kbhit(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:while(!kbhit()) do_your_thing(); 　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　
+說明:kbhit 常式會檢查鍵盤緩衝區是否有按鍵等候讀取。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:程式使用 kbhit 常式, 就可正常的執行預定的工作, 不必停下來等候按鍵。　
+我們所要作的只是讓 kbhit 常式在指定時間 (例如迴圈開始時)到鍵盤緩衝區看是否　　
+有按鍵等候讀取。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:若有鍵按下, kbhit 傳回非 0 值, 不然傳回 0。　　　　　　　　　　　　　　
+補充說明:要設計事件決定的程式時, 則 kbhit 常式幾乎是不可缺少的。例如像終端　　
+模擬程式的主迴圈一定要處理至少兩種型式的事件:從串列埠送進來的字元及從鍵盤　　　
+送來的字元。如果你用 getch 常式來讀取按鍵, 則你會發現程式會一直停在那邊等候　　
+按鍵,而把串列埠送來的資料丟掉了。若使用 kbhit 常式, 則不必等候。　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 390 頁　　　　　　　　　　　　　　　　　　
+outport　　　　　　 　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:outport 常式可把一個 16 位元字組寫到指定的 I/O 埠位址內。例如可用　　　　
+outport 把兩個位元組的資料同時送入 EGA 卡的控制暫存器內, 作直接繪圖之用。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void outport(int port,int word); 　　　　　　　　　　　　　　　　　　　　
+呼叫法:outport(0x3ce,(2<<8)|0x5);　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:outport 常式用組合語言指令 OUT 把一個 16 位元的字組 (由參數 word　　　　　
+指定)送到一個埠位址 (由參數 port 指定)。　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:outport 常式可在一次呼叫中, 送兩個位元組資料到兩個相連的埠　　　　　　
+位址。在規畫 EGA 上時, 這是很有用的。　　　　　　　　　　　　　　　　　　　　　
+補充說明:PC 上的每一個埠位址指到一個 8 位元的暫存器。如果你用 outport　　　　　
+把兩個位元組的資料送到埠位址 3CEh, 第則1 個位元組進入 3CEh, 第 2 個進入　　　　
+3CFh。在 EGA 卡上經常要作這樣的輸出。　　　　　　　　　　　　　　　　　　　　　
+相關常式:outportb,inport,inportb 　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 393 頁　　　　　　　　　　　　　　　　　　
+outportb　　　　　　 　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　 　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:outportb 常式把一個位元組送給指定的 I/O 埠。例如用 outportb 把適當　　　　
+資料送給 8255 的 61h 暫存器, 則可使電腦的喇叭發聲。　　　　　　　　　　　　　　
+語法:void outportb(int port,unsigned char byte);　　　　　　　　　　　　　　　
+呼叫法:outportb(0x43,0xb6);　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h>　 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:outportb 常式用組合語言指令 OUT 把一個位元組的資料 (byte 指定)送給　　　　
+某一埠位址 (port 參數指定)。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:outportb 常式和 inportb 常式合用, 可存取輸出/輸入裝置的暫存器。　　　
+outportb 常式是 OUT 指令的 C 介面。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:PC 的BIOS 並不支援像喇叭這種的裝置。事實上喇只能用 IN,OUT 指令　　　　
+來控制, 這時就是使用 outportb ,inportb 常式的機會。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:outport,inport　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 396 頁　　　　　　　　　　　　　　　　　　
+putch　　　　　　　　 　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:putch 常式不用緩衝, 直接把一個位元在螢幕上印出。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int putch(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:putch('>'); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明 putch 常式把一個位元在螢幕上印出。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, putch 傳回它印出的位元, 不然傳回 EOF。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getch,getche　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 398 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+ungetch　　　　　　　 　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:ungetch 常式把一個字元送入鍵盤緩衝區, 因此這一字元會成為下一個被讀取　　　
+的字元。在下一次讀取前, 不能放入其他字元。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int ungetch(int c);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:ungetch(last_char); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:ungetch 常式把一個字元 (參數 c 指定)送入鍵盤緩衝區。因此下一次讀取　　　　
+會讀到此字元。在讀取前只能放入一個字元 (不可以是 EOF 字元)。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, ungetch 傳回送入的字元。若有錯誤傳回 EOF。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getch,getche　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 399 頁　　　　　　　　　　　　　　　　　　
+**********************************
+

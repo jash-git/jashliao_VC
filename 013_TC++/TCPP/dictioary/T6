@@ -1,0 +1,722 @@
+exec 常式　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  exec 常式可把一個子程式載入 (蓋掉父程式用的記憶體)並執行。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 int execv(char *path,char *arg[]);　　　　　　　　　　 　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 execv("child.exe",argv);　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<process.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明   exec  常式建立一個子程式, 載入並執行程式的指定 (由參數 path 指定)。　
+在這樣作時, 它把呼叫程式破壞了、exec  常式的各種變化是由參數和環境變數(傳給　
+子程式的)來決定的。表格 3.4照常式的名稱來列出它們的功能。　　　　　　　　　　
+    名稱中的第 5 個字元 (l 或 v)決定子程式接收命令列參數的方法。再下來的 1　　
+或兩個字元指出環境變數傳給子程式的方法。　　　　　　　　　　　　　　　
+    如果第 6 個字元是 p,則 COMMAND.COM 會用 PATH 環境變數來尋找程式 (此　　　
+程式的名稱由參數 path 指定)。如果不是這樣, 就必需指出到此程式的完整路徑,　　
+或指定從目前目錄開始的路徑。如果 path 沒有附名, 則 exec 會先去找沒有附名　　
+的程式。若沒有找到, 而 path 並沒有用句點結束, 則會去找附名為 .COM 和 .EXE　
+的檔案。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    所有命令列參數 (含分隔空間)總和不能超過 128 個位元組。雖然用不同的字串　　
+並無所謂, 不過通常把可執行檔案的完整路徑當作第 1 個命令列參數傳給子程式。　　
+    最後兩點要注意的是檔案和信號管制常式。在子程式中, 所有信號管制常式被重　
+置為預定管制常式。在父程式開啟的檔案, 在子程式中仍是開啟的。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法    exec  常式可讓程式一個接一個執行　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表格 3.4 參看 Turbo C 程式設計寶典上篇第 093 頁　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	成功時, exec  不會有回報值。有錯誤時, 傳回 -1, 並把公共變數 errno　　
+設定為表格 3.5 中的一個常數(指出錯誤的原因)。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+註解	 由於 exec  會蓋掉父程式的記憶體, 因此它們只適於連結程式。如果希望　
+回到原來的程式, 應使用 spawn 常式。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 spawn 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表格 3.5　參看 Turbo C 程式設計寶典上篇第 093 頁　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 093 頁。 　　　　　　　　　　　　　　　
+spawn　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　　　　MSC4　MSC5/QC　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途   spawn 常式可載入並執行子程式, 而在子程式結束時, 又回到父程式。　　　　　
+語法 int spawnl(int modeflag,char *path,char *arg0,char *arg1,...,NULL); 　
+含括檔:#include<process.h> 　　　　　　　　　　　　　　　　　　　　　　　　
+說明   spawn 常式建立一個子程式, 載入並執行 path 指定的程式。參數 modeflag
+指出子程式執行時, 對父程式的處理方法。在 DOS 下, modeflag 可以是 P_WAIT或
+P_OVERLAY。P_WAIT 表示執行子程式時, 父程式要停下來。而 P_OVERLAY 使 spawn
+等於 exec 常式。P_NOWAIT( 在 process.h 中定義)表示子程式和父程式同時執行。
+在 DOS 下使用此模式是不可以的。它只能用在多工系統中。　　　　　　　　　　　　　
+    spawn 的變化是由參數和環境變數決定的。表格 3.8 說明每一個常式的工作。　　
+第 5 個字母 l 或 v 決定子程式接受命令列參數的方法。再來的一或兩個字母表示　　
+環境變數傳給子程式的方法。如果是 p, 則 COMMAND.COM 用 PATH 環境變數來找出　
+可執行程式 (由參數 path 指定的)。不然就要指定檔案的完整徑名或從目前目錄開　
+始的路徑。如果 path 沒有附名, 則 spawn 常式會先去找沒有附名的檔案。如果　　　
+沒有找到, 而 path 又沒有用句號結束, 則 spawn 會去找 .COM 及 .EXE 檔。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表格 3.8 參看 Turbo C 程式設計寶典上篇第 115 頁　　　　　　　　　　　　　　　
+    所有的命令列參數 (含空白)總長度不可超過 128 個位元組。通常給子程式　　　　
+的第 1 個命令列參數是可執行檔案的完整徑名 (不這樣也可以)。　　　　　　　　　　
+    在子程式中, 所有 signal 管制程式都重定為內定的常式。在父程式中開啟的　　　
+檔案, 對子程式也是開啟的。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法   spawn 常式可用來從主程式中執行另一個程式 (另外編譯和連結的)。而　　
+在此程式結束時, 又回到主程式。下面的範例說明傳送指標 (指到資料區)給兩個子程式
+共用的方法。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	 在 P_WAIT 模式時, spawn 會把子程式的結束狀態傳給父程式。目 前無法　　
+使用 P_NOWAIT 模式。如果子程式無法啟動, 傳回 -1, 並把 error 設定為表 3.9　　
+中的一個常數 (以指出錯誤的原因)。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 3.9 參看 Turbo C 程式設計寶典上篇第 115 頁。 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明  spawn 常式可加強程式的能力。應用程式可用它來執行另外一個運作良　　
+好的程式 (不會影響效率), 這樣可產生出常駐程式 ( 在 DOS 中是常用到的)。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 exec 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 115 頁　　　　　　　　　　　　　　　　
+va_start, va_arg,va_end　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　　　　MSC4　MSC5/QC　ANSI　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  這 3 個巨集可用來取得常式中的參數 (數目可變化)。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法  void va_start(va_list arg_ptr,prev_param); 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 :#include<stdarg.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    一個常式取得了固定數目的指定參數和不定數目的機動參數後, 可用這 3 個　　
+巨集來取得此常式的參數 (方法和 ANSI 標準相容)。指定的參數有標準格式並用　　
+參數名來存取, 機動參數用巨集來存取。va_start 巨集用來使一個指標指向機動　　
+參數中的第 1 個位址, va_arg 用來移動指標指向下一個參數, va_end 在所有參數　
+都用過後, 使指標成為 NULL。存取機動參數的程序如下:　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+1.用參數名稱存取指定的參數。這些參數用正常的方法來宣告。宣告一個變數　　　　　
+(arg_ptr , 其型別為 va_list)。　　　　　　　　　　　　　　　　　　　　　　　
+2.使用 va_start (其參數為 arg_ptr 和最後指定參數的名稱),這會使 arg_ptr　　　
+指向常式的機動參數串的第 1 個位址。如果最後指定參數被宣告為 register 存放　　
+等級, 則 va_start 無法正確動作。　　　　　　　　　　　　　　　　　　　　　　　
+3.用 va_arg 取得下一個參數。此一巨集會更新 arg_ptr 的內容, 並傳回被找到參數　
+的指標。這個步驟要到存取完全部參數後, 纔結束。必需要有一個值能標定參數串的終　
+點。如果要存取整數參數, 則可用 -1 標示參數串的終點。　　　　　　　　　　　　　
+4.用 va_end 使 arg_ptr 成為 NULL。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+UNIX V 系統有一組類似的巨集可作同樣的工作。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    vfprintf,vprintf,vsprintf 常式可用這些巨集來設計錯誤管制常式 (可取　　　　
+得數量不定的參數)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　
+    va_arg 傳回指向下一個參數(具有指定型別)的指標。va_start 設定指向參數　　
+串起點的指標。va_end 使指標成為 NULL。　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 130 頁　　　　　　　　　　　　　
+fdopen　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+用途: fdopen 常式使一個檔案 (以無緩衝, 無格式化開啟)可以有一個緩衝區。　　　
+這樣, 這個檔案也從此可作緩衝, 格式化的存取操作。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:FILE *fdopen(int handle,char *access_mode); 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 p_datafile=fdopen(handle,"rb"); 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fdopen 常式使一個檔案 (由 handle 參數指定的)可以有一個 FILE 結構。　　
+handle 是由原先打開此檔案的低階 I/O 常式如 open,creat,sopen 等所傳回來　　
+的整數。在緩衝式 I/O 得到許可後, 你希望使用的操作模式一定要用參數　　　　　　　
+access_mode 來指定。表格 9.7  列出 access_mode 的可能值及其含義:　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 9.7 參看 Turbo C 程式設計寶典上篇第 265 頁 　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    除了表格 9.7 的基本存取模式外, 表格 9.8 的字元中的一個也可加到表格　　
+9.7 的字串上, 這可指出檔案內容的轉換方式。字元可放在 + 號的前面或後面。例
+如 w+b 等於 wb+, 它的意義是 (打開檔案在 2 位元模式下存取)。若沒有指定轉換
+模式, 則仗用 _fmode 指定的模式 (在 stdio.h 中宣告)。若檔案以 a 或 a+ 的模式
+開啟, 則現有資料不會被破壞, 因為新寫入的資料是從檔案終點開 始加上去的 (
+檔案指標指向檔案終點)。在寫入時, 這個指標都指向最新位置。在檔案用 r+,w+,a+
+打開, 準備作更新時, 若要作讀寫切換, 一定要呼叫 fsetpos,fseek,rewind 等常式
+中的一個。這些常式使把檔案指標指向適當的位置。你也可呼叫 fsetpos,fseek 常式　
+使指標指向目前位置。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表格 9.8 參看 Turbo C 程式設計寶典上篇第 265 頁　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:fdopen 常式使原來無緩衝及格式化能力的常式具有緩衝及格式化的能力。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, fdopen 傳回指向 FILE 結構的指標。若有錯誤, 則傳回 NULL。參看
+範例。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:在呼叫 fdopen 常式時, 指定的存取模式一定要和第 1 次開檔時的模式　　
+相同。不可在 fdopen 來打開一個檔案共用的檔案。因緩衝化操作和檔案共用是不能　
+並存的。有資料存放在緩衝區內時, 無法檔案共用。　　　　　　　　　　　　　　　　
+相關常式 fclose,open　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 265 頁　　　　　　　　　　　　　　　　　
+printf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:printf 常式可把字元字串和 C 變數的值 (照指定的格式)印在 stdout 檔案　　
+(通常是螢幕)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int printf(const char *format_string,...);　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:printf("The product of %d and is %d\n",x,y,x*y); 　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:printf 常式取得一串數目不定的參數, 把它們送到標準輸出 stdout。每　　　　　
+一個值都照格式化指定字串 format_string 指定的格式印出。呼叫 printf 時,　　　
+一定要有第 1 個參數。呼叫 printf 等於 fprintf(stdin)。　　　　　　　　　　　
+    如果 format_string 沒有含 % (除了 % % 會輸出一個 % 外), 則不必有參數,　
+format_string 會直接送給 stdout。例如　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+printf("Hello there!\n");　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+會在螢幕上印出 "Hello there", 然後碰到 \n 字元而跳到下一列。實際上特殊字元
+前面接上 \ 是可接受的。例如 \n,\t,\a  8 進位的 ASCII 字元也可以(如 \004　　
+在螢幕上印出一個菱形)。你可用這些字元來作排列的工作, 例如 printf("Name\t\r　
+Phone Number\n")會在螢幕上印出 Name 和  Phone Number (中間有兩個空白)。　　　
+    要印出 C 變數的值, 必需在 format_string 中對每一個變數指定一個格式化指定字
+。在大多數情況下, 都可用最簡單的格式化命令。　　　　　　　　　　　　　　　　
+程式 參看 Turbo C 程式設計寶典上篇第 308 頁　　　　　　　　　　　　　　　　　
+此程式印出一個 int型的整數, 一個 double型的數及一個字元字串。每一個變數　　　
+的格式化指定字前面都有一個 % 字元, 後面接一個文字 (指定變數的型別)。　　　　　
+    對於印出結果可作進一步的控制。在 % 和指定格式的文字間可插入許多指定。　　
+printf 可接受的完整格式指定如下:　　　　　　　　　　　　　　　　　　　　　　
+有許多表格參看 Turbo C 程式設計寶典上篇第 308 頁　　　　　　　　　　　　　　　
+基本用法:printf 常式是最常用的常式之一。很少有人會全部用到它的格式指定命令,　
+但如你需要, 它總是隨時候命的。　　　　　　　　　　　　　　　　　　　　　　
+回報值:printf 傳回印出的字元數目, 如有錯誤, 傳回 EOF。　　　　　　　　　　　
+補充說明:要印出 % 時, 用兩個 % %。printf 會印出在 % 後面的字元。　　　　　　
+    不過有幾個欄位並非標準, 如果希望程式能在不同系統上執行, 不要　　　　　　
+用 N 及 F 定址模式指定字。　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:vprintf,fprintf 　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 308 頁　　　　　　　　　　　　　　　　　
+scanf　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:scanf 常式從標準輸入檔案 stdin 讀取一個字元字串, 並照指定格式把此字串　
+轉換成 C 變數。例如你可用 scanf 從 stdin 讀取一個短整數。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int scnaf(const char *format_string,...); 　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:scanf("%d:%d:%d",&hour,&minute,&second); 　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　
+含括檔: #include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:scanf 常式取得一組數目不定的參數 (會被轉換成 C 變數的位址), 它從 stdin　
+讀入字串, 把它們照格式化命令 (scanf 常式中一定要含有此一命令, 用 format_string
+指定)轉換成電腦可處理的值。　　　　　　　　　　　　　　　　　　　　　　　　　
+    變數的轉換格式由 format_string 指定。每一個變數的格式化命令都用 % 號　　
+開始, 可以接其他字元。一個空白字元 (空白, 定位, 進列字元)都會使 scanf 不　　　
+處理 stdin 送來的空白字元。其他的非空白字元 (不含 %)使 scanf 不去處理送進　　
+來的相合字元。在讀到變數的值後, scanf 開始轉換第 1 個不相合字元。　　　　　　
+    對於位址放在 scanf 參數串中的每一個 C 變數而言, 在 format_string 中一定
+要有一個格式化命令指定給它。每一個格式化命令都有下列的格式:　　　　　　　　
+	Foemat Specification for scanf in Turbo C 　　　　　　　　　　　　　　
+	%[*][Width][Addressing_mode][Size][Type]　　　　　　　　　　　　　　　
+表 9.13摘要列出格式化命令中每一欄位的用途。進一步的細節參看表 9.4。　　　
+表 9.13 參看 Turbo C 程式設計寶典上篇第 323 頁 　　　　　　　　　　　　　　　
+最重要的欄位是 Type 欄。它指定 C 變數的型別。表 9.14 Type 欄中可用的　　　
+字元, 及相關 C 變數的型別。　　　　　　　　　　　　　　　　　　　　　　　　　
+表 9.4 參看 Turbo C 程式設計寶典上篇第 323 頁 　　　　　　　　　　　　　　　　
+通常用 % 讀進來的字元都假設用空白分開。如果你希望用其他字元來分開, 可　　
+把此字元用 [ ] 包住, 放在 s 的位置。如果 [ ] 內的第 1 個字元是 ^, 則　　　　　
+會印出結束字串的字元。因此 %[^'\"] 讀到用 ' 或 " 分開的字串。　　　　　　　　
+    使用 %[decimal number] (decimal number 表示從字串中要讀取的字元數目),　
+則在讀取及保存字串時, 不必管結束用的 null 字元。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:scanf 常式傳回成功處理的數目。如果傳回 EOF , 表示碰到檔案終點。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:要讀取 % 時, 使用兩個符號。scanf 中有某些內容並非標準內容,　　　　　
+如果希望程式能在各種系統中使用, 不可用 N,F 這兩個欄位。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 sscanf,cscanf　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 323 頁　　　　　　　　　　　　　　　　　
+open　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:在作任何讀寫以前, 可用 open 常式把檔案以無緩衝無格式化的 I/O 來打開。
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int open(const char *filename,int oflag[,unsigned pmode]); 　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:filehandle=open("temp.dat",O_WRONLY|O_CREAT,S_IWRITE);　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<io.h>,#include<fcntl.h>,#include<sys\types.h>,#include<sys\ 　
+　　　　stst.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:open 常式打開由 filename 指到的檔案。oflag 參數指定操作的模式。　　　　　
+這是由表 9.15 的值作 OR 運算而來的。這些值在 fcntl.h 中定義。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 9.15 參看 Turbo C 程式設計寶典上篇第 367 頁　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    只有在用 O_CREAT 建立新檔案時, 纔要用到第 3 個參數 pmode。如果檔案　　
+不存在, 則 pmode 用來設定新檔案的操作許可。表 09.16 列出 pmode 的可能值(　　
+在 sys\stat.h 中定義)。從表中可看到, DOS 的檔案一定都可讀取。可用 umask　　　
+常式來修改 pmode 的值。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 9.16 參看 Turbo C 程式設計寶典上篇第 367 頁　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    在 MS-DOS 3.0 及以上版本, 若用 SHARE.EXE 程式啟動檔案共用, 則 open 常式　　
+會有問題。當檔案用 open 打開, 而 aflag 設定為 O_CREAT|O_READONLY 或 O_CREAT　
+|O_WRONLY 時, DOS 會在 open 常式呼叫系統時, 關掉檔案。解決的方法是把 p_mode　
+設定為 S_IWRITE。而在關檔後, 可用 chmod 常式改為 S_IREAD。另一個方法是　　　
+把 pmode 設定為 S_IREAD, oflag 設定為 O_CREAT|O_RDWR 來開檔。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在執行無緩衝,無格式化 I/O 操作以前, 用 open 常式開檔。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回識別碼 (稍後, read,write 常式操作檔案時,要使用此碼)。　　
+若失敗, 傳回 -1, 並把 errno 設定為下表中的一個。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 9.17 參看 Turbo C 程式設計寶典上篇第 367 頁　　　　　　　 　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:close,fopen 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 367 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+sopen　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:sopen 常式打開一檔案 (作無緩衝, 無格式化, 共用 I/O 操作)。如果沒有　　　
+執行 SHARE.EXE , 則不作檔案共用。SHARE.EXE (或 SHARE.COM, 區域性網路使用　　
+的命令)只有 DOS 3.0 及以上的版本纔有。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int sopen(char *filename,int oflag,int shflag,unsigned pmode); 　　　　　
+呼叫法:fhandle=sopen("c:\\autoexec.bat",O_RDONLY,SH_DENYRW); 　　　　　　　　
+含括檔#include<io.h>,#include<share.h>,#include<fcntl.h>,#include<sys\types.h>
+　　　#include<sys\stat.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:sopen 常式打開由 filename 指到的檔案。oflag 參數指定操作的模式。　　　　　
+這是由表 9.15 的值作 OR 運算而來的。這些值在 fcntl.h 中定義。　　　　　　　
+    shflag 參數指定共用等級。它是由表 09.8 的值作 OR 運算來的。如果　　　　　
+沒有用 SHARE.EXE (SHARE.COM )啟動檔案共用, 則此參數用不到。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 9.18 　參看 Turbo C 程式設計寶典上篇第 373 頁　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    只有在用 O_CREAT 建立新檔案時, 纔要用到第 3 個參數 pmode。如果檔案　　　
+不存在, 則 pmode 用來設定新檔案的操作許可。表 9.16 列出 pmode 的可能值(　　
+在 sys\stat.h 中定義)。從表中可看到, DOS 的檔案一定都可讀取。可用 umask　　
+常式來修改 pmode 的值。　　　　　　　　　　　　　　　　　　　　　　　　　　
+    在 MS-DOS 3.0 及以上版本, 若用 SHARE.EXE 程式啟動檔案共用, 則 sopen 常式
+會有問題。當檔案用 sopen打開, 而 aflag 設定為 O_CREAT|O_READONLY 或 O_CREAT　
+|O_WRONLY 時,而 sh_flag 設定為 SH_COMPAT時S, DOS 會在 sopen常式呼叫系統時, 關掉
+檔案或產生一個 sharing violation 的中斷 (24h), 解決的方法是用 sopen 開檔時, 把
+pmode 設定為 S_IWRITE。而在關檔後, 可用 chmod 常式改為 S_IREAD。另一個方法是
+把 pmode 設定為 S_IREAD, oflag 設定為 O_CREAT|O_RDWR ,shflag 設定為 SH_COMPAT
+來開檔。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在網路中作檔案共用時, 用 sopen 開檔。它的工作和 open 相同, 但它可　
+指定檔案共用的等級。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回識別碼 (稍後, read,write 常式操作檔案時,要使用此碼)。　　
+若失敗, 傳回 -1, 並把 errno 設定為表 9.17 中的一個。　　　　　　　　　　　　
+　　　　　　　　
+補充說明:只有無緩衝式檔案纔能共用檔案。因此用 sopen 打開的檔案, 不可用　　　
+FDOPEN 把一個 FILE 結構指定給此檔案並使此檔案具有緩衝的能力。　　　　　　　
+相關常式:close,fopen　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 373 頁　　　　　　　　　　　　　　　　　
+bioscom　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:bioscom 常式用來存取 RS-232 串列埠 (COM1,COM2)。bioscom 可用來執行　　
+polled 式 I/O, 設定通訊參數 (輸送率, 位元檢查等)檢查串列埠狀態等。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int bioscom(int cmd,char abyte,int port);　　　　　　　　　　　　　　　　
+呼叫法:ch_rcvd=0xff&bioscom(2,0,COM1);　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<bios.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:bioscom 常式可控制 BIOS  INT 14h 常式。這個常式只控制 COM1,COM2。　　
+port 參數指定串列埠的編號, 0 表示 COM1,1 表示 COM2。bioscom 執行參數　　　　　
+cmd 指定的工作, 傳送的字元數目由參數 abyte 指定。表 10.7 的命令可作　　　　　
+為 cmd 參數。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    使用串列埠前, 一定要先設定一組參數。字組長度參數指定構成一個字元　　　　　
+的位元數目, 停止位元的數目 (指定字元的終點), 傳送率 (指定位元傳送的　　　　　
+速度)。從表格 10.9 的 4 個範圍中各選一個, 再把它們 OR 起來, 產生 abyte　　　
+參數, 就可設定一組參數。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.8 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.9 參看 Turbo C 程式設計寶典上篇第 433 頁 　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+例如若你選 8 位元的字組長度, 1 個停止位元, 不作同位元檢查, 傳送率為 300 ,
+則 0x03|0x00|0x00|0x40 組成 abyte 參數 (功能編號為 0 表示設定串列埠初值)。
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:bioscom 常式適合作串列埠的簡單 I/O (傳送率不超過 300)。超過 300　
+, 則程式來不及接收。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果希望增加速度, 則可使用中斷管制常式, 使串列埠能在需要時, 呼叫中斷　　
+管制常式。(參看 MS-DOS Paper 一書的第 13 章)。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:傳回值的高位元組表示串列埠的狀態。各位元的意義如表 10-10。　　　　　
+表 10.10 參看 Turbo C 程式設計寶典上篇第 433 頁　　　　　　　　　　　　　　　
+    在送出字元時, 傳回值的低階位元組應存放剛纔送出的字元。如表 16.10, 若　　
+位元 15 被設定為 1, 則由於串列埠還沒有準備好, 因此字元不會被送出。　　　　　
+    而在讀取字元時, 則傳回值的低階位元組是剛讀到的字元。若高階位元組中有　　
+任一個位元被設定為 1 則芷%雃鹵欞>產生, 此虫元代表的錯誤參看表 10-10。　　　
+    在設定初值, 及取得串列埠狀態時, 低階位元組存放 modem 的狀態。各位　　　
+元的意義如表 10.11。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.11 　參看 Turbo C 程式設計寶典上篇第 433 頁
+相關常式:int86 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 433 頁　　　　　　　　　　　　　　　　　
+harderr　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:harderr 常式可安裝 INT 24h (重大錯誤)的新管制常式。此常式的位址由　　　　
+參數指定。在硬體 I/O 時若有錯誤 (例如磁碟機的門沒有關)就會產生 INT 24h。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void harderr(int (*funcptr)());　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:int harderror_handler(int errval,int ax,int bp,int si); 　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:harderr 常式替 INT 24h 安裝新的管制常式, 硬體有錯誤時, 就會產生此一　　　
+中斷。被呼叫常式的位址由參數 funcptr 指定。　　　　　　　　　　　　　　　　
+    安裝的管制常式用 4 個參數呼叫指定的常式。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　(*funcptr)(int errval,int ax,int bp,int si);　 　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+errval,ax,bp,si 分別含有 DI,AX,BP,SI 暫存器的值。bp,si 參數組成一個 far　　
+指標, 指向含有表頭的結構, 結構中是關於發生錯誤裝置的訊息。要呼叫的常式　　　
+不應改變表頭中的任何資料。　　　　　　　　　　　　　　　　　　　　　　　　　
+    errval 參數的低階位元組指出錯誤的型別。如表 10.24 所示。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.24 參看 Turbo C 程式設計寶典上篇第 499 頁　　　　　　　　　　　　　　　
+如果磁片 I/O 時, 有錯誤, 則 ax 中的位元 15 會被設定為 0, ax 會提供關於　　　
+此錯誤的更多訊息。表 10.25 列出各位元的意義。　　　　　　　　　　　　　　　
+表 10.25 參看 Turbo C 程式設計寶典上篇第 499 頁　　　　　　　　　　　　　　　
+ax 的低階位元組存放產生錯誤的磁碟機編號 ( 0 表示 A 磁碟機等)。　　　　　　　
+    如果 ax 的位元 15 是 1, 則表示磁片 I/O 沒有錯誤, 要到別的地方　　　　　
+去找。表頭中偏移 4 的字組含有更多的錯誤訊息。可用位址 devhbr+4 來存取。　　
+表 10.26 說明錯誤的原因。　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.26 參看 Turbo C 程式設計寶典上篇第 499 頁　　　　　　　　　　　　　　　
+在管制常式 (由 funcptr 指到)中, 也可呼叫一些 DOS 常式。特別是 DOS 01-0Ch 及
+59h 常式。但它不能呼叫很多 Turbo C 常式, 因為這些常式本身也使用 DOS 的常式。
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法: harderr 常式可用來設計有耐力的程式, 即使有些錯誤產生. 程式也不會放
+棄資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:使用自己設計的管制常式有時是必要的。DOS 原來的管制常式無法達到要　
+求的能力。因此可用 harderr 來安裝新的管制常式。　　　　　　　　　　　　　　　
+相關常式:hardresume,getvect　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:　參看 Turbo C 程式設計寶典上篇第 499 頁　　　　　　　　　　　　　　　　
+randbrd　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:randbrd 常式把一個多個順序錄從檔案移到磁片轉移區(DTA)的目前位置。這些　
+錄可從任一錄編號開始。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int randbrd(struct fcb *fcb,int numrecs); 　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:if(randbrd(&my_fcb,4)!=0) printf("Error reading records!\n"); 　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:randbrd 常式使用 DOS 的 27h 常式從檔案讀取一串錄 (用 FCB 法)。在這種　　
+方法中, FCB 結構保存檔名, 檔案附名, 錄長度, 第 1 個錄位址等等資料。讀到的　
+資料放入 DTA 內。因此使用 randbrd 前, 一定要先用 setdta 來設定一個 DTA。在　
+改變 DTA 的內容以前, 應先把 DTA 的原來內容保存起來。而新的 DTA 也應有足夠　
+空間來保存所有資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    參數 numrecs 指定錄的數目。其他訊息應放在 fcb 結構內 (其位址由 fcb 參數
+指定)。fcb 在 dos.h 中定義如下:　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典上篇第 537 頁
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+在使用 randbrd 前, 應先把磁碟機編號, 檔名, 錄長度等資料放在 fcb 結構內。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:randbrd 常式使用 FCB 和 DTA 讀取檔案。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:randbrd 的回報值, 意義如下:　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+0=所有的錄都成功讀取　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+1=碰到檔案終點, 最後一個錄已讀完。　　　　　　　　　　　　　　　　　　　　　
+2=DTA 太小, 裝不下所有的錄。　　　　　　　　　　　　　　　　　　　　　　　　　
+3=在最後一個錄還沒有讀完前, 已碰到檔案終點。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:read 常式比 randbrd 有更大的移植性。使用 read 和 lseek 組合比　　　
+randbrd 有更大的好處。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:lseek,randbwr 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 537 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+randbwr　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:randbwr 常式把一個多個順序錄從磁片轉移區(DTA)的目前位置寫入檔案內。這些
+錄可從任一錄編號開始。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int randbwr(struct fcb *fcb,int numrecs); 　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:if(randbwr(&my_fcb,4)!=0) printf("Error writing records!\n"); 　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:randbwr 常式使用 DOS 的 28h 常式把一串錄寫入檔案 (用 FCB及 DTA 法)。在這種
+方法中, FCB 結構保存檔名, 檔案附名, 錄長度, 第 1 個錄位址等等資料。要寫入的資料
+一定要放在 DTA 內。因此使用 randbwr 前, 一定要先用 setdta 來設定一個 DTA。在　
+改變 DTA 的內容以前, 應先把 DTA 的原來內容保存起來。而新的 DTA 內應為預備寫入　
+檔案的所有資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    參數 numrecs 指定錄的數目。其他訊息應放在 fcb 結構內 (其位址由 fcb 參數　
+指定)。fcb 在 dos.h 中定義如下:　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典上篇第 540 頁　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+在使用 randbwr 前, 應先把磁碟機編號, 檔名, 錄長度等資料放在 fcb 結構內。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:randbrd 常式使用 FCB 和 DTA 把資料寫入檔案。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:randbwr 的回報值, 意義如下:　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+0=所有的錄都成功寫入　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+1=磁片已滿　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+2=DTA 的位置使某些錄位於區段之外 (傳回示誤碼前, 會儘量把錄寫入)。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:write 常式比 randbwr 有更大的移植性。使用 write 和 lseek 組合比　　　
+randbwr 有更大的好處。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:lseek,read 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 540 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+initgraph　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　 TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:initgraph 常式用來啟動 Turbo C 繪圖系統。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far initgraph(int far *graphdriver,int far *graphmode,char far 　　
+			*pathtodriver);
+呼叫法:initgraph(&graphdriver,&graphmode,"c:\\turboc");　　　　　　　　　　　
+含括檔: #include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:initgraph 把繪圖驅動程式載入記憶體內, 並使介面卡進入繪圖模式, 而　　
+啟動了繪圖系統。驅動程式和繪圖模式分別由參數 graphdriver 和 graphmode　
+指定。你可用表 07.8 的常數指定驅動程式。每個驅動程式又分為幾個模式。　　　　　
+各模式的常數參看表 07.9。驅動程式常數是 graphics_driver 的列舉型 別,　　　　　
+而模式常數是graphics_modes 的列舉型別(都在graphics.h 中 定義)。　　　　　　　
+   initgraph 的第 3 個參數是個字 串(指出驅動程式和目錄的位置)。在　　　　　
+呼叫法 中, 我們假設驅動程式是在 C:\TURBOC 內)。用一個字串常數來指定此　　　
+路線時, 要記得用兩個 \\ 作目錄分別字, 因為一個 \ 在 Turbo C 中表示跳出字元。
+    如果在指定路線沒有找到驅動程式, 則initgraph 也會到目前錄中中找 .BGI　　
+檔案。因此若 pathtodriver 為 NULL, 則驅動程式一定要放在目前目錄中。　　　　　
+    即使不知道介面卡的型式, 也可以啟動繪圖系統。只要用 DETECT 這個常數,　　
+initgraph 就會去呼叫 detectgraph 常式來找出此介面上的最佳模式。然後啟動　　
+繪圖系統。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    除了使介面卡進入繪圖系統外, initgraph 也呼叫 _graphgetmem 來配置記憶體
+給驅動程式並存放暫時結果。它也會使繪圖設定回到原始的Turbo C (參看　　　　　
+graphdefault 常式的說明)。　　　　　　　　　　　　　　　　　　　　　　　　　
+    你可以把繪圖驅動程式加到自己的程式內。這時, 你要用 registerbgidriver　　
+或 registerfarbgidriver 常式讓系統知道有這個驅動程式。這樣 initgraph 纔不　　
+會再把驅動程式載入記憶體內。　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果 initgraph 碰到錯誤, 它會設定示誤碼 (並抄到 *graphdriver 內)。4　　　
+個可能的錯誤如下:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典下篇第 274 頁　　　　　　　　　　　　　　　　　　　
+你可用 graphresult 來取得示誤碼。　　　　　　　　　　　　　　　　　　　　　
+表 7.8 參看 Turbo C 程式設計寶典下篇第 274 頁　　　　　　　　　　　　　　　　
+表 7.9 參看 Turbo C 程式設計寶典下篇第 274 頁　　　　　　　　　　　　　　　
+基本用法:在能作繪圖以前, 一定要先用 initgraph 來啟動繪圖系統。呼叫 initgraph
+時, 若用 DETECT 作參數, 則會自動設定最佳繪圖模式。　　　　　　　　　　　　　
+補充說明:使用 Turbo C 繪圖常式的, 啟動是關鍵性的, 因此應檢查啟動時可能產生　
+的錯誤。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:closegraph,detectgraph　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 274 頁　　　　　　　　　　　　　　　　　
+registerbgidriver　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+registerfarbgidriver　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　 TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:registerbgidriver 和 registerfarbgidriver 都可告訴繪圖系統, 加入的　　
+驅動程式的資料。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int registerbgidriver(void (*driver)(void));　　　　　　　　　　　　　　
+呼叫法if(registerbgidriver(EGAVGA_driver)<0){printf("Error driver:EGAVGA\n");}
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 繪圖常式可用已安裝的驅動程式把輸出送到各種介 面卡上。這些　　　
+驅動程式存放在檔案附名 .OBJ 的檔案內。用 initgraph 啟動繪圖系統後, 會把　　
+適當的驅動程式載入記憶體內, 並設定某些指向此驅動程式的 far 指標。這樣　　　　　
+繪圖系統使用此指標即可呼叫驅動程式。　　　　　　　　　　　　　　　　　　　　
+    通常 initgraph 從磁片載入驅動程式, 並設定指到它的指標。你也可直接　　　
+把驅動程式加到你的程式內。作法是用 BGIOBJ 公用程式把 .OBJ 檔案轉換成　　　　　
+.OBJ 檔案,  然後照一般連接 .OBJ 檔案的方法來連結即可。　　　　
+    當程式要連結一或多個驅動程式時, 就要用到 registerbgidriver 或　　　　　
+registerfarbgidriver。它們會讓系統知道驅動程式已在記憶體內, 而使系統　　　　　
+不必再到磁片中找驅動程式。在使用 initgraph 前, 就要先叫用這種登錄　　　　　
+常式。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    BGIOBJ 程式把 .BGI 檔案轉換成 .OBJ 檔案 (使用固定的區段名稱)。這時,　　
+要用 registerbgidriver 來登錄驅動程式。如果有幾個驅動程式, 而一個 64 K　　　
+的區段無法裝下, 則要產生問題。這時可用	/F 使每一個檔案都有自己的區段名稱(　
+這時要用 registerfarbgidriver 來登錄)。例如在轉換 EGAVGA.BGI 及 HERC.BGI 時
+,前者不用 /F, 而後者用 /F , 則登錄如下:　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典下篇第 280 頁 　　　　　　　　　　　　　　　　　　　
+驅動程式的名稱是在 .BGI 的名稱後面加上 _driver 產生, 如果用 /F, 則還會加　　
+上 _far。表 7.10 列出登錄時一定要用的驅動程式名稱。　　　　　　　　　　　　
+表 7.10 　 參看 Turbo C 程式設計寶典上篇第 280 頁　　　　　　　　　　　　　　
+基本用法:要把驅動程式連結到應用程式時, 可用 registerbgidriver 或　　　　　
+registerbgidriver 常式來作。這樣程式纔能獨立不致增加使用上的麻煩。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 都傳回非負值, 有錯誤, 則傳回負值。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:當新的介面卡出現時, 只要有它的驅動程式, 則 Turbo C 程式　　　　　
+照樣可在這種介面卡上執行。如果知道規格, 自己也可設計驅動程式。Turbo C　　　
+使用類似的方法使 stroke 式的字體能出現在繪圖畫面上。　　　　　　　　　　　
+相關常式:getdrivername,initgraph　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 280 頁　　　　　　　　　　　　　　　　　
+setallpalette　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　 TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setallpalette 常式可在 EGA/VGA 卡中重新設定像素值和彩色的關係。也就是　
+能重新定義調色盤。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far setallpalette(struct palettetype far *palette);　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:struct palettetype new_palette;setallpalette(&new_palette); 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setallpalette 常式 (只能用在 EGA/VGA 卡上)取得新的調色盤定義,　　　　　
+此一調色盤是放在結構 palettetype 內, 此結構在 graphics.h　中定義如下：　　　
+struct palettetype{ 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+unsigned char size,signed char colors[MAXCOLORS+1];};　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+其中的 MAXCOLOR 代表最大像素值 15。你一定要定義一個 palettetype 結構,　　　　　
+並在參數 palette 指定結構的位址。結構中的 size 欄指出可用的彩色數目,　　　　　
+而陣列 color 保存實際的彩色值。例如像素值 0 表示背景色。因此若把 color　　　
+中的第 1 項定義為 1 , 表示背景色為藍色。　　　　　　　　　　　　　　　　　　
+    setallpalette 指定像素值和 color 中成員的關係。從像素 0 開始配對　　　　　
+直到最大可能值為止。因此陣列中的成員必需至少等於可同時出現在螢幕中的彩　　　
+色數目。例如 EGA/VGA 的 16 色模式中, 陣列的成員至少要有 16 個。　　　　　　
+    你可用表 07.11 的常數來定義調色盤。實際上, 此表為 EGA 的內定調色盤。　　
+你也可直接把 0-63 的值放在 color 陣列內, 下一例子說明 EGA 調色盤的　　　　　
+再定義。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    用 getpalette 常式可取得目前調色盤。如果 color 陣列中有一項被設定　　　
+為 -1, 則setallpalette 無法重新定義此項。在像素值重新定義後, 目前的所　　　
+有文字和圖形都將使用新的定義。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 7.11 參看 Turbo C 程式設計寶典上篇第 287 頁　　　　　　　　　　　　　　　
+基本用法:setallpalette 和 setpalette 常式可在 EGA/VGA 系統中, 快速的　　　　　
+變換螢幕的彩色。例如把彩色從較淺的改成較強的, 會有發亮的感覺。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如果給 setallpalette 的輸入值無效,  則把示誤碼設定為 grError (-11)。　
+graphresult 常式會傳回此值。　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:　getpalette  　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 287 頁　　　　　　　　　　　　　　　　　
+setlinestyle　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　 TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setlinestyle 常式可把直線的寬度設定為 4 種內定花式的一種, 或一種新的　　
+16 位元花式 (也可決定直線的外形)。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far setlinestyle(int linestyle,unsigned upattern,int thickness);　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setlinestyle(USERBIT_LINE,0x3ff,THICK_WIDTH); 　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setlinestyle 常式用來定義直線的外形 (由 line,lineto,drawpoly,pieslice　
+常式畫出來的直線)。外形包含寬度, 實心或點式, 及點的形式等。　　　　　　　　
+    參數 linestyle 指定內定花式中的一個。表 7.14 是可用的花式名稱。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 7.14 參看 Turbo C 程式設計寶典上篇第 304 頁　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　
+如果 linestyle 是 USERBIT_LINE 則要處理 upattern 參數。這時可用自己指定　　　
+的花式 (由 upattern 決定)。此花式可看作是 16 個像素長的線段。如果 linemask　
+中有一個位元是 1, 則對應的像素具有目前的彩色 (參看 setcolor 常式), 如果有　　
+一個位元是 0 , 則對應的像素不會有改變。linemask 為 FFh, 會畫出實心線 (這也　
+是預定形式)。下面的例子說明改成其他花式的方法。　　　　　　　　　　　　　　　
+    第 3 個參數 thickness 指定直線的寬度 (以像素為單位)。不過只有 1 和 3 可　
+選。名稱如表 7.15。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 7.15 參看 Turbo C 程式設計寶典上篇第 304 頁　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+如果這些參數有一個是無效的,則 setlinestyle 會把示誤碼設定為 -11 (grError , 一
+般性錯誤)。可用 graphresult 常式取得此值。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:此常式可決定各種花式, 而使各種圖形易於分開。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:要改變花式前, 最好先用 getlinesettings 把原來的花式保存起來。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getlinesettings　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 304 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+registerbgifont　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+registerfarbgifont　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　 TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:registerbgifont (registerfarbgifont)把字體已連結到可執行程式的訊息告訴繪圖
+系統。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int registerbgifont(*font)(void));　　　　　　　　　　　　　　　　　　　
+　　 int far registerfarbgifont(void far *font);　　　　　　　　
+呼叫法:if(registerbgifont(sansserif_font)<0){printf("Error font:SANS_SERIF_　
+					     FONT\n");exit(1);}　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 提供好幾種字體, 需要時, 可從磁片載入記憶體。存放這些字體的檔案, 附
+名都是 .CHR。在 initgraph 常式啟動繪圖系統後, 可用 settextstyle 常式選一個字體,
+這字體就會被載入記憶體, 並設定指向此字體的 far 指標。以後就用這指標來取得字體。
+    通常字體檔案 (.CHR)和執行檔案是分開的, 使用時纔從磁片中載入記憶體, 但　　
+Turbo C 有一種方法可把字體檔案放在可執行檔案內。作法是用 BGIOBJ 公用程式　　
+把 .CHR 檔案轉換成 .OBJ 檔案, 你可以指定這個 .OBJ 檔是要放在和其他字體相同　
+的區段內, 或單獨放在一個 far 區段內。如果程式要用幾種不同的字體, 則有必要　
+把它們放在不同的區段, 以免字體放不下。　　　　　　　　　　　　　　　　　　　　
+    轉換成 .OBJ 檔後, 可用 TLINK 把它和其他 .OBJ 檔結合在一起。在使用這　　　
+些字體前, 一定要用 registerbgifont 常式 (若有不同區段, 則用 registerfar　　　
+bgifont)來登錄字體。這樣繪圖系統纔知道字體已載入, 不必再從磁片中讀入了。
+在使用 initgraph 前, 一定要先作此一步驟。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用下列程式登錄字體:　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典下篇第 390 頁　　　　　　　　　　　　　　　　　　　
+registerbgifont 的參數是字體常式的名稱 (由字體名稱加 _font 組成)。如果選　
+/F,還要在前面接 _far。表 9.3 列出字體的名稱及登錄時的名稱。　　　　　　　　
+表 9.3	參看 Turbo C 程式設計寶典上篇第 390 頁　　　　　　　　　　　　　　　
+基本用法:要把字體連到程式內時, 就要用 registerbgifont (或 registerfarbgifont)
+。程式要上市時, 總要把字體也含括進來比較方便。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 這兩個常式都傳回非負值。有錯誤則傳回負值。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:在設計 Turbo C 繪圖取向的文書處理程式時, 可載入字體的觀念是很有用的。
+只要提供新字體的 .CHR 檔, 就可使用此新字體。對於產生螢幕輸出的繪圖驅動程式,　
+Turbo C 也有類似的控制方法。　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph,registerbgidriver　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 390 頁　　　　　　　　　　　　　　　　　
+settextstyle　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　 TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:settextstyle 常式選定字體, 輸出方向, 及大小, 以便 outtext,outtextxy　　
+可使用。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far settextstyle(int font,int direction,int charsize); 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:settextstyle(SANS_SERIF_FONT,HORIZ_DIR,4); 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 有一個內定的 8*8 bit-mapped 字體, 可用在繪圖模式的文字輸出。　　
+另外也可從磁片中載入 stroke 字體。settextstyle 在字體還沒有連結及登錄時,　　
+會把參數 font 指定的字體載入記憶體。font 使用表 9.5 中的常數。這些常數　　
+都在 graphics.h 中的 font_name 中定義。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 9.5 參看 Turbo C 程式設計寶典上篇第 396 頁　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參數 charsize,direction 分別設定文字的大小和方向。方向有兩個選擇　　　　　　
+HORIZ_DIR (水平方向從左到右), 及 VERT_DIR(反時鐘方向轉 90 度, 並從底部　　　
+向上印出)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    charsize 指定比例。4 表示 4 倍 (從 8*8 變成 32*32)。如果是 0 , 則　　　
+bit-mapped 字體不變, 而 stroke 字體則照 setusercharsize 常式設定的比例印出
+(內定值為 4)。因此在垂直和水平方向可有不同的比例。　　　　　　　　　　　　　
+    settextstyle 常式要載入字體時, 它會照 initgraph 指定的路線到磁片中尋　　
+找字體檔案。若有錯誤, 則傳回下表中的一個示誤碼。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 參看 Turbo C 程式設計寶典上篇第 396 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+你應用 graphresult 常式來檢查錯誤。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:settextstyle  常式用來控制字形和佈局。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:能選各種字體及排列, 使 Turbo C 常式適合設計 what you see is what　　
+you get 的文書處理程式。雖然目前使用自己的字體還有限制, 不過以後會有改進。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph,outtext　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 396 頁　　　　　　　　　　　　　　　　　
+************************
+

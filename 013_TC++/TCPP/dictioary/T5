@@ -1,0 +1,1544 @@
+getmoderange　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getmoderange  常式可找出某一驅動程式的有效模式編號的範圍。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far getmodernrange(int graphdriver,int far *lomode,int far *himode);
+呼叫法:getmodernrange(VGA,&mode_low,&mode_high);　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getmoderange 傳回可用模式編號的範圍。參數 graphdriver 指定介面卡。　　　
+表 7.9 列出各種驅動程式的指定常數。最低及最高編號都傳回參數 lomode 和　　　　
+himode。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　如果 graphdriver 指定的是無效的驅動程式, 則 getmoderange  會使　　　　　　
+*lomode,*himode 都 變成 -1。要取得目前驅動程式的模式範圍, 應把　　　　　　　　
+graphdriver 設定為 -1 , 再呼叫 getmoderange。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:detectgraph,getgraphmode　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 255 頁　　　　　　　　　　　　　　　　　　
+getpalette　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getpalette 常式取得目前的調色盤。　　　　　　　　　　　　　　　　　　　　
+語法:void far getpalette(struct palettetype far *palette);　　　　　　　　　　
+呼叫法:struct palettetype cur_palette;getpalette(&cur_palette); 　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getpalette 常式傳回 palettetype 結構內的目前調色盤 (結構的位址　　　　　
+由 palette 指定)。此結構在 graphics.h 中定義如下:　　　　　　　　　　　　　　　
+參看 257 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+其中的 MAXCOLOR 是一個常數, 其值為 15。size 這一欄是調色盤中彩色的數目。　　　
+實際的彩色值放在陣列 colors 內 (編號從 0-size-1)。　　　　　　　　　　　　　
+    表 7.3 列出 CGA,VGA,EGA 的預定調色盤。在 CGA 上, 只有調色盤中的第　　　　
+1 項(代表背景色的像素值)可重新定義。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getpalette 常式可取得並保存 EGA 或 VGA 的調色盤 (在使用　　　　　　　
+setallpalette 重新定義調色盤前)。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getmaxcolor,seypalette　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 257 頁　　　　　　　　　　　　　　　　　　
+getpalettesize　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　　　　　　TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getpalettesize 常式可取得目前調色盤的彩色數目　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far getpalettesize(void);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:printf("Current palette has %d colors\n",getpalettesize()); 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getpalettesize 常式用來取得目前調色盤可用彩色數目。例如在 EGA 的高　　　　
+解析度彩色模式中, getpalettesize 傳回的值是 16。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:getpalettesize 傳回調色盤的可用彩色數目。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getpalette,setpalette 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 259 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+getviewsettings　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getviewsettings 可取得目前觀察窗的資料。　　　　　　　　　　　　　　　　
+語法:void far getviewsettings(struct viewporttype far *viewport); 　　　　　　
+呼叫法:getviewsettings(&cur_view);　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:觀察窗是螢幕的一塊區域。觀察窗的左上角成為各繪圖常式的原點。而　　　　　
+在觀察窗外的圖形會被切掉。開始時, 是把整個螢幕當作觀察窗的。　　　　　　　　　
+　　getviewsettings 把觀察窗的資料傳回結構 viewporttype , 此結構在　　　　　　
+graphics.h 中定義如下:　　　　　　　　　　　　　　　　　　　　　　　　　　　
+struct viewporttype{　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+int left,top;int right,bottom;int clip;}; 　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+在程式中一定要定義一個這種結構, 而用參數 viewport 指定其位址。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getviewsettings 的主要用途是把舊的觀察窗資料保存起來, 以便　　　　　
+稍後能回到原來的狀態。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:setviewport,clearviewport 　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 260 頁　　　　　　　　　　　　　　　　　　
+getx　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getx 可取得目前位置的 x 座標 (以觀察窗的左上角為參考原點)。　　　　　　　
+語法: int far getx(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:x_pos=getx();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 的繪圖系統保存一個目前位置, getx 常式傳回此位置的 x 座標。　　　　
+座標系統的原點是目前觀察窗的原點。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在畫封閉多邊形時, 可用 getx 和 gety 來取得並保存目前位置, 這樣　　　
+可從最後一點畫一條直線到此點, 而得到封閉圖形。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值: getx 傳回目前位置的 x 座標。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:gety,moveto 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 262 頁。　　　　　　　　　　　　　　 　　
+gety　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+用途:gety 可取得目前位置的 y 座標 (以觀察窗的左上角為參考原點)。　　　　　　　
+語法: int far gety(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:y_pos=gety(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 的繪圖系統保存一個目前位置, getx 常式傳回此位置的 y 座標。　　　　
+座標系統的原點是目前觀察窗的原點。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在畫封閉多邊形時, 可用 getx 和 gety 來取得並保存目前位置, 這樣　　　
+可從最後一點畫一條直線到此點, 而得到封閉圖形。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值: gety 傳回目前位置的 y 座標。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getx,moveto 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 264 頁　　　　　　　　　　　　　　　　　　
+graphdefaults　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:graphdefaults 常式把 Turbo C 的設定重置回原始設定。　　　　　　　　　　　
+語法:void far graphdefaults(void);　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:graphdefaults();　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 繪圖常式有內定的設定。你可用 graphdefaults 來回到原始　　　　　　
+設定。graphdefaults 執行過後, 產生下列效果:　　　　　　　　　　　　　　　　　
+1.觀察窗被定為整個螢幕。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+2.目前位置為 (0,0)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+3.調色盤回到內定 (參看表 7.3)的黑底白色。　　　　　　　　　　　　　　　　　　
+4.花式是實心, 白色的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+5.線也是實心的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+6.繪圖字型是 8*8 位元對映字體, 以左下角為目前位置。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:graphdefaults 可重置繪圖系統　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 265 頁　　　　　　　　　　　　　　　
+grapherrormsg　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:grapherrormsg 常式用 graphresult 傳回來的示誤編號取得一個示誤訊息。　　　
+語法:char *far grapherrormsg(int errorcode);　　　　　　　　　　　　　　　　　
+呼叫法:g_errorcode=grapherrormsg(int errorcode);　　　　　　　　　　　　　　　
+       if(g_errorcode !=grok) printf("%s\n",grapherrormsg(graphresult()));
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 的繪圖常式會設定示誤碼, 來指出目前的狀態。這些示誤碼由　　　　　　
+grapheresult 常式傳回。grapherrormsg 利用這示誤碼 (由 errorcode 參數提供)　　　
+傳回示誤訊息。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在有錯誤產生時, grapherrormsg 可印出此錯誤的有關訊息。　　　　　　　
+回報值:grapherrormsg 傳回一個指標(指到含有錯誤訊息的字串)。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:呼叫 grapheresult 時, 都會把示誤碼重置為 0 (或 grOK 表示沒有錯誤)　　
+。如果要在幾個地方使用這個示誤碼, 可把它們在變數內。下一式:　　　　　　　　　　
+if(graphresult()!=grok) printf("%s\n",grapherrormsg(graphresult()));　　　　　
+並不正確, 因為第 1 次呼叫 graphresult 時, 已把示誤碼重置為 0 了。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:graphresult 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 266 頁　　　　　　　　　　　　　　　　
+_graphfreemem　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　 　　　　
+用途:_graphfreemem 常式釋放 initgraph 常式配置的記憶體。如果你提供自己的　　　
+記憶體控制程式, 則要重新定義 _graphfreemem。　　　　　　　　　　　　　　　　　
+語法:_void far _graphfreemem(void far *ptr,unsigned size);　　　　　　　　　　
+呼叫法:不必直接呼叫。　　　　　　 　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 繪圖常式使用機動的記憶體配置來放驅動程式, 字體和填入操作的　　　
+中間結果。在開始時, initgraph 常式用 _graphgetmem 來配置這些記憶體, 而在　　　
+用 closegraph 常式結束繪圖時, 會用 _graphfreemem 來釋放這些記憶體。　　　　　　
+_graphfreemem 的內定版本是 Turbo C 常式庫中的 free 常式。　　　　　　　　　　　
+　　你也可用自己的記憶體控制程式, 這時就要用 _graphgetmem 和 _graphfreemem　　
+常式來配置和釋放記憶體。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:若在 small 或 medium 模式中使用 far 指標, 則應用 farfree 常式而非　　
+_graphfreemem。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:若要換掉 _graphfreemem , 則 _graphgetmem 也要重新定義, 以便相容。　　
+    _graphfreemem 的參數是指標及記憶體長度。若用 free 常式, 則不必用長度參數。
+程式需要時, 這個長度很容易取得。　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:closegraph,_graphgetmem 　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 269 頁 　　　　　　　　　　　　　　　　　
+_graphgetmem　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:_graphgetmem 常式配置所要的的記憶體。如果你提供自己的　　　　　　　　　　
+記憶體控制程式, 則要重新定義 _graphgetmem。　　　　　　　　　　　　　　　　　
+語法:void far *far _graphgetmem(unsigned size); 　　　　　　　　　　　　　　　
+呼叫法:不必直接呼叫。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 繪圖常式使用機動的記憶體配置來放驅動程式, 字體和填入操作的　　　
+中間結果。在開始時, initgraph 常式用 _graphgetmem 來配置這些記憶體, 而在　　　
+用 closegraph 常式結束繪圖時, 會用 _graphfreemem 來釋放這些記憶體。　　　　　
+_graphgetmem 的預設版本是 Turbo C 常式庫中的 malloc 常式。　　　　　　　　　　
+    你也可用自己的記憶體控制程式, 這時就要用 _graphgetmem 和 _graphfreemem　　
+常式來配置和釋放記憶體。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:若在 small 或 medium 模式中使用 far 指標, 則應用 farmalloc 而非　　
+_graphgetmem。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:若要換掉 _graphfreemem , 則 _graphgetmem 也要重新定義, 以便相容。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph,_graphfreemem 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 270 頁　　　　　　　　　　　　　　　　　　
+graphresult　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+用途:graphresult 常式可取得最後一次繪圖操作的示誤碼　　　　　　　　　　　　　
+語法:int far graphresult(void); 　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:g_errorcode=graphresult(); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:Turbo C 的繪圖常式會設定示誤碼, 來指出操作的成功或失敗。graphresult 傳　
+回目前的示誤碼。在結束前, 它會使此示誤碼重置為 0, 因此若以後要用此示誤碼,　　　
+則要把它保存起來。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在每一個可能會產生錯誤的繪圖常式執行後, 都要呼叫 graphresult 常式。　
+並把傳回的結果和表 7.7 的值對照。最好和 grapherrormsg 常式用下列方法合用:　　
+參看 272 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:graphresult 傳回繪圖示誤碼。參照表 7.7 來找出它們的意義。這些示　　　
+誤碼在 graphics.h 中定義(為列舉式型別)。可用 grapherrormsg 常式來取得　　　　　
+此示誤碼的相關訊息。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 7.7 　　 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:好的應用軟體應有管制錯誤的能力。如果你在設計 Turbo C 的繪圖程式　　　
+,  則應常用 graphresult 和 grapherrormsg 來管制錯誤。　　　　　　　　　　　　　
+相關常式:grapherrprmsg 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 272 頁　　　　　　　　　　　　　　　　　　
+installuserdriver　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:installuserdriver 常式把新繪圖驅動程式的名稱加到 Turbo C 繪圖系統的內部　
+表格內。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int registerbgidriver(void(*driver)(void));　　　　　　　　　　　　　　　
+呼叫法:if(registerbgidriver(EGAVGA_driver)<0){ printf("Error registering driver
+       :EGAVGA\n"); exit(1);}　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　
+說明:installuserdriver 常式把新驅動程式的名稱(參數 name 指定)加到表格內。　　　
+驅動程式則保存在磁片內 (名稱相同, 但檔案附名為 .BGI)。參數 detect 是一　　　　
+個常式的位址, 當繪圖系統啟動要找出適當的驅動程式時, 都會呼叫此常式。　　　　　
+基本用法:installuserdriver 可使新的驅動程式加入 Turbo C 的繪圖常式庫內。　　　
+由於 .BGI 的格式還沒有公開, installuserdriver 只能用在 Borland 公司提　　　　　
+供的驅動程式上。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:installuserdriver 傳回一個整數 (應保存), 使用 initgraph 常式時,　　　　
+可用上值來找出適當的驅動程式。　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果 Borland 公開繪圖驅動程式的規則, 則 installuserdriver 將很　　　
+有用。你可自行設計繪圖驅動程式, 用此常式加到 Turbo C 繪圖常式庫內。　　　　　　
+相關常式:initgraph   　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 279 頁　　　　　　　　　　　　　　　　　
+restorecrtmode　　　　　　　　　　　　　　　　　　　　　
+相容性:　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:restorecrtmode 常式使螢幕回到原先的模式, 此一模式是 initgraph 常式在　　　
+啟動繪圖系統前所找出來的。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far restorecrtmode(void); 　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:restorecrtmode(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:initgraph 啟動繪圖系統時, 會先找出原來的模式, 把此模式保存起 來。而　　　
+restorecrtmode 則回到此原來模式。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:通常 restorecrtmode 常式用來從繪圖模式回到文字模式。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:在叫用 restorecrtmode 前, 應先叫用 getgraphmode 來取得目前的繪圖　　　
+模式。稍後可用 setgraphmode 回到原來的繪圖模式。　　　　　　　　　　　　　　　
+相關常式:getgraphmode,setgraphmode 　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 284 頁　　　　　　　　　　　　　　　　　　
+setactivepage　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setactivepage 常式可指定一頁或螢幕的一部份作繪圖的地方。只有介面卡可　　
+分作好幾頁時, 纔能使用此常式。　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far setactivepage(int pagr);　　　　　　　　　　　　　　　　　　　　
+呼叫法:setactivepage();　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setactivepage 選擇某頁 (由參數 page 指定)作為目前動作頁。這可決定使　　　
+用那一部份視訊記憶體來接受輸出的結果。　　　　　　　　　　　　　　　　　　　　
+    所謂頁是指容納輸出的一部份視訊記憶體。例如若介面卡有足夠記憶體裝下　　　
+兩個畫面, 就稱為兩頁。只有 EGA,VGA 卡有 256 K記憶體, 而 HERC 卡在繪圖　　　　　
+模式時, 可分成好幾頁。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    動作頁決定使用視訊記憶體的那一部份, 而印出頁則決定那一部份記憶體的　　　　
+內容會出現在螢幕上。照內定第 0 頁同時是動作及印出頁。　　　　　　　　　　　　
+基本用法:若有足夠記憶體, 則 setactivepage 可把它們分成幾頁, 一頁用來處理, 另　
+一頁印在螢幕上等。這使動畫產生連續的效果。　　　　　　　　　　　　　　　　　　
+相關常式:setvisulapage 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 285 頁　　　　　　　　　　　　　　　　　　
+setaspectratio　　　　　　　　　　　　　　　　　　　　　
+相容性 　　　　　　  TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setaspectratio 常式可改變預定的高寬比。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far setaspectratio(int xasp,int yasp);　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setaspectratio(75,100); 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setaspectratio 常式可改變高寬比, 而改變各種圖形的比例。　　　　　　　　
+    新的高寬比用參數 xasp,yasp 來定義。如果螢幕原來的高寬比為 1:1.1,　　　　　
+則 setaspectratio (10,11)使高寬比變成 1:1 。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:如果你的螢幕不合 Turbo C 的要求, 則可用 setaspectratio 來改變　　　　
+螢幕的高寬比。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getaspectratio　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 291 頁　　　　　　　　　　　　　　　　　　
+setbkcolor　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+用途:setbkcolor 常式可選擇新的背景色。　　　　　　　　　　　　　　　　　　　　
+語法:void far setbkcolor(int color);　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setbkcolor(RED);　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setbkcolor 常式把背景色改變為參數 color 指定的彩色。一設定立即發生　　　
+效果。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    背景色由彩色值指定。在 CGA 上中可用 0-15 的色 (或表 7.12 中的常數)。　　　
+EGA/VGA卡則為 0-63。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　setbkcolor(4) 使背景成為紅色, 而 setbkcolor(0) 使背景成為黑色。　　　　　
+表 7.12 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法 :setbkcolor 用來設定新的背景色。　　　　　　　　　　　　　　　　　　
+補充說明:介面卡在繪圖模式時, 背景色的像素值都是 0, 也就是說繪圖模式中,　　　　
+背景都是黑色。然而由於像素值是對應到調色盤中的一個彩色, 在 EGA/VGA 卡中　　　
+可重新定義調色盤的對應關係, 而使像素值 0 可代表任一色。因此可改變背景色。　　
+參看 setallpalette 常式的說明, CGA 卡只能用 setpalette 來改變像素值 0 的　　
+對應彩色。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getblcolor,getpalette 　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 293 頁　　　　　　　　　　　　　　　　　　
+setcolor　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setcolor 常式選要畫出的彩色, 選好後, 各種畫圖常式如 arc,line,pieslice　　
+等都使用這個彩色。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far setcolor(int color);  　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setcolor(4);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setcolor 常式把彩色設定為參數 color 指定的彩色。設定好後, 常式都用　　　
+此色來繪圖。實際的彩色由調色盤決定。　　　　　　　　　　　　　　　　　　　　　
+　　若沒有設定, 則使用目前調色盤中最高可用的彩色編號。　　　　　　　　　　　　
+　　它沒有傳回值, 但若 color 的值超過範圍, 則彩色不改變。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getcolor,getpalette 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 295 頁　　　　　　　　　　　　　　　　　　
+setfillpattern　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setfillpattern 常式選一種填入色及花式 (bar,bar3d,floodfill,pieslice 常式
+都使用這些設定)。若沒有設定花式, 則使用實心白色花式。　　　　　　　　　　　　　
+語法:void far setfillpattern(char far *fillpattern,int color);　　　　　　　　
+呼叫法:char far pattern1[]={1,3,7,0xf,0x1f,0x3f,0x7f,0xff);　　　　　　　　　　
+       setfillpattern(pattern1,RED);　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setfillpattern 可設定一種填入彩色及一個 8*8 的花式 (bar,pieslice　　　　　
+等常式在填入時使用得到)。　　　　　　　　　　　　　　　　　　　　　　　　　　
+    填入色由 color , 花式由 fillpattern (這是指向 8 字元陣列的 far 指標)指定。
+由於一個字元由 8 位元組成, 可以把它想成是 8*8 的圖形區 , 第 1個字元代表此區的
+第 1 列。花式填入時, 和 0  位元對應的像素不變, 其他像素則填入目前的彩色。因此
+若 8 個字元都是 ffh, 則產生實心的花式 (這也是預定的花式)。對大於 8*8 的區域, 花
+式會連續畫出, 直到填滿為止。　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:此常式可設定各種花式, 而使圖形能明白分開。　　　　　　　　　　　　　
+補充說明:在改變花式前, 最好先用 getfillpattern 把舊的花式保存起來。Turbo C　　
+有 12 種花式可由 setfillstyle 來選。而 setfillpattern 則用來設定自己設計的花式
+相關常式:getfillpattern,setfillstyle 　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 297 頁　　　　　　　　　　　　　　　　　　
+setfillstyle　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setfillstyle 常式用來選一個預定的彩色及花式, 以便後來的常式可用。　　　　
+語法:void far setfillstyle(int pattern,int color);　　　　　　　　　　　　　　
+呼叫法:setfillstyle(HATCH_FILL,YELLOW); 　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setfillstyle 常式用來選一個預定的彩色和花式給畫圖常式 (bar,pieslice　　　
+等使用)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    color 指定彩色, 參看表 7.3。pattern 指定花式, 參看表 7.13 (都在 graph　
+ics.h 中定義)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    若要用自已設計的花式, 應使用 setfillpattern 常式。只在 setfillstyle 中　　
+使用 USER_FILL 是不夠的。USER_FILL 是 getfillsettings 傳回來的值。　　　　　　
+表 7.13　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:此常式用來選彩色和花式。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:在換新花式前, 最好用 getfillsettings 把舊花式保存起來。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getfillpattern,setfillpattern 　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 299 頁　　　　　　　　　　　　　　　　　　
+setgraphbufsize　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setgraphbufsize 常式可指定 Turbo C 繪圖常式所用緩衝區的長度, 而不必使　　
+用內定的 4k 位元組緩衝區。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:unsigned far setgraphbufsize(unsigned bufsize);　　　　　　　　　　　　　
+呼叫法:unsigned old_size,new_size=2048;old_size=setgraphbufsize(new_size); 　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:在填入時,Turbo C 的繪圖常式使用一個緩衝區來保存中間的結果。緩衝區是　　　
+initgraph 常式在啟動繪圖系統時設定的。內定的長度是 4k。在 initgraph　　　　　
+還沒有使用前, 可先用 setgraphbufsize 來設定緩衝區的長度, 不限在 4 k。　　　　　
+基本用法:如果不作填入, 沒有用緩衝區的必要, 而有時又需要大於 4 k 的緩衝區　　
+, 這都可用 setgraphbufsize 來達成。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:setgraphbufsize 傳回前次的緩衝區長度。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:closegraph,initgraph　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 301 頁　　　　　　　　　　　　　　　　　　
+setgraphmode　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setgraphmode 常式可切換繪圖模式, 清除螢幕。　　　　　　　　　　　　　　　
+語法:void far setgraphmode(int mode); 　　　　　　　　　　　　　　　　　　　　
+呼叫法:setgraphmode(VGAHI);　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setgraphmode 常式設定繪圖模式 (由 mode 指定)使用的硬體裝置。並把所有　　　
+的繪圖設定還原回原始設定 (參看 graphdefaults)。　　　　　　　　　　　　　　　
+　　在 Turbo C 中, 每一種繪圖驅動程式都有幾個模式。例如 VGA 繪圖驅動程式　　
+有 3 個模式 (0-2, 參看表 7.9)。setgraphmode 用來在這些模式間切換。例如開始　
+時用 initgraph 設定為 VGAHI 模式 (640*480 16 色), 可用 setgraphmode 再改為　　
+VGALO ( 640*200 , 16 色)等。　　　　　　　　　　　　　　　　　　　　　　　　　
+    setgraphmode 的參數 mode 必需是有效值, 如果是無效值, 則會把示誤碼　　　　　
+設定 為 -10。getmoderange 常式提供有效的值範圍。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:setgraphmode 常用來從文字模式回到繪圖模式。也可在不同的繪圖模式 　　
+間切換。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式: getgraphmode,initgraph 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 303 頁　　　　　　　　　　　　　　　　　　
+setpalette　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+用途:setpalette 可重新定義像素值和彩色的關係。例如像素值 0  都是代表背景,　　　
+因此只要用 setpalette 重新定義彩色編號 0 即可改變背景色。　　　　　　　　　　　
+語法:void far setpalette(int pixel_value,int color);　　　　　　　　　　　　　
+呼叫法:setpalette(0,CYAN);　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setpalette 常式 (只能用在 EGA/VGA)定義彩色 (color 指定)和像素值 (pixel　　
+_value 指定)的關係。pixel_value 的最大可能值由可同 時映出幾色決定。例如　　　
+16 色的繪圖模式中, 其值從 0-15  (參看  getpalette 常式)。　　　　　　　　　　　
+　　color 可用符號或數值指定。參看表 7.3。　　　　　　　　　　　　　　　　　
+    一個像素值被 setpalette 重新定義過後, 用此像素的圖形立即照樣改變。　　　　
+如果這些參數有一個是無效的,則 setlinestyle 會把示誤碼設定為 -11 (grError , 一
+般性錯誤)。可用 graphresult 常式取得此值。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:setpalette 和 setallpalette 常式可重新定義調色盤, 而使 EGA/VGA　　　
+系統產生特殊效果。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getpalette,setrgbpalette　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 307 頁　　　　　　　　　　　　　　　　　　
+setrgbpalette　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setrgbpalette 常式可為 IBM 8514 介面卡定義 256 色的調色盤。　　　　　　　
+語法:void far setrgbpalette(int colornum,int red,int green,int blue); 　　　　
+呼叫法:setrgbpalette(1,0x3f,0,0); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:IBM 8514 介面卡具有 1024*768 個像素的解析度, 並可在 262144 種可用　　　　
+的彩色中, 一次映出 256 種。setrgbpalette 常式可明白指定像素值(彩色編號)　　　
+和螢幕彩色的對應關係。colornum 參數的範圍從 0 -255。red,green,blue　　　　　　
+分別指定像素的強度。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    由於只使用了最低的 6 個位元, 因此強度為 2^6 =64 級。而使 IBM 8514　　　　　
+具有 64*64*64 =262144 種可用的彩色。　　　　　　　　　　　　　　　　　　　　　
+基本用法:setrgbpalette 常式只能用在 IBM 8514 介面卡。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:不應使用 Turbo C 的其他調色盤常式如 setallpalette, setpalette 等　　
+來控制 IBM 8514 介面卡。IBM 8514 的驅動程式一開始就把調色盤最前面的 16 色　　
+設定為 EGA/VGA 的 16 色。floodfill 常式不可用在 IBM 8514 驅動程式上。　　　　　
+相關常式:getpalette　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 309 頁　　　　　　　　　　　　　　
+setviewport　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setviewport 常式在螢幕定出一塊方形區, 在此區外的圖形可把它除去。　　　　
+語法:void far setviewport(int left,int top,int right,int bottom,int clip);　　
+呼叫法:setviewport(150,50,350,150,1);　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setviewport 在螢幕中定義一塊區域(觀察窗), 使所有的繪圖都在此窗內　　　　　
+執行。此區的範圍由 left,top,right,bottom  4 個參數決定。定義觀察窗後,　　　　　
+以觀察窗的左上角為原點。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:setviewport 常式可在螢幕產生幾個觀察窗, 每一個都有自己的座標　　　　　
+系統。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:initgraph,setgraphmode,graphdefaults 常式在執行時, 都把觀察窗　　　　
+重定為整個螢幕。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式: clearviewport,window 　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 311 頁　　　　　　　　　　　　　　　　　　
+setvisualpage　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+ 用途:setvisualpage 常式可選擇目前頁, 或記憶體中的某一部份, 這些是實際送　　　
+到螢幕上的。只有介面 卡有 足夠記憶體容納好幾頁時, 纔能使用 setvisualpage。　　
+語法:void far setvisualpage(int page);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setvisualpage(1); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setvisualpage 選擇要映在螢幕上的頁 (由 page 指定)。參看 setactivepages　　
+及頁的說明。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    那一頁要保存則由 setactivepage 決定。照預定第 0 頁同時是印出及動作頁。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:setvisualpage 和 setactivepage 常式合用可決定那一頁要印出, 那一　　　
+頁要處理。這可使畫面產生連續的效果,在動畫上很有用。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:setactivepage 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 313 頁　　　　　　　　　　　　　　　　　　
+setwritemode　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  　　　  TC2　 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setwritemode 可改變寫入模式 (line,lineto,drawpoly 等常式用的模式)。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far setwritemode(int mode); 　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setwritemode(COPY_PUT); 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:setwritemode 設定 line,lineto,drawpoly 常式用的模式。寫入模式決定　　　　
+像素的效果。整數型參數 umode 決定模式, 它的可能值是 COPY_PUT 及 XOR_PUT　　　
+(都在 graphics.h 中定義)。　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果是 COPY_PUT , 則把舊的像素蓋掉, 若用 XOR_PUT, 則和舊像素作 XOR　　　
+處理。一條線用 COPY_PUT 畫出後, 再用 XOR_PUT 來畫, 則前面的線可清除。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:輪流使用 COPY_PUT 和 XOR_PUT 模式, setwritemode 可用來畫線和清除線。　
+相關常式:line,lineto 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 314 頁　　　　　　　　　　　　　　　　　　
+arc　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:arc常式畫出圓弧, 此弧可為任何角度並 使用目前的彩色。　　　　　　　　　　
+語法:void far arc(int x,int y,int stangle,int endangle,int radius); 　　　　　
+呼叫法:arc(100,100,0,29,50); 　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:arc  常式會在觀察窗內畫出一個弧 (半徑 radius, 圓心為 x,y)。  如圖 8.1　
+,  弧的兩個角度由 stangle,endangle 指定 (順反時鐘 方向)。3 點鐘方向為 0 度,　
+因此從圓心到此點的直線為參考線。　　　　　　　　　　　　　　　　　　　　　　　
+    弧從 stangle 角開始, 而照反時鐘方向在 endangle 角結束。如果 stangle  為　
+0 而 endangle 為 359  , 則畫出的是一個圓。　　　　　　　　　　　　　　　　　　
+    不像 bar,bar3d,lineto 常式, arc 常式只使用實心花式, 在 畫出弧後, 並 不會　
+改變目前位置。arc 使用目前模式的高寬比使弧不致變 形。　　　　　　　　　　　　　
+基本用法:此常式可用來畫弧, 並組成弧區。　　　　　　　　　　　　　　　　　　　　
+補充說明:Turbo C 能很容易的把直線組成弧。getarccords 常式傳回最後一個弧的圓心　
+和終點。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:circle,ellipse　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 331 頁　　　　　　　　　　　　　　　　　　
+bar　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:bar 常式用來畫出矩形柱 (使用目前的彩色和花式)。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far bar(int left,int top,int right,int bottom); 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:bar(100,100,120,200); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:bar 常式在螢幕畫出一個柱形 (使用目前的彩色和花式)。柱形由左上角和右下角　
+(即參數 left,top,right,bottom 指定, 座標以觀察窗為參考系統)。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:bar 常式用來畫出柱形, 這在印出數字和結果時很有用。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:bar 無法畫出邊界 , bar3d 常式把 depth 定為 0 時, 可畫出邊界。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:bar3d,setfillpattern　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 333 頁　　　　　　　　　　　　　　　　　　
+bar3d　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:bar3d 常式可畫出 3 維矩型柱形 (使用目前 的彩色和花式)。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法void far bar3d(int left,int top,int right,int bottom,int depth,
+　　　　　　　　　　int topflag); 　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:bar3d(100,100,120,200,5,1); 　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 :#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:bar3d 畫出一個 3 維的柱形, 此柱形的特 點是有正面和深度, 深度　　　　　　
+由參數 depth 指定, 正面由 left,top,right,bottom 參數指定 (以觀察窗為　　　　　
+參考點)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    只有在參數 topflag 不是 0 時, 纔會畫出頂部。如果要堆上 第 2 個　　　　　　
+3 維柱形就不能有頂部。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:bar3d 常式畫出的柱形很適合表達數字和結果。　　　　　　　　　　　　　
+相關常式:bar,setfillpattern　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 334 頁　　　　　　　　　　　　　　　　　　
+circle　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:circle 常式可畫出圓　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far circle(int x,int y,int radius); 　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:circle(100,100,50); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:circle 常式畫出一個圓, 半徑由參數 radius 圓心由參數 x,y 指定(以觀察窗　　
+為參考點)。圓的外觀使用實心線和目前彩色。可用 floodfill 常式填入 圓的內部。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:雖然 arc 常式也可畫圓, circle 常式是更方便的。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:arc,floodfill 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　 參考 Turbo C 程式設計寶典下篇第 336 頁　　　　　　　　　　　　　　　　　
+cleardevice　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:cleardevice 常式可清除螢幕並把目前位置移到觀察窗的左上角。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far cleardevice(void);　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:cleardevice();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:cleardevice 常式清除螢幕, 使整 個螢幕變成背景色。setbkcolor 常式可改變　　
+背景色。在清除後, cleardevice 把目前位置定為目前觀察窗的原點。若只清除觀察窗,　
+使用 clearviewport 常式即可。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:clearviewport,setbkcolor　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 337 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+clearviewport　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:clearviewport 常式清除目前的觀察窗, 並把目前位置移到觀察窗的原點。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far clearviewport(void);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:clearviwport();　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:clearviewport 清除目前觀察窗填入背 景色,背 景色可由 setbkcolor 常式　　　
+改變。在清除後, clearviewport 把目前位置定為觀察窗的原點。　　　　　　　　　　
+　　若要清除整個螢幕, 應使用 cleardevice。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:清除觀察窗的能力可產生彈出式及拉下式視窗。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:cleardevice,setviewport 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　  　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 339 頁　　　　　　　　　　　　　　　　　　
+drawpoly　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:drawpoly 常式畫出多邊形的外觀。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far drawpoly(int numpoints,int far *polypoints);　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:int triangle[]{100,100,150,50,200,100,100,100}; 　　　　　　　　　　　　
+　　　　npts=sizeof(triangle)/(2*sizeof(int));　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:drawpoly 常式使用目前的彩色和花式畫出一串直線 (各點位置由一個陣列指定,　　
+陣列的位址由參數 polypoints 指定)。numpoints 指定陣列成員的總數。setwritemode　
+常式決定各像素的寫入模式。　　　　　　　　　　　　　　　　　　　　　　　　　　
+    要畫出封閉的多邊形, 必需使第 1 點等於最後一點。fillpoly 常式可把多邊形填　
+入目前彩色和花式。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:雖然 drawpoly 的名稱另有含意, 但它通常用來畫 x-y 圖 (參看圖 8.3)。　
+相關常式:fillpoly,line 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 340 頁　　　　　　　　　　　　　　　　　　
+ellipse　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:ellipse 常式用目前彩色畫出橢圓或橢圓弧。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 :void far ellipse(int x,int y,int stangle,int endangle,int xradius,　　　
+　　　　　　　　　　　　int yradius); 　　　　　　　　　　　　　　　　　　　　
+呼叫法:ellipse(100,100,0,45,50,25); 　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:ellipse 畫出一段橢圓, 橢圓的水平和垂直軸分別由 xradius,yradius 參數　　　
+指定。橢圓的圓心由 x,y 指定 (以觀察窗為參考點)。stangle,endangle  分別　　　　
+指定橢圓的起點和終點。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果從 0 度開 始而以 359 度結束, 則畫出完整的橢圓。floodfill 常式　　　　　
+可把彩色和花式 填入橢圓內。　　　　　　　　　　　　　　　　　　　　　　　　　
+    ellipse 使用實心線, 也不改變目前位置。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法  :此 常式為更複雜 圖形的基礎。　　　　　　　　　　　　　　　　　　　　
+相關常式:arc,circle　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 342 頁　　　　　　　　　　　　　　　　　　
+fillellipse　　　　　　　　　　　　　　　　　　　　
+相容性 　　　　　　  TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fillellipse 常式畫出一個橢圓, 並填入目前的彩色和花式。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far fillellipse(int x,int y,int radius,int yradius);　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:fillellipse(100,100,50,25); 　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fillellipse 常式畫出一個橢圓, 圓心為 x,y, 半徑為 xradius,yradius。　　　
+橢圓的邊界沒有畫出, 而內部填入目前的彩色和花式 (用 setfillpattern,　　　　　　
+setfillstyle 設定)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果要畫出橢圓的邊界, 應使用 ellipse 常式。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:ellipse,setfillpattern　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 344 頁　　　　　　　　　　　　　　　　　　
+fillpoly　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fillpoly 常式畫出一個封閉多邊形的邊界 (使用目前的彩色, 而封閉多邊形的　　
+內部則填入目前的填入彩色和花式)。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far fillpoly(int numpoints,int far *polypoints);　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:int triangle[]={100,100,150,50,200,100),　　　　　　　　　　　　　　　　
+　　　　npts=sizeof(triangle)/(2*sizeof(int));　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fillpoly 常式畫出一組線段 (使用目前的彩色和花式), 這組線段把一個陣列中各　
+點 (參數 polypoint 指定陣列位址)連結起來。numpoint 參數指定點的總數。fillpoly　
+把最後一點和第一點連結起來 (這和 drawpoly 不同)形成封閉多邊形。它也把目前填　　
+入彩色和花式填入封閉多邊形內部。　　　　　　　　　　　　　　　　　　　　　　　
+   fillpoly 用一個內部緩衝區保存中間結果。如果緩衝區太小, 則把示誤碼定為 -6　
+(grNoScanMem) , 可用 graphresult 常式傳回此值。　　　　　　　　　　　　　　　
+相關常式:drawpoly,setlinestyle 　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 345 頁　　　　　　　　　　　　　　　　　　
+floodfill　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:floodfill 把目前填入彩色和花式填入有邊界的區域內。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far floodfill(int x,int y,int border); 　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:floodfill(50,50,4); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:floodfill 常式使用常用的繪圖演算法 (名稱也是 floodfill)把彩色 (由參數　　
+border 指定)填入一條曲線的內部或外部。填入起點由參數 x,y 指定。如果此點在　　　
+內部, 則在內部填入, 反之在外部填入。　　　　　　　　　　　　　　　　　　　　　
+    填入從起點開始,向每一個方向進行, 而在碰到邊界色時停止。邊界色不可和　　　
+填入色相同, 否則整個螢幕都會被填入。填入的花式可由 setfillstyle, 或　　　　　　
+setfillpattern 常式指定。　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:由於填入在各方向進行, 因此邊界必需很確實定出 (參看範例)。　　　　　　
+相關常式:setfillpattern,setfillstyle 　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 347 頁　　　　　　　　　　　　　　　　　　
+getimage　　　　　　　　　　　　　　　　　　　　　　　　
+相容性　　　 TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getimage 常式把一個矩形區內的圖形保存在緩衝區。你一定要配置記憶體　　　　
+給緩衝區, 並把緩衝區的位址傳給 getimage。　　　　　　　　　　　　　　　　　　
+語法:void far getimage(int left,int top,int right,int bottom,void far 　　　　
+　　　　　　　         *image_buffer);　　　　　　　　　　　　　　　
+呼叫法:getimage(50,50,100,100,image);　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getimage 把圖形保存在緩衝區 (位址由 image_buffer 指定)。保存範圍由　　　
+left,top,right,bottom 參數指定。　　　　　　　　　　　　　　　　　　　　　　　
+    在使用 getimage 前, 應先用 imagesize 來找出緩衝區的長度, 以便配置　　　　　
+記憶體。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getimage 和 putimage 合用可保存和還原圖形。你可用 getimage 保存一　　
+個圖形, 再用 putimage 把它印在螢幕的幾個不同地方。而如果同時除去舊圖形,　　　　
+則產生動畫的效果。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:imagesize,putimage　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 349 頁　　　　　　　　　　　　　　　　　　
+getpixel　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getpixel 常式可取得指定像素的彩色　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:unsigned far getpixel(int x,int y);　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:pix_value=getpixel(100,150);　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:getpixel 常式會先檢查 (x,y)指定的像素是否位於目前的觀察窗內。如果是,　　　
+則 getpixel 傳回此像素的彩色, 此值即為視訊記憶體中對應於 (x,y)座標的位元組　　
+的內容。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:getpixel 常式可在螢幕上變色, 例如和 setcolor,putcolor 常式合用, 可　　
+改變螢幕上任一像素的彩色。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如果像素在觀察窗內, getpixel 傳回目前的像素值, 不然傳回 0。　　　　　　
+相關常式:putpixel,setviewport　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 351 頁　　　　　　　　　　　　　　　　　　
+imagesize　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:imagesize 常式用來找出緩衝區的大小 (此緩衝區是要保存螢幕上一塊矩形　　　
+區的內容的)。在用 getimage 常式配置記憶體前, 應先叫用imagesize 常式。　　　　　
+語法:unsigned far imagesize(int left,int top,int right,int bottom); 　　　　　
+呼叫法:bytes_needed=imagesize(min_x,min_y,max_x,max_y); 　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:imagesize 常式算出保存一塊區域 (由 left,top,right,bottom 參數指定)所　　　
+需位元組數目。它算出的是最少的數量。　　　　　　　　　　　　　　　　　　　　　
+　　位元組的數目由像素所含位元數目決定, 而位元數目又由繪圖模式決定(參看 07 章)
+。像素值的保存有一定的格式。最前面的兩個位元組用來保存被保存區域的高度和寬度。
+基本用法:getimage 和 putimage 常式合用, 用來保存和還原圖形, 在產生動畫時, 這　
+是很有用的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    在保存時, 你要提供足夠容量的緩衝區, imagesize 常式可找出此緩衝區的長度。　
+(要考慮模式所用位元的數目)。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:imagesize 傳回所需位元組數目。因為這是一個 16 位元整數, 所以傳回值不　
+超過 64 K。如果緩衝區超過, 則 imagesize 傳回 0xffff。　　　　　　　　　　　　
+相關常式:getimage,putimage 　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 353 頁　　　　　　　　　　　　　　　　　　
+line　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:line 常式在兩個指定點間畫出一條直線 (用目前彩色和花式)。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far line(int x1,int y1,int x2,int y2);　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:line(100,100,120,200);　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:line 常式在兩個指定點 (x1,y1),(x2,y2)間畫出一條直線。此線使用目前的　　　
+彩色和花式。setwritemode 常式設定寫入模式, 以決定像素的結果。　　　　　　　　
+    line 常式不改變目前位置。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:若不改變目前位置, 而要畫一條線, 則 line 很合適。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:linerel,setcolor　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 355 頁　　　　　　　　　　　　　　　　　　
+linerel　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:linerel 常式從目前位置畫一條直線到指定位置 (使用目前彩色和花式)。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far linerel(int x,int y); 　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法: linerel(10,0);　　　　 　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:linerel 常式從目前位置畫一條直線到 dx (水平偏移距離), dy (垂直偏移距離)　
+的點。使用目前的彩色和花式, 畫出後, 目前位置移到此線的終點。　　　　　　　　　
+　　若用 moveto 常式畫直線, 則目前位置不變。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:如果某一點的偏移距離比絕對座標更易取得, 則用 linerel 常式來畫直線比較
+方便。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:line,lineto 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 356 頁　　　　　　　　　　　　　　　　　　
+lineto　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:lineto 常式從目前位置畫一條直線到另一點 (使用目前彩色和花式)。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far lineto(int x,int y);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:lineto(next_x,next_y);　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:lineto 常式在目前位置和座標為 (x,y )的點間畫一條直線。此座標以目前觀察窗　
+的原點為原點。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    直線使用目前彩色和花式(分別由 setcolor,setlinestyle 指定)。直線的終點變作　
+目前位置, 若用 moveto 常式來畫直線, 則目前位置不受影響。　　　　　　　　　　　
+　　setwritemode 常式決定像素寫入的方法。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:lineto 常式是在兩點間畫直線的基本方法。把它和 moveto 合用, 可畫出　　
+各種複雜的圖形形。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:line,setcolor 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 358 頁　　　　　　　　　　　　　　　　　　
+moverel　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:moverel 常式把目前位置移到偏移 (x,y )的地方。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far moverel(int dx,int dy); 　　　　　　　　　　　　　　　　　　　　
+呼叫法:moverel(10,5);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:moverel 常式把目前位置改變到 dx (水平), dy (垂直)個像素的地方。若用負值,　
+可把它移到左方或上方。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　linerel,lineto 常式都要用目前位置來畫直線。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:當新位置的偏移比絕對座標更容易取得時, 使用 moverel 來改變目前位置　　
+是比較方便的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:linerel,moveto　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 360 頁　　　　　　　　　　　　　　　　　　
+moveto　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:moveto 可改變目前位置 (保存在繪圖系統內的)。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far moveto(int x,int y);  　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:moveto(10,20);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:moveto 常式改變目前位置 (由繪圖常式設定的)。此點的座標由 x,y 指定。　　　
+　　linerel,lineto 常式需要用目前位置來畫直線。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:這是一個基本的常式, moveto 具有畫筆的作用, 可移到螢幕上任一點。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:linerel,moverel 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 362 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+pieslice　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:pieslice 常式畫出圓盤圖 (圓盤由弧和兩條直線組成)。　　　　　　　　　　　　
+語法:void far pieslice(int x,int y,int stangle,int endangle,int radius);　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:pieslice(100,100,0,29,50);　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:pieslice 常式畫出一個圓盤 (半徑為 radius,圓心為 x,y,起始和結束角度由　　　
+stangle,endangle 參數指定)。此圓盤填入目前的彩色和花式。弧線使用實心線,　　　
+而邊線使用目前的花式, 兩者都用目前彩色 (圖8.1)。　　　　　　　　　　　　　　　
+    起點和終點是反時鐘方向來算的。3 點鐘方向為 0 度。12 點鐘方向為 89 度,　　　
+9 點鐘方向為 179 度。從這個方法看, 圖上任一點都對應一個角度。因此圓盤圖　　　　
+的起點和終點可由 stangle,endangle 指定。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在商業繪圖上, 圓盤圖是很有用的。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:arc,setcolor　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 363 頁　　　　　　　　　　　　　　　　　　
+putimage　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:putimage 常式還原 getimage 常式保存的圖形。　　　　　　　　　　　　　　　
+語法:void far putimage(int left,int top,void far *image_buffer,int action); 　
+呼叫法:putimage(100,200,image,XOR_PUT);　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:putimage 常式把 getimage 保存在緩衝區 (位址由參數 image_buffer 指定)的　　
+圖形還原到螢幕上,圖形的左上角由 (left,top )指定。圖形的大小不必另外指定。　　
+    還原的方法由參數 action 指定。此一參數在 graphics.h 中定義, 如表 8.3。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 8.3 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:putimage 常式用來還原 getimage 保存的圖形。例如畫一個圖形, 用　　　　
+getimage 把它保存起來, 再用 putimage 還原到螢幕各處, 而產生動畫的效果。　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:imagesize,getimage　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 365 頁　　　　　　　　　　　　　　　　　　
+putpixel　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:putpixel 常式把像素設定為指定的彩色。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far putpixel(int x,int y,int color);　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:putpixel(120,90,RED); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:putpixel 常式會先檢查 (x,y) 的像素是否位於目前觀察窗內。如果是, 則　　　
+putpixel 把參數 color 指定的彩色指定給此像素。如果像素不在觀察窗內, 則　　　　
+不受影響。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:putpixel 可在圖形上加上複雜的彩色。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:setviewport,getpixel　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 368 頁　　　　　　　　　　　　　　　　　　
+rectangle　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　
+用途:rectangle 常式用目前的彩色, 花式, 寬度畫出矩形。　　　　　　　　　　　　
+語法:void far rectangle(int left,int top,int right,int bottom); 　　　　　　　
+呼叫法:rectangle(100,140,250,200); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:rectangle 常式畫出一個矩形, 左上角座標為 left,top, 右下角座標為　　　　　
+right,bottom 參數決定。x 從左向右增加, 而 y 從上向下增加。原點 (0,0)　　　　　
+定義觀察窗的左上角 (參看 setviewport)。　　　　　　　　　　　　　　　　　　　　
+    矩形的邊界用目前彩色, 花式, 寬度畫出。可用 setcolor 設定彩色, 用　　　　　
+setlinestyle 設定花式。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:rectangle 畫出基本的矩形, 可作更複雜圖形的基礎。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果要畫實心矩形, 可用 bar 常式, 有邊界實心矩形可用 bar3d 來畫　　　
+(寬度設定為 0)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:bar,setcolor　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 370 頁　　　　　　　　　　　　　　　　　　
+sector　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　 TC1.5　 TC2　 MSC3　 MSC4　 MSC5/QC　 ANSI　 UNIX V 　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:sector 常式畫出有邊界實心的圓盤圖。邊界由橢圓弧, 及兩條直線 (和　　　　　
+圓心相連, 並接到弧的起點和終點)。　　　　　　　　　　　　　　　　　　　　　　
+語法:void far sector(int x,int y,int stangle,int endangle,int xradius,　　　　
+　　　　　　　　  int yradius);　　　　　　　　　　　　　　　　　　　
+呼叫法:sector(100,100,0,29,50,25); 　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:sector 常式畫出一個橢圓弧 (圓心為 x,y),xradius,yradius 分別指定　　　　　
+水平和垂直軸, stangle,endangle 參數指定開始和結束角度。把弧的終點和圓心　　　
+相連, 產生圓盤圓。弧的內部填入目前的彩色和花式。弧的邊界用實心線畫出。而　　　
+兩邊的直線用目前的彩色, 花式和寬度畫出。　　　　　　　　　　　　　　　　　　　
+    角度是以反時鐘方向來算的。3 點鐘方向為 0 度, 89 度為 12 點鐘方向, 9 點鐘　
+方向為 179 度。因此橢圓的任一點都可指定一個角度。而弧的起點和終點即由　　　　　
+stangle,endangle 參數指定。　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在畫商業圓盤圖時,  sector 常式很有用。　　　　　　　　　　　　　　　　
+相關常式:ellipse,setcolor　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 371 頁　　　　　　　　　　　　　　　　　　
+gettextsettings　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:gettextsettings 常式用來取得目前的文字設定 (如字體, 大小, 調整,及輸出方向
+等)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far gettextsettings(struct textsettingstype far *textinfo); 　　　　
+呼叫法:struct textsettingstype gt_setting; gettextsettings(&gt_setting); 　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:gettextsettings 常式傳回有關目前字體, 方向, 大小, 及調整的訊息。這些　　　
+訊息都放在結構 (型別為 textsettingtype, 在 graphics.h 中定義)內。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 382 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+你必需在程式中宣告一個這樣的結構, 並用參數 textinfo 指定結構的位址。　　　　　
+    參看 settextstyle 常式中對這些訊息的解釋。settextjustify 說明調位　　　　　
+的方法, 它也提供水平和垂直調位的碼。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:gettextsettings 可取得並保存目前的文字設定。然後纔可用 settext　　　　
+style,settextjustify 來改變這些設定。　　　　　　　　　　　　　　　　　　　　
+相關常式:settextjustify,settextstyle 　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 382 頁　　　　　　　　　　　　　　　　　　
+installuserfont　　　　　　　　　　　　　　　　　　　　　
+相容性 　　　　　　  TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:installuserfont 常式從 .CHR 檔載入新字體給 Turbo C 繪圖系統使用。　　　　
+語法:int far installuserfont(char far *name); 　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:installuserfont("MYFONT");　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:installuserfont 載入參數 name 指定的字體 (參看對字體的說明)。字體的　　　
+資料要放在檔案附名為 .CHR 的同名檔案內。　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:新字體可用 installuserfont 常式加入 Turbo C 的繪圖常式庫內。不過由　　
+於 .CHR 檔案的格式沒有公開, 它只能使用在 Borland 提供的字體上。　　　　　　　
+回報值:installuserfont 傳回一個整數, 由於 settextstyle 要用這個值來當作字體　
+識別碼, 因此要保存起來。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果 Borland 公司公開字體檔案的格式, 那 installuserfont 會很有用。但
+現在無法用它來加入自己設計的字體。　　　　　　　　　　　　　　　　　　　　　
+相關常式:initgraph,registerbgifont 　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 384 頁 　　　　　　　　　　　　　
+outtext　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:outtext 常式在目前位置印出一個 C 字串 (以 null 結束的)。此字串使用目前彩色
+和設定。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far outtext(char far *textstring); 　　　　　　　　　　　　　　　　　
+呼叫法:outtext("This text begins at the current position");　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:outtext 印出一個字串 (以 null 結束), 字串位址由參數 textstring 指定。　　
+它從目前位置開始印起, 使用目前的設定 (如方向, 大小, 調位等)。　　　　　　　　
+    如果水平調位為 LEFT_TEXT (參看 settextjustify), 方向為 HORIZ_DIR (參看　　
+settextstyle)。則 outtext 把目前位置順 x 軸向前移 textwidth 個量。不然目前位置
+不變。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果文字是印在觀察窗中, 而此觀察窗的切掉開關設定為 1 (參看 setviewport)　
+, 則超出觀察窗部份會被去掉。不過如果用預定的 bit-mapped 字體只有觀察窗的一側　
+被去掉, 但一個字元也不能被去掉一半。　　　　　　　　　　　　　　　　　　　　　
+基本用法:繪圖文字輸出大都用 outtext 常式。它可使用各種字體, 大小, 彩色, 因此
+適合文書程式使用。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:有時需要作格式化輸出, 如印出整數的 ASCII 值。由於 outtext 無法作格式化
+輸出, 這時要先用 fprintf 準備好格式化字串, 再用 outtext 印出。　　　　　　　　
+相關常式:outtextxy  範例:參考 Turbo C 程式設計寶典下篇第 385 頁
+outtextxy　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:outtextxy 常式在指定位置印出一個 C 字串 (以 null 結束的)。此字串使用目前彩
+色和設定。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far outtextxy(int x,int y,char far *textstring);　　　　　　　　　　
+呼叫法:outtextxy(10,20,"This text begins at the point (10,20)");　　　　　　　
+含括檔:#include<graphics.h> 　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:outtextxy 印出一個字串 (以 null 結束), 字串位址由參數 textstring 指定。
+它從 (x,y)位置開始印起, 使用目前的設定 (如方向, 大小, 調位等)。　　　　　　　
+    如果水平調位為 LEFT_TEXT (參看 settextjustify), 方向為 HORIZ_DIR (參看　　
+settextstyle)。則 outtextxy把目前位置順 x 軸向前移 textwidth 個量。不然目前位置
+不變。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果文字是印在觀察窗中, 而此觀察窗的切掉開關設定為 1 (參看 setviewport)　　
+, 則超出觀察窗部份會被去掉。不過如果用預定的 bit-mapped 字體只有觀察窗的一側　
+被去掉, 但一個字元也不能被去掉一半。　　　　　　　　　　　　　　　　　　　　　
+基本用法:outtextxy 常式用來印出標題, 在設計 what you see is what ou get 的　　
+文書程式就用得到 outtextxy 。　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:有時需要作格式化輸出, 如印出整數的 ASCII 值。由於 outtextxt  無法作格式化
+化輸出, 這時要先用 fprintf 準備好格式化字串, 再用 outtextxy 印出。　　　　　
+相關常式:outtext     　　範例:參考 Turbo C 程式設計寶典下篇第 387 頁　　　　　
+settextjustify　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:settextjustify 常式可指定繪圖文字(由 outtext,outtextxy輸出的)的調位。　　
+語法:void far settextjustify(int horiz,int vert); 　　　　　　　　　　　　　　
+呼叫法:settextjustify(LEFT_TEXT,BOTTOM_TEXT);　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:繪圖用文字的調位指定字串和目前位置的相對偏移。settextjustify 的兩個　　　
+參數 horiz,vert 分別指定後續文字輸出的水平和垂直調整。表 09.4 列出調整用的　　
+常數。這些常數在 graphics.h 的列舉 text_just 中定義。　　　　　　　　　　　　
+    從表及圖 09.1 中可看到, 通常用 LEFT_TEXT 作水平, 而 BOTTOM_TEXT 作垂直　　
+調整。你可用 settextjustify 把標題放在中央 。　　　　　　　　　　　　　　　　　
+    如果給 settextjustify 的輸入錯誤, 則會把示誤碼設定為 -11 (grError), 可用　
+graphresult 找出此錯誤。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:settextjustify 可把文字印在繪圖螢幕中任一位置,以配合某些要求。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+圖 9.1 　　 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 9.4 　　 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:outtext,settextstyle　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 394 頁　　　　　　　　　　　　　　　　　
+setusercharsize　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:setusercharsize 常式指定 stroke 字體的水平和垂直比例。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void far setusercharsize(int multx,int divx,int multy,int divy); 　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:setusercharsize(2,1,3,2); 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:settextstyle 指定的比例在垂直和水平方向都相等, 而 setusercharsize 則　　　
+可使兩方向的比例不同 (但 settextstyle 的字元大小要設定為 0)。　　　　　　　　
+    字元的寬度由 (multx/divx)*內定寬度而得, 高度由 (multy/divy)*內定高度而得。
+例如 setusercharsize(2,1,3,2) 使寬度兩倍, 而高度 1.5 倍於內定值。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:setusercharsize 常式適合設定字元的大小。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:settextstyle　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 399 頁　　　　　　　　　　　　　　　　　
+textheight　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:textheight 常式可找出字串的高度 (像素單位), 字串使用目前的字體和大小。　　
+語法:int far  textheight(char far *textstring); 　　　　　　　　　　　　　　　
+呼叫法:v_space=textheight("Turbo C");　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:textheight 常式使用目前的字體, 字元大小, 方向等資料來找出螢幕中字串　　　
+(由 textstring 指標指到)的高度 (以像素為單位)。textheight 不輸出字串, 而　　
+應用 outtext,outtextxy 來輸出字串。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:textheight 和 textwidth 常式可用來調整各列的距離, 算出比例因子,　　　
+而使文字能放入指定空間內。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:使用 textheight 和 textwidth 來算出螢幕中字串的尺度, 不過程式可　　　
+不必考慮所選的字體, 而能正常運作。　　　　　　　　　　　　　　　　　　　　　　
+相關常式:outtext,textwidth 　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 402 頁　　　　　　　　　　　　　　　　　　
+textwidth　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:textwidth 常式可找出字串的寬度 (像素單位), 字串使用目前的字體和大小。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int far textwidth(char far *textstring); 　　　　　　　　　　　　　　　　
+呼叫法:h_space=textwidth("Turbo C"); 　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<graphics.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:textwidth 常式使用目前的字體, 字元大小, 方向等資料來找出螢幕中字串　　　
+(由 textstring 指標指到)的寬度 (以像素為單位)。textwidth 不輸出字串, 而　　　　
+應用 outtext,outtextxy 來輸出字串。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:textheight 和 textwidth 常式可用來調整各列的距離, 算出比例因子,　　　
+而使文字能放入指定空間內。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:使用 textheight 和 textwidth 來算出螢幕中字串的尺度, 使程式可　　　　
+不必考慮所選的字體, 而能正常運作。　　　　　　　　　　　　　　　　　　　　　　
+相關常式:outtext,textheight　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 404 頁　　　　　　　　　　　　　　　　　　
+clreol　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:clreol 常式從游標位置開始把一列清掉。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void clreol(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:clreol(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:clreol 常式從游標位置開始, 把一列清掉 (在目前的視窗範圍內)。被清掉的部份　
+填入目前的底色。delline 可把整列清掉。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:文字編輯和填入的程式常用到 clreol 常式。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:clrscr,window 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 415 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+clrscr　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:clrscr 常式清除掉目前視窗, 填入目前的底色。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void clrscr(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:clrscr(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:clrscr 把目前視窗填入目前底色。視窗被清除後, 游標回到視窗的左上角。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:印出彈出式視窗和交談窗的程式常用 clrscr 來清除螢幕。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:clreol,window 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 416 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+delline　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:delline 常式清除游標所在之列。此列的下一列會升上來。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void delline(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:delline();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:delline 從目前視窗中清 掉游標所在的一列。並把下列升上來。如果不想把下　　
+列升上來, 則應先用 gotoxy 常式把游標移到此列的起點, 再用 delline 來清掉。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:文書編輯程式少不了 delline 常式。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:clrscr,clreol 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 417 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+gettext　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:gettext 常式把文字螢幕上一塊區域保存在記憶體內。　　　　　　　　　　　　
+語法:int gettext(int left,int top,int right,int bottom,void *textbuf);　　　　
+呼叫法:char saved_screen[20*10*2]; if(!gettext(1,1,20,10,saved_screen))　　　　
+       puts("gettext failed");　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:gettext 把螢幕中一塊矩形區中的文字抄到一個緩衝區內 (位址由參數 textbuf　　
+指定)。參數 left,top,right,bottom 決定被存區域的 4 角座標。　　　　　　　　　　
+    由於螢幕上的每個字元使用兩個位元組 (一個 ASCII 碼, 一個屬性), 因此緩衝區的
+長度至少要有 2*(right-left+1)*(bottom-top+1) 的長度。　　　　　　　　　　　　
+    抄的順序是從左上角開始, 從左到右, 從上到下。　　　　　　　　　　　　　　　
+基本用法:在印出彈出式功能表以前,原來的文字應先保存起來,這由 gettext 來作, 而稍
+後用 puttext 把保存的文字再還原回去。　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 1。有問題傳回 0。如果提供的座標超過目前模式的範圍, 則　　
+gettext 無法動作。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:雖然大多數文字常式以視窗左上角為參考原點。但 gettext 和 puttext　　　
+以絕對原點為參考點,而和目前視窗無關。　　　　　　　　　　　　　　　　　　　　
+相關常式:movetext　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 418 頁　　　　　　　　　　　　　　　　　　
+gettextinfo　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:gettextinfo 常式取得目前模式, 屬性, 視窗的有關訊息。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void gettextinfo(struct text_info *p_tinfo); 　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:struct text_info info_tmode;　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:gettextinfo 常式傳回視窗的座標, 游標位置, 屬性, 螢幕大小等資料。　　　　　
+傳回的資料放在結構 text_info 內。程式一定要宣告一個這種結構, 而其　　　　　　
+位址由 p_info 指定。結構此 conio.h 中定義如下:　　　　　　　　　　　　　　　
+參看 420 頁。 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+各欄的意義在此結構的 C 宣告中指定。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:gettextinfo 常式先取得目前的螢幕資料, 保存起來, 然後改變螢幕,　　　　
+而再稍後, 用保存的資料把文字還原回去。　　　　　　　　　　　　　　　　　　　　
+相關常式:textattr,textmode 　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 420 頁　　　　　　　　　　　　　　　　　　
+gotoxy　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:gotoxy 把游標移到指定位置 (在視窗內)。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void gotoxy(int x,int y);  　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:gotoxy(20,5); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:gotoxy 常式把游標移到 x,y 的地方。這個 x,y 以目前視窗的左上角為 (1,1)。　
+如果超過視窗範圍, 則 gotoxy 不理會。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:gotoxy 常式在視窗中移動文字。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:wherex,wherey 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 422 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+highvideo　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:highvideo 常式把目前屬性位元組的第 3 位元設定為 1 (高亮度)。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void highvideo(void);　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:textcolor(RED);highvideo(); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:如圖 10.2 屬性位元組的位元 0-3 用來保存文字的背景色。0,1,2, 位元分別　　
+和紅, 綠, 藍有關, 而 3 位元則和亮度有關。highvideo 使此位元設定為 1。　　　　　
+    在單色模式中叫用 highvideo, 則後面的文字都會有高亮度, 在彩色模式中,　　　　
+則使前景有更高的亮度。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    lowvideo 可使位元 3 重新變成 0。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:highvideo 常式用來控制文字的亮度。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:呼叫 highvideo 以前的文字不受影響, 只有以後的纔受影響。　　　　　　　
+相關常式:lowvideo,textcolor　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 424 頁　　　　　　　　　　　　　　　　　　
+insline　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:insline 常式在游標位置插入空白的一列。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void insline(void);  　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:insline();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:insline 常式把一個空白列插入游標位置 (目前視窗)。此列使用目前的背景　　　
+色。下面各列都降一列。在螢幕底部的一列則捲到螢幕外。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在文書編輯程式中, 少不了 insline 常式。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:clreol,window 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 425 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+lowvideo　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:lowvideo 常式把目前屬性位元組的第 3 位元設定為 0 (底亮度)。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void lowvideo(void); 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:textcolor(LIGHTRED);lowvideo(); 　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:如圖 10.2 屬性位元組的位元 0-3 用來保存文字的背景色。0,1,2, 位元分別　　
+和紅, 綠, 藍有關, 而 3 位元則和亮度有關。lowvideo 使此位元設定為 1。　　　　　
+    highvideo 可使位元 3 重新變成 1。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:lowvideo 常式用來控制文字的亮度。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:呼叫 lowvideo 以前的文字不受影響, 只有以後的纔受影響。　　　　　　　
+相關常式:highvideo,textcolor 　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 426 頁　　　　　　　　　　　　　　　　　　
+movetext　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:movetext 常式把螢幕上一塊區域的文字抄到另一塊區域。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法int movetext(int left,int top,int right,int bottom,int newleft,int newtop)
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:if(!movetext(1,1,20,10,30,30)) puts("movetext failed"); 　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:movetext 常式把螢幕上一塊區域的文字抄到另一區域。參數 left,top,right,　　
+bottom 分別是被抄區域的左上及右下角的角絕對座標。由於抄入區域是相同大小,　　　
+因此只要指定左上角座標 (newleft,newtop )即可。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 1, 不然傳回 0。如果座標超過目前模式的範圍, movetext 不　　
+能動作。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:雖然大多數文字常式使用相對座標, movetext 常式使用絕對座標。　　　　　
+相關常式:gettext,puttext 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 428 頁　　　　　　　　　　　　　　　　　　
+normvideo　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:normvideo 常式把文字屬性還原到程式開始前的值。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void normvideo(void);　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:normvideo();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明: normvideo 把文字屬性還原到程式開始前的值。可用 gettextinfo 常式從　　　
+text_info 的 normattr 取得此值。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:highvideo,textattr　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 429 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+puttext　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:puttext 常式把記憶體內緩衝區的資料抄到螢幕上。　　　　　　　　　　　　　
+語法:int puttext(int left,int top,int right,int bottom,void *textbuf);　　　　
+呼叫法:char saved_screen[20*10*2]; if(!puttext(5,5,25,15,saved_screen)) 　　　
+　　　　　　　　　 puts("puttext failed");　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:puttext 把緩衝區中的文字抄到螢幕上。(緩衝區的位址由參數 textbuf　　　　　
+指定)。參數 left,top,right,bottom 決定螢幕區域的 4 角座標。　　　　　　　　　　
+    由於螢幕上的每個字元使用兩個位元組 (一個 ASCII 碼, 一個屬性), 因此緩衝區的
+長度至少要有 2*(right-left+1)*(bottom-top+1) 的長度。　　　　　　　　　　　　
+    抄的順序是從左上角開始, 從左到右, 從上到下。　　　　　　　　　　　　　　　
+基本用法:在印出彈出式功能表以前,原來的文字應先保存起來,這由 gettext 來作, 而稍
+後用 puttext 把保存的文字再還原回去。　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 1。有問題傳回 0。如果提供的座標超過目前模式的範圍, 則　　
+puttext 無法動作。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:雖然大多數文字常式以視窗左上角為參考原點。但 gettext 和 puttext　　　
+以絕對原點為參考點,而和目前視窗無關。　　　　　　　　　　　　　　　　　　　　
+相關常式:gettext,movetext　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 430 頁　　　　　　　　　　　　　　　　　
+textattr　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+用途:textattr 常式設定文字屬性 (前景和後景), cprintf,cputs 常式都使用此一　　
+設定。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void textattr(int newattr);　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:textattr(YELLOW+(red<<4));　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:textattr 把文字屬性設定為 newattr。cprintf,cputs 常式都使用這個屬性。　　
+    若用 textattr 同時設定前景和後景的屬性 (而不像 textcolor,textbackground　　
+分別設定屬性), 則必需照表 10.4 把前景和後景色組成一個單一位元組。　　　　　　　
+表 10.4　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+你可用表 10.5 (參看 textcolor 常式的說明)的符號來組成 newattr。例如下式　　　　
+可印出紅色後景的黃色字元。　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 432 頁 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+後景色要左移 4 個位元, 再加到前景色。把 BLINK 加上去, 產生閃爍的效果。　　　　
+基本用法:textattr 常式可控制文字的外觀。　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果要分別控制前景和後景色, 可用 textcolor,textbackground 常式來作。　
+相關常式:textcolor,textbackground　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 432 頁　　　　　　　　　　　　　　　　　　
+textbackground　　　　　　　　　　　　　　　　　　　　
+相容性 　　　TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:textbackground 常式設定後景色, cprintf,cputs 常式都使用此屬性。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void textbackground(int bgcolor);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:textbackground(RED);　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:textbackground 設定後景色 (參數 bgcolor 指定)。　　　　　　　　　　　　　
+    如表 10.4 屬性位元組只有 4,5,6  3 個位元和後景色有關。因此 bgcolor　　　　
+只可能為 0-7。可用表 10.5 的常數來指定後景色。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法：textbackground　用來控制文字的外觀。　　　　　　　　　　　　　　　　
+補充說明:若要一次指定全部屬性, 可用 textattr常式。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:textattr,textcolor　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 435 頁　　　　　　　　　　　　　　　　　　
+textcolor　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:textcolor 常式設定前景色, cprintf,cputs 常式都使用此一前景色。　　　　　
+語法:void textcolor(int fgcolor); 　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:textcolor(YELLOW);　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:textcolor 常式設定前景色 (給 cprintf,cputs 常式使用)。參數 fgcolor　　　
+指定前景色。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如表 10.4 位元 0-3 用來保存前景色的設定值。因此 fgcolor 的值限於 0-15。　
+可使用表 10.5 的常數來指定前景色 (在 conio.h 中定義)。　　　　　　　　　　　　
+表 10.5 895　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:textcolor 常式用來控制文字的外觀。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果要一次設定所有屬性應使用 textattr 常式。在單色卡上, 前景色和背景色
+會轉換成其他屬性如底線,反白, 粗體等。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:textattr  　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 437 頁　　　　　　　　　　　　　　　　　　
+textmode　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+用途:textmode 常式在文字模式間切換。　　　　　　　　　　　　　　　　　　　　　
+語法:void textmode(int mode); 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:textmode(c40);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:textmode 照參數 newmode 的指示切換到新文字模式。它也同時使整個螢幕　　　　
+成為目前視窗,使文字回到正常屬性(程式開始前的屬 性)。　　　　　　　　　　　　　
+    模式應用表 10.1 的常數來指定 (它們是在 conio.h 中定義的列舉式 text_modes)　
+。若選 LASTMODE 常數則回到上一個文字模式。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:textmode 用來切換文字模式　　　　　　　　　　　　　　　　　　　　　　
+補充說明:使繪圖模式回到文字模式的常式是 restorecrtmode。textmode 只用在文字模式
+間的切換 。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:gettextinfo 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 439 頁　　　　　　　　　　　　　　　　　　
+wherex　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:wherex 常式用來找出目前視窗中游標的 x 座標。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int wherex(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:current_column=wherex();　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:wherex 傳回游標的 x 座標。此座標以視窗的左上角為 (1,1)。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:wherex 傳回游標的 x 座標。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:傳回游標的 x 座標。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:wherey,window 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 441 頁　　　　　　　　　　　　　　　　　　
+wherey　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:wherey 常式用來找出目前視窗中游標的 y 座標。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int wherey(void);　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:current_row=wherey(); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:wherey 傳回游標的 y 座標。此座標以視窗的左上角為 (1,1)。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:wherey 傳回游標的 y 座標。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:傳回游標的 y 座標。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:wherex,window 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 442 頁　　　　　　　　　　　　　　　　　　
+window　　　　　　　　　　　　　　　　　　　　　　　
+相容性 　　  TC1.5　 TC2　 　　　　　　　　　　　　　　　　　　　 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:window 常式定義螢幕的一塊矩形區為目前視窗。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void window(int left,int top,int right,int bottom);　　　　　　　　　　　
+呼叫法:window(20,10,59,19);　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<conio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:window 在螢幕上定出一塊矩形區域作目前視窗。定好後, cprintf,cputs　　　　　
+常式的輸出就不能超出此視窗之外。left,top,right,down 參數定出此目前視窗的左　　
+上角及右下角座標。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    如果超過目前模式的範圍或 left=right,top=bottom 則 window 不會動作。在　　　
+80 行模式中, x 為 1-80, 40 行模式中 x 為 1-40, 而在各種模式中, y 都是　1-25。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在設計彈出式功能表或交談窗 (文字模式)時, window 常式很有用。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:textmode,gettextinfo　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參考 Turbo C 程式設計寶典下篇第 443 頁　　　　　　　　　　　　　　　　　　
+*******************************************************************************
+*******************************************************************************
+
+

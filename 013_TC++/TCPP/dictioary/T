@@ -1,0 +1,1112 @@
+longjmp　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途   longjmp 可把在堆疊中的環境取回 (它是稍早前由 setjmp 放到堆疊的)。　　
+這可使所有局部變數回到前一個狀態, 好像是從最近一次的 setjmp 返回。　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 void longjmp(jmp_buf,int value);　　　　　　　　　　　　　　　　　　　　
+呼叫法 longjmp(stack_env,1); 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔	#include<setjmp.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明 longjmp 常式會把存放在堆疊中環境的 env 這一部份暫存器的值還原 (它們是　　
+由 setjmp 存放到堆疊內的)。然後它跳到傳回的位址上 (setjmp 的位址, 也是放在　　
+env 內的)。這會回到呼叫 setjmp 前各局部變數的值 (有如從 setjmp 返回一樣)。　　
+在這種強制式的從 setjmp 返回中, 使用了 value 這個參數。然而這種方法並無法　　
+使所有暫存器變數回到呼叫 setjmp 前的狀態。由於 longjmp 跳到相關呼叫 (呼叫　　
+setjmp)的返回位址, 因此一定要確定在從常式返回前 (呼叫 setjmp 的常式), 已先　
+呼叫了 longjmp。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+longjmp 和 setjmp 共用, 以便使執行的流程轉到錯誤補救的程式 (而省去使用正　　
+常的常式呼叫和規定)。要先呼叫 setjmp 來設定位置, 以便 longjmp 可把控制權　　　
+交到此位置。然後在有錯誤產生時, 可呼叫 longjmp , 而跳到某一點 (setjmp　　　　　
+返回的位置)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+注解  longjmp 和 setjmp 有些不易理解, 但基本上, 它們可使程式跳到  C 的任一　
+位置。這種 goto 陳式一樣, 都可從一個常式跳到另一常式。　　　　　　　　　　　
+相關常式 setjmp 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 104 頁　　　　　　　　　　　　　　　　　
+putenv　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途   putenv 可把一個新變數的定義放入程式的環境表格內　　　　　　　　　　　
+語法 int putenv(char *envstring);　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 putenv("TMP=c:\\mydir\\temp); 　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<stdlib.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明  putenv 用公共變數 environ 找出環境表的抄本 (這是父程式傳給子程式的環境
+)。然後 putenv 把新的定義 (用參數 envstring 指定)加到此一表格內。定義必需有　
+如下格式:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　VARNAME=definition　　　　　　　　　　　　　　　　　　　　　　　　　　
+如果名為 VARNAME 的環境變數已存在, 則其定義為換成新的定義。若不存在, 則在表　
+格內加入這一新的定義。被 putenv 改變的環境表格只是一個抄本。在子程式結束後,　
+環境表格仍恢復原來的樣子。因此無法用 putenv 改變 DOS 層次下的環境設定。不過
+程式用 exec,spawn 起動的子程式都都會取得 putenv 修改過的環境。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法  putenv 的作用就是把應用程式新指定的定義加到環境表格內, 而在　　
+程式結束時, 環境恢復原狀。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	 成功時, putenv 傳回 0。傳回 -1 表示記憶體不夠　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　
+注意   在 DOS 下, main() 可用第 3 個參數 (如 envp) 來取得指向環境變數的指標　
+。但 putenv 會改變表格的位置, 而使 envp 失效。因此在定位和修改環境表格時,　　
+putenv 和 getenv 要分開使用, 以免干擾。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 getenv　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例 參看 Turbo C 程式設計寶典上篇第 107 頁 　　　　　　　　　　　　　　　
+setjmp　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途   在呼叫其他常式前, 先用 setjmp 把環境放入堆疊內。而用 longjmp 取回　　　
+此環境 (其效果如全域性的 goto)。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法  int setjmp(jmp_buf env);　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 if(setjmp(env)!=0) printf("Returned from longjmp\n");　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔	#include<setjmp.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明   setjmp 把某些暫存器的值及其本身的位址存放參數 env 內,　　　　　　　　　
+env 的型別為 jmp_buf (在 setjmp.h 中定義)。存放的值代表堆疊環境(呼叫　　　　　
+setjmp 時的環境)。而在呼叫 longjmp　時 (用堆疊中的環境), 它會使所有堆疊　　　
+中的區域性變數回到原來的值 (呼叫 setjmp 時的值)並跳到 setjmp 存放的位址　　　
+上。這很像又一次從 setjmp 返回。不過這一程序並不保証暫存器變數的值能正　　　　
+確還原。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法   setjmp 和 longjmp 合用, 可使程式跳到錯誤補救常式, 而不必經過　　　
+正常的程序。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	 在存放堆疊環境後, setjmp 傳回 0。在用存放的環境呼叫 longjmp 時,　　
+其效果等於從 setjmp 返回。不過這次以 longjmp 的第 2 個參數為傳回值　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　
+注意   setjmp 和 longjmp 有些難解, 但基本上, 它們提供了在 C 中任意跳越　　　
+的彈性。因此和 goto 是一樣的。　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 longjmp 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例　參看 Turbo C 程式設計寶典上篇第 110 頁　　　　　　　　　　　　　　　　
+calloc　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  calloc 可分配記憶體給一個陣列 (有指定數目的成員)。每一個成員都有固定長度
+被分配到的陣列, 初值都設定為 0。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法  void *calloc(size_t num_elems,size_t elem_size); 　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 p_int=(int*)calloc(100,sizeof(int));　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<alloc.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明   calloc 常式把 num_elems (成員數目)和 elem_size (每一成員長度)相　　　
+乘來算出要分配記憶體的數量。記憶體分配好後, 把其中的每一個位元組都設定　　　
+為 0。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　
+基本用法  calloc 常式在執行時, 把記憶體分配給陣列, 並把記憶體的值設定　　　　　
+為 0。這樣程式可取得所需要的記憶體, 而不必另外增加固定的記憶體要求, 可　　　
+免記憶體不夠的危險。例如 calloc 可為 100 個成員(每一個有 80 個位元組長)安
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+排記憶體。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	 calloc 傳回的是一個指標 (指向型別為 void 的記憶體),這個指標就　　　
+是記憶體的第 1 個位址。如果記憶體不夠, 或參數不良, calloc 會傳回 NULL。　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 malloc,free　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例　參看 Turbo C 程式設計寶典上篇第 149 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+sbrk　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  sbrk 可改變程式的中止值。中止值是內定資料區段中己用記憶體後面的第　　　
+1 個位址。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 void *sbrk(int change); 　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 buffer=(char*)sbrk(80); 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<alloc.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明	sbrk 常式把指定數目 (由 change 參數指定)加到中止值的後面。中止　　　
+值表示已用記憶體數量。事實上, 它是指示 heap 起點的偏移值。由於 sbrk　　　　　
+會改變中止值, 若參數為負, 則使記憶體減少。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法  sbrk 常式用來改變已分配的記憶體數量。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	sbrk 傳回的是一個指標 (指向 void 型別的資料), 此指標為上一個　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+中止值的位址。如果記憶體不夠, 而不能改變中止值, 則傳回 -1, 並使 errno　　　　　
+設定為 ENOMEM。參看下面的程式。(163 頁)。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明  sbrk 提供了和 UNIX V 系統的相容性。由 malloc 來作記憶體分配　　　　　
+比較好 (有移植性), 它和 ANSI 標準一致, 除了 huge 模式外, 適用於全部的　　　　　
+記憶體模式。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 malloc,free　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 163 頁 　　　　　　　　　　　　　　　　　
+memccpy　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  memccpy 常式可把位元組從一個緩衝區抄到另一個緩衝區。在到指定位元組數目,
+或碰到指定字元纔結束抄的工作。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 void *memccpy(void *dest,void *source,int c,unsigned count);　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 memccpy(dest_buf,inbuf,'\0',81);　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔	#include<mem.h> 或 #include<string.h>　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明  memccpy 把一個緩衝區的內容抄到另一個緩衝區。它從第 1  個位元組開始, 而
+在碰到指定字元 c, 或到指定位元組數目  count 後, 纔結束。若碰到指定字元後　　
+結束, 則在結束前, 它也把此字元抄進去。　　　　　　　　　　　　　　　　　　　　
+    我們有責任安排足夠的記憶體。如果記憶體不夠, 可能會破壞其他資料。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法   memccpy 和其他類似常式 memcpy,memmove,movedata 都是抄錄資料　　　
+的有力常式。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	 在碰到指定字元而結束時, memccpy 會傳回指到指定字元後面位址的指標。　
+	 在其他狀態下, 傳回 NULL。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明   在呼叫這類常式前, 一定要先確定已安排足夠記憶體。很多問題的產生　　
+	   就是因為沒有先作這樣的安排。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 memcpy,memmove,movedata　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例　參看 Turbo C 程式設計寶典上篇第 173 頁　　　　　　　　　　　　　　　　　
+memcmp　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  memcmp 常式用來比較兩個緩衝區中一定數目的位元組。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 int memcmp(const void *buffer1,const void *buffer2,size_t count);　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 if(memcmp(buffer1,buffer2,sizeof(buffer1))==0) 　　　　　　　　　　　　
+　　　　printf("The buffers are identical\n");　　　　　　　　　　　　　　　　
+含括檔 #include<mem.h>,#include<string.h> 　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    memcmp 常式比較 buffer1 和 buffer2 中最前面的位元組 (數量由 count 指定)
+, 它傳回一個整數, 指出這兩組字元的順序 (照字典順序)。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　
+　　由於其他字串常式如 strcmp 只能用在 \0 結束的字串, 因此在比較兩個　　　　　
+字串的部份內容時, 用 memcmp 比較合適。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    memcmp 傳回的整數值, 意義如下:　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典上篇第 176 頁	　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 memicmp　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 176 頁 　　　　　　　　　　　　　　　　　
+swab　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  swab 常式把偶數數目的位元組從一個位置移到另一個位置, 並把相鄰的　　　　　
+位元組互換。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法  void swab(char *source,char *destination,int n); 　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 swab("badc",result,4);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<stdlib.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明  swab 常式把 n  個位元組從緩衝區 (source)抄到另一個緩衝區 (dest)。　　
+它一次移動兩個位元組, 並在 dest 中把它們的位置交換。 n 必需是偶數, swab　　
+纔能交換。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法  當一個系統的最低和最高位元組的順序和另一個執行正好相反時,　　　　　
+可用 swab 來作位元組交換的工作。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明   雖然目前大部份電腦都用 8 位元的位元組為最小存放單位, 但一　　　　　
+個資料有幾個位元組時, 並沒有位元組順序的標準。即使最簡單的短整數 (只　　　　　
+佔用兩個位元組), 也有兩種順序(最小有效位元組可能在較低或較高的位址)。　　　　　
+而在網路中, 由於電腦系統不同, 而使情況更為複雜。這時就要用 swab 來調　　　　　
+整位元組的順序。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例 參看 Turbo C 程式設計寶典上篇第 187 頁 　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+strtod　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  strtod 常式可把一個字元字串轉換成一個雙倍精度的數　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 double strtod(const char *string,char **endptr);　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 dbl_value=strtod(input_string,&endptr); 　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<stdlib.h>,#include<float.h>,#include<math.h> 　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明 strtod 常式把 string 轉換成一個雙倍精度的數。string  格式如下:　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　[whitespace][sign][digits.digits][exponent_letter][sign][digits] 　　　　
+　　　
+其中的 whitespace 指定空白及定位字元 (可有可無), sign 表示為正或負數　　　　　
+, 而 digit 表示 10 進位數元。exponent_letter 可以是 d,e 或 D,E (不論　　　　　
+用那一個, 都是 10 的級數)。如果小數點前面沒有數元, 則後面一定要有。　　　　　
+    strtod 常式從 string 的第 1 個字元開始轉換, 直到碰到和上一格式　　　　　
+不合的字元纔結束。然後它把 endptr 設定為指向終點的指標。在 compact　　　　　
+和 large 模式中, 字串不能超過 100 個字元。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	strtod 傳回一個雙倍精度數 (不能超過規定長度)。如果超過了,則傳　　　　　
+回 HUGE_VAL (這是一個常數, 其正負號和此數一樣)。而公共變數 errno 則設定　　
+為常數 ERANGE。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明 strtod 比 atof 好的地方是它能傳回指到轉換結束點的指標, 因此可照　　
+自己的意思來控制其餘的字串。　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 atof,strtol　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例 參看 Turbo C 程式設計寶典下篇第 021 頁　　　　　　　　　　　　　　　　　
+cabs　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途 cabs 常式可用來計算複數的長度 (存放在型別為 complex 的結構內)。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 double cabs(struct complex z); 　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 magnitude=cabs(z);　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<math.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明 cabs 常式算出複數 z 的長度, 此複數存放在一個結構內 (此結構的型別為　　
+complex , 在 math.h 中定義), 如下:　　　　　　　　　　　　　　　　　　　　　
+struct complex{ 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+double x;double y;}; 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+z 的長度用下式算出:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+magnitude=sqrt(z.x*z.x+z.y*z.y); 　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	 如果 z 的長度太大, cabs 常式呼叫 matherr 來處理。這時它會傳回　　　
+HUGE.VAL (在 math.h 中定義)並把變數 errno 設定為常數 ERANGE。如果一切　　　　　
+都沒有問題, cabs 傳回複數的長度。　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式  matherr,hypot 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例  參看 Turbo C 程式設計寶典下篇第 046 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+hypot　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  hypot 常式用來算出一個直角 3 角型的斜邊 ( 另外兩邊的長度要當參數傳給　　
+此常式)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 double hypot(double x,double y);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 length=hypot(3.0,4.0);　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<msth.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明  hypot 常式會算出兩個和 (本身是參數的平方)的平方根。其傳回值如下:　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+return_value=sqrt(x*x+y*y); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　
+如果  x,y 是直角 3 角型的兩邊 (組成直角), 則 hypot 傳回的就是斜邊的長度　　　
+。如果	x,y分別代表複數的實數及虛數部份, 則 hypot 傳回的值為此複數的絕對　　
+值。因此 hypot 常式具有 cabs 常式的能力。　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值	hypot 常式通常傳回斜邊的值, 如果傳回值太大, 則 hypot 傳回 HUGE_VAL　
+, 並把 errno 設定為 ERANGE。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式  cabs　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例  參看 Turbo C 程式設計寶典下篇第 063 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+_status87　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性	TC1　TC1.5　TC2　　　　MSC4　MSC5/QC　　　　　　　　 　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途  _status87 常式可取得浮點數狀態字組的內容, 此一字組是 8087 數學處理　　
+機狀態字組和其他狀況 (由 8087 錯誤管制程式查出的)字組組成的。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法 unsigned int _status87(void); 　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法 if(_status87()&SW_ZERODIVIDE) puts("Zero divide error");　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔 #include<float.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　
+說明  _status87 常式傳回浮點數常式的狀態字組。這個字組是 8087 狀態字組　　　
+和管制程式查出狀態字組的組合。在自己設計的錯誤管制程式中, 可用這個字組　　　
+來查出錯誤狀態。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    檢查時, 應把傳回值和表 2. 5 的常數 AND 運算, 再和此常數作比較, 看是　　
+否相等, 如下式:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    stauts=_status87(); 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    if((status &SW_INEXACT)==SW_INEXACT)　{:　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　:}　　　　　　　　　　　　　　　　
+回報值	_status87 常式傳回的值表示浮點常式的狀態。表格 2. 5 出指示各種　　　
+狀態的常數 (在 float.h 中定義)。　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 2.5 參看 Turbo C 程式設計寶典下篇第 095 頁　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 _clear87,_control87　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例  參看 Turbo C 程式設計寶典下篇第 095 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+iscntrl, isdigit,isgraph,islower,isprint,ispunct,isspace,isupper,isxdigit
+相容性:TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:這組巨集可找出一個 ASCII 字元的特性 (是否為控制字元, 可印出字元, 字母等)。
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int iscntrl(int c); int isdigit(int c),int isgraph(int c),int islower(int
+c);int isprint(int c);int ispunct(int c);int isspace(int c);int isupper(int c);
+int isxdigit(int c);int c;
+呼叫法:if(isprint(c)!=0) printf("%c is printable\n",c);　　　　　　　　　　　
+含括檔:#include<ctype.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:這組巨集可決定整數型參數 c 的值是否滿足某一條件。它們只處理 0-127　　　
+及 EOF 字元。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 3.5 參看 Turbo C 程式設計寶典下篇第 111 頁 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如果 c 滿足某一條件, 則傳回非 0 值, 不然傳回 0。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:要先用 isascii 檢查此值是否為有效的 ASCII 字元。然後纔能用上述巨集
+來看此 ASCII 字元滿足那些條件。　　　　　　　　　　　　　　　　　　　　　　
+	  　　　　　　　　　　　　　　　　　 　　　　　　　　　　　　　　　
+    Turbo C 有一個字元分類表 (照這些條件分類的), 可使檢查的工作順利執行。
+可從 ctype.h 檔案中看出這些檢查的動作。你可以試試把 _ctype 陣列中的 0-127
+項的值列印出來。若字元為 64 (等於 ctype.h中的 _IS_PUN)表示是一個標點字元。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:isascii 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 111 頁　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+strtok　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:strtok 常式可取得字串中的子字串 (或子集 token),此字串由第 2 個字串中　　
+的任一字元隔開。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法: char *strtok(char *string1,const char *string2); 　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:next_token=strtok(input,"\t,"); 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<string.h.> 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:strtok 把 string1 中的子字串分開。第 2 個字串 string 2 的字元是分隔字元。
+連續呼叫 strtok , 可從 string 1 中抽出各子字串。第 1 次呼叫 strtok 時, 把被
+分開的字串當 strtok 的第 1 個參數, 而由分隔字元組成的一個 C 字串當 strtok
+的第 2 個參數。第 2 次呼叫 strtok 時,則把 NULL 當第一個參數, 而把適當分隔字元
+當第 2 個參數。這會使 strtok 不斷傳回 string1 中的子集。　　　　　　　　　　
+    每次呼叫 strtok 都可改變分隔字元。在分隔過程中,  strtok 會修改 string1。
+它把 null 換掉分隔字元, 而使子集變成一個 C 字串。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:如果使用者以特殊的語法來輸入命令, 則可用 strtok 來分開此命令。　　
+對各子集使用一組不同的分隔字元, 可把複雜的語法簡化。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:第 1 次呼叫 strtok, 傳回第 1 個子集。第 2 次傳回第 2 個。傳完後, 傳回
+NULL。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:strpbrk,strspn　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 159 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+bsearch　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:bsearch 常式在已排序的陣列中作2 元尋找。此陣列有一定數目的成員, 每一成員
+有固定的長度。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void *bsearch(const void *key,const void *base,size_t num,size_t width,　
+　　　int (*comare)(const void *elem1,const void *elem2));　　　　　　　　　　
+呼叫法:int mycompare(const void*,const void*); result=(char **)bsearch(( 　　
+const void*)keyword,(const void*)envp,(size_t)sizeof(char*),mycompare); 　　　
+含括檔:#include<stdlib.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:bsearch 常式在已排序的陣列中作 2 元尋找, 此一陣列從 base 這個位址開　　
+始, 有 num 個成員, 每個成員有 width 個位元組。key 參數指定要尋找的關鍵值。　　
+    compare 參數提供一個常式的位址, 此常式會取得兩個參數 elem1,elem2,　　　　　
+每個參數都是指向陣列成員的一個指標。bsearch 常式在要比較陣列中兩個成員時,　
+會把成員的位址(即指標)傳給比較用的常式。而在比較完後, 傳回下表的一個值。　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典下篇第 170 頁　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:bsearch 傳回一個指標, 也就是 key 第 1 次出現位址。若沒有找到 key,　　　
+則傳回 NULL。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:lfind,qsort 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 170 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+asctime　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:asctime 常式把一個時間 (保存在 tm 結構)轉換成字元字串。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:char *asctime(const struct tm *time); 　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:printf("The time is %s\n",asctime(&timedata)); 　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<time.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:asctime 常式把保存在結構 (型別為 tm, 位址為 time)的時間轉換成字元字串。　
+此一時間是由 mttime 或 localtime 把一個長整數轉換而得的,結構在 time.h 中　　
+定義如下:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典下篇第 188 頁 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　
+asctime 準備的字串有 26 個字元長 (\0 也算在內), 其格式如下:　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+Thu Nov 26 17:02:39 1987\n\0　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+此一時間用 24 小時為單位。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:asctime 傳回一個指標(指到保存資料的地方)。　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:為印出時間, asctime 和 ctime 都只用一個 static 字串, 它們會被新的　
+值蓋掉。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:ctime,gmtime　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典下篇第 188 頁　　　　　　　　　　　　　　　　
+fflush　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fflush 常式可處理緩衝區的現有內容 (此緩衝區屬於一個緩衝式 I/O 的檔案)。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int fflush(FILE *file_pointer);　 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:fflush(stdin);　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fflush 常式清除緩衝區的內容 (此緩衝區屬於 file_pointer 指到的檔案)。　
+先前呼叫 fopen 常式傳回來的指標則指到 FILE 結構。如果檔案打開來作寫入,　　　
+則清除的工作包含把緩衝區內的資料寫到檔案內,不然就直接把緩衝區清除。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:你可用 fflush 常式把從檔案 (作緩衝區 I/O 讀取)讀來的資料清除。　　　
+如果一個檔案是打開來準備寫入或更新, 則可呼叫 fflush 常式來確保緩衝區資料　　
+可讀出, 而不必等候緩衝區填滿纔能讀出。使用子程式時 (參看第 3 章)就可用　　
+fflush 來確保子程式使用前, 檔案已更新過了。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如緩衝區已成功清除, 則傳回 0, 否則傳回 EOF 常數 (在 stdio.h 中定義)。
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:在檔案作緩衝式 I/O 時, 只有在緩衝區填滿, 檔案關掉, 或程式正常結束時,
+纔能作實際的讀寫操作。在大部份情況下, 你並不必使用fflush, 但如果你希望寫入時
+,是直接對檔案而不是對緩衝區寫入, 則要使用 fflush 常式來確保此點。這會使資料保
+特完整 (不過執行速率會慢一點)。　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:fopen,fclose 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 271 頁　　　　　　　　　　　　　　　　　　
+fopen　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fopen 常式打開一個檔案 (作緩衝式輸入及輸出)。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:FILE *fopen(const char *filename,const char *access_mode);　　　　　　　
+呼叫法:input_file=fopen("data.in","rb"); 　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fopen 常式打開一個檔案 (由 filename 指到)。對此檔案所要作的操作,　　　　　
+一定要在參數 access_mode 中指定。表 9.7 列出可用的值。　　　　　　　　　　
+    除了表 9.7 的字串外, 表 9.8 的字元也可加到這些字串的後面 (用以指出　
+轉換模式)。指定模式的字元可在 + 號的前面或後面, 如 w+b=wb+ (其意義是建立檔案
+並在 2 位元模式下讀寫)。如沒有指定模式, 則使用 _fmode 指定的模式(在 stdio.h
+中宣告)。檔案若用 +a 打開, 則 file_pointer 指向檔案的終點, 因此檔案現存內容都
+不會被破壞。在寫入時, file_pointer 都指到目前位置。　　　　　　　　　　　　
+    檔案在 r+,w+,a+ 模式下打開作更新時, 則作讀寫切換時, 一定要呼叫 fsetpos　
+,fseek,ewind 常式中的一個。它們會在操作前設定適當的指標。也可用 fsetpos或　　
+fseek 設定指標指到目前位置。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:在對檔案執行緩衝式 I/O 前, 要用 fopen 常式把此檔案打開。例如用　　
+fopen 打開 c:\autoexec.bat , 然後用 fgets 常式讀取其中的內容。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:若成功, 則傳回指向此檔案的指標 (實際上指到檔案的 FILE 結構)。此一　　
+結構已配置好, 你不必再配置一次。若有錯誤, 則傳回 NULL。　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:DOS 的緩衝式 I/O 中, 一個程式最多可打開 20 個檔案。除了　　　　　　
+stdin,stdout,strerr,stdaux,stdprn 已打開外, 還有 15 個可用 fopen 打開。　　
+相關常式:fclose,open 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 282 頁　　　　　　　　　　　　　　　　　
+fseek　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　ANSI　UNIX V　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:fseek 常式可在檔案 (緩衝式 I/O)中移動位置。　　　　　　　　　　　　　　　
+語法:int fseek(FILE *file_pointer,long offset,int origin); 　　　　　　　　　
+呼叫法:fseek(infile,0L,SEEK_SET); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<stdio.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:fseek 常式把檔案 (由 file_pointer 指到)的目前位置放成 offset 和 origin
+參數指定的位置。offset 是一個長整數, 它表示距 origin　的距離, origin 的值　
+如下表:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+SEEK_SET　 檔案起點 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+SEEK_CUR 　檔案目前位置　　　　　　　　　　　　　　　　　　　　　　　　　　　
+SEEK_END　 檔案終點 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:fseek 常式通常用來讀 2 位元模式的檔案。例如一個程式可能建立某一　　
+格式 (如 512 個位元組的表頭, 再接資料)的資料檔案。在讀這種檔案時, 可用　　　　
+fseek 來跳過表頭, 直接用 fread 讀取指定的資料。　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, fseek 傳回 0。若有錯誤, 傳回非 0 值。如果此檔案和裝置結合, 而
+設定目前位置沒有意義 (如印表機), 則傳回無意義的值。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:注意下列的差別。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+.在文字模式中, 由於 CR-LF 的轉換, 可能無法提供適當的 offset 值。因此只有下列
+參數可用:1.任一 origin 的 OL offset, 2.ftell (用 SEEK_SET 作 origin )傳回的
+offset。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+.在 append 模式中, 目前位置只由最後一次 I/O 操作決定。不論在檔案何處,　　　　　
+寫入都從檔案終點寫起。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式 ftell　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 296 頁　　　　　　　　　　　　　　　　　
+absread　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:absread 常式從邏輯磁區讀取資料, 送到記憶體中的緩衝區。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int absread(int drive,int nsects,int lsect,void *buffer);　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:absread(0,1,0,buff);　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:absread 常式用中斷 25h 從邏輯磁區讀取資料, 送給記憶體中的緩衝區 (這不
+是 DOS 的 25 h 常式)。參數 drive 指定要讀的磁碟機。0 表示 A 磁碟機等。從
+lsect 邏輯磁區讀起, 連續讀 nsects 邏輯磁區。一定要配置一個緩衝區來裝這些
+資料, 此緩衝區的位址由參數 buffer 指定。　　　　　　　　　　　　　　　　　
+    absread 常式不涉及檔案系統, 存取 raw 邏輯磁區。為使 absread 常式能有效
+運用, 你應對磁片的結構 (磁頭, 磁軌, 磁區,磁區編號)有些熟悉。例如邏輯磁區0
+和邏輯磁區 1 並不需要連在一起。為了有效存取邏輯磁區, 許多控制磁片的程式把
+邏輯磁區編號指定給固定距離之外的實際磁區 (稱為 interleaving)。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　
+基本用法:在設計能印出磁區資料的公用程式時, absread 常式是很有用的。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如果成功, 傳回 0。有錯誤時, 傳回 -1。並把 AX 暫存器的值放在　　　　　
+errno 變數內。AL 暫存器中的碼照表 10.27 的值來解釋, 而 AH 暫存器含有　　　　　
+表 10.7 中的一項。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.7 參看 Turbo C 程式設計寶典上篇第 423 頁 　　　　　　　　　　　　　　　
+補充說明:BIOS 的磁片常式 (用 INT 13h 呼叫)對磁片有更進一步的存取能力　　　　　
+(使用指定的磁頭, 磁軌, 實際磁區編號)。在格式化磁片時, 必需使用 BIOS　　　　　
+常式。你可用 bisk 常式來控制這些 BIOS 常式。　　　　　　　　　　　　　　　　
+相關常式:abswrite,biosdisk　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 423 頁　　　　　　　　　　　　　　　　　
+abswrite　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　 　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:abswrite 常式從指定的記憶體緩衝區讀取資料, 送入邏輯磁區。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int abswrite(int drive,int nsects,int lsects,void *buffer); 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:abswrite(2,1,3,buff);　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:abswrite 常式用 int 26h 把記憶體中緩衝區的資料寫入磁片中的邏輯磁區。　
+參數 drive 指定磁碟機, 0 表示 A 磁碟機, 1 表示 B 磁碟機等。第 1 個被寫入　　
+的邏輯磁區由參數 lsect 指定, 寫入的邏輯磁區數目由參數 nsects 指定。　　　　　
+    absread 常式不涉及檔案系統, 存取 raw 邏輯磁區。為使 absread 常式能有效
+運用, 你應對磁片的結構 (磁頭, 磁軌, 磁區,磁區編號)有些熟悉。　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:如果成功, 傳回 0。有錯誤時, 傳回 -1。並把 AX 暫存器的值放在　　　　　
+errno 變數內。AL 暫存器中的碼照表 10.27 的值來解釋, 而 AH 暫存器含有　　　　　
+表 10.7 中的一項。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.7 參看 Turbo C 程式設計寶典上篇第 426 頁
+補充說明:BIOS 的磁片常式 (用 INT 13h 呼叫)對磁片有更進一步的存取能力　　　　　
+(使用指定的磁頭, 磁軌, 實際磁區編號)。在格式化磁片時, 必需使用 BIOS　　　　　
+常式。你可用 bisk 常式來控制這些 BIOS 常式。　　　　　　　　　　　　　　　
+    abswrite 常式會蓋掉原來的內容(不考慮 DOS 檔案結構)因此使用時, 要　　　　　
+很謹慎。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:absread,biosdisk　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 426 頁　　　　　　　　　　　　　　　　　
+bdos　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　
+用途:bdos 常式可呼叫 DOS 常式, 就像用 int 21h 來呼叫一樣。你可用　　　　　　
+bdos 來呼叫不用參數的 DOS 常式, 或只從 DX 暫存器取得參數的 DOS 常式。　　　　　
+例如用 bdos (常式編號 1)從鍵盤讀取一個字元。傳回的字元會放在傳回值的　　　　　
+低位元組。跟更一般化的 intdos,intdosx 相比, bdos 比較適合於用在小　　　　　　
+量的 DOS 常式上。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int bdos(int dosfun,unsigned dosdx,unsigned dosal); 　　　　　　　　　　
+呼叫法:bdos(2,'q',0); 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:bdos 常式提供一個簡化的方法來存取 DOS 常式的子集合。bdos 可用　　　　　
+來存取任一 DOS 常式 (只要此常式不用參數, 或只從 DX,AL 暫存器取得參數的)。它
+先把無正負號整數參數 dosdx,dosal 的值抄到 DX,AL 暫存器內。然後用一個　　　　　
+INT 指令呼叫編號為 dosfun 的常式。傳回值放在 AX 暫存器。此值的意義由　　　　　
+此 DOS 常式決定。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　
+基本用法:bdos 常式通常用來讀取鍵盤輸入的字元, 再用 DOS 介面印到螢幕上。　　　
+這樣程式可在任何 DOS 電腦上執行。　　　　　　　　　　　　　　　　　　　　　　　
+    intdos,intdosx 比 bdos 更為一般化, 但 bdos 常式比較簡單。當然如果　　　　　
+常式需要參數或需要從 DX,AL 暫存器以外的暫存器取得參數, 則不能用 bdos 常式。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:傳回的值放在 AX 暫存器內。此值的意義由 DOS 常式決定。bdos 只是傳回 DOS
+常式放在 AX 暫存器中的值。例如 DOS 常式把值傳回 AL 暫存器, 則你不必理會 AH　　
+暫存器的值。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:intdosx 常式可接受各種暫存器上的設定值。只有合於上述條件的情　　　　　
+況下, 纔能使用 bdos 常式。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:bdosptr,intdosx　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 429 頁　　　　　　　　　　　　　　　　　
+biosdisk　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:biosdisk 常式使用 BIOS 常式作磁碟機的 raw I/O 操作。例如用 biosdisk
+存取磁片的實際磁區, 找出磁片的狀態, 作磁片的格式化等 (可取代 DOS 的 FORMAT
+命令)。由於 biosdisk 可直接作低階的磁片 I/O , 使用時應注意, 以免損害磁片上
+原來的檔案。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int biosdisk(int cmd,int drive,int head,int track,int sector,　　　　　
+　　　　　　　	  int nsects,void *buffer);　　　　　　　　　　　　　　　　
+呼叫法:biosdisk(2,0,0,0,6,1,dir_buf);　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<bios.h>　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:biosdisk 常式可使用 BIOS 常式來存取磁碟機。它比 int 86x 常式方便。　　
+參數 cmd 指定 biosdisk 執行的工作。參數 drive,head,track,sector,nsects　　　
+則分別提供磁碟機的資料。表 10.12 列出有效的磁區和磁軌數目。 　　　　　　　　　
+biosdisk 用的緩衝區應配有足夠的記憶體, 例如 PC 磁片的一個磁區有 512 個　　　
+位元組, 因此要讀取 n 個磁區, 應配置 512*n 個位元組。　　　　　　　　　　　　
+    表 10.13 列出 biosdisk 可執行的工作。細節參看 Ray Duncan 的書。　　　　　
+基本用法:biosdisk 可用來設計磁片公用程式。這種程式檢查磁片的磁區總數,　　　　　
+作磁片的格式化工作, 或代替 DOS 的 FORMAT 命令等。有的可把檔案藏起來, 　　　　　
+無法用 DIR 列出。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:biosdisk 傳回 AX 暫存器中的值。AL 暫存器存放處理過的磁區總數, 　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+AH 暫存器存放成功或錯誤的狀態。成功的話, AH 內的值是 0。因此把 info　　　　　
+結構中的 nsectors 欄和傳回值相比, 可以很容易的找出是否有錯誤發生。如　　　　　
+果相等, 表示成功, 失敗的話, 示誤碼傳回 AL 暫存器。示誤碼列於表 10.14。　　　
+(IBM 技術手冊有示誤碼的定義)。　　　　　　　　　　　　　　　　　　　　　　
+表 10.14 參看 Turbo C 程式設計寶典上篇第 438 頁　　　　　　　　　　　　　　　
+補充說明:為有效使用 biosdisk 常式, 應對檔案系統有點認識。同時也要小心　　
+使用, 以免損害原來的資料。參看 MS-DOS Developers Guide 一書。　　　　　　　　
+相關常式:int86x　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 438 頁　　　　　　　　　　　　　　　　
+bioskey　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:bioskey 常式可使用 BIOS 的鍵盤控制常式。你可用 bioskey 來讀取下一個可　　
+取得的字元, 或檢查是否有字元在等候或特殊鍵如 ALT,CTRL,SHIFT 是否被按下。　　
+語法:int bioskey(int cmd); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:ch_read=bioskey(0)&0xff; 　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<bios.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:bioskey 常式產生 INT 16h 中斷, 叫用 BIOS 的鍵盤常式。參數 cmd 指定　　　
+執行的動作, 表 10.16 列出可用的 cmd 值。　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.16 參看 Turbo C 程式設計寶典上篇第 445 頁 　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:在呼叫 bioskey(0) 後, 傳回值的低階位元組是剛讀到字元的 ASCII 碼。　　　
+而高階位元組是掃描碼 (有鍵被按下或釋放時產生的唯一碼, 參看 PC 技術手冊)。　　
+字元是從緩衝區移出的。　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    cmd 為 1 時, 若鍵盤緩衝區是空的, 則傳回 0, 反之傳回字元, 但不把此字　　
+元從緩衝區移走。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    cmd 為 2 時, 傳回值的低階位元組存放 LED 的狀態 (CAPS LOCK,NUM LOCK　　　
+,SCROLL LOCK)或 SHIFT,ALT,CTRL 鍵是否被按下。表 10.17 中每一個位元代表　　　
+一種狀態。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 10.17　參看 Turbo C 程式設計寶典上篇第 445 頁 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:如果希望不必等候按鍵, 則 cmd 應設為 1。你可在一迴圈中檢查按鍵。　　
+因此不必等候。kbhit 常式也有此能力, 並且比較容易使用。　　　　　　　　　　　
+相關常式:int86,kbhit 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 445 頁　　　　　　　　　　　　　　　　　
+country　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:country 常式可取出 ( DOS 2.0 版以上)或設定 (DOS 3.0 版以上)　　　　　　
+某一國家的日期, 時間, 通貨單位等資料。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:struct country *country(int xcode,struct country *cp);　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:country(0,&country_info);　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:country 常式使用 DOS 的 38h 常式傳回和國家有關的資料。在 DOS 3.0　　　　　
+及以上版本可設定新的國家碼。　　　　　　　　　　　　　　　　　　　　　　　　　
+    在需要資料時, 你一定要配置一個 country 結構 , 並用參數 cp 提供指到　　　
+此結構的指標。country 結構在 dos.h 中定義如下:　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 turbo c 程式設計寶典上篇第 458 頁　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　
+如果參數 cp 是 -1, 則參數 xcode 指定國家的資料。不然 country 把 xcode　　　　　
+指定的資料放在結構內 (位址由 cp 指定)。xcode=0 表示需要目前國家的資料。　　
+xcode 為其他值表示需要某一指定國家的資料。國家碼通常是此國家的國際電話碼。　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:country 常式使程式可適應各國特別的時間, 日期, 通貨等要求。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:country 常式傳回參數 cp。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:此一常式用在 DOS 3.0 版及以上為宜。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 turbo c 程式設計寶典上篇第 458 頁　　　　　　　　　　　　　　　　
+ctrlbrk　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:ctrlbrk 常式用來設定一個常式。Control-Break 鍵組被按下, 會呼叫此　　　　　
+常式來處理。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void ctrlbrk(int (*fptr)(void));　　　　　　　　　　　　　　　　　　　　
+呼叫法:ctrlbrk(our_cbrk_handler);　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:ctrlbrk 的參數 fptr 指向一個常式。在Control-Break 鍵組或 Control-C 鍵組
+被按下時, 會呼叫此常式。此一常式並不需要是一個中斷管制常式。ctrlbrk 常式會　　
+為 INT 23h (按下 Control-Break 鍵組或 Control-C  鍵組時產生此一中斷)產生一　　
+個中斷管制常式。此一中斷管制常式會呼叫被 fptr 指到的常式。　　　　　　　　
+     管制常式會結束程式或用 longjmp 回到程式中指定的地方 (例如回到程式中上
+一層次的命令解譯器)。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:一個設計良好的程式應可處理例外或錯誤狀況。ctrlbrk 常式可使你安裝　　
+一個可處理 Control-Break 鍵組例外狀況的常式。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:ctrlbrk 不傳回值。但安裝的常式要放棄程式時, 會傳回 0。而在 　　　　　
+Control-Break 鍵組按下後,程式仍會重新執行時, 傳回非 0 值。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:處理 Control-Break 鍵組的另一種方法是使用更一般化 (標準)的　　　　　
+signal 機制。Turbo C 2.0 的 signal 常式可作這個工作。較早的版本只可用　　　　　
+ctrlbrk 常式。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:getcbrk,longjmp　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 461 頁　　　　　　　　　　　　　　　　　
+delay　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性:　　 TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:delay 常式使程式延後一定數目的毫秒數目 　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void delay(unsigned milliseconds);　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:delay(500);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h>	　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:delay 常式使程式延後一定數目的毫秒數目 (由參數 milliseconds 指定)。　　
+延後的精度由電腦的計時器決定。如果電腦的中斷隔 55 毫秒, 則不會有少於 　　　　　
+55 毫秒的延後。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　  　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　  　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:你可用 delay 常式配合 sound 常式產生指定的時間的音調。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相關常式:sound,biostime　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 463 頁　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+findfirst　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:findfirst 常式可找出合於指定名稱和屬性的第 1 個檔案。由於指定名稱可為　　
+萬用字元 (* 和 ﹖), 因此可用 findfirst 常式來找出檔案附名為 .C 的第 1 個檔案。
+　　　　　　　　　　　　　　　　　　
+語法:int findfirst(const char *pathname,struct ffblk *fileinfo int attribute);
+呼叫法:findfirst("\*.*",&fileinfo,FA_LABEL); 　　　　　　　　　　　　　　　　　
+含括檔: #include<dir.h>,#include<dos.h>　　　　　　　　　　　　　　　　　　　　
+　　　　　
+說明:findfirst 常式使用 DOS 的 4Eh 常式來找出一個檔案 (檔名和參數 pathname ,
+屬性和參數 attribute 相同)。檔名可用萬用字元 * 和 ﹖。　　　　　　　　　　　　
+    屬性可用表 10.22 中的名稱作 OR 運算而得。這些名稱在 dos.h中定義。　　　　　
+    尋找的結果傳回結構 (型別為 ffblk)內。指向此結構的指標由參數 fileinfo　　　
+提供。此結構在 dir.h 中定義, 在 Turbo C 中的宣告如下:　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典上篇第 473 頁 　　　　　
+
+成功時, ff_name 會取得第 1 個檔案的檔名 (合乎要求的)。屬性則放入 ff_attrib 內。
+時間和日期放入 ff_fdate 和 ff_ftime 內。檔案的長度 (以位元組為單位)放入長整數
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+欄位 ff_fsize 內。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    findfirst 把 DTA 的位址指定給 fileinfo 。如果你要在程式中保留此位址,　　
+則在呼叫 findfirst 前, 要先呼叫 getdata, 而在結束 findfirst 後, 用 setdata　
+取回原來的 DTA 值。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:findfirst 和 findnext 合用, 找出合於指定的檔案。　　　　　　　　　　
+回報值:成功時,傳回 0, 失敗時, 傳回 -1。並把 errno 設定為 ENOENT (表示找不到　
+檔案)或 ENMFILE (表示沒有另外的檔案)。　　　　　　　　　　　　　　　　　　　　
+相關常式:findnext 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 473 頁　　　　　　　　　　　　　　　 　
+findnext　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:findnext 常式緊接在 findfirst 常式後使用, 它從留下的檔案中找出和　　　　　
+要求相同的檔案。只有在 findfirst 中指定的檔名使用一個或以上的萬用字元　　　　　
+時, 纔使用得到 findnext。例如找出檔案附名為 .C 的全部檔案, 可先用 findfirst
+找出第 1 個, 再重複用 findnext 找出其他的。　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void findnext(struct ffblk *fileinfo);　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:findnext(&fileinfo); 　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dir.h>,#include<dos.h> 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:findfirst 常式用 DOS 的 4Fh 常式來找出下一個合於要求的檔案。　　　　　
+    找到的結果傳回結構內 (型別為 ffblk), 參數 fileinfo 提供指向此結構的　　
+指標。ffblk 結構在 dos.h 中定義, 其宣告參看 findfirst 一節。　　　　　　　　
+    成功時, ff_name 會取得第 1 個檔案的檔名 (合乎要求的)。屬性則放入 ff_attrib。
+欄內,時間和日期放入 ff_fdate 和 ff_ftime 內。檔案的長度 (以位元組為單位)放入長
+整數欄位 ff_fsize 內。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    findnext 把 DTA 的位址指定給 fileinfo 。如果你要在程式中保留此位址,　　　
+則在呼叫 findfirst 前, 要先呼叫 getdata, 而在結束 findnext 後, 用 setdata　　
+取回原來的 DTA 值。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:findfirst 和 findnext 合用, 找出合於指定的檔案。　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時,傳回 0, 失敗時, 傳回 -1。並把 errno 設定為 ENOENT (表示找不到　
+檔案)或 ENMFILE (表示沒有另外的檔案)。　　　　　　　　　　　　　　　　　　　　
+相關常式:findfirst　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 475 頁　　　　　　　　　　　　　　　　　
+getftime　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:getftime 常式可取得檔案上一次修改時的日期和時間。使用前要先取得　　　　　
+_open_ 或 _creat 常式傳回來的識別碼。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int getftime(int handle,struct ftime*ftimep);　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:getftime(handle,&dt_info); 　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:每一個檔案在最近一次修改後, DOS 都會記下修改的日期和時間。在用　　　　　
+DIR 命令列出檔案時, 可看到此一資料。它們以碼的方式存放在表格內, 日期的　　　
+位元意義如下:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 參看 Turbo C 程式設計寶典上篇第 490 頁 　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　
+時間的位元意義如下:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+表 參看 Turbo C 程式設計寶典上篇第 490 頁 　　　　　　　　　　　　　
+getftime 常式用 DOS 的 57h 常式來傳回檔案 (由參數 filehandle 指定)的　　　　　
+日期和時間資料。傳回的資料放在 ftime 結構內 (參數 ftimep 指定結構位址)。　　
+結構宣告如下:　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典上篇第 490 頁 　　　　　　　　　　　　　　　　　　　　
+檔案的識別碼必需是 _open 或 _creat 常式傳回來的。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:成功時, 傳回 0, 不然傳回 -1, 並把 errno 設定為 EBADF (表示識別碼　　　
+無效)或 EINVFNC (表示常式編號無效)。　　　　　　　　　　　　　　　　　　　　
+相關常式:setftime,_open 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 490 頁　　　　　　　　　　　　　　　　　
+int86　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:int86 常式用來呼叫 BIOS 和 DOS 常式 (可用 80x86 軟體中斷啟動的)。如果　　
+常式不需要參數, 或記憶體模式不需要明確指定區段暫存器, 則使用 int86 是很適合　　
+的。例如你可用 int86 來呼叫 BIOS 視訊常式, int86 使用 REGS 結構來傳送暫存器　　
+的值。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int int86(int intfo,union REGS *inregs,union REGS *outregs); 　　　　　　
+呼叫法:int86(0x10,&inregs,&outregs); 　　　　　　　　　　　　　　　　　　　　　
+含括檔: #include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:int86 常式先把 inregs 結構中暫存器的值抄到微處理機中相關的暫存器內。　　
+然後用 INT 指令產生 intfo 編號的中斷。中斷常式結束時, 把微處理機的暫存器
+內容及進位旗號傳回結構 outregs。　　　　　　　　　　　　　　　　　　　　　　
+    inregs 和 outregs 是兩個結構 (在 dos.h 中定義)。　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:int86 常式常用來存取 BIOS 常式。這些 BIOS 常式可移動游標,讀取　　　
+鍵盤等作很多工作。雖然 Turbo C 另有許多比較簡單的常式可存取 BIOS 或 DOS　　
+常式, 但 int86 仍有其作用,因為它可產生入一個軟體中斷, 存取任一個 BIOS 或　　　
+DOS 常式。參看表 10.1 10.2。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　
+回報值:處理過中斷後, int86 傳回 AX 暫存器的值。outregs.x.flag 中的非 0 值　
+表示有錯誤。公共變數 _doserrno 會被設定為適當的示誤碼。可用它來找出錯誤　　
+的原因。參看表 10.26。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:被呼叫的 BIOS 或 DOS 常式要求的參數可決定是否需要使用 DS,ES 暫存器。
+假設使用 large 記憶體模式, DX 暫存器中的值是資料的偏移位址, 則可能要很明白　
+的使 DS 暫存器的值為資料區段的位址。這時就應使用 int86x常式, 因 int86x可在產生
+軟體中斷前, 把新的值放入 DS 暫存器內。　　　　　　　　　　　　　　　　　　　
+相關常式:int86x,bdos 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 506 頁　　　　　　　　　　　　　　　　　
+int86x　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　 　　　　　　　　　
+用途:int86x 常式用來呼叫 BIOS 和 DOS 常式 (可用 80x86 軟體中斷啟動的)。如果　
+常式需要參數, 或記憶體模式需要明確指定區段暫存器, 則使用 int86x是很適合　　　
+的。例如你可用 int86x來呼叫 DOS 3Bh  常式,int86x 使用 REGS 和 SREGS結構來傳送
+暫存器的值。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法int int86x(int intno,union REGS *inr,union REGS *outr,struct SREGS *segr);
+呼叫法:int86x(0x21,&inregs,&outregs,&segregs);	　　　　　　　　　　　　　　　
+含括檔: #include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:int86x 常式先把 inr 結構中暫存器的值抄到微處理機中相關的暫存器內。　　
+把 DS 暫存器的值保存起來, 再把 segr 結構中的值放入 DS 和 ES 暫存器內。　　　
+然後用 INT 指令產生 intno 編號的中斷。中斷常式結束時, 把微處理機的暫存器　　
+內容及進位旗號傳回結構 outr。　　　　　　　　　　　　　　　　　　　　　　　　　
+    inr 和 outr 是兩個結構,SREGS 也是結構(在 dos.h 中定義)。　　　　　　　　
+基本用法:int86x 常式常用來存取 BIOS 和 DOS 常式(特別是那些需要參數或使用 DS　
+ES 暫存器的常式)。這些常式可作磁片 I/O , 改變目錄, 印出字串等很多工作。　　　　
+int86x 可產生任一個軟體中斷, 存取任一個 BIOS 或　　　　　　　　　　　　　　　
+DOS 常式。參看表 10.1 10.2。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　
+回報值:處理過中斷後, int86 傳回 AX 暫存器的值。outregs.x.flag 中的非 0 值　　
+表示有錯誤。公共變數 _doserrno 會被設定為適當的示誤碼。可用它來找出錯誤　　　
+的原因。參看表 10.26。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:被呼叫的 BIOS 或 DOS 常式要求的參數可決定是否需要使用 DS,ES 暫存器。
+假設使用 large 記憶體模式, DX 暫存器中的值是資料的偏移位址, 則可能要很明白
+的使 DS 暫存器的值為資料區段的位址。這時就可用 int86x常式, 因 int86x可在產生
+軟體中斷前, 把新的值放入 DS 暫存器內。　　　　　　　　　　　　　　　　　　　　
+    int86x 是最常用來存取 BIOS 和 DOS 常式的, 雖然 Turbo C 另有許多常式可　　
+存取 BIOS 或 DOS 常式, 但每一個常式都可透過 int86x 來存取。　　　　　　　　　　
+相關常式:int86,bdos 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 510 頁　　　　　　　　　　　　　　　　　
+intdos　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:intdos常式用來呼叫 DOS 常式 (可用 80x86 軟體中斷啟動的)。如果　　　　　
+常式不需要參數, 或記憶體模式不需要明確指定區段暫存器, 則使用 intdos是很適合
+的。例如你可用 intdos來呼叫 19h常式 (取得目前磁碟機編號)。　　　　　　　　　　
+    由於 int86 也同樣有這個功能, intdos 唯一的好處是參數比較少。　　　　　　　
+語法:int intdos(union REGS *inregs,union REGS *outregs); 　　　　　　　　　　
+呼叫法:intdos(&inregs,&outregs);　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:intdos 常式先把 inregs 結構中暫存器的值抄到微處理機中相關的暫存器內。　
+然後用 INT 21h 指令呼叫 DOS 常式。中斷常式結束時, 把微處理機的暫存器　　　　　
+內容及進位旗號傳回結構 outregs。DOS 常式所作的工作由 AH 暫存器的值指定。　　
+    inregs 和 outregs 是兩個結構 (在 dos.h 中定義)。　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:intdos 常式常用來存取 DOS 常式。這些 DOS 常式可移動游標,讀取　　　　　
+鍵盤等作很多工作。參看表 10.2。　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:處理過中斷後, intdos傳回 AX 暫存器的值。outregs.x.flag 中的非 0 值　　
+表示有錯誤。公共變數 _doserrno 會被設定為適當的示誤碼。可用它來找出錯誤　　
+的原因。參看表 10.23。　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:被呼叫的 DOS 常式要求的參數可決定是否需要使用 DS,ES 暫存器。　　　　　
+假設使用 large 記憶體模式, DX 暫存器中的值是資料的偏移位址, 則可能要很明白　
+的使 DS 暫存器的值為資料區段的位址。這時就應使用 intdosx常式, 因 intdosx 可在
+產生軟體中斷前, 把新的值放入 DS 暫存器內。　　　　　　　　　　　　　　　　　　
+相關常式:int86,intdosx　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 513 頁　　　　　　　　　　　　　　　　　
+intdosx　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　MSC3　MSC4　MSC5/QC　　　　　　　　 　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:intdosx 常式用來呼叫 DOS 常式 (可用 80x86 軟體中斷啟動的)。如果　　　　　
+常式需要參數, 或記憶體模式需要明確指定區段暫存器, 則使用 intdosx是很適合
+的。例如你可用 intdosx來呼叫 DOS 39h  常式(建立子目錄)。
+語法:int intdosx(union REGS *inr,union REGS *outr,struct SREGS *segr); 　　　
+呼叫法:intdosx(&inregs,&outregs,&segregs); 　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:intdosx 常式先把 inr 結構中暫存器的值抄到微處理機中相關的暫存器內。　　
+把 DS 暫存器的值保存起來, 再把 segr 結構中的值放入 DS 和 ES 暫存器內。　　　
+然後用 INT 21h 呼叫 DOS 常式。常式結束時, 把微處理機的暫存器　　　　　　　　
+內容及進位旗號傳回結構 outr。　　　　　　　　　　　　　　　　　　　　　　　　　
+    inr 和 outr 是兩個結構,SREGS 也是結構(在 dos.h 中定義)。　　　　　　　　
+基本用法:intdosx常式用來存取 DOS 常式(特別是那些需要參數或使用 DS　　　　　　
+ES 暫存器的常式)。這些常式可作磁片 I/O , 改變目錄, 印出字串等很多工作。　　　
+intdosx可產生任一個軟體中斷, 存取任一個 DOS 常式(參看表 10.2)。　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:處理過中斷後, intdosx傳回 AX 暫存器的值。outregs.x.flag 中的非 0 值　　
+表示有錯誤。公共變數 _doserrno 會被設定為適當的示誤碼。可用它來找出錯誤　　　
+的原因。參看表 10.23。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:被呼叫的 DOS 常式要求的參數可決定是否需要使用 DS,ES 暫存器。　　　　　
+假設使用 large 記憶體模式, DX 暫存器中的值是資料的偏移位址, 則可能要很明白　
+的使 DS 暫存器的值為資料區段的位址。這時就一定要用 intdosx 。　　　　　　　
+    intdosx 是最常用來存取 DOS 常式的, 雖然 Turbo C 另有許多常式可　　　　　
+存取 DOS 常式, 但每一個常式都可透過 intdosx 來存取。　　　　　　　　　　　　
+相關常式:int86,bdos 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 515 頁　　　　　　　　　　　　　　　　　
+ioctl　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:ioctl 常式可控制驅動程式　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:int ioctl(int handle,int cmd,...); 　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:ret=ioctl(0,8);　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<io.h> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　
+說明:驅動程式和應用程式間的連絡有一些協定稱為 IOCTL 。MS-DOS 和 UNIX　　　　　
+的驅動程式都有 IOCTL。不過各系統的 IOCTL 都不一樣。Turbo C 的 ioctl 常式　　
+使用 DOS 的 44h 常式, 此常式控制 DOS 的驅動程式。　　　　　　　　　　　　　　　
+    ioctl 執行的動作由參數 cmd 決定。表 10.27 列出 cmd 的意義。參數 handle　
+是指磁碟機編號或檔案識別碼由磁碟機控制的裝置決定。*argdx,argcx 用來在 IOCTL　
+呼叫時, 把值傳給 DX,CX 暫存器。　　　　　　　　　　　　　　　　　　　　　　　
+表 10.27 　參看 Turbo C 程式設計寶典上篇第 520 頁 　　　　　　　　　　　　　　　　
+基本用法:如果一個裝置的驅動程式提供的功能可透過 IOCTL 來存取, 那就可　　　　　
+用 ioctl 常式來控制此裝置。例如串列埠驅動程式可讓你設定傳送率, 字組　　　　　　
+長度等 (透過 IOCTL)。　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+回報值:ioctl 常式傳回的值由其執行的功能決定。cmd2-5 時, ioctl 傳回實際讀取
+的位元組數目。cmd 是 6 或 7 時, 傳回裝置或檔案的狀態。　　　　　　　　　　
+    有錯誤時, 傳回 -1, 並把 errno 設定為下列 3 個值中的一個。　　　　　　　
+表 參看 Turbo C 程式設計寶典上篇第 520 頁 　　　　　　　　　　　　　　　　　　　　　　　
+補充說明:DOS 和 UNIX 的IOCTL 是不同的。IOCTL 的呼叫隨各種裝置而有很大的不同。　
+    IOCTL 8-11 只有 DOS 3.0 及以上版本纔有, 而 12 更只有 3.3 版纔有。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 520 頁　　　　　　　　　　　　　　　　　
+keep　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:keep 常式可安裝常駐程式 (TSR)。　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:void keep(unsigned char status,unsigned memsize); 　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:keep(0,programsize_in_paragraphs); 　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:keep 常式使用 DOS 31h 常式把目前執行的程式安裝在記憶體內 (參數　　　　　
+memsize 指定保留記憶體的數目)。然後結束程式, 把 status 中的值傳給父　　　　　
+程式 (通常是 DOS)。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    傳回值和 exit 常式的類似。若 status 的值為 0 表示沒有錯誤, 不然　　　　　
+就有錯誤。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+基本用法:你可使用 keep 來安裝自己的常駐程式。　　　　　　　　　　　　　　　　
+補充說明:在呼叫 keep 時, 如何設定 memsize 的長度是一個問題。一個方法是使　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　
+用我們對程式佈局的認識。公共變數 _psp 提供 psp 的位址 (此為程式的起點)。　　
+設備設備點是堆疊的頂部。我們可用虛擬變數 _SS,_SP 來取得堆疊的區段位址和　　
+目前的堆疊指標。因此程式的長度可用下式來算出:　　　　　　　　　　　　　　　　
+prog_size=_SS+(_SP+safety_margin)/16-_psp; 　　　　　　　　　　　　　　　　　
+safety_margin 大概有 100 個位元組長, 是用來作後備用的。除 16 把它轉換成指向段
+落的堆疊指標。　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+    在使用 keep 前, 對常駐程式應有一些認識。　　　　　　　　　　　　　　　　
+相關常式:FP_OFF,FP_SEG　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Computer Language 1988  2 月號中 Al Stevens 的論文 ("Writing
+Terminate-and-Stay-Resident Programs,Part I:TSR in Turbo C")。　　　　　
+parsfnm　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+相容性 TC1　TC1.5　TC2　　　　　　　　　　　　　　　　　　 　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+用途:parsfnm 常式可拆開命令列中的檔名。並把結果放入 FCB 內。　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+語法:char *parsfnm(const char *cmdline,struct fcb *fcb,int opt); 　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+呼叫法:parsfnm(command_line,&my_fcb,0xff);　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+含括檔:#include<dos.h>　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+說明:parsfnm 常式使用 DOS 29h 常式拆開 codline 中的檔名, 並把結果傳回　　　　　
+fcb 結構內, 此結構在 dos.h 中定義如下:　　　　　　　　　　　　　　　　　　　　
+參看 Turbo C 程式設計寶典上篇第 529 頁 　　　　　　　　　　　　　　　　　　　　
+parsfnm 把資料放入 fcb 結構的欄位內, fcb 的位址由參數 fcb 提供。　　　　　
+    opt 參數控制拆開的細節。表 16.30 說明各位元的意義。在拆開時, 下列字　　
+元稱為分隔字元。　　　　　　　　　　　　　　　　
+: . ; ,=+tab space 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+而下列字元稱為結束字元。　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+: . ; ,=+ tab space <>|/"[]　　　　　　　　　　　　　　　　　　　　　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+檔名中若有 * 號, 表示 * 後面的字元都被設定為 ﹖, 也就是可為任何字元。因此　　
+ERASE *A.* 會刪掉目錄中全部檔案而不是只刪掉檔名最後一個字為 A 的檔案。　　　
+    parsfnm 無法處理路線 (有多層目錄的路徑)。這是 FCB 的共同缺點。　　　　　
+表 10.30參看 Turbo C 程式設計寶典上篇第 529 頁 　　　　　　　　　　　　　　
+回報值:成功時, parsfnm 傳回檔名終點後的第 1 個指標。有錯誤傳回 NULL。　　　　　
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+範例:參看 Turbo C 程式設計寶典上篇第 529 頁　　　　　　　　　　　　　　　　　
+*************************
+
