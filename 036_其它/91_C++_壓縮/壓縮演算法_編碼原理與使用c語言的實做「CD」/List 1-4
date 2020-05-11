@@ -1,0 +1,33 @@
+#include<stdio.h>
+
+int decode(FILE *fp);
+
+/* main”ŸÉ */
+int main(int ac,char *av[])
+{
+    FILE *fp;
+
+    if ((fp = fopen(av[1],"rb"))==NULL)
+        return 6;
+
+    decode(fp);
+
+    fclose(fp);
+    return 0;
+}
+
+/* ‰ğšØk™|—å’ö® */
+int decode(FILE *fp)
+{
+    int i;
+    int run,code;
+
+    while(!feof(fp)) {
+        run=fgetc(fp);
+        code=fgetc(fp);
+        for(i=0;i<run;i++) {
+            fputc(code,stdout);
+        }
+    }
+    return 0;
+}

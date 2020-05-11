@@ -1,0 +1,229 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define TRUE 1
+#define FALSE 0
+typedef unsigned char byte;
+
+char mbuf[256];
+int readmode;
+
+/* 將4位元組的數值資料從檔案讀入 */
+int getLong(FILE *fp)
+{
+    unsigned char buf[10];
+
+    readData(buf,4,fp);
+    return (buf[0]<<24) |(buf[1]<<16) | (buf[2]<<8) | buf[3];
+}
+
+/* 將2位元組的數值資料從檔案讀入 */
+int getShort(FILE *fp)
+{
+    unsigned char buf[10];
+
+    readData(buf,2,fp);
+    return (buf[0]<<8) | buf[1];
+}
+
+/* 讀入1位元組 */
+unsigned int getC(FILE *fp)
+{
+    unsigned char buf[4];
+
+    readData(buf,1,fp);
+    return (unsigned int)buf[0];
+}
+
+/* 從檔案讀入數個位元組 */
+int readData(char *data,int len,FILE *fp)
+{
+    return fread(data,len,sizeof(char),fp);
+}
+
+/* ------------------------------------------------------- */
+
+static int bits=0;
+static int bdata=0;
+
+/* 輸入處理的初始化 */
+int fgetBitInit()
+{
+    bits=0;
+    bdata=0;
+    return 0;
+}
+
+/* 輸入1位元 */
+int fgetBit(FILE *fp)
+{
+    unsigned char bbuf;
+    int val;
+
+    if(bits==0) {
+        readData(&bbuf,1,fp);
+        bdata=bbuf;
+    }
+    val=(bdata>>7)&1;
+    bdata=(bdata<<1) & 0xff;
+    bits++;
+    if(bits>=8) {
+        bits=0;
+        bdata=0;
+    }
+    return val;
+}
+
+/* 從檔案讀入n位元 */
+int fgetBits(FILE *fp,int bits)
+{
+    int i,res;
+
+    res=0;
+    for(i=0;i<bits;i++) {
+        res=res*2;
+        res+=fgetBit(fp);
+    }
+    return res;
+}
+
+/* 辭典緩衝區 */
+typedef int BUF;
+typedef struct SDIC
+{
+    BUF *buffer;
+    int dic_len,code_len;     /* 辭典大小與編碼大小 */
+    int buf_size;             /* 緩衝區整體的大小 */
+    int dic_bgn;              /* 辭典部分的開始 */
+    int code_bgn,code_end;    /* 編碼部分的開始和結束 */
+}SlideDic;
+
+/* 求出滑動辭典中的下一個資料位置 */
+int nextPos(int now,int bsize)
+{
+    return (now+1)%bsize;
+}
+
+/* 滑動辭典的初始化 */
+int initSlideDic(SlideDic *sdic,int dic,int code)
+{
+    int i;
+    int size;
+
+    size=dic+code;
+    if((sdic->buffer=malloc(sizeof(BUF)*size))==NULL) return FALSE;
+    for(i=0;i<size;i++) sdic->buffer[i]=0;
+    sdic->dic_len=dic;
+    sdic->code_len=code;
+    sdic->buf_size=size;
+    sdic->dic_bgn=0;
+    sdic->code_bgn=0;
+    sdic->code_end=0;
+    return TRUE;
+}
+
+/* 求出x1、x2在滑動辭典上的距離 */
+int getDistance(int x1,int x2,int size)
+{
+    int sa;
+
+    sa=x1-x2;
+    if(sa>=0) return sa;
+    return sa+size;
+}
+
+/* 在滑動辭典追加1個字 */
+int insertOneCodeToDic(SlideDic *sdic,int c)
+{
+    int bsize;
+    int sa;
+
+    bsize=sdic->buf_size;
+
+    sdic->buffer[sdic->code_bgn]=c;
+    sdic->code_bgn = nextPos(sdic->code_bgn,bsize);
+    sa=getDistance(sdic->code_bgn,sdic->dic_bgn,bsize);
+    if(sa > sdic->dic_len) {
+        sdic->dic_bgn = nextPos(sdic->dic_bgn,bsize);
+    }
+    return 0;
+}
+
+/* 解壓縮處理主程式 */
+long decode(FILE *fp,int size,int dic_bits,int code_bits)
+{
+    SlideDic sdic;
+    int p;
+    int c;
+    int i,d_bgn;
+    int flg,pos,len;
+    int dic,code;
+
+    dic=getPow2(dic_bits);
+    code=getPow2(code_bits)+2;
+
+    p=0;
+    fgetBitInit();
+    initSlideDic(&sdic,dic,code);
+    while(p<size) {
+        flg=fgetBit(fp);
+        if(flg) {
+            pos=fgetBits(fp,dic_bits);
+            len=fgetBits(fp,code_bits)+3;
+            printf("[%d %d]",pos,len);
+            /*h=data[p++];
+            l=data[p++];
+            pos=h*256+l;
+            len=data[p++];*/
+            d_bgn=(sdic.dic_bgn+pos)%sdic.buf_size;
+            for(i=0;i<len;i++) {
+                c=sdic.buffer[d_bgn];
+                printf("%c",c);
+                p++;
+                insertOneCodeToDic(&sdic,c);
+                d_bgn=nextPos(d_bgn,sdic.buf_size);
+            }
+        }
+        else {
+            c=fgetBits(fp,8);
+            printf("%c",c);
+            p++;
+            insertOneCodeToDic(&sdic,c);
+        }
+    }
+    return 0;
+}
+
+/* 求出2的x次方 */
+int getPow2(int x)
+{
+    int i;
+    int s;
+
+    s=1;
+    for(i=0;i<x;i++) s*=2;
+    return s;
+}
+
+/* main函數 */
+int main(int ac,char *av[])
+{
+    FILE *fp;
+    int size;
+    int prev=0;
+    int dic,code;
+
+    if ((fp = fopen(av[1],"rb"))==NULL)
+        return 6;
+
+    size=getLong(fp);
+    dic=getLong(fp);
+    code=getLong(fp);
+    printf("%d %d %d\n",size,dic,code);
+
+    decode(fp,size,dic,code);
+
+    fclose(fp);
+    return 0;
+}

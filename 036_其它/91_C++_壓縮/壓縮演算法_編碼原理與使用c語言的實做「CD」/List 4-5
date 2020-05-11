@@ -1,0 +1,64 @@
+#include <stdlib.h>
+
+#define N 8
+#define Nketa 3
+
+/* main函數 */
+int main(int ac,char *av[])
+{
+    int u,v;
+ 
+    if(ac==3) {
+        u=atoi(av[1]);
+        v=atoi(av[2]);
+    }
+    else {
+        u=0;
+        v=0;
+    }
+    printf("[%d:%d]\n\n",u,v);
+    get_matrix(u,v);
+}
+
+/* 求出哈達瑪陣列 */
+int get_matrix(int u,int v)
+{
+    int x,y;
+
+    for(y=0;y<N;y++) {
+        for(x=0;x<N;x++) {
+            printf("%2d ",(func_q(x,y,u,v)%2==0)?1:-1);
+        }
+        printf("\n");
+    }
+    return 0;
+}
+
+/* 求出Fig.4-29的q */
+int func_q(int x,int y,int u,int v)
+{
+    int i;
+    int sum;
+
+    sum=0;
+    for(i=0;i<N;i++) {
+        //sum+=(getNbit(x,i)*getNbit(ggg(u,i),i)+
+        //                 getNbit(y,i)*getNbit(ggg(v,i),i));
+        sum+=(getNbit(x,i)*ggg(u,i)+getNbit(y,i)*ggg(v,i));
+    }
+    return sum;
+}
+
+/* 求出Fig.4-29的g */
+int ggg(int u,int i)
+{
+
+    return getNbit(u,Nketa-i) + getNbit(u,Nketa-i-1);
+}
+
+/* 求出x的第n位元 */
+int getNbit(int x,int n)
+{
+    x>>=n;
+    return x&1;
+}

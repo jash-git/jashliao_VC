@@ -1,0 +1,143 @@
+#include <stdio.h>
+
+#define BUFFER_SIZE 102400
+#define TRUE 1
+
+typedef unsigned char byte;
+
+unsigned char buffer[BUFFER_SIZE];
+
+/* 將4位元組的數值資料輸出到檔案 */
+int fputLong(long num,FILE *fp)
+{
+    fputc((num>>24) & 0xff,fp);
+    fputc((num>>16) & 0xff,fp);
+    fputc((num>>8)  & 0xff,fp);
+    fputc((num)     & 0xff,fp);
+    return 0;
+}
+
+static int bits=0;
+static int bdata=0;
+
+/* 位元輸出處理的初始化 */
+int fputBitInit()
+{
+    bits=0;
+    bdata=0;
+    return 0;
+}
+
+/* 輸出1位元 */
+int fputBit(int bit,FILE *fp)
+{
+    bdata=(bdata<<1)|bit;
+    bits++;
+    if(bits>=8) {
+        fputc(bdata,fp);
+        bits=0;
+        bdata=0;
+    }
+    return 0;
+}
+
+/* 將多餘的位元輸出 */
+int flushBit(FILE *fp)
+{
+    int i;
+
+    for(i=0;i<7;i++) {
+        fputBit(0,fp);
+    }
+    return 0;
+}
+
+/* 求出x的正負符號 */
+int sgni(int x)
+{
+    if(x<0) return 0;
+    return 1;
+}
+
+/* 求出x的絕對值 */
+int absi(int x)
+{
+    if(x<0) return -x;
+    return x;
+}
+
+/* 求出威爾編碼前端部分的位元數 */
+int getLength(int x)
+{
+    int len;
+
+    x/=4;
+    len=0;
+    while(x>0) {
+        x/=2;
+        len++;
+    }
+    return len;
+}
+
+/* 輸出威爾編碼 */
+int outputEncode(int val,FILE *fp)
+{
+    int s,a,len;
+    int i;
+
+    s=1;
+    a=absi(val);
+    len=getLength(a);
+    for(i=0;i<len;i++) fputBit(s,fp);
+    fputBit(1-s,fp);
+    len+=2;
+    for(i=0;i<len;i++) {
+        fputBit(a&1,fp);
+        a>>=1;
+    }
+    return TRUE;
+}
+
+/* 壓縮處理主程式 */
+int encode(FILE *fpo,unsigned char *data,int size)
+{
+    int x;
+
+    fputLong(size,fpo);
+    fputBitInit();
+    for(x=0;x<size;x++) {
+        outputEncode(data[x],fpo);
+    }
+    flushBit(fpo);
+    return 0;
+}
+
+/* main函數 */
+int main(int ac,char *av[])
+{
+    FILE *fp_i,*fp_o;
+    int i,c;
+
+    if(ac<3) {
+        exit(8);
+    }
+    fp_i=fopen(av[1],"rb");
+    if(fp_i==NULL) {
+        fprintf(stderr,"Input File cannot open\n");
+        exit(8);
+    }
+    i=0;
+    while(i<BUFFER_SIZE && (c=fgetc(fp_i))!=EOF) {
+        buffer[i]=c;
+        i++;
+    }
+    fclose(fp_i);
+    fp_o=fopen(av[2],"wb");
+    if(fp_o==NULL) {
+        fprintf(stderr,"Output File cannot open\n");
+        exit(8);
+    }
+    encode(fp_o,buffer,i);
+    fclose(fp_o);
+}

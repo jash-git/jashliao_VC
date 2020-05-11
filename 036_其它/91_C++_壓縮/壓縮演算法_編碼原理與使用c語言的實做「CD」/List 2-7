@@ -1,0 +1,232 @@
+#include <stdio.h>
+#include <limits.h>
+
+/* 霍夫曼樹用的結構 */
+typedef struct {
+    int  val;            /* 資料值 */
+    long count;          /* 節點的出現頻率 */
+    int  parent;         /* 父節點 */
+    int  c_left;         /* 左側的子節點 */
+    int  c_right;        /* 右側的子節點 */
+} NodeInfo;
+
+#define ROOT         0                /* 根 */
+#define EOF_NODE     1                /* EOF */
+#define CHAR_SIZE    256
+#define NODE_SIZE    (2*CHAR_SIZE+2)
+
+#define BUFFER_SIZE 102400
+#define TRUE 1
+
+typedef unsigned char byte;
+
+unsigned char buffer[BUFFER_SIZE];
+
+int encode(FILE *fp,byte *img,int mx);
+
+/* main函數 */
+int main(int ac,char *av[])
+{
+    FILE *fp_i,*fp_o;
+    int i,c;
+
+    if(ac<3) {
+        exit(8);
+    }
+    fp_i=fopen(av[1],"rb");
+    if(fp_i==NULL) {
+        fprintf(stderr,"Input File cannot open\n");
+        exit(8);
+    }
+    i=0;
+    while(i<BUFFER_SIZE && (c=fgetc(fp_i))!=EOF) {
+        buffer[i]=c;
+        i++;
+    }
+    fclose(fp_i);
+    fp_o=fopen(av[2],"wb");
+    if(fp_o==NULL) {
+        fprintf(stderr,"Output File cannot open\n");
+        exit(8);
+    }
+    encode(fp_o,buffer,i);
+    fclose(fp_o);
+    return 0;
+}
+
+/* 將4位元組的數值資料輸出到檔案 */
+int fputLong(long num,FILE *fp)
+{
+    fputc((num>>24) & 0xff,fp);
+    fputc((num>>16) & 0xff,fp);
+    fputc((num>>8)  & 0xff,fp);
+    fputc((num)     & 0xff,fp);
+    return 0;
+}
+
+static int bits=0;
+static int bdata=0;
+
+/* 輸出處理的初始化 */
+int fputBitInit()
+{
+    bits=0;
+    bdata=0;
+    return 0;
+}
+
+/* 輸出1位元 */
+int fputBit(int bit,FILE *fp)
+{
+    bdata=(bdata<<1)|bit;
+    bits++;
+    if(bits>=8) {
+        fputc(bdata,fp);
+        bits=0;
+        bdata=0;
+    }
+    return 0;
+}
+
+/* 將多餘的位元輸出 */
+int flushBit(FILE *fp)
+{
+    int i;
+
+    for(i=0;i<7;i++) {
+        fputBit(0,fp);
+    }
+    return 0;
+}
+
+/* 壓縮處理主程式 */
+int encode(FILE *fp,unsigned char *data,int dlen)
+{
+    int    i, j, k;
+    long   c;
+    int    curChar;
+    int    zeroNode, thisNode, maxid;
+    int    node2id[NODE_SIZE];         /* 節點的編號 */
+    int    val2node[CHAR_SIZE];
+    NodeInfo   node[NODE_SIZE];
+    int free_node;
+    short bitcode[1024];
+    int bitc;
+
+    for (i = 0; i < CHAR_SIZE; i++) val2node[i] = 0;
+
+    /* 初始霍夫曼樹 */
+    zeroNode = 2;
+    node[2].count = 0;
+    node[2].parent = ROOT;
+
+    node[EOF_NODE].count = 1;
+    node[EOF_NODE].parent = ROOT;
+
+    node[ROOT].count = 0x7FFFFFFFL;
+    node[ROOT].parent = 0;
+    node[ROOT].c_left = zeroNode;
+    node[ROOT].c_right = EOF_NODE;
+
+    node2id[zeroNode] = 0;
+    node2id[EOF_NODE] = 1;
+    node2id[ROOT]     = 2;
+    free_node = 3;
+
+    /* 將資料列編碼 */
+    i=0;
+
+    /* 輸出資料大小 */
+    fputLong(dlen,fp);
+
+    fputBitInit();
+    for (c = 0;; c++) {
+        /* 與資料值對應的節點 */
+        bitc=0;
+        curChar = data[c];
+        if (c >= dlen) thisNode = EOF_NODE;
+        else if ((thisNode = val2node[curChar]) == 0) { /* 未出現的值 */
+            int bitmask;
+            thisNode = zeroNode;
+            /* 將資料值本身附加到編碼中 */
+            bitmask=1;
+            for (j = 7; j >= 0; j--) {
+                bitcode[bitc++] = ((curChar & bitmask)!=0)?1:0;
+                bitmask=(bitmask<<1);
+            }
+        }
+
+        /* 取得編碼 */
+        k = thisNode;
+        do {
+            int parent;
+            parent = node[k].parent;
+            bitcode[bitc++] = (node[parent].c_left == k) ? 0 : 1;
+            k = parent;
+        } while (k != ROOT);
+
+        /* 反向輸出 */
+        for(j=bitc-1;j>=0;j--) {
+            fputBit(bitcode[j],fp);
+        }
+
+        if (c == dlen) break;    /* EOF */
+
+        /* 更新霍夫曼樹 */
+        while (thisNode != ROOT) {
+            if (thisNode == zeroNode) {
+                for (j = 0; j < free_node; j++) node2id[j] += 2;
+                node[zeroNode].c_left  = free_node;
+                node[free_node].count = 0;
+                node[free_node].parent = zeroNode;
+                node2id[free_node] = 0;
+                free_node++;
+
+                node[zeroNode].c_right = free_node;
+                node[free_node].count = 1;
+                node[free_node].parent = zeroNode;
+                node2id[free_node] = 1;
+                val2node[curChar] = free_node;    /* 第一次出現的資料值 */
+                free_node++;
+
+                thisNode = zeroNode;
+                zeroNode = free_node - 2;
+            } else {
+                if (node[thisNode].count == 1 &&
+                    node[k = node[thisNode].parent].count == 1) {
+                    /* 未出現值的兄弟 */
+                    maxid = thisNode;
+                    for (j = 0; j < free_node; j++)
+                        if (node[j].count == 1 && j != k &&
+                            node2id[j] > node2id[maxid]) maxid = j;
+                } else {
+                    maxid = thisNode;
+                    for (j = 0; j < free_node; j++)
+                        if (node[thisNode].count == node[j].count &&
+                            node2id[j] > node2id[maxid]) maxid = j;
+                }
+                if (maxid != thisNode) {
+                    int maxidP = node[maxid].parent;
+                    int thisP  = node[thisNode].parent;
+                    int id = node2id[maxid];
+
+                    if (node[maxidP].c_left == maxid)
+                         node[maxidP].c_left  = thisNode;
+                    else node[maxidP].c_right = thisNode;
+                    if (node[thisP].c_left  == thisNode)
+                         node[thisP].c_left  = maxid;
+                    else node[thisP].c_right = maxid;
+                    node[maxid].parent = thisP;
+                    node[thisNode].parent = maxidP;
+
+                    node2id[maxid] = node2id[thisNode];
+                    node2id[thisNode] = id;
+                }
+                node[thisNode].count++;
+                thisNode = node[thisNode].parent;
+            }
+        }
+    }
+    flushBit(fp);
+    return TRUE;
+}

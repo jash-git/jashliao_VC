@@ -1,0 +1,42 @@
+#include<stdio.h>
+
+int decode(FILE *fp);
+
+/* main函數 */
+int main(int ac,char *av[])
+{
+    FILE *fp;
+
+    if ((fp = fopen(av[1],"rb"))==NULL)
+        return 6;
+
+    decode(fp);
+
+    fclose(fp);
+    return 0;
+}
+
+/* 解壓縮處理主程式 */
+int decode(FILE *fp)
+{
+    int i;
+    int c1;
+    int run,code;
+
+    while(!feof(fp)) {
+        c1=fgetc(fp);
+        if(c1==EOF) break;
+        if(c1>0x80) {
+            run=c1-0x80;
+            code=fgetc(fp);
+            if(code==EOF) break;
+            for(i=0;i<run;i++) {
+                fputc(code,stdout);
+            }
+        }
+        else {
+            fputc(c1,stdout);
+        }
+    }
+    return 0;
+}

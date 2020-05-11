@@ -1,0 +1,201 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define TRUE 1
+typedef unsigned char byte;
+
+char mbuf[256];
+int readmode;
+
+/* 霍夫曼樹用的結構 */
+typedef struct {
+    int  val;            /* 資料值 */
+    long count;          /* 結點的出現頻率 */
+    int  parent;         /* 父節點 */
+    int  c_left;         /* 左邊的子節點 */
+    int  c_right;        /* 右邊的子節點 */
+} NodeInfo;
+
+#define ROOT         0                /* 根 */
+#define EOF_NODE     1                /* EOF */
+#define FREE_NODE    2
+#define CHAR_SIZE    256
+#define NODE_SIZE    (2*CHAR_SIZE+2)
+
+/* 從檔案讀入數個位元 */
+int readData(unsigned char *data,int len,FILE *fp)
+{
+    return fread(data,len,sizeof(char),fp);
+}
+
+/* 從檔案讀入4位元組的數值資料 */
+int getLong(FILE *fp)
+{
+    unsigned char buf[16];
+
+    readData(buf,4,fp);
+    return (buf[0]<<24) |(buf[1]<<16) | (buf[2]<<8) | buf[3];
+}
+
+static int bits=0;
+static int bdata=0;
+
+/* 輸出處理的初始化 */
+int fgetBitInit()
+{
+    bits=0;
+    bdata=0;
+    return 0;
+}
+
+/* 輸出1位元 */
+int fgetBit(FILE *fp)
+{
+    unsigned char bbuf;
+    int val;
+
+    if(bits==0) {
+        readData(&bbuf,1,fp);
+        bdata=bbuf;
+    }
+    val=(bdata>>7)&1;
+    bdata=(bdata<<1) & 0xff;
+    bits++;
+    if(bits>=8) {
+        bits=0;
+        bdata=0;
+    }
+    return val;
+}
+
+/* 解壓縮處理主程式 */
+long decode(FILE *fp,/*unsigned char *data,*/int dlen)
+{
+    int    j, k;
+    long   c;
+    int    curChar;
+    int    zeroNode, thisNode, maxid;
+    int    node2id[NODE_SIZE];         /* 從節點的號碼 */
+    NodeInfo   node[NODE_SIZE];
+    int free_node;
+    int code;
+
+    /* 初期霍夫曼樹 */
+    zeroNode = 2;
+    node[FREE_NODE].val = CHAR_SIZE+1;
+    node[FREE_NODE].count = 0;
+    node[FREE_NODE].parent = ROOT;
+
+    node[EOF_NODE].count = 1;
+    node[EOF_NODE].parent = ROOT;
+
+    node[ROOT].count = 0x7FFFFFFFL;
+    node[ROOT].parent = 0;
+    node[ROOT].c_left = zeroNode;
+    node[ROOT].c_right = EOF_NODE;
+    node[ROOT].val=-3000;
+
+    node2id[zeroNode] = 0;
+    node2id[EOF_NODE] = 1;
+    node2id[ROOT]     = 2;
+    free_node = 3;
+
+    /* 解碼 */
+    fgetBitInit();
+
+    for (c=0;c<dlen;c++ ) {
+        thisNode = ROOT;
+        while (node[thisNode].val < 0) {
+            code=fgetBit(fp);
+            thisNode = (code!=0 ) ?
+                node[thisNode].c_right : node[thisNode].c_left;
+            if (thisNode >= free_node) return -1L;
+        }
+
+        if (thisNode == EOF_NODE) break;     /* EOF */
+
+        if (thisNode == zeroNode) {
+            curChar = 0;
+            for (j = 0; j < 8; j++) {
+                curChar=curChar<<1;
+                curChar|=fgetBit(fp);
+            }
+        }
+        else curChar = node[thisNode].val;
+
+        fputc(curChar,stdout);
+
+        /* 更新霍夫曼樹 */
+        while (thisNode != ROOT) {
+            if (thisNode == zeroNode) {
+                for (j = 0; j < free_node; j++) node2id[j] += 2;
+                node[zeroNode].c_left  = free_node;
+                node[free_node].count = 0;
+                node[free_node].parent = zeroNode;
+                node2id[free_node] = 0;
+                node[free_node].val = CHAR_SIZE + 1;
+                free_node++;
+
+                node[zeroNode].c_right = free_node;
+                node[free_node].count = 1;
+                node[free_node].parent = zeroNode;
+                node2id[free_node] = 1;
+                node[free_node].val = curChar;
+                free_node++;
+
+                thisNode = zeroNode;
+                node[thisNode].val = -1;
+                zeroNode = free_node - 2;
+            } else {
+                if (node[thisNode].count == 1 &&
+                    node[k = node[thisNode].parent].count == 1) {
+                    for (j = 0, maxid = thisNode; j < free_node; j++)
+                        if (node[j].count == 1 && j != k &&
+                            node2id[j] > node2id[maxid]) maxid = j;
+                } else {
+                    for (j = 0, maxid = thisNode; j < free_node; j++)
+                        if (node[thisNode].count == node[j].count &&
+                            node2id[j] > node2id[maxid]) maxid = j;
+                }
+                if (maxid != thisNode) {
+                    int maxidP = node[maxid].parent;
+                    int thisP  = node[thisNode].parent;
+                    int id = node2id[maxid];
+
+                    if (node[maxidP].c_left == maxid)
+                         node[maxidP].c_left  = thisNode;
+                    else node[maxidP].c_right = thisNode;
+                    if (node[thisP].c_left  == thisNode)
+                         node[thisP].c_left  = maxid;
+                    else node[thisP].c_right = maxid;
+                    node[maxid].parent = thisP;
+                    node[thisNode].parent = maxidP;
+
+                    node2id[maxid] = node2id[thisNode];
+                    node2id[thisNode] = id;
+                }
+                node[thisNode].count++;
+                thisNode = node[thisNode].parent;
+            }
+        }
+    }
+    return TRUE;
+}
+
+/* main函數 */
+int main(int ac,char *av[])
+{
+    FILE *fp;
+    int size;
+
+    if ((fp = fopen(av[1],"rb"))==NULL)
+        return 6;
+
+    size=getLong(fp);
+
+    fgetBitInit();
+    decode(fp,size);
+
+    fclose(fp);
+    return 0;
+}

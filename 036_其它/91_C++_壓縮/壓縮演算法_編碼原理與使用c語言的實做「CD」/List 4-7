@@ -1,0 +1,391 @@
+#include <windows.h>
+#include <stdio.h>
+#include <limits.h>
+
+#define NNN 8
+#define Nketa 3
+
+/* 存放圖像資訊的結構 */
+struct PictureInfo {
+    long left, top;
+    long width;
+    long height;
+    WORD x_density;
+    WORD y_density;
+    short colorDepth;
+    HLOCAL hInfo;
+};
+
+/* 存放RGB值的資料結構 */
+typedef struct RGB_COL{ int r,g,b;}RGBcolor;
+
+char mbuf[256];
+int readmode;
+
+/* 傳回plug-in資訊 */
+int WINAPI GetPluginInfo(int infono,LPSTR buf,int buflen)
+{
+    switch (infono) {
+    case 0:
+        strncpy(buf, "00IN", buflen);
+        break;
+    case 1:
+        strncpy(buf, "HDE to DIB filter ver.0.08b", buflen);
+        break;
+    case 2:
+        strncpy(buf, "*.HDE", buflen);
+        break;
+    case 3:
+        strncpy(buf, "HDE decoding sample", buflen);
+        break;
+    default:
+        return 0;
+    }
+    return strlen(buf);
+}
+
+/* 判斷資料是否對應plug-in */
+int WINAPI IsSupported(LPSTR filename,DWORD dw)
+{
+    unsigned char buffer[2048];
+    unsigned char *p;
+
+    if (dw & 0xffff0000) {
+        p = (unsigned char*)dw;
+    } else {
+        DWORD r;
+        p = buffer;
+        if (!ReadFile((HANDLE)dw,(void*)p,4 , &r, NULL))
+            return 0;
+    }
+    buffer[4]='\0';
+    if(strcmp(buffer,"HDTN")==0) return 1;
+    return 0;
+}
+
+/* 關閉檔案 */
+int MYlclose(HFILE fp)
+{
+    if(!readmode) _lclose(fp);
+    return 0;
+}
+
+/* 設定預設值 */
+int set_defaultBMI(BITMAPINFOHEADER *bmi)
+{
+    bmi->biSize=sizeof(BITMAPINFOHEADER);
+    bmi->biPlanes=1;
+    bmi->biCompression=BI_RGB;
+    bmi->biSizeImage=0;
+    bmi->biXPelsPerMeter=0;
+    bmi->biYPelsPerMeter=0;
+    bmi->biClrUsed=0;
+    bmi->biClrImportant=0;
+    return 0;
+}
+
+/* 從檔案讀入4位元組的資料 */
+int getLong(HFILE fp)
+{
+    char buf[10];
+
+    readData(buf,4,fp);
+    return (buf[0]<<24) |(buf[1]<<16) | (buf[2]<<8) | buf[3];
+}
+
+/* 從檔案讀入2位元組的資料 */
+int getShort(HFILE fp)
+{
+    char buf[10];
+
+    readData(buf,2,fp);
+    return (buf[0]<<8) | buf[1];
+}
+
+/* 讀入1位元組的數值資料 */
+unsigned int getC(HFILE fp)
+{
+    char buf[4];
+
+    readData(buf,1,fp);
+    return (unsigned int)buf[0];
+}
+
+/* 從檔案讀入數個位元 */
+int readData(char *data,int len,HFILE fp)
+{
+   return _lread(fp,data,len);
+}
+
+/* ------------------------------------------------------- */
+
+static int bits=0;
+static int bdata=0;
+
+/* 輸入處理的初始化 */
+int fgetBitInit()
+{
+    bits=0;
+    bdata=0;
+    return 0;
+}
+
+/* 輸入1位元 */
+int fgetBit(HFILE fp)
+{
+    unsigned char bbuf;
+    int val;
+
+    if(bits==0) {
+        readData(&bbuf,1,fp);
+        bdata=bbuf;
+    }
+    val=(bdata>>7)&1;
+    bdata=(bdata<<1) & 0xff;
+    bits++;
+    if(bits>=8) {
+        bits=0;
+        bdata=0;
+    }
+    return val;
+}
+
+/* 輸入n位元 */
+int fgetNumber(int bits,HFILE fp)
+{
+    int i,res,sn;
+
+    sn=fgetBit(fp);
+    if(sn==0) sn=1;
+    else sn=-1;
+    res=0;
+    for(i=0;i<bits;i++) {
+        res=res*2;
+        res+=fgetBit(fp);
+    }
+    return res*sn;
+}
+
+/* 讀入標頭 */
+int getImgInfo(int *mx,int *my,int *dep,HFILE fp)
+{
+    char buf[100];
+
+    readData(buf,4,fp);
+    *mx=getLong(fp);
+    *my=getLong(fp);
+    *dep=24;
+    return 0;
+}
+
+/* 在24位元DIB上設定像素值 */
+int setColor(int x,int y,unsigned char *data,int mx,int my,RGBcolor *col)
+{
+    int adr,mmx;
+
+    if(x>=mx) return 0;
+    if(y>=my) return 0;
+    mmx=(mx*3)/4*4;
+    adr=x*3+(my-y-1)*mmx;
+    data[adr+2]=col->r;
+    data[adr+1]=col->g;
+    data[adr  ]=col->b;
+}
+
+short adm[NNN][NNN][NNN][NNN];
+
+/* 逆向哈達瑪轉換 */
+long decode(HFILE fp,unsigned char *img,int mx,int my)
+{
+    int x,y,u,v;
+    int lx,ly,loopx,loopy;
+    int r_re[NNN*NNN];
+    int sum;
+    RGBcolor col;
+
+    /* 製作哈達瑪陣列 */
+    for(v=0;v<NNN;v++) {
+        for(u=0;u<NNN;u++) {
+            for(y=0;y<NNN;y++) {
+                for(x=0;x<NNN;x++) {
+                    adm[u][v][x][y]=get_matrix(u,v,x,y);
+                }
+            }
+        }
+    }
+    loopx=(mx+NNN-1)/NNN;
+    loopy=(my+NNN-1)/NNN;
+    fgetBitInit();
+    for(ly=0;ly<loopy;ly++) {
+        for(lx=0;lx<loopx;lx++) {
+
+            for(y=0;y<NNN;y++) {
+                for(x=0;x<NNN;x++) {
+                    r_re[x+y*NNN]=fgetNumber(15,fp);
+                }
+            }
+
+            for(v=0;v<NNN;v++) {
+                for(u=0;u<NNN;u++) {
+                    sum=0;
+                    for(y=0;y<NNN;y++) {
+                        for(x=0;x<NNN;x++) {
+                            if(adm[u][v][x][y]>0) {
+                                sum+=(r_re[x+y*NNN]);
+                            }
+                            else {
+                                sum-=(r_re[x+y*NNN]);
+                            }
+                        }
+                    }
+                    sum/=(NNN*NNN);
+                    col.r=sum;
+                    col.g=sum;
+                    col.b=sum;
+                    setColor(lx*NNN+u,ly*NNN+v,img,mx,my,&col);
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+/* 讀入圖像資料 */
+int WINAPI GetPicture(
+              LPSTR file_name,long len,unsigned int flag,
+              HANDLE *pHBInfo,HANDLE *pHBm,
+              FARPROC lpPrgressCallback,long lData)
+{
+    unsigned int sig_read = 0;
+    int i;
+    int mx,my,mmx,dep;
+    int mode;
+
+    HFILE fp;
+
+    BITMAPINFOHEADER *bmi;
+    BITMAPINFO *bm;
+    RGBQUAD ipal[256];
+    byte *image;
+
+    mode = flag & 7;
+    *pHBInfo=NULL;
+    *pHBm=NULL;
+    if (mode == 0) {
+        readmode=0;             /* 從檔案讀入 */
+    } else if (mode == 1) {
+        readmode=1;             /* 從記憶體讀入 */
+        return -1;              /* 表不支援 */
+    } else {
+        return -1;
+    }
+
+    if(readmode==0) {
+        if ((fp = _lopen(file_name,OF_READ))==HFILE_ERROR)
+            return 6;
+    }
+
+    /* 讀出圖像大小資訊 */
+    getImgInfo(&mx,&my,&dep,fp);
+
+    /* 製作圖像資料區域 */
+    mmx=(mx*3+3)/4*4;
+    *pHBInfo=GlobalAlloc(GHND,sizeof(BITMAPINFOHEADER)+256*sizeof(RGBQUAD));
+    bmi=GlobalLock(*pHBInfo);
+    set_defaultBMI(bmi);
+    bmi->biWidth=mx;
+    bmi->biHeight=my;
+    bmi->biBitCount=dep;
+    *pHBm=GlobalAlloc(GHND,(mmx) * (my+1));
+    if(*pHBm==NULL)
+        return 4;
+    bm=(BITMAPINFO*)bmi;
+    for(i=0;i<256;i++) {
+        bm->bmiColors[i]=ipal[i];
+    }
+    image=GlobalLock(*pHBm);
+    if (!image)
+        return 5;
+    decode(fp,image,mx,my);
+
+    MYlclose(fp);
+    GlobalUnlock(*pHBInfo);
+    GlobalUnlock(*pHBm);
+
+    return 0;
+}
+
+/* 讀入預覽圖像 */
+int WINAPI GetPreview(LPSTR buf,long len,unsigned int flag,
+              HANDLE *pHBInfo,HANDLE *pHBm,
+              FARPROC lpPrgressCallback,long lData)
+{
+    return -1;
+}
+
+/* 取得圖像資訊 */
+int WINAPI GetPictureInfo(
+    LPSTR buf,long len,unsigned int flag,struct PictureInfo *lpInfo)
+{
+    HFILE fp;
+    int mode;
+    int wt,ht,dep;
+
+    mode = flag & 7;
+    if (mode == 0) {
+    } else if (mode == 1) {
+        return -1;
+    } else {
+        return -1;
+    }
+    if((fp=_lopen(buf,OF_READ))==HFILE_ERROR) return 8;
+    _llseek(fp,len,0);
+
+    getImgInfo(&wt,&ht,&dep,fp);
+    dep=24;
+
+    lpInfo->left=0;
+    lpInfo->top=0;
+    lpInfo->width=wt;
+    lpInfo->height=ht;
+    lpInfo->x_density=0;
+    lpInfo->y_density=0;
+    lpInfo->colorDepth=dep;
+    lpInfo->hInfo = NULL;/*GlobalAlloc(GHND,10);*/
+    _lclose(fp);
+    return 0;
+}
+
+/* 求出哈達瑪陣列 */
+int get_matrix(int u,int v,int x,int y)
+{
+    return (func_q(x,y,u,v)%2==0) ? 1 : -1;
+}
+
+/* 求出Fig.4-29的q */
+int func_q(int x,int y,int u,int v)
+{
+    int i;
+    int sum;
+
+    sum=0;
+    for(i=0;i<NNN;i++) {
+        sum+=(getNbit(x,i)*ggg(u,i)+getNbit(y,i)*ggg(v,i));
+    }
+    return sum;
+}
+
+/* 求出Fig.4-29的g */
+int ggg(int u,int i)
+{
+
+    return getNbit(u,Nketa-i) + getNbit(u,Nketa-i-1);
+}
+
+/* 求出x的第n位元 */
+int getNbit(int x,int n)
+{
+    x>>=n;
+    return x&1;
+
+}

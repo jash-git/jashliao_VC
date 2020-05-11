@@ -1,0 +1,94 @@
+#include<stdio.h>
+
+#define BUFFER_SIZE 102400
+
+typedef unsigned char byte;
+
+unsigned char buffer[BUFFER_SIZE];
+
+int encode(FILE *fp,byte *img,int mx);
+
+/* main函數 */
+int main(int ac,char *av[])
+{
+    FILE *fp_i,*fp_o;
+    int i,c;
+
+    if(ac<3) {
+        exit(8);
+    }
+    fp_i=fopen(av[1],"rb");
+    if(fp_i==NULL) {
+        fprintf(stderr,"Input File cannot open\n");
+        exit(8);
+    }
+    i=0;
+    while(i<BUFFER_SIZE && (c=fgetc(fp_i))!=EOF) {
+        buffer[i]=c;
+        i++;
+    }
+    fclose(fp_i);
+    fp_o=fopen(av[2],"wb");
+    if(fp_o==NULL) {
+        fprintf(stderr,"Output File cannot open\n");
+        exit(8);
+    }
+    encode(fp_o,buffer,i);
+    fclose(fp_o);
+    return 0;
+}
+
+/* 求出同一資料連續出現的run長度 */
+int getRLE(byte *img,int x,int mx,int lim,int *run,int *code)
+{
+    int px;
+
+    px=x;
+    *run=1;
+    *code=img[px];
+    px++;
+    while(px<mx && *code==img[px] && *run<lim ) {
+        px++;
+        (*run)++;
+    }
+    return px;
+}
+
+/* 壓縮處理主程式 */
+int encode(FILE *fp,byte *img,int mx)
+{
+    int run,code;
+    int x;
+
+    x=0;
+    while(x<mx) {
+        x=getRLE(img,x,mx,0xff,&run,&code);
+        if(run<2) {
+            if(code!=0xff) {
+                fputc(code,fp);
+            }
+            else {
+                fputc(0xff,fp);
+                 fputc(0x01,fp);
+                 fputc(code,fp);
+            }
+        }
+        else if(run==2) {
+            if(code!=0xff) {
+                fputc(code,fp);
+                fputc(code,fp);
+            }
+            else {
+                fputc(0xff,fp);
+                fputc(0x02,fp);
+                fputc(code,fp);
+            }
+        }
+        else {
+            fputc(0xff,fp);
+            fputc(run,fp);
+            fputc(code,fp);
+        }
+    }
+    return 0;
+}
