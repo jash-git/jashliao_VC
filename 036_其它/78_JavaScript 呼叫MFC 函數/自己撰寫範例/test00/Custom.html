@@ -1,0 +1,129 @@
+<HTML>
+	<HEAD>
+		<TITLE>自訂瀏覽器ん</TITLE>
+		<script langauge="javascript">
+	function fnIsOurCustomBrowser()
+	{
+		//判斷是否為自訂瀏覽器
+		if(window.external.CB_IsOurCustomBrowser != null)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	//執行判斷函數
+	bIsCustomBrowser = fnIsOurCustomBrowser();
+
+	if(!bIsCustomBrowser)
+	{
+		alert('非自訂瀏覽器,無法測試MFC功能ん.');
+	}
+
+	function fnCallFunction()
+	{
+		if(bIsCustomBrowser)
+		{
+			window.external.CB_CustomFunction();
+		}
+	}
+
+	function fnSetText(strVal)
+	{
+		if(bIsCustomBrowser)
+		{
+			result.innerText = strVal;
+		}
+	}
+
+	function fnClose()
+	{
+		if(bIsCustomBrowser)
+		{
+			window.external.CB_Close();
+		}
+	}
+
+	function fnCallFunctionWithParams(strString, nNumber)
+	{
+		if(bIsCustomBrowser)
+		{
+			window.external.CB_CustomFunctionWithParams(strString, nNumber);
+		}
+	}
+
+	function fnCallAdd(add1, add2)
+	{
+		if(bIsCustomBrowser)
+		{
+			window.external.CB_CustomFunctionAdd(add1, add2);
+		}
+	}
+
+	function fnShowModalDialog(strCaption, nLeft, nTop, nWidth, nHeight)
+	{
+		if(bIsCustomBrowser)
+		{
+			window.external.CB_ShowModalDialog(strCaption, nLeft, nTop, nWidth, nHeight);
+		}
+	}
+
+	function fnShowModelessDialog(strCaption, nLeft, nTop, nWidth, nHeight)
+	{
+		if(bIsCustomBrowser)
+		{
+			window.external.CB_ShowModelessDialog(strCaption, nLeft, nTop, nWidth, nHeight);
+		}
+	}
+		</script>
+	</HEAD>
+	<BODY style="FONT-SIZE:10pt;FONT-FAMILY:arial" bgcolor="#ccff66">
+		<h2><b><u>自訂瀏覽器測試網頁</u></b></h2>
+		<p>javascript呼叫C++函數:</p>
+		<input type="button" value="測試" onclick="fnCallFunction();">
+		<BR>
+		<BR>
+		<BR>
+		<p>javascript呼叫C++函數,並帶字串參數:
+			<BR>
+			參數1: <input type="text" name="param1" value="test" style="WIDTH:60px">
+			<BR>
+			參數2: <input type="text" name="param2" value="193" style="WIDTH:60px">
+		</p>
+		<input type="button" value="測試" onclick="fnCallFunctionWithParams(document.all.param1.value, parseInt(document.all.param2.value));">
+		<BR>
+		<BR>
+		<BR>
+		<p>javascript呼叫C++函數帶參數，並做數值運算，且回傳結果:
+			<BR>
+			被&nbsp;加數: <input type="text" name="add1" style="WIDTH:60px">
+			<BR>
+			加&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;數: <input type="text" name="add2" style="WIDTH:60px">
+			<BR>
+			結&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;果: <input type="text" id="result" style="WIDTH:60px">
+		</p>
+		<input type="button" value="萸僻聆彸" onclick="fnCallAdd(parseInt(document.all.add1.value), parseInt(document.all.add2.value));">
+		<BR>
+		<BR>
+		<BR>
+		<p>javascript呼叫C++函數帶參數:C++將參數轉化成物件</p>
+		<input type="button" value="測試" onclick="fnShowModalDialog('www.cppblog.com/wlwlxj', 100, 100, 500, 500);">
+		<BR>
+		<BR>
+		<BR>
+		<p>javascript呼叫C++函數帶參數:C++將參數轉化成物件:</p>
+		<input type="button" value="測試" onclick="fnShowModelessDialog('www.cppblog.com/wlwlxj', 0, 0, 500, 500);">
+		<BR>
+		<BR>
+		<BR>
+		<p>顯示自訂警告視窗:</p>
+		<input type="button" value="測試" onclick="alert('顯示自訂警告視窗.');">
+		<BR>
+		<BR>
+		<BR>
+		<p>關閉程式:</p>
+		<input type="button" value="測試" onclick="fnClose();">
+	</BODY>
+</HTML>

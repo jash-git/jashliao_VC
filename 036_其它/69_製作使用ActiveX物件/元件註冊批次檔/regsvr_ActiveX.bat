@@ -1,0 +1,1 @@
+regsvr32 c:\testActive2IE.ocx

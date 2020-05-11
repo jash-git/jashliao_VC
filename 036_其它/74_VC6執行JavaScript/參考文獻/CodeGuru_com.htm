@@ -1,0 +1,1977 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0059)http://www.codeguru.com/cpp/i-n/ieprogram/article.php/c4399 -->
+<HTML xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>JavaScript Calls from C++ — CodeGuru.com</TITLE>
+<META 
+content="While HTML support in a C++ browser control is relatively easy, JavaScript support isn't as obvious. Learn to use JavaScript in a C++ application that contains a browser control. By Eugene Khodakovsky." 
+name=description>
+<META content="Eugene Khodakovsky" name=Author>
+<META content="" name=keywords>
+<META content=20021025 name=date>
+<META content=en-US name=MS.LOCALE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content=kbArticle name=Search.TopicType>
+<META content="Fri, 25 Oct 2002 00:00:00 -0400" name=Search.PublishDate>
+<META content="Fri, 25 Oct 2002 00:00:00 -0400" name=Search.ReviseDate>
+<META content=80 name=Search.UserRating><LINK media=all 
+href="CodeGuru_com.files/flyout.css" type=text/css rel=stylesheet><!--[if lte IE 6]><LINK media=all 
+href="CodeGuru_com.files/flyout_ie.css" type=text/css rel=stylesheet><![endif]--><LINK href="CodeGuru_com.files/newstyle.css" 
+type=text/css rel=stylesheet>
+<SCRIPT language=JavaScript type=text/javascript>
+<!--
+
+function show(object) {
+if (document.getElementById) {
+document.getElementById(object).style.visibility = 'visible';
+}
+else if (document.layers && document.layers[object]) {
+document.layers[object].visibility = 'visible';
+}
+else if (document.all) {
+document.all[object].style.visibility = 'visible';
+}
+}
+
+function hide(object) {
+if (document.getElementById) {
+document.getElementById(object).style.visibility = 'hidden';
+}
+else if (document.layers && document.layers[object]) {
+document.layers[object].visibility = 'hidden';
+}
+else if (document.all) {
+document.all[object].style.visibility = 'hidden';
+}
+}
+
+//-->
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+<!--
+OAS_url = 'http://mjxads.internet.com/RealMedia/ads/';
+OAS_sitepage = 'intm/webdev/www.codeguru.com/cpp/i-n/ieprogram';
+OAS_listpos = '120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1';
+OAS_query = '';
+OAS_target = '_top';
+OAS_version = 10;
+OAS_rn = '001234567890'; OAS_rns = '1234567890';
+OAS_rn = new String (Math.random()); OAS_rns = OAS_rn.substring (2, 11);
+function OAS_NORMAL(pos) {
+var_a=('<A HREF="' + OAS_url + 'click_nx.cgi/' + OAS_sitepage );
+var_b=(var_a + '/1' + OAS_rns + '@' + OAS_listpos + '!' + pos + '?' );
+var_c=(var_b+ OAS_query + '" TARGET=' + OAS_target + '>');
+document.write(var_c);
+var_aa=('<IMG SRC="' + OAS_url + 'adstream_nx.cgi/' + OAS_sitepage ); 
+var_bb=( var_aa + '/1' + OAS_rns + '@' + OAS_listpos + '!' + pos + '?');
+var_cc=( var_bb + OAS_query + '" BORDER=0></A>');
+document.write(var_cc);
+}
+//-->
+</SCRIPT>
+
+<SCRIPT language=JavaScript1.1>
+<!--
+OAS_version = 11;
+if (navigator.userAgent.indexOf('Mozilla/3') != -1 )
+OAS_version = 10;
+if (navigator.userAgent.indexOf('Mozilla/4.0 WebTV') != -1)
+OAS_version = 10;
+if (OAS_version >= 11) {
+var_aaa=('<SCRIPT LANGUAGE=JavaScript1.1 SRC="' + OAS_url); 
+var_bbb=(var_aaa + 'adstream_mjx.ads/' + OAS_sitepage + '/1'); 
+var_ccc=(var_bbb + OAS_rns + '@' + OAS_listpos + '?' + OAS_query );
+var_ddd=(var_ccc + '"><\/SCRIPT>');
+document.write(var_ddd);
+}
+//-->
+
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+<!--
+document.write('');
+function OAS_AD(pos) {
+if (OAS_version >= 11)
+OAS_RICH(pos);
+else
+OAS_NORMAL(pos);
+}
+//-->
+</SCRIPT>
+
+<META content="MSHTML 6.00.2900.5848" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=4 MARGINHEIGHT="4" MARGINWIDTH="0">
+<SCRIPT language=JavaScript1.2 src="CodeGuru_com.files/HM_Loader.js" 
+type=text/javascript></SCRIPT>
+
+<CENTER><!------ OAS AD 'house_ribbon' begin ------>
+<SCRIPT language=JavaScript>
+<!--
+OAS_AD('house_ribbon');
+//-->
+</SCRIPT>
+<NOSCRIPT><A 
+href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!house_ribbon"><IMG 
+src="CodeGuru_com.files/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,.gif" 
+border=0> </A></NOSCRIPT><!------ OAS AD 'house_ribbon' end ------>
+<P><!------ OAS AD '468x60-1' begin ------>
+<SCRIPT language=JavaScript>
+<!--
+OAS_AD('468x60-1');
+//-->
+</SCRIPT>
+<NOSCRIPT><A 
+href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!468x60-1"><IMG 
+src="CodeGuru_com.files/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,.jpg" 
+border=0> </A></NOSCRIPT><!------ OAS AD '468x60-1' end ------>
+<P></CENTER><!--Top Navigation-->
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD><LINK href="CodeGuru_com.files/headermenu.css" type=text/css 
+      rel=stylesheet>
+      <SCRIPT src="CodeGuru_com.files/headermenu.js"></SCRIPT>
+
+      <DIV style="LEFT: 0px; POSITION: relative; TOP: 16px; TEXT-ALIGN: left">
+      <DIV id=menuit onmouseover=showMenuit(1) 
+      style="BORDER-RIGHT: #000000 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #000000 1px solid; PADDING-LEFT: 3px; FILTER: alpha(opacity=95); LEFT: 5px; VISIBILITY: hidden; PADDING-BOTTOM: 3px; BORDER-LEFT: #000000 1px solid; WIDTH: 475px; PADDING-TOP: 3px; BORDER-BOTTOM: #000000 1px solid; POSITION: absolute; BACKGROUND-COLOR: #ffffcc; opacity: 0.95" 
+      onmouseout=showMenuit(0)><A class=menulink 
+      href="http://itmanagement.earthweb.com/"><B>IT MANAGEMENT</B></A> 
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD width="20%"><A class=menulink 
+            href="http://www.cioupdate.com/">CIO Update</A><BR><A class=menulink 
+            href="http://itmanagement.earthweb.com/">Datamation</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://www.ecrmguide.com/">eCRMGuide</A><BR><A class=menulink 
+            href="http://www.drmwatch.com/">DRM Watch</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://www.esecurityplanet.com/">eSecurity Planet</A><BR><A 
+            class=menulink href="http://www.itsmwatch.com/">ITSMWatch</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://www.intranetjournal.com/">Intranet Journal</A><BR><A 
+            class=menulink href="http://www.insideid.com/">Inside ID</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://www.gridcomputingplanet.com/">Grid Computing 
+            Planet</A><BR><A class=menulink 
+            href="http://www.bitaplanet.com/">bITa Planet</A> </TD>
+          <TD width="20%"><A class=menulink 
+            href="http://www.itcareerplanet.com/">IT Career Planet Planet</A> 
+        </TD></TR></TBODY></TABLE></DIV></DIV>
+      <DIV style="LEFT: 0px; POSITION: relative; TOP: 16px; TEXT-ALIGN: left">
+      <DIV id=menunc onmouseover=showMenunc(1) 
+      style="BORDER-RIGHT: #000000 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #000000 1px solid; PADDING-LEFT: 3px; FILTER: alpha(opacity=95); LEFT: 113px; VISIBILITY: hidden; PADDING-BOTTOM: 3px; BORDER-LEFT: #000000 1px solid; WIDTH: 400px; PADDING-TOP: 3px; BORDER-BOTTOM: #000000 1px solid; POSITION: absolute; BACKGROUND-COLOR: #ffffcc; opacity: 0.95" 
+      onmouseout=showMenunc(0)><A class=menulink 
+      href="http://networking.earthweb.com/"><B>NETWORKING</B></A> 
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><A class=menulink 
+            href="http://www.enterprisenetworkingplanet.com/">EnterpriseNetworkingPlanet</A><BR><A 
+            class=menulink 
+            href="http://www.instantmessagingplanet.com/">InstantMessagingPlanet</A></TD>
+          <TD><A class=menulink 
+            href="http://www.enterprisestorageforum.com/">EnterpriseStorageForum</A><BR><A 
+            class=menulink 
+            href="http://www.opennetworkstoday.com/">OpenNetworksToday</A></TD>
+          <TD vAlign=top><A class=menulink 
+            href="http://www.opticallynetworked.com/">OpticallyNetworked</A><BR><A 
+            class=menulink 
+            href="http://www.practicallynetworked.com/">PracticallyNetworked</A></TD></TR></TBODY></TABLE></DIV></DIV>
+      <DIV style="LEFT: 0px; POSITION: relative; TOP: 16px; TEXT-ALIGN: left">
+      <DIV id=menuweb onmouseover=showMenuweb(1) 
+      style="BORDER-RIGHT: #000000 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #000000 1px solid; PADDING-LEFT: 3px; FILTER: alpha(opacity=95); LEFT: 204px; VISIBILITY: hidden; PADDING-BOTTOM: 3px; BORDER-LEFT: #000000 1px solid; WIDTH: 200px; PADDING-TOP: 3px; BORDER-BOTTOM: #000000 1px solid; POSITION: absolute; BACKGROUND-COLOR: #ffffcc; opacity: 0.95" 
+      onmouseout=showMenuweb(0)><A class=menulink 
+      href="http://webdeveloper.earthweb.com/"><B>WEB DEVELOPMENT</B></A> 
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD width="50%"><A class=menulink 
+            href="http://www.htmlgoodies.com/">HTML Goodies</A><BR></TD>
+          <TD vAlign=top width="50%"><A class=menulink 
+            href="http://webdeveloper.earthweb.com/webjs/">Javascripts.com</A><BR></TD></TR></TBODY></TABLE></DIV></DIV>
+      <DIV style="LEFT: 0px; POSITION: relative; TOP: 16px; TEXT-ALIGN: left">
+      <DIV id=menuhw onmouseover=showMenuhw(1) 
+      style="BORDER-RIGHT: #000000 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #000000 1px solid; PADDING-LEFT: 3px; FILTER: alpha(opacity=95); LEFT: 324px; VISIBILITY: hidden; PADDING-BOTTOM: 3px; BORDER-LEFT: #000000 1px solid; WIDTH: 215px; PADDING-TOP: 3px; BORDER-BOTTOM: #000000 1px solid; POSITION: absolute; BACKGROUND-COLOR: #ffffcc; opacity: 0.95" 
+      onmouseout=showMenuhw(0)><A class=menulink 
+      href="http://hardware.earthweb.com/"><B>HARDWARE &amp; SYSTEMS</B></A> 
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD width="50%"><A class=menulink 
+            href="http://earthwebhardware.com/">EarthWeb Hardware </A><BR><A 
+            class=menulink href="http://www.sysopt.com/">SysOpt</A></TD>
+          <TD width="50%"><A class=menulink 
+            href="http://www.virtualdr.com/">Virtual Dr.</A><BR><A 
+            class=menulink 
+            href="http://www.workstationplanet.com/">WorkstationPlanet</A></TD></TR></TBODY></TABLE></DIV></DIV>
+      <DIV style="LEFT: 0px; POSITION: relative; TOP: 16px; TEXT-ALIGN: left">
+      <DIV id=menusw onmouseover=showMenusw(1) 
+      style="BORDER-RIGHT: #000000 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #000000 1px solid; PADDING-LEFT: 3px; FILTER: alpha(opacity=95); LEFT: 466px; VISIBILITY: hidden; PADDING-BOTTOM: 3px; BORDER-LEFT: #000000 1px solid; WIDTH: 215px; PADDING-TOP: 3px; BORDER-BOTTOM: #000000 1px solid; POSITION: absolute; BACKGROUND-COLOR: #ffffcc; opacity: 0.95" 
+      onmouseout=showMenusw(0)><A class=menulink 
+      href="http://softwaredev.earthweb.com/"><B>SOFTWARE DEVELOPMENT</B></A> 
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><A class=menulink 
+            href="http://www.codeguru.com/">CodeGuru</A><BR><A class=menulink 
+            href="http://www.developer.com/">Developer</A></TD>
+          <TD><A class=menulink 
+            href="http://www.jguru.com/">jGuru.com</A><BR><A class=menulink 
+            href="http://www.jars.com/">JARS</A></TD>
+          <TD vAlign=top><A class=menulink 
+            href="http://www.gamelan.com/">Gamelan</A><BR></TD></TR></TBODY></TABLE></DIV></DIV>
+      <DIV style="LEFT: 0px; POSITION: relative; TOP: 16px; TEXT-ALIGN: left">
+      <DIV id=menuitnews onmouseover=showMenuitnews(1) 
+      style="BORDER-RIGHT: #000000 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #000000 1px solid; PADDING-LEFT: 3px; FILTER: alpha(opacity=95); LEFT: 225px; VISIBILITY: hidden; PADDING-BOTTOM: 3px; BORDER-LEFT: #000000 1px solid; WIDTH: 460px; PADDING-TOP: 3px; BORDER-BOTTOM: #000000 1px solid; POSITION: absolute; BACKGROUND-COLOR: #ffffcc; opacity: 0.95" 
+      onmouseout=showMenuitnews(0)><A class=menulink 
+      href="http://news.earthweb.com/"><B>EARTHWEBNEWS.COM</B></A> 
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD width="20%"><A class=menulink 
+            href="http://news.earthweb.com/bus-news/">Business</A><BR><A 
+            class=menulink 
+            href="http://news.earthweb.com/dev-news/">Developer</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://news.earthweb.com/ec-news/">Ecommerce</A><BR><A 
+            class=menulink 
+            href="http://news.earthweb.com/ent-news/">Enterprise</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://news.earthweb.com/infra/">Networking</A><BR><A 
+            class=menulink 
+          href="http://news.earthweb.com/security/">Security</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://news.earthweb.com/special/">Special Reports</A><BR><A 
+            class=menulink 
+          href="http://news.earthweb.com/storage/">Storage</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://news.earthweb.com/commentary/">Commentary</A><BR><A 
+            class=menulink 
+          href="http://news.earthweb.com/wireless/">Wireless</A></TD>
+          <TD width="20%"><A class=menulink 
+            href="http://news.earthweb.com/xsp/">xSP</A><BR><A class=menulink 
+            href="http://news.earthweb.com/stats/">Stats</A></TD></TR></TBODY></TABLE></DIV></DIV>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <DIV id=cgheader style="WIDTH: 750px">
+            <UL>
+              <LI onmouseover=showMenuit(1) onmouseout=showMenuit(0)><A 
+              href="http://itmanagement.earthweb.com/">IT MANAGEMENT</A> </LI>
+              <LI onmouseover=showMenunc(1) onmouseout=showMenunc(0)><A 
+              href="http://networking.earthweb.com/">NETWORKING</A> </LI>
+              <LI onmouseover=showMenuweb(1) onmouseout=showMenuweb(0)><A 
+              href="http://webdeveloper.earthweb.com/">WEB DEVELOPMENT</A> </LI>
+              <LI onmouseover=showMenuhw(1) onmouseout=showMenuhw(0)><A 
+              href="http://hardware.earthweb.com/">HARDWARE &amp; SYSTEMS</A> 
+              </LI>
+              <LI onmouseover=showMenusw(1) onmouseout=showMenusw(0)><A 
+              href="http://softwaredev.earthweb.com/">SOFTWARE DEVELOPMENT</A> 
+              </LI>
+              <LI onmouseover=showMenuitnews(1) onmouseout=showMenuitnews(0)><A 
+              href="http://news.earthweb.com/">IT 
+        NEWS</A></LI></UL></DIV></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background=CodeGuru_com.files/top-bg.gif>
+      <TABLE style="HEIGHT: 82px" cellSpacing=0 cellPadding=0 width=780 
+border=0>
+        <TBODY>
+        <TR>
+          <TD style="HEIGHT: 82px" vAlign=top align=left width=272 
+            height=82><A href="http://www.codeguru.com/"><IMG height=82 
+            alt=CodeGuru hspace=0 src="CodeGuru_com.files/logo.gif" width=272 
+            border=0></A></TD>
+          <TD style="HEIGHT: 82px" background=CodeGuru_com.files/top-bg-2.gif>
+            <TABLE height=15 cellSpacing=0 cellPadding=0 width=508 
+            background=CodeGuru_com.files/article.htm border=0>
+              <TBODY>
+              <TR>
+                <FORM name=myform 
+                action=http://search.internet.com/www.codeguru.com method=post>
+                <TD width=1><IMG height=54 alt="" hspace=0 
+                  src="CodeGuru_com.files/sp.gif" width=1 border=0></TD>
+                <TD vAlign=center align=left><A 
+                  href="http://www.earthweb.com/"><IMG height=20 alt=Earthweb 
+                  src="CodeGuru_com.files/eweb.gif" width=135 align=right 
+                  border=0></A> <INPUT type=hidden name=starget> <INPUT 
+                  type=hidden name=IC_QueryDatabase> <IMG height=23 alt=Search 
+                  src="CodeGuru_com.files/search.gif" width=50 align=absMiddle 
+                  border=0> <SELECT 
+                  style="FONT-WEIGHT: normal; FONT-SIZE: 9pt; COLOR: #000000; FONT-FAMILY: verdana, arial, sans-serif; BACKGROUND-COLOR: #ffffff" 
+                  name=searchsite> <OPTION value=CodeGuru 
+                    selected>CodeGuru.com</OPTION> <OPTION 
+                    value=CodeGuru-Articles>---Articles</OPTION> <OPTION 
+                    value=CodeGuru-Comments>---Comments</OPTION> <OPTION 
+                    value=CodeGuru-Forums>---Forums</OPTION> <OPTION 
+                    value=Earthweb>Earthweb</OPTION></SELECT> <INPUT size=10 
+                  name=IC_QueryText> <INPUT type=image height=23 alt=Go width=40 
+                  src="CodeGuru_com.files/go.gif" align=absMiddle value=Go! 
+                  border=0 name=submit> </TD></FORM></TR>
+              <TR>
+                <TD width=1><IMG height=27 alt="" hspace=0 
+                  src="CodeGuru_com.files/sp.gif" width=1 border=0></TD>
+                <TD vAlign=center align=middle><IMG 
+                  style="MARGIN-BOTTOM: 0px; MARGIN-LEFT: 20px" height=14 
+                  hspace=0 src="CodeGuru_com.files/eweb-nav-a.gif" width=380 
+                  useMap=#eweb_nav_Map border=0> <MAP name=eweb_nav_Map><AREA 
+                    shape=RECT alt=Login coords=338,0,880,14 
+                    href="http://www.codeguru.com/login.php"><AREA shape=RECT 
+                    alt=Forums coords=253,0,330,14 
+                    href="http://www.codeguru.com/forum"><AREA shape=RECT 
+                    alt=Wireless coords=185,0,244,14 
+                    href="http://www.developer.com/ws/"><AREA shape=RECT 
+                    alt=Jars coords=145,0,176,14 
+                    href="http://www.jars.com/"><AREA shape=RECT alt=Gamelan 
+                    coords=77,1,136,15 
+                    href="http://www.developer.com/java/"><AREA shape=RECT 
+                    alt=Developer.com coords=0,0,69,14 
+                    href="http://www.developer.com/"></MAP></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><!--End Top-->
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top width="1%" background=CodeGuru_com.files/leftnav-bg.gif><!--Left Navigation--><!--Left Navigation-->
+      <TABLE cellSpacing=0 cellPadding=0 width=165 bgColor=#999999 border=0>
+        <TBODY>
+        <TR>
+          <TD><A href="http://www.codeguru.com/"><IMG height=30 
+            alt="CodeGuru Navigation" src="CodeGuru_com.files/leftnav-top.gif" 
+            width=165 border=0></A></TD></TR>
+        <TR>
+          <TD>
+            <DIV class=menu>
+            <UL>
+              <LI><A class=hide href="http://www.codeguru.com/Cpp"><B>Visual C++ 
+              / C++</B></A><!--[if lte IE 6]> <A 
+              href="http://www.codeguru.com/Cpp"><B>Visual C++ / C++</B> 
+              <TABLE>
+                <TBODY>
+                <TR>
+                  <TD><![endif]-->
+                    <UL>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/cpp">C++ <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/cpp">C++ <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/cpp/algorithms">Algorithms 
+                              &amp; Formulas</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/cpp/cpp_mfc">C++ 
+                              &amp; MFC</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/cpp/date_time">Date 
+                              &amp; Time</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/cpp/cpp_managed">C++/CLI</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/cpp/string">String 
+                              Programming</A> 
+                        </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/com-tech">COM-based 
+                      Technologies <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/com-tech">COM-based 
+                      Technologies <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/com-tech/atl">ATL 
+                              &amp; WTL Programming</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/com-tech/activex">ActiveX 
+                              Programming</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/com-tech/complus">COM+</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/com-tech/shell">Shell 
+                              Programming</A> 
+                        </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/controls">Controls 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/controls">Controls 
+                      <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/buttonctrl">Button 
+                              Control</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/combobox">ComboBox</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/editctrl">Edit 
+                              Control</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/imagelist">ImageList 
+                              Control</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/listbox">ListBox 
+                              Control</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/listview">ListView 
+                              Control</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/menu">Menu</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/controls">Other 
+                              Controls</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/propertysheet">Property 
+                              Sheet</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/richedit">Rich 
+                              Edit Control</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/staticctrl">Static 
+                              Control</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/statusbar">Status 
+                              Bar</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/toolbar">Toolbar</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/controls/treeview">Treeview 
+                              Control</A> 
+                        </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/data">Data <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/data">Data <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/data/mfc_database">Database</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/data/data-misc">Miscellaneous</A> 
+                              </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/frameworks">Frameworks 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/frameworks">Frameworks 
+                      <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/frameworks/advancedui">UI 
+                              &amp; Printing Frameworks</A> </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/g-m">Graphics &amp; 
+                      Multimedia <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/g-m">Graphics &amp; 
+                      Multimedia <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/g-m/bitmap">Bitmaps 
+                              &amp; Palettes</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/g-m/directx">DirectX</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/g-m/gdi">GDI</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/g-m/multimedia">Multimedia</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/g-m/opengl">OpenGL</A> 
+                              </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/i-n">Internet &amp; 
+                      Networking <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/i-n">Internet &amp; 
+                      Networking <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/i-n/ieprogram">IE 
+                              Programming</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/i-n/isapi">ISAPI</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/i-n/internet">Internet 
+                              Protocols</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/i-n/network">Network 
+                              Protocols</A> 
+                        </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/misc">Miscellaneous 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/misc">Miscellaneous 
+                      <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/misc/misc">Miscellaneous</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/misc/samples">Samples</A> 
+                              </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide2 
+                      href="http://www.codeguru.com/cpp/security">Security</A><!--[if lte IE 6]> 
+                      <A class=sub2 
+                      href="http://www.codeguru.com/cpp/security">Security 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]--><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide2 
+                      href="http://www.codeguru.com/Cpp/STL">Standard Template 
+                      Library</A><!--[if lte IE 6]> <A class=sub2 
+                      href="http://www.codeguru.com/Cpp/STL">Standard Template 
+                      Library 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]--><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/v-s">Visual Studio 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/v-s">Visual Studio 
+                      <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/v-s/devstudio_macros">Add-ins 
+                              &amp; Macros</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/v-s/debug">Debugging</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/v-s/tips">Editor 
+                              Tips</A> 
+                      </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/w-d">Windows &amp; 
+                      Dialogs <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/w-d">Windows &amp; 
+                      Dialogs <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-d/console">Console</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-d/dislog">Dialog</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-d/doc_view">Doc/View</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-d/docking">Docking 
+                              Window</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-d/splitter">Splitter</A> 
+                              </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/cpp/w-p">Windows Programming 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/cpp/w-p">Windows Programming 
+                      <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/ce">CE</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/clipboard">Clipboard</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/dll">DLL</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/files">File 
+                              &amp; Folder</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/help">Help 
+                              Systems</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/printing">Printing</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/system">System</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/vista">Vista</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/cpp/w-p/win32">Win32</A> 
+                              </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide2 
+                      href="http://www.codeguru.com/cpp/sample_chapter">Sample 
+                      Chapter</A><!--[if lte IE 6]> <A class=sub2 
+                      href="http://www.codeguru.com/cpp/sample_chapter">Sample 
+                      Chapter 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]--><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI></UL>
+            <UL>
+              <LI><A class=hide href="http://www.codeguru.com/Csharp"><B>.NET / 
+              C#</B></A><!--[if lte IE 6]> <A 
+              href="http://www.codeguru.com/Csharp"><B>.NET / C#</B> 
+              <TABLE>
+                <TBODY>
+                <TR>
+                  <TD><![endif]-->
+                    <UL>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/csharp/.net">.NET 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/csharp/.net">.NET <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_data">Data 
+                              &amp; Databases</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_debugging">Debugging</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_framework">Framework</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_general">General</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_asp">General 
+                              ASP.NET</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/jscript">JScript 
+                              .NET</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/cpp_managed">Managed 
+                              C++</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_security">Net 
+                              Security</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_vs_addins">VS 
+                              Add-Ins</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_silverlight">Silverlight</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_wcf">WCF</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_wpf">WPF</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/.net/net_workflow">Windows 
+                              Workflow</A> 
+                        </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/csharp/csharp">C# 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/csharp/csharp">C# <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_syntax">Basic 
+                              Syntax</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_collections">Collections</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_controls">Controls</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_data">Data 
+                              &amp; I/O</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_date_time">Date 
+                              &amp; Time</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_delegates">Delegates</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_graphics">Graphics 
+                              &amp; Multimedia</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_internet">Internet</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_misc">Miscellaneous</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/net30">.NET 
+                              3.0 / .NET 3.5</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_network">Network 
+                              &amp; Systems</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_webservices">Web 
+                              Services</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/csharp/csharp/cs_linq">LINQ</A> 
+                              </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide2 
+                      href="http://www.codeguru.com/csharp/sample_chapter">Sample 
+                      Chapter</A><!--[if lte IE 6]> <A class=sub2 
+                      href="http://www.codeguru.com/csharp/sample_chapter">Sample 
+                      Chapter 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]--><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI></UL>
+            <UL>
+              <LI><A class=hide href="http://www.codeguru.com/vb"><B>Visual 
+              Basic</B></A><!--[if lte IE 6]> <A 
+              href="http://www.codeguru.com/vb"><B>Visual Basic</B> 
+              <TABLE>
+                <TBODY>
+                <TR>
+                  <TD><![endif]-->
+                    <UL>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/vb/gen">General <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/vb/gen">General <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/gen/vb_database">Database</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/gen/vb_forms">Forms 
+                              &amp; Controls</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/gen/vb_general">IDE 
+                              &amp; Language</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/gen/vb_misc">Misc</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/gen/vb_system">System</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/gen/vb_graphics">VB 
+                              Graphics</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/gen/vb_multimedia">VB 
+                              Multimedia</A> 
+                        </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/vb/vb_internet">Internet 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/vb/vb_internet">Internet 
+                      <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/vb_internet/aspnet">ASP 
+                              .NET</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/vb_internet/database">Database</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/vb_internet/html">HTML</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/vb_internet/indexing">Indexing</A> 
+                              </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/vb_internet/smtpemail">SMTP 
+                              / eMail</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/vb_internet/webservices">Web 
+                              Services</A> 
+                        </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/vb/mobile">Mobile/Wireless 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/vb/mobile">Mobile/Wireless 
+                      <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/mobile/mobileinternettoolkit">Mobile 
+                              Internet<BR>Toolkit</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/mobile/pocketpc">Pocket 
+                              PC</A> 
+                      </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide2 
+                      href="http://www.codeguru.com/vb/vbnet30">.NET 3.0</A> 
+                      </LI>
+                      <LI><A class=hide2 
+                      href="http://www.codeguru.com/vb/vb_linq">LINQ</A><!--[if lte IE 6]> 
+                      <A class=sub2 
+                      href="http://www.codeguru.com/vb/vbnet30">.NET 3.0 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]--><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide 
+                      href="http://www.codeguru.com/vb/controls">VB Controls 
+                      <B>»</B></A><!--[if lte IE 6]> <A class=sub 
+                      href="http://www.codeguru.com/vb/controls">VB Controls 
+                      <B>»</B> 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]-->
+                            <UL>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/controls/vbnet_controls">.NET 
+                              Controls</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/controls/vb_activex">VB 
+                              ActiveX</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/controls/vb_combobox">VB 
+                              ComboBox</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/controls/vb_file">VB 
+                              Files</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/controls/vb_listbox">VB 
+                              ListBox</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/controls/vb_listview">VB 
+                              ListView</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/controls/vb_othctrl">VB 
+                              Other Controls</A> </LI>
+                              <LI><A 
+                              href="http://www.codeguru.com/vb/controls/vb_shell">VB 
+                              Shell</A> 
+                      </LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI>
+                      <LI><A class=hide2 
+                      href="http://www.codeguru.com/vb/sample_chapter">Sample 
+                      Chapter</A><!--[if lte IE 6]> <A class=sub2 
+                      href="http://www.codeguru.com/vb/sample_chapter">Sample 
+                      Chapter 
+                      <TABLE>
+                        <TBODY>
+                        <TR>
+                          <TD><![endif]--><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI></UL><!--[if lte IE 6]></TD></TR></TBODY></TABLE></A><![endif]--></LI></UL></DIV>
+            <DIV class=menu2>
+            <UL>
+              <LI><A href="http://www.codeguru.com/video"><B>Videos</B></A> 
+            </LI></UL>
+            <UL>
+              <LI><A href="http://www.codeguru.com/edit-article.php"><B>Submit 
+              an Article</B></A> </LI></UL>
+            <UL>
+              <LI><A href="http://www.codeguru.com/forum"><B>Discussion 
+              Forums</B></A> </LI></UL>
+            <UL>
+              <LI><A href="http://www.codeguru.com/resources"><B>Resource 
+              Directory</B></A> </LI></UL>
+            <UL>
+              <LI><A 
+              href="http://www.codeguru.com/announcements"><B>Announcements</B></A> 
+              </LI></UL>
+            <UL>
+              <LI><A 
+              href="http://extra.codeguru.com/bookList/booklist.asp"><B>Book 
+              List</B></A> </LI></UL>
+            <UL>
+              <LI><A href="http://extra.codeguru.com/default.asp"><B>Book 
+              Reviews</B></A> </LI></UL>
+            <UL>
+              <LI><A href="http://www.codeguru.com/gurus.php"><B>List of 
+              Gurus</B></A> </LI></UL>
+            <UL>
+              <LI><A href="http://blog.codeguru.com/blog/"><B>Codeguru 
+              Blog</B></A> </LI></UL>
+            <UL>
+              <LI><A href="http://www.theguestbook.com/read.php/608196"><B>Guest 
+              Book</B></A> </LI></UL>
+            <UL>
+              <LI><A 
+              href="http://www.justtechjobs.com/Jobseekers.asp"><B>Technology 
+              Jobs</B></A> </LI></UL>
+            <UL>
+              <LI><A href="http://www.codeguru.com/about.php"><B>About 
+              Us</B></A> </LI></UL>
+            <UL>
+              <LI><A href="http://www.codeguru.com/faq.php"><B>FAQs</B></A> 
+            </LI></UL>
+            <UL>
+              <LI><A href="http://www.codeguru.com/sitemap.php"><B>Site 
+              Map</B></A> </LI></UL></DIV></TD></TR></TBODY></TABLE><!--RSS Feeds-->
+      <TABLE cellSpacing=0 cellPadding=4 width=165 bgColor=#053061 border=0>
+        <TBODY>
+        <TR>
+          <TD><FONT color=#cccc66><B>RSS Feeds</B></FONT>
+            <P><A 
+            href="http://www.codeguru.com/icom_includes/feeds/codeguru/rss-all.xml"><IMG 
+            height=14 alt=RSS hspace=5 src="CodeGuru_com.files/xml.gif" width=36 
+            align=absMiddle border=0><FONT color=#ffffff>All</FONT></A> <BR><IMG 
+            height=2 alt="" src="CodeGuru_com.files/sp.gif" width=1 
+border=0><BR><!--<a href="/icom_includes/feeds/codeguru/rss-cpp.xml"><img src="/img/xml.gif" width="36" height="14" border="0" align="absmiddle" hspace="5" ALT="RSS"><font color="#ffffff">VC++/C++</font></a>--><A 
+            href="http://feedproxy.google.com/codeguru/cpp"><IMG height=14 
+            alt=RSS hspace=5 src="CodeGuru_com.files/xml.gif" width=36 
+            align=absMiddle border=0><FONT color=#ffffff>VC++/C++</FONT></A> 
+            <BR><IMG height=2 alt="" src="CodeGuru_com.files/sp.gif" width=1 
+            border=0><BR><!--<a href="/icom_includes/feeds/codeguru/rss-csharp.xml"><img src="/img/xml.gif" width="36" height="14" border="0" align="absmiddle" hspace="5" ALT="RSS"><font color="#ffffff">.NET/C#</font></a>--><A 
+            href="http://feedproxy.google.com/codeguru/csharp"><IMG height=14 
+            alt=RSS hspace=5 src="CodeGuru_com.files/xml.gif" width=36 
+            align=absMiddle border=0><FONT color=#ffffff>.NET/C#</FONT></A> 
+            <BR><IMG height=2 alt="" src="CodeGuru_com.files/sp.gif" width=1 
+            border=0><BR><!--<a href="/icom_includes/feeds/codeguru/rss-vb.xml"><img src="/img/xml.gif" width="36" height="14" border="0" align="absmiddle" hspace="5" ALT="RSS"><font color="#ffffff">VB</font></a>--><A 
+            href="http://feedproxy.google.com/codeguru/VB"><IMG height=14 
+            alt=RSS hspace=5 src="CodeGuru_com.files/xml.gif" width=36 
+            align=absMiddle border=0><FONT color=#ffffff>VB</FONT></A> 
+            <BR><BR><A href="http://www.jupiterweb.com/rss/earthweb.html"><FONT 
+            color=#ffffff>See more EarthWeb Network feeds</FONT></A> <BR><BR><A 
+            href="http://twitter.com/Codeguru">
+            <CENTER><IMG height=35 alt="follow us on Twitter" 
+            src="CodeGuru_com.files/follow_twitter.gif" width=125 
+            border=0></CENTER></A>
+            <HR color=#ffffff noShade SIZE=1>
+          </TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=0 cellPadding=3 width=165 bgColor=#053061 border=0>
+        <TBODY>
+        <TR>
+          <FORM action=/login.php method=post><INPUT type=hidden value=login 
+          name=action> <INPUT type=hidden 
+          value=/cpp/i-n/ieprogram/article.php/c4399 name=url> 
+          <TD align=middle colSpan=2><IMG height=13 alt="Member Sign In" 
+            src="CodeGuru_com.files/member-top.gif" width=113 vspace=5 border=0> 
+          </TD></TR>
+        <TR>
+          <TD align=right><SPAN class=bodycopy><FONT color=#ffffff>User 
+            ID:</FONT></SPAN></TD>
+          <TD><INPUT style="WIDTH: 60px" size=7 name=username></TD></TR>
+        <TR>
+          <TD align=right><SPAN class=bodycopy><FONT 
+            color=#ffffff>Password:</FONT></SPAN></TD>
+          <TD><INPUT style="WIDTH: 60px" type=password size=7 
+        name=password></TD></TR>
+        <TR>
+          <TD align=middle colSpan=2><SPAN class=bodycopy><FONT 
+            color=#ffffff>Remember Me:</FONT></SPAN> <INPUT type=checkbox 
+            value=1 name=perm></TD></TR>
+        <TR>
+          <TD align=middle colSpan=2><INPUT type=image height=23 width=73 
+            src="CodeGuru_com.files/signin-blue.gif" align=absMiddle border=0 
+            name=member></TD></TR></FORM>
+        <TR>
+          <TD align=middle colSpan=2><A class=moreinfo 
+            href="http://www.codeguru.com/forgotpw.php">Forgot 
+        Password?</A></TD></TR>
+        <TR>
+          <TD align=middle colSpan=2><A class=moreinfo 
+            href="http://www.codeguru.com/register.php">Not a member?<BR>Click 
+            here for more information and to register.</A></TD></TR></TBODY></TABLE><!-- start marketplace ads -->
+      <STYLE type=text/css>#skypartnerset {
+	CLEAR: both; BORDER-RIGHT: #333 1px solid; BORDER-TOP: #333 1px solid; FONT-SIZE: 10px; MARGIN-BOTTOM: 10px; BORDER-LEFT: #333 1px solid; WIDTH: 160px; COLOR: #333; BORDER-BOTTOM: #333 1px solid; FONT-FAMILY: arial, verdana, helvetica; BACKGROUND-COLOR: #fff
+}
+#skypartnerset A {
+	CLEAR: both; MARGIN-TOP: 10px; FONT-SIZE: 10px; WIDTH: 160px; COLOR: #333
+}
+#skypartnerset A:link {
+	CLEAR: both; MARGIN-TOP: 10px; FONT-SIZE: 10px; WIDTH: 160px; COLOR: #333
+}
+#skypartnerset A:visited {
+	CLEAR: both; MARGIN-TOP: 10px; FONT-SIZE: 10px; WIDTH: 160px; COLOR: #333
+}
+#skypartnerset A:hover {
+	TEXT-DECORATION: none
+}
+#skypartnerset P {
+	PADDING-BOTTOM: 2px; BORDER-BOTTOM: #ccc 1px solid
+}
+</STYLE>
+
+      <DIV id=skypartnerset align=center><A 
+      href="http://www.jupitermedia.com/partners/"><IMG alt="" 
+      src="CodeGuru_com.files/codeguru_partners.gif" border=0></A> 
+      <P><A href="http://www.jupitermedia.com/partners/"><STRONG><BIG>Become a 
+      Marketplace Partner</BIG></STRONG></A></P><!------ OAS AD 'marketplace01' begin ------>
+      <SCRIPT language=JavaScript>
+<!--
+OAS_AD('marketplace01');
+//-->
+</SCRIPT>
+      <NOSCRIPT><A 
+      href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!marketplace01"><IMG 
+      src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(1).gif" 
+      border=0> </A></NOSCRIPT><!------ OAS AD 'marketplace01' end ------><!------ OAS AD 'marketplace02' begin ------>
+      <SCRIPT language=JavaScript>
+<!--
+OAS_AD('marketplace02');
+//-->
+</SCRIPT>
+      <NOSCRIPT><A 
+      href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!marketplace02"><IMG 
+      src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(2).gif" 
+      border=0> </A></NOSCRIPT><!------ OAS AD 'marketplace02' end ------><!------ OAS AD 'marketplace03' begin ------>
+      <SCRIPT language=JavaScript>
+<!--
+OAS_AD('marketplace03');
+//-->
+</SCRIPT>
+      <NOSCRIPT><A 
+      href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!marketplace03"><IMG 
+      src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(3).gif" 
+      border=0> </A></NOSCRIPT><!------ OAS AD 'marketplace03' end ------><!------ OAS AD 'marketplace04' begin ------>
+      <SCRIPT language=JavaScript>
+<!--
+OAS_AD('marketplace04');
+//-->
+</SCRIPT>
+      <NOSCRIPT><A 
+      href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!marketplace04"><IMG 
+      src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(4).gif" 
+      border=0> </A></NOSCRIPT><!------ OAS AD 'marketplace04' end ------><!------ OAS AD 'marketplace05' begin ------>
+      <SCRIPT language=JavaScript>
+<!--
+OAS_AD('marketplace05');
+//-->
+</SCRIPT>
+      <NOSCRIPT><A 
+      href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!marketplace05"><IMG 
+      src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(5).gif" 
+      border=0> </A></NOSCRIPT><!------ OAS AD 'marketplace05' end ------><!------ OAS AD 'marketplace06' begin ------>
+      <SCRIPT language=JavaScript>
+<!--
+OAS_AD('marketplace06');
+//-->
+</SCRIPT>
+      <NOSCRIPT><A 
+      href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!marketplace06"><IMG 
+      src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(6).gif" 
+      border=0> </A></NOSCRIPT><!------ OAS AD 'marketplace06' end ------></DIV><!-- end marketplace ads -->
+      <TABLE cellSpacing=0 cellPadding=0 width=165 bgColor=#999999 border=0>
+        <TBODY>
+        <TR>
+          <TD bgColor=#000000><IMG height=1 alt="" 
+            src="CodeGuru_com.files/sp.gif" width=1 border=0></TD></TR>
+        <TR>
+          <TD bgColor=#999999><IMG height=1 alt="" 
+            src="CodeGuru_com.files/sp.gif" width=1 
+      border=0></TD></TR></TBODY></TABLE><IMG height=10 alt="" 
+      src="CodeGuru_com.files/sp.gif" width=151 border=0> 
+      <TABLE cellSpacing=0 cellPadding=0 width=165 border=0>
+        <TBODY>
+        <TR>
+          <TD align=middle><!------ OAS AD '125x125-1' begin ------>
+            <SCRIPT 
+            language=JavaScript>
+<!--
+OAS_AD('125x125-1');
+//-->
+</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!125x125-1"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(1).jpg" 
+            border=0> </A></NOSCRIPT><!------ OAS AD '125x125-1' end ------>
+            <P><A href="http://www.jobs.internet.com/"><IMG height=35 
+            alt=jobs.internet.com src="CodeGuru_com.files/jobs.gif" width=120 
+            border=0></A> 
+            <P>
+            <TABLE cellSpacing=0 cellPadding=3 width="100%" 
+            background=CodeGuru_com.files/article.htm border=0>
+              <TBODY>
+              <TR>
+                <TD class=bodycopy align=middle bgColor=#000000><FONT 
+                  color=#ffffff><B>internet.commerce</B></FONT></TD></TR>
+              <TR>
+                <TD class=bodycopy align=left bgColor=#cccccc><A 
+                  href="http://www.internet.com/partners/">Partners &amp; 
+                  Affiliates</A><BR><!------ OAS AD 'cp1' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp1');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp1"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(7).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp1' end ------><BR><!------ OAS AD 'cp2' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp2');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp2"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(8).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp2' end ------><BR><!------ OAS AD 'cp3' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp3');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp3"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(9).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp3' end ------><BR><!------ OAS AD 'cp4' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp4');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp4"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(10).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp4' end ------><BR><!------ OAS AD 'cp5' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp5');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp5"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(11).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp5' end ------><BR><!------ OAS AD 'cp6' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp6');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp6"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(12).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp6' end ------><BR><!------ OAS AD 'cp7' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp7');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp7"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(13).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp7' end ------><BR><!------ OAS AD 'cp8' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp8');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp8"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(14).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp8' end ------><BR><!------ OAS AD 'cp9' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp9');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp9"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(15).gif" 
+                  border=0> </A></NOSCRIPT><!------ OAS AD 'cp9' end ------><BR><!------ OAS AD 'cp10' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp10');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp10"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(16).gif" 
+                  border=0> 
+</A></NOSCRIPT><!------ OAS AD 'cp10' end ------><BR><!------ OAS AD 'cp11' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp11');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp11"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(17).gif" 
+                  border=0> 
+</A></NOSCRIPT><!------ OAS AD 'cp11' end ------><BR><!------ OAS AD 'cp12' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp12');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp12"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(18).gif" 
+                  border=0> 
+</A></NOSCRIPT><!------ OAS AD 'cp12' end ------><BR><!------ OAS AD 'cp13' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp13');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp13"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(19).gif" 
+                  border=0> 
+</A></NOSCRIPT><!------ OAS AD 'cp13' end ------><BR><!------ OAS AD 'cp14' begin ------>
+                  <SCRIPT 
+                  language=JavaScript>
+	<!--
+	OAS_AD('cp14');
+	//-->
+	</SCRIPT>
+                  <NOSCRIPT><A 
+                  href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!cp14"><IMG 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(20).gif" 
+                  border=0> 
+                </A></NOSCRIPT><!------ OAS AD 'cp14' end ------><BR></TD></TR></TBODY></TABLE></P></TD></TR></TBODY></TABLE><BR><BR>
+      <TABLE cellPadding=4 width=165 bgColor=#053061>
+        <TBODY>
+        <TR>
+          <TD><!------ OAS AD '120x60-1' begin ------>
+            <SCRIPT 
+language=JavaScript>
+<!--
+OAS_AD('120x60-1');
+//-->
+</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!120x60-1"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(2).jpg" 
+            border=0> </A></NOSCRIPT><!------ OAS AD '120x60-1' end ------>
+            <P></P><!------ OAS AD '125x800' begin ------>
+            <SCRIPT language=JavaScript>
+<!--
+OAS_AD('125x800');
+//-->
+</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!125x800"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(21).gif" 
+            border=0> </A></NOSCRIPT><!------ OAS AD '125x800' end ------></TD>
+        <TR>
+        <TR>
+          <TD><!------ OAS AD '125x600' begin ------>
+            <SCRIPT language=JavaScript>
+<!--
+OAS_AD('125x600');
+//-->
+</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!125x600"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(3).jpg" 
+            border=0> </A></NOSCRIPT><!------ OAS AD '125x600' end ------></TD>
+        <TR></TR></TBODY></TABLE></TD>
+    <TD vAlign=top width="99%" background=CodeGuru_com.files/article.htm 
+    bgColor=#ffffff><IMG height=1 alt="" src="CodeGuru_com.files/sp.gif" 
+      width=629 border=0> 
+      <TABLE cellSpacing=0 cellPadding=4 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN class=bodycopy><B><A 
+            href="http://www.codeguru.com/">Home</A></B> &gt;&gt; <B><A 
+            href="http://www.codeguru.com/cpp/">Visual C++ / C++</A></B> 
+            &gt;&gt; <B><A href="http://www.codeguru.com/cpp/i-n/">Internet 
+            &amp; Networking</A></B> &gt;&gt; <B><A 
+            href="http://www.codeguru.com/cpp/i-n/ieprogram/">IE 
+            Programming</A></B><BR><BR><!--content_start--><!------ OAS AD 'ciu' begin ------>
+            <SCRIPT language=JavaScript>
+<!--
+OAS_AD('ciu');
+//-->
+</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!ciu"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(22).gif" 
+            border=0> </A></NOSCRIPT><!------ OAS AD 'ciu' end ------><BR><FONT 
+            class=sectionhead>JavaScript Calls from C++</FONT><BR><B>Rating:</B> 
+            <FONT color=#990000><IMG height=12 src="CodeGuru_com.files/star.gif" 
+            width=13><IMG height=12 src="CodeGuru_com.files/star.gif" 
+            width=13><IMG height=12 src="CodeGuru_com.files/star.gif" 
+            width=13><IMG height=12 src="CodeGuru_com.files/star.gif" 
+            width=13><IMG height=12 src="CodeGuru_com.files/star-gray.gif" 
+            width=13></FONT><BR><BR>
+            <TABLE cellSpacing=0 cellPadding=5 border=0>
+              <TBODY>
+              <TR>
+                <TD align=right></TD>
+                <TD class=bodycopy><B>Eugene Khodakovsky</B> (<A 
+                  href="http://www.codeguru.com/member.php/2769/">view 
+                  profile</A>)<BR>October 25, 2002 </TD></TR></TBODY></TABLE>
+            <P><SPAN class=bodycopy>
+            <P><A 
+            href="http://www.codeguru.com/cpp/i-n/ieprogram/article.php/JSCalls.jpg" 
+            target=newframe><BR><BR><A 
+            href="http://www.codeguru.com/cpp/i-n/ieprogram/article.php/c4399#more">(continued)</A>
+            <P></P>
+            <DIV class=right_ads style="FLOAT: right; WIDTH: 336px"><!------ OAS AD 'flex' begin ------>
+            <SCRIPT language=JavaScript>
+<!--
+OAS_AD('flex');
+//-->
+</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!flex"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(4).jpg" 
+            border=0> </A></NOSCRIPT><!------ OAS AD 'flex' end ------><BR><BR><!------ OAS AD 'accessunit' begin ------>
+            <SCRIPT 
+            language=JavaScript>
+<!--
+OAS_AD('accessunit');
+//-->
+</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!accessunit"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(5).jpg" 
+            border=0> 
+</A></NOSCRIPT><!------ OAS AD 'accessunit' end ------><BR><!-- START: MARCHEX -->
+            <SCRIPT src="CodeGuru_com.files/jsct" type=text/javascript></SCRIPT>
+<!-- END: MARCHEX --></DIV><A name=more>
+            <P><IMG src="CodeGuru_com.files/JSCalls.jpg" width=500><BR><FONT 
+            size=3><EM>Click here for a larger image.</EM></FONT> </A></P>
+            <P><U>Environment:</U> VC++ 6.0, NT 4.0, Win2000, Win95/98 
+            <H3>Introduction</H3>
+            <P>Sometimes, when we are using the IE Browser Control inside of a 
+            C++ application, we need to access the HTML elements. We can do it 
+            by using standard COM objects such as <CODE>IWebBrowser2</CODE>, 
+            <CODE>IHTMLDocument2</CODE>, and so forth. By doing this, we easily 
+            can implement features such as click button, click anchor, get input 
+            string, get HTML text, and so on. Unfortunately, Microsoft did not 
+            provide similar objects for JavaScript. In any case, it is possible 
+            to make a control for the JavaScript object inside an HTML page by 
+            using a traditional COM approach. This article describes the class 
+            <CODE>CWebPage</CODE> that allows you to do it and a technique to 
+            call a JavaScript function from C++ code.</P>
+            <H3>How to Do This</H3>
+            <P>As the result of using the presented class, it will be easy to 
+            call any JavaScript function from C++ code. To implement this 
+            feature, we should get a pointer to the <CODE>IHTMLDocument2</CODE> 
+            interface. If we are using the <CODE>CHtmlView</CODE> class from 
+            MFC, we can get one by using member function 
+            <CODE>CHtmlView::GetHtmlDocument()</CODE>. In the case of using the 
+            <CODE>IWebBrowser</CODE> or <CODE>IWebBrowser2</CODE> components, 
+            the function <CODE>get_Document</CODE> will bring us the desired 
+            interface. Here is an example:</P><PRE>CComPtr&lt;IDispatch&gt; spDisp = CHtmlView::GetHtmlDocument();
+m_webPage.SetDocument(spDisp);
+</PRE>
+            <P>The rest of the things will be done by the <CODE>CWebPage</CODE> 
+            class. Here is an example of a JavaScript call without 
+            parameters.</P><PRE>m_webPage.CallJScript("Welcome");
+</PRE>
+            <P>The example of the JavaScript call with two parameters will look 
+            like this:</P><PRE>m_webPage.CallJScript("Miltiply","2.34","3.32");
+</PRE>
+            <H3>The Class Implementation</H3><PRE><SPAN class=codeKeyword>class</SPAN> CWebPage
+{
+<SPAN class=codeKeyword>public</SPAN>:
+  CWebPage();
+  <SPAN class=codeKeyword>virtual</SPAN> ~CWebPage();
+
+  <SPAN class=codeKeyword>bool</SPAN> SetDocument(IDispatch* pDisp);
+  LPDISPATCH GetHtmlDocument() <SPAN class=codeKeyword>const</SPAN>;
+  <SPAN class=codeKeyword>const</SPAN> CString GetLastError() <SPAN class=codeKeyword>const</SPAN>;
+  <SPAN class=codeKeyword>bool</SPAN> GetJScript(CComPtr&lt;IDispatch&gt;&amp; spDisp);
+  <SPAN class=codeKeyword>bool</SPAN> GetJScripts(CComPtr&lt;IHTMLElementCollection&gt;&amp; spColl);
+  CString ScanJScript(CString&amp; strAText,CStringArray&amp; args);
+
+  <SPAN class=codeKeyword>bool</SPAN> CallJScript(<SPAN class=codeKeyword>const</SPAN> CString strFunc);
+  <SPAN class=codeKeyword>bool</SPAN> CallJScript(<SPAN class=codeKeyword>const</SPAN> CString strFunc,<SPAN class=codeKeyword>const</SPAN> CString strArg1);
+  <SPAN class=codeKeyword>bool</SPAN> CallJScript(<SPAN class=codeKeyword>const</SPAN> CString strFunc,<SPAN class=codeKeyword>const</SPAN> CString strArg1,
+                   <SPAN class=codeKeyword>const</SPAN> CString strArg2);
+  <SPAN class=codeKeyword>bool</SPAN> CallJScript(<SPAN class=codeKeyword>const</SPAN> CString strFunc,<SPAN class=codeKeyword>const</SPAN> CString strArg1,
+                   <SPAN class=codeKeyword>const</SPAN> CString strArg2,<SPAN class=codeKeyword>const</SPAN> CString strArg3);
+  <SPAN class=codeKeyword>bool</SPAN> CallJScript(<SPAN class=codeKeyword>const</SPAN> CString strFunc,<SPAN class=codeKeyword>const</SPAN>
+                         CStringArray&amp; paramArray);
+
+<SPAN class=codeKeyword>protected</SPAN>
+
+  CComPtr&lt;IHTMLDocument2&gt; m_spDoc;
+
+};
+</PRE>
+            <H3>Calling Technique</H3>
+            <P>The previously mentioned technique splits the following 
+steps:</P>
+            <UL>
+              <LI>Getting a pointer to the <CODE>IHTMLDocument2</CODE> 
+              interface. 
+              <LI>Getting <CODE>IDispatch</CODE> for a JavaScript object in an 
+              HTML document. 
+              <LI>Getting <CODE>DISPID</CODE> for a given name of a JavaScript 
+              function. 
+              <LI>Putting parameters to the <CODE>DISPPARAM</CODE> structure. 
+              <LI>Calling a JavaScript function by using the Invoke method of 
+              the <CODE>IDispatch</CODE> interface. </LI></UL>
+            <P>Here is an example of getting a <CODE>IDispatch</CODE> pointer to 
+            the Java Scripts objects:</P><PRE><SPAN class=codeKeyword>bool</SPAN> CWebPage::GetJScript(CComPtr&lt;IDispatch&gt;&amp; spDisp)
+{
+  HRESULT hr = m_spDoc-&gt;get_Script(&amp;spDisp);
+  ATLASSERT(SUCCEEDED(hr));
+  <SPAN class=codeKeyword>return</SPAN> SUCCEEDED(hr);
+}
+</PRE>
+            <P>And here is the final function to call JavaScript:</P><PRE>CComVariant CWebPage::CallJScript(<SPAN class=codeKeyword>const</SPAN> CString strFunc,
+                                  <SPAN class=codeKeyword>const</SPAN> CStringArray&amp;
+                                        paramArray)
+{
+  <SPAN class=codeComment>//Getting IDispatch for Java Script objects</SPAN>
+  CComPtr&lt;IDispatch&gt; spScript;
+  <SPAN class=codeKeyword>if</SPAN>(!GetJScript(spScript))
+  {
+    ShowError("Cannot GetScript");
+    <SPAN class=codeKeyword>return</SPAN> <SPAN class=codeKeyword>false</SPAN>;
+  }
+  <SPAN class=codeComment>//Find dispid for given function in the object</SPAN>
+  CComBSTR bstrMember(strFunc);
+  DISPID dispid = <SPAN class=codeKeyword>NULL</SPAN>;
+  HRESULT hr = spScript-&gt;GetIDsOfNames(IID_NULL,&amp;bstrMember,1,
+                         LOCALE_SYSTEM_DEFAULT,&amp;dispid);
+  <SPAN class=codeKeyword>if</SPAN>(FAILED(hr))
+  {
+    ShowError(GetSystemErrorMessage(hr));
+    <SPAN class=codeKeyword>return</SPAN> <SPAN class=codeKeyword>false</SPAN>;
+  }
+
+  <SPAN class=codeKeyword>const</SPAN> <SPAN class=codeKeyword>int</SPAN> arraySize = paramArray.GetSize();
+  <SPAN class=codeComment>//Putting parameters</SPAN>
+  DISPPARAMS dispparams;
+  memset(&amp;dispparams, 0, <SPAN class=codeKeyword>sizeof</SPAN> dispparams);
+  dispparams.cArgs      = arraySize;
+  dispparams.rgvarg     = <SPAN class=codeKeyword>new</SPAN> VARIANT[dispparams.cArgs];
+  dispparams.cNamedArgs = 0;
+
+  <SPAN class=codeKeyword>for</SPAN>( <SPAN class=codeKeyword>int</SPAN> i = 0; i &lt; arraySize; i++)
+  {
+    CComBSTR&gt; bstr = paramArray.GetAt(arraySize - 1 - i);
+              <SPAN class=codeComment>// back reading</SPAN>
+    bstr.CopyTo(&amp;dispparams.rgvarg[i].bstrVal);
+    dispparams.rgvarg[i].vt = VT_BSTR;
+  }
+  EXCEPINFO excepInfo;
+  memset(&amp;excepInfo, 0, <SPAN class=codeKeyword>sizeof</SPAN> excepInfo);
+  CComVariant vaResult;
+  UINT nArgErr = (UINT)-1;      <SPAN class=codeComment>// initialize to invalid arg</SPAN>
+  <SPAN class=codeComment>//Call JavaScript function</SPAN>
+  hr = spScript-&gt;Invoke(dispid,IID_NULL,0,
+                        DISPATCH_METHOD,&amp;dispparams,
+                        &amp;vaResult,&amp;excepInfo,&amp;nArgErr);
+  <SPAN class=codeKeyword>delete</SPAN> [] dispparams.rgvarg;
+  <SPAN class=codeKeyword>if</SPAN>(FAILED(hr))
+  {
+    ShowError(GetSystemErrorMessage(hr));
+    <SPAN class=codeKeyword>return</SPAN> <SPAN class=codeKeyword>false</SPAN>;
+  }
+  <SPAN class=codeKeyword>return</SPAN> vaResult;
+}
+</PRE>
+            <H3>Notes About the Demo</H3>
+            <P>To call a JavaScript function from the demo, you should select 
+            the function in the tree of the left window. After this, press the ! 
+            button on the menu bar.</P>
+            <H3>Downloads</H3>
+            <P><A 
+            href="http://www.codeguru.com/code/legacy/ieprogram/JSCalls_demo.zip">Download 
+            demo project - 34 Kb</A><BR><A 
+            href="http://www.codeguru.com/code/legacy/ieprogram/JSCalls_src.zip">Download 
+            source - 3 Kb</A></P>
+            <P></SPAN><!--content_stop--><!-- print box ---><LINK 
+            href="CodeGuru_com.files/epfs.css" type=text/css rel=stylesheet>
+            <TABLE cellSpacing=7 cellPadding=0 border=0>
+              <TBODY>
+              <TR>
+                <TD>
+                  <DIV id=tools_inews><B>Tools:</B> <A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/email.php/c4399"><IMG 
+                  height=17 alt="" hspace=2 
+                  src="CodeGuru_com.files/badge_email.gif" width=71 
+                  align=absMiddle vspace=2 border=0></A> <A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/print.php/c4399"><IMG 
+                  height=17 alt="" hspace=2 
+                  src="CodeGuru_com.files/badge_print.gif" width=71 
+                  align=absMiddle vspace=2 border=0></A> <A 
+                  onclick="window.open('http://digg.com/submit?phase=2&amp;url=www.codeguru.com/cpp/i-n/ieprogram/article.php/c4399&amp;title=&amp;bodytext=&amp;topic=','digg','toolbar=no,width=900,height=600,scrollbars=yes'); return false;" 
+                  href="http://digg.com/submit?phase=2&amp;url=www.codeguru.com/cpp/i-n/ieprogram/article.php/c4399&amp;title=&amp;bodytext=&amp;topic="><IMG 
+                  height=17 alt="" hspace=2 
+                  src="CodeGuru_com.files/badge_digg.gif" width=91 
+                  align=absMiddle vspace=2 border=0></A> <A 
+                  onclick="window.open('http://del.icio.us/post?v=4&amp;noui&amp;jump=close&amp;url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title), 'delicious','toolbar=no,width=700,height=400'); return false;" 
+                  href="http://del.icio.us/post"><IMG height=17 alt="" hspace=2 
+                  src="CodeGuru_com.files/badge_delicious.gif" width=91 
+                  align=absMiddle vspace=2 border=0></A> </DIV></TD></TR>
+              <TR>
+                <TD>
+                  <DIV id=tools_inews><!-- search box -->
+                  <SCRIPT type=text/javascript>
+function addFireFox() {
+	if ((typeof window.sidebar == "object") && (typeof window.sidebar.addSearchEngine == "function")) {
+		window.sidebar.addSearchEngine('http://www.codeguru.com/search/ffsearch.src', 'http://www.codeguru.com/search/ffsearch.png', 'CodeGuru', 'CodeGuru');
+	}
+	else {
+		alert(' x ');
+	}
+}
+
+function addIE() {
+	window.external.AddSearchProvider('/search/iesearch.xml');
+}
+</SCRIPT>
+                  <B>Add www.codeguru.com</B> to your favorites<BR><A 
+                  href="http://add.my.yahoo.com/rss?url=http://www.codeguru.com/icom_includes/feeds/codeguru/rss-all.xml"><IMG 
+                  height=17 alt="" hspace=2 
+                  src="CodeGuru_com.files/badge_myyahoo.gif" width=91 vspace=2 
+                  border=0></A> <A 
+                  href="javascript:window.external.AddFavorite('http://www.codeguru.com',%20'www.codeguru.com')"><IMG 
+                  height=17 alt="" hspace=2 
+                  src="CodeGuru_com.files/badge_windowsfav.gif" width=118 
+                  vspace=2 border=0></A> 
+                  <DIV class=dotrule></DIV><B>Add www.codeguru.com</B> to your 
+                  browser search box<BR><A href="javascript:addIE();"><IMG 
+                  alt="" hspace=2 src="CodeGuru_com.files/ie_icon.gif" 
+                  align=absMiddle vspace=2 border=0>IE 7</A> | <A 
+                  href="javascript:addFireFox();"><IMG alt="" hspace=2 
+                  src="CodeGuru_com.files/ff_icon.gif" align=absMiddle vspace=2 
+                  border=0>Firefox 2.0</A> | <A 
+                  href="javascript:addFireFox();"><IMG alt="" hspace=2 
+                  src="CodeGuru_com.files/ff_icon.gif" align=absMiddle vspace=2 
+                  border=0>Firefox 1.5.x</A> <!-- search box -->
+                  <DIV class=dotrule></DIV><B>Receive news</B> via our XML/RSS 
+                  <A 
+                  href="http://www.codeguru.com/icom_includes/feeds/codeguru/rss-all.xml">feed</A> 
+                  <A 
+                  href="http://www.codeguru.com/icom_includes/feeds/codeguru/rss-all.xml"><IMG 
+                  height=14 alt="" hspace=0 
+                  src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\xml(1).gif" 
+                  width=36 align=absMiddle border=0><IMG height=14 alt="" 
+                  hspace=0 src="CodeGuru_com.files/rss.png" width=36 
+                  align=absMiddle border=0></A> </DIV></TD></TR></TBODY></TABLE>
+            <P><!-- end print box --->
+            <P><IMG src="CodeGuru_com.files/jw_devsol.gif"></P>
+            <P><!------ OAS AD 'fl1' begin ------>
+            <SCRIPT language=JavaScript>
+	<!--
+	OAS_AD('fl1');
+	//-->
+	</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!fl1"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(23).gif" 
+            border=0> </A></NOSCRIPT><!------ OAS AD 'fl1' end ------><BR><!------ OAS AD 'fl2' begin ------>
+            <SCRIPT language=JavaScript>
+	<!--
+	OAS_AD('fl2');
+	//-->
+	</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!fl2"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(24).gif" 
+            border=0> </A></NOSCRIPT><!------ OAS AD 'fl2' end ------><BR><!------ OAS AD 'fl3' begin ------>
+            <SCRIPT language=JavaScript>
+	<!--
+	OAS_AD('fl3');
+	//-->
+	</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!fl3"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(25).gif" 
+            border=0> </A></NOSCRIPT><!------ OAS AD 'fl3' end ------><BR><!------ OAS AD 'fl4' begin ------>
+            <SCRIPT language=JavaScript>
+	<!--
+	OAS_AD('fl4');
+	//-->
+	</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!fl4"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(26).gif" 
+            border=0> </A></NOSCRIPT><!------ OAS AD 'fl4' end ------><BR><!------ OAS AD 'fl5' begin ------>
+            <SCRIPT language=JavaScript>
+	<!--
+	OAS_AD('fl5');
+	//-->
+	</SCRIPT>
+            <NOSCRIPT><A 
+            href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!fl5"><IMG 
+            src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(27).gif" 
+            border=0> </A></NOSCRIPT><!------ OAS AD 'fl5' end ------><BR></P>
+            <TABLE cellPadding=3 width="100%" border=0>
+              <TBODY>
+              <TR>
+                <TD vAlign=top align=left><BR><A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/email.php/c4399/"><IMG 
+                  src="CodeGuru_com.files/emailicon.gif" border=0></A> <A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/print.php/c4399/"><IMG 
+                  src="CodeGuru_com.files/printicon.gif" border=0></A> 
+              </TD></TR></TBODY></TABLE></SPAN></TD></TR>
+        <TR>
+          <TD><A name=rating></A>
+            <TABLE cellSpacing=0 cellPadding=4 width="100%" bgColor=#cccccc 
+            border=1>
+              <TBODY>
+              <TR><INPUT type=hidden 
+                value=/cpp/i-n/ieprogram/article.php/c4399 name=url> 
+                <TD class=bodycopy><FONT color=#cc0000><B>RATE THIS 
+                  ARTICLE:</B></FONT>&nbsp;&nbsp; <INPUT type=radio value=5 
+                  name=vote>Excellent&nbsp;&nbsp;<INPUT type=radio value=4 
+                  name=vote>Very Good&nbsp;&nbsp;<INPUT type=radio value=3 
+                  name=vote>Average&nbsp;&nbsp;<INPUT type=radio value=2 
+                  name=vote>Below Average&nbsp;&nbsp;<INPUT type=radio value=1 
+                  name=vote>Poor&nbsp;&nbsp;<INPUT type=image height=23 width=73 
+                  src="CodeGuru_com.files/rate.gif" align=absMiddle border=0> 
+                  <BR><BR><B>(You must be signed in to rank an article. Not a 
+                  member? <A 
+                  href="http://www.codeguru.com/register.php?url=/cpp/i-n/ieprogram/article.php/c4399">Click 
+                  here</A> to register)</B> </TD></TR></FORM></TBODY></TABLE><BR><!--COMMENTS-->
+            <TABLE cellSpacing=0 cellPadding=4 width="100%" bgColor=#cccccc 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD class=bodycopy colSpan=2><FONT class=title>Latest 
+                  Comments: </FONT></TD></TR>
+              <TR>
+                <TD class=bodycopy>• <A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/comments.php/c4399/?thread=3893">More 
+                  explanation</A> - inbugable (10/21/2004)<BR>• <A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/comments.php/c4399/?thread=51976">Why 
+                  doyou need to do back reading the parameter?</A> - Legacy 
+                  CodeGuru (02/04/2004)<BR>• <A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/comments.php/c4399/?thread=51978">how 
+                  to call a java classes (with RMI implementation) from c++ 
+                  code</A> - Legacy CodeGuru (03/31/2003)<BR>• <A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/comments.php/c4399/?thread=51980">how 
+                  to automatically click a link </A>- Legacy CodeGuru 
+                  (02/20/2003)<BR>• <A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/comments.php/c4399/?thread=51982">Caution: 
+                  Memory leak in the CWebPage class</A> - Legacy CodeGuru 
+                  (02/14/2003)<BR><BR><A 
+                  href="http://www.codeguru.com/cpp/i-n/ieprogram/comments.php/c4399/"><B>View 
+                  All Comments</B></A> 
+                  <HR>
+                </TD></TR>
+              <TR>
+                <TD class=bodycopy colSpan=2><FONT class=title>Add a Comment: 
+                  </FONT></TD></TR>
+              <TR>
+                <TD class=bodycopy><INPUT type=hidden value=add name=action> 
+                  <CENTER>
+                  <TABLE class=bodycopy>
+                    <TBODY>
+                    <TR vAlign=top>
+                      <TD class=bodycopy align=right><STRONG>Title: 
+                      </STRONG></TD>
+                      <TD><INPUT maxLength=256 size=60 name=title></TD></TR>
+                    <TR vAlign=top>
+                      <TD class=bodycopy align=right><STRONG>Comment: 
+                      </STRONG></TD>
+                      <TD><TEXTAREA name=subject rows=5 wrap=physical cols=60></TEXTAREA></TD></TR>
+                    <TR vAlign=top>
+                      <TD class=bodycopy align=right><STRONG>Pre-Formatted: 
+                        </STRONG></TD>
+                      <TD><INPUT type=checkbox value=on 
+                        name=preformatted>Check this if you want the text to 
+                        display with the formatting as typed (good for source 
+                        code)</TD></TR></TBODY></TABLE><BR><INPUT type=image height=23 
+                  width=73 src="CodeGuru_com.files/submit.gif" 
+                  value="Add Comment" border=0 name=AddComment> 
+                  </CENTER><BR><BR><B>(You must be signed in to comment on an 
+                  article. Not a member? <A 
+                  href="http://www.codeguru.com/register.php?url=/cpp/i-n/ieprogram/article.php/c4399">Click 
+                  here</A> to register)</B> 
+        </TD></FORM></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+  <TR>
+    <TD bgColor=#666666 colSpan=2><IMG height=2 alt="" 
+      src="CodeGuru_com.files/sp.gif" width=1 border=0></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=10 width="100%" bgColor=#ffffff border=0>
+  <TBODY>
+  <TR>
+    <TD align=middle><!------ OAS AD '468x60-2' begin ------>
+      <SCRIPT language=JavaScript>
+<!--
+OAS_AD('468x60-2');
+//-->
+</SCRIPT>
+      <NOSCRIPT><A 
+      href="http://63.236.18.118/RealMedia/ads/click_nx.ads/intm/webdev/www.codeguru.com/cpp/i-n/ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,cp14,cp2,cp3,cp4,cp5,cp6,cp7,cp8,cp9,fl1,fl2,fl3,fl4,fl5,flex,house_ribbon,marketplace01,marketplace02,marketplace03,marketplace04,marketplace05,marketplace06,sitetext-1!468x60-2"><IMG 
+      src="C:\Documents and Settings\Administrator\桌面\VC6執行JavaScript\參考文獻\CodeGuru_com.files\ieprogram@120x60-1,125x125-1,125x600,125x800,468x60-1,468x60-2,accessunit,accessunit_one,accessunit_three,accessunit_two,ciu,cp1,cp10,cp11,cp12,cp13,(6).jpg" 
+      border=0> </A></NOSCRIPT><!------ OAS AD '468x60-2' end ------></TD></TR>
+  <TR>
+    <TD class=bodycopy align=middle>
+      <CENTER><!-- Google Analytics -->
+      <SCRIPT src="CodeGuru_com.files/ga.js" type=text/javascript>
+</SCRIPT>
+
+      <SCRIPT type=text/javascript>
+<!--     hide from no js browsers
+delete Array.prototype.itemValidation;
+delete Array.prototype.isArray;
+var superTracker = _gat._getTracker("UA-2838492-1");
+superTracker._initData();
+superTracker._trackPageview();
+
+-->
+</SCRIPT>
+
+      <SCRIPT type=text/javascript>
+   var site_name =  location.hostname;
+   if ( site_name.indexOf("www.") != 0 ) {
+     site_name  = "www."+site_name ;
+   }
+   document.write("<SCR" + "IPT LANGUAGE='JavaScript1.2' SRC='/icom_includes/footers/sites/"+ site_name +".js' TYPE='text/javascript'><\/SCR" + "IPT>");
+-->
+</SCRIPT>
+
+      <SCRIPT type=text/javascript>
+<!--     hide from no js browsers
+   pageTracker._initData();
+   pageTracker._trackPageview();
+   // -->
+</SCRIPT>
+<!-- End Google Analytics --><!-- Revenue Science API -->
+      <SCRIPT src="CodeGuru_com.files/gw.js"></SCRIPT>
+
+      <SCRIPT>
+  DM_addEncToLoc("pid","INT");
+  DM_tag();
+</SCRIPT>
+<!-- Revenue Science API --><!-- begin skimlinks -->
+      <SCRIPT src="CodeGuru_com.files/internet.skimlinks.js" 
+      type=text/javascript></SCRIPT>
+
+      <SCRIPT src="CodeGuru_com.files/skimlinks.js" 
+      type=text/javascript></SCRIPT>
+
+      <SCRIPT type=text/javascript> skimlinks(); </SCRIPT>
+<!-- end skimlinks -->
+      <STYLE type=text/css>#jomfooter {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 5px; PADDING-LEFT: 5px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 5px; MARGIN: 5px; PADDING-TOP: 5px; BORDER-RIGHT-WIDTH: 0px
+}
+#jomfooter  {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; FONT-FAMILY: Arial, Helvetica, sans-serif
+}
+#jomfooter IMG {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 5px; PADDING-LEFT: 5px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 5px; BEHAVIOR: url('/icom_includes/footers/css/iepngfix.htc'); PADDING-TOP: 5px; BORDER-RIGHT-WIDTH: 0px
+}
+#jomfooter P {
+	FONT-SIZE: 11px; MARGIN: 10px; LINE-HEIGHT: 20px
+}
+#jomfooter FORM B {
+	FONT-SIZE: 12px
+}
+#jomfooter A {
+	TEXT-DECORATION: underline
+}
+#jomfooter A:hover {
+	TEXT-DECORATION: none
+}
+#jomfooter TABLE TD {
+	BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+#jomfooter #solsect {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 10px; MARGIN: 0px auto; WIDTH: 720px; PADDING-TOP: 10px
+}
+#jomfooter #solsect .top {
+	BACKGROUND: url(/icom_includes/footers/soltopbg.gif) #bbb repeat-x; MARGIN-BOTTOM: 1px; HEIGHT: 26px
+}
+#jomfooter #solsect .top A {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FONT-WEIGHT: bold; FONT-SIZE: 16px; PADDING-BOTTOM: 0px; MARGIN-LEFT: 5px; COLOR: #333; LINE-HEIGHT: 25px; PADDING-TOP: 0px; TEXT-DECORATION: none
+}
+#jomfooter #solsect .top A:hover {
+	TEXT-DECORATION: none
+}
+#jomfooter #solsect .solsectpad {
+	BACKGROUND: #fff
+}
+#jomfooter #solsect .solsectpad .main {
+	PADDING-RIGHT: 5px; PADDING-LEFT: 5px; BACKGROUND: url(/icom_includes/footers/solmidbg.gif) #e7e8e3 repeat-x; MARGIN-BOTTOM: 1px; PADDING-BOTTOM: 5px; PADDING-TOP: 5px
+}
+#jomfooter #solsect .solsectpad .main H2 {
+	FONT-WEIGHT: normal; FONT-SIZE: 12px; PADDING-BOTTOM: 3px; COLOR: #000
+}
+#jomfooter #solsect A {
+	FONT-SIZE: 10px; COLOR: #333; LINE-HEIGHT: 13px; TEXT-DECORATION: none
+}
+#jomfooter #solsect A:hover {
+	TEXT-DECORATION: underline
+}
+</STYLE>
+<!-- Begin JOM Footer -->
+      <DIV id=jomfooter align=center><IMG height=19 hspace=0 
+      src="CodeGuru_com.files/wmb_footer.png" width=174> 
+      <P align=center><A href="http://www.internet.com/" target=_blank><IMG 
+      height=15 alt=internet.com hspace=0 
+      src="CodeGuru_com.files/intm_footer.png" width=97 align=absMiddle 
+      border=0></A><IMG height=25 alt="" hspace=10 
+      src="CodeGuru_com.files/ruledivide_foot.gif" width=1 align=absMiddle 
+      border=0><A href="http://www.mediabistro.com/" target=_blank><IMG 
+      height=44 alt=mediabistro.com hspace=5 
+      src="CodeGuru_com.files/mb_footer.png" width=102 align=absMiddle 
+      border=0></A><IMG height=25 alt="" hspace=10 
+      src="CodeGuru_com.files/ruledivide_foot.gif" width=1 align=absMiddle 
+      border=0><A href="http://www.justtechjobs.com/" target=_blank><IMG 
+      height=13 alt=Justtechjobs.com hspace=0 
+      src="CodeGuru_com.files/jtj_footer.png" width=99 align=absMiddle 
+      border=0></A><IMG height=25 alt="" hspace=10 
+      src="CodeGuru_com.files/ruledivide_foot.gif" width=1 align=absMiddle 
+      border=0><A href="http://www.graphics.com/" target=_blank><IMG height=18 
+      alt=Graphics.com hspace=0 src="CodeGuru_com.files/gdc_footer.png" 
+      width=108 align=absMiddle border=0></A> </P>
+      <FORM action=http://search.internet.com/www.jupiterweb.com method=post 
+      target=_top><INPUT type=hidden value=1 name=IC_Summary> <INPUT type=hidden 
+      value=0 name=IC_StartNumber> <INPUT type=hidden value=10 
+      name=IC_BatchSize> <INPUT type=hidden value=50 name=IC_RelevanceThreshold> 
+      <INPUT type=hidden value=all name=IC_QueryDatabase> <B>Search:</B> <INPUT 
+      size=45 name=IC_QueryText> <INPUT type=image height=20 width=41 
+      src="CodeGuru_com.files/but_find.gif" align=absMiddle value=Find border=0 
+      name=SUBMIT> </FORM>
+      <P><A href="http://www.webmediabrands.com/" target=_blank 
+      rel=nofollow>WebMediaBrands Corporate Info</A> <BR>
+      <SCRIPT type=text/javascript>
+            document.write(' Copyright ');
+            var today = new Date();
+            document.write(  + today.getFullYear());
+            document.write(' WebMediaBrands Inc. All Rights Reserved.');
+        </SCRIPT>
+      <NOSCRIPT>Copyright 2009 WebMediaBrands Inc. All Rights 
+      Reserved.</NOSCRIPT> </P>
+      <P><A href="http://www.webmediabrands.com/corporate/legal.html" 
+      target=_blank rel=nofollow>Legal Notices</A>, <A 
+      href="http://www.webmediabrands.com/corporate/reprints.html#Licensing1" 
+      target=_blank rel=nofollow>Licensing</A>, <A 
+      href="http://www.webmediabrands.com/corporate/reprints.html#Reprints1" 
+      target=_blank rel=nofollow>Reprints</A>, <A 
+      href="http://www.webmediabrands.com/corporate/reprints.html#Permissions" 
+      target=_blank rel=nofollow>Permissions</A>, <A 
+      href="http://www.webmediabrands.com/corporate/privacy/privacypolicy.html" 
+      target=_blank rel=nofollow>Privacy Policy</A>. <BR><A 
+      href="http://www.internet.com/mediakit/" target=_blank 
+      rel=nofollow>Advertise</A> | <A href="http://e-newsletters.internet.com/" 
+      target=_blank rel=nofollow>Newsletters</A> | <A 
+      href="http://www.internetshopper.com/" target=_blank>Shopping</A> | <A 
+      href="http://e-newsletters.internet.com/announcement_list.html" 
+      target=_blank rel=nofollow>E-mail Offers</A> | <A 
+      href="http://freelancer.internet.com/">Freelance Jobs</A> <IMG 
+      src="CodeGuru_com.files/icon_new.jpg" align=top border=0> </P><!-- start solutions links section -->
+      <DIV id=solsect>
+      <DIV class=top align=left><A 
+      href="http://www.codeguru.com/cpp/i-n/ieprogram/article.php/c4399#">Solutions</A></DIV>
+      <DIV class=solsectpad>
+      <DIV class=main align=left>
+      <H2>Whitepapers and eBooks</H2>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top align=left width="50%"><A 
+            href="http://www.devx.com/ebook/Article/38087" 
+            target=_blank>Internet.com eBook: Becoming a Better Project Manager 
+            </A><BR><A href="http://www.devx.com/MS_Partner/Door/35665" 
+            target=_blank>Microsoft Partner Portal: What Azure Means for 
+            Microsoft Partners</A><BR><A 
+            href="http://www.devx.com/ebook/Article/40784" 
+            target=_blank>Internet.com eBook: Web Development Frameworks for 
+            Java</A><BR></TD>
+          <TD width=10></TD>
+          <TD vAlign=top align=left width="50%"><A 
+            href="http://www.devx.com/ebook/Article/40319" 
+            target=_blank>Internet.com eBook: Developing a Content Management 
+            System Strategy</A><BR><A 
+            href="http://www.devx.com/HotList/HotList-RIM/Article/42283" 
+            target=_blank>Article: New BlackBerry Enterprise Server Eases 
+            Administration for IT Pros</A><BR><A 
+            href="http://www.devx.com/solutions" target=_blank>MORE WHITEPAPERS, 
+            EBOOKS, AND ARTICLES</A><BR></TD></TR></TBODY></TABLE></DIV>
+      <DIV class=main align=left>
+      <H2>Webcasts</H2>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top align=left width="50%"><A 
+            href="http://solutions.internet.com/6036_closerLook" 
+            target=_blank>Ipswitch Video: A Closer Look--WS_FTP 
+Server</A><BR></TD>
+          <TD width=10></TD>
+          <TD vAlign=top align=left width="50%"><A 
+            href="http://www.devx.com/solutions" target=_blank>MORE WEBCASTS, 
+            PODCASTS, AND VIDEOS</A><BR></TD></TR></TBODY></TABLE></DIV>
+      <DIV class=main align=left>
+      <H2>Downloads and eKits</H2>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top align=left width="50%"><A 
+            href="http://www.devx.com/Amyuni/Door/39454" target=_blank>Amyuni: 
+            PDF &amp; PDF/A Engine for .NET and ActiveX Apps</A><BR><A 
+            href="http://www.devx.com/RedGateVS/Link/41666" target=_blank>Red 
+            Gate Free Trial: SQL Toolbelt</A><BR></TD>
+          <TD width=10></TD>
+          <TD vAlign=top align=left width="50%"><A 
+            href="http://www.devx.com/IronSpeedVS/Door/17479" target=_blank>Iron 
+            Speed Designer Application Generator</A><BR><A 
+            href="http://www.devx.com/solutions" target=_blank>MORE DOWNLOADS, 
+            EKITS, AND FREE TRIALS</A><BR></TD></TR></TBODY></TABLE></DIV>
+      <DIV class=main align=left>
+      <H2>Tutorials and Demos</H2>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top align=left width="50%"><A 
+            href="http://www.devx.com/HotList/Link/40644" 
+            target=_blank>Internet.com Hot List: Get the Inside Scoop on the 
+            Hottest IT and Developer Products</A><BR></TD>
+          <TD width=10></TD>
+          <TD vAlign=top align=left width="50%"><A 
+            href="http://www.devx.com/solutions" target=_blank>MORE TUTORIALS, 
+            DEMOS AND STEP-BY-STEP 
+      GUIDES</A><BR></TD></TR></TBODY></TABLE></DIV></DIV></DIV></DIV><!-- End JOM Footer --></CENTER></TD></TR></TBODY></TABLE></P></BODY></HTML>

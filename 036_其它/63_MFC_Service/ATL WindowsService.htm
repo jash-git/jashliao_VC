@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.vckbase.com/document/viewdoc/?id=1176 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 用 ATL 编写 Windows 服务</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content=atl,service,服务 name=keywords>
+<META content=atl,service,服务 name=description><LINK 
+href="ATL WindowsService.files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.5659" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD width="14%" height=78>&nbsp;<IMG height=13 
+      src="ATL WindowsService.files/vckcom.gif" width=109></TD>
+    <TD align=left width="76%"></TD>
+    <TD vAlign=bottom align=right height=78><IMG height=27 
+      src="ATL WindowsService.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD colSpan=2><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=1703"><SPAN 
+      class=small><FONT color=black>ATL</FONT></SPAN></A></TD>
+    <TD class=small align=right width="10%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=33"><SPAN 
+      class=small><FONT color=black>在线杂志 第33期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR><A href="http://www.uipower.com/" target=_blank><IMG 
+height=125 src="ATL WindowsService.files/skin2.jpg" width=830 border=0></A> <!--br>
+ <script type="text/javascript">
+google_ad_client = "pub-4159669282587342";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "image";
+google_ad_channel = "";
+</script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script--></DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background="ATL WindowsService.files/dotline2.gif" 
+  height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合中级读者 
+            已阅读16024次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="ATL WindowsService.files/go.gif" align=absMiddle border=0 
+            name=imageField> </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><B>用 ATL 编写 Windows 服务<BR></B><BR>作者：<A 
+            href="mailto:alon21@tom.com">Alon</A></P>
+            <P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2400">下载源代码</A><BR><BR>　　有时候，我们需要自己写的程序在没有用户登陆的情况下，只要Windows系统启动就运行，那我们可以把我们的程序写成一个Windows服务。<BR>　　服务是能够为各种用户（包括本地用户和远程用户）所用的，拥有用户授权级进行管理的能力，并且不论用户是否物理的与正在运行该应用程序的计算机相连都能正常执行。<BR>下面，我将用一个简单的例子说明如何用ATL来编写Windows服务程序。<BR>首先，我们新建一个Project。如图一所示，选择 
+            "ATL COM AppWizard",工程名为：ServiceDemo。<BR><BR><IMG height=314 
+            src="ATL WindowsService.files/atlsrvimg1.jpg" width=483 
+            border=0><BR>图一<BR><BR>点击 "OK ", 出现图二，选择Service [EXE]。点击 
+            Finish。<BR><BR><IMG height=313 
+            src="ATL WindowsService.files/atlsrvimg2.jpg" width=460 
+            border=0><BR>图二<BR><BR>　　完成以上的步骤，一个"什么也不做"的服务就完成了！编译… 
+            打开"控制面板"-&gt;"管理工具"<BR>-&gt;"服务"，嗯？我们写的服务怎么没有在服务管理器(service control 
+            manager 
+            ，简称(SCM))里面列出来呢？呵呵，被我骗了？不要着急，我们还需要做一些工作。<BR><BR>首先先大概介绍一下向导为我们生成的代码：<BR><BR>　　程序的进入点是全局函数_tWinMain, 
+            仔细看一下这个函数,我们会发现当我们运行程序时,可以加上参数,例如: ServiceDemo /RegServer 或者 
+            ServiceDemo -RegServer，这个是用来本地服务器注册（Register as Local S Register as 
+            Service erver）； ServiceDemo / Service 或者 ServiceDemo 
+            -Service，这个是服务的注册（Register as Service）；ServiceDemo /UnRegServer 或者 
+            ServiceDemo -UnRegServer ，这个是服务的删除。所以，当我们写好了服务程序，只要运行的时候加上参数 Service 
+            ,这个时候在SCM中就会看到我们的服务了。可以试一下在SCM中对这个什么也不做的服务"启动"，"停止"，改变一下它的启动方式。<BR>　　每次编码后测试都要在命令行中加参数运行服务才可以在SCM中列出来是不是很麻烦呢？我再介绍一个偷懒的方法，选择VC 
+            IDE的菜单Project -&gt; Setting, 再选择Custom Build　面板，如图三：<BR><BR><IMG 
+            height=313 src="ATL WindowsService.files/atlsrvimg3.jpg" width=476 
+            border=0><BR>图三<BR><BR>在"$(TargetPath)" 
+            /RegServer的下面加上："$(TargetPath)" 
+            /Service，这样当我们每次编码后编译程序，就不用再在命令行中去加参数执行我们的服务程序完成服务的注册了。<BR>继续介绍向导生成的代码：向导为我们建立了一个类：CServiceModule，全局变量_Module就是这个类的实例。<BR>Init()：这个函数用于完成一些初始化工作；<BR>Run()：这个函数就是服务开始运行后的内容，我们接下来要修改的内容也就是从这里入手。<BR>Install()：<BR>看一下Install()的这一部分： 
+            </P><PRE>SC_HANDLE hService = ::CreateService(hSCM, 
+				 m_szServiceName, 
+				 m_szServiceName,SERVICE_ALL_ACCESS, 
+				 SERVICE_WIN32_OWN_PROCESS,
+				 SERVICE_DEMAND_START, 
+				 SERVICE_ERROR_NORMAL,
+				 szFilePath, 
+				 NULL, 
+				 NULL, 
+				 _T("RPCSS\0"), 
+				 NULL, 
+				 NULL);      </PRE>函数的原型如下： <PRE>SC_HANDLE CreateService(
+	SC_HANDLE hSCManager,       // handle to SCM database 
+	LPCTSTR lpServiceName,      // name of service to start
+	LPCTSTR lpDisplayName,      // display name
+	DWORD dwDesiredAccess,      // type of access to service
+	DWORD dwServiceType,        // type of service
+	DWORD dwStartType,          // when to start service
+	DWORD dwErrorControl,       // severity of service failure
+	LPCTSTR lpBinaryPathName,   // name of binary file
+	LPCTSTR lpLoadOrderGroup,   // name of load ordering group
+	LPDWORD lpdwTagId,          // tag identifier
+	LPCTSTR lpDependencies,     // array of dependency names
+	LPCTSTR lpServiceStartName, // account name 
+	LPCTSTR lpPassword          // account password
+);
+</PRE>具体的细节可以查一下MSDN，我只说一下第六个和第十一个参数。第六个参数是服务的启动类型。<BR>SERVICE_DEMAND_START是手动启动，SERVICE_AUTO_START是自动启动。第十一个参数是服务的依存关系，比如说服务的启动想要依存SQL 
+            Server的启动，那我们可以把这个参数写成：<PRE>_T("MSSQLSERVER\0")；</PRE>
+            <P>如果我们写的服务不依存于其他的任何服务，那我们就将此参数设置为NULL就可以了。<BR><BR>　　接下来，我们为上面的"什么也不做"的服务添加一个简单的功能：做数字的累加，并且把结果写到系统的"应用程序日志"中去。<BR>　　首先，我们在类CServiceModule中添加一个成员变量：int 
+            n; 在Init()中对n进行初始化：<BR>n = 0;<BR>然后在类CServiceModule中添加一个成员函数Adder(): 
+            </P><PRE>void CServiceModule::Adder()
+{
+	n ++;
+	CString str;
+	str.Format("%i",n);
+	LogEvent(str);
+}
+</PRE>编译…出错了。？？，提示 CString 没有定义，难道在ATL中无法用 MFC 
+            吗？让我们看看设置：菜单Project-&gt;Setting ，General面板，默认的设置是：Use MFC in a 
+            Static Library。那为什么不可以用MFC中的类呢？原来是头文件没有包含，这个不知道算不算 VC 的一个 Bug : 
+            ,设置中默认是用MFC，可是却没有包含相应的头文件。那我们就自己加上好了。在StdAfx.h中加上：#include 
+            <AFXWIN.H>，注意要加到#include 
+            <ATLBASE.H>的前面，要不然又要编译出错了。接下来，我们在程序中再添加一个Timer,让这个Timer每两秒钟调用一次Adder,做一次累加。在： 
+<PRE>MSG msg;
+while (GetMessage(&amp;msg, 0, 0, 0))
+	DispatchMessage(&amp;msg);
+</PRE>的前面加上代码：<PRE>SetTimer(NULL,1,2000,(TIMERPROC)OnTimerProc); </PRE>
+            <P>　　注意一定要加在前面，因为要是加到while循环的下面，就没有机会执行了。再添加一个全局的回调函数OnTimerProc 如下： 
+            </P><PRE>VOID CALLBACK OnTimerProc(HWND hwnd,UINT uMsg,UINT_PTR idEvent,DWORD dwTime)
+{
+	_Module.Adder();
+}
+</PRE>　　好了，大功告成。编译，然后在SCM中启动我们的服务。在控制面板中打开"事件查看器"，看一下运行的结果,如下图四：<BR><BR><IMG 
+            height=454 src="ATL WindowsService.files/atlsrvimg4.jpg" width=491 
+            border=0><BR>图四<BR><BR>好了，就写到这里吧，其他的内容大家自己深究吧。祝各位编程愉快！ <BR>
+            <P></P>
+            <P></P>
+            <P></P></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="ATL WindowsService.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="ATL WindowsService.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1176" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 
+      src="ATL WindowsService.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1176" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 
+      src="ATL WindowsService.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=1176&amp;title=%d3%c3+ATL+%b1%e0%d0%b4+Windows+%b7%fe%ce%f1" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 
+      src="ATL WindowsService.files/rec1.gif" width=9> <A 
+      href="javascript:window.print();"><SPAN 
+  class=small>打印</SPAN></A></TD></TR></TBODY></TABLE>
+<TABLE class=small cellSpacing=1 cellPadding=0 width="98%" bgColor=#ffffff 
+border=0>
+  <TBODY>
+  <TR>
+    <TD bgColor=#ffffff><BR><IMG height=11 
+      src="ATL WindowsService.files/doc2.gif" width=11 align=absMiddle> 
+      我看过原程序，好像调用分派服务的API函数失败也会执行run函数，这样会不会导致服务失控呢？？？ ( hqw123456 发表于 2007-2-6 
+      15:57:00)<BR>&nbsp;<BR><IMG height=11 
+      src="ATL WindowsService.files/doc2.gif" width=11 align=absMiddle> 
+      请问，如何向服务程序发消息呢？？？ ( sinall 发表于 2004-12-17 20:29:00)<BR>&nbsp;<BR><IMG 
+      height=11 src="ATL WindowsService.files/doc2.gif" width=11 
+      align=absMiddle> 不错！&nbsp;谢谢！ ( tw2050 发表于 2004-11-5 
+      17:48:00)<BR>&nbsp;<BR><IMG height=11 
+      src="ATL WindowsService.files/doc2.gif" width=11 align=absMiddle> 
+      在此代表我本人，感谢作者：：：） ( ss 发表于 2004-10-23 19:25:00)<BR>&nbsp;<BR><IMG height=11 
+      src="ATL WindowsService.files/doc2.gif" width=11 align=absMiddle> 
+      很有帮助，谢谢&nbsp;尤其是ATL中不支持MFC&nbsp;这点的解决方法很简单巧妙，但很多人都想不到。。 ( Pregunta 发表于 
+      2004-10-20 14:26:00)<BR>&nbsp;<BR><IMG height=11 
+      src="ATL WindowsService.files/doc2.gif" width=11 align=absMiddle> 很不错，谢谢! 
+      ( appleii 发表于 2004-9-14 
+      20:45:00)<BR>&nbsp;<BR>.......................................................<BR><A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1176" 
+      target=_blank><SPAN class=small>More...</SPAN></A> 
+</TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 1999 - 2008 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>
