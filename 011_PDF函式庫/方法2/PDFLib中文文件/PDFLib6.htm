@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.vckbase.com/document/viewdoc/?id=1537 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 浅谈PDFlib中文输出（五）人工生成粗体及斜体字形</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content=pdflib,粗体,斜体,字形 name=keywords>
+<META content=pdflib,粗体,斜体,字形 name=description><LINK 
+href="PDFLib6.files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 src="PDFLib6.files/vckcom.gif" 
+      width=109></TD>
+    <TD vAlign=bottom align=right height=30><IMG height=27 
+      src="PDFLib6.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=111"><SPAN 
+      class=small><FONT color=black>Samples</FONT></SPAN></A></TD>
+    <TD class=small align=right width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=44"><SPAN 
+      class=small><FONT color=black>在线杂志 第44期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR>
+<TABLE height=108 cellSpacing=1 cellPadding=0 width="90%" bgColor=#999999 
+border=0>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE height=100 cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD class=small width=705 bgColor=#f9f9f9 height=106><FONT 
+            color=#0000ff>本站特别推荐：</FONT><BR><A href="http://www.uipower.com/" 
+            target=_blank>Skin++ 通用的界面换肤控件（Skin++ 
+            2.0于2005年11月1日发布，网站全面更新！）产品</A><BR><BR>特性：<BR>支持多种开发语言（VC++ 
+            ，VB，C#，PowerBuilder，C++Builder，Delphi，E语言等）<BR>界面和业务逻辑彻底分离，节约开发和维护时间，支持各Windows平台，包括Windows98/NT4/2000/XP/2003<BR>彻底换肤,包括标准控件，通用对话框等，支持对第三方控件的换肤，提供方便的设计工具，可自行设计皮肤。[<A 
+            href="http://www.uipower.com/" target=_blank>详情请点这里</A>]</TD>
+          <TD align=middle width=183 bgColor=#99cccc><A 
+            href="http://www.uipower.com/zp.asp" 
+            target=_blank><U>公司诚聘VC界面软件工程师</U></A></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background=PDFLib6.files/dotline2.gif height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合初级读者 
+            已阅读1209次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="PDFLib6.files/go.gif" align=absMiddle border=0 name=imageField> 
+          </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><STRONG>浅谈PDFlib中文输出（五）</STRONG><BR>-- 
+            人工生成粗体及斜体字形<BR><BR>作者：Michelle Yi</P>
+            <P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2774">下载源代码</A></P>
+            <P>一般来说, 每种基本字体, 都会有在其基础上变化字形的附加字体。比如，字体Arial, 就有其附加字体Arial Bold 
+            （粗体）, Arial Italic（斜体）, 及Arial Bold 
+            Italic（粗斜体）。一般你都可以找到或购买到相应的附加字体。<BR>但有时为了应急，或对字体字形没有非常严格的要求。在这样的情况下，我们可以采用人工字形生成（Artificial 
+            font styles）。Artificial font 
+            styles是Acrobat的一个功能，它根据基本字形而模拟生成粗体，斜体及粗斜体。PDFlib支持这一功能，并遵守Acrobat对此功能的限制。目前此功能之局限于：<BR>1． 
+            Acrobat标准字体, 
+            就简体中文来说也就是PDFlib自带的STSong-Light，AdobeSongStd-Light-Acro，及STSongStd-Light-Acro三种简体中文字体。<BR>2． 
+            PDFlib可以访问的.otf OpenType字体，并使用表1.1的编码(见<A 
+            href="http://www.vckbase.com/document/viewdoc/?id=1527" 
+            target=_blank>《浅谈PDFlib中文输出(一)》</A>), 且“embedding”参数设为假。</P>
+            <P>下面是一个相关的例子--C 源程序(附上生成的pdf文件 –PDFlib_cs5.pdf)。<BR></P><PRE>/*******************************************************************/
+/* This example demostrates the usage of Artificial font styles 
+/* under Chinese Simplifed Windows.
+/*******************************************************************/
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include "pdflib.h"
+
+int main(void)
+{
+    PDF             	*p = NULL;
+    int                	Font_H = 0, Font_CS = 0, Left = 50, y = 700;
+    const int       	INCRY = 25;
+    const char     TextUnicode[] = "\x80\x7B\x53\x4F\x2D\x4E\x87\x65";
+    const int        TEXTLEN = 8;
+
+    /* create a new PDFlib object */
+    if ((p = PDF_new()) == (PDF *) 0)
+    {
+        printf("Couldn''t create PDFlib object (out of memory)!\n");
+        return(2);
+    }
+
+    PDF_TRY(p) {
+	if (PDF_begin_document(p, "pdflib_cs5.pdf", 0, "") == -1) 
+            {
+	    printf("Error: %s\n", PDF_get_errmsg(p));
+	    return(2);
+  	}
+
+       PDF_set_info(p, "Creator", "pdflib_cs5.c");
+       PDF_set_info(p, "Author", "myi@pdflib.com");
+       PDF_set_info(p, "Title", "Usage of Artificial font styles");
+
+        /* Start a new page. */
+        PDF_begin_page_ext(p, a4_width, a4_height, "");
+        Font_H = PDF_load_font(p, "Helvetica-Bold", 0, "winansi", "");
+        PDF_setfont(p, Font_H, 24);
+        PDF_show_xy(p, "Artificial Font Styles", Left + 100,  y);
+
+        /* Normal */
+        y -= 2 * INCRY;
+        PDF_setfont(p, Font_H, 14);
+        PDF_show_xy(p, "Normal", Left,  y);
+        y -= INCRY;
+        Font_CS = PDF_load_font(p, "STSong-Light", 0, "UniGB-UCS2-H", "");
+        PDF_setfont(p, Font_CS, 14);
+        PDF_show_xy2(p, TextUnicode, TEXTLEN, Left,  y);
+
+        /* Italic */
+        y -= 2 * INCRY;
+        PDF_setfont(p, Font_H, 14);
+        PDF_show_xy(p, "Italic", Left,  y);
+        y -= INCRY;
+        Font_CS = PDF_load_font(p, "STSong-Light", 0, "UniGB-UCS2-H", "fontstyle italic");
+        PDF_setfont(p, Font_CS, 14);
+        PDF_show_xy2(p, TextUnicode, TEXTLEN, Left,  y);
+
+        /* Bold */
+        y -= 2 * INCRY;
+        PDF_setfont(p, Font_H, 14);
+        PDF_show_xy(p, "Bold", Left,  y);
+        y -= INCRY;
+        Font_CS = PDF_load_font(p, "STSong-Light", 0, "UniGB-UCS2-H", "fontstyle bold");
+        PDF_setfont(p, Font_CS, 14);
+        PDF_show_xy2(p, TextUnicode, TEXTLEN, Left,  y);
+
+        /* Bold-italic */
+        y -= 2 * INCRY;
+        PDF_setfont(p, Font_H, 14);
+        PDF_show_xy(p, "Bold-italic", Left,  y);
+        y -= INCRY;
+        Font_CS = PDF_load_font(p, "STSong-Light", 0, "UniGB-UCS2-H", 
+		"fontstyle bolditalic");
+        PDF_setfont(p, Font_CS, 14);
+        PDF_show_xy2(p, TextUnicode, TEXTLEN, Left,  y);
+
+        /* End of page. */
+	PDF_end_page_ext(p, "");
+        PDF_end_document(p, "");
+    }
+
+    PDF_CATCH(p) {
+        printf("PDFlib exception occurred in pdflib_cs5 sample:\n");
+        	        printf("[%d] %s: %s\n",  PDF_get_errnum(p),  PDF_get_apiname(p),  
+		PDF_get_errmsg(p));
+        PDF_delete(p);
+        return(2);
+    }
+
+    PDF_delete(p);
+    return 0;
+}
+</PRE><STRONG><BR>相关链接:</STRONG><BR><BR>PDFLIB官方网站: <A 
+            href="http://www.pdflib.com/" 
+            target=_blank>http://www.pdflib.com/</A><BR>PDFLIB官方下载专页:<A 
+            href="http://www.pdflib.com/products/pdflib/download/index.html" 
+            target=_blank>http://www.pdflib.com/products/pdflib/download/index.html</A><BR>VC知识库PDFLIB下载:<A 
+            href="http://www.vckbase.com/tools" 
+            target=_blank>http://www.vckbase.com/tools</A><BR><BR>(全文完) 
+        </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="PDFLib6.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="PDFLib6.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1537" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 src="" width=9> 
+      <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1537" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 src="" 
+      width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=1537&amp;title=%c7%b3%cc%b8PDFlib%d6%d0%ce%c4%ca%e4%b3%f6%a3%a8%ce%e5%a3%a9%c8%cb%b9%a4%c9%fa%b3%c9%b4%d6%cc%e5%bc%b0%d0%b1%cc%e5%d7%d6%d0%ce" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 src="" 
+      width=9> <A href="javascript:window.print();"><SPAN 
+      class=small>打印</SPAN></A></TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2006 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

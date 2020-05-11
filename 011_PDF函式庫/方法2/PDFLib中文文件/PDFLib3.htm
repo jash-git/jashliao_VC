@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.vckbase.com/document/viewdoc/?id=1531 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 浅谈PDFlib中文输出（二）如何在PDFlib中使用其他简体中文字体</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content="pdflib,PDF_load_font,utf-8,bom utf,unicode" name=keywords>
+<META content="pdflib,PDF_load_font,utf-8,bom utf,unicode" 
+name=description><LINK href="PDFLib3.files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 src="PDFLib3.files/vckcom.gif" 
+      width=109></TD>
+    <TD vAlign=bottom align=right height=30><IMG height=27 
+      src="PDFLib3.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=111"><SPAN 
+      class=small><FONT color=black>Samples</FONT></SPAN></A></TD>
+    <TD class=small align=right width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=44"><SPAN 
+      class=small><FONT color=black>在线杂志 第44期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR>
+<TABLE height=108 cellSpacing=1 cellPadding=0 width="90%" bgColor=#999999 
+border=0>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE height=100 cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD class=small width=705 bgColor=#f9f9f9 height=106><FONT 
+            color=#0000ff>本站特别推荐：</FONT><BR><A href="http://www.uipower.com/" 
+            target=_blank>Skin++ 通用的界面换肤控件（Skin++ 
+            2.0于2005年11月1日发布，网站全面更新！）产品</A><BR><BR>特性：<BR>支持多种开发语言（VC++ 
+            ，VB，C#，PowerBuilder，C++Builder，Delphi，E语言等）<BR>界面和业务逻辑彻底分离，节约开发和维护时间，支持各Windows平台，包括Windows98/NT4/2000/XP/2003<BR>彻底换肤,包括标准控件，通用对话框等，支持对第三方控件的换肤，提供方便的设计工具，可自行设计皮肤。[<A 
+            href="http://www.uipower.com/" target=_blank>详情请点这里</A>]</TD>
+          <TD align=middle width=183 bgColor=#99cccc><A 
+            href="http://www.uipower.com/zp.asp" 
+            target=_blank><U>公司诚聘VC界面软件工程师</U></A></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background=PDFLib3.files/dotline2.gif height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合初级读者 
+            已阅读1517次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="PDFLib3.files/go.gif" align=absMiddle border=0 name=imageField> 
+          </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><STRONG>浅谈PDFlib中文输出（二）</STRONG><BR>-- 
+            如何在PDFlib中使用其他简体中文字体<BR><BR>作者: Michelle Yi </P>
+            <P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2761">下载源代码</A><BR><BR>除了PDFlib自带字体外，用户还可以使用安装在系统上的字体及其他用户字体。<BR><BR>PDFlib称安装在Windows和Mac操作系统中的（存在于或被拷入相应系统字体目录的）TrueType, 
+            OpenType 和PostScript字体为宿主字体（Host 
+            Font）。PDFlib可直接引用字体名进行调用,但必须与文件名完全相同(严格区分大小写)。例如，调用安装在Windows系统中的字体：C:\WINDOWS\Fonts\SimHei.ttf</P><PRE> int Font_CS = 0;
+Font_CS = PDF_load_font(p, "SimHei", 0, "unicode", "");
+</PRE>需要注意的是，字体名可能与字体文件名不同，甚至相同的字体在不同语言的操作系统下字体名称会有所不同。在 Windows 
+            环境下查看字体名，可双击该字体文件，窗口打开后的第一行字除结尾的 TrueType, OpenType 外为字体名。例如，调用安装在 
+            Windows 系统中的字体： C:\WINDOWS\Fonts\SimHei.ttf ，双击该文件后，窗口的第一行为“黑体 
+            TrueType” 。则该文件的字体名为“黑体”。在 PDFlib 中若要调用多字节的文件名，须以 BOM+ UTF8 的形式。 
+            “黑体”的 BOM+ UTF8 的形式为“ \xEF\xBB\xBF\xE9\xBB\x91\xE4\xBD\x93 
+            ”。<BR>因此对于中文黑体, 在中文WINDOWS下,则我们使用<BR><PRE>PDF_load_font(p, "\xEF\xBB\xBF\xE9\xBB\x91\xE4\xBD\x93", 0, "unicode", "");</PRE>在英文WINDOWS下则应使用<BR><PRE>PDF_load_font(p, "SimHei", 0, "unicode", "");</PRE>(小技巧: 
+            我们可以使用Windows2000/XP自带的notepad获得UTF8编码,具体方法举例:在notepad中输入"黑体"并保存, 
+            保存时在编码下拉框中选择UTF-8, 
+            然后用UltraEdit,WinHex,VC等可以进行二进制编辑的工具打开该文件即可取得带BOM的UTF8字符串)<BR><BR>除安装在Windows系统中的字体之外，PDFlib还可以调用其他用户字体。但在调用之时，需要给出路径名。如我想用C:\Program 
+            Files\Adobe\Acrobat 7.0\Resource\CIDFont\AdobeSongStd-Light.otf 
+            这个字体： <PRE>Font_CS= PDF_load_font(p,
+"C:\\Program Files\\Adobe\\Acrobat 7.0\\Resource\\CIDFont\\ AdobeSongStd-Light",
+0, "unicode", "");</PRE>但这里有个例外，那就是.ttc(TrueType 
+            Collection)字体。.ttc是集合字体文件，每个文件中含有多种字体。所以用户不能用文件名调用字体，而是要用真正的字体名。比方说，我们知道C:\WINDOWS\Fonts\MSGOTHIC.TTC 
+            包含三种字体依次名为MS Gothic，MS PGothic，和MS UI Gothic。我们可以用以它们相应的字体名调用： <PRE> int Font_E = 0;
+Font_E= PDF_load_font(p, "MS Gothic", 0, "winansi", ""); /* Use MS Gothic */
+PDF_setfont(p, Font_E, 20);
+PDF_show_xy(p, "MS Gothic font:" , 50,  800)；
+Font_E= PDF_load_font(p, "MS PGothic", 0, "winansi", ""); /* Use MS PGothic */
+……
+Font_E= PDF_load_font(p, "MS UI Gothic", 0, "winansi", ""); /* Use MS UI Gothic */
+</PRE>可是我们经常并不清楚.ttc里包含哪些字体。在这种情况PDFlib提供了另一种调用方式—索引（Index）。用此方式，首先须给字体文件名一个别名，然后在别名后加冒号再加数字（0表示文件中第一种字体，1 
+            表示第二种，依次类推。） <PRE>int Font_E = 0;
+/*  Give “C:\WINDOWS\Fonts\MSGOTHIC.TTC an alias “gothic” */
+ PDF_set_parameter(p, "FontOutline", "gothic=C:\\WINDOWS\\Fonts\\MSGOTHIC.TTC");
+ Font_E= PDF_load_font(p, "gothic:0", 0, "winansi", ""); /* Use MS Gothic */
+ Font_E= PDF_load_font(p, "gothic:1", 0, "winansi", ""); /* Use MS PGothic */
+ Font_E= PDF_load_font(p, "gothic:2", 0, "winansi", ""); /* Use MS UI Gothic */
+</PRE><BR>下面是一个相关的例子--C 源程序<PRE>/*******************************************************************/
+/* This example demostrates the usage of host font and other fonts
+/* based on Chinese Simplifed Windows.
+/*******************************************************************/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+#include "pdflib.h"
+
+int main(void)
+{
+    PDF         *p = NULL;
+    int             i = 0, j = 0, Left = 50, Top = 800;
+    int             Font_E = 0, Font_CS = 0;
+    char          fontfile[1024];
+    char          buf[1024];
+    char          TextUnicode[] = "\x80\x7B\x53\x4F\x2D\x4E\x87\x65";
+
+    /* create a new PDFlib object */
+    if ((p = PDF_new()) == (PDF *) 0)
+    {
+        printf("Couldn't create PDFlib object (out of memory)!\n");
+        return(2);
+    }
+
+    PDF_TRY(p) {
+	if (PDF_begin_document(p, "pdflib_cs2.pdf", 0, "") == -1) 
+             {
+	    printf("Error: %s\n", PDF_get_errmsg(p));
+	    return(2);
+	}
+
+	PDF_set_info(p, "Creator", "pdflib_cs2.c");
+	PDF_set_info(p, "Author", "myi@pdflib.com");
+	PDF_set_info(p, "Title", "Output Chinese Simplify with host font and others");
+
+        /* Start a new page. */
+        PDF_begin_page_ext(p, a4_width, a4_height, "");
+        Font_E = PDF_load_font(p, "Helvetica-Bold", 0, "winansi", "");
+
+        /* Using host font -- C:\WINDOWS\Fonts\SimHei.ttf. 
+           PDFlib is using BOM UTF8 string to calling multi-byte character string
+           SimHei.ttf font name is "黑体", its corresponding BOM UTF8 string is 
+           "\xEF\xBB\xBF\xE9\xBB\x91\xE4\xBD\x93" */
+
+        Font_CS= PDF_load_font(p, "\xEF\xBB\xBF\xE9\xBB\x91\xE4\xBD\x93", 0, "unicode", "");
+        /* Font_CS= PDF_load_font(p, "SimHei", 0, "unicode", ""); */
+		
+        PDF_setfont(p, Font_E, 20);
+        PDF_show_xy(p, "SimHei font:" , Left,  Top);
+        PDF_setfont(p, Font_CS, 24);
+        Top-=30;
+        PDF_show_xy(p, TextUnicode , Left,  Top);
+
+        /* Using other disk-based font file that is not installed in system directory -- 
+            C:\PSFONTS\CS\gkai00mp.ttf*/
+        Top-=50;
+        strcpy(fontfile, "C:\\PSFONTS\\CS\\gkai00mp.ttf");
+        sprintf(buf, "kai=%s", fontfile);
+        /* Defines kai as alias for ..\gkai00mp.ttf */
+        PDF_set_parameter(p, "FontOutline", buf); 
+        Font_CS= PDF_load_font(p, "kai", 0, "unicode", "");
+        PDF_setfont(p, Font_E, 20);
+        PDF_show_xy(p, "AR PL KaitiM GB  font:" , Left,  Top);
+        PDF_setfont(p, Font_CS, 24);
+        Top-=30;
+        PDF_show_xy(p, TextUnicode , Left,  Top);
+
+        /* Using TrueType collection font with index -- C:\WINDOWS\Fonts\simsun.ttc*/
+        Top-=50;
+        strcpy(fontfile, "C:\\WINDOWS\\Fonts\\simsun.ttc");
+        sprintf(buf, "simsun=%s", fontfile);
+        /* Defines AdobeSongStd as alias for ..\AdobeSongStd-Light.otf 
+        This only need to claim once will be sufficient to 
+		configure all fonts in simsun.ttc*/
+        PDF_set_parameter(p, "FontOutline", buf); 
+        /* TTC files contain multiple separate fonts.
+        Address 1st font by appending a colon character and 0 after alias simsun */
+        Font_CS= PDF_load_font(p, "simsun:0", 0, "unicode", "");
+        PDF_setfont(p, Font_E, 20);
+        PDF_show_xy(p, "simsun:0 font:", Left, Top);
+        PDF_setfont(p, Font_CS, 24);
+        Top-=30;
+        PDF_show_xy2(p, TextUnicode, 8, Left,  Top);
+
+        /*Address 2nd font by appending a colon character and 1 after alias simsun */
+        Top-=50;
+        Font_CS= PDF_load_font(p, "simsun:1", 0, "unicode", "");
+        PDF_setfont(p, Font_E, 20);
+        PDF_show_xy(p, "simsun:1 font:", Left, Top);
+        PDF_setfont(p, Font_CS, 24);
+        Top-=30;
+        PDF_show_xy2(p, TextUnicode, 8, Left,  Top);
+
+        /* End of page. */
+        PDF_end_page_ext(p, "");
+        PDF_end_document(p, "");
+    }
+
+    PDF_CATCH(p) {
+        printf("PDFlib exception occurred in pdflib_cs2 sample:\n");
+        printf("[%d] %s: %s\n",
+	    PDF_get_errnum(p), PDF_get_apiname(p), PDF_get_errmsg(p));
+        PDF_delete(p);
+        return(2);
+    }
+
+    PDF_delete(p);
+    return 0;
+}
+</PRE>相关链接:<BR><BR>PDFLIB官方网站: <A href="http://www.pdflib.com/" 
+            target=_blank>http://www.pdflib.com/</A><BR>PDFLIB官方下载专页:<A 
+            href="http://www.pdflib.com/products/pdflib/download/index.html" 
+            target=_blank>http://www.pdflib.com/products/pdflib/download/index.html</A><BR>VC知识库PDFLIB下载:<A 
+            href="http://www.vckbase.com/tools" 
+            target=_blank>http://www.vckbase.com/tools</A><BR><BR>(本篇完) 
+        </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="PDFLib3.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="PDFLib3.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1531" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 src="" width=9> 
+      <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1531" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 src="" 
+      width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=1531&amp;title=%c7%b3%cc%b8PDFlib%d6%d0%ce%c4%ca%e4%b3%f6%a3%a8%b6%fe%a3%a9%c8%e7%ba%ce%d4%daPDFlib%d6%d0%ca%b9%d3%c3%c6%e4%cb%fb%bc%f2%cc%e5%d6%d0%ce%c4%d7%d6%cc%e5" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 src="" 
+      width=9> <A href="javascript:window.print();"><SPAN 
+      class=small>打印</SPAN></A></TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2006 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

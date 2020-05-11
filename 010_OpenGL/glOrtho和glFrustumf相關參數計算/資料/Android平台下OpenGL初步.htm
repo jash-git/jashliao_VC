@@ -1,0 +1,693 @@
+
+<!-- saved from url=(0045)http://www.uml.org.cn/mobiledev/201208064.asp -->
+<html class=" clickberry-extension clickberry-extension-standalone"><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+
+<title>Android平台下OpenGL初步 </title>
+<link href="./Android平台下OpenGL初步_files/style.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+<!--
+.left {
+	border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: D9D9D9;
+}
+-->
+</style>
+<link href="./Android平台下OpenGL初步_files/artstyle.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function MM_reloadPage(init) {  //reloads the window if Nav4 resized
+  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
+    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
+  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
+}
+MM_reloadPage(true);
+//-->
+</script>
+<script src="./Android平台下OpenGL初步_files/logger.js"></script><meta content="clickberry-extension-here"><link href="./Android平台下OpenGL初步_files/bdsstyle.css" rel="stylesheet" type="text/css"><script id="clickberry-standalone-script" src="chrome-extension://lfmhcpmkbdkbgbmkjoiopeeegenkdikp/modules/clickberry/ChromeStdInjector.js?v=prod&addonType=fvd"></script></head>
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" style="margin:0; padding:0;"><iframe frameborder="0" style="display: none;"></iframe><div id="bdshare_s" style="display: block;"><iframe id="bdsIfr" style="position:absolute;display:none;z-index:9999;" frameborder="0"></iframe><div id="bdshare_l" style="display: none;"><div id="bdshare_l_c"><h6>分享到</h6><ul><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_mshare mshare">一键分享</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_qzone qqkj">QQ空间</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_tsina xlwb">新浪微博</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_bdysc bdysc">百度云收藏</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_renren rrw">人人网</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_tqq txwb">腾讯微博</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_bdxc bdxc">百度相册</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_kaixin001 kxw">开心网</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_tqf txpy">腾讯朋友</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_tieba bdtb">百度贴吧</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_douban db">豆瓣网</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_tsohu shwb">搜狐微博</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_bdhome bdhome">百度新首页</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_sqq sqq">QQ好友</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_thx thx">和讯微博</a></li><li><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="bds_more">更多...</a></li></ul><p><a href="http://www.uml.org.cn/mobiledev/201208064.asp#" class="goWebsite">百度分享</a></p></div></div></div>
+<noscript>
+</noscript>
+<noscript>
+</noscript>
+<noscript>
+</noscript>
+<noscript>
+&lt;iframe src="保密的网页名.htm"&gt;&lt;/iframe&gt;
+</noscript>
+<link href="./Android平台下OpenGL初步_files/style.css" rel="stylesheet" type="text/css">
+<link href="./Android平台下OpenGL初步_files/pxgk.css" rel="stylesheet" type="text/css">
+<link href="./Android平台下OpenGL初步_files/vedio.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+<!--
+.artsect{color:#242424; font-family:"微软雅黑";font-size:14px; line-height: 18px}
+-->
+</style>
+<script type="text/javascript">
+ 
+<!--
+ 
+    function txtFocus() {
+ 
+       var e = window.event;
+ 
+       var obj = e.srcElement;   //当前对象
+ 
+       obj.style.background = "#FFFFFF";
+ 
+    }
+ 
+    
+
+    function txtBlur() {
+ 
+       var e = window.event;
+ 
+       var obj = e.srcElement;
+ 
+       obj.style.background = "#404040";
+ 
+    }
+ 
+-->
+ 
+</script>
+
+<noscript>&lt;iframe src=*&gt;&lt;/iframe&gt;</noscript>
+<div id="heada">
+ 
+  <div id="toplefta"></div>
+  <div id="topa">
+  <div id="hdtopconta">
+    <ul>
+      <li><a href="http://www.uml.org.cn/index.asp">首页</a></li>
+	  <li><a href="http://www.uml.org.cn/wenzhang/artindex.asp" style="background:#f5f5f5"><font color="#000">文章</font></a></li>
+       <li><a href="http://wenku.uml.com.cn/index.asp">文库</a></li>
+        <li><a href="http://video.uml.com.cn/index.asp">视频</a></li>
+        <li><a href="http://www.uml.org.cn/iProcess/GuideView/MyP/MyProcess.asp">iProcess</a></li>
+      <li><a href="http://www.uml.org.cn/course/index.asp">课程</a></li>
+      <li><a href="http://certificate.uml.com.cn/index.asp">认证</a></li>
+      <li><a href="http://job.uml.com.cn/index.asp">招聘</a></li>
+    <li><a href="http://consult.uml.com.cn/index.asp">咨询</a></li>
+       <li><a href="http://tool.uml.com.cn/index.asp">工具</a></li>
+     <li><a href="http://www.uml.com.cn/communicate/index.asp" style="border-right:1px solid #000;">讲座吧</a></li></ul>
+    <div class="clearfloata"></div>
+  </div>
+<div id="hdrighta"><ul>
+
+      <li><a href="http://user.uml.com.cn/index.asp" target="_self">会员</a></li>
+      
+</ul>
+    <div class="clearfloat"></div>
+ </div></div>
+<div id="buttona">  
+    <div id="hdbconta" style="border:none;"> 
+      <div id="hdbcontlogoa" style="width:auto;"><a href="http://www.uml.org.cn/"><img src="./Android平台下OpenGL初步_files/arthd1.jpg" width="177" height="80" border="0"></a></div>
+      <div id="artrba"><a href="http://www.uml.com.cn/" target="_blank"><img src="./Android平台下OpenGL初步_files/hlgxynn.jpg" border="0"></a></div>
+    </div>
+</div></div>
+
+<table width="100%" height="1" border="0" cellpadding="0" cellspacing="0" bgcolor="#f5f5f5">
+       
+  <tbody><tr> 
+    
+    <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tbody><tr> 
+          <td width="19" bgcolor="#F5F5F5"></td>
+          <td bgcolor="#dcdcdc"><img src="./Android平台下OpenGL初步_files/spacern.gif" width="1" height="1"></td>
+          <td width="19" bgcolor="#F5F5F5"></td>
+        </tr>
+      </tbody></table></td>
+  </tr>
+</tbody></table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" class="content">
+  <tbody><tr valign="top"> 
+    <td width="900"> <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" class="content">
+        <tbody><tr valign="top"> 
+            <td width="20" background="./Android平台下OpenGL初步_files/wzhleft22012.jpg" bgcolor="F5F5F5" class="content"> 
+            <table width="20" height="8" border="0" align="center" cellpadding="0" cellspacing="0" class="content">
+              <!--DWLayoutTable-->
+              <tbody><tr> 
+                
+      <td width="20" height="8" valign="top">&nbsp;</td>
+              </tr>
+            </tbody></table>
+</td>
+          <td width="864" class="left"> <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+              <tbody><tr> 
+                <td height="18" bgcolor="#FFFFFF"><table width="100%" border="0" align="center" cellpadding="1" cellspacing="1" class="content">
+                    <tbody><tr> 
+                      <td height="17" valign="top">&nbsp;</td>
+                      <td valign="top">&nbsp;</td>
+                      <td valign="top">&nbsp;</td>
+                    </tr>
+                    <tr> 
+                      <td width="34%" height="17" valign="top"> 
+                        &nbsp;
+
+                      </td>
+                      <td valign="top"> 
+                        &nbsp; 
+                      </td>
+                      <td width="34%" valign="top"> <div align="center"> 
+                          <table width="100%">
+  <tbody><tr><td width="58%"></td><td width="42%"><div align="right" id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+  <span class="bds_more" style="line-height: 12px; font-family: 微软雅黑; font-size: 14px; height: 17px;">分享到</span> 
+</div></td></tr></tbody></table>
+
+<!-- Baidu Button BEGIN -->
+<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6586105" src="./Android平台下OpenGL初步_files/bds_s_v2.js"></script>
+
+<script type="text/javascript">
+document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000);
+</script>
+<!-- Baidu Button END -->
+                        </div></td>
+                    </tr>
+                  </tbody></table></td>
+              </tr>
+              <tr> 
+                <td bgcolor="#FFFFFF"> <div align="center" class="arttitle">Android平台下OpenGL初步  <br>
+                  </div></td>
+              </tr>
+              <tr> 
+                <td height="17" bgcolor="#FFFFFF">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td bgcolor="#FFFFFF"><div align="center" class="artformtitle"> 
+                    <div align="center" class="artformtitle"> 
+                      <p> 作者：hilarysky ，发布于2012-8-6</p>
+                    </div>
+                  </div></td>
+              </tr>
+              <tr> 
+                <td height="16" bgcolor="#FFFFFF">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td valign="top" bgcolor="#FFFFFF"> <table width="95%" border="0" align="center" cellpadding="3" cellspacing="1" class="artcontent">
+                    <tbody><tr> 
+                      <td height="800" valign="top" bgcolor="#FFFFFF" class="content"> 
+                        <p class="artcon">本文只关注于如何一步步实现在Android平台下运用OpenGl。 </p>
+                        <p class="artdir1">1、GLSurfaceView</p>
+                        <p class="artcon"> GLSurfaceView是Android应用程序中实现OpenGl画图的重要组成部分。GLSurfaceView中封装了一个Surface。而android平台下关于图像的现实，差不多都是由Surface来实现的</p>
+                        <p class="artdir1"> 2、Renderer</p>
+                        <p class="artcon"> 有了GLSurfaceView之后，就相当于我们有了画图的纸。现在我们所需要做的就是如何在这张纸上画图。所以我们需要一支笔。 
+                        </p>
+                        <p class="artcon">Renderer是GLSurfaceView的内部静态接口，它就相当于在此GLSurfaceView上作画的笔。我们通过实现这个接口来“作画”。最后通过GLSurfaceView的setRenderer(GLSurfaceView.Renderer 
+                          renderer)方法，就可以将纸笔关联起来了。</p>
+                        <p class="artcon">实现Renderer需要实现它的三个接口：onSurfaceCreated(GL10 
+                          gl, EGLConfig config)、 onSurfaceChanged(GL10 gl, int 
+                          width, int height)、onDrawFrame(GL10 gl)。下面就这三个接口的具体意义做个简单的介绍。 
+                        </p>
+                        <p class="artdir3">2.1、onSurfaceCreated </p>
+                        <p class="artcon">此方法看名字就知道它是在Surface创建的时候被调用的。因此我们可以在这个函数的实现中做一些初始化的工作。例如取出文房四宝、铺好画布、调好颜料之类的。它的函数原型如下： 
+                        </p>
+                        <p class="artcon">public abstract void onSurfaceCreated 
+                          (GL10 gl, EGLConfig config) </p>
+                        <p class="artcon">第二个参数在文档中没有关于它的任何public方法和域。因此我们可以不用管它。 
+                        </p>
+                        <p class="artcon">第一个参数非常重要。如果说Renderer是画笔的话，那么这个gl参数，就可以说是我们的手了。如何操作这支画笔，都是它说了算！所以我们绝大部分时候都是通过这个叫做gl的手来指挥Renderer画图的。 
+                        </p>
+                        <p class="artdir3">2.2 onSurfaceChanged </p>
+                        <p class="artcon">当GLSurfaceView大小改变时，对应的Surface大小也会改变。值得注意的是，在Surface刚创建的时候，它的size其实是0，也就是说在画第一次图之前它也会被调用一次的。（而且对于很多时候，Surface的大小是不会改变的，那么此函数就只在创建之初被调用一次而已） 
+                        </p>
+                        <p class="artcon">原型如下： </p>
+                        <p class="artcon">public abstract void onSurfaceChanged 
+                          (GL10 gl, int width, int height) </p>
+                        <p class="artcon">同样的，画图的手是必需的。 </p>
+                        <p class="artcon">另外值得注意的是，它告诉了我们这张纸有多高多宽。这点很重要。因为在onSurfaceCreated的时候我们是不知道纸的宽高的，所以有一些和长宽相关的初始化工作还得在此函数中来做。 
+                        </p>
+                        <p class="artdir3">2.3 onDrawFrame </p>
+                        <p class="artcon">好了，我们的初始化工作做得差不多了，那么现在就是该真刀真枪画画的时候了！此函数就是真正给你画画用的。每调用一次就画一幅图。可能的疑问是这个函数什么时候会被调用呢？最开始的时候肯定是会被调用的。以后会有两种模式供你选择： 
+                        </p>
+                        <p class="artcon">1.RENDERMODE_CONTINUOUSLY </p>
+                        <p class="artcon">2.RENDERMODE_WHEN_DIRTY </p>
+                        <p class="artcon">第一种模式（RENDERMODE_CONTINUOUSLY）： </p>
+                        <p class="artcon">连续不断的刷，画完一幅图马上又画下一幅。这种模式很明显是用来画动画的； 
+                        </p>
+                        <p class="artcon">第二种模式（RENDERMODE_WHEN_DIRTY）： </p>
+                        <p class="artcon">只有在需要重画的时候才画下一幅。这种模式就比较节约CPU和GPU一些，适合用来画不经常需要刷新的情况。多说一句，系统如何知道需要重画了呢？当然是你要告诉它…… 
+                        </p>
+                        <p class="artcon">调用GLSurfaceView的requestRender ()方法，告诉它，你脏了。 
+                        </p>
+                        <p class="artcon">这两种模式在什么地方设置呢? GLSurfaceView的setRenderMode(int 
+                          renderMode)方法。 可以供你设置你需要的刷新模式。 </p>
+                        <p class="artcon">还是来看看这个函数的原型吧： public abstract void 
+                          onDrawFrame (GL10 gl) 很简单，只有手。 </p>
+                        <p class="artdir1">3、 Android下OpenGL绘图基本流程： </p>
+                        <p class="artcon">我们从画一个三角形开始说起： </p>
+                        <p class="artdir3">3.1 MyRender </p>
+                        <p class="artcon">经过前面的介绍，我们应该知道现在需要做的事，就是写好Renderer的三个接口方法。 
+                        </p>
+                        <p class="artcon">我们需要重新写一个类实现它，然后重写这三个方法。 </p>
+                        <p class="artcon">class MyRender implements GLSurfaceView.Renderer 
+                        </p>
+                        <p class="artcon">OK，笔已经拿好了。“铺好纸”是非常关键的一步。虽然我们说GLSurfaceView就是我们作图的纸，但是“铺”好这张纸，却也非常的重要。</p>
+                        <p class="artcon"> 下面我们重点讲下，这纸该怎么铺。OpenGL这张纸可不是一般的纸啊。最起码，它是三维的。然而实际的显示屏幕却是一个平面。所以这纸还不好“铺”。 
+                        </p>
+                        <p class="artcon">首先，不一定整张纸都用来作画吧，Surface不一定全部都用上（当然，一般情况下我们是全部用上的）。那么我们需要计划好，哪部分区域用来作画。 
+                        </p>
+                        <p class="artcon">gl.glViewport(0, 0, width, height); 
+                        </p>
+                        <p class="artcon">根据这里的参数width和height，我们可以知道这个宽高需要在onSurfaceChanged里得知。 
+                        </p>
+                        <p class="artcon">然后，这一步很关键。如何在平面上画三维坐标的点或图形呢？OpenGL有一个坐标系，如下图： 
+                        </p>
+                        <p align="center" class="artcon"><img src="./Android平台下OpenGL初步_files/2012080641.jpg"></p>
+                        <p class="artcon">我们需要将这个坐标系和我们的GLSurfaceView里的Surface做一个映射关系。 
+                        </p>
+                        <p class="artcon">glMatrixMode(GL10.GL_PROJECTION); </p>
+                        <p class="artcon">gl.glLoadIdentity(); </p>
+                        <p class="artcon">gl.glFrustumf(-400, 400, -240, 240, 
+                          0.3f, 100); </p>
+                        <p class="artcon">glMatrixMode(GL10.GL_PROJECTION); 是说我们现在改变的是坐标系与Surface的映射关系（投影矩阵）。</p>
+                        <p class="artcon"> 下一句 gl.glLoadIdentity(); 是将以前的改变都清掉（之前对投影矩阵的任何改变）。 
+                        </p>
+                        <p class="artcon">glFrustumf (float left, float right, 
+                          float bottom, float top, float zNear, float zFar) 这个函数非常Powerful。它实现了Surface和坐标系之间的映射关系。它是以透视投影的方式来进行映射的。 
+                        </p>
+                        <p class="artcon">透视投影的意思见下图： </p>
+                        <p align="center" class="artcon"><img src="./Android平台下OpenGL初步_files/2012080642.png"></p>
+                        <p class="artcon">映射说明： </p>
+                        <p class="artcon">1、 前面一个矩形表示的是我们平面作图的范围。即Surface的作图范围。它有四条边，我们将它们暂时命名edgeLeft、edgeRight、edgeTop、edgeBottom。 
+                        </p>
+                        <p class="artcon">2、 glFrustumf 参数中的left、right、bottom、top指的是作图范围的四条edge在OpenGL 
+                          x = -400的位置。同理top、right、bottom的值表示的是edgeRight、edgeTop、edgeBottom这几条边在坐标系中的位置。 
+                        </p>
+                        <p class="artcon">3、 上面第二点定出了作图范围的x和y的范围。那么对于3D的OpenGL这张纸来说，我们还需要定出z的范围。首先，要想象一下，相机或者眼睛在坐标系的哪个位置？ 
+                        </p>
+                        <p class="artcon">默认的眼睛的位置在OpenGL坐标的原点处(0,0,0)。视线方向是平行于Z轴往里看。 
+                        </p>
+                        <p class="artcon">near表示的是眼睛到作图平面的距离(绝对值哦！)，far表示眼睛到最远可见处的平面范围。于是，默认情况下z的作图范围就是在-near到-far的位置。 
+                        </p>
+                        <p class="artcon">4、 好了，我们已经确定好x、y、z方向的作图范围了。回过头来，就可以发现，这张“立体”的纸，是一个方椎体切去头部的平截头体。我们所画的物体坐标落在这个区域范围内的部分将可以被我们看到（即在屏幕里画出来）。OK，至此，我们把纸终于铺好了。 
+                        </p>
+                        <p class="artcon">glMatrixMode函数的选项(参数)有后面三种：GL_PROJECTION，GL_MODELVIEW和GL_TEXTURE； 
+                        </p>
+                        <ul>
+                          <li>GL_PROJECTION，是投影的意思，就是要对投影相关进行操作，也就是把物体投影到一个平面上，就像我们照相一样，把3维物体投到2维的平面上。这样，接下来的语句可以是跟透视相关的函数，比如glFrustum()或gluPerspective()； 
+                          </li>
+                          <li>GL_MODELVIEW，是对模型视景的操作，接下来的语句描绘一个以模型为基础的适应，这样来设置参数，接下来用到的就是像gluLookAt()这样的函数； 
+                          </li>
+                          <li>GL_TEXTURE，就是对纹理相关进行操作； </li>
+                        </ul>
+                        <p class="artcon">顺便说下，OpenGL里面的操作，很多是基于对矩阵的操作的，比如位移，旋转，缩放，所以， 
+                          这里其实说的规范一点就是glMatrixMode是用来指定哪一个矩阵是当前矩阵，而它的参数代表要操作的目标：</p>
+                        <ul>
+                          <li>GL_PROJECTION是对投影矩阵操作； </li>
+                          <li>GL_MODELVIEW是对模型视景矩阵操作； </li>
+                          <li>GL_TEXTURE是对纹理矩阵进行随后的操作； </li>
+                        </ul>
+                        <p class="artdir3">3.2 画图之前先构图</p>
+                        <p class="artcon">Android 的 OpenGL 作图，不同于一般的作图，这点我们不得不感慨。它将数据和画完全分开来。例如，我们要画一个三角形。很显然，三角形有三个点。我们在画图之前首先要构图，比如每个点在哪个地方。我们将这些数据放在一个一个数组缓冲区中，放好这些数据之后，再统一一起画出来。 
+                        </p>
+                        <p class="artcon">下面，主要讲下，如何将顶点数据和颜色数据放入符合 Android OpenGL 
+                          的数组缓冲区中。 </p>
+                        <p class="artcon">首先我们要明白的是，OpenGL 是一个非常底层的画图接口，它所使用的缓冲区存储结构是和我们的 
+                          java 程序中不相同的。Java 是大端字节序(BigEdian)，而 OpenGL 所需要的数据是小端字节序(LittleEdian)。所以，我们在将 
+                          Java 的缓冲区转化为 OpenGL 可用的缓冲区时需要作一些工作。</p>
+                        <p class="artcon"><strong>byte 数据缓冲区 </strong></p>
+                        <p class="artcon">不管我们的数据是整型的还是浮点型的，为了完成 BigEdian 到 LittleEdian 
+                          的转换，我们都首先需要一个 ByteBuffer。我们通过它来得到一个可以改变字节序的缓冲区。 </p>
+                        <p class="artcon">ByteBuffer mBuffer = ByteBuffer.allocateDirect(pointCount*dimension*4); 
+                        </p>
+                        <p class="artcon">mBuffer.order(ByteOrder.nativeOrder()); 
+                        </p>
+                        <p class="artcon">注意，我们应该用“allocateDirect”来分配内存空间，因为这样才可以 
+                          order 排序。最后我们就可以通过： </p>
+                        <p class="artcon">resultBuffer = mBuffer.asFloatBuffer(); 
+                        </p>
+                        <p class="artcon">resultBuffer = mBuffer.asIntBuffer(); 
+                        </p>
+                        <p class="artcon">将字节缓冲区转化为整型或者浮点型缓冲区了。 </p>
+                        <p class="artdir3">3.3 终于画图了！ </p>
+                        <p class="artcon">有了前面所有的准备工作之后，有一个好消息可以告诉你，我们终于可以画图了！而且，有了前面这么多工作，真正画图的工作其实比较简单。 
+                        </p>
+                        <p class="artdir2">3.3.1、清理好你的纸 </p>
+                        <p class="artcon">前面我们说过了，在画图之前，一定要把纸给清理干净喽： </p>
+                        <p class="artcon">gl.glClear(GL10.GL_COLOR_BUFFER_BIT); 
+                        </p>
+                        <p class="artcon">另外，之前我们在映射坐标系的时候，用了glMatrixMode(GL10.GL_PROJECTION);来指定改变的是投影矩阵。那么现在要画图了，所以我们需要指定改变的是“视图矩阵”： 
+                        </p>
+                        <p class="artcon">gl.glMatrixMode(GL10.GL_MODELVIEW); 
+                        </p>
+                        <p class="artcon">gl.glLoadIdentity(); </p>
+                        <p class="artdir2">3.3.2、启用数组 </p>
+                        <p class="artcon">我们的前面说过，画图的数据都放在数组缓冲区里，最后再一起传过来作画。那么我们首先要告诉 
+                          OpenGL，我们需要用到哪些数组。例如我们需要顶点数组和颜色数组： </p>
+                        <p class="artcon">gl.glEnableClientState(GL10.GL_VERTEX_ARRAY); 
+                        </p>
+                        <p class="artcon">gl.glEnableClientState(GL10.GL_COLOR_ARRAY); 
+                        </p>
+                        <p class="artdir2">3.3.3、指定数组数据 </p>
+                        <p class="artcon">我们前面已经构造好了我们的数据缓冲区，floatBuffer（或 IntBuffer）。现在我们只需要将这个数据缓冲区和对应的功能绑定起来就好了： 
+                        </p>
+                        <p class="artcon">gl.glVertexPointer(3, GL10.GL_FLOAT, 
+                          0, VertexBuffer); </p>
+                        <p class="artcon">gl.glColorPointer(4, GL10.GL_FLOAT, 
+                          0, colorBuffer); </p>
+                        <p class="artcon">这两句话分别绑定了顶点数据数组和颜色数据数组。其中第一个参数表示的是每个点有几个坐标。例如顶点，有 
+                          x、y、z值，所以是 3；而颜色是 r、g、b、a 值，所以是 4。 </p>
+                        <p class="artdir2">3.3.4、画图！ </p>
+                        <p class="artcon">gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 
+                          3); </p>
+                        <p class="artcon">第一个参数指明了画图的类型——三角形（android 似乎只支持画三角形、点、线，不支持画多边形）。后面两个参数指明，从哪个顶点开始画，画多少个顶点。 
+                        </p>
+                        <p class="artcon">OK！至此，我们的第一个三角形就画出来了，来看看效果吧。</p>
+                        <p align="center" class="artcon"><img src="./Android平台下OpenGL初步_files/2012080643.jpg"></p></td>
+                    </tr>
+                  </tbody></table>
+                  <br> 
+                  <style type="text/css">
+.lettit
+{      color:#000000;
+        font-family:"微软雅黑";
+        font-size:13px; 
+		
+}
+</style>
+<table width="95%" border="0" align="center" cellpadding="1" cellspacing="1">
+  <tbody><tr> 
+    <td width="34%" height="30" valign="top"></td>
+    <td height="30" valign="top"></td>
+    <td width="34%" height="30" valign="top"></td>
+  </tr>
+  <tr valign="bottom"> 
+    <td width="34%" height="30" class="lettit">相关文章</td>
+    <td height="30" class="lettit">相关文档</td>
+    <td width="34%" height="30" class="lettit">相关课程</td>
+  </tr>
+  <tr> 
+    <td width="34%" height="25"> <hr width="80%" size="1" color="#999999" align="left"></td>
+    <td width="34%" height="25"> <hr width="80%" size="1" color="#999999" align="left"></td>
+    <td width="34%" height="25"> <hr width="80%" size="1" color="#999999" align="left"></td>
+  </tr>
+  <tr> 
+    <td width="34%" height="127" valign="top"> 
+      <table width="100%">
+        <tbody><tr> 
+          <td width="386" height="25"><a class="artrighttext_a" href="http://www.uml.org.cn/codeNorms/201307081.asp">深度解析：清理烂代码</a></td>
+        </tr>
+        <tr> 
+          <td height="25"><a class="artrighttext_a" href="http://www.uml.org.cn/codeNorms/201303182.asp">如何编写出拥抱变化的代码</a></td>
+        </tr>
+        <tr> 
+          <td height="25"><a class="artrighttext_a" href="http://www.uml.org.cn/sjms/201106023.asp">重构-使代码更简洁优美</a></td>
+        </tr>
+        <tr> 
+          <td height="25"><a class="artrighttext_a" href="http://www.uml.org.cn/xmgl/200910211.asp">团队项目开发"编码规范"系列文章</a></td>
+        </tr>
+      </tbody></table></td>
+    <td height="127" valign="top"> 
+      <table width="100%">
+        <tbody><tr> 
+          <td width="386" height="25"><a class="artrighttext_a" href="http://wenku.uml.com.cn/document.asp?fileid=4646&partname=%B1%E0%C2%EB%A1%A2%B9%B9%BD%A8%D3%EB%BC%AF%B3%C9">重构-改善既有代码的设计</a></td>
+        </tr>
+        <tr> 
+          <td height="25"> <a class="artrighttext_a" href="http://wenku.uml.com.cn/document.asp?fileid=2527&partname=%B1%E0%C2%EB%A1%A2%B9%B9%BD%A8%D3%EB%BC%AF%B3%C9">软件重构v2</a></td>
+        </tr>
+        <tr> 
+          <td height="25"><a class="artrighttext_a" href="http://wenku.uml.com.cn/document.asp?fileid=4621&partname=%B1%E0%C2%EB%A1%A2%B9%B9%BD%A8%D3%EB%BC%AF%B3%C9">代码整洁之道</a></td>
+        </tr>
+        <tr> 
+          <td height="25"><a class="artrighttext_a" href="http://wenku.uml.com.cn/document.asp?fileid=4580&partname=%B1%E0%C2%EB%A1%A2%B9%B9%BD%A8%D3%EB%BC%AF%B3%C9">高质量编程规范</a></td>
+        </tr>
+      </tbody></table></td>
+    <td width="34%" height="127" valign="top"> 
+      <table width="100%">
+        <tbody><tr> 
+          <td height="25"><a class="artrighttext_a" href="http://www.uml.org.cn/course-web/HTML5.asp">基于HTML5客户端、Web端的应用开发</a></td>
+        </tr>
+        <tr> 
+          <td width="386" height="25"><a class="artrighttext_a" href="http://www.uml.org.cn/course-java/HTMLCSS.asp">HTML 
+            5+CSS 开发</a></td>
+        </tr>
+        <tr> 
+          <td height="25"><a class="artrighttext_a" href="http://www.uml.org.cn/course-c%2B%2B/emdc.asp">嵌入式C高质量编程</a></td>
+        </tr>
+        <tr> 
+          <td height="25"><a class="artrighttext_a" href="http://www.uml.org.cn/course-pm/functEsti.asp">C++高级编程</a></td>
+        </tr>
+      </tbody></table></td>
+  </tr>
+</tbody></table>
+                  <br> <table width="100%" border="0" align="center" cellpadding="1" cellspacing="1" class="content">
+                    <tbody><tr> 
+                      <td width="34%" height="18" valign="top"> 
+                        <table width="100%">
+  <tbody><tr>
+    <td width="5%"></td>
+    <td width="55%"><div align="left" id="bdshare" class="bdshare_t bds_tools get-codes-bdshare"> 
+        <span class="bds_more" style="line-height: 12px; font-family: 微软雅黑; font-size: 14px; height: 17px;">分享到</span> 
+      </div></td>
+    <td width="42%"></td>
+  </tr>
+</tbody></table>
+
+<!-- Baidu Button BEGIN -->
+<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6586105"></script>
+<script type="text/javascript" id="bdshell_js"></script>
+<script type="text/javascript">
+document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000);
+</script>
+<!-- Baidu Button END -->
+                      </td>
+                      <td valign="top"> 
+                        &nbsp; 
+                      </td>
+                      <td width="34%" valign="top"> <div align="center"> 
+                          &nbsp; 
+                        </div></td>
+                    </tr>
+                    <tr> 
+                      <td height="17" valign="top">&nbsp;</td>
+                      <td valign="top">&nbsp;</td>
+                      <td valign="top">&nbsp;</td>
+                    </tr>
+                  </tbody></table></td>
+              </tr>
+            </tbody></table></td>
+        </tr>
+      </tbody></table></td>
+    <td> <table width="240" border="0" align="right" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" class="content">
+        <tbody><tr> 
+          <td height="20" valign="top" class="left"><br> <table width="200" height="8" border="0" align="center" cellpadding="1" cellspacing="1" bgcolor="#FFFFFF" class="content" id="__01">
+              <!--DWLayoutTable-->
+              <tbody><tr> 
+                <td width="200" valign="top" bgcolor="#FFFFFF"><table width="100%" border="0" align="center" cellpadding="1" cellspacing="0" class="content">
+                    <tbody><tr> 
+                      <td height="17" valign="top"><div align="left"><font color="000080"><a href="http://www.uml.org.cn/mobiledev/mobdev.asp" target="_blank"><font color="000080"><b><u>相关文章</u></b></font></a> 
+                          </font></div>
+                        <hr width="100%" size="1">
+                        </td>
+                    </tr>
+                    <tr> 
+                      <td valign="top"> 
+                        <link href="./Android平台下OpenGL初步_files/style1.css" rel="stylesheet" type="text/css">
+<table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" class="content">
+  <tbody><tr> 
+    <td class="content"><a href="http://www.uml.org.cn/mobiledev/androidjmzn.rar" target="_blank" class="artrighttext_a">android人机界面指南 
+      </a></td>
+  </tr>
+  <tr> 
+    <td class="content"><a href="http://www.uml.org.cn/mobiledev/201107261.asp" target="_blank" class="artrighttext_a">Android手机开发（一）</a></td>
+  </tr>
+  <tr> 
+    <td class="content"><a href="http://www.uml.org.cn/mobiledev/201107262.asp" target="_blank" class="artrighttext_a">Android手机开发（二） 
+      </a></td>
+  </tr>
+  <tr> 
+    <td class="content"><a href="http://www.uml.org.cn/mobiledev/201107263.asp" target="_blank" class="artrighttext_a">Android手机开发（三） 
+      </a></td>
+  </tr>
+  <tr> 
+    <td class="content"><a href="http://www.uml.org.cn/mobiledev/201107264.asp" target="_blank" class="artrighttext_a">Android手机开发（四）</a></td>
+  </tr>
+  <tr> 
+    <td class="content"><a href="http://www.uml.org.cn/mobiledev/201107184.asp" target="_blank" class="artrighttext_a">iPhone消息推送机制实现探讨 
+      </a> </td>
+  </tr>
+  <tr> 
+    <td class="content"><a href="http://www.uml.org.cn/test/201106244.asp" target="_blank" class="artrighttext_a">手机软件测试用例设计实践 
+      </a></td>
+  </tr>
+  <tr> 
+    <td class="content"><a href="http://www.uml.org.cn/jmshj/201009302.asp" target="_blank" class="artrighttext_a">手机客户端UI测试分析</a></td>
+  </tr>
+  <tr> 
+    <td class="content"><a href="http://www.uml.org.cn/test/201009262.asp" target="_blank" class="artrighttext_a">手机软件自动化测试研究报告 
+      </a></td>
+  </tr>
+  <tr> 
+    <td height="18"><div align="right"><a href="http://www.uml.org.cn/mobiledev/mobdev.asp" target="_blank" class="artrighttext_a">更多...</a></div></td>
+  </tr>
+</tbody></table>
+
+                      </td>
+                    </tr>
+                  </tbody></table></td>
+              </tr>
+            </tbody></table>
+            <br> <table width="100%" border="0" align="center" cellpadding="1" cellspacing="1" class="content">
+              <tbody><tr> 
+                <td height="17" valign="top"><div align="left"><font color="000080"><a href="http://www.uml.org.cn/course/embeded.asp" target="_blank"><font color="000080"><b><u>相关培训课程</u></b></font></a></font></div>
+                  <hr width="100%" size="1"> </td>
+              </tr>
+              <tr> 
+                <td valign="top"> 
+                  <link href="./Android平台下OpenGL初步_files/style1.css" rel="stylesheet" type="text/css">
+<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="content">
+  <tbody><tr> 
+    <td height="18"><a href="http://www.uml.org.cn/course-emb/Androiddev.asp" target="_blank" class="artrighttext_a">Android高级移动应用程序</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/course-emb/Andryydev.asp" target="_blank" class="artrighttext_a">Android应用开发</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/course-emb/Andrsysdev.asp" target="_blank" class="artrighttext_a">Android系统开发</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/course-test/shjrjcs.asp" target="_blank" class="artrighttext_a">手机软件测试</a> 
+    </td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/course-emb/qrscs.asp" target="_blank" class="artrighttext_a">嵌入式软件测试</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/course-emb/Android-ryy.asp" target="_blank" class="artrighttext_a">Android软、硬、云整合</a></td>
+  </tr>
+  <tr> 
+    <td> <div align="right"><a href="http://www.uml.org.cn/course/embeded.asp" target="_blank" class="artrighttext_a">更多课程...</a></div></td>
+  </tr>
+</tbody></table>
+
+                </td>
+              </tr>
+            </tbody></table>
+            <br> <table width="100%" border="0" align="center" cellpadding="1" cellspacing="1" class="content">
+              <tbody><tr> 
+                <td height="17" valign="top"><div align="left"><a href="http://www.uml.org.cn/newumltrain/pxanli.asp" target="_blank"><font color="000080"><b><u>成功案例</u></b></font> 
+                    </a></div>
+                  <hr width="100%" size="1"> </td>
+              </tr>
+              <tr> 
+                <td valign="top"> 
+                  <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="content">
+  <tbody><tr>
+    <td height="18"><a href="http://www.uml.org.cn/news/20110915aertekalangxun.asp" target="_blank" class="artrighttext_a">阿尔卡特 
+      Linux内核驱动</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/news/201105embArch.asp" target="_blank" class="artrighttext_a">艾默生 
+      嵌入式软件架构设计</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/news/201010embAD.asp" target="_blank" class="artrighttext_a">西门子 
+      嵌入式架构设计</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/news/927reqdes.asp" target="_blank" class="artrighttext_a">某国际通信公司 
+      嵌入式需求</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/news/20108Rhapsodytraining.asp" target="_blank" class="artrighttext_a">爱立信 
+      嵌入式系统分析设计</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/news/0728UMLtraining.asp" target="_blank" class="artrighttext_a">丹佛斯 
+      UML在嵌入式系统中</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><a href="http://www.uml.org.cn/news/emb201004.asp" target="_blank" class="artrighttext_a">霍尼韦尔 
+      嵌入式架构设计</a></td>
+  </tr>
+  <tr> 
+    <td height="18"><div align="right"><a href="http://www.uml.org.cn/MyProcess/GuideView/kchanli.asp#11" target="_blank" class="artrighttext_a">更多...</a></div></td>
+  </tr>
+</tbody></table>
+
+                </td>
+              </tr>
+            </tbody></table></td>
+          <td width="40">&nbsp;</td>
+        </tr>
+      </tbody></table></td>
+    <td width="20" background="./Android平台下OpenGL初步_files/wzhrig22012.jpg" bgcolor="F5F5F5" class="content"> 
+      <table width="20" height="8" border="0" align="center" cellpadding="0" cellspacing="0" class="content">
+        <!--DWLayoutTable-->
+        <tbody><tr> 
+          
+      <td width="20" height="8" valign="top">&nbsp;</td>
+        </tr>
+      </tbody></table>
+    </td>
+
+  </tr>
+</tbody></table>
+<style type="text/css">
+<!--
+.STYLE0 {font-family:"微软雅黑";
+font-size: 16px;
+color: #000000;
+}
+.STYLE3 {font-size: 12px}
+.STYLE4_a:link
+{	color: #000000;
+	font-family:"宋体";
+	font-size:14px;
+	line-height: 2;
+	text-decoration:underline
+}
+.STYLE4_a:visited
+{       color:#000000;
+        font-family:"宋体";
+        font-size:14px;
+		line-height: 2;
+       text-decoration:underline
+} 
+.STYLE4_a:hover
+{       color:#FF0000;
+        font-family:"宋体";
+        font-size:14px;
+		line-height: 2;
+        text-decoration:underline
+} 
+.STYLE5 {font-size: 18px; }
+-->
+</style>
+ 
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <!--DWLayoutTable-->
+  <tbody><tr> 
+    <td width="20" height="90" align="center" valign="middle" bgcolor="f5f5f5" class="content"> 
+      <div align="center"></div></td>
+    <td height="90" align="center" valign="middle" bgcolor="f5f5f5" class="content" style="border-top:1px solid #dcdcdc;"> 
+      <div align="left"> 
+        <table width="50%" height="94" border="0" cellspacing="20" style="border-width: 0px; margin-left: 0px;">
+          <tbody><tr> 
+            <td class="STYLE0" style="border-style: none; border-width: medium; line-height: 1.5;">希望我们的资料可以帮助你学习，也欢迎投稿&amp;提建议给我<br>
+              频道编辑：winner<br>
+              邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;件：winner@uml.net.cn</td>
+          </tr>
+        </tbody></table>
+      </div>
+      <blockquote> 
+        <p align="right"><a class="content_a" href="http://www.uml.org.cn/index2.htm" target="_blank">关于我们</a> | <span class="content_a"><a class="content_a" href="http://www.uml.org.cn/index3.htm" target="_blank">联系我们</a></span> | <span><font color="#000000"> &nbsp;&nbsp;京ICP备10020922号&nbsp;&nbsp;京公海网安备110108001071号 
+          </font></span></p>
+      </blockquote>
+      <p align="right">&nbsp;</p></td>
+	  <td width="20" height="90" align="center" valign="middle" bgcolor="f5f5f5" class="content"> 
+      <div align="center"></div></td>
+  </tr>
+</tbody></table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="./Android平台下OpenGL初步_files/ga.js" type="text/javascript"></script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-5476741-1");
+pageTracker._trackPageview();
+</script>
+
+
+</body></html>

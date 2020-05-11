@@ -1,0 +1,590 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0059)http://blog.csdn.net/wangyuchun_799/article/details/7789521 -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>OpenGL ES之glFrustum函数 - 飞鱼
+        - 博客频道 - CSDN.NET</title>
+    
+    <meta name="description" content="名称：glFrustum—— 使用一个透视矩阵乘以当前矩阵函数原型：void glFrustumf(GLfloat left,  GLfloat right,  GLfloat bottom,  GLfloat top,  GLfloat near,  GLfloat far);void glFrustumx(GLfixed left,  GLfix">
+    <script type="text/javascript" async="" src="./OpenGL ES_glFrustum_files/ga.js"></script><script src="./OpenGL ES_glFrustum_files/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" src="./OpenGL ES_glFrustum_files/ad.js"></script>
+    <link rel="Stylesheet" type="text/css" href="./OpenGL ES_glFrustum_files/style.css">
+    <link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/wangyuchun_799/rss/list">
+    <link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="./OpenGL ES_glFrustum_files/default.css">
+
+<link href="./OpenGL ES_glFrustum_files/bdsstyle.css" rel="stylesheet" type="text/css"><script type="text/javascript" charset="utf-8" src="./OpenGL ES_glFrustum_files/tracking.js"></script><script type="text/javascript" charset="utf-8" src="./OpenGL ES_glFrustum_files/main.js"></script><link type="text/css" rel="stylesheet" href="./OpenGL ES_glFrustum_files/style(1).css"><script src="./OpenGL ES_glFrustum_files/logger.js"></script></head>
+<body><div id="BAIDU_DUP_fp_wrapper" style="position: absolute; left: -1px; bottom: -1px; z-index: 0; width: 0px; height: 0px; overflow: hidden; visibility: hidden; display: none;"><iframe id="BAIDU_DUP_fp_iframe" src="./OpenGL ES_glFrustum_files/o.htm" style="width: 0px; height: 0px; visibility: hidden; display: none;"></iframe></div><iframe frameborder="0" style="display: none;"></iframe><div id="bdshare_s" style="display: block;"><iframe id="bdsIfr" style="position:absolute;display:none;z-index:9999;" frameborder="0"></iframe><div id="bdshare_l" style="display: none;"><div id="bdshare_l_c"><h6>分享到</h6><ul><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_mshare mshare">一键分享</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_qzone qqkj">QQ空间</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_tsina xlwb">新浪微博</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_bdysc bdysc">百度云收藏</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_renren rrw">人人网</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_tqq txwb">腾讯微博</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_bdxc bdxc">百度相册</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_kaixin001 kxw">开心网</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_tqf txpy">腾讯朋友</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_tieba bdtb">百度贴吧</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_douban db">豆瓣网</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_tsohu shwb">搜狐微博</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_bdhome bdhome">百度新首页</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_sqq sqq">QQ好友</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_thx thx">和讯微博</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="bds_more">更多...</a></li></ul><p><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" class="goWebsite">百度分享</a></p></div></div></div>
+    <script src="./OpenGL ES_glFrustum_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./OpenGL ES_glFrustum_files/navtop_2012.css">
+<div class="nav_top_2011">
+<p><span style="color:red;">您还未登录！</span>|<a href="https://passport.csdn.net/account/login" target="_top">登录</a>|<a href="https://passport.csdn.net/account/register" target="_top">注册</a>|<a href="https://passport.csdn.net/help/faq" target="_blank">帮助</a></p><ul>
+<li><a href="http://www.csdn.net/" target="_blank" style="color: red;">首页</a></li>
+<li><a href="http://news.csdn.net/" target="_blank">业界</a></li>
+<li><a href="http://mobile.csdn.net/" target="_blank">移动</a></li>
+<li><a href="http://cloud.csdn.net/" target="_blank">云计算</a></li>
+<li><a href="http://sd.csdn.net/" target="_blank">研发</a></li>
+<li><a href="http://bbs.csdn.net/" target="_blank">论坛</a></li>
+<li><a href="http://blog.csdn.net/" target="_blank">博客</a></li>
+<li><a href="http://download.csdn.net/" target="_blank">下载</a></li>
+<li class="more"><h2 id="topnav_btnmore" onclick="showNavMore(this)"><a href="javascript:void(0);">更多</a></h2>
+<div id="topnav_hidlist">
+<iframe name="nav_frm" src="about:blank" width="92" height="178" scrolling="no" frameborder="no"></iframe>
+</div>
+</li>
+</ul>
+</div>
+
+    <div id="container">
+        <div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h1>
+                <a href="http://blog.csdn.net/wangyuchun_799">飞鱼</a></h1>
+            <h2>Good Good Study,Day Day Up!</h2>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>
+                <li id="btnContents"><a href="http://blog.csdn.net/wangyuchun_799?viewmode=contents"><span>
+                    <img src="./OpenGL ES_glFrustum_files/ico_list.gif">目录视图</span></a></li>
+                <li id="btnView"><a href="http://blog.csdn.net/wangyuchun_799?viewmode=list"><span>
+                    <img src="./OpenGL ES_glFrustum_files/ico_summary.gif">摘要视图</span></a></li>
+                <li id="btnRss"><a href="http://blog.csdn.net/wangyuchun_799/rss/list"><span>
+                    <img src="./OpenGL ES_glFrustum_files/ico_rss.gif">订阅</span></a></li>
+</ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "wangyuchun_799";
+    var _blogger = username;
+    var blog_address = "http://blog.csdn.net/wangyuchun_799";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "";
+</script>
+
+        <div id="body">
+            <div id="main">
+                <div class="main">
+<div class="notice tracking-ad" data-mod="popu_3"> 
+
+<a href="http://vote.blog.csdn.net/blogstar2013" target="_blank">
+<font color="blue">投票赢好礼，周周有惊喜！
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/17440147" target="_blank"><font color="red">2014年4月微软MVP申请开始了！
+</font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://blog.csdn.net/csdn_ask/article/details/16943685" target="_blank">
+<font color="blue">消灭0回答，赢下载分
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/17356319" target="_blank">
+<font color="red">“我的2013”年度征文活动火爆进行中！
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://www.csdn.net/article/2013-12-17/2817828" target="_blank">
+<font color="red">专访Kinect手语翻译系统团队
+ </font></a>
+
+
+</div>                    <link href="./OpenGL ES_glFrustum_files/comment1.css" type="text/css" rel="stylesheet">
+<link href="./OpenGL ES_glFrustum_files/style1.css" type="text/css" rel="stylesheet">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./OpenGL ES_glFrustum_files/OpenGL ES_glFrustum.htm">
+        OpenGL ES之glFrustum函数
+        </a></span>
+    </h3>
+</div>
+
+    <div class="article_manage">
+        <span class="link_categories">
+        分类：
+            <a href="http://blog.csdn.net/wangyuchun_799/article/category/1122389">iOS</a> 
+            <a href="http://blog.csdn.net/wangyuchun_799/article/category/1122388">Android</a> 
+        </span>
+    <span class="link_postdate">2012-07-26 16:41</span>
+    <span class="link_view" title="阅读次数">722人阅读</span>
+    <span class="link_comments" title="评论次数"><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#comments">评论</a>(0)</span>
+    <span class="link_collect"><a href="javascript:void(0);" onclick="javascript:collectArticle(&#39;OpenGL ES之glFrustum函数&#39;,&#39;7789521&#39;);return false;" title="收藏">收藏</a></span>
+    <span class="link_report"><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#report" onclick="javascript:report(7789521,2);return false;" title="举报">举报</a></span>
+    
+</div>
+
+    
+<div style="clear:both"></div><div style="border:solid 1px #ccc; background:#eee; float:left; min-width:200px;padding:4px 10px;"><p style="text-align:right;margin:0;"><span style="float:left;">目录<a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" title="系统根据文章中H1到H6标签自动生成文章目录">(?)</a></span><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" onclick="javascript:return openct(this);" title="展开">[+]</a></p><ol style="display:none;margin-left:14px;padding-left:14px;line-height:160%;"><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#t0">名称</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#t1">函数原型</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#t2">函数参数</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#t3">描述</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#t4">注意</a></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#t5">错误</a></li></ol></div><div style="clear:both"></div><div id="article_content" class="article_content">
+
+<h2><a name="t0"></a>名称：</h2>
+<blockquote>
+<p>glFrustum—— 使用一个透视矩阵乘以当前矩阵<br>
+</p>
+</blockquote>
+<p><br>
+</p>
+<h2><a name="t1"></a>函数原型：</h2>
+<blockquote>
+<p></p>
+<p>void glFrustumf(GLfloat left,&nbsp; GLfloat right,&nbsp; GLfloat bottom,&nbsp; GLfloat top,&nbsp; GLfloat near,&nbsp; GLfloat far);<br>
+</p>
+<p>void glFrustumx(GLfixed left,&nbsp; GLfixed right,&nbsp; GLfixed bottom,&nbsp; GLfixed top,&nbsp; GLfixed near,&nbsp; GLfixed far);</p>
+<p></p>
+</blockquote>
+<p><br>
+</p>
+<h2><a name="t2"></a>函数参数：</h2>
+<blockquote>left，right&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 指定左边和右边垂直切面的坐标<br>
+<p>bottom，top&nbsp;&nbsp;&nbsp; 指定下边和上边水平切面的坐标</p>
+<p>near，far&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 指定近端和远端深度切面的距离<br>
+</p>
+</blockquote>
+<p><br>
+</p>
+<h2><a name="t3"></a>描述：</h2>
+<blockquote>
+<p>glFrustum描述了一个产生透视投影的透视矩阵。这个矩阵乘以当前矩阵的积，将代替当前矩阵，当glMultMatrix以如下参数被调用时：</p>
+<p><img src="./OpenGL ES_glFrustum_files/1343290608_5861.JPG" alt=""></p>
+<p>通常，矩阵模式是GL_PROJECTION, 假设眼睛的位置在(0,0,0)， (left, bottom, -near) 和 (right, top,&nbsp; -near)指明了近切面的点，并且被映射到窗口的左下角和右上角。-far指明了远切面的位置。near 和 far都必须是正数<br>
+</p>
+<p>使用 glPushMatrix 或 glPopMatrix来保存或恢复缩放前的坐标系统。<br>
+</p>
+</blockquote>
+<h2><a name="t4"></a>注意：</h2>
+<blockquote>
+<p>深度缓冲区的精度受到指定的near和far值的影响。far和near的比例越大，区分临近表面的有效深度缓冲区就越少。如果，</p>
+<p><img src="./OpenGL ES_glFrustum_files/1343292332_6393.JPG" alt=""></p>
+</blockquote>
+<blockquote>
+<p>那么，将有大概<img src="./OpenGL ES_glFrustum_files/1343292386_6931.JPG" alt="">位的深度缓冲区精度被丢失。因为，当near接近0的时候，r就接近于无穷，所以near一定不要设置为0.</p>
+</blockquote>
+<h2><a name="t5"></a>错误：</h2>
+<blockquote>
+<p>GL_INVALID_VALUE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果near和far不为整数，left等于right，top等于bottom，near等于far，那么将产生GL_INVALID_VALUE错误。<br>
+</p>
+</blockquote>
+<br>
+
+</div>
+
+
+
+<!-- Baidu Button BEGIN -->
+<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare" style="float: right;">
+<a class="bds_qzone" title="分享到QQ空间" href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#"></a>
+<a class="bds_tsina" title="分享到新浪微博" href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#"></a>
+<a class="bds_tqq" title="分享到腾讯微博" href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#"></a>
+<a class="bds_renren" title="分享到人人网" href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#"></a>
+<a class="bds_t163" title="分享到网易微博" href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#"></a>
+<span class="bds_more">更多</span>
+<a class="shareCount" href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" title="累计分享0次">0</a>
+</div>
+<!-- Baidu Button END -->
+
+
+<!--192.168.100.33-->
+<div class="article_next_prev">
+            <li class="prev_article"><span>上一篇：</span><a href="http://blog.csdn.net/wangyuchun_799/article/details/7786069">OpenGL ES之glPushMatrix, glPopMatrix函数</a></li>
+            <li class="next_article"><span>下一篇：</span><a href="http://blog.csdn.net/wangyuchun_799/article/details/7790059">OpenGL ES之glOrtho函数</a></li>
+</div>
+
+<!-- Baidu Button BEGIN -->
+<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=1536434" src="./OpenGL ES_glFrustum_files/bds_s_v2.js"></script>
+
+<script type="text/javascript">
+    document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+</script>
+<!-- Baidu Button END -->
+
+</div>
+    <div id="ad_cen">
+        <script type="text/javascript">            BAIDU_CLB_SLOT_ID = "117306";</script>
+        <script type="text/javascript" src="./OpenGL ES_glFrustum_files/o.js"></script><div id="BAIDU_DUP_wrapper_117306_0"></div><script charset="utf-8" src="./OpenGL ES_glFrustum_files/ecom"></script><script charset="utf-8" src="./OpenGL ES_glFrustum_files/fixed7o.js"></script><script type="text/javascript">
+/*728*90，博客内页*/
+var cpro_id = "u1405018";
+</script>
+<script src="./OpenGL ES_glFrustum_files/c.js" type="text/javascript"></script><script type="text/javascript" charset="utf-8" src="./OpenGL ES_glFrustum_files/ecom(1)"></script><div style="display:none">-</div> <iframe id="cproIframe1" src="./OpenGL ES_glFrustum_files/snippetcacher.htm" width="728" height="90" align="center,center" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
+    </div>
+    <script type="text/javascript">
+        //new Ad(4, 'ad_cen');
+    </script>
+<div id="comment_title" class="panel_head">
+    查看评论<a name="comments"></a></div>
+<div id="comment_list"><br>&nbsp;&nbsp;暂无评论<br><br><div class="clear"></div></div>
+<div id="comment_bar">
+</div>
+<div id="comment_form"><div class="notice">该文章已被禁止评论！</div></div>
+<div class="announce">
+    * 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+<script type="text/javascript">
+    var fileName = '7789521';
+    var commentscount = 0;
+    var islock = true
+</script>
+<script type="text/javascript" src="./OpenGL ES_glFrustum_files/comment.js"></script>
+    <div id="ad_bot">
+    <iframe id="ad_frm_0" frameborder="0" scrolling="no" src="./OpenGL ES_glFrustum_files/ad(1).htm" style="border-width: 0px; overflow: hidden; width: 732px; height: 170px;"></iframe></div>
+    <script type="text/javascript">
+    new Ad(5, 'ad_bot');
+    </script>
+<div id="report_dialog">
+</div>
+<div id="d-top" style="display: none;">
+    <a id="d-top-a" href="http://blog.csdn.net/wangyuchun_799/article/details/7789521#" title="回到顶部">
+        <img src="./OpenGL ES_glFrustum_files/top.png" alt="TOP"></a>
+</div>
+<script type="text/javascript">
+    $(function ()
+    {
+        var d_top = $('#d-top');
+        document.onscroll = function ()
+        {
+            var scrTop = (document.body.scrollTop || document.documentElement.scrollTop);
+            if (scrTop > 500)
+            {
+                d_top.show();
+            } else
+            {
+                d_top.hide();
+            }
+        }
+        $('#d-top-a').click(function ()
+        {
+            scrollTo(0, 0);
+            this.blur();
+            return false;
+        });
+    });
+  
+</script>
+<style type="text/css">
+    .tag_list
+    {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border: 1px solid #D7CBC1;
+        color: #000000;
+        font-size: 12px;
+        line-height: 20px;
+        list-style: none outside none;
+        margin: 10px 2% 0 1%;
+        padding: 1px;
+    }
+    .tag_list h5
+    {
+        background: none repeat scroll 0 0 #E0DBD3;
+        color: #47381C;
+        font-size: 12px;
+        height: 24px;
+        line-height: 24px;
+        padding: 0 5px;
+        margin: 0;
+    }
+    .tag_list h5 a
+    {
+        color: #47381C;
+    }
+    .classify
+    {
+        margin: 10px 0;
+        padding: 4px 12px 8px;
+    }
+    .classify a
+    {
+        margin-right: 20px;
+        white-space: nowrap;
+    }
+</style>
+<div class="tag_list">
+    <h5>
+        <a href="http://www.csdn.net/tag/" target="_blank">核心技术类目</a></h5>
+    <div class="classify">
+<a title="全部主题" href="http://www.csdn.net/tag" target="_blank" onclick="LogClickCount(this,336);">全部主题</a>
+<a title="Java" href="http://www.csdn.net/tag/Java" target="_blank" onclick="LogClickCount(this,336);">Java</a>
+<a title="VPN" href="http://www.csdn.net/tag/vpn" target="_blank" onclick="LogClickCount(this,336);">VPN</a>
+<a title="Android" href="http://www.csdn.net/tag/android" target="_blank" onclick="LogClickCount(this,336);">Android</a>
+<a title="iOS" href="http://www.csdn.net/tag/ios" target="_blank" onclick="LogClickCount(this,336);">iOS</a>
+<a title="ERP" href="http://www.csdn.net/tag/erp" target="_blank" onclick="LogClickCount(this,336);">ERP</a>
+<a title="IE10" href="http://www.csdn.net/tag/ie10" target="_blank" onclick="LogClickCount(this,336);">IE10</a>
+<a title="Eclipse" href="http://www.csdn.net/tag/eclipse" target="_blank" onclick="LogClickCount(this,336);">Eclipse</a>
+<a title="CRM" href="http://www.csdn.net/tag/crm" target="_blank" onclick="LogClickCount(this,336);">CRM</a>
+<a title="JavaScript" href="http://www.csdn.net/tag/javascript" target="_blank" onclick="LogClickCount(this,336);">JavaScript</a>
+<a title="Ubuntu" href="http://www.csdn.net/tag/ubuntu" target="_blank" onclick="LogClickCount(this,336);">Ubuntu</a>
+<a title="NFC" href="http://www.csdn.net/tag/nfc" target="_blank" onclick="LogClickCount(this,336);">NFC</a>
+<a title="WAP" href="http://www.csdn.net/tag/wap" target="_blank" onclick="LogClickCount(this,336);">WAP</a>
+<a title="jQuery" href="http://www.csdn.net/tag/jquery" target="_blank" onclick="LogClickCount(this,336);">jQuery</a>
+<a title="数据库" href="http://www.csdn.net/tag/%E6%95%B0%E6%8D%AE%E5%BA%93" target="_blank" onclick="LogClickCount(this,336);">数据库</a>
+<a title="BI" href="http://www.csdn.net/tag/bi" target="_blank" onclick="LogClickCount(this,336);">BI</a>
+<a title="HTML5" href="http://www.csdn.net/tag/html5" target="_blank" onclick="LogClickCount(this,336);">HTML5</a>
+<a title="Spring" href="http://www.csdn.net/tag/spring" target="_blank" onclick="LogClickCount(this,336);">Spring</a>
+<a title="Apache" href="http://www.csdn.net/tag/apache" target="_blank" onclick="LogClickCount(this,336);">Apache</a>
+<a title="Hadoop" href="http://www.csdn.net/tag/hadoop" target="_blank" onclick="LogClickCount(this,336);">Hadoop</a>
+<a title=".NET" href="http://www.csdn.net/tag/.net" target="_blank" onclick="LogClickCount(this,336);">.NET</a>
+<a title="API" href="http://www.csdn.net/tag/api" target="_blank" onclick="LogClickCount(this,336);">API</a>
+<a title="HTML" href="http://www.csdn.net/tag/html" target="_blank" onclick="LogClickCount(this,336);">HTML</a>
+<a title="SDK" href="http://www.csdn.net/tag/sdk" target="_blank" onclick="LogClickCount(this,336);">SDK</a>
+<a title="IIS" href="http://www.csdn.net/tag/iis" target="_blank" onclick="LogClickCount(this,336);">IIS</a>
+<a title="Fedora" href="http://www.csdn.net/tag/fedora" target="_blank" onclick="LogClickCount(this,336);">Fedora</a>
+<a title="XML" href="http://www.csdn.net/tag/xml" target="_blank" onclick="LogClickCount(this,336);">XML</a>
+<a title="LBS" href="http://www.csdn.net/tag/lbs" target="_blank" onclick="LogClickCount(this,336);">LBS</a>
+<a title="Unity" href="http://www.csdn.net/tag/unity" target="_blank" onclick="LogClickCount(this,336);">Unity</a>
+<a title="Splashtop" href="http://www.csdn.net/tag/splashtop" target="_blank" onclick="LogClickCount(this,336);">Splashtop</a>
+<a title="UML" href="http://www.csdn.net/tag/uml" target="_blank" onclick="LogClickCount(this,336);">UML</a>
+<a title="components" href="http://www.csdn.net/tag/components" target="_blank" onclick="LogClickCount(this,336);">components</a>
+<a title="Windows Mobile" href="http://www.csdn.net/tag/windowsmobile" target="_blank" onclick="LogClickCount(this,336);">Windows Mobile</a>
+<a title="Rails" href="http://www.csdn.net/tag/rails" target="_blank" onclick="LogClickCount(this,336);">Rails</a>
+<a title="QEMU" href="http://www.csdn.net/tag/qemu" target="_blank" onclick="LogClickCount(this,336);">QEMU</a>
+<a title="KDE" href="http://www.csdn.net/tag/kde" target="_blank" onclick="LogClickCount(this,336);">KDE</a>
+<a title="Cassandra" href="http://www.csdn.net/tag/cassandra" target="_blank" onclick="LogClickCount(this,336);">Cassandra</a>
+<a title="CloudStack" href="http://www.csdn.net/tag/cloudstack" target="_blank" onclick="LogClickCount(this,336);">CloudStack</a>
+<a title="FTC" href="http://www.csdn.net/tag/ftc" target="_blank" onclick="LogClickCount(this,336);">FTC</a>
+<a title="coremail" href="http://www.csdn.net/tag/coremail" target="_blank" onclick="LogClickCount(this,336);">coremail</a>
+<a title="OPhone " href="http://www.csdn.net/tag/ophone" target="_blank" onclick="LogClickCount(this,336);">OPhone </a>
+<a title="CouchBase" href="http://www.csdn.net/tag/couchbase" target="_blank" onclick="LogClickCount(this,336);">CouchBase</a>
+<a title="云计算" href="http://www.csdn.net/tag/%E4%BA%91%E8%AE%A1%E7%AE%97" target="_blank" onclick="LogClickCount(this,336);">云计算</a>
+<a title="iOS6" href="http://www.csdn.net/tag/iOS6" target="_blank" onclick="LogClickCount(this,336);">iOS6</a>
+<a title="Rackspace " href="http://www.csdn.net/tag/rackspace" target="_blank" onclick="LogClickCount(this,336);">Rackspace </a>
+<a title="Web App" href="http://www.csdn.net/tag/webapp" target="_blank" onclick="LogClickCount(this,336);">Web App</a>
+<a title="SpringSide" href="http://www.csdn.net/tag/springside" target="_blank" onclick="LogClickCount(this,336);">SpringSide</a>
+<a title="Maemo" href="http://www.csdn.net/tag/maemo" target="_blank" onclick="LogClickCount(this,336);">Maemo</a>
+<a title="Compuware" href="http://www.csdn.net/tag/compuware" target="_blank" onclick="LogClickCount(this,336);">Compuware</a>
+<a title="大数据" href="http://www.csdn.net/tag/%E5%A4%A7%E6%95%B0%E6%8D%AE" target="_blank" onclick="LogClickCount(this,336);">大数据</a>
+<a title="aptech" href="http://www.csdn.net/tag/aptech" target="_blank" onclick="LogClickCount(this,336);">aptech</a>
+<a title="Perl" href="http://www.csdn.net/tag/perl" target="_blank" onclick="LogClickCount(this,336);">Perl</a>
+<a title="Tornado" href="http://www.csdn.net/tag/tornado" target="_blank" onclick="LogClickCount(this,336);">Tornado</a>
+<a title="Ruby" href="http://www.csdn.net/tag/ruby" target="_blank" onclick="LogClickCount(this,336);">Ruby</a>
+<a title="Hibernate" href="http://www.csdn.net/hibernate" target="_blank" onclick="LogClickCount(this,336);">Hibernate</a>
+<a title="ThinkPHP" href="http://www.csdn.net/tag/thinkphp" target="_blank" onclick="LogClickCount(this,336);">ThinkPHP</a>
+<a title="Spark" href="http://www.csdn.net/tag/spark" target="_blank" onclick="LogClickCount(this,336);">Spark</a>
+<a title="HBase" href="http://www.csdn.net/tag/hbase" target="_blank" onclick="LogClickCount(this,336);">HBase</a>
+<a title="Pure" href="http://www.csdn.net/tag/pure" target="_blank" onclick="LogClickCount(this,336);">Pure</a>
+<a title="Solr" href="http://www.csdn.net/tag/solr" target="_blank" onclick="LogClickCount(this,336);">Solr</a>
+<a title="Angular" href="http://www.csdn.net/tag/angular" target="_blank" onclick="LogClickCount(this,336);">Angular</a>
+<a title="Cloud Foundry" href="http://www.csdn.net/tag/cloudfoundry" target="_blank" onclick="LogClickCount(this,336);">Cloud Foundry</a>
+<a title="Redis" href="http://www.csdn.net/tag/redis" target="_blank" onclick="LogClickCount(this,336);">Redis</a>
+<a title="Scala" href="http://www.csdn.net/tag/scala" target="_blank" onclick="LogClickCount(this,336);">Scala</a>
+<a title="Django" href="http://www.csdn.net/tag/django" target="_blank" onclick="LogClickCount(this,336);">Django</a>
+<a title="Bootstrap" href="http://www.csdn.net/tag/bootstrap" target="_blank" onclick="LogClickCount(this,336);">Bootstrap</a>
+    </div>
+</div>
+
+                    <div class="clear">
+                    </div>
+                </div>
+            </div>
+            <div id="side">
+    <div class="side">
+<div id="panel_Profile" class="panel">
+<ul class="panel_head"><span>个人资料</span></ul>
+<ul class="panel_body profile">
+<div id="blog_userface">
+    <a href="http://my.csdn.net/wangyuchun_799" target="_blank">
+    <img src="./OpenGL ES_glFrustum_files/1_wangyuchun_799.jpg" title="访问我的空间" style="max-width:90%">
+    </a>
+    <br>
+    <span><a href="http://my.csdn.net/wangyuchun_799" class="user_name" target="_blank">秋风涩</a></span>
+</div>
+<div class="interact">
+<a href="javascript:void(0);" class="attent" id="span_add_follow" title="[加关注]"></a>
+<a href="javascript:void(0);" class="letter" onclick="loginto(1)" title="[发私信]"></a>
+</div>
+<div id="blog_medal">
+<div id="bms_box"><a href="http://medal.blog.csdn.net/allmedal.aspx" target="_blank"><img src="./OpenGL ES_glFrustum_files/holdon_s2.gif" onmouseover="m_over_m(this,0)" onmouseout="m_out_m()" alt=""></a></div></div>
+<ul id="blog_rank">
+    <li>访问：<span>85149次</span></li>
+    <li>积分：<span>1440分</span></li>
+    <li>排名：<span>第8141名</span></li>
+</ul>
+<ul id="blog_statistics">
+    <li>原创：<span>60篇</span></li>
+    <li>转载：<span>2篇</span></li>
+    <li>译文：<span>1篇</span></li>
+    <li>评论：<span>2条</span></li>
+</ul>
+</ul>
+</div>
+
+
+<div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search" target="_blank">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字"></span>
+        <input id="btnSubmit" type="submit" value="搜索" title="search in blog">
+        <input type="hidden" name="q" id="inputQ">
+        <input type="hidden" name="t" value="blog">
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div><div id="panel_Category" class="panel">
+<ul class="panel_head"><span>文章分类</span></ul>
+<ul class="panel_body">
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/category/1122388">Android</a><span>(56)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/category/1122389">iOS</a><span>(60)</span>
+</li>
+</ul>
+</div><div id="panel_Archive" class="panel">
+<ul class="panel_head"><span>文章存档</span></ul>
+<ul class="panel_body">
+<div id="archive_list">
+<!--归档统计-->
+<li><a href="http://blog.csdn.net/wangyuchun_799/article/month/2012/12">2012年12月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/month/2012/08">2012年08月</a><span>(17)</span></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/month/2012/07">2012年07月</a><span>(40)</span></li><li><a href="http://blog.csdn.net/wangyuchun_799/article/month/2012/04">2012年04月</a><span>(3)</span></li>
+</div>
+</ul>
+</div>
+<div id="hotarticls" class="panel">
+<ul class="panel_head"><span>阅读排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7736928" title="OpenGL ES入门详解">OpenGL ES入门详解</a><span>(9409)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/8248472" title="苹果开发者账号购买或续费支付表单填写全记录purchase form">苹果开发者账号购买或续费支付表单填写全记录purchase form</a><span>(7218)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7761278" title="Android配置cocos2d-x开发环境">Android配置cocos2d-x开发环境</a><span>(5711)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7804809" title="CGBitmapContextCreate函数参数详解">CGBitmapContextCreate函数参数详解</a><span>(4227)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7489955" title="Android开发如何正确使用WebView">Android开发如何正确使用WebView</a><span>(3786)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7742787" title="OpenGL ES之glUniform函数">OpenGL ES之glUniform函数</a><span>(3540)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7729222" title="Objective-C/C++混编编译器设置">Objective-C/C++混编编译器设置</a><span>(2850)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7861226" title="obj2opengl：转换OBJ 3D模型到iPhone OpenGL ES兼容的数组中">obj2opengl：转换OBJ 3D模型到iPhone OpenGL ES兼容的数组中</a><span>(2748)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7841429" title="OpenGL ES之glFrustumf设置投影视角详解">OpenGL ES之glFrustumf设置投影视角详解</a><span>(2608)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7794867" title="iTunes下载的ipa文件的目录位置">iTunes下载的ipa文件的目录位置</a><span>(2579)</span>
+</li>
+</ul>
+</div>
+<div id="hotarticls2" class="panel">
+<ul class="panel_head"><span>评论排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7861226" title="obj2opengl：转换OBJ 3D模型到iPhone OpenGL ES兼容的数组中">obj2opengl：转换OBJ 3D模型到iPhone OpenGL ES兼容的数组中</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/8248472" title="苹果开发者账号购买或续费支付表单填写全记录purchase form">苹果开发者账号购买或续费支付表单填写全记录purchase form</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/8254737" title="iPhone强制关机">iPhone强制关机</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7819756" title="OpenGL ES贴图坐标和方向">OpenGL ES贴图坐标和方向</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7819658" title="OpenGL ES顶点数据绘制技巧">OpenGL ES顶点数据绘制技巧</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7804859" title="OpenGL ES之glTexImage2D函数">OpenGL ES之glTexImage2D函数</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7804809" title="CGBitmapContextCreate函数参数详解">CGBitmapContextCreate函数参数详解</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7804024" title="西蒙OpenGL ES教程第五章的示例代码显示不了纹理">西蒙OpenGL ES教程第五章的示例代码显示不了纹理</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7803756" title="OpenGL ES之glShadeModel函数">OpenGL ES之glShadeModel函数</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/wangyuchun_799/article/details/7802182" title="OpenGL ES几何图形的绘制顺序">OpenGL ES几何图形的绘制顺序</a><span>(0)</span>
+</li>
+</ul>
+</div>
+<div id="homepageArticles" class="panel tracking-ad" data-mod="popu_4">
+<ul class="panel_head"><span>推荐文章</span></ul>
+<ul class="panel_body" id="ad_commend"><iframe id="ad_frm_1" frameborder="0" scrolling="no" src="./OpenGL ES_glFrustum_files/ad.htm" style="border-width: 0px; overflow: hidden; width: 182px; height: 318px;"></iframe></ul>
+</div>
+<script type="text/javascript">
+ new Ad(12, 'ad_commend');
+</script><div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body itemlist">
+    <li>
+    <a href="http://blog.csdn.net/wangyuchun_799/article/details/8248472#comments">苹果开发者账号购买或续费支付表单填写全记录purchase form</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/bigjava" class="user_name">OftenTapContacts</a>:
+一般购买这儿账号提交申请后要等多久苹果才回复？
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/wangyuchun_799/article/details/7861226#comments">obj2opengl：转换OBJ 3D模型到iPhone OpenGL ES兼容的数组中</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/aiyongyyy" class="user_name">aiyongyyy</a>:
+这个确实非常好用啊
+    </p>
+    </li>
+</ul>
+</div>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+            <div class="clear">
+            </div>
+        </div>
+        
+
+<script type="text/javascript" src="./OpenGL ES_glFrustum_files/newblog.min.js"></script>
+<script type="text/javascript" src="./OpenGL ES_glFrustum_files/showblogmedal.ashx"></script>
+<script type="text/javascript">
+    document.write('<script type="text/javascript" src="http://csdnimg.cn/pubfooter/js/publib_footer.js?' + Math.floor(new Date() / 120000).toString(36) + '="></' + 'script>');
+</script><script type="text/javascript" src="./OpenGL ES_glFrustum_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./OpenGL ES_glFrustum_files/pub_footer_2012.css"><div id="pub_footerall" class="pub_footerall"><dl><dt></dt> <dd><a href="http://www.csdn.net/company/about.html" target="_blank">公司简介</a>|<a href="http://www.csdn.net/company/recruit.html" target="_blank">招贤纳士</a>|<a href="http://www.csdn.net/company/marketing.html" target="_blank">广告服务</a>|<a href="http://www.csdn.net/company/account.html" target="_blank">银行汇款帐号</a>|<a href="http://www.csdn.net/company/contact.html" target="_blank">联系方式</a>|<a href="http://www.csdn.net/company/statement.html" target="_blank">版权声明</a>|<a href="http://www.csdn.net/company/layer.html" target="_blank">法律顾问</a>|<a href="mailto:webmaster@csdn.net">问题报告</a></dd><dd><a href="http://wpa.qq.com/msgrd?v=3&uin=2355263776&site=qq&menu=yes" target="_blank" class="qq">QQ客服</a> <a href="http://e.weibo.com/csdnsupport/profile" target="_blank" class="weibo">微博客服</a> <a href="http://bbs.csdn.net/forums/Service" target="_blank" class="online">论坛反馈</a> <a href="mailto:webmaster@csdn.net" class="email">联系邮箱：webmaster@csdn.net</a> <span class="phone">服务热线：400-600-2320</span></dd><dd>京&nbsp;ICP&nbsp;证&nbsp;070598&nbsp;号</dd><dd>北京创新乐知信息技术有限公司 版权所有</dd><dd>江苏乐知网络技术有限公司 提供商务支持</dd><dd>Copyright © 1999-2014, CSDN.NET, All Rights Reserved&nbsp;<a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202001032100010" target="_blank"><img src="./OpenGL ES_glFrustum_files/gongshang_logos.gif" alt="GongshangLogo" title=""></a></dd></dl></div><script id="noticeScript" type="text/javascript" btnid="header_notice_num" wrapid="note1" count="5" subcount="5" src="./OpenGL ES_glFrustum_files/notify.js"></script>
+    <script type="text/javascript" src="./OpenGL ES_glFrustum_files/login.js"></script>
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="./OpenGL ES_glFrustum_files/pv.aspx" border="0" width="0" height="0">
+<script type="text/javascript" src="./OpenGL ES_glFrustum_files/counter.js"></script><script type="text/javascript" charset="UTF-8" src="./OpenGL ES_glFrustum_files/msg.popup.js"></script>
+<script type="text/javascript" src="./OpenGL ES_glFrustum_files/ad-blog.js"></script>
+<script type="text/javascript" src="./OpenGL ES_glFrustum_files/count.js"></script><iframe src="./OpenGL ES_glFrustum_files/logs.htm" frameborder="0" width="0" height="0"></iframe>
+<script type="text/javascript">
+    $(function () {
+        function __get_code_toolbar(snippet_id) {
+            return $("<a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "' target='_blank' title='在CODE上查看代码片' style='text-indent:0;'><img src='https://code.csdn.net/assets/CODE_ico.png' width=12 height=12 alt='在CODE上查看代码片' style='position:relative;top:1px;left:2px;'/></a>"
+                    + "<a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "/fork' target='_blank' title='派生到我的代码片'  style='text-indent:0;'><img src='https://code.csdn.net/assets/ico_fork.svg' width=12 height=12 alt='派生到我的代码片' style='position:relative;top:2px;left:2px;'/></a>");
+        }
+        
+        $("[code_snippet_id]").each(function () {
+            __s_id = $(this).attr("code_snippet_id");
+            if (__s_id != null && __s_id != "" && __s_id != 0 && parseInt(__s_id) > 70020) {
+                __code_tool = __get_code_toolbar(__s_id);
+                $(this).prev().find(".tools").append(__code_tool);
+            }
+        });
+    });
+</script>
+
+    </div>
+
+
+</body></html>

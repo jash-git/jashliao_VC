@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.vckbase.com/document/viewdoc/?id=1536 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 浅谈PDFlib中文输出（四）PDFlib 接收的几种文本输入形式</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content=pdflib,unicode,bom name=keywords>
+<META content=pdflib,unicode,bom name=description><LINK 
+href="PDFLib5.files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 src="PDFLib5.files/vckcom.gif" 
+      width=109></TD>
+    <TD vAlign=bottom align=right height=30><IMG height=27 
+      src="PDFLib5.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=111"><SPAN 
+      class=small><FONT color=black>Samples</FONT></SPAN></A></TD>
+    <TD class=small align=right width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=44"><SPAN 
+      class=small><FONT color=black>在线杂志 第44期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR>
+<TABLE height=108 cellSpacing=1 cellPadding=0 width="90%" bgColor=#999999 
+border=0>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE height=100 cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD class=small width=705 bgColor=#f9f9f9 height=106><FONT 
+            color=#0000ff>本站特别推荐：</FONT><BR><A href="http://www.uipower.com/" 
+            target=_blank>Skin++ 通用的界面换肤控件（Skin++ 
+            2.0于2005年11月1日发布，网站全面更新！）产品</A><BR><BR>特性：<BR>支持多种开发语言（VC++ 
+            ，VB，C#，PowerBuilder，C++Builder，Delphi，E语言等）<BR>界面和业务逻辑彻底分离，节约开发和维护时间，支持各Windows平台，包括Windows98/NT4/2000/XP/2003<BR>彻底换肤,包括标准控件，通用对话框等，支持对第三方控件的换肤，提供方便的设计工具，可自行设计皮肤。[<A 
+            href="http://www.uipower.com/" target=_blank>详情请点这里</A>]</TD>
+          <TD align=middle width=183 bgColor=#99cccc><A 
+            href="http://www.uipower.com/zp.asp" 
+            target=_blank><U>公司诚聘VC界面软件工程师</U></A></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background=PDFLib5.files/dotline2.gif height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合初级读者 
+            已阅读1300次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="PDFLib5.files/go.gif" align=absMiddle border=0 name=imageField> 
+          </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><STRONG>浅谈PDFlib中文输出（四）</STRONG><BR>-- PDFlib 
+            接收的几种文本输入形式<BR>作者：Michelle Yi</P>
+            <P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2766">下载源代码</A></P>
+            <P>PDFlib的textformat参数用以设定文本输入形式，其有效值如下:</P>
+            <P>bytes: 在字符串中每个字节对应于一个字符。主要应用于8位编码。<BR>utf8：字符串是 
+            UTF-8编码。<BR>ebcdicutf8：字符串是EBCDIC的UTF-8编码，只应用于IBM 
+            iSeries和zSeries。<BR>utf16：字符串是 
+            UTF-16编码。如果字符串是以Unicode的标记字节顺序号(BOM)开始，PDFlib会接收BOM信息后将其从字符串首移去。如果字符串不带BOM，字符串的字节顺序将取决于主机的字节顺序。Intel 
+            x86系统是小尾（little-endian，0xFFFE ）, 而Sparc和PowerPC系统是大尾（big-endian, 
+            0xFEFF)。<BR>utf16be：字符串是大尾字节顺序的UTF-16编码。对BOM没有特殊处理。<BR>utf16le：字符串是小尾字节顺序的UTF-16编码。对BOM没有特殊处理。<BR>auto:对于8位编码，它相当于“bytes”, 
+            对于宽字符字符串(Unicode, glyphid, UCS2 或UTF16 CMap)，它相当于“utf16”。</P>
+            <P>在编程语言里，我们将可以自动处理Unicode字符串的语言称为支持Unicode语言（Unicode-capable），它们是COM, 
+            .NET, Java, 
+            REALbasic及Tcl等。对于需对Unicode字符串进行特殊处理的语言称为不支持Unicode语言（non-Unicode-capable），它们是C, 
+            C++, Cobol, Perl, PHP, Python 
+            及RPG等。<BR>在non-Unicode-capable语言里，“auto”设置将会正确处理大部分文本字符串。<BR>对于Unicode-capable语言，textformat参数的缺省值是“utf16”；而non-Unicode-capable语言的缺省值是“auto”。<BR>除此之外，PDFlib还支持在SGML和HTML经常使用的字符引用方法（Character 
+            Reference）。前提是将参数charref设成真, textformat设成“bytes”:<BR></P><PRE>PDF_set_parameter(p, "charref", "true");
+PDF_set_parameter(p, "textformat", "bytes");
+</PRE>下面给出一些有效的Character Reference:<BR>&amp;#173; soft 
+            hyphen<BR>&amp;#xAD; soft hyphen<BR>&amp;shy; soft 
+            hyphen<BR>&amp;#x20AC; Euro glyph (hexadecimal)<BR>&amp;#8364; Euro 
+            glyph (decimal)<BR>&amp;euro; Euro glyph (entity name)<BR>&amp;lt; 
+            less than sign<BR>&amp;gt; greater than sign<BR>&amp;amp; ampersand 
+            sign<BR>&amp;Alpha; Greek Alpha 
+            <P>下面是一个相关的例子--C 源程序(附上生成的pdf文件 –PDFlib_cs4.pdf)。</P><PRE>/*******************************************************************/
+/* This example demostrates output Chinese Simplified text with different
+/* ''textformat'' option under Chinese Simplifed Windows.
+/*******************************************************************/
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include "pdflib.h"
+
+int main(void)
+{
+    PDF             *p = NULL;
+    int                 Font_E = 0, Font_H = 0, Font_CS = 0, Left = 50, y = 800, i = 0;
+    const int       INCRY = 25;
+    char              text[128], buf[128];
+
+    /* 1 byte text (English: "Simplified Chinese") */
+    static const char byte_text[] =
+        "\123\151\155\160\154\151\146\151\145\144\040\103\150\151\156\145\163\145";
+    static const int byte_len = 18;
+    static const char byte2_text[] = {0x53,0x69,0x6D,0x70,0x6C,0x69,0x66,0x69,0x65,
+                                                0x64,0x20,0x43,0x68,0x69,0x6E,0x65,0x73,0x65};
+    static const int byte2_len = 18;
+    /* 2 byte text (Simplified Chinese) */
+    static const unsigned short utf16_text[] = {0x7B80,0x4F53,0x4E2D,0x6587};
+    static const int utf16_len = 8;
+    static const unsigned char utf16be_text[] ="\173\200\117\123\116\055\145\207";
+    static const int utf16be_len = 8;
+    static const unsigned char utf16be_bom_text[] = "\376\377\173\200\117\123\116\055\145\207";
+    static const int utf16be_bom_len = 10;
+    static const unsigned char utf16le_text[] ="\200\173\123\117\055\116\207\145";
+    static const int utf16le_len = 8;
+    static const unsigned char utf16le_bom_text[] = "\377\376\200\173\123\117\055\116\207\145";
+    static const int utf16le_bom_len = 10;
+    static const unsigned char utf8_text[] = "\347\256\200\344\275\223\344\270\255\346\226\207";
+    static const int utf8_len = 12;
+    static const unsigned char utf8_bom_text[] = "\xEF\xBB\xBF\xE7\xAE\x80\xE4\xBD\x93\xE4\xB8\xAD\xE6\x96\x87";
+    static const int utf8_bom_len = 15;
+    static const char htmlutf16_text[] = "简体中文";
+    static const int htmlutf16_len = sizeof(htmlutf16_text) - 1;
+
+    typedef struct
+    {
+        char *textformat;
+        char *encname;
+        const char *textstring;
+        const int  *textlength;
+        const char *bomkind;
+    } TestCase;
+
+static const TestCase table_8[] = {
+ { "bytes",      "winansi",  (const char *)byte_text,         &amp;byte_len,      ""},
+     { "auto",        "winansi",  (const char *)byte_text,         &amp;byte_len,      ""},
+     { "bytes",      "winansi",  (const char *)byte2_text,       &amp;byte2_len,     ""}, };
+
+    static const TestCase table_16[] =  {
+{ "auto",  "unicode",  (const char *)utf16_text,       &amp;utf16_len,      ""},
+{ "utf16", "unicode",  (const char *)utf16_text,       &amp;utf16_len,      ""},
+{ "auto",  "unicode",  (const char *)utf16be_bom_text, &amp;utf16be_bom_len, ", UTF-16+BE-BOM"},
+{ "auto",     "unicode",     (const char *)utf16le_bom_text, &amp;utf16le_bom_len, ", UTF-16+LE-BOM"},
+{ "utf16be", "unicode",    (const char *)utf16be_text,         &amp;utf16be_len,    ""},
+{ "utf16le",   "unicode",   (const char *)utf16le_text,           &amp;utf16le_len,    ""},
+{ "utf8",       "unicode",    (const char *)utf8_text,               &amp;utf8_len,       ""},
+{ "auto",       "unicode",   (const char *)utf8_bom_text,      &amp;utf8_bom_len, ", UTF-8+BOM"},
+{ "bytes", "unicode",   (const char *)htmlutf16_text, &amp;htmlutf16_len, ", HTML unicode character"}, };
+
+    const int   tsize_8 = sizeof table_8 / sizeof (TestCase);
+    const int   tsize_16 = sizeof table_16 / sizeof (TestCase);
+
+    /* create a new PDFlib object */
+    if ((p = PDF_new()) == (PDF *) 0)
+    {
+        printf("Couldn''t create PDFlib object (out of memory)!\n");
+        return(2);
+    }
+
+    PDF_TRY(p) {
+	if (PDF_begin_document(p, "pdflib_cs4.pdf", 0, "") == -1) 
+            {
+	    printf("Error: %s\n", PDF_get_errmsg(p));
+	    return(2);
+	}
+
+	PDF_set_info(p, "Creator", "pdflib_cs4.c");
+	PDF_set_info(p, "Author", "myi@pdflib.com");
+	PDF_set_info(p, "Title", "Output Chinese Simplify with Different textformat");
+
+        /* Start a new page. */
+        PDF_begin_page_ext(p, a4_width, a4_height, "");
+        Font_H = PDF_load_font(p, "Helvetica-Bold", 0, "winansi", "");
+
+        /* 8-bit encoding */
+        Font_E = PDF_load_font(p, "Times", 0, "winansi", "");
+        PDF_setfont(p, Font_H, 24);
+        PDF_show_xy(p, "8-bit encoding", Left+40,  y);
+        y -= 2*INCRY;
+
+        for (i = 0; i &lt; tsize_8; ++i)
+        {
+            PDF_setfont(p, Font_H, 14);
+            sprintf(text, "%s encoding, %s textformat %s: ", table_8[i].encname, 
+                table_8[i].textformat, table_8[i].bomkind);
+            PDF_show_xy(p, text, Left,  y);
+            y -= INCRY;
+            PDF_set_parameter(p, "textformat", table_8[i].textformat);
+            PDF_setfont(p, Font_E, 14);
+            PDF_show_xy(p, table_8[i].textstring, Left,  y);
+            y -= INCRY;
+        } /* for */
+
+        /* 16-bit encoding */
+        PDF_setfont(p, Font_H, 24);
+        y -= 2*INCRY;
+        PDF_show_xy(p, "16-bit encoding", Left+40,  y);
+        y -= 2*INCRY;
+        PDF_set_parameter(p, "charref", "true");
+        Font_CS = PDF_load_font(p, "STSong-Light", 0, "UniGB-UCS2-H", "");
+        for (i = 0; i &lt; tsize_16; i++)
+        {
+            PDF_setfont(p, Font_H, 14);
+            sprintf(text, "%s encoding, %s textformat %s: ", table_16[i].encname, 
+                table_16[i].textformat, table_16[i].bomkind);
+            PDF_show_xy(p, text, Left,  y);
+            y -= INCRY;
+
+            PDF_setfont(p, Font_CS, 14);
+            sprintf(buf, "textformat %s",table_16[i].textformat);
+            PDF_fit_textline(p, table_16[i].textstring, *table_16[i].textlength,
+                             Left, y, buf);
+            y -= INCRY;
+        } /* for */
+
+        /* End of page. */
+        PDF_end_page_ext(p, "");
+        PDF_end_document(p, "");
+    }
+
+    PDF_CATCH(p) {
+        printf("PDFlib exception occurred in pdflib_cs4 sample:\n");
+        printf("[%d] %s: %s\n",
+	    PDF_get_errnum(p), PDF_get_apiname(p), PDF_get_errmsg(p));
+        PDF_delete(p);
+        return(2);
+    }
+
+    PDF_delete(p);
+    return 0;
+}
+</PRE><STRONG>相关链接:</STRONG><BR><BR>PDFLIB官方网站: <A 
+            href="http://www.pdflib.com/" 
+            target=_blank>http://www.pdflib.com/</A><BR>PDFLIB官方下载专页:<A 
+            href="http://www.pdflib.com/products/pdflib/download/index.html" 
+            target=_blank>http://www.pdflib.com/products/pdflib/download/index.html</A><BR>VC知识库PDFLIB下载:<A 
+            href="http://www.vckbase.com/tools" 
+            target=_blank>http://www.vckbase.com/tools</A><BR><BR>
+            <P></P>(本篇完) 
+            <P></P></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="PDFLib5.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="PDFLib5.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1536" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 src="" width=9> 
+      <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1536" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 src="" 
+      width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=1536&amp;title=%c7%b3%cc%b8PDFlib%d6%d0%ce%c4%ca%e4%b3%f6%a3%a8%cb%c4%a3%a9PDFlib+%bd%d3%ca%d5%b5%c4%bc%b8%d6%d6%ce%c4%b1%be%ca%e4%c8%eb%d0%ce%ca%bd" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 src="" 
+      width=9> <A href="javascript:window.print();"><SPAN 
+      class=small>打印</SPAN></A></TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2006 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

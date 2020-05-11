@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://home.planet.nl/~monstrous/tutMFC.html -->
+<HTML><HEAD><TITLE>Making an MFC app with OpenGL</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="MSHTML 6.00.2900.2722" name=GENERATOR>
+<META content=C:\appl\_off97uk.32\Office\html.dot name=Template>
+<META content="Mozilla/4.61 [en] (WinNT; I) [Netscape]" name=GENERATOR><!-- saved from url=(0022)http://internet.e-mail --></HEAD>
+<BODY vLink=#800080 link=#0000ff>
+<CENTER><B><FONT face=verdana><FONT color=#0000ff><FONT size=+2>&nbsp;MFC and 
+OpenGL</FONT></FONT></FONT></B> <BR><B>How to make an MFC application with an 
+OpenGL viewport</B> <BR>by <A href="http://home.planet.nl/~monstrous">Marco 
+Monster</A></CENTER>
+<P><B>Level</B>: Advanced 
+<P><B>Abstract</B>: <I>Some tips on making game construction tools with MFC.</I> 
+<BR>
+<HR>
+<BR>&nbsp; <FONT size=-2>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top width="20%">version 1.1 Feb, 2002</TD>
+    <TD>Added section on editing toolbars and adding drop lists. Updated some 
+      of the existing text with new findings.</TD></TR>
+  <TR>
+    <TD vAlign=top>version 1.0 Jan, 2002</TD>
+    <TD>Initial version</TD></TR></TBODY></TABLE></FONT>
+<P><B>Motivation</B> 
+<P {font-size:large}><FONT size=-1>If you're going to make a game, it's no good 
+just having a game engine. You're also going to need tools to develop the game 
+content. Sometimes, you can make use of existing tools (e.g. MilkShape to make 
+models), but sometimes you'll need specialized tools specific to your game. For 
+example, to construct a game level, to define bounding volumes for your models, 
+etc. etc.</FONT> 
+<P><FONT size=-1>Building tools is perhaps regarded as a thankless task as 
+compared with, for example, building the graphics engine, but without it you're 
+going to get stuck with a game without content. You need the tools to do the 
+"other 90 percent" of the game.</FONT> 
+<P><FONT size=-1>So you might as well do it right and that means using an 
+environment to quickly throw together a fancy GUI. Enter MFC.</FONT> 
+<P><FONT size=-1>Your first reaction may be "Yuck!" at the mere mention of MFC. 
+But after playing around with it for a couple of days, it turns out to be 
+relatively painless to throw together a simple application in a couple of 
+hours.&nbsp; Find some good tutorials to guide you and&nbsp; don't be afraid to 
+experiment.</FONT> 
+<P><B>References</B> 
+<P><A href="http://www.flipcode.com/misc/sfarticle/">StrayFire: writing a 
+"simple" game by Kurt Miller</A> <BR><FONT size=-2>A post mortem of what was 
+supposed to be a simple game, including What went right and What went wrong. The 
+reason I've included this reference is the section about the importance of 
+developing a good tool set. Follow the "view image" links to see screen shots of 
+these tools.</FONT> 
+<P><A href="http://gear.kku.ac.th/~rujchai/ComGraphics/GLwithMFC.html">OpenGL 
+Integrated with MFC (SDI)</A> <BR><FONT size=-2>Basic tutorial on how to create 
+a SDI application for OpenGL.</FONT> 
+<P><A href="http://pws.prserv.net/mfcogl/">MFC &amp; OpenGL website by Joel 
+Parris</A> <BR><FONT size=-2>In particular check out the SDI application with 
+DOC/View support.</FONT> 
+<P><A 
+href="http://www.gamedev.net/reference/programming/features/3dmfc/">Creating 3D 
+Tools with MFC by Joe Houston</A> <BR><FONT size=-2>Excellent tutorial. A more 
+advanced application with splitters and a tool panel. Source for a MD3 (Quake 
+model) viewer.</FONT> 
+<P><A 
+href="http://www.geocities.com/SiliconValley/Code/1219/opengl32.html">OpenGL 
+Win32 Tutorial by Blaine Hodge</A> <BR><FONT size=-2>Another good tutorial. 
+Strictly Win32, no MFC.</FONT> <BR><FONT size=-2></FONT>&nbsp; <BR><FONT 
+size=-2></FONT>&nbsp; <BR>&nbsp; 
+<P><B>Checklist</B> 
+<P><FONT size=-1>The following is a quick checklist:</FONT> 
+<P><FONT size=-1>1. New project. Select MFC application (.EXE). Select Single 
+Document Interface (SDI). Enable Document View Architecture. Disable print. 
+Disable ActiveX</FONT> 
+<P><FONT size=-1>2. Build and run the empty application.</FONT> 
+<P><FONT size=-1>3. Add includes for OpenGL header files (some people put this 
+in StdAfx.h, but you can also just put in those .cpp files that contain OpenGL 
+function calls) :</FONT> 
+<BLOCKQUOTE><TT><FONT color=#009900>// OpenGL Headers<BR></FONT>#include 
+  &lt;gl/gl.h&gt;<BR>#include &lt;gl/glu.h&gt;</TT></BLOCKQUOTE><FONT size=-1>4. 
+Add context handles (can be static globals in <I>app</I>View.cpp or as 
+<I>app</I>View class members):</FONT> 
+<DIR><TT>HDC m_hgldc;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <FONT color=#009900>// 
+GDI Device Context</FONT></TT> <BR><TT>HGLRC 
+m_hglrc;&nbsp;&nbsp;&nbsp;&nbsp;<FONT color=#009900> // Rendering 
+Context</FONT></TT></DIR><FONT size=-1>5. Go to Class view, select 
+<I>app</I>View (where <I>app</I> is the name of your project). Add windows 
+message handlers for</FONT> 
+<UL>
+  <LI><FONT size=-1>WM_CREATE</FONT> 
+  <LI><FONT size=-1>WM_DESTROY</FONT> 
+  <LI><FONT size=-1>WM_ERASBKGRND</FONT> 
+  <LI><FONT size=-1>WM_SIZE</FONT> </LI></UL><FONT size=-1>This creates prototype 
+functions OnCreate, OnDestroy, OnEraseBkgnd and OnSize in <I>app</I>View.cpp. 
+We're now going to modify those. I'll just give a summary, look at the sample 
+code for details:</FONT> 
+<P><FONT size=-1>6. Adapt OnCreate:</FONT> 
+<UL>
+  <LI><FONT size=-1>get device context;</FONT> 
+  <LI><FONT size=-1>select and set pixel format</FONT> 
+  <LI><FONT size=-1>create and activate OpenGL context</FONT> 
+  <LI><FONT size=-1>initialise OpenGL state (clear colour, etc.)</FONT> 
+</LI></UL><FONT size=-1>7. Adapt OnDestroy:</FONT> 
+<UL>
+  <LI><FONT size=-1>deselect OpenGL context and delete</FONT> </LI></UL><FONT 
+size=-1>8. Adapt OnSize:</FONT> 
+<UL>
+  <LI><FONT size=-1>pass width, height to glViewPort, recalc project 
+  matrix;</FONT> </LI></UL><FONT size=-1>9. Adapt OnEraseBkgnd:</FONT> 
+<UL>
+  <LI><FONT size=-1>return TRUE (needed to prevent flickering)</FONT> 
+</LI></UL><FONT size=-1>&nbsp;10. Adapt PreCreateWindow:</FONT> 
+<DIR><TT>cs.lpszClass = ::AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW | 
+CS_DBLCLKS | CS_OWNDC,</TT> <BR><TT>&nbsp; ::LoadCursor(NULL, IDC_ARROW), NULL, 
+NULL);</TT> <BR><TT>cs.style |= WS_CLIPSIBLINGS | WS_CLIPCHILDREN;</TT> 
+<BR><TT>return CView::PreCreateWindow(cs);</TT><TT></TT> 
+<P><B>Reference:</B> <BR><FONT color=#3366ff><A 
+href="http://www.starstonesoftware.com/OpenGL/errata.htm">Errata for OpenGL 
+Super Bible</A></FONT> <BR><FONT size=-2>A small discussion about a common 
+misunderstanding of CS_OWNDC.&nbsp; In some examples on the web (I won't name 
+names), you'll see code like the following:</FONT> <BR><FONT 
+size=-2>&nbsp;cs.style |= WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CS_OWNDC;</FONT> 
+<BR><FONT size=-2>This is incorrect code and the errata page explains 
+why.</FONT> <BR><FONT size=-2></FONT>&nbsp;<FONT size=-2></FONT> 
+<P><FONT size=-1>The OWNDC flag for the window is important because some OpenGL 
+implementations (ATI Rage Pro, Riva TNT) apparently assume that the DC (Device 
+Context)&nbsp; remains constant throughout the lifetime of the application, so 
+that they can avoid some costly initialisation per GL call.&nbsp; The OWNDC flag 
+tells Windows not to change the DC. See also Blaine Hodge's 
+tutorial.</FONT></P></DIR><FONT size=-1></FONT>
+<P><BR><FONT size=-1>&nbsp;11. Adapt OnDraw:</FONT> 
+<DIR><TT><FONT color=#009900>// Useful in multidoc templates<BR></FONT>HWND hWnd 
+= GetSafeHwnd();<BR>HDC hDC = 
+::GetDC(hWnd);<BR>wglMakeCurrent(hDC,m_hglrc);<BR>DrawGLScene();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<FONT color=#009900>// do all OpenGL drawing 
+here<BR></FONT>SwapBuffers(m_hgldc);</TT></DIR><FONT size=-1>&nbsp;12. Add the 
+following libraries to Object libraries (Project settings/Link tab).&nbsp; You 
+need to do this, otherwise you'll get link errors for all the glXXX. 
+functions.</FONT> 
+<UL>
+  <LI><TT>OPENGL32.LIB GLU32.LIB<BR></TT><FONT size=-1>(Note: I like to use 
+  capitals in the settings page for the libraries added later, so you can tell 
+  them apart from the default set, but it doesn't really matter).</FONT> 
+</LI></UL><FONT size=-1>13. Build and run.</FONT> 
+<P><FONT size=-1>Note: MainFrm.cpp, <I>app</I>Doc.cpp and <I>app</I>.cpp remain 
+untouched in this checklist.</FONT> 
+<P><B>Post Scriptum</B> 
+<P><FONT size=-1>This quick hack puts all the OpenGL code in appView.cpp and has 
+nothing in appDoc.cpp. If you want to organize this according to the 
+Document/View architecture you have to separate out the OpenGL calls that are 
+related to the view and the OpenGL calls that are related to the document (e.g. 
+the model or the game level). In my opinion, the following calls belong in the 
+appView.cpp:</FONT> 
+<UL>
+  <LI><FONT size=-1>set up lighting;</FONT> 
+  <LI><FONT size=-1>clearing the colour and depth buffer (glClear);</FONT> 
+  <LI><FONT size=-1>setting up the PROJECTION and the MODELVIEW matrix;</FONT> 
+  <LI><FONT size=-1>setting up the camera position (typically via glTranslate 
+  and glRotate).</FONT> </LI></UL><FONT size=-1>and the following should be in 
+appDoc.cpp (because they depend on the data):</FONT> 
+<UL>
+  <LI><FONT size=-1>outputting triangles (glBegin, glVertex, glEnd)</FONT> 
+</LI></UL><FONT size=-1>For example, you could have the following lines of code 
+in OnDraw, assuming you've added a member function DrawScene to the document 
+class.</FONT> 
+<DIR><TT>glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);&nbsp;&nbsp;&nbsp; 
+<FONT color=#009900>// Clear Screen And Depth Buffer</FONT></TT> 
+<BR><TT>glLoadIdentity();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<FONT color=#009900>// Reset The Current Modelview Matrix</FONT></TT> 
+<BR><TT>glTranslatef(-1.5f,0.0f,-6.0f);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<FONT color=#009900>// Move Left 1.5 Units And Into The Screen 6.0</FONT></TT> 
+<BR><TT>GetDocument()-&gt;DrawScene();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<FONT color=#009900>// Call document's drawing 
+code</FONT></TT></DIR><B>Sample</B> 
+<P><FONT size=-1>&nbsp;This sample application lets you view MilkShape models 
+stored in the ASCII format (*.txt).&nbsp; It makes use of some of the classes we 
+used in the skeletal animation demo and in GUTS. It's still a bit rough round 
+the edges (e.g. Save button in the tool bar I couldn't get rid of), but not bad 
+for an evening's work, huh?</FONT> <BR><IMG height=122 alt="Screen shot" 
+src="Making an MFC app with OpenGL.files/wed2.gif" width=162 border=0><A 
+href="http://home.planet.nl/~monstrous/download.html#wed2">Download</A> 
+<BR>&nbsp; <BR>&nbsp; 
+<P>
+<HR width="100%">
+<BR><B>Editing the tool bar</B> 
+<P><FONT size=-1>Deleting icons from the tool bar is very simple once you know 
+how, but not so obvious if you don't.&nbsp; Open the tool bar in the 
+ResourceView. Click on the offending icon and drag it off the toolbar, for 
+example down into the icon paint grid. Release the mouse button and "Hey 
+Presto!" the button is no more.</FONT> 
+<P><FONT size=-1>To add a button, click on the empty extra button at the right 
+end of the tool bar and start drawing the icon on the paint grid. Your drawing 
+will be inserted as a new button and the empty extra button wil shift to the 
+right.</FONT> 
+<P><FONT size=-1>You can drag a button sideways to create or remove a little gap 
+between buttons. Using the little gaps you can organize the buttons into groups 
+of related buttons, e.g. Cut. Copy, Paste are usually in their own little 
+group.</FONT> 
+<P>
+<HR width="100%">
+<BR><B>Adding a drop list</B> 
+<P><FONT size=-1>Go to the ResourceView, select the folder Dialog and then 
+select the appropriate dialog resource.</FONT> 
+<P><FONT size=-1>Drag a combo box from the Control toolbar onto the dialog 
+(Note: if you've accidentally closed your Control toolbar, you have to 
+rightclick on an empty area of the menu bar and activate the menu item 
+"Controls".&nbsp; Easy enough, once you know it, but it took me about an hour to 
+figure that one out.)</FONT> 
+<P><FONT size=-1>Size the combo box the way you want it. Click on the down arrow 
+icon inside the combo box to define the drop down area.</FONT> 
+<P><FONT size=-1>Right-click on the combo box to select the Properties 
+sheet.&nbsp; Change the ID if you want, e.g. to IDC_COMBO1. Set Styles/Type to 
+"Drop List". Uncheck "Sort".</FONT> 
+<P><FONT size=-1>Right-click on the combo box and activate the Class 
+Wizard.&nbsp; Add a member variable to the CPanel class.&nbsp; Input a variable 
+name, let's call it "m_combo", select category "Control" and variable type 
+"CComboBox".</FONT> 
+<P><FONT size=-1>Go to Message Maps in the Class Wizard, make sure the right 
+Object ID is selected (IDC_COMBO1) and add a function for the message 
+CBN_SELCHANGE.&nbsp; This is where the application will react to a user 
+selection.</FONT> 
+<P><FONT size=-1>Go to the Class View, select the class CPanel and add a virtual 
+function handler for OnInitialUpdate. And put the following code in:</FONT> 
+<BR>&nbsp; 
+<BLOCKQUOTE><TT>void CPanel::OnInitialUpdate( )</TT> <BR><TT>{</TT> 
+  <BR><TT>&nbsp;&nbsp;&nbsp; CFormView::OnInitialUpdate();</TT> 
+  <BR><TT><B>&nbsp;</B>&nbsp;&nbsp; <FONT color=#009900>// add combo box 
+  entries</FONT></TT> <BR><TT>&nbsp;&nbsp;&nbsp; 
+  <B>m_combo.AddString("Three");</B></TT> <BR><B><TT>&nbsp;&nbsp;&nbsp; 
+  m_combo.AddString("Blind");</TT></B> <BR><B><TT>&nbsp;&nbsp;&nbsp; 
+  m_combo.AddString("Mice");</TT></B> <BR><TT>&nbsp;&nbsp; <FONT 
+  color=#009900>// select the first item (index = 0)</FONT></TT> 
+  <BR><TT>&nbsp;&nbsp;&nbsp; <B>m_combo.SetCurSel(0);</B></TT> 
+<BR><TT>}</TT></BLOCKQUOTE>
+<P><BR><FONT size=-1>(Note: since CPanel is derived from CFormView this seems to 
+be the appropriate place for control initialisation.&nbsp; Putting it in an 
+OnCreate handler of in the constructore gives an assertion error, presumably 
+because the controls are not yet constructed.&nbsp; If you're putting the 
+control in a pure Dialog resource, rather than a Form View,&nbsp; the virtual 
+function OnInitDialog may be a better place)</FONT> 
+<P><B>Reference</B> <BR><A 
+href="http://www.msoe.edu/eecs/cese/resources/cppbuild/msvcmfc/mfc_d.htm">MFC 
+Examples: Additional Controls by the Milwaukee School of Engineering</A> 
+<BR><FONT size=-2>How to add a combo box, a list box, etc. to a dialog.</FONT> 
+</P></BODY></HTML>

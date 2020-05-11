@@ -1,0 +1,295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)http://www.vckbase.com/document/viewdoc/?id=1527 -->
+<HTML><HEAD><TITLE>VC知识库文章 - 浅谈PDFlib中文输出（一）如何使用Acrobat标准的简体中文字体</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content=pdf,pdflib,中文输出 name=keywords>
+<META content=pdf,pdflib,中文输出 name=description><LINK 
+href="PDFLib2.files/style.css" rel=stylesheet>
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 src="PDFLib2.files/vckcom.gif" 
+      width=109></TD>
+    <TD vAlign=bottom align=right height=30><IMG height=27 
+      src="PDFLib2.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black><SPAN 
+      class=small>首页</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black><SPAN 
+      class=small>文档中心</SPAN></FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/journal"><SPAN class=small><FONT 
+      color=black>在线杂志</FONT></SPAN></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=111"><SPAN 
+      class=small><FONT color=black>Samples</FONT></SPAN></A></TD>
+    <TD class=small align=right width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=44"><SPAN 
+      class=small><FONT color=black>在线杂志 第44期</FONT></SPAN></A> ] 
+</TD></TR></TBODY></TABLE>
+<DIV align=center><BR>
+<TABLE height=108 cellSpacing=1 cellPadding=0 width="90%" bgColor=#999999 
+border=0>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE height=100 cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD class=small width=705 bgColor=#f9f9f9 height=106><FONT 
+            color=#0000ff>本站特别推荐：</FONT><BR><A href="http://www.uipower.com/" 
+            target=_blank>Skin++ 通用的界面换肤控件（Skin++ 
+            2.0于2005年11月1日发布，网站全面更新！）产品</A><BR><BR>特性：<BR>支持多种开发语言（VC++ 
+            ，VB，C#，PowerBuilder，C++Builder，Delphi，E语言等）<BR>界面和业务逻辑彻底分离，节约开发和维护时间，支持各Windows平台，包括Windows98/NT4/2000/XP/2003<BR>彻底换肤,包括标准控件，通用对话框等，支持对第三方控件的换肤，提供方便的设计工具，可自行设计皮肤。[<A 
+            href="http://www.uipower.com/" target=_blank>详情请点这里</A>]</TD>
+          <TD align=middle width=183 bgColor=#99cccc><A 
+            href="http://www.uipower.com/zp.asp" 
+            target=_blank><U>公司诚聘VC界面软件工程师</U></A></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></DIV><BR>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD background=PDFLib2.files/dotline2.gif height=1></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD width=40 height=74></TD>
+    <TD vAlign=top width=* height=74>
+      <FORM name=form2 action=/SYS/script/find.asp method=post>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD><SPAN id=docinfo>[ <FONT color=#009900>原创文档</FONT> 本文适合中级读者 
+            已阅读2841次 ]</SPAN></TD>
+          <TD align=right><INPUT class=rect maxLength=20 size=10 name=keyword> 
+            <SELECT class=rect name=gclsid> <OPTION value=100 
+              selected>文档</OPTION> <OPTION value=200>代码</OPTION> <OPTION 
+              value=400>工具</OPTION></SELECT> <INPUT type=image height=15 width=21 
+            src="PDFLib2.files/go.gif" align=absMiddle border=0 name=imageField> 
+          </TD></TR></TBODY></TABLE></FORM>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><STRONG>浅谈PDFlib中文输出（一）</STRONG><BR>-- 
+            如何使用Acrobat标准的简体中文字体<BR><BR>作者: Michelle Yi</P>
+            <P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=2754">下载源代码</A><BR><BR>PDF文件格式以其安全可靠，易于交换，及保真度高而成为电子文档的标准。PDFlib是一套在国际上非常流行的在服务器端批量生成PDF文档的功能强大的软件包。国外许多政府，税务，银行，水电，邮电部门用其在线生成PDF格式的单据及报表。<BR><BR>对于国内用户来说，如何使用PDFlib输出简体中文会是我们最关心的问题。在这里我将于大家一起分享自己的一些心得体会，不对之处请指正，若我所说于PDFlib手册有冲突，请以手册为准。我的邮箱是 
+            :bowriver2001@yahoo.ca 。<BR><BR>对于没有接触过PDFlib的朋友，如果你们感兴趣，可以从这个链接<A 
+            href="http://www.pdflib.com/products/pdflib/download/index.html" 
+            target=_blank>http://www.pdflib.com/products/pdflib/download/index.html</A> 
+            下载PDFlib软件包。(也可以到<A href="http://www.vckbase.com/tools" 
+            target=_blank>VC知识库工具与资源栏目</A>下载) 
+            在没有license的情况下，你仍可使用其所有功能，只是生成的PDF文档带有PDFlib的水印。<BR><BR>PDFlib提供C,C++, 
+            Java, Perl, PHP, Python, Tcl 及RealBasic的语言接口。以下所有的例子将采用C。</P>
+            <P align=center><STRONG>如何使用Acrobat 标准的简体中文字体</STRONG></P>
+            <P>PDFlib自带STSong-Light，AdobeSongStd-Light-Acro，及STSongStd-Light-Acro三种简体中文字体。这三种字体同时也是Acrobat的简体中文标准字体。<BR>以上三种字体均支持以下几种编码（Encoding）：UniGB-UCS2-H，UniGB-UCS2-V，UniGB-UTF16-H，UniGB-UTF16-V，GB-EUC-H，GB-EUC-V，GBpc-EUC-H，GBpc-EUC-V，GBK-EUC-H，GBK-EUC-V，GBKp-EUC-H，GBKp-EUC-V，GBK2K-H，及GBK2K-V。各编码的定义请见下表1.1:<BR><BR>表1.1 
+            </P>
+            <TABLE cellSpacing=1 cellPadding=3 width=600 bgColor=#333333 
+            border=0>
+              <TBODY>
+              <TR bgColor=#ffffff>
+                <TD width=242>Encoding</TD>
+                <TD width=343>Character set and text format</TD></TR>
+              <TR bgColor=#ffffff>
+                <TD>UniGB-UCS2-H<BR>UniGB-UCS2-V</TD>
+                <TD>Unicode (UCS-2) encoding for the Adobe-GB1 character 
+                  collection</TD></TR>
+              <TR bgColor=#ffffff>
+                <TD>UniGB-UTF16-H<BR>UniGB-UTF16-V</TD>
+                <TD>Unicode (UTF-16BE) encoding for the Adobe-GB1 character 
+                  collection.Contains mappings for all characters in the 
+                  GB18030-2000 character set.</TD></TR>
+              <TR bgColor=#ffffff>
+                <TD>GB-EUC-H<BR>GB-EUC-V</TD>
+                <TD>Microsoft Code Page 936 (charset 134), GB 2312-80 
+                  character set, EUC-CN encoding</TD></TR>
+              <TR bgColor=#ffffff>
+                <TD>GBpc-EUC-H<BR>GBpc-EUC-V</TD>
+                <TD>Macintosh, GB 2312-80 character set, EUC-CN encoding, 
+                  Script Managercode 2</TD></TR>
+              <TR bgColor=#ffffff>
+                <TD>GBK-EUC-H<BR>GBK-EUC-V</TD>
+                <TD>Microsoft Code Page 936 (charset 134), GBK character set, 
+                  GBK encoding</TD></TR>
+              <TR bgColor=#ffffff>
+                <TD>GBKp-EUC-H<BR>GBKp-EUC-V</TD>
+                <TD>Same as GBK-EUC-H, but replaces half-width Latin 
+                  characters withproportional forms and maps code 0x24 to dollar 
+                  ($) instead of yuan (￥).</TD></TR>
+              <TR bgColor=#ffffff>
+                <TD>GBK2K-H<BR>GBK2K-V</TD>
+                <TD>GB 18030-2000 character set, mixed 1-, 2-, and 4-byte 
+                  encoding</TD></TR></TBODY></TABLE><BR>编码以-H结尾的，表示字体将会横向输出；以 
+            –V结尾的，表示字体将会纵向输出。以Uni开头的是Unicode类编码，如果你的输入字符串是Unicode，则应选择此类编码。以GB开头的是CP936类编码，如果你的输入字符串是Code 
+            Page 936，则应选择此类编码。<BR>在PDFlib中若想调用以上其中一种字体，可直接用字体名和相应的编码： <PRE>int  	 Font_CS;
+Font_CS = PDF_load_font(p, " STSong-Light ", 0, " ", " UniGB-UTF16-H");
+</PRE>不久，你们将会发现，字体与编码间可有非常多的组合，而PDFlib的字体功能（function）并不支持所有的组合。最为保险的组合是PDFlib自带三种字体与Unicode类编码的组合。<BR>下面是一个使用PDFlib自带字体及编码的C 
+            源程序<PRE>/*******************************************************************/
+/* This example demostrates the usage of PDFlib builtin fonts
+/* based on Chinese Simplifed Windows.
+/*******************************************************************/
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include "pdflib.h"
+
+int main(void)
+{
+    PDF         	*p = NULL;
+    int        	i = 0, j = 0, Left = 50, Top = 800;
+    int       	Font_E = 0, Font_CS = 0;
+    char       	TextUnicode[] = "\x80\x7B\x53\x4F\x2D\x4E\x87\x65";
+    char        	TextCp936[] = "\xBC\xF2\xCC\xE5\xD6\xD0\xCE\xC4";
+    char        	EncodingName[100];
+
+static const char *ChineseFont[] = 
+{"STSong-Light",  "AdobeSongStd-Light-Acro",   "STSongStd-Light-Acro", };
+
+    static const char *Encoding[] =
+    {
+        "UniGB-UCS2-H",
+        "UniGB-UCS2-V",
+        "UniGB-UTF16-H",
+        "UniGB-UTF16-V",
+        "GB-EUC-H",
+        "GB-EUC-V",
+        "GBpc-EUC-H",
+        "GBpc-EUC-V",
+        "GBK-EUC-H",
+        "GBK-EUC-V",
+        "GBKp-EUC-H",
+        "GBKp-EUC-V",
+        "GBK2K-H",
+        "GBK2K-V",
+    };
+
+    const int   fsize = sizeof ChineseFont / sizeof (char *);
+    const int   esize = sizeof Encoding / sizeof (char *);        
+
+    /* create a new PDFlib object */
+    if ((p = PDF_new()) == (PDF *) 0)
+    {
+        printf("Couldn''t create PDFlib object (out of memory)!\n");
+        return(2);
+    }
+
+    PDF_TRY(p) {
+	if (PDF_begin_document(p, "pdflib_cs1.pdf", 0, "") == -1) 
+             {
+	    printf("Error: %s\n", PDF_get_errmsg(p));
+	    return(2);
+	}
+
+        PDF_set_info(p, "Creator", "pdflib_cs1.c");
+        PDF_set_info(p, "Author", "bowriver2001@yahoo.ca");
+        PDF_set_info(p, "Title", "Output Chinese Simplify with PDFlib builtin font");
+        Font_E = PDF_load_font(p, "Helvetica-Bold", 0, "winansi", "");
+
+        for (i = 0; i &lt; fsize; i++)
+        {
+            /*Start a new page. */
+            Top = 800;
+            PDF_begin_page_ext(p, a4_width, a4_height, ""); 
+            PDF_setfont(p, Font_E, 24);
+            PDF_show_xy(p, ChineseFont[i] , Left + 50,  Top);
+            Top -= 30;
+
+            for (j = 0; j &lt; esize; j++)
+            {
+                Font_CS = PDF_load_font(p, ChineseFont[i], 0, Encoding[j], "");
+	   PDF_setfont(p, Font_E, 12);
+                strcpy(EncodingName, "");
+                strcat(EncodingName,  Encoding[j]);
+                strcat(EncodingName,  ":");
+                PDF_show_xy(p, EncodingName , Left,  Top);
+                PDF_setfont(p, Font_CS, 12);
+
+                if (strstr(Encoding[j], "-H") != NULL)
+                {
+                    /* It''s horizontal encoding. */
+                    Top -= 15;
+                }
+
+                if (strstr(Encoding[j], "UniGB") != NULL)
+                {
+                    /* It''s unicode encoding. */
+                    PDF_show_xy2(p, TextUnicode, 8, Left,  Top);
+                }
+                else
+                {
+                    /* It''s code page 936 encoding. */
+                    PDF_show_xy2(p, TextCp936, 8, Left,  Top);
+                }
+
+                if (strstr(Encoding[j], "-H") != NULL)
+                {
+                    /* It''s horizontal encoding. */
+                    Top -= 25;
+                }
+                else
+                {
+                    /* It''s vertical encoding. */
+                    Top -= 65;
+                }
+
+            } /* for */
+
+            /* End of page. */
+	    PDF_end_page_ext(p, "");
+        } /* for */
+
+        PDF_end_document(p, "");
+    }
+
+    PDF_CATCH(p) {
+        printf("PDFlib exception occurred in pdflib_cs1 sample:\n");
+        printf("[%d] %s: %s\n",
+	    PDF_get_errnum(p), PDF_get_apiname(p), PDF_get_errmsg(p));
+        PDF_delete(p);
+        return(2);
+    }
+
+    PDF_delete(p);
+    return 0;
+}
+</PRE>(本篇完)</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-4159669282587342";
+google_alternate_color = "FFFFFF";
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = "468x60_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "B4D0DC";
+google_color_bg = "ECF8FF";
+google_color_link = "0000CC";
+google_color_url = "008000";
+google_color_text = "6F6F6F";
+//--></SCRIPT>
+
+<SCRIPT src="PDFLib2.files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><BR>
+<TABLE class=small height=18 cellSpacing=0 cellPadding=0 width="98%" border=0>
+  <TBODY>
+  <TR vAlign=center>
+    <TD width="47%" bgColor=#a0d39b><IMG height=10 
+      src="PDFLib2.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1527" 
+      target=_blank><SPAN class=small>[发表评论]</SPAN></A> <A 
+      href="http://www.vckbase.com/support/contribute.html" target=_blank><SPAN 
+      class=small>[文章投稿]</SPAN></A></TD>
+    <TD align=right width="53%" bgColor=#a0d39b><IMG height=9 src="" width=9> 
+      <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=1527" 
+      target=_blank><SPAN class=small>查看所有评论</SPAN></A> <IMG height=9 src="" 
+      width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=1527&amp;title=%c7%b3%cc%b8PDFlib%d6%d0%ce%c4%ca%e4%b3%f6%a3%a8%d2%bb%a3%a9%c8%e7%ba%ce%ca%b9%d3%c3Acrobat%b1%ea%d7%bc%b5%c4%bc%f2%cc%e5%d6%d0%ce%c4%d7%d6%cc%e5" 
+      target=_blank><SPAN class=small>推荐给好友</SPAN></A> <IMG height=9 src="" 
+      width=9> <A href="javascript:window.print();"><SPAN 
+      class=small>打印</SPAN></A></TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2006 VC知识库&nbsp; 
+<BR><BR></SPAN></DIV></BODY></HTML>

@@ -1,0 +1,1099 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0053)http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml -->
+<!--[2,1,703228] published at 2005-08-25 09:42:36 from #004 by 803--><!--天极yesky--><!----><HTML><HEAD><TITLE>基于VC++的OpenGL编程讲座之基本图元(2)_技术_科技时代_新浪网</TITLE>
+<META http-equiv=content-type content="text/html; charset=gb2312">
+<STYLE type=text/css>H1 {
+	FONT-SIZE: 24px; MARGIN: 0px
+}
+TD {
+	FONT-SIZE: 12px
+}
+SELECT {
+	FONT-SIZE: 12px
+}
+INPUT {
+	FONT-SIZE: 12px
+}
+.l17 {
+	LINE-HEIGHT: 170%
+}
+.l15 {
+	LINE-HEIGHT: 150%
+}
+.f7 {
+	FONT-SIZE: 7px
+}
+.f24 {
+	FONT-SIZE: 24px
+}
+.f14 {
+	FONT-SIZE: 14px; LINE-HEIGHT: 130%
+}
+.title12 {
+	FONT-SIZE: 12px
+}
+.title14 {
+	FONT-SIZE: 14px; LINE-HEIGHT: 130%
+}
+.tail12 {
+	FONT-SIZE: 12px
+}
+A:link {
+	COLOR: #0000ff
+}
+A:visited {
+	COLOR: #800080
+}
+A:active {
+	COLOR: #ff0000
+}
+A:hover {
+	COLOR: #ff0000
+}
+A.a01:link {
+	COLOR: #07015b; TEXT-DECORATION: none
+}
+A.a01:visited {
+	COLOR: #07015b; TEXT-DECORATION: none
+}
+A.a01:active {
+	COLOR: #ff0000; TEXT-DECORATION: none
+}
+A.a01:hover {
+	COLOR: #ff0000; TEXT-DECORATION: none
+}
+A.a02:link {
+	COLOR: #0000ff; TEXT-DECORATION: none
+}
+A.a02:visited {
+	COLOR: #0000ff; TEXT-DECORATION: none
+}
+A.a02:active {
+	COLOR: #ff0000; TEXT-DECORATION: none
+}
+A.a02:hover {
+	COLOR: #ff0000; TEXT-DECORATION: none
+}
+</STYLE>
+
+<STYLE>.yqin {
+	DISPLAY: inline; WIDTH: 0px; POSITION: absolute; HEIGHT: 0px; TEXT-ALIGN: left
+}
+A.iask_f14:link {
+	FONT-SIZE: 14px; COLOR: #ff0000; TEXT-DECORATION: none
+}
+A.iask_f14:visited {
+	FONT-SIZE: 14px; COLOR: #ff0000; TEXT-DECORATION: none
+}
+A.iask_f14:active {
+	FONT-SIZE: 14px; COLOR: #ff0000; TEXT-DECORATION: none
+}
+A.iask_f14:hover {
+	FONT-SIZE: 14px; COLOR: #ff0000; TEXT-DECORATION: none
+}
+A.akey:link {
+	COLOR: #0000ff; TEXT-DECORATION: none
+}
+A.akey:visited {
+	COLOR: #800080; TEXT-DECORATION: none
+}
+A.akey:active {
+	COLOR: #ff0000; TEXT-DECORATION: underline
+}
+A.akey:hover {
+	COLOR: #ff0000; TEXT-DECORATION: underline
+}
+</STYLE>
+
+<SCRIPT language=JavaScript>
+//发布日期
+pagepubtime = "2005-08-25";
+
+//广告显示判断
+function checkPubTime(){
+
+	//分解年、月、日
+	DateTime = new Array(); 
+	DateTime = pagepubtime.split("-");
+	var year = DateTime[0];
+	var month = DateTime[1];
+	var day = DateTime[2];
+
+	//用得到的年、月、日生成日期对象
+	var pubTime = new Date(year,month - 1,day);
+	//得到当前日期
+	var now = new Date();
+
+	//计算出当前日期与发布日期之间的毫秒差值
+	var dif = now.getTime() - pubTime.getTime();
+
+	//需要检测的日期差
+	var difDay = 20;
+
+	//一天24小时、一小时60分、一分60秒、一秒1000毫秒
+	if (dif > difDay * 24 * 60 * 60 * 1000)
+	{
+		return false;
+	}
+	return true;
+}
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+function setBarPosition(){
+	document.getElementById('toolBar').style.top=0
+	document.getElementById('toolBar').style.left=621
+	document.getElementById('toolBar').style.display='block'
+}
+
+function setTailPosition(){
+//
+var theHeight=(document.getElementById('toolBar').offsetHeight>document.getElementById('theEnd').offsetTop) ? document.getElementById('toolBar').offsetHeight : document.getElementById('theEnd').offsetTop
+	document.getElementById('sinaTail').style.top=theHeight
+	document.getElementById('sinaTail').style.left=document.getElementById('theEnd').offsetLeft
+	document.getElementById('sinaTail').style.display='block'
+}
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+	function doZoom(size){
+		document.getElementById('zoom').style.fontSize=size+'px'
+		setTailPosition()
+	}
+	</SCRIPT>
+
+<SCRIPT language=JavaScript>
+	
+	function doPrint(){
+	var str="<html>";
+	var article;
+	var css;
+	var strAdBegin="<!--NEWSZW_HZH_BEGIN-->";
+	var strAdEnd="<!--NEWSZW_HZH_END-->";
+	var strFontSize='【<A href="javascript:doZoom(16)">大</A> <A href="javascript:doZoom(14)">中</A> <A href="javascript:doZoom(12)">小</A>】'
+	var strdoPrint="doPrint()";
+	var strTmp;
+	
+		css="<style>"
+		+"body{font-family:宋体}"
+		+"td,.f12{font-size:12px}"
+		+".f24 {font-size:24px;}"
+		+".f14 {font-size:14px;}"
+		+".title14 {font-size:14px;line-height:130%}"
+		+".l17 {line-height:170%;}"
+		+"</style>";
+	
+		str +=	css;
+		str +=	'<meta http-equiv="content-type" content="text/html; charset=gb2312">';
+		str +=	"<body bgcolor=#ffffff topmargin=5 leftmargin=5 marginheight=5 marginwidth=5 onLoad='window.print()'>";
+		str +=	"<center><table width=600 border=0 cellspacing=0 cellpadding=0><tr><td height=34 width=150><a href=http://tech.sina.com.cn><img src=http://tech.sina.com.cn/images/sina_kjsd.gif width=144 height=34 border=0></a></td><td valign=bottom><font color=#0000ff><a href=http://home.sina.com.cn/ class=a02>新浪首页</a> &gt; <a href=http://tech.sina.com.cn/ class=a02>科技时代</a> &gt; &nbsp;正文</font></td><td align=right valign=bottom><a href='javascript:history.back()'>返回</a>　<a href='javascript:window.print()'>打印</a></td></tr></table>";
+		str +=	"<table width=600 border=0 cellpadding=0 cellspacing=20 bgcolor=#EDF0F5><tr><td>";
+		
+		article=document.getElementById('article').innerHTML;
+		if(article.indexOf(strAdBegin)!=-1){
+			str +=article.substr(0,article.indexOf(strAdBegin));
+			strTmp=article.substr(article.indexOf(strAdEnd)+strAdEnd.length, article.length);
+		}
+		else{
+			strTmp=article;
+		}
+		str +=strTmp
+		str += window.location.href
+		str +=	"</td></tr></table></center>";
+		str +=	"</body></html>";
+		document.write(str);
+		document.close();
+	}
+</SCRIPT>
+
+<META content="MSHTML 6.00.2800.1491" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=5 onload=setTailPosition() 
+marginwidth="0" marginheight="5">
+<CENTER><!--导航start-->
+<STYLE>.h3 {
+	FONT-SIZE: 7px; COLOR: #ffbd00
+}
+</STYLE>
+
+<TABLE cellSpacing=0 cellPadding=0 width=750 border=0>
+  <TBODY>
+  <TR>
+    <TD>
+      <SCRIPT>
+function getCookie(name) {
+
+  var search;
+
+  search = name + "="
+  offset = document.cookie.indexOf(search) 
+  if (offset != -1) {
+    offset += search.length ;
+    end = document.cookie.indexOf(";", offset) ;
+    if (end == -1)
+      end = document.cookie.length;
+    return document.cookie.substring(offset, end);
+  }
+  else
+    return "";
+}
+
+function unipro_clearCookie(name ) {
+	document.cookie=name+"=; " + "domain=sina.com.cn; path=/; ";     
+	//bites = document.cookie.split("; ");
+} 
+
+function getMobileNum(ckName){
+var userInfo = getCookie(ckName).split(":");
+	return userInfo[2];
+}
+
+function unipro_UniProLogout() {
+	unipro_clearCookie("SINAPRO");
+	unipro_clearCookie("SINA-AVATAR");
+	unipro_clearCookie("SINAPROC");
+	unipro_clearCookie("nick");
+	unipro_clearCookie("SINA_NU");      
+	unipro_clearCookie("SINA_OU");
+	unipro_clearCookie("appmask");
+	unipro_clearCookie("gender");
+	unipro_clearCookie("UNIPROTM");
+	unipro_clearCookie("UNIPROU");
+	unipro_clearCookie("SINA_USER");
+	unipro_clearCookie("SMS_COOKIE");
+	return true;
+}
+
+function getUniproUrl_stand(){
+	window.location='http://unipro.sina.com.cn/';
+	return false;
+}
+
+function getUniproUrl_welcome(){
+	unipro_UniProLogout();
+	window.location='http://unipro.sina.com.cn';
+	return false;	
+}
+
+function print_stand_unipro_head()
+{
+	document.write("<table border=0 cellpadding=0 cellspacing=0 width=100%><tr align=center><td><a href=http://www.sina.com.cn class=a01>首页</a></td><td width=4></td><td><a href=http://news.sina.com.cn class=a01>新闻</a></td><td width=4></td><td><a href=http://sports.sina.com.cn class=a01>体育</a></td><td width=4></td><td><a href=http://ent.sina.com.cn class=a01>娱乐</a></td><td width=4></td><td><a href=http://bn.sina.com.cn/ class=a01>视频</a></td><td width=4></td><td><a href=http://finance.sina.com.cn/ class=a01>财经</a></td><td width=4></td><td><a href=http://tech.sina.com.cn/ class=a01>科技</a></td><td width=4></td><td><a href=http://auto.sina.com.cn/ class=a01>汽车</a></td><td width=4></td><td><a href=http://house.sina.com.cn/ class=a01><font color=red>房产</font></a></td><td width=4></td><td><a href=http://games.sina.com.cn class=a01>游戏</a></td><td width=4></td><td><a href=http://eladies.sina.com.cn/ class=a01>女性</a></td><td width=4></td><td><a href=http://weather.sina.com.cn/ class=a01>天气</a></td><td width=4></td><td><a href=http://sms.sina.com.cn class=a01>短信</a></td><td width=4></td><td><a href=http://mail.sina.com.cn class=a01>邮箱</a></td><td width=4></td></td><td><a href=http://news.sina.com.cn/guide/ class=a01>导航</a></td><td width=4></td><td ><a href=# onClick='return getUniproUrl_stand()'>通行证</a></td><td align=right style=\"padding-bottom:4px;\"><table width=211 border=0 align=right cellpadding=0 cellspacing=0>	<tr><td width=211 colspan=3 height=1 bgcolor=#A9A9A9></td>	</tr>	<form name=\"_searchiask\" method=get action=\"http://www.iask.com/n\" onsubmit=\"return checkiask()\" target=_blank><input type=hidden name=t value=keyword><input type=hidden name=\"c\" value=all><tr bgcolor=#F0F0F0><td width=97 height=21 align=center style=\"padding-top:3px;\"><a href=http://iask.com target=_blank  class=a01><font color=#ff0000>爱问(iAsk.com)</font></a></td><td width=91><input type=text name=\"k\" size=12 style=\"width:84px;height:17px;border:1px solid #7F9DB9;\" value=\"请输关键词\" onClick=\"javascript:if(this.value=='请输关键词')this.value='';\"></td>	<td width=23><input type=submit style=\"width:20px;height:18px\" value=\"搜\"></td>	</tr>	<tr><td colspan=3 height=1 bgcolor=#A9A9A9></td>	</tr>	</form>	</table></td></tr></table>");
+	
+	document.write("</td><td align=right>");
+	
+	
+}
+
+function print_stand_unipro_welcome()
+{
+	var unipro_login_nickname = getCookie( "nick" );
+	var unipro_login_pos = unipro_login_nickname.indexOf( "(" );
+	if ( unipro_login_pos != -1 )
+	{
+		unipro_login_nickname = unipro_login_nickname.substr( 0, unipro_login_pos );
+	}
+	
+	document.write("<table border=0 cellpadding=0 cellspacing=0 width=100%><tr align=center><td><a href=http://www.sina.com.cn class=a01>首页</a></td><td width=4></td><td><a href=http://news.sina.com.cn class=a01>新闻</a></td><td width=4></td><td><a href=http://sports.sina.com.cn class=a01>体育</a></td><td width=4></td><td><a href=http://ent.sina.com.cn class=a01>娱乐</a></td><td width=4></td><td><a href=http://bn.sina.com.cn/ class=a01>视频</a></td><td width=4></td><td><a href=http://finance.sina.com.cn/ class=a01>财经</a></td><td width=4></td><td><a href=http://tech.sina.com.cn/ class=a01>科技</a></td><td width=4></td><td><a href=http://auto.sina.com.cn/ class=a01>汽车</a></td><td width=4></td><td><a href=http://house.sina.com.cn/ class=a01><font color=red>房产</font></a></td><td width=4></td><td><a href=http://games.sina.com.cn class=a01>游戏</a></td><td width=4></td><td><a href=http://weather.sina.com.cn/ class=a01>天气</a></td><td width=4></td><td><a href=http://sms.sina.com.cn class=a01>短信</a></td><td width=4></td><td><a href=http://mail.sina.com.cn class=a01>邮箱</a></td><td width=4></td><td><a href=http://news.sina.com.cn/guide/ class=a01>导航</a></td><td width=4></td></tr></table>");
+	
+	document.write("</td><td align=right>");
+	
+	document.write("<table height=25 border=0 cellpadding=0 cellspacing=0>");
+	document.write("<tr>");
+	
+	if ( unipro_login_nickname!="" && unipro_login_nickname!="null" && unipro_login_nickname!=null && unipro_login_nickname!="undefined" ) {
+		document.write("<td align=right> "+unipro_login_nickname+"</td><td width=4></td><td><a href=# onClick='return getUniproUrl_welcome()'><font color=#0000ff>退出</font></a>");
+	} else {
+		document.write( "<td align=right> 新浪过客" +"</td><td width=4></td><td><a href=# onClick='return getUniproUrl_welcome()'><font color=#0000ff>退出</font></a>");
+	}
+	document.write("&nbsp;</td><td style=\"padding-bottom:4px;\"><table width=211 border=0 align=right cellpadding=0 cellspacing=0>	<tr><td width=211 colspan=3 height=1 bgcolor=#A9A9A9></td>	</tr>	<form name=\"_searchiask\" method=get action=\"http://www.iask.com/n\" onsubmit=\"return checkiask()\" target=_blank><input type=hidden name=t value=keyword><input type=hidden name=\"c\" value=all><tr bgcolor=#F0F0F0><td width=97 height=21 align=center style=\"padding-top:3px;\"><a href=http://iask.com target=_blank  class=a01><font color=#ff0000>爱问(iAsk.com)</font></a></td><td width=91><input type=text name=\"k\" size=12 style=\"width:84px;height:17px;border:1px solid #7F9DB9;\" value=\"请输关键词\" onClick=\"javascript:if(this.value=='请输关键词')this.value='';\"></td>	<td width=23><input type=submit style=\"width:20px;height:18px\" value=\"搜\"></td>	</tr>	<tr><td colspan=3 height=1 bgcolor=#A9A9A9></td>	</tr>	</form>	</table></td></tr>");
+	document.write("</table>");
+}
+
+function checkiask()
+{
+	if (document._searchiask.k.value=="请输关键词" || document._searchiask.k.value=="" )
+	{
+		window.open("http://iask.com");
+		return false;
+	}
+	return true;
+}
+</SCRIPT>
+
+      <SCRIPT language=javascript>
+if (getCookie("SINAPRO") == "") {
+	print_stand_unipro_head();
+
+} else {
+
+	print_stand_unipro_welcome();
+
+}
+</SCRIPT>
+    </TD></TR></TBODY></TABLE><!--导航end--><!--头部结束-->
+<DIV id=PublicRelation4 style="DISPLAY: none" name="PublicRelation"><!--ADS:begin=PDPS000000001351:{9F097A92-05FE-462E-9CA0-B8F07C1BE179}--><!--B8F07C1BE179-->
+<OBJECT 
+codeBase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 
+height=80 width=750 classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000><PARAM NAME="movie" VALUE="http://ad4.sina.com.cn/200508/19/27259.swf"><PARAM NAME="quality" VALUE="high"><PARAM NAME="wmode" VALUE="opaque">
+   <EMBED src="http://ad4.sina.com.cn/200508/19/27259.swf" quality=high 
+WIDTH="750" HEIGHT="80" TYPE="application/x-shockwave-flash" 
+PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"></EMBED>
+</OBJECT><!--$$ weixing/2005-8-23 ~ 2005-8-25/B $--><!--ADS:end--></DIV>
+<SCRIPT>	 
+//<!--广告发布-->
+<!--
+	if (checkPubTime())
+	{
+		document.getElementById("PublicRelation4").style.display="";
+	}
+-->
+</SCRIPT>
+
+<TABLE cellSpacing=0 cellPadding=0 width=750 border=0>
+  <TBODY>
+  <TR>
+    <TD width=150 height=34><A href="http://tech.sina.com.cn/"><IMG height=34 
+      alt=科技时代 src="基于VC++的OpenGL2.files/sina_kjsd.gif" width=144 
+    border=0></A></TD>
+    <TD vAlign=bottom width=440><FONT color=#0000ff><A class=a02 
+      href="http://home.sina.com.cn/">新浪首页</A> &gt; <A class=a02 
+      href="http://tech.sina.com.cn/">科技时代</A> &gt; <A class=a02 
+      href="http://tech.sina.com.cn/introduction/">学园</A> &gt; 正文</FONT></TD>
+    <TD vAlign=bottom align=right width=150><A href="http://www.yesky.com/" 
+      target=_blank><IMG height=28 
+      src="基于VC++的OpenGL2.files/U1084P2T50D213F629DT20041213105743.gif" 
+      border=0></A></TD>
+    <TD width=10></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width=750 border=0>
+  <TBODY>
+  <TR>
+    <TD height=8></TD></TR>
+  <TR>
+    <TD bgColor=#747474 height=1><IMG height=1 
+      src="基于VC++的OpenGL2.files/c.gif" width=1></TD></TR></TBODY></TABLE>
+<DIV id=outer style="WIDTH: 750px; POSITION: relative">
+<TABLE cellSpacing=0 cellPadding=0 width=750 border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top align=middle width=620 bgColor=#edf0f5 rowSpan=2><BR>
+      <DIV id=article>
+      <TABLE cellSpacing=0 cellPadding=0 width=560 border=0>
+        <TBODY>
+        <TR>
+          <TH class=f24><FONT color=#05006c>
+            <H1>基于VC++的OpenGL编程讲座之基本图元(2)</H1></FONT></TH></TR>
+        <TR>
+          <TD>
+            <HR SIZE=1 bgcolor="#d9d9d9">
+          </TD></TR>
+        <TR>
+          <TD align=middle height=20>http://www.sina.com.cn 
+            2005年08月25日&nbsp;09:42 <FONT color=#a20010>天极yesky</FONT></TD></TR>
+        <TR>
+          <TD height=15></TD></TR>
+        <TR>
+          <TD class=l17><FONT class=f14 id=zoom><!-- 正文内部文字导航 : begin --><!-- 正文内部文字导航 : end -->
+            <P>　　文/刘涛</P>
+            <P></P>
+            <P><STRONG>&nbsp;&nbsp;&nbsp; 
+            三、多边形(Polygon)<BR><BR></STRONG>　　（一）凸、凹多边形。<BR><BR>　　OpenGL定义的多边形是由一系列线段依次连结而成的封闭区域，多边形可以是平面多边形，即所有顶点在一个平面上，也可以是空间多边形。OpenGL规定多边形中的线段不能交叉，区域内不能有空洞，也即多边形必须是凸多边形（指多边形任意非相邻的两点的连线位于多边形的内部），不能是凹多边形，否则不能被OpenGL函数接受。凸多边形和凹多边形见图三。<BR><BR>
+            <DIV align=center><IMG style="WIDTH: 463px; HEIGHT: 203px" 
+            alt=基于VC++的OpenGL编程讲座之基本图元(2) hspace=0 
+            src="基于VC++的OpenGL2.files/3790952062.jpg" 
+            border=1><BR>图三、凸凹多边形</DIV><BR>　　（二）边界标志问题。<BR><BR>　　实际应用中，往往需要绘制一些凹多边形，通常解决的办法是对它们进行分割，用多个三角形来替代。显然，绘制这些三角形时，有些边不应该进行绘制，否则，多边形内部就会出现多余的线框。OpenGL提供的解决办法是通过设置边标志命令glEdgeFlag（）来控制某些边产生绘制，而另外一些边不产生绘制，这也称为边界标志线或非边界线。这个命令的定义如下；<BR><BR>
+            <TABLE borderColor=#cccccc width="90%" align=center bgColor=#e3e3e3 
+            border=1>
+              <TBODY>
+              <TR>
+                <TD>void glEdgeFlag(GLboolean flag);<BR>void 
+                  glEdgeFlag(PGLboolean 
+            pflag);</TD></TR></TBODY></TABLE><BR>　　（三）多边形绘制模式。<BR><BR>　　多边形的绘制模式包含有：全填充式、轮廓点式、轮廓线式、图案填充式及指定正反面等。下面分别介绍应的OpenGL函数形式。<BR><BR>　　1）多边形模式设置。其函数为：<BR><BR>
+            <TABLE borderColor=#cccccc width="90%" align=center bgColor=#e3e3e3 
+            border=1>
+              <TBODY>
+              <TR>
+                <TD>void glPolygonMode(GLenum face,GLenum 
+            mode);</TD></TR></TBODY></TABLE><BR>　　参数face为GL_FRONT、GL_BACK或GL_FRONT_AND_BACK；参数mode为GL_POINT、GL_LINE或GL_FILL，分别表示绘制轮廓点式多边形、轮廓线式多边形或全填充式多边形。在OpenGL中，多边形分为正面和反面，对这两个面都可以进行操作，在缺省状况下，OpenGL对多边形正反面是以相同的方式绘制的，要改变绘制状态，必须调用PolygonMode（）函数，<BR><BR>　　2）设置图案填充式多边形。其函数为：<BR><BR>
+            <TABLE borderColor=#cccccc width="90%" align=center bgColor=#e3e3e3 
+            border=1>
+              <TBODY>
+              <TR>
+                <TD>void glPolygonStipple(const GLubyte 
+            *mask);</TD></TR></TBODY></TABLE><BR>　　参数mask是一个指向32x32位图的指针。与虚点线绘制的道理一样，某位为1时绘制，为0时什么也不绘。注意，在调用这个函数前，必须先启动glEnable(GL_POLYGON_STIPPLE)；不用时用glDisable(GL_POLYGON_STIPPLE)关闭。下面举出一个多边形扩展绘制实例：<BR><BR>
+            <TABLE borderColor=#cccccc width="90%" align=center bgColor=#e3e3e3 
+            border=1>
+              <TBODY>
+              <TR>
+                <TD>void CALLBACK display(void)<BR>{<BR>　　/* 填充模式定义 （32x32） 
+                  */<BR>　　GLubyte pattern[]= {<BR>　　　　0x00, 0x01, 0x80, 
+                  0x00,<BR>　　　　0x00, 0x03, 0xc0, 0x00,<BR>　　　　　　0x00, 0x07, 
+                  0xe0, 0x00,<BR>　　　　　　0x00, 0x0f, 0xf0, 0x00,<BR>　　　　　　0x00, 
+                  0x1f, 0xf8, 0x00,<BR>　　　　　　0x00, 0x3f, 0xfc, 
+                  0x00,<BR>　　　　　　0x00, 0x7f, 0xfe, 0x00,<BR>　　　　　　0x00, 0xff, 
+                  0xff, 0x00,<BR>　　　　　　0x01, 0xff, 0xff, 0x80,<BR>　　　　　　0x03, 
+                  0xff, 0xff, 0xc0,<BR>　　　　　　0x07, 0xff, 0xff, 
+                  0xe0,<BR>　　　　　　0x0f, 0xff, 0xff, 0xf0,<BR>　　　　　　0x1f, 0xff, 
+                  0xff, 0xf8,<BR>　　　　　　0x3f, 0xff, 0xff, 0xfc,<BR>　　　　　　0x7f, 
+                  0xff, 0xff, 0xfe,<BR>　　　　　　0xff, 0xff, 0xff, 
+                  0xff,<BR>　　　　　　0xff, 0xff, 0xff, 0xff,<BR>　　　　　　0x7f, 0xff, 
+                  0xff, 0xfe,<BR>　　　　　　0x3f, 0xff, 0xff, 0xfc,<BR>　　　　　　0x1f, 
+                  0xff, 0xff, 0xf8,<BR>　　　　　　0x0f, 0xff, 0xff, 
+                  0xf0,<BR>　　　　　　0x07, 0xff, 0xff, 0xe0,<BR>　　　　　　0x03, 0xff, 
+                  0xff, 0xc0,<BR>　　　　　　0x01, 0xff, 0xff, 0x80,<BR>　　　　　　0x00, 
+                  0xff, 0xff, 0x00,<BR>　　　　　　0x00, 0x7f, 0xfe, 
+                  0x00,<BR>　　　　　　0x00, 0x3f, 0xfc, 0x00,<BR>　　　　　　0x00, 0x1f, 
+                  0xf8, 0x00,<BR>　　　　　　0x00, 0x0f, 0xf0, 0x00,<BR>　　　　　　0x00, 
+                  0x07, 0xe0, 0x00,<BR>　　　　　　0x00, 0x03, 0xc0, 
+                  0x00,<BR>　　　　　　0x00, 0x01, 0x80, 0x00<BR>　　　　};<BR>　　　　glClear 
+                  (GL_COLOR_BUFFER_BIT);<BR>　　　/* 绘制一个指定图案填充的三角形 
+                  */<BR>　　　　glColor3f(0.9,0.86,0.4);<BR>　　　　glPolygonStipple 
+                  (pattern);<BR>　　　　glBegin(GL_TRIANGLES);<BR>　　　　　　glVertex2i(310,310);<BR>　　　　　　glVertex2i(220,80);<BR>　　　　　　glVertex2i(405,80);<BR>　　　　glEnd();<BR>　　　　glDisable 
+                  (GL_POLYGON_STIPPLE);<BR>　　　　glFlush ();<BR>　　} 
+            </TD></TR></TBODY></TABLE><BR>　　（三）指定多边形的正反面。 
+<BR><BR>　　其函数为：<BR><BR>
+            <TABLE borderColor=#cccccc width="90%" align=center bgColor=#e3e3e3 
+            border=1>
+              <TBODY>
+              <TR>
+                <TD>void glFrontFace(GLenum 
+            mode);</TD></TR></TBODY></TABLE><BR>　　在正常情况下，OpenGL中的多边形的正面和反面是由绘制的多边形的顶点顺序决定的，逆时针绘制的面是多边形的正面，但是，在OpenGL中使用该函数可以自定义多边形的正面。该函数的参数mode指定了正面的方向。它可以是CL_CCW和CL_CW，分别指定逆时针和顺时针方向为多边形的正方向。 
+
+            <P></P>
+            <P><SPAN id=_function_code_page>
+            <P align=right><A style="FONT-SIZE: 14px" 
+            href="http://tech.sina.com.cn/s/2005-08-25/0942703227.shtml">[上一页]</A>　<A 
+            href="http://tech.sina.com.cn/s/2005-08-25/0942703227.shtml">[1]</A>　[2]　<A 
+            href="http://tech.sina.com.cn/s/2005-08-25/0942703229.shtml">[3]</A>　<A 
+            style="FONT-SIZE: 14px" 
+            href="http://tech.sina.com.cn/s/2005-08-25/0942703229.shtml">[下一页]</A></P></SPAN>
+            <P></P><!--NEWSZW_HZH_BEGIN-->
+            <DIV id=PublicRelation5 style="DISPLAY: none" 
+            name="PublicRelation"></DIV><!--NEWSZW_HZH_END-->
+            <TABLE width="90%" align=center border=0>
+              <TBODY>
+              <TR></TR></TBODY></TABLE>
+            <P clear=all></P>
+            <TABLE cellSpacing=0 cellPadding=0 width=565 border=0>
+              <TBODY>
+              <TR>
+                <TD width=20></TD>
+                <TD class=f14 align=left>
+                  <P>
+                  <SCRIPT>
+				<!--
+				function ck()
+				{
+						if((f.k.value=="")||(f.k.value=="请输关键词"))
+						{
+								window.open("http://iask.com");
+								return false;
+						} 
+								return true;
+				}
+
+				//-->
+				</SCRIPT>
+
+                  <TABLE 
+                  style="BORDER-TOP: #a9a9a9 1px solid; BORDER-BOTTOM: #a9a9a9 1px solid" 
+                  cellSpacing=0 cellPadding=0 width=514 bgColor=#f9f9f9 
+border=0>
+                    <FORM name=f onsubmit="return ck()" action=http://iask.com/s 
+                    method=get target=_blank>
+                    <TBODY>
+                    <TR>
+                      <TD class=f14 style="PADDING-LEFT: 10px" width=514 
+                      height=30><A class=iask_f14 href="http://iask.com/" 
+                        target=_blank>爱问(iAsk.com)</A> <INPUT id=k 
+                        onclick="javascript:if(this.value=='请输关键词')this.value='';" 
+                        maxLength=200 size=16 value=请输关键词 name=k> <INPUT style="WIDTH: 30px" type=submit value=" 搜 "> 
+                    </TD></TR></FORM></TBODY></TABLE></P></TD></TR></TBODY></TABLE></FONT></TD></TR></TBODY></TABLE></DIV>
+      <SCRIPT>	 
+	//<!--广告发布-->
+	<!--
+		if (checkPubTime())
+		{
+			document.getElementById("PublicRelation5").style.display="";
+		}
+	-->
+	</SCRIPT>
+      <BR><BR>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD style="PADDING-RIGHT: 20px" align=right>【<A 
+            href="http://comment4.news.sina.com.cn/comment/comment4.html?channel=kj&amp;newsid=2-1-703227">评论</A>】【<A 
+            href="http://forum.tech.sina.com.cn/cgi-bin/tree.cgi?gid=23&amp;fid=288">应用软件论坛</A>】【<A 
+            title=收藏的网页将被永久的保存到ViVi收藏夹http://vivi.sina.com.cn 
+            href="javascript:d=document;t=d.selection?(d.selection.type!='None'?d.selection.createRange().text:''):(d.getSelection?d.getSelection():'');void(vivi=window.open('http://vivi.sina.com.cn/collect/icollect.php?pid=tech.sina.com.cn&amp;title='+escape(d.title)+'&amp;url='+escape(d.location.href)+'&amp;desc='+escape(t),'vivi','scrollbars=no,width=460,height=450,left=75,top=20,status=no,resizable=yes'));vivi.focus();">收藏此页</A>】【<A 
+            href="javascript:doZoom(16)">大</A> <A 
+            href="javascript:doZoom(14)">中</A> <A 
+            href="javascript:doZoom(12)">小</A>】【<A 
+            href="http://news.sina.com.cn/pc/2004-11-16/27/1088.html?from=401" 
+            target=_blank>多种方式看新闻</A>】【<A href="http://www.sina.com.cn/ddt/" 
+            target=_blank>下载点点通</A>】【<A href="javascript:doPrint()">打印</A>】【<A 
+            href="javascript:window.close()">关闭</A>】</TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=0 cellPadding=0 width=565 border=0>
+        <TBODY>
+        <TR>
+          <TD height=19></TD></TR>
+        <TR>
+          <TD bgColor=#c6c9d1 height=1></TD></TR>
+        <TR>
+          <TD height=10></TD></TR></TBODY></TABLE>
+      <DIV id=PublicRelation1 style="DISPLAY: none" name="PublicRelation">
+      <TABLE cellSpacing=0 cellPadding=0 width=560 border=0>
+        <TBODY>
+        <TR>
+          <TD><!-- 正文底部小通栏 -->
+            <TABLE cellSpacing=0 cellPadding=0 width=585 align=center 
+              border=0><TBODY>
+              <TR>
+                <TD><!--ADS:begin=PDPS000000001114:{588D1DA4-7E6F-4839-91A5-12CE283F091A}--><!--12CE283F091A-->
+                  <OBJECT 
+                  codeBase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 
+                  height=50 width=585 
+                  classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000><PARAM NAME="movie" VALUE="http://ad4.sina.com.cn/200508/10/26515.swf"><PARAM NAME="quality" VALUE="high"><PARAM NAME="wmode" VALUE="opaque">
+                     <EMBED src="http://ad4.sina.com.cn/200508/10/26515.swf" 
+                  quality=high WIDTH="585" HEIGHT="50" 
+                  TYPE="application/x-shockwave-flash" 
+                  PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"></EMBED>
+                  </OBJECT><!--$$ nwy/2005-8-25 ~ 2005-8-25/B $--><!--ADS:end--></TD></TR>
+              <TR>
+                <TD 
+            height=5></TD></TR></TBODY></TABLE><!--Adforward Begin:测试勿删--><IFRAME 
+            marginWidth=0 marginHeight=0 src="基于VC++的OpenGL2.files/adfshow.htm" 
+            frameBorder=0 width=1 scrolling=no 
+            height=1>
+		<SCRIPT LANGUAGE="JavaScript1.1" SRC="http://153.adsina.allyes.com/main/adfshow?user=AFP6_for_SINA|Tech|TechPIP&db=sina&local=yes&js=on"></SCRIPT>
+		<NOSCRIPT><A HREF="http://153.adsina.allyes.com/main/adfclick?user=AFP6_for_SINA|Tech|TechPIP&db=sina"><IMG SRC="http://153.adsina.allyes.com/main/adfshow?user=AFP6_for_SINA|Tech|TechPIP&db=sina" WIDTH=1 HEIGHT=1 BORDER=0></a></NOSCRIPT></IFRAME><!--Adforward End--></TD></TR></TBODY></TABLE>
+      <TABLE width=580>
+        <TBODY>
+        <TR>
+          <TD class=f14>&nbsp;&nbsp;&nbsp;&nbsp; <!--ADS:begin=PDPS000000000776:{EE3ADEE5-416F-4852-AC16-B38417A1B433}--><A 
+            href="http://cxjl.sina.com.cn/" target=_blank>彩信精灵 意想不到的结果 
+你能不喜欢?</A><!--nwy/sms/A--> <!--ADS:end-->&nbsp;&nbsp;&nbsp;&nbsp;<!--ADS:begin=PDPS000000000777:{7491E3E1-F49A-4667-9658-793CC9204392}--> 
+<!--ADS:end--></TD></TR></TBODY></TABLE></DIV>
+      <SCRIPT>	 
+	//<!--广告发布-->
+	<!--
+		if (checkPubTime())
+		{
+			document.getElementById("PublicRelation1").style.display="";
+		}
+	-->
+	</SCRIPT>
+      <BR>
+      <DIV id=links></DIV></TD>
+    <TD width=1 bgColor=#747474 rowSpan=2></TD>
+    <TD vAlign=top width=129></TD></TR></TBODY></TABLE><!-- 右侧功能条 begin -->
+<DIV id=toolBar style="DISPLAY: none; POSITION: absolute">
+<TABLE cellSpacing=0 cellPadding=0 width=129 border=0>
+  <TBODY>
+  <TR>
+    <TD align=middle><!-- 搜索 begin--><!-- 搜索 end-->
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD height=2></TD></TR></TBODY></TABLE>
+      <DIV id=PublicRelation2 style="DISPLAY: none" name="PublicRelation"><!--ADS:begin=PDPS000000000362:{33DB94DA-C090-40B2-A2C4-4BDC3354DFC8}--><!--3BD4B22AE985-->
+      <OBJECT 
+      codeBase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 
+      height=320 width=120 classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000><PARAM NAME="movie" VALUE="http://ad4.sina.com.cn/200507/03/23106_120320b2b.swf"><PARAM NAME="quality" VALUE="high"><PARAM NAME="wmode" VALUE="opaque">
+         <EMBED src="http://ad4.sina.com.cn/200507/03/23106_120320b2b.swf" 
+      quality=high WIDTH="120" HEIGHT="320" TYPE="application/x-shockwave-flash" 
+      PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"></EMBED>
+      </OBJECT><!--$$ zhyh/2005-08-25 ~  2005-08-25/B $--><!--ADS:end-->
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD height=8></TD></TR></TBODY></TABLE>
+      <TABLE 
+      style="BORDER-RIGHT: #fcc219 1px solid; BORDER-TOP: #fcc219 1px solid; BORDER-LEFT: #fcc219 1px solid; BORDER-BOTTOM: #fcc219 1px solid" 
+      cellSpacing=1 cellPadding=0 width=122 border=0>
+        <TBODY>
+        <TR>
+          <TD style="PADDING-TOP: 2px" align=middle bgColor=#fccc04 
+            height=20>热 点 专 题</TD></TR>
+        <TR>
+          <TD height=3></TD></TR>
+        <TR>
+          <TD class=l15 style="PADDING-LEFT: 2px">
+            <TABLE cellSpacing=0 cellPadding=0 width=118 border=0>
+              <TBODY>
+              <TR>
+                <TD height=5></TD></TR>
+              <TR>
+                <TD class=l15 colSpan=3><A class=a02 
+                  href="http://news.sina.com.cn/z/ylwstzg/index.shtml" 
+                  target=_blank>聚焦医疗体制改革</A><BR><A class=a02 
+                  href="http://finance.sina.com.cn/nz/zzfgzsds/index.shtml" 
+                  target=_blank>个人所得税改革</A><BR><A class=a02 
+                  href="http://tech.sina.com.cn/focus/tel_fee_05/index.shtml" 
+                  target=_blank>固定电话资费调整</A><BR><A class=a02 
+                  href="http://tech.sina.com.cn/focus/MobNIC_2005/index.shtml" 
+                  target=_blank>信息化高峰论坛召开</A><BR><A class=a02 
+                  href="http://auto.sina.com.cn/z/baiweichezhu/index.shtml" 
+                  target=_blank>热销车型车主调查</A><BR><A class=a02 
+                  href="http://sports.sina.com.cn/z/05zc17/" 
+                  target=_blank>2005中超第十七轮</A><BR><A class=a02 
+                  href="http://ent.sina.com.cn/f/s/gxmtfxzb/index.shtml" 
+                  target=_blank>小品演员高秀敏去世</A><BR><A class=a02 
+                  href="http://book.sina.com.cn/nzt/lit/langmanmanwu/index.shtml" 
+                  target=_blank>青春文学：浪漫满屋</A><BR><A class=a02 
+                  href="http://book.sina.com.cn/nzt/sex/hellobaby/index.shtml" 
+                  target=_blank>爆笑怀孕日记</A><BR></TD></TR></TBODY></TABLE><!--ok--></TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <TBODY>
+        <TR>
+          <TD height=8></TD></TR></TBODY></TABLE>
+      <TABLE 
+      style="BORDER-RIGHT: #fcc219 1px solid; BORDER-TOP: #fcc219 1px solid; BORDER-LEFT: #fcc219 1px solid; BORDER-BOTTOM: #fcc219 1px solid" 
+      cellSpacing=1 cellPadding=0 width=120 border=0>
+        <TBODY>
+        <TR>
+          <TD style="PADDING-TOP: 2px" align=middle bgColor=#fccc04 
+            height=20><A class=a02 href="http://www.sina.net/" target=_blank>企 业 
+            服 务</A></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.cnpatent.org/zhkc/" target=_blank><FONT 
+            color=#ff0000>投资3万元年利100万！</FONT></A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.auslet.com/gg/index.asp" 
+            target=_blank>名品折扣店聚财新模式</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.888tea.cn/" target=_blank><FONT 
+            color=#ff0000>看盛唐茶庄如何赚钱？</FONT></A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/webpages/lydyb/lydyb.htm" 
+            target=_blank>美国休闲氧吧，狂赚钱</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/WebPages/zdji/zdji.htm" 
+            target=_blank>火爆粥铺，四季稳赚</A><A class=a02 
+            href="http://www.u88.cn/webpages/qlbl/qlbl_sina.htm" 
+            target=_blank></A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/webpages/yjyy/yjyy_sin.htm" 
+            target=_blank>眼镜影院，石破天惊！</A><BR></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/WebPages/wqqy/wqqy.htm" 
+            target=_blank>油价狂涨！钱狂赚！</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/WebPages/bld/bld_sin.htm" 
+            target=_blank>2—5万元投资好项目</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/webpages/csbb/ccfs.htm" 
+            target=_blank>虫虫新女装漂亮才被抢</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.wangtingrui.com/index.htm" 
+            target=_blank>中国特色治疗精神病！</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/WebELiao/xfnr/xfnr.htm" 
+            target=_blank>拯救男人，还你健康！</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/webeliao/shnx/shnx1.htm" target=_blank><FONT 
+            color=#ff0000>健康男人，美满生活！</FONT></A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/webeliao/jjkk123/jjkk123.htm" 
+            target=_blank>高血压治疗上的飞跃！</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/webpages/ydy/ydy_sin.htm" 
+            target=_blank>谈情说爱，浪漫赚钱！</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"><A class=a02 
+            href="http://www.u88.cn/WebPages/csg/csg.htm" 
+            target=_blank>新韩国快餐一月赚八万</A></FONT></TD></TR>
+        <TR>
+          <TD class=title12>
+            <TABLE cellSpacing=0 cellPadding=0 width=120 border=0>
+              <TBODY></TBODY></TABLE><FONT 
+            style="FONT-SIZE: 12px; LINE-HEIGHT: 150%"></FONT></TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=0 cellPadding=0 width=120 border=0>
+        <TBODY>
+        <TR>
+          <TD align=right height=8></TD></TR></TBODY></TABLE></DIV>
+      <SCRIPT>	 
+	//<!--广告发布-->
+	<!--
+		if (checkPubTime())
+		{
+			document.getElementById("PublicRelation2").style.display="";
+		}
+	-->
+	</SCRIPT>
+  </TR></TBODY></TABLE></DIV><!-- 右侧功能条 end -->
+<SCRIPT language=JavaScript>
+	setBarPosition();
+</SCRIPT>
+
+<TABLE cellSpacing=0 cellPadding=0 width=750 border=0>
+  <TBODY>
+  <TR>
+    <TD align=middle width=620 bgColor=#edf0f5>
+      <TABLE>
+        <TBODY>
+        <TR>
+          <TD height=2></TD></TR></TBODY></TABLE>
+      <DIV id=PublicRelation3 style="DISPLAY: none" 
+      name="PublicRelation"><IFRAME id=nadframe marginWidth=0 marginHeight=0 
+      src="基于VC++的OpenGL2.files/WEBSITE_DEFAULTPAGE_0_0.htm" frameBorder=0 
+      width=565 scrolling=no height=43></IFRAME>
+      <STYLE>A.ajhnba01 {
+	COLOR: #ffffff; TEXT-DECORATION: none
+}
+A.ajhnba02 {
+	COLOR: #017fd3; TEXT-DECORATION: none
+}
+A.ajhnba03 {
+	COLOR: #585857; TEXT-DECORATION: none
+}
+.laza14 {
+	LINE-HEIGHT: 140%
+}
+</STYLE>
+
+      <TABLE cellSpacing=0 cellPadding=0 width=564 align=center border=0>
+        <TBODY>
+        <TR vAlign=top>
+          <TD width=283>
+            <TABLE 
+            style="BORDER-RIGHT: #afafaf 1px solid; BORDER-TOP: #afafaf 1px solid; BORDER-LEFT: #afafaf 1px solid; BORDER-BOTTOM: #afafaf 1px solid" 
+            cellSpacing=0 cellPadding=0 width=281 background="" border=0>
+              <SCRIPT language=JavaScript>
+		function newbfpic(type,aid,id) {
+			window.open('http://bf.sina.com.cn/sinarc_php/piclist.php?from=414&aid='+aid+'&type='+type)
+			window.open('http://bf.sina.com.cn/sinarc_php/picpre.php?from=414&aid='+aid+'&id='+id,'mmspic','width=585,height=475,resizable=1,scrollbars=0,status=no,toolbar=no,location=no,menu=no');}
+
+		function newbfringkey(aid,key) {
+			window.open('http://mms.sina.com.cn/bf/srchall.php?from=414&aid='+aid+'&key='+key);}
+
+		function newbfringlist(aid,type) {
+			window.open('http://bf.sina.com.cn/sinarc_php/ringlist.php?from=414&aid='+aid+'&type='+type);}
+
+		function newbfring(aid,id) {
+			window.open('http://bf.sina.com.cn/sinarc_php/ringpre.php?from=414&aid='+aid+'&id='+id,'mmsring','width=585,height=485,resizable=1,scrollbars=0,status=no,toolbar=no,location=no,menu=no');}
+	</SCRIPT>
+
+              <TBODY>
+              <TR bgColor=#ff6044>
+                <TD width=98><IMG 
+src="基于VC++的OpenGL2.files/zhegndos01.gif"></TD>
+                <TD style="PADDING-RIGHT: 5px" align=right width=127><A 
+                  class=ajhnba01 
+                  href="http://sms.sina.com.cn/binfen/newbf/zt/xylx.html?from=414" 
+                  target=_blank>校园铃声</A>　<A class=ajhnba01 
+                  href="http://bf.sina.com.cn/newbf/zt/xwsn.html?from=414" 
+                  target=_blank>绝版青春</A></TD>
+                <TD width=55><A class=ajhnba01 href="http://bf.sina.com.cn/" 
+                  target=_blank>更多&gt;&gt;</A></TD></TR>
+              <TR>
+                <TD vAlign=top align=middle 
+                background=基于VC++的OpenGL2.files/zhegndos02.gif colSpan=3 
+                height=131>
+                  <TABLE cellSpacing=0 cellPadding=0 width=272 
+                  background=基于VC++的OpenGL2.files/zhegndos03.gif border=0>
+                    <TBODY>
+                    <TR>
+                      <TD height=10></TD></TR>
+                    <TR>
+                      <TD class=laza14 style="PADDING-LEFT: 10px" 
+                        width=155><FONT color=#017fd3>[<A class=ajhnba02 
+                        title="" 
+                        href="javascript:newbfringkey(679,'伍佰')">伍　佰</A>] <A 
+                        class=ajhnba02 
+                        href="javascript:newbfring(679,25107605)">突然的自我</A> 
+                        <BR>[<A class=ajhnba02 
+                        href="javascript:newbfringkey(679,'赵薇')">赵　薇</A>] <A 
+                        class=ajhnba02 
+                        href="javascript:newbfring(679,25107604)">我和上官燕</A> 
+                        <BR>[<A class=ajhnba02 title="" 
+                        href="javascript:newbfringkey(679,'梁靜茹')">梁靜茹</A>] <A 
+                        class=ajhnba02 title="" 
+                        href="javascript:newbfring(679,25107572)">爱你不是两三天</A> 
+                        <BR>[<A class=ajhnba02 
+                        href="javascript:newbfringkey(679,'阳一')">阳　一</A>] <A 
+                        class=ajhnba02 title="" 
+                        href="javascript:newbfring(679,25107563)">回来我的爱</A> <!--a class=ajhnba02 href=javascript:newbfring(679,25107337) title="">对不起</a--><BR>[<A 
+                        class=ajhnba02 
+                        href="javascript:newbfringlist(1322,654)">MP3铃声</A>] <A 
+                        class=ajhnba02 title=任贤齐-只爱你一人 
+                        href="javascript:newbfring(1322,28101453)">只爱你一人</A></FONT></TD>
+                      <TD width=117><A 
+                        href="javascript:newbfpic(783,113,27115597)"><IMG 
+                        style="BORDER-RIGHT: #afafaf 1px solid; BORDER-TOP: #afafaf 1px solid; BORDER-LEFT: #afafaf 1px solid; BORDER-BOTTOM: #afafaf 1px solid" 
+                        src="基于VC++的OpenGL2.files/27115597.gif"></A></TD></TR>
+                    <TR>
+                      <SCRIPT>function chg(){document.yao.key.focus();document.yao.key.value="";}</SCRIPT>
+
+                      <FORM name=yao 
+                      action=http://mms.sina.com.cn/bf/srchall.php method=post 
+                      target=_blank><INPUT type=hidden value=679 name=aid> 
+                      <INPUT type=hidden value=414 name=from> 
+                      <TD align=middle colSpan=2 height=30>图铃狂搜：<INPUT 
+                        style="COLOR: #ff0000" onclick=chg() value=罗大佑 name=key> 
+                        <INPUT type=image 
+                        src="基于VC++的OpenGL2.files/zhengwein05.gif" 
+                        align=absMiddle 
+              border=0></TD></FORM></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD bgColor=#ffd1c8 colSpan=3 height=2></TD></TR></TBODY></TABLE></TD>
+          <TD width=281>
+            <SCRIPT language=Javascript>
+function sina_ivr_send_song(id)           
+{
+	//alert("hello "+id);
+	window.open('http://bobo.sina.com.cn/web/bless.php?id='+id+'&','','width=600,height=510,scrollbars=no');
+}
+
+</SCRIPT>
+
+            <SCRIPT language=Javascript 
+            src="基于VC++的OpenGL2.files/ordersong.js"></SCRIPT>
+
+            <TABLE 
+            style="BORDER-RIGHT: #696969 1px solid; BORDER-TOP: #696969 1px solid; BORDER-LEFT: #696969 1px solid; BORDER-BOTTOM: #696969 1px solid" 
+            cellSpacing=0 cellPadding=0 width=281 bgColor=#c4002e border=0>
+              <TBODY>
+              <TR>
+                <TD colSpan=2><IMG src="基于VC++的OpenGL2.files/zhegndos04.gif" 
+                  align=absMiddle border=0> <FONT color=#ffffff>　<A 
+                  class=ajhnba01 href="http://bobo.sina.com.cn/" 
+                  target=_blank>更多</A>&gt;&gt;</FONT></TD></TR>
+              <TR vAlign=top>
+                <TD width=6><IMG src="基于VC++的OpenGL2.files/zhegndos05.gif"></TD>
+                <TD width=273>
+                  <TABLE cellSpacing=0 cellPadding=0 width=270 bgColor=#ffffff 
+                  border=0>
+                    <TBODY>
+                    <TR>
+                      <TD width=270><IMG hspace=0 
+                        src="基于VC++的OpenGL2.files/zhegndos06.gif" 
+                        align=left><IMG hspace=0 
+                        src="基于VC++的OpenGL2.files/zhegndos07.gif" 
+                    align=right></TD></TR></TBODY></TABLE>
+                  <TABLE cellSpacing=1 cellPadding=3 width=270 bgColor=#ffffff 
+                  border=0>
+                    <TBODY>
+                    <TR>
+                      <TD width=90><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1030090015','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>好感觉</A></TD>
+                      <TD width=90><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1030110001','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>对我好一点</A></TD>
+                      <TD width=90><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1060270033','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>最美</A></TD></TR>
+                    <TR>
+                      <TD bgColor=#fac0c2 height=25><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1060090004','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>爱不爱我</A></TD>
+                      <TD bgColor=#fac0c2><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1050080001','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>老鼠爱大米</A></TD>
+                      <TD bgColor=#fac0c2><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1040110002','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>杯水情歌</A></TD></TR>
+                    <TR>
+                      <TD><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1030180033','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>爱的主打歌</A></TD>
+                      <TD><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1030010024','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>后来</A></TD>
+                      <TD><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1020160031','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>浪花一朵朵</A></TD></TR>
+                    <TR>
+                      <TD bgColor=#fac0c2 height=24><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1020130030','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>爱很简单</A></TD>
+                      <TD bgColor=#fac0c2><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1020070015','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>偏偏喜欢你</A></TD>
+                      <TD bgColor=#fac0c2><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1020150017','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>雨一直下</A></TD></TR>
+                    <TR>
+                      <TD><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1020170004','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>门没锁</A></TD>
+                      <TD><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1030170006','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>没有丑女人</A></TD>
+                      <TD><A class=ajhnba03 
+                        onclick="sina_ivr_send_song('1021120006','414');return false;" 
+                        href="http://tech.sina.com.cn/s/2005-08-25/0942703228.shtml#" 
+                        target=_blank>你的样子</A></TD></TR></TBODY></TABLE>
+                  <TABLE cellSpacing=0 cellPadding=0 width=270 bgColor=#ffffff 
+                  border=0>
+                    <TBODY>
+                    <TR>
+                      <TD width=270><IMG hspace=0 
+                        src="基于VC++的OpenGL2.files/zhegndos08.gif" 
+                        align=left><IMG hspace=0 
+                        src="基于VC++的OpenGL2.files/zhegndos09.gif" 
+                    align=right></TD></TR>
+                    <TR>
+                      <TD bgColor=#c4002e 
+              height=2></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><!-- 新浪竞价排名 --><IFRAME 
+      border=0 marginWidth=0 marginHeight=0 
+      src="基于VC++的OpenGL2.files/sinanews_tech.html" frameBorder=0 width=565 
+      scrolling=no height=90></IFRAME><!-- 新浪竞价排名 end -->
+      <TABLE 
+      style="BORDER-RIGHT: #fec100 1px solid; BORDER-TOP: #fec100 1px solid; BORDER-LEFT: #fec100 1px solid; BORDER-BOTTOM: #fec100 1px solid; tr: " 
+      cellSpacing=0 cellPadding=0 width=565 bgColor=#fdf9e1 #FFEA8B?>
+        <TBODY>
+        <TR>
+          <TD colSpan=7></TD></TR>
+        <TR class=l15>
+          <TD class=l15 bgColor=#ffea8b colSpan=3 height=21>&nbsp;<A class=a02 
+            href="http://www.vutoo.com/sina/" target=_blank>健康</A>·<A class=a02 
+            href="http://sina.biz178.com/" 
+            target=_blank>加盟</A>&nbsp;&nbsp;&nbsp;<A class=a02 
+            href="http://admin.biz178.com/sheke/weburl.php?id=25" 
+            target=_blank>学习能力大揭秘</A>&nbsp;<A class=a02 
+            href="http://admin.biz178.com/sheke/weburl.php?id=28" 
+            target=_blank>睡出个百万富翁！</A></TD>
+          <TD class=l15 width=1 bgColor=#fec100 rowSpan=5></TD>
+          <TD class=l15 width=141 bgColor=#ffea8b>
+            <DIV align=center><A class=a02 
+            href="http://net.91cy.cn/webjump.php?www=sa&amp;id=6" 
+            target=_blank>点这里财“色”双收</A></DIV></TD>
+          <TD class=l15 width=1 bgColor=#fec100 rowSpan=5></TD>
+          <TD width=141 bgColor=#ffea8b>
+            <DIV align=center><A class=a02 
+            href="http://ad.vutoo.com/pf_yl/gb1025/" 
+            target=_blank>肝病，为何久治不愈？</A></DIV></TD></TR>
+        <TR height=20>
+          <TD class=l15 width=142>·<A class=a02 
+            href="http://admin.biz178.com/sheke/weburl.php?id=30" 
+            target=_blank>开唐林香烧鸡烤鸭店</A></TD>
+          <TD class=l15 width=1 bgColor=#fec100 rowSpan=4></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://admin.biz178.com/sheke/weburl.php?id=26" 
+            target=_blank>05年做什么赚钱快？！</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://classadnew.sina.com.cn/doc/daili.html" 
+            target=_blank>分类诚招地方CEO</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://ad.vutoo.com/pf_yl/shyx728/" 
+            target=_blank>难言之隐怎么办？？？</A></TD></TR>
+        <TR height=20>
+          <TD class=l15 width=142>·<A class=a02 
+            href="http://admin.biz178.com/sheke/weburl.php?id=31" 
+            target=_blank>1.2万办厂：年利100万</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://admin.biz178.com/sheke/weburl.php?id=27" 
+            target=_blank>不需店面一部电话创业</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://post.sina.com.cn/html/biz178.html" 
+            target=_blank>冲浪招贴栏发掘新财源</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://ad.vutoo.com/pf_yl/pfb619/" 
+          target=_blank>如何治皮肤白斑鱼鳞病</A></TD></TR>
+        <TR height=20>
+          <TD class=l15 width=142>·<A class=a02 
+            href="http://admin.biz178.com/sheke/weburl.php?id=32" 
+            target=_blank>开家咖啡店赚个几百万</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://admin.biz178.com/sheke/weburl.php?id=29" 
+            target=_blank>投资1000元：利润惊人</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://hotmoney.sina.net/" target=_blank>热钱投资频道火爆招商</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://ad.vutoo.com/pf_yl/smgxy810/" 
+            target=_blank>失眠、高血压紧急通知</A></TD></TR>
+        <TR height=20>
+          <TD class=l15 width=142>·<A class=a02 
+            href="http://www.u88.cn/webpages/zym_fz/zym_fz.htm" 
+            target=_blank><FONT color=#ff0000>韩国品牌女装招商！</FONT></A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://chanye.finance.sina.com.cn/focus/chuangye/index.shtml" 
+            target=_blank>创业好项目发家百招</A></TD>
+          <TD class=l15 width=141>·<A class=a02 href="http://www.alibaba.com/" 
+            target=_blank>外贸出口，商机无限！</A></TD>
+          <TD class=l15 width=141>·<A class=a02 
+            href="http://ad.vutoo.com/xljk/" 
+        target=_blank>健康分类诚招地方代理</A></TD></TR></TBODY></TABLE></DIV>
+      <SCRIPT>	 
+//<!--广告发布-->
+<!--
+	if (checkPubTime())
+	{
+		document.getElementById("PublicRelation3").style.display="";
+	}
+-->
+</SCRIPT>
+      <BR></TD>
+    <TD width=1 bgColor=#747474 rowSpan=2></TD>
+    <TD vAlign=top width=129></TD></TR></TBODY></TABLE><!--结束：底部--><!----><!--${生成留言参数}2205--><!--<FONT COLOR=CCCCCC><span style="font-size: 9pt">★</span></FONT>--><!--s/2005-08-25/0942,--><!--2005--><!--08--><!--25--><!--${特殊学园专题名称}--><!----><!----><!----><!----><!----><!--${图片精选数量}--><!--${图片精选更多页号}--><!--${是否发往各频道图片汇总}--><!--${是否送台湾新闻}--><!----><!--${传媒观察栏目组合}--><!--开始：底部--></CENTER>
+<CENTER>
+<DIV id=theEnd style="WIDTH: 750px; POSITION: relative"></DIV></CENTER>
+<DIV id=sinaTail style="DISPLAY: none; POSITION: absolute">
+<HR width=750 SIZE=2>
+<!--标准尾-->
+<TABLE cellSpacing=0 cellPadding=0 width=750 border=0>
+  <TBODY>
+  <TR>
+    <TD class=title12 align=middle><BR><A 
+      href="http://tech.sina.com.cn/guest.html" 
+      target=_blank>科技时代意见反馈留言板</A>　电话：010-82628888-5828　　　欢迎批评指正<BR><BR><A 
+      href="http://corp.sina.com.cn/chn/">新浪简介</A> | <A 
+      href="http://corp.sina.com.cn/eng/">About Sina</A> | <A 
+      href="http://ads.sina.com.cn/">广告服务</A> | <A class=sinatail 
+      href="http://www.sina.com.cn/contactus.html">联系我们</A> | <A 
+      href="http://corp.sina.com.cn/chn/sina_job.html">招聘信息</A> | <A 
+      href="http://www.sina.com.cn/intro/lawfirm.shtml">网站律师</A> | <A 
+      href="http://english.sina.com/">SINA English</A> | <A 
+      href="http://unipro.sina.com.cn/register.html">会员注册</A> | <A 
+      href="http://tech.sina.com.cn/focus/sinahelp.shtml">产品答疑</A> 
+      <BR><BR>Copyright &copy; 1996 - 2005 SINA Inc. All Rights Reserved<BR><BR><IMG 
+      height=1 src="C:\WINDOWS\Desktop\基于VC++的OpenGL2.files\c(1).gif" width=1><A 
+      href="http://home.sina.com.cn/intro/copyright.shtml" 
+      target=_blank>版权所有</A>　新浪网</TD></TR></TBODY></TABLE></DIV></DIV>
+<SCRIPT language=javascript src="基于VC++的OpenGL2.files/yq.js" 
+type=text/javascript></SCRIPT>
+</BODY></HTML>
