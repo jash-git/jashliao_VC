@@ -1,0 +1,280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML><HEAD><TITLE>VC知识库文章</TITLE>
+<BASE url="1.htm">
+<META content="text/html; charset=gb2312" http-equiv=Content-Type><LINK 
+href="VC知识库文章8.files/style.css" rel=stylesheet>
+<META content="MSHTML 5.00.2614.3500" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 src="VC知识库文章8.files/vckcom.gif" 
+      width=109></TD>
+    <TD align=right height=30 vAlign=bottom><IMG height=27 
+      src="VC知识库文章8.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black>首页</FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black>文档中心</FONT></A> 
+      &gt;&gt; <A href="http://www.vckbase.com/document/journal"><FONT 
+      color=black>在线杂志</FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=1303"><FONT 
+      color=black>DLL</FONT></A></TD>
+    <TD align=right class=small width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=3"><FONT 
+      color=black>在线杂志 第3期</FONT></A> ] </TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 height=35 width="100%">
+  <FORM action=/SYS/script/find.asp method=post name=form2>
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV align=right><INPUT class=rect maxLength=20 name=keyword size=10> 
+      <SELECT class=rect name=gclsid> <OPTION selected value=100>文档</OPTION> 
+        <OPTION value=200>代码</OPTION> <OPTION value=400>工具</OPTION></SELECT> 
+      <INPUT align=absMiddle border=0 height=15 name=imageField 
+      src="VC知识库文章8.files/go.gif" type=image width=21> 
+  </DIV></TD></TR></FORM></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD background=VC知识库文章8.files/dotline2.gif height=1></TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD height=74 width=40></TD>
+    <TD height=74 vAlign=top width=*>[ 本文适合中级读者 已阅读984次 ]<BR><BR>
+      <TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+        <TBODY>
+        <TR>
+          <TD>
+            <P align=center><B>编写控制面板程序的一个例子 <BR></B><BR>编译/<A 
+            href="mailto:zxn@hk.hi.cn?subject=文章“封装控制面板函数 CCPApplet”">zxn</A></P>
+            <P><A 
+            href="http://www.vckbase.com/code/downcode.asp?id=1801">下载源代码</A><BR><BR><BR>&nbsp;&nbsp;&nbsp; 
+            最近在编写一个Windows 98 和 Windows 2000 
+            系统中使的MPEG播放器，我想创建一个控制面板程序，用户可以通过这个程序改变播放器的 
+            基本配置。大家知道，控制面板程序一般都是个DLL动态库，然后将名字改为*.cpl。查找了许多资料后，发现所看到的一些例子都是用C写的。能不能在MFC中用C++来编写一个呢？答案是肯定的。本文将通过一个实际的VC++例子来示范如何编写MFC控制面板程序。<BR>&nbsp;&nbsp;&nbsp; 
+            首先要清楚虽然控制面板程序是一个DLL，但它和一般DLL还是有所差别的，因为它带有一个特殊的输出接口，这个接口就是CPlApplet函数，下面是它的原型：</P><PRE>LRESULT CPlApplet(HWND hwnd, 
+                  UINT msg, 
+                  LPARAM lp1, 
+                  LPARAM lp2);    </PRE>
+            <P>&nbsp;&nbsp;&nbsp;&nbsp;为了使本文的例子代码尽可能的具有可重用性，我用C++对控制面板的接口函数进行了封装。 
+            做了一个迷你型的控制面板应用程序开发框架，利用它开发控制面板扩展程序易如反掌。 
+            控制面板程序除了是个特别的DLL外，还有一个特点是其扩展名必须为 *.cpl，而不是*.dll。当Windows的控制面板管理程序 
+            (CONTROL.EXE)启动后，它会在系统目录（如：windows\system或者winnt\system32）中寻找名为XXX.cpl的文件，然后加载每一个DLL并以不同的消息 
+            参数调用CPlApplet函数。例如，当控制面板第一次启动时，它用消息msg=CPL_INIT调用 
+            CPlApplet函数，当用户双击控制面板中的应用程序图标时，它用消息msg=CPL_DBLCLK调用CPlApplet函数，然后控制面板应用程序显示相应的对话框，每个控制面板DLL都能支持一个以上的图标或应用。通过对消息CPL_GETCOUNT的响应，可以让控制面板知道DLL中有多少个应用，通过发送CPL_INQUIRE 
+            或 CPL_NEWINQUIRE消息，控制面板可以请求 与每一个应用有关的信息。 
+            图一是用一个跟踪程序（TraceWin）显示的TRACE Dump，从中可以看出控制面板对消息的处理情况。 <BR><BR><IMG 
+            border=0 src="VC知识库文章8.files/mypanel1.gif"><BR>图一 使用TraceWin 显示的 
+            TRACE Dump <BR><BR>&nbsp;&nbsp;&nbsp; 
+            由于大多数控制面板和DLL之间的交互都有固定的套路，所以可以被封装在一个框架里。本文提供了两个类，CControlPanelApp 和 
+            CCPApplet，实现了上述的封装。为了说明这两个类的使用方法， 
+            本文还编写了示范的控制面板程序应用DLL：MyCtrlPanel.dll，它实现了两个控制面板应用，图二是本文例子程序运行后在控制面板里创建的两个图标 
+            ，这两个图标一个是对话框形式（如图三）、一个是属性页 形式（如图四）。<BR><BR><IMG border=0 
+            src="VC知识库文章8.files/mypanel2.gif"><BR>图二 例子程序图标<BR><BR><IMG border=0 
+            src="VC知识库文章8.files/mypanel3.gif"><BR>图三<BR><BR><IMG border=0 
+            src="VC知识库文章8.files/mypanel4.gif"><BR>图四<BR><BR>&nbsp;&nbsp;&nbsp; 
+            例子程序的实现代码很象典型的MFC文档/视图应用，所不同的是它的APP类派生于CControlPanelApp，而不是CWinApp， 
+            并且不用改写InitInstance来添加文档模板，它用一个名为OnInit函数创建控制面板应用，OnInit创建了两个面板程序： 
+            </P><PRE>BOOL CMyControlPanelApp::OnInit()
+{
+     AddApplet(new CCPApplet(IDR_MYAPPLET1, 
+     RUNTIME_CLASS(CMyDialog)));
+     AddApplet(new CCPApplet(IDR_MYAPPLET2, 
+     RUNTIME_CLASS(CMyPropSheet)));
+     return CControlPanelApp::OnInit();
+}
+</PRE>
+            <P>&nbsp;&nbsp;&nbsp; CCPApplet是个很通用的类 
+            ，在例子程序中使用它时都不必再派生新类，其运行机制也很透明。真正需要自己编写代码的部分是对话框本身。MyCtrlPanel实现一个对话框CMyDialog和一个属性页CMyPropSheet。不管你相不相信，就这么简单， 
+            创建一个对话框，并象上述那样重载CControlPanelApp::OnInit，剩下的事情都交给迷你框架来做。<BR>&nbsp;&nbsp;&nbsp; 
+            到这里我们只完成了一部分工作，下面我们要描述由框架负责的那部分工作，比如：在哪里获取图标以及描述性信息、CPlApplet函数 
+            的实现在哪里？CPL消息的处理例程等等。所有这些工作都由CControlPanelApp 和 
+            CCPApplet来完成。CPanel.cpp中有一个CPlApplet函数负责将CPL消息转换成虚拟函数调用。当控制面板以消息CPL_INIT 
+            调用 
+            CPlApplet时，CPlApplet再调用CControlPanelApp::OnCplMsg，然后依次将控制传到CControlPanelApp::OnInit。OnCplMsg是CWnd::WindowProc的模拟，OnInit 
+            类似于消息处理函数，如OnCreate。有些CPL消息如CPL_INQUIRE、CPL_DBLCLK等都有面板程序号（索引），用lParam1进行传递，这些消息被传到索引指示的程序。（记住：单个控制面板扩展 
+            可以实现一个以上的图标或应用）。此时CControlPanelApp::OnCplMsg将消息处理路由到CCPApplet类的某个虚拟函数，而非CControlPanelApp。 
+            <BR>&nbsp;&nbsp;&nbsp; 
+            以上我们介绍了一大堆的类代码运行逻辑，将底层的DLL调用和消息代码映射到较高级C++雷和虚拟函数。可光有逻辑是不行的，要实现这个逻辑才有价值。CControlPanelApp 
+            和 CCPApplet 
+            便是最终的结果。它们根据给定的静态信息实现了需要的处理。当你创建一个新的控制面板应用时，只要给构造函数一个资源ID和一个MFC运行时类： 
+            </P><PRE>AddApplet(new CCPApplet(IDR_MYAPPLET2,
+RUNTIME_CLASS(CMyPropSheet)));</PRE>&nbsp;&nbsp;&nbsp; 
+            这就是框架实现控制面板应用时需要的全部信息。AddApplet将应用添加到m_lsApplets列表。默认的CPL_GETCOUNT消息处理函数可以返回列表中 
+            应用的个数。当控制面板发送CPL_INQUIRE 或 
+            CPL_NEWINQUIRE消息时，CCPApplet使用资源ID来获得应用的图标、名字和描述。名字和描述被解析为主资源串中的子串。 <PRE>STRINGTABLE PRELOAD DISCARDABLE?
+BEGIN
+IDR_MYAPPLET3 "Intergalactic\n
+Intergalactic settings for space cadets\n\n"
+END</PRE>&nbsp;&nbsp;&nbsp; 
+            这类似于MFC使用IDR_MAINFRAME处理串资源情况，如应用程序名、文当类型、COM 
+            ProgID等。只要按规范定义图标和资源串，就不必再实现OnInqure 或者 
+            OnNewInqure，调用默认的实现即可。另外，这里要对CPL_INQUIRE 和 
+            CPL_NEWINQUIRE消息的处理要做一点说明，CPL_NEWINQUIRE是新增的消息。一般说来，一个应用只要实现OnInqure就可以了，但如果 
+            面板应用程序的信息从一个SESSION到另一个SESSION的过程中是可变的（似乎有点不可思议），那么就只需实现OnNewInquire，如果是这样，应将CCPApplet::m_bDynamic赋值为TRUE； 
+            以便告诉框架旁路掉对CPL_INQUIRE消息的处理，也就是让它返回FALIED，从而让控制面板程序去处理CPL_NEWINQUIRE消息。 
+            是不是有点神奇啊！就是为什么你能忽略所有的那些细节，仅仅使用资源串就能搞掂的缘故。
+            <P></P>&nbsp;&nbsp;&nbsp; 当用户双击控制面板中的应用图标时，Windows发送CPL_DBLCK消息。 
+            这个消息被映射到CCPApplet::OnLaunch，此函数用对话框或者属性页的运行时类来创建一个实例，并调用DoModal： <PRE>LRESULT CCPApplet::OnLaunch(CWnd* pWndCpl, LPCSTR lpCmdLine)
+{
+    CWnd* pw = (CWnd*)m_pDialogClass-&gt;CreateObject();
+    if (pw) 
+    {
+        if (pw-&gt;IsKindOf(RUNTIME_CLASS(CPropertySheet))) 
+        {
+            CPropertySheet* ps = (CPropertySheet*)pw;
+            ps-&gt;SetActivePage(lpCmdLine ? atoi(lpCmdLine) : 0);
+            ps-&gt;DoModal();
+        } 
+        else 
+        {
+            if (pw-&gt;IsKindOf(RUNTIME_CLASS(CDialog))) 
+            {
+               CDialog* pd = (CDialog*)pw;
+               pd-&gt;DoModal();
+            }
+        }
+        return pw==NULL;
+     }
+}</PRE>&nbsp;&nbsp;&nbsp; 
+            一定要用DECLARE_DYNCREATE来声明对话框类和属性页类。如果不这样做Create会调用失败，而且可能还会有MFC的TRACE诊断错。除此之外，还要记住重 
+            写对话框和属性页的OnPostNcDestroy函数，加入代码“delete 
+            this”。这是因为，通常创建对话框是在栈（stack）上进行的，代码如下： <PRE>CMyDialog dlg;
+dlg.DoModal();
+</PRE>&nbsp;&nbsp;&nbsp; 
+            这种情况不用关心delete。而CPApplet是在堆（heap）上创建的对话框和属性页，在对话框和属性页被destroy掉以后，必须要进行delete操作，否则造成内存溢出。<BR>&nbsp;&nbsp;&nbsp; 
+            综上所述，我们可以看到，使用CControlPanelApp 和 
+            CCPApplet编写控制面扩展易如反掌。为了添加普通对话框或者基于属性页的面板应用，只需要重写CControlPanelApp::OnInit即可，然后实现相应的对话框代码和属性页代码。 
+            表一概括地总结了框架处理各种CPL消息的方法和注释。 <BR><BR>表一：控制面板消息和控制面板应用框架 <BR>
+            <TABLE bgColor=#ffffff border=1 borderColor=#111111 cellPadding=0 
+            cellSpacing=0 height=331 style="BORDER-COLLAPSE: collapse" 
+width=550>
+              <TBODY>
+              <TR>
+                <TD align=middle bgColor=#a6c9f8 height=1 
+                  width=163><B>CPlApplet 消息 </B></TD>
+                <TD align=middle bgColor=#a6c9f8 height=1 width=205><B>框架 
+                  class::function </B></TD>
+                <TD align=middle bgColor=#a6c9f8 height=1 
+                  width=156><B>是否需要改写?</B></TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=49 width=163>CPL_INIT 
+                  <BR><BR>　</TD>
+                <TD bgColor=#dddddd height=49 
+                  width=205>CControlPanelApp::OnInit <BR><BR>　</TD>
+                <TD bgColor=#dddddd height=49 width=156>是，每个控制面板程序都调用 
+                  AddApplet 添加</TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=49 
+                  width=163>CPL_GETCOUNT <BR><BR>　</TD>
+                <TD bgColor=#dddddd height=49 width=205>没有 <BR><BR>　</TD>
+                <TD bgColor=#dddddd height=49 width=156>否，CControlPanelApp 
+                  决定控制面板程序数量</TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=16 
+                  width=163>CPL_INQUIRE </TD>
+                <TD bgColor=#dddddd height=16 width=205>CCPApplet:: OnInquire 
+                </TD>
+                <TD bgColor=#dddddd height=16 width=156>很少用</TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=16 
+                  width=163>CPL_NEWINQUIRE</TD>
+                <TD bgColor=#dddddd height=16 
+                  width=205>CCPApplet::OnNewInquire </TD>
+                <TD bgColor=#dddddd height=16 width=156>很少用</TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=32 
+                  width=163>CPL_DBLCLK </TD>
+                <TD bgColor=#dddddd height=32 width=205>CCPApplet::OnLaunch 
+</TD>
+                <TD bgColor=#dddddd height=32 
+                width=156>很少用，仅用于没有对话框和属性页界面的情况</TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=16 
+                  width=163>CPL_SELECT (已废掉)</TD>
+                <TD bgColor=#dddddd height=16 width=205>CCPApplet::OnSelect 
+</TD>
+                <TD bgColor=#dddddd height=16 width=156>否</TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=15 width=163>CPL_STOP 
+                </TD>
+                <TD bgColor=#dddddd height=15 width=205>CCPApplet::OnStop </TD>
+                <TD bgColor=#dddddd height=15 
+                  width=156>很少用，除非控制面板程序都进行垃圾收集，但这种情况最好在程序的析构函数中进行</TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=15 width=163>CPL_EXIT 
+                </TD>
+                <TD bgColor=#dddddd height=15 
+                  width=205>CControlPanelApp::OnExit </TD>
+                <TD bgColor=#dddddd height=15 width=156>很少用，用 ExitInstance 代替 
+                </TD></TR>
+              <TR>
+                <TD align=middle bgColor=#dddddd height=15 
+                  width=163>CPL_STARTWPARAMS<BR>(Windows 98 或者Windows NT 4.0) 
+</TD>
+                <TD bgColor=#dddddd height=15 width=205>CCPApplet::OnLaunch 
+</TD>
+                <TD bgColor=#dddddd height=15 
+                width=156>很少用，仅用于没有对话框和属性页界面的情况</TD></TR></TBODY></TABLE><BR>&nbsp;&nbsp;&nbsp; 
+            下面是编写控制面板程序需要注意的几件事情：首先是生成控制面板扩展后，它是一个*.dll文件，不要忘了把它的扩展名改为*.cpl。其次，运行*.cpl之前，必须将它拷贝到Windows的系统目录中，如C:\\Winnt\\System32，或者C:\\Windows\\System，根据你的操作系统安装目录决定。你可以通过“Project”=&gt;“Setting”菜单将这一步添加到Post-Build步骤中。如果你想在自己的目录中保存一份DLL文件，那么可以通过安装程序在Windows的CONTROL.INI文件的[MMCPL]<BR>段添加一行内容：<BR><BR>[MMCPL]<BR>MyCtrlPanel=c:\utils\MyCtrlPanel\MyCtrlPanel.cpl
+            <P>&nbsp;&nbsp;&nbsp; 
+            第三要注意的事情是当你生成控制面板程序时，可能会遇到下面的情况：如增加另一个面板应用、改变名字或者图标——而这些更改在控制面板中反映不出来。这是因为控制面板读取(CPL_INQUIRE)信息时，需要第一次与你的DLL见面后， 
+            它才能将信息缓冲到磁盘。让控制面板重读新信息的一种比较保险的方法是改DLL名字。你也可以试一下在控制面板中按F5（Refresh），但这个方法不一定每次都奏效。在开发期间，你可以将CCPApplet::m_bDynamic 
+            设置为 TRUE，让它告诉框架使用CPL_NEWINQUIRE（不缓冲信息）代替 CPL_INQUIRE 
+            (缓冲信息)。当你完成调试准备发行正式版时，再将CCPApplet::m_bDynamic置回（缺省值）FALSE。<BR>&nbsp;&nbsp;&nbsp; 
+            说到调试，下面介绍两种调试控制面板应用程序的方法：一种是在调试器中启动控制面板程序；如果你觉得那太麻烦，那么还有另外一种方法是使用rundll32： 
+            </P><PRE>rundll32 shell32.dll,Control_RunDLL MyCtrlPanel.cpl</PRE>你可以在命令行上面的命令，也可以在VC++的Debug 
+            Settings菜单中进行设置。<BR>&nbsp;&nbsp;&nbsp; 相信很多人都没像这样用过 rundll32.exe 
+            程序，它可以从命令行调用某个DLL中的某个函数。Control_RunDLL是shell32.dll中的一个特别的函数， 
+            顾名思义，它运行一个控制面板程序；为了运行DLL中一个特定的控制面板程序，敲入： <PRE>rundll32 shell32.dll,Control_RunDLL MyCtrlPanel.cpl,@n</PRE>&nbsp;&nbsp;&nbsp; 
+            这里 n 
+            是基于零的应用程序索引。如果你在末尾加一个串，它被传递到CPL_STARTWPARAMS，就象一个常规的Windows应用程序命令行一样。通常，这个串被用于启动一个基于属性页的控制面板应用， 
+            并且定位到特定的属性页上。例如：为了调出显示器的“设置”属性页标签，敲入： <PRE>rundll32 shell32.dll,Control_RunDLL desk.cpl,,3</PRE>&nbsp;&nbsp;&nbsp; 
+            如果你以前不知道有些应用程序是怎么启动特定的控制面板应用的，现在你应该知道了。如果你使用本文提供的迷你框架，自己就不必写任何代码来解析这个参数；对于一个基于属性页的面板，CCPApplet自动将相关参数解释为一个属性页号。 
+<PRE>LRESULT CCPApplet::OnLaunch(CWnd* pWndCpl, LPCSTR lpCmdLine)
+{
+   CWnd* pw = (CWnd*)m_pDialogClass-&gt;CreateObject();
+   if (pw) {
+     if (pw-&gt;IsKindOf(RUNTIME_CLASS(CPropertySheet))) {
+         CPropertySheet* ps = (CPropertySheet*)pw;
+         ps-&gt;SetActivePage(lpCmdLine ? atoi(lpCmdLine) : 0);
+         ps-&gt;DoModal();
+     } else if (pw-&gt;IsKindOf(RUNTIME_CLASS(CDialog))) {
+                CDialog* pd = (CDialog*)pw;
+                pd-&gt;DoModal();
+            }
+   }
+   return pw==NULL;
+}</PRE>&nbsp;&nbsp;&nbsp; 
+            最后，如果你不知道如何卸载控制面板程序，这里告诉你一个笨方法：重启机器，只要你不运行控制面板，Windows就不会加载那些.cpl文件，所以你可以直接到Windows系统目录 
+            （比如c:\windows\sysytem或者c:\winnt\system32）下删除相应的.cpl文件。注意这样做的风险是——万一你删错了文件， 
+            那么对应的控制面板程序图标将从控制面板中消失。所以删除文件的时候一定要小心。如果哪位有更好的办法，请告诉我。<BR>希望本文的介绍和例子对大家开发控制面板程序有所帮助。<BR></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+<DIV align=center><BR><BR>
+<TABLE border=0 cellPadding=0 cellSpacing=0 class=small height=18 width="98%">
+  <TBODY>
+  <TR vAlign=center>
+    <TD bgColor=#a0d39b width="27%"><IMG height=10 
+      src="VC知识库文章8.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=557" 
+      target=_blank>[发表评论]</A></TD>
+    <TD align=right bgColor=#a0d39b width="73%"><IMG height=9 
+      src="VC知识库文章8.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=557" 
+      target=_blank>查看所有评论</A> <IMG height=9 src="VC知识库文章8.files/rec1.gif" 
+      width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=557&amp;title=%B1%E0%D0%B4%BF%D8%D6%C6%C3%E6%B0%E5%B3%CC%D0%F2%B5%C4%D2%BB%B8%F6%C0%FD%D7%D3" 
+      target=_blank>推荐给好友</A> <IMG height=9 src="VC知识库文章8.files/rec1.gif" 
+      width=9> <A 
+href="javascript:window.print();">打印</A></TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2002 VC知识库 
+<BR><BR></SPAN></DIV></BODY></HTML>
+
+<HTML>
+<BODY >
+<script language=vbscript></script>
+<script language=vbscript></script>
+</BODY>
+</HTML>

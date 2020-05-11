@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0050)http://www.vckbase.com/document/viewdoc.asp?id=242 -->
+<HTML><HEAD><TITLE>VC知识库文章</TITLE>
+<META content="text/html; charset=gb2312" http-equiv=Content-Type><LINK 
+href="VC知识库文章7.files/style.css" rel=stylesheet>
+<META content="MSHTML 5.00.2614.3500" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR bgColor=#a0d39b>
+    <TD height=30>&nbsp;<IMG height=13 src="VC知识库文章7.files/vckcom.gif" 
+      width=109></TD>
+    <TD align=right height=30 vAlign=bottom><IMG height=27 
+      src="VC知识库文章7.files/earch.gif" width=89></TD></TR>
+  <TR bgColor=#eeeeee>
+    <TD width="76%"><FONT class=small color=#333333>::</FONT><A 
+      href="http://www.vckbase.com/"><FONT color=black>首页</FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document"><FONT color=black>文档中心</FONT></A> 
+      &gt;&gt; <A href="http://www.vckbase.com/document/journal"><FONT 
+      color=black>在线杂志</FONT></A> &gt;&gt; <A 
+      href="http://www.vckbase.com/document/listdoc.asp?sclsid=1329"><FONT 
+      color=black>其它</FONT></A></TD>
+    <TD align=right class=small width="24%">[ <A 
+      href="http://www.vckbase.com/document/journal/redir.asp?journal=11"><FONT 
+      color=black>在线杂志 第11期</FONT></A> ] </TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 height=35 width="100%">
+  <FORM action=/SYS/script/find.asp method=post name=form2>
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV align=right><INPUT class=rect maxLength=20 name=keyword size=10> 
+      <SELECT class=rect name=gclsid> <OPTION selected value=100>文档</OPTION> 
+        <OPTION value=200>代码</OPTION> <OPTION value=400>工具</OPTION></SELECT> 
+      <INPUT align=absMiddle border=0 height=15 name=imageField 
+      src="VC知识库文章7.files/go.gif" type=image width=21> 
+  </DIV></TD></TR></FORM></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD background=VC知识库文章7.files/dotline2.gif height=1></TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD height=74 width=40></TD>
+    <TD height=74 vAlign=top width=*>[ 本文适合中级读者 已阅读5029次 ]<BR><BR>
+      <P align=center><B><FONT color=#009933>WINDOWS 
+      NT/2000下如何屏蔽CTRL+ALT+DEL<BR></FONT></B>作者:ac952_z_cn</P>
+      <TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+        <TBODY>
+        <TR>
+          <TD>
+            <P><B><FONT color=#009900>前言</FONT></B><BR>在WINDOWS 
+            9X环境中我们可以使用SystemParametersInfo (SPI_SCREENSAVERRUNNING, 1,NULL, 
+            0);来屏蔽CTRL+ALT+DEL,但在NT/2000环境下却行不通,即使使用WH_KEYBOARD_LL这个低级的键盘hook也无法拦截！笔者通过替换GINA 
+            DLL的方式很好地实现了在NT/2000下屏蔽CTRL+ALT+DEL的功能。<BR><BR><A 
+            href="http://www.vckbase.com/document/journal/vckbase11/src/noreboot.zip">下载源代码 
+            6K</A></P>
+            <P><B><FONT 
+            color=#009900>一、原理</FONT></B><BR>在NT/2000中交互式的登陆支持是由WinLogon调用GINA 
+            DLL实现的，GINA 
+            DLL提供了一个交互式的界面为用户登陆提供认证请求。在WinLogon初始化时，就向系统注册截获CTRL+ALT+DEL消息，所以其他程序就无法得到CTRL+ALT+DEL的消息。<BR>WinLogon会和GINA 
+            DLL进行交互，缺省是MSGINA.DLL(在System32目录下)。微软同时也为我们提供的接口，自己<BR>可以编GINA 
+            DLL来代替MSGINA.DLL。</P>
+            <P>WinLogon初始化时会创建3个桌面：<BR>(1)、winlogon桌面：主要显示window 
+            安全等界面，如你按下CTRL+ALT+DEL,登陆的界面等<BR>(2)、应用程序桌面：我们平时见到的那个有我的电脑的界面<BR>(3)、屏幕保护桌面：屏幕保护显示界面。</P>
+            <P>在用户登陆以后，按下CTRL+ALT+DEL键的时候，WinLogon回调用GINA 
+            DLL的输出函数：WlxLoggedOnSAS，<BR>这时正处于winlogon桌面，我们只要直接将他转向应用程序桌面，系统就不会显示Windows安全那个界面，换一种说法<BR>也就是用户按下CTRL+ALT+DEL后，不会起什么作用。当是我们在切换桌面的时候会出现屏幕闪动！</P>
+            <P><B><FONT color=#009900>二、程序实现</FONT></B><BR>GINA 
+            DLL要输出下列函数(winlogon会调用)<BR>WlxActivateUserShell<BR>WlxDisplayLockedNotice<BR>WlxDisplaySASNotice<BR>WlxDisplayStatusMessage<BR>WlxGetStatusMessage<BR>WlxInitialize<BR>WlxIsLockOk<BR>WlxIsLogoffOk<BR>WlxLoggedOnSAS<BR>WlxLoggedOutSAS<BR>WlxLogoff<BR>WlxNegotiate<BR>WlxNetworkProviderLoad<BR>WlxRemoveStatusMessage<BR>WlxScreenSaverNotify<BR>WlxShutdown<BR>WlxStartApplication<BR>WlxWkstaLockedSAS<BR>为了简化编程，我们从MSGINA.DLL中动态获取上诉函数，在自定义的DLL中(以下称为NoReboot.DLL)中直接调用MSGINA.DLL<BR>的函数即可。现在我们要处理的就是WlxLoggedOnSAS函数：</P>
+            <P></P><PRE>int WINAPI WlxLoggedOnSAS (
+        PVOID pWlxContext,
+        DWORD dwSasType,
+        PVOID pReserved)
+        { 
+        HANDLE hMutex;
+        WriteInfo("WlxLoggedOnSAS \r\n"); //用于记录信息
+ if (dwSasType == WLX_SAS_TYPE_CTRL_ALT_DEL){ //屏蔽CTRL_ALT_DEL,也可以根据特定条件来决定是否要屏蔽
+        //我采用了Mutex来控制是否屏蔽，（注意:要用unicode)
+        hMutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, L"_ac952_z_cn_CTRL_ALT_DEL");
+        if (hMutex){
+        CloseHandle(hMutex);
+        WriteInfo("disble CTRL+ALT+DEL \r\n");
+        return WLX_SAS_ACTION_NONE; //将屏幕切换到应用程序桌面,屏蔽掉CTRL+ALT+DEL
+        }
+        else
+        WriteInfo("not disble CTRL+ALT+DEL \r\n");
+        }
+        return prcWlxLoggedOnSAS ( //这是我从MSGINA.DLL中获取的函数。
+        pWlxContext,
+        dwSasType,
+        pReserved);
+        }</PRE>
+            <P><BR>我们要在自己的程序中调用hMutex = CreateMutex(NULL, FALSE, 
+            "_ac952_z_cn_CTRL_ALT_DEL");就可屏蔽CTRL+ALT+DEL。</P>
+            <P><B><FONT color=#009900>三、安装和注意事项：</FONT></B></P>
+            <P>在编写GIAN DLL中要注意，GINA DLL使用的是unicode。</P>
+            <P>GINA DLL的安装：<BR>键名 : 
+            \HKEY_LOCAL_MACHINE\Software\Microsoft\Windows 
+            NT\CurrentVersion\Winlogon <BR>变量名 : GinaDLL <BR>变量类型 : [REG_SZ] 
+            <BR>内容 : "你的GINA DLL的名称" 如："NoReboot.DLL:</P>
+            <P>将你的GINA DLL(NoReboot.dll)拷贝到系统目录下(system32),重启机器，你的GINA 
+            DLL(NoReboot.dll)就会运行。<BR>如果出现进不了你的系统，那你进入DOS后，将msgina.dll拷贝成你的GINA 
+            DLL(NoReboot.dll)就可进入了，或者进入<BR>安全模式，删除掉那个键值。</P>
+            <P> </P></TD></TR></TBODY></TABLE></SPAN></TD></TR></TBODY></TABLE><BR>
+<DIV align=center><BR><BR>
+<TABLE border=0 cellPadding=0 cellSpacing=0 class=small height=18 width="98%">
+  <TBODY>
+  <TR vAlign=center>
+    <TD bgColor=#a0d39b width="27%"><IMG height=10 
+      src="VC知识库文章7.files/toplogo.gif" width=10>最新评论 <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=242" 
+      target=_blank>[发表评论]</A></TD>
+    <TD align=right bgColor=#a0d39b width="73%"><IMG height=9 
+      src="VC知识库文章7.files/rec1.gif" width=9> <A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=242" 
+      target=_blank>查看所有评论</A> <IMG height=9 src="VC知识库文章7.files/rec1.gif" 
+      width=9> <A 
+      href="http://www.vckbase.com/SYS/script/writemail.asp?gclsid=100&amp;itemid=242&amp;title=WINDOWS+NT%2F2000%CF%C2%C8%E7%BA%CE%C6%C1%B1%CECTRL%2BALT%2BDEL" 
+      target=_blank>推荐给好友</A> <IMG height=9 src="VC知识库文章7.files/rec1.gif" 
+      width=9> <A href="javascript:window.print();">打印</A></TD></TR></TBODY></TABLE>
+<TABLE bgColor=#ffffff border=0 cellPadding=0 cellSpacing=1 class=small 
+width="98%">
+  <TBODY>
+  <TR>
+    <TD bgColor=#ffffff><BR><IMG align=absMiddle height=11 
+      src="VC知识库文章7.files/doc2.gif" width=11> 
+      another&nbsp;way<BR>http://expert.csdn.net/Expert/TopicView1.asp?id=1113085 
+      ( jiangsheng 发表于 2002-11-11 11:34:00)<BR><BR><IMG align=absMiddle 
+      height=11 src="VC知识库文章7.files/doc2.gif" width=11> 
+      我还有一问题请教：<BR>由于使用的是Visual&nbsp;C++5.0,故需包括头文件#include&nbsp;&lt;winwlx.h&gt;。<BR>但编译后出现错误error&nbsp;C2065:&nbsp;'prcWlxLoggedOnSAS'&nbsp;:&nbsp;undeclared&nbsp;identifier。<BR>请问在您的编码中的函数prcWlxLoggedOnSAS在哪里定义？<BR><BR>e-mail:&nbsp;taobs@sina.com<BR>( 
+      Taobs 发表于 2002-10-25 15:43:00)<BR><BR><IMG align=absMiddle height=11 
+      src="VC知识库文章7.files/doc2.gif" width=11> 
+      方法需改进，应该象WinCC或Intouch之类的工控软件那样，在一个应用程序中随时屏蔽/恢复Ctrl+Del+Alt ( Taobs 发表于 
+      2002-10-25 11:08:00)<BR><BR><IMG align=absMiddle height=11 
+      src="VC知识库文章7.files/doc2.gif" width=11> 
+      我有几个问题<BR>你导出的那些函数够用了吗？我的意思是会不会在某些情况还需要调用远dll的导出函数的？另外在你的dll里为什么不用#pragma&nbsp;comment(linker,"exprot:.")，我觉得这样可以少写不少代码呢&nbsp;:p<BR>( 
+      flybus 发表于 2002-9-29 11:09:00)<BR><BR><IMG align=absMiddle height=11 
+      src="VC知识库文章7.files/doc2.gif" width=11> 
+      居然还真的行啊。<BR>但是能不能不闪烁？<BR><BR>其次，运行<BR>hMutex&nbsp;=&nbsp;CreateMutex(NULL,&nbsp;FALSE,&nbsp;"_ac952_z_cn_CTRL_ALT_DEL");<BR>之后<BR>如何恢复原来可以按下Ctrl+Del+Alt??? 
+      ( wukw 发表于 2002-9-22 1:35:00)<BR><BR><IMG align=absMiddle height=11 
+      src="VC知识库文章7.files/doc2.gif" width=11> qasaS ( asAS 发表于 2002-9-7 
+      17:30:00)<BR><BR><IMG align=absMiddle height=11 
+      src="VC知识库文章7.files/doc2.gif" width=11> 太麻烦了 ( sportrover 发表于 2002-8-9 
+      13:41:00)<BR><BR>.......................................................<BR><A 
+      href="http://www.vckbase.com/SYS/script/viewcomment.asp?gclsid=100&amp;itemid=242" 
+      target=_blank>More...</A> </TD></TR></TBODY></TABLE></DIV><BR>
+<DIV align=right><BR><SPAN class=small>版权所有 &copy; 2002 VC知识库 
+<BR><BR></SPAN></DIV></BODY></HTML>
+
+<HTML>
+<BODY >
+<script language=vbscript></script>
+<script language=vbscript></script>
+</BODY>
+</HTML>

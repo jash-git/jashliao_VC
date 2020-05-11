@@ -1,0 +1,417 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0052)http://bbs.ee.ntu.edu.tw/boards/Programming/7/4.html -->
+<!-- BBS2HTML[877079777] Areicle by wcf@CCCA.NCTU.edu.tw  --><HTML><HEAD><TITLE>◇ malloc()/free()/new/delete...</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=big5">
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY text=#ddffdd vLink=#ffff00 link=#ffff11 bgColor=#000000>
+<CENTER>
+<H1>◇ malloc()/free()/new/delete...</H1>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD><PRE><HR>  -------------------------------------------------------------------------
+                NCTU-CIS BBS `programming' 版  精華區
+
+                ■■■ malloc()/free()/new/delete... ■■■
+  -------------------------------------------- 整理：william@cis_nctu -----
+  -------------------------------------------------------------------------
+
+發信人: cdsheen@ccsun24 (ｃｄ), 信區: programming
+標  題: 函數中的記憶體配置 ?
+發信站: 交大資工天龍新聞社 (Oct 16 17:45:34 1993)
+轉信站: bbsnews dragon cis_nctu
+
+小弟不才, 只因對 C 的 new 和 malloc 的能力感到不解  懇請高手賜教
+
+請看下面程式:
+
+int *pointer;
+void main(void)
+{
+  void fun(void);
+  fun();
+}
+void fun(void)
+{
+  int *pointer2;
+  pointer2=new int[10];
+  pointer=pointer2;
+}
+
+在函數內用 new 配置一塊記憶體給 Local 指標變數 Pointer2
+函數返回後 指標變數自然消失了
+
+那麼 被配置的那一塊記憶體 是否消失了 ?
+
+回到主程式中是否還可利用 pointer 引用 ?
+==============================================================================
+
+發信人: william@cis_nctu (C++/ASM/Win Master), 信區: programming
+發信站: 交大資科系_BBS (Oct 16 20:42:27 1993)
+
+==&gt;[Author]: "cdsheen" on board 'programming'
+&gt; 在函數內用 new 配製一塊記憶體給 Local 指標變數 Pointer2
+&gt; 函數返回後 指標變數自然消失了
+&gt; 那麼 被配置的那一塊記憶體 是否消失了 ?
+
+No.  The memory allocated is still there.
+
+&gt; 回到主程式中是否還可利用 pointer 引用 ?
+
+Yes.
+
+<HR>-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 君子終日乾乾, 夕惕若, 厲, 無咎。  易‧乾‧九三爻辭
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+==============================================================================
+
+發信人: Hentai@cis_nctu (Sukebe), 信區: programming
+發信站: 交大資科系_BBS (Oct 17 03:31:13 1993)
+
+&gt; 在函式所宣告的Local 變數之記憶體, 或者使用malloc()配置一塊給local pointer
+&gt; 的記憶體, 函式在返回以後, 都一定會被釋放掉。( subroutine's life cycle )
+
+            不對不對！life cycle 只會把pointer 本身佔的位置拿掉，而用
+     malloc 之類所要求到的記憶體並不會釋放，唯一不用free而要求到的記憶
+     體被釋放只有在程式結束時才會發生。你只要想想在執行時怎麼知道那個
+     pointer 是由malloc 拿來的，那個是別的指定來得就知道他不可能幫每一
+     個指標 run delete 或 free，如果不小心free掉不該free 的怎麼辦？？
+
+&gt; 兄台雖然使用global pointer  指向local pointer 之記憶體位址, 可以暫時保住
+&gt; 資料, 但是如果程式再呼叫函式, 原先被配置的記憶體有可能被拿去給新呼叫的函
+&gt; 式使用, 這樣資料就lose  掉了,That's very dangerous!!!!!
+&gt;
+&gt; 這樣的程式,拿去 compiler 一定會有 warning!! 不信你可以試試。
+
+         不會有 warning 吧！你試過嗎？又你預期會有什麼 warning 呢？？？
+
+                                   NCTU's Hentai
+==============================================================================
+
+發信人: william@cis_nctu (C++/ASM/Win Master), 信區: programming
+發信站: 交大資科系_BBS (Oct 19 12:02:20 1993)
+
+==&gt;[Author]: "chir" on board 'programming'
+&gt; 發信站: 交大資科系_BBS (Oct 19 11:12:14 1993)
+&gt;
+&gt;&gt;   float *abc;
+     ~~~~~~~~~~~
+&gt;&gt;   abc=new float;
+&gt;&gt;   delete abc;
+&gt;&gt;   abc=new float[10];
+&gt;&gt;   delete abc;
+&gt;  此處的new及delete是否是可對變數重新定義呢?
+                            ------^^^^^^^^
+                            抱歉, 看不懂您的意思...
+就此例, 您的原意中:
+
+   "對變數" 是指何變數?
+   "重新定義" 又是指怎樣的 variable definition?
+
+以此例而言, 只有用 ~~~~ 標記的那一行才有 variable definition 的行為。
+還是您用錯了術語?
+
+<HR>-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 君子終日乾乾, 夕惕若, 厲, 無咎。  易‧乾‧九三爻辭
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+==============================================================================
+
+發信人: william@cis_nctu (C++/ASM/Win Master), 信區: programming
+標  題: lifetime of "new" 平議
+發信站: 交大資科系_BBS (Oct 19 12:23:52 1993)
+
+依據 C++的爸爸 Bjarne Stroustrup 的 "The C++ Programming Language, 2nd ed."
+一書的 "Reference Manual" 中, Section r5.3.3 所述:
+
+    The lifetime of an object created by  new  is not restricted to the
+                                          ^^^
+    scope in which it is created.
+
+Section r.5.3.4:
+
+    The form
+        delete []  cast-expression
+        ^^^^^^^^^
+    is used to delete arrays.
+    ......
+    The effect of deleting an array with the plain  delete  syntax is
+                                                    ^^^^^^
+    undefined, as is deleting an individual object with the  delete[]
+    syntax.                                                  ^^^^^^^^
+
+希望這段文字能平議 new、delete、delete[] 之是非。
+
+<HR>-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 君子終日乾乾, 夕惕若, 厲, 無咎。  易‧乾‧九三爻辭
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+==============================================================================
+
+發信人: sjl@cis_nctu (阿華), 信區: programming
+發信站: 交大資科系_BBS (Oct 19 13:23:28 1993)
+
+Sorry!!!
+    因小弟不才, 致使有些網友對 "dynamic memory allocation" 產生一點 "confuse"!
+
+    也感謝 William 和 Hentai 先生  的指正!!
+
+    如果各位尚有一些不明瞭的地方, 或是想知道更多有關這方面的問題, 可以參閱:
+
+    "CRAFTING A COMPILER WITH C"  BY Charles N.Fischer
+                                     Richard J.LeBlanc,Jr.
+      Chapter 9 :Run-Time Storage Organization
+              9.3 Heap Allocation.
+              9.4 Program Layout in Memory.
+
+** The key points are:
+   . C Language makes use of "Explicit Deallocation"
+   . The "Run time allocation" is required in Heap Space
+     instead of Stack Space.
+   . The Heap Space's size is predecided by a compiler,
+     programer can require the heap memory by malloc() in C,
+     and dispose it by free().
+
+  感覺上, 這有點取決於 compiler 的特性, 其實, 大部份的語言都採用 C language
+這種方式, 提供 programmer 向系統要求額外的記憶體, 當然, 釋放要求到的記憶體
+的權力也在 programmer, 否則, 系統不小心 free 掉你還要用的 memory 怎麼辦!!
+
+  如果! 各位還覺得有什麼不妥, 敬請指正, 小弟不勝感激!!
+
+<HR>~~~~~~~ ●~~~~☆~~~~~~★~~~ ≡ 把 愛 找 回 來 ≡　
+　　　　◣　　　　  　﹋    User  Id ＝》 sjl
+    　　█◣　　●　﹋　 ﹋ Nick name＝》阿　華
+　　　　▍　　◥▍　　　　　≡ 好 想 你 baby  ≡
+　　　　▍　　　▍
+==============================================================================
+
+發信人: william@cis_nctu (C++/ASM/Win Master), 信區: programming
+發信站: 交大資科系_BBS (Oct 20 13:33:53 1993)
+
+==&gt;[Author]: "chir" on board 'programming'
+&gt;  抱歉! 小弟的表達能力不好!
+&gt;  不知下面小弟說得對不對呢?
+&gt;   float *abc;
+&gt;  宣告了float 的指標
+
+正確說法應該是: 定義 (或稱: 宣告且定義, 因為 define 包含 declare) 了個
+ "float 的指標"  (a pointer to a float variable) 。
+
+&gt;   abc=new float;
+&gt;  定此指標為一個float的變數(並配置所需記憶體)
+   ^^^^^^^^^^^^^^^^^^^^^^^^^
+&gt;   delete abc;
+&gt;  刪除前面new的宣告,abc又變回指標
+                     ^^^^^^^^^^^^^
+注意: 不論是 abc = (float*) malloc( sizeof( float ) ) 或是 abc = new float,
+這個 abc 變數從來就沒有『變成不是指標』的時候。所以 free( abc ) 或是
+delete abc 後, 無所謂『又變回指標』的說法。
+
+它一直都是個指標 (pointer to float) 。只是它本身的值有變動 (content of this
+pointer variable) , 導致它指向的空間 (storage it points to) 不一樣。
+
+abc = new float; 的正確說法是: 配置一個 float 的變數空間, 並將 abc 指向此處。
+ (allocate a storage of float, and set "abc" to point to it.)
+
+delete abc; 的正確說法是: 刪去一個 abc指向的、剛剛用 new 配置過的 float
+變數空間。(deallocate a storage of float allocated by new, pointed to by
+pointer "abc".)
+
+&gt;   abc=new float[10];
+&gt;  將abc改訂為一個有十個元素的陣列指標
+
+將 abc 改指向一個新配置的、含十個元素的 float陣列。
+
+&gt;   delete abc;
+    ^^^^^^
+    delete[]
+&gt;  同上,刪除之....
+
+刪除 abc指向的、先前配置過的 float陣列。
+
+<HR>-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 君子終日乾乾, 夕惕若, 厲, 無咎。  易‧乾‧九三爻辭
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+==============================================================================
+
+發信人: william@cis_nctu (C++/ASM/Win Master), 信區: programming
+發信站: 交大資科系_BBS (Oct 22 16:04:58 1993)
+
+==&gt;[Author]: "chir" on board 'programming'
+&gt; 是否 C++的 new 及 delete 具有如 free 及 malloc 的功能呢?
+&gt; 或使用上亦有其他差異呢?
+
+主要差異:
+
+  1.純就 allocate intrinsic types 而言, 差在 new[nnn]/delete[] 會自行記錄
+    實際配置的 object 個數。
+    即使如此, 兩者最好不要混合使用。用 new/new[nnn] 的東東不要用 free() ,
+    用 malloc() 的東東不要用 delete/delete[] 。
+
+  2.最重要的差異在於 constructor/destructor 的呼叫。這是屬於 C++的 OOP部
+    份, 三言兩語講不清楚。請找本 C++的書看。
+
+<HR>-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 君子終日乾乾, 夕惕若, 厲, 無咎。  易‧乾‧九三爻辭
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+==============================================================================
+
+發信人: william@cis_nctu (C++/ASM/Win Master), 信區: programming
+發信站: 交大資科系_BBS (Oct 22 16:04:56 1993)
+
+==&gt;[Author]: "lmy" on board 'programming'
+&gt; 發信站: 台大電機 Maxwell 站 (Oct 22 12:15:44 1993)
+&gt;&gt;     delete[] abc;
+&gt; 這是舊的 C++用法. 新的 C++ standard已認為此語法不但無必要, 且容易成為錯誤
+&gt; 的新來源, 已修正成一律用 delete. 由 compiler 自行依 object type編入正確的
+&gt; implicit destructor call. 詳見陳建維先生著的 C++的書
+
+是嗎?
+您看看陳建維的書的附錄, 可發現 AT&amp;T C++ 2.0 和 2.1 的區別。
+而且, 請再看看先前我 post 的「new 平議」一信, 看看當中引的 Bjarne 的
+那段話。
+
+那本 C++爸爸的書是 1991 版的。且這部份的 specfication 尚未再被 ANSI C++
+draft 會議更動過。
+
+或是請參考 C++ faq:
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+        Document:       Frequently-Asked-Questions for comp.lang.c++
+        Revision:       09-July-93
+
+        Author:         Marshall P. Cline, Ph.D.
+                        Paradigm Shift, Inc.
+                        One Park St. / Norwood, NY  13668
+                        voice: 315-353-6100
+                        fax:   315-353-6110
+                        email: cline@parashift.com
+
+Q33: How do I allocate / unallocate an array of things?
+A: Use new[] and delete[]:
+
+        Thing* p = new Thing[100];
+        //...
+        delete [] p;    //older compilers require you to use `delete [100] p'
+
+Any time you allocate an array of things (ie: any time you use the `[...]' in
+the `new' expression) you *!*MUST*!* use the `[]' in the `delete' statement.
+
+The fact that there is no syntactic difference between a ptr to a thing and a
+ptr to an array of things is an artifact we inherited from C.
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+請注意該 FAQ文件的日期, 和陳建維的書的日期, 何者為新?
+如果您認為陳建維說得對, 不妨向 C++ FAQ的編者指正此一 bug, 相信他會感謝你的...
+;-)
+
+<HR>-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 君子終日乾乾, 夕惕若, 厲, 無咎。  易‧乾‧九三爻辭
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+===============================================================================
+
+發信人: william@cis_nctu (C++/ASM/Win Master), 信區: programming
+標  題: Re: 初始化??
+發信站: 交大資科系_BBS (Jan  5 21:46:22 1994)
+
+==&gt;[Author]: clock@phoenix (龜) on board 'programming'
+&gt;&gt; new 並不能保證其值為空白。應該在 constructor 中使用 memset。
+&gt;&gt; bzero 雖可, 但非 ANSI C 之標準。
+&gt; 沒有人用過 calloc &amp; cfree 嗎?
+
+場合不同...
+malloc/calloc 是針對『一個』或『一塊』 memory dynamic allocation 才需要的,
+以他的原例: 非 pointer 的 instance variables 而言, 是不需要這種東東的。
+
+而且既然使用 C++, 又用到了 class, 應該極力避免舊式的 malloc/calloc/realloc/
+free 族系。兩者混合使用, 若遇到了沒有考慮周全的 implementation, 極易... ;-&lt;
+
+BTW, cfree 並非 ANSI C 之標準...
+
+<HR>-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 問渠哪得清如許? 為有源頭活水來!   朱熹‧觀書有感
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+==============================================================================
+
+發信人: william@cis_nctu (C++/ASM/Win Master), 信區: programming
+標  題: Re: malloc
+發信站: 交大資科_BBS (Feb 28 20:32:06 1994)
+
+==&gt;[Author]: realnick@cis_nctu (翁嘉宏) on board 'programming'
+&gt; 當我用 C  malloc 一塊記憶體時  程式結束我並沒有 free
+&gt; 那塊記憶體會留著嘛還是  C 在程式結束時會自動 free
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+但嚴格說起來, 是 OS 自動 free 的。
+
+<HR>-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 聖人, 吾不得而見之矣...   論語‧述而
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+===============================================================================
+
+發信人: Drifter@Maxwell (我和周慧敏生日同一天), 信區: programming
+標  題: Re: 當函數 return 字串時?????????
+發信站: 台大電機 Maxwell 站 (Sat Apr 23 14:20:47 1994)
+
+&gt; 看到大家的回答, 我是變得糊塗了...
+&gt; 在這個Proc function中,
+&gt;
+&gt;  char *Proc()
+&gt;   {
+&gt;      char buf[30];
+&gt;
+&gt;      strcpy(buf,"HELLO");
+&gt;      return buf;
+&gt;   }
+&gt;  main()
+&gt;   {
+&gt;      char *rbuf;
+&gt;      :
+&gt;      :
+&gt;   }
+&gt;
+&gt; 請問 [1]. buf[30] 在 Proc 中被配置了 30 空間的 array, 當 return 後取消了??
+
+            Yes.
+
+&gt;   即 rbuf 所指到的地方不一定是 30 個空間??
+
+           當然是 30 個空間
+
+&gt;      [2]. 如果改用 static char buf[30]; 則因為 static所以配置的 30 個空間
+&gt;           保留, 所以 rbuf 可拿到 30 空間中的資料??
+
+            Yes, but if you do this, the function will be a non-reentrant
+            function. A non-reentrant function usually has some potential
+            problem, except you can promise that your program is correct.
+
+&gt;      [3]. 如果用 malloc分配給 buf 30 個空間, 則 return 後, 在 main 中是否還
+&gt;           知道( 承認 ) buf 這個位置往下有 30 個空間??
+&gt;           即 rbuf 也跟著有 malloc 的功效??
+
+            你的說法很怪，'buf 這個位置' 是啥意思？如果你是用 malloc
+            的話，它傳回的是一個指標，然後你用 buf 去接它。這樣以後
+            你就可以利用 buf 這個指標去取用該空間了。 main 當然不知
+            道，但你的 C compiler 或 System 知道。(It depends on what
+            OS and C compiler you use)
+
+&gt;      [4]. 為何說用 malloc 的寫法會浪費記憶體呢??
+
+           看你是怎麼去寫，如果你每次都去配置，而又不 free 的話，
+           當然會浪費記憶體。而這樣的 Style 是非常糟的...
+
+        Drifter  ----  「不盈科不行，不成章不達」
+===============================================================================
+
+發信人: Drifter.bbs@mic.ee.ntu (我和周慧敏生日同一天), 信區: programming
+發信站: 台大電機 Maxwell 站 (Wed May 11 19:06:06 1994)
+
+&gt; 在Ｃ的 subfunction 中, 用 malloc() 來配置一動態變數將須要用到的記憶體
+&gt; 若該變數值不再使用  是不是 "一定" 要 free() 掉
+&gt; 還是任其隨 subfunc. 結束而不理它???
+
+基本上，不去 free 的話其實沒有什麼關係的啦！
+在你「整個」程式結束之後，所使用的空間會同時被 OS 收回，不管是 UNIX 或
+DOS 都是一樣。 不過，話雖如此，這畢竟不是一個好習慣，因為如果你自己的
+程式因為這樣的情況太多，而配置不到記憶體的話，無異是自作自受；此外，如果
+你的程式是那種要 run  很久很久的程式（如：AT&amp;T 的第五代電子交換機），
+那一旦有「忘記」 free 的狀況出現的話，那遲早會是導致程式完蛋的原因。
+
+        Drifter  ----  「不盈科不行，不成章不達」
+</PRE></TD></TR></TBODY></TABLE></CENTER></BODY></HTML>

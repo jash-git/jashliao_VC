@@ -1,0 +1,40 @@
+//http://www.programmer-club.com/showSameTitleN/vc/20401.html
+// .h file
+class CMainPanel : public CWnd
+{
+public:
+    CButton* m_pButtons;
+    afx_msg void OnButtonClicked(Uint nID);
+};
+
+
+// .cpp file
+#define ID_FIRST_BUTTON 0xe00
+#define ID_LAST_BUTTON 0xfff
+
+BEGIN_MESSAGE_MAP(CMainPanel, CWnd)
+    ON_CONTROL_RANGE(BN_CLICKED, ID_FIRST_BUTTON, ID_LAST_BUTTON, OnButtonClicked)
+END_MESSAGE_MAP()
+
+int CMainPanel::OnCreate(LPCREATEstruct lpCreateStruct)
+{
+    m_pButtons = new CButton[nButtonCount];
+    for(int i = 0; i < nButtonCount; i++)
+    {
+     m_pButtons[i].Create("Button", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, CRect(0, 0, 100, 100), this, ID_FIRST_BUTTON + i);
+    }
+}
+
+
+void CMainPanel::OnButtonClicked(Uint nID)
+{
+    switch(nID)
+    {
+    case ID_FIRST_BUTTON:
+     MessageBox("Button1");
+     break;
+    case ID_FIRST_BUTTON + 1:
+     MessageBox("Button2");
+     break;
+    }
+}

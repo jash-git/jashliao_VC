@@ -1,0 +1,33 @@
+一、使用MFC可以用以下代碼得到
+
+CTime time = CTime::GetCurrentTime();   ///構造CTime物件
+int m_nYear = time.GetYear();      ///年
+int m_nMonth = time.GetMonth();      ///月
+int m_nDay = time.GetDay();      ///日
+int m_nHour = time.GetHour();      ///小時
+int m_nMinute = time.GetMinute();   ///分鐘
+int m_nSecond = time.GetSecond();   ///秒
+
+我們還可以用CTime::Format函數將CTime物件轉換為字串物件
+例如:
+CString m_strTime = time.Format("%Y-%m-%d %H:%M:%S");
+
+運行結果:m_strTime為 2001-8-1 12:11:05
+
+二、使用GetSystemTime()這個API函數得到系統時間
+
+SYSTEMTIME ti;
+GetSystemTime(&ti);
+////我們可以通過讀取SYSTEMTIME結構體成員直接得到時間
+typedef struct _SYSTEMTIME { 
+    WORD wYear; 
+    WORD wMonth; 
+    WORD wDayOfWeek; 
+    WORD wDay; 
+    WORD wHour; 
+    WORD wMinute; 
+    WORD wSecond; 
+    WORD wMilliseconds; 
+} SYSTEMTIME, *PSYSTEMTIME; 
+
+例如:ti.wMilliseconds;可以得到毫秒時間

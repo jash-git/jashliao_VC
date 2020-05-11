@@ -1,0 +1,32 @@
+clear;
+close all;
+n=0:1:2047;
+x=sin(2*pi*100*n/512);
+figure(1)
+plot(n,x)
+axis([0 2047 -1.2 1.2])
+title('x[n]')
+
+Xsize=fft(x);
+Xabs=abs(Xsize)
+figure(2),plot(Xabs)
+axis([0 2047 0 1200])
+title('power spectrum density')
+
+Yang=angle(Y)
+figure(3),plot(Yang)
+axis([0 2047 -4 4])
+title('phase')
+
+k=(rand(size(n))*2+rand(size(n))*(-1)*2)
+m=(rand(size(n))*pi*2+rand(size(n))*(-pi)*2)
+y1=Xabs.*cos(m)+i.*Xabs.*sin(m)
+Y1=ifft(y1)
+figure(4),plot(n,Y1)
+axis([0 2047 -1 1])
+title('signal with the same amplitude spectrum of x[n]')
+
+y2=k.*cos(Yang)+i.*k.*sin(Yang)
+Y2=ifft(y2)
+figure(5),plot(n,Y2)
+axis([0 2047 -0.06 0.06])

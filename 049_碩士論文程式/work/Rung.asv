@@ -1,0 +1,28 @@
+
+clear t x;
+t(1) = 0.0;
+tf   = 12.0;
+%
+%	Set the initial condition
+%
+x(1)=10.0;
+%
+%
+%	Loop through the times, numerically evaluating the integral
+%
+for i=2:tf/dt+1,
+	
+	%k1=-1/4*x(i-1)+1;
+	k1=f(x(i-1),t(i-1));
+    %xhat1=x(i-1)+k1*dt/2;
+	k2=f(x(i-1)+k1*dt/2,t(i-1)+2/);
+    %k2=-1/4*xhat1+1;
+	%xhat2=x(i-1)+k2*dt/2;
+	%k3=-1/4*xhat2+1;
+	%xhat3=x(i-1)+k3*dt;
+    %k4=-1/4*xhat3+1;
+
+	x(i)=x(i-1)+dt/6*(k1+2*k2+2*k3+k4);
+	t(i)=t(i-1)+dt;
+	er(i)=abs(x(i)-(6*exp(t(i)/4)+4));
+end;

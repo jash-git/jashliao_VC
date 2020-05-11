@@ -1,0 +1,117 @@
+◇ C 語言多維陣列動態配置
+--------------------------------------------------------------------------------發信人: william (何陋居主), 信區: 'programming'
+標  題: Re: ANSI C 的動態記憶體配置 
+發信站: 交大資科_BBS (Jun 15 13:49:26 1995)
+
+==>[作者]: ziv.bbs@cc05.ccit(ziv) 在 programming 討論區中提到:
+>   用 *ary=(int *) calloc(100,sizeof(int)) 所配到的記憶體是一維的,
+> 請問在 ANSI C 下要如何做到二,三維的動態宣告或如何定義出高維陣列呢?
+
+摘自 USENET comp.lang.c FAQ:
+
+2.14:   How can I dynamically allocate a multidimensional array?
+
+A:      It is usually best to allocate an array of pointers, and then
+        initialize each pointer to a dynamically-allocated "row."  Here
+        is a two-dimensional example:
+
+                int **array1 = (int **)malloc(nrows * sizeof(int *));
+                for(i = 0; i < nrows; i++)
+                        array1[i] = (int *)malloc(ncolumns * sizeof(int));
+
+        (In "real" code, of course, malloc would be declared correctly,
+        and each return value checked.)
+
+        You can keep the array's contents contiguous, while making later
+        reallocation of individual rows difficult, with a bit of
+        explicit pointer arithmetic:
+
+                int **array2 = (int **)malloc(nrows * sizeof(int *));
+                array2[0] = (int *)malloc(nrows * ncolumns * sizeof(int));
+                for(i = 1; i < nrows; i++)
+                        array2[i] = array2[0] + i * ncolumns;
+
+        In either case, the elements of the dynamic array can be
+        accessed with normal-looking array subscripts: array[i][j].
+
+        If the double indirection implied by the above schemes is for
+        some reason unacceptable, you can simulate a two-dimensional
+        array with a single, dynamically-allocated one-dimensional
+        array:
+
+                int *array3 = (int *)malloc(nrows * ncolumns * sizeof(int));
+
+        However, you must now perform subscript calculations manually,
+        accessing the i,jth element with array3[i * ncolumns + j].  (A
+        macro can hide the explicit calculation, but invoking it then
+        requires parentheses and commas which don't look exactly like
+        multidimensional array subscripts.)
+
+        Finally, you can use pointers-to-arrays:
+
+                int (*array4)[NCOLUMNS] =
+                        (int (*)[NCOLUMNS])malloc(nrows * sizeof(*array4));
+
+        , but the syntax gets horrific and all but one dimension must be
+        known at compile time.
+
+        With all of these techniques, you may of course need to remember
+        to free the arrays (which may take several steps; see question
+        3.9) when they are no longer needed, and you cannot necessarily
+        intermix the dynamically-allocated arrays with conventional,
+        statically-allocated ones (see question 2.15 below, and also
+        question 2.10).
+
+2.15:   How can I use statically- and dynamically-allocated
+        multidimensional arrays interchangeably when passing them to
+        functions?
+
+A:      There is no single perfect method.  Given the declarations
+
+                int array[NROWS][NCOLUMNS];
+                int **array1;
+                int **array2;
+                int *array3;
+                int (*array4)[NCOLUMNS];
+
+        as initialized in the code fragments in questions 2.10 and 2.14,
+        and functions declared as
+
+                f1(int a[][NCOLUMNS], int m, int n);
+                f2(int *aryp, int nrows, int ncolumns);
+                f3(int **pp, int m, int n);
+
+        (see questions 2.10 and 2.11), the following calls should work
+        as expected:
+
+                f1(array, NROWS, NCOLUMNS);
+                f1(array4, nrows, NCOLUMNS);
+                f2(&array[0][0], NROWS, NCOLUMNS);
+                f2(*array2, nrows, ncolumns);
+                f2(array3, nrows, ncolumns);
+                f2(*array4, nrows, NCOLUMNS);
+                f3(array1, nrows, ncolumns);
+                f3(array2, nrows, ncolumns);
+
+        The following two calls would probably work, but involve
+        questionable casts, and work only if the dynamic ncolumns
+        matches the static NCOLUMNS:
+
+                f1((int (*)[NCOLUMNS])(*array2), nrows, ncolumns);
+                f1((int (*)[NCOLUMNS])array3, nrows, ncolumns);
+
+        It must again be noted that passing &array[0][0] to f2() is not
+        strictly conforming; see question 2.11.
+
+        If you can understand why all of the above calls work and are
+        written as they are, and if you understand why the combinations
+        that are not listed would not work, then you have a _very_ good
+        understanding of arrays and pointers (and several other areas)
+        in C.
+
+---------------------------------------------------------------------------------- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+≡ 何陋居 ≡ 中學生以伏案讀書為主, 大學生則應起而高瞻遠矚。  Whitehead.
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+-------------------------------------------------------------------------------- * Origin: ★ 交通大學資訊科學系-BBS ★ <bbs.cis.nctu.edu.tw> 140.113.23.3
+
+ 

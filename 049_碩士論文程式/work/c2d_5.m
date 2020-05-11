@@ -1,0 +1,10 @@
+A=[0 1 ;0 -1];
+B=[0;10];
+C=[1 0];
+D=[0];
+sys_dc=ss(A,B,C,D);
+Ts=0.1;
+sysd1=c2d(sys_dc,Ts,'zoh')
+sysd2=c2d(sys_dc,Ts,'foh')
+sysd3=c2d(sys_dc,Ts,'imp')
+sysd4=c2d(sys_dc,Ts,'tustin')

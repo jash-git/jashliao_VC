@@ -1,0 +1,52 @@
+// Text2.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "TABCONTROL.h"
+#include "Text2.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// CText2 property page
+
+IMPLEMENT_DYNCREATE(CText2, CPropertyPage)
+
+CText2::CText2() : CPropertyPage(CText2::IDD)
+{
+	//{{AFX_DATA_INIT(CText2)
+		// NOTE: the ClassWizard will add member initialization here
+	//}}AFX_DATA_INIT
+}
+
+CText2::~CText2()
+{
+}
+
+void CText2::DoDataExchange(CDataExchange* pDX)
+{
+	CPropertyPage::DoDataExchange(pDX);
+	//{{AFX_DATA_MAP(CText2)
+		// NOTE: the ClassWizard will add DDX and DDV calls here
+	//}}AFX_DATA_MAP
+}
+
+
+BEGIN_MESSAGE_MAP(CText2, CPropertyPage)
+	//{{AFX_MSG_MAP(CText2)
+	ON_BN_CLICKED(IDC_BUTTON1, OnButton1)
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// CText2 message handlers
+
+void CText2::OnButton1() 
+{
+	// TODO: Add your control notification handler code here
+	MessageBox("CText2");
+}
