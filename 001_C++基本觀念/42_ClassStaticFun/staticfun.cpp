@@ -1,0 +1,27 @@
+// staticfun.cpp: implementation of the Cstaticfun class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "staticfun.h"
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+
+Cstaticfun::Cstaticfun()
+{
+
+}
+
+Cstaticfun::~Cstaticfun()
+{
+
+}
+int Cstaticfun::add(int a,int b)
+{
+	return (a+b);
+}
+double Cstaticfun::dot(double a,double b)
+{
+	return (a*b);
+}
