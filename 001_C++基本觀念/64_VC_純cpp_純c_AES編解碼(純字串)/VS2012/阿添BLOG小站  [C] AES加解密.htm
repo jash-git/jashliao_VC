@@ -1,0 +1,3340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0042)http://blog.atien4u.com/2013/01/c-aes.html -->
+<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://www.google.com/2005/gml/b" xmlns:data="http://www.google.com/2005/gml/data" xmlns:expr="http://www.google.com/2005/gml/expr" class=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css"></style>
+<meta content="8cf3d266-6ae0-4fdf-be5c-9c804b99dde7" name="wumiiVerification">
+<link href="./阿添BLOG小站  [C] AES加解密_files/css" rel="stylesheet" type="text/css">
+<link href="./阿添BLOG小站  [C] AES加解密_files/css(1)" rel="stylesheet" type="text/css">
+<link href="./阿添BLOG小站  [C] AES加解密_files/css(2)" rel="stylesheet" type="text/css">
+<link href="./阿添BLOG小站  [C] AES加解密_files/css(3)" rel="stylesheet" type="text/css">
+<link href="./阿添BLOG小站  [C] AES加解密_files/css(4)" rel="stylesheet" type="text/css">
+<link href="./阿添BLOG小站  [C] AES加解密_files/css(5)" rel="stylesheet" type="text/css">
+<link href="./阿添BLOG小站  [C] AES加解密_files/css(6)" rel="stylesheet" type="text/css">
+<link href="./阿添BLOG小站  [C] AES加解密_files/css(7)" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" async="" src="./阿添BLOG小站  [C] AES加解密_files/ga.js"></script><script src="./阿添BLOG小站  [C] AES加解密_files/cb=gapi.loaded_3" async=""></script><script src="./阿添BLOG小站  [C] AES加解密_files/cb=gapi.loaded_2" async=""></script><script src="./阿添BLOG小站  [C] AES加解密_files/cb=gapi.loaded_1" async=""></script><script src="./阿添BLOG小站  [C] AES加解密_files/cb=gapi.loaded_0" async=""></script><script src="./阿添BLOG小站  [C] AES加解密_files/jquery.min.js"></script><script type="text/javascript">(function() { var b=window,e="jstiming",g="tick";(function(){function d(a){this.t={};this.tick=function(a,d,c){c=void 0!=c?c:(new Date).getTime();this.t[a]=[c,d]};this[g]("start",null,a)}var a=new d;b.jstiming={Timer:d,load:a};if(b.performance&&b.performance.timing){var a=b.performance.timing,c=b[e].load,f=a.navigationStart,a=a.responseStart;0<f&&a>=f&&(c[g]("_wtsrt",void 0,f),c[g]("wtsrt_","_wtsrt",a),c[g]("tbsd_","wtsrt_"))}try{a=null,b.chrome&&b.chrome.csi&&(a=Math.floor(b.chrome.csi().pageT),c&&0<f&&(c[g]("_tbnd",void 0,b.chrome.csi().startE),
+c[g]("tbnd_","_tbnd",f))),null==a&&b.gtbExternal&&(a=b.gtbExternal.pageT()),null==a&&b.external&&(a=b.external.pageT,c&&0<f&&(c[g]("_tbnd",void 0,b.external.startE),c[g]("tbnd_","_tbnd",f))),a&&(b[e].pt=a)}catch(l){}})();b.tickAboveFold=function(d){var a=0;if(d.offsetParent){do a+=d.offsetTop;while(d=d.offsetParent)}d=a;750>=d&&b[e].load[g]("aft")};var h=!1;function k(){h||(h=!0,b[e].load[g]("firstScrollTime"))}b.addEventListener?b.addEventListener("scroll",k,!1):b.attachEvent("onscroll",k);
+ })();</script><style type="text/css"></style><script src="./阿添BLOG小站  [C] AES加解密_files/sf_main.jsp"></script><script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/sf_preloader.jsp"></script><script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/sf_code.jsp"></script><script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/base_single_icon.js"></script><script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/dojo.xd.js"></script><script type="text/javascript" charset="utf-8" src="./阿添BLOG小站  [C] AES加解密_files/script.xd.js"></script><script type="text/javascript" charset="utf-8" src="./阿添BLOG小站  [C] AES加解密_files/window.xd.js"></script><style type="text/css"></style>
+<meta content="true" name="MSSmartTagsPreventParsing">
+<meta content="blogger" name="generator">
+<link href="http://blog.atien4u.com/favicon.ico" rel="icon" type="image/x-icon">
+<link href="./阿添BLOG小站  [C] AES加解密_files/阿添BLOG小站  [C] AES加解密.htm" rel="canonical">
+<link rel="alternate" type="application/atom+xml" title="阿添BLOG小站 - Atom" href="http://blog.atien4u.com/feeds/posts/default">
+<link rel="alternate" type="application/rss+xml" title="阿添BLOG小站 - RSS" href="http://blog.atien4u.com/feeds/posts/default?alt=rss">
+<link rel="service.post" type="application/atom+xml" title="阿添BLOG小站 - Atom" href="http://www.blogger.com/feeds/6707279719901209815/posts/default">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.blogger.com/rsd.g?blogID=6707279719901209815">
+<link rel="alternate" type="application/atom+xml" title="阿添BLOG小站 - Atom" href="http://blog.atien4u.com/feeds/2067128892160109434/comments/default">
+<link rel="image_src" href="http://4.bp.blogspot.com/-Rfiw0CLL8MI/UOQAib2N0eI/AAAAAAAAD08/-rKNHHq3fjc/s72-c/%25E6%259C%25AA%25E5%2591%25BD%25E5%2590%258D.png">
+<!--[if IE]> <script> (function() { var html5 = ("abbr,article,aside,audio,canvas,datalist,details," + "figure,footer,header,hgroup,mark,menu,meter,nav,output," + "progress,section,time,video").split(','); for (var i = 0; i < html5.length; i++) { document.createElement(html5[i]); } try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {} })(); </script> <![endif]-->
+<title>阿添BLOG小站: [C] AES加解密</title>
+<link type="text/css" rel="stylesheet" href="./阿添BLOG小站  [C] AES加解密_files/1832531788-widget_css_bundle.css">
+<link type="text/css" rel="stylesheet" href="./阿添BLOG小站  [C] AES加解密_files/authorization.css">
+<style id="page-skin-1" type="text/css"><!--
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:   MusicStyle
+Author: Klodian
+URL:    www.deluxetemplates.net
+Date:   Jul 2012
+----------------------------------------------- */
+#navbar-iframe {
+display: none !important;
+}
+/* Use this with templates/template-twocol.html */
+body {
+background: url("http://3.bp.blogspot.com/-QLfkCDs1Bl4/T_g5IRqntuI/AAAAAAAAD9E/k1PLLxlM8Eg/s1600/wrapper1.jpg") repeat-x scroll 0 187px #000000;
+color: #333333;
+font: small Georgia Serif;
+margin: 0;
+text-align: center;
+}
+a:link {
+color: #1F7117;
+text-decoration: none;
+}
+a:visited {
+color: #3366CC;
+text-decoration: none;
+}
+#HTML123 h2 {
+display: none;
+}
+a:hover {
+color: #FC8901;
+text-decoration: underline;
+}
+a img {
+border-width: 0;
+}
+#header-wrapper {
+height: 134px;
+margin: 0 auto;
+}
+#header-inner {
+height: 111px;
+margin-left: auto;
+margin-right: auto;
+}
+#header {
+color: #FFFFFF;
+text-align: left;
+text-shadow: 0 1px #000000;
+}
+#header h1 {
+font: 412% lobster,Oswald,Arial,Serif;
+letter-spacing: 0;
+margin: 0;
+padding: 24px 0 0 18px;
+text-transform: inherit;
+}
+#header a {
+color: #ffffff;
+text-decoration: none;
+}
+#header a:hover {
+color: #ffffff;
+}
+#header .description {
+font: 99%/10px lobster,Arial,Helvetica,Sans-serif;
+letter-spacing: 0;
+margin: -1px 0 0;
+padding: 0 3px 0 18px;
+text-transform: none;
+}
+#header img {
+margin-left: 0;
+margin-right: auto;
+margin-top: 0;
+}
+#outer-wrapper {
+font: 100% Arial,Serif;
+margin: 0 auto;
+padding-top: 0;
+text-align: left;
+width: 970px;
+}
+#outer-wrapper1 {
+}
+#main-wrapper {
+background: none repeat scroll 0 0 #FFFFFF;
+border: 1px solid #DDDDDD;
+float: left;
+margin-left: 6px;
+margin-top: 5px;
+overflow: hidden;
+padding: 16px;
+width: 580px;
+word-wrap: break-word;
+}
+#sidebar-wrapper {
+float: right;
+margin-right: 6px;
+margin-top: 6px;
+overflow: hidden;
+width: 339px;
+word-wrap: break-word;
+}
+#sidebar-wrapper2 {
+float: left;
+margin-right: 0;
+margin-top: 0;
+overflow: hidden;
+width: 200px;
+word-wrap: break-word;
+}
+h2 {
+background: url("http://2.bp.blogspot.com/-qUquyIyDfyQ/T_g5MMqH8iI/AAAAAAAAD9Q/j08LMGq0-6U/s1600/h2.jpg") repeat-x scroll 0 0 transparent;
+color: #FFFFFF;
+font: 120%/1.4em 'Oswald',Arial,Sans-serif;
+letter-spacing: 0;
+margin: 0;
+padding: 8px 6px 6px 7px;
+text-shadow: 0 1px #000000;
+text-transform: uppercase;
+}
+.post {
+margin: 0.5em 0 10px;
+padding-bottom: 14px;
+}
+.post h3 {
+color: #000000;
+font-family: Oswald,Arial;
+font-size: 180%;
+font-weight: normal;
+line-height: 1.4em;
+margin: 0.25em 0 0;
+padding: 0 0 4px;
+}
+.post h3 a, .post h3 a:visited, .post h3 strong {
+color: #000000;
+display: block;
+font-weight: normal;
+text-decoration: none;
+}
+.post h3 strong, .post h3 a:hover {
+color: #333333;
+}
+.post-body {
+font-size: 16px;
+line-height: 1.6em;
+margin: 0 0 0.75em;
+}
+.post-body blockquote {
+line-height: 1.3em;
+}
+.post-footer {
+background: none repeat scroll 0 0 #F7F7F7;
+border-bottom: 1px solid #DDDDDD;
+border-top: 1px solid #DDDDDD;
+color: #555555;
+font: 90%/1.4em 'Oswald',Trebuchet,Arial,Verdana,Sans-serif;
+letter-spacing: 0;
+margin-bottom: 0.75em;
+margin-left: 0;
+margin-top: 7px;
+padding: 10px;
+text-transform: none;
+}
+.comment-link {
+margin-left: 0.6em;
+}
+.post img, table.tr-caption-container {
+border: 1px solid #EEEEEE;
+padding: 2px;
+}
+.tr-caption-container img {
+border: medium none;
+padding: 0;
+}
+.post blockquote {
+background:$QuoteBackgroundColor url("$imgHackerQuote") left top no-repeat;
+border:4px dotted #ccc;
+display:block;
+font-family:Verdana;
+font-size:10pt;
+line-height:1.5em;
+max-height:30000px;
+overflow:auto;
+padding:15px 15px 15px 31px;
+}
+.post blockquote p {
+margin: 0.75em 0;
+}
+#comments h4 {
+color: #666666;
+font-size: 14px;
+font-weight: bold;
+letter-spacing: 0;
+line-height: 1.4em;
+margin: 1em 0;
+text-transform: none;
+}
+#comments-block {
+line-height: 1.6em;
+margin: 1em 0 1.5em;
+}
+body#layout #main-wrapper {
+margin-top: 0;
+overflow: visible;
+}
+body#layout #sidebar-wrapper {
+margin-top: 0;
+overflow: visible;
+}
+#comments-block .comment-author {
+-moz-background-inline-policy: continuous;
+background: none repeat scroll 0 0 #EEEEEE;
+border: 1px solid #EEEEEE;
+font-size: 15px;
+font-weight: normal;
+margin-right: 20px;
+padding: 5px;
+}
+#comments .blogger-comment-icon, .blogger-comment-icon {
+-moz-background-inline-policy: continuous;
+background: none repeat scroll 0 0 #E8DEC4;
+border-color: #E8DEC4;
+border-style: solid;
+border-width: 2px 1px 1px;
+line-height: 16px;
+padding: 5px;
+}
+#comments-block .comment-body {
+border-left: 1px solid #EEEEEE;
+border-right: 1px solid #EEEEEE;
+margin-left: 0;
+margin-right: 20px;
+padding: 7px;
+}
+#comments-block .comment-footer {
+border-bottom: 1px solid #EEEEEE;
+border-left: 1px solid #EEEEEE;
+border-right: 1px solid #EEEEEE;
+font-size: 11px;
+line-height: 1.4em;
+margin: -0.25em 20px 2em 0;
+padding: 5px;
+text-transform: none;
+}
+#comments-block .comment-body p {
+margin: 0 0 0.75em;
+}
+.deleted-comment {
+color: gray;
+font-style: italic;
+}
+#blog-pager-newer-link {
+background: none repeat scroll 0 0 #FFFFFF;
+border: 1px solid #CCCCCC;
+float: left;
+padding: 7px;
+}
+#blog-pager-older-link {
+background: url("http://1.bp.blogspot.com/-3lNtLBgMe24/TymBqycue0I/AAAAAAAAC8U/g5MEdEJoWVU/s1600/post.png") repeat-x scroll 0 1px transparent;
+border: 1px solid #EEEEEE;
+float: right;
+padding: 10px;
+}
+#blog-pager {
+margin: 25px 0 0;
+overflow: hidden;
+text-align: center;
+}
+.feed-links {
+clear: both;
+line-height: 2.5em;
+}
+.sidebar {
+color: #333333;
+line-height: 1.5em;
+}
+.sidebar2 {
+color: #333333;
+font-size: 90%;
+line-height: 1.5em;
+}
+.sidebar ul {
+list-style: none outside none;
+margin: 0;
+padding: 0;
+}
+.sidebar li {
+border-bottom: 1px dotted #DDDDDD;
+line-height: 1.5em;
+margin: 0;
+padding: 2px;
+}
+.sidebar2 .widget, .main .widget {
+margin: 0 0 1.5em;
+padding: 0 0 1.5em;
+}
+.sidebar2 ul {
+list-style: none outside none;
+margin: 0;
+padding: 0;
+}
+.sidebar2 li {
+border-bottom: 1px dotted #EEEEEE;
+line-height: 1.5em;
+margin: 0;
+padding: 2px;
+}
+.sidebar2 .widget, .main .widget {
+background: url("http://2.bp.blogspot.com/-MukJE3TVH4U/ThlGuAuWhhI/AAAAAAAAAYs/un2cfPTJyjM/s1600/postcont.png") repeat scroll 0 0 transparent;
+margin: 5px 0;
+padding: 5px;
+}
+.main .Blog {
+background: none repeat scroll 0 0 transparent;
+border: medium none;
+padding: 0;
+}
+.profile-img {
+border: 1px solid #CCCCCC;
+float: left;
+margin: 0 5px 5px 0;
+padding: 4px;
+}
+.profile-data {
+color: #999999;
+font: bold 78%/1.6em 'Trebuchet MS',Trebuchet,Arial,Verdana,Sans-serif;
+letter-spacing: 0.1em;
+margin: 0;
+text-transform: uppercase;
+}
+.profile-datablock {
+margin: 0.5em 0;
+}
+.profile-textblock {
+line-height: 1.6em;
+margin: 0.5em 0;
+}
+.profile-link {
+font: 78% 'Trebuchet MS',Trebuchet,Arial,Verdana,Sans-serif;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+}
+#footer {
+background: none repeat scroll 0 0 #272727;
+clear: both;
+color: #FFFFFF;
+font: 12px arial;
+letter-spacing: 0;
+margin: 0 auto;
+padding: 19px 0 20px;
+text-align: center;
+text-transform: none;
+width: 970px;
+}
+.feed-links {
+display: none;
+}
+#Attribution1 {
+display: none;
+}
+body#layout #footer {
+display: none;
+}
+body#layout #addthis_toolbox {
+display: none;
+}
+body#layout #crosscol-wrapper {
+display: none;
+}
+body#layout #searchbox {
+display: none;
+}
+.post-share-buttons {
+}
+#sidebar-wrapper2 .sidebar .widget {
+background: url("http://4.bp.blogspot.com/-6J8CUtCBbec/ThHXMg86LaI/AAAAAAAAAVs/KIoQ7g5m_Rk/s1600/sidebar.png") no-repeat scroll right top #E5E9D5;
+margin-bottom: 8px;
+padding: 0;
+}
+#HTML111 h2 {
+display: none;
+}
+#sidebar-wrapper2 .widget-content {
+background: none repeat scroll 0 0 #FFFFFF;
+margin: 0;
+padding: 10px;
+}
+#sidebar-wrapper .sidebar .widget {
+margin-bottom: 6px;
+padding-bottom: 0;
+}
+#sidebar-wrapper .widget-content {
+background: none repeat scroll 0 0 #FFFFFF;
+border: 1px solid #DDDDDD;
+margin: 0;
+padding: 7px 9px 9px;
+}
+#footer-bg {
+margin-top: auto;
+}
+.first-links {
+font-size: 11px;
+margin-bottom: -4px;
+padding-left: 13px;
+}
+.second-links {
+padding-left: 30px;
+}
+#footer a {
+color: #FFFFFF;
+}
+#content-wrapper {
+background: none repeat scroll 0 0 #FFFFFF;
+margin-top: 6px;
+padding-top: 0;
+}
+#PageList1 {
+height: 38px;
+margin: 0 auto 0 0;
+padding-top: 0;
+width: 781px;
+}
+.PageList li a {
+color: #FFFFFF;
+font: 12px Oswald,Arial;
+padding: 14px 12px 10px;
+text-transform: uppercase;
+}
+.crosscol .PageList li, .footer .PageList li {
+float: left;
+list-style: none outside none;
+margin: 0;
+padding: 13px 0;
+}
+.PageList li.selected a {
+background: none repeat scroll 0 0 #000000;
+color: #FFFFFF;
+font-weight: normal;
+text-decoration: none;
+}
+.PageList li a:hover {
+background: none repeat scroll 0 0 #000000;
+text-decoration: none;
+}
+.searchbox {
+-moz-background-inline-policy: continuous;
+background: url("http://2.bp.blogspot.com/_Ax-O2ayi6kU/TUV8EMX-UTI/AAAAAAAABWE/sPzPhAKq9AY/s1600/search.png") no-repeat scroll 0 0 transparent;
+display: block;
+float: right;
+height: 50px;
+margin-right: 43px;
+margin-top: -40px;
+width: 249px;
+}
+.searchbox .textfield {
+-moz-background-inline-policy: continuous;
+background: none repeat scroll 0 0 transparent;
+border: 0 none;
+float: left;
+height: 20px;
+margin: 14px 1px 5px 25px;
+width: 155px;
+}
+.searchbox .button {
+-moz-background-inline-policy: continuous;
+background: none repeat scroll 0 0 transparent;
+border: 0 none;
+cursor: pointer;
+float: left;
+height: 20px;
+margin-left: 2px;
+margin-top: 14px;
+width: 35px;
+}
+h2.date-header {
+background: url("http://2.bp.blogspot.com/_8GxSJXcDIwk/TBM41zdJRTI/AAAAAAAABp0/Y-bxfWbuf8s/s1600/1276328132_date.png") no-repeat scroll left -1px transparent;
+border: medium none;
+color: #333333;
+font: 12px Oswald,Arial;
+letter-spacing: 0;
+margin: 0;
+padding-left: 20px;
+padding-top: 0;
+text-shadow: 0 1px 0 #FFFFFF;
+text-transform: none;
+}
+.post-author {
+background: url("http://3.bp.blogspot.com/_8GxSJXcDIwk/TBNBFo0rK-I/AAAAAAAABq8/VO_ATeuF6sM/s1600/aaa.png") no-repeat scroll 0 0 transparent;
+padding-left: 20px;
+}
+.post-comment-link a {
+background: url("http://2.bp.blogspot.com/_8GxSJXcDIwk/TBM6sX5_MNI/AAAAAAAABp8/2RwKjFNZjcQ/s1600/1276328597_comment.png") no-repeat scroll left center transparent;
+padding-left: 20px;
+}
+.post-labels {
+background: url("http://4.bp.blogspot.com/_8GxSJXcDIwk/TBNALDZe_0I/AAAAAAAABqk/cS_OBWXZEQs/s1600/1276330011_tags.png") no-repeat scroll left center transparent;
+padding-left: 20px;
+}
+#wrapper1 {
+background: url("http://1.bp.blogspot.com/-Ru5qzigch7Q/T_g5CJPaZKI/AAAAAAAAD8s/M3b84CBQL7I/s1600/wrapper.jpg") no-repeat scroll center top transparent;
+}
+#wrapper {
+background: url("http://3.bp.blogspot.com/-mI8xvW16hM4/T_g5FopeUbI/AAAAAAAAD84/q9Mwmv60KD0/s1600/wrapper-bg.jpg") no-repeat scroll center 262px transparent;
+}
+#content-but {
+}
+.col-left {
+float: left;
+width: 49%;
+}
+.col-right {
+float: right;
+width: 48%;
+}
+#HTML102 h2 {
+display: none;
+}
+body#layout #ads-header {
+float: right;
+height: 60px;
+margin-right: 20px;
+margin-top: 0;
+width: 300px;
+}
+body#layout #HTML102 {
+float: right;
+margin-right: 0;
+width: 296px;
+}
+body#layout #Header1 {
+float: left;
+margin-left: 20px;
+width: 600px;
+}
+body#layout #headertw {
+display: none;
+}
+#headertw {
+float: left;
+height: 27px;
+margin-left: 653px;
+margin-top: -43px;
+position: relative;
+}
+#headertw img {
+margin-right: 5px;
+padding: 0;
+}
+#searchbox {
+-moz-background-inline-policy: continuous;
+background: none repeat scroll 0 0 #FFFFFF;
+border-radius: 12px 12px 12px 12px;
+float: right;
+height: 23px;
+margin-right: 48px;
+margin-top: -34px;
+width: 182px;
+}
+#searchbox .textfield {
+-moz-background-inline-policy: continuous;
+background: none repeat scroll 0 0 transparent;
+border: 0 none;
+float: left;
+height: 18px;
+margin: 2px 1px 2px 8px;
+width: 140px;
+}
+#searchbox .button {
+-moz-background-inline-policy: continuous;
+background: url("http://2.bp.blogspot.com/-bc5XqZfTEqo/ThyjPB6DPsI/AAAAAAAAAbY/RO60uxY98Gg/s1600/searc.png") no-repeat scroll 0 4px transparent;
+border: 0 none;
+cursor: pointer;
+float: left;
+height: 23px;
+margin-left: 2px;
+margin-top: 0;
+width: 23px;
+}
+#HTML102 h2 {
+display: none;
+}
+.text-h {
+color: #FFFFFF;
+display: none;
+float: left;
+font: bold 13px Arial;
+margin-right: 10px;
+margin-top: 5px;
+text-transform: none;
+}
+#ads-header {
+height: 60px;
+margin-left: 701px;
+margin-top: -59px;
+width: 295px;
+}
+#newheader {
+height: 38px;
+margin-bottom: 0;
+margin-left: auto;
+margin-right: auto;
+padding-top: 6px;
+width: 950px;
+}
+.crosscol .PageList UL, .footer .PageList UL {
+list-style: none outside none;
+margin: 0;
+padding: 0;
+}
+.post-footer a {
+}
+.date-outer {
+margin-bottom: 5px;
+}
+#s3slider {
+background: none repeat scroll 0 0 #FFFFFF;
+border: 3px double #CCCCCC;
+height: 299px;
+margin-bottom: 25px;
+margin-top: 0;
+overflow: hidden;
+position: relative;
+text-shadow: 0 1px 0 #000000;
+width: 590px;
+}
+#HTML123 h2 {
+display: none;
+}
+#s3sliderContent {
+background: none repeat scroll 0 0 #FFFFFF;
+height: 300px;
+list-style: none outside none;
+margin-left: 0;
+overflow: hidden;
+padding: 0;
+position: absolute;
+top: -14px;
+width: 590px;
+}
+.s3sliderImage {
+float: left;
+position: relative;
+width: 590px;
+}
+.s3sliderImage span {
+background-color: #000000;
+color: #FFFFFF;
+display: none;
+font-size: 12px;
+height: 300px;
+line-height: 16px;
+opacity: 0.7;
+overflow: hidden;
+padding: 10px 13px;
+position: absolute;
+right: 0;
+top: 0;
+width: 180px;
+}
+.s3sliderImage strong a {
+color: #FFFFFF;
+font-family: 'Myriad Pro',Helvetica,Arial,Sans-Serif;
+font-size: 20px;
+}
+.s3sliderImage strong a:hover {
+color: #FFFFFF;
+}
+#HTML101 h2 {
+display: none;
+}
+.sidebar a {
+}
+#wrapper-bg {
+}
+.second-row h2 {
+display: none;
+}
+.second-row a {
+color: #FFFFFF;
+}
+.second-row {
+height: 40px;
+margin: 0 auto 0 0;
+padding-bottom: 0;
+padding-left: 0;
+padding-right: 0;
+text-shadow: 0 1px 0 #000000;
+text-transform: none;
+}
+.second-row li {
+color: #FFFFFF;
+float: left;
+font: bold 12px Arial;
+margin: 0;
+padding: 16px 7px 14px 10px;
+text-transform: uppercase;
+}
+.second-row ul {
+float: left;
+list-style: none outside none;
+margin: 0;
+padding: 0;
+width: 969px;
+}
+#top-social-profiles {
+}
+#ads-header img {
+margin: 0 6px 0 0 !important;
+}
+#ads-header img:hover {
+opacity: 0.8;
+}
+#top-social-profiles img {
+margin: 0 6px 0 0 !important;
+}
+#top-social-profiles img:hover {
+opacity: 0.8;
+}
+#top-social-profiles .widget-container {
+background: none repeat scroll 0 0 transparent;
+border: 0 none;
+padding: 0;
+}
+.fp-slider {
+background: none repeat scroll 0 0 #EEEEEE;
+height: 333px;
+margin: 0 0 17px;
+overflow: hidden;
+padding: 0;
+position: relative;
+width: 579px;
+}
+.fp-slides-container {
+}
+.fp-slides, .fp-thumbnail, .fp-prev-next, .fp-nav {
+width: 582px;
+}
+.fp-slides, .fp-thumbnail {
+height: 299px;
+margin-left: 0;
+margin-top: 0;
+overflow: hidden;
+position: relative;
+}
+.fp-title {
+color: #FFFFFF;
+font: bold 18px Arial,Helvetica,Sans-serif;
+margin: 0;
+padding: 0 0 2px;
+text-shadow: 0 1px 0 #000000;
+}
+.fp-title a, .fp-title a:hover {
+color: #FFFFFF;
+text-decoration: none;
+}
+.fp-content {
+background: none repeat scroll 0 0 #111111;
+bottom: 0;
+left: 0;
+margin-left: 0;
+opacity: 0.7;
+overflow: hidden;
+padding: 10px 15px;
+position: absolute;
+right: 0;
+}
+.fp-content p {
+color: #FFFFFF;
+line-height: 18px;
+margin: 0;
+padding: 0;
+text-shadow: 0 1px 0 #000000;
+}
+.fp-more, .fp-more:hover {
+color: #FFFFFF;
+font-weight: bold;
+}
+.fp-nav {
+height: 12px;
+margin-left: 12px;
+padding: 10px 0;
+text-align: center;
+}
+.fp-pager a {
+background-image: url("http://2.bp.blogspot.com/-9SMGe_e4Cnw/T4BYgcnG3WI/AAAAAAAAAt0/a4-6wqD8n2c/s1600/pages.png");
+background-position: 0 0;
+cursor: pointer;
+display: inline-block;
+float: none;
+height: 15px;
+line-height: 1;
+margin: 0 8px 0 0;
+overflow: hidden;
+padding: 0;
+text-indent: -999px;
+width: 16px;
+}
+.fp-pager a:hover, .fp-pager a.activeSlide {
+background-position: 0 -112px;
+opacity: 1;
+text-decoration: none;
+}
+.fp-prev-next-wrap {
+position: relative;
+z-index: 200;
+}
+.fp-prev-next {
+bottom: 130px;
+height: 37px;
+left: 0;
+position: absolute;
+right: 0;
+}
+.fp-prev {
+background: url("https://sites.google.com/site/atianbuluoge/fu-jian/prev.png") no-repeat scroll left top transparent;
+float: left;
+height: 51px;
+margin-left: 10px;
+margin-top: -180px;
+width: 53px;
+}
+.col-left {
+float: left;
+width: 49%;
+}
+.col-right {
+float: right;
+width: 48%;
+}
+.fp-prev:hover {
+}
+.fp-next {
+background: url("https://sites.google.com/site/atianbuluoge/fu-jian/prev1.png") no-repeat scroll right top transparent;
+float: right;
+height: 51px;
+margin-right: 10px;
+margin-top: -180px;
+width: 53px;
+}
+.fp-next:hover {
+}
+div.jump-link {
+font: 100%/1.4em 'Oswald',Trebuchet,Arial,Verdana,Sans-serif;
+padding: 7px;
+}
+#lower2 {
+color: #EEEEEE;
+font: 13px arial;
+margin: 0 auto;
+text-align: left;
+}
+#lowerbar-wrapper2 .widget-content {
+color: #FFFFFF;
+margin: 0;
+padding: 10px;
+}
+#lowerbar-wrapper2 h2 {
+background: url("http://2.bp.blogspot.com/-qUquyIyDfyQ/T_g5MMqH8iI/AAAAAAAAD9Q/j08LMGq0-6U/s1600/h2.jpg") repeat-x scroll 0 0 transparent;
+color: #FFFFFF;
+font: 130% Oswald,Arial;
+letter-spacing: 0;
+margin: 0;
+padding: 2px 9px;
+text-shadow: none;
+text-transform: uppercase;
+}
+#lowerbar-wrapper2 ul {
+list-style: none outside none;
+margin: 0;
+padding: 0;
+}
+#lowerbar-wrapper2 li {
+margin: 0;
+padding: 2px 0;
+}
+#lowerbar-wrapper2 {
+float: left;
+line-height: 1.6em;
+margin: 0 8px -4px;
+overflow: hidden;
+width: 303px;
+word-wrap: break-word;
+}
+#lower-wrapper2 {
+background: url("http://3.bp.blogspot.com/-wkNPMu8ZRy8/T_g5PL8MgqI/AAAAAAAAD9c/PuKOT0bR7yg/s1600/low.jpg") repeat-x scroll 0 0 #2B2B2B;
+margin: 0 auto;
+padding: 12px 5px 1px;
+width: 960px;
+}
+
+--></style>
+<script src="./阿添BLOG小站  [C] AES加解密_files/jquery.min(1).js" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+
+(function($){
+	/* hoverIntent by Brian Cherne */
+	$.fn.hoverIntent = function(f,g) {
+		// default configuration options
+		var cfg = {
+			sensitivity: 7,
+			interval: 100,
+			timeout: 0
+		};
+		// override configuration options with user supplied object
+		cfg = $.extend(cfg, g ? { over: f, out: g } : f );
+
+		// instantiate variables
+		// cX, cY = current X and Y position of mouse, updated by mousemove event
+		// pX, pY = previous X and Y position of mouse, set by mouseover and polling interval
+		var cX, cY, pX, pY;
+
+		// A private function for getting mouse position
+		var track = function(ev) {
+			cX = ev.pageX;
+			cY = ev.pageY;
+		};
+
+		// A private function for comparing current and previous mouse position
+		var compare = function(ev,ob) {
+			ob.hoverIntent_t = clearTimeout(ob.hoverIntent_t);
+			// compare mouse positions to see if they've crossed the threshold
+			if ( ( Math.abs(pX-cX) + Math.abs(pY-cY) ) < cfg.sensitivity ) {
+				$(ob).unbind("mousemove",track);
+				// set hoverIntent state to true (so mouseOut can be called)
+				ob.hoverIntent_s = 1;
+				return cfg.over.apply(ob,[ev]);
+			} else {
+				// set previous coordinates for next time
+				pX = cX; pY = cY;
+				// use self-calling timeout, guarantees intervals are spaced out properly (avoids JavaScript timer bugs)
+				ob.hoverIntent_t = setTimeout( function(){compare(ev, ob);} , cfg.interval );
+			}
+		};
+
+		// A private function for delaying the mouseOut function
+		var delay = function(ev,ob) {
+			ob.hoverIntent_t = clearTimeout(ob.hoverIntent_t);
+			ob.hoverIntent_s = 0;
+			return cfg.out.apply(ob,[ev]);
+		};
+
+		// A private function for handling mouse 'hovering'
+		var handleHover = function(e) {
+			// next three lines copied from jQuery.hover, ignore children onMouseOver/onMouseOut
+			var p = (e.type == "mouseover" ? e.fromElement : e.toElement) || e.relatedTarget;
+			while ( p && p != this ) { try { p = p.parentNode; } catch(e) { p = this; } }
+			if ( p == this ) { return false; }
+
+			// copy objects to be passed into t (required for event object to be passed in IE)
+			var ev = jQuery.extend({},e);
+			var ob = this;
+
+			// cancel hoverIntent timer if it exists
+			if (ob.hoverIntent_t) { ob.hoverIntent_t = clearTimeout(ob.hoverIntent_t); }
+
+			// else e.type == "onmouseover"
+			if (e.type == "mouseover") {
+				// set "previous" X and Y position based on initial entry point
+				pX = ev.pageX; pY = ev.pageY;
+				// update "current" X and Y position based on mousemove
+				$(ob).bind("mousemove",track);
+				// start polling interval (self-calling timeout) to compare mouse coordinates over time
+				if (ob.hoverIntent_s != 1) { ob.hoverIntent_t = setTimeout( function(){compare(ev,ob);} , cfg.interval );}
+
+			// else e.type == "onmouseout"
+			} else {
+				// unbind expensive mousemove event
+				$(ob).unbind("mousemove",track);
+				// if hoverIntent state is true, then call the mouseOut function after the specified delay
+				if (ob.hoverIntent_s == 1) { ob.hoverIntent_t = setTimeout( function(){delay(ev,ob);} , cfg.timeout );}
+			}
+		};
+
+		// bind the function to the two event listeners
+		return this.mouseover(handleHover).mouseout(handleHover);
+	};
+	
+})(jQuery);
+
+//]]>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+
+/*
+ * Superfish v1.4.8 - jQuery menu widget
+ * Copyright (c) 2008 Joel Birch
+ *
+ * Dual licensed under the MIT and GPL licenses:
+ * 	http://www.opensource.org/licenses/mit-license.php
+ * 	http://www.gnu.org/licenses/gpl.html
+ *
+ * CHANGELOG: http://users.tpg.com.au/j_birch/plugins/superfish/changelog.txt
+ */
+
+;(function($){
+	$.fn.superfish = function(op){
+
+		var sf = $.fn.superfish,
+			c = sf.c,
+			$arrow = $(['<span class="',c.arrowClass,'"> &#187;</span>'].join('')),
+			over = function(){
+				var $$ = $(this), menu = getMenu($$);
+				clearTimeout(menu.sfTimer);
+				$$.showSuperfishUl().siblings().hideSuperfishUl();
+			},
+			out = function(){
+				var $$ = $(this), menu = getMenu($$), o = sf.op;
+				clearTimeout(menu.sfTimer);
+				menu.sfTimer=setTimeout(function(){
+					o.retainPath=($.inArray($$[0],o.$path)>-1);
+					$$.hideSuperfishUl();
+					if (o.$path.length && $$.parents(['li.',o.hoverClass].join('')).length<1){over.call(o.$path);}
+				},o.delay);	
+			},
+			getMenu = function($menu){
+				var menu = $menu.parents(['ul.',c.menuClass,':first'].join(''))[0];
+				sf.op = sf.o[menu.serial];
+				return menu;
+			},
+			addArrow = function($a){ $a.addClass(c.anchorClass).append($arrow.clone()); };
+			
+		return this.each(function() {
+			var s = this.serial = sf.o.length;
+			var o = $.extend({},sf.defaults,op);
+			o.$path = $('li.'+o.pathClass,this).slice(0,o.pathLevels).each(function(){
+				$(this).addClass([o.hoverClass,c.bcClass].join(' '))
+					.filter('li:has(ul)').removeClass(o.pathClass);
+			});
+			sf.o[s] = sf.op = o;
+			
+			$('li:has(ul)',this)[($.fn.hoverIntent && !o.disableHI) ? 'hoverIntent' : 'hover'](over,out).each(function() {
+				if (o.autoArrows) addArrow( $('>a:first-child',this) );
+			})
+			.not('.'+c.bcClass)
+				.hideSuperfishUl();
+			
+			var $a = $('a',this);
+			$a.each(function(i){
+				var $li = $a.eq(i).parents('li');
+				$a.eq(i).focus(function(){over.call($li);}).blur(function(){out.call($li);});
+			});
+			o.onInit.call(this);
+			
+		}).each(function() {
+			var menuClasses = [c.menuClass];
+			if (sf.op.dropShadows  && !($.browser.msie && $.browser.version < 7)) menuClasses.push(c.shadowClass);
+			$(this).addClass(menuClasses.join(' '));
+		});
+	};
+
+	var sf = $.fn.superfish;
+	sf.o = [];
+	sf.op = {};
+	sf.IE7fix = function(){
+		var o = sf.op;
+		if ($.browser.msie && $.browser.version > 6 && o.dropShadows && o.animation.opacity!=undefined)
+			this.toggleClass(sf.c.shadowClass+'-off');
+		};
+	sf.c = {
+		bcClass     : 'sf-breadcrumb',
+		menuClass   : 'sf-js-enabled',
+		anchorClass : 'sf-with-ul',
+		arrowClass  : 'sf-sub-indicator',
+		shadowClass : 'sf-shadow'
+	};
+	sf.defaults = {
+		hoverClass	: 'sfHover',
+		pathClass	: 'overideThisToUse',
+		pathLevels	: 1,
+		delay		: 800,
+		animation	: {opacity:'show'},
+		speed		: 'normal',
+		autoArrows	: true,
+		dropShadows : true,
+		disableHI	: false,		// true disables hoverIntent detection
+		onInit		: function(){}, // callback functions
+		onBeforeShow: function(){},
+		onShow		: function(){},
+		onHide		: function(){}
+	};
+	$.fn.extend({
+		hideSuperfishUl : function(){
+			var o = sf.op,
+				not = (o.retainPath===true) ? o.$path : '';
+			o.retainPath = false;
+			var $ul = $(['li.',o.hoverClass].join(''),this).add(this).not(not).removeClass(o.hoverClass)
+					.find('>ul').hide().css('visibility','hidden');
+			o.onHide.call($ul);
+			return this;
+		},
+		showSuperfishUl : function(){
+			var o = sf.op,
+				sh = sf.c.shadowClass+'-off',
+				$ul = this.addClass(o.hoverClass)
+					.find('>ul:hidden').css('visibility','visible');
+			sf.IE7fix.call($ul);
+			o.onBeforeShow.call($ul);
+			$ul.animate(o.animation,o.speed,function(){ sf.IE7fix.call($ul); o.onShow.call($ul); });
+			return this;
+		}
+	});
+
+})(jQuery);
+
+
+
+//]]>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+
+/*
+ * jQuery Cycle Plugin (with Transition Definitions)
+ * Examples and documentation at: http://jquery.malsup.com/cycle/
+ * Copyright (c) 2007-2010 M. Alsup
+ * Version: 2.88 (08-JUN-2010)
+ * Dual licensed under the MIT and GPL licenses.
+ * http://jquery.malsup.com/license.html
+ * Requires: jQuery v1.2.6 or later
+ */
+(function($){var ver="2.88";if($.support==undefined){$.support={opacity:!($.browser.msie)};}function debug(s){if($.fn.cycle.debug){log(s);}}function log(){if(window.console&&window.console.log){window.console.log("[cycle] "+Array.prototype.join.call(arguments," "));}}$.fn.cycle=function(options,arg2){var o={s:this.selector,c:this.context};if(this.length===0&&options!="stop"){if(!$.isReady&&o.s){log("DOM not ready, queuing slideshow");$(function(){$(o.s,o.c).cycle(options,arg2);});return this;}log("terminating; zero elements found by selector"+($.isReady?"":" (DOM not ready)"));return this;}return this.each(function(){var opts=handleArguments(this,options,arg2);if(opts===false){return;}opts.updateActivePagerLink=opts.updateActivePagerLink||$.fn.cycle.updateActivePagerLink;if(this.cycleTimeout){clearTimeout(this.cycleTimeout);}this.cycleTimeout=this.cyclePause=0;var $cont=$(this);var $slides=opts.slideExpr?$(opts.slideExpr,this):$cont.children();var els=$slides.get();if(els.length<2){log("terminating; too few slides: "+els.length);return;}var opts2=buildOptions($cont,$slides,els,opts,o);if(opts2===false){return;}var startTime=opts2.continuous?10:getTimeout(els[opts2.currSlide],els[opts2.nextSlide],opts2,!opts2.rev);if(startTime){startTime+=(opts2.delay||0);if(startTime<10){startTime=10;}debug("first timeout: "+startTime);this.cycleTimeout=setTimeout(function(){go(els,opts2,0,(!opts2.rev&&!opts.backwards));},startTime);}});};function handleArguments(cont,options,arg2){if(cont.cycleStop==undefined){cont.cycleStop=0;}if(options===undefined||options===null){options={};}if(options.constructor==String){switch(options){case"destroy":case"stop":var opts=$(cont).data("cycle.opts");if(!opts){return false;}cont.cycleStop++;if(cont.cycleTimeout){clearTimeout(cont.cycleTimeout);}cont.cycleTimeout=0;$(cont).removeData("cycle.opts");if(options=="destroy"){destroy(opts);}return false;case"toggle":cont.cyclePause=(cont.cyclePause===1)?0:1;checkInstantResume(cont.cyclePause,arg2,cont);return false;case"pause":cont.cyclePause=1;return false;case"resume":cont.cyclePause=0;checkInstantResume(false,arg2,cont);return false;case"prev":case"next":var opts=$(cont).data("cycle.opts");if(!opts){log('options not found, "prev/next" ignored');return false;}$.fn.cycle[options](opts);return false;default:options={fx:options};}return options;}else{if(options.constructor==Number){var num=options;options=$(cont).data("cycle.opts");if(!options){log("options not found, can not advance slide");return false;}if(num<0||num>=options.elements.length){log("invalid slide index: "+num);return false;}options.nextSlide=num;if(cont.cycleTimeout){clearTimeout(cont.cycleTimeout);cont.cycleTimeout=0;}if(typeof arg2=="string"){options.oneTimeFx=arg2;}go(options.elements,options,1,num>=options.currSlide);return false;}}return options;function checkInstantResume(isPaused,arg2,cont){if(!isPaused&&arg2===true){var options=$(cont).data("cycle.opts");if(!options){log("options not found, can not resume");return false;}if(cont.cycleTimeout){clearTimeout(cont.cycleTimeout);cont.cycleTimeout=0;}go(options.elements,options,1,(!opts.rev&&!opts.backwards));}}}function removeFilter(el,opts){if(!$.support.opacity&&opts.cleartype&&el.style.filter){try{el.style.removeAttribute("filter");}catch(smother){}}}function destroy(opts){if(opts.next){$(opts.next).unbind(opts.prevNextEvent);}if(opts.prev){$(opts.prev).unbind(opts.prevNextEvent);}if(opts.pager||opts.pagerAnchorBuilder){$.each(opts.pagerAnchors||[],function(){this.unbind().remove();});}opts.pagerAnchors=null;if(opts.destroy){opts.destroy(opts);}}function buildOptions($cont,$slides,els,options,o){var opts=$.extend({},$.fn.cycle.defaults,options||{},$.metadata?$cont.metadata():$.meta?$cont.data():{});if(opts.autostop){opts.countdown=opts.autostopCount||els.length;}var cont=$cont[0];$cont.data("cycle.opts",opts);opts.$cont=$cont;opts.stopCount=cont.cycleStop;opts.elements=els;opts.before=opts.before?[opts.before]:[];opts.after=opts.after?[opts.after]:[];opts.after.unshift(function(){opts.busy=0;});if(!$.support.opacity&&opts.cleartype){opts.after.push(function(){removeFilter(this,opts);});}if(opts.continuous){opts.after.push(function(){go(els,opts,0,(!opts.rev&&!opts.backwards));});}saveOriginalOpts(opts);if(!$.support.opacity&&opts.cleartype&&!opts.cleartypeNoBg){clearTypeFix($slides);}if($cont.css("position")=="static"){$cont.css("position","relative");}if(opts.width){$cont.width(opts.width);}if(opts.height&&opts.height!="auto"){$cont.height(opts.height);}if(opts.startingSlide){opts.startingSlide=parseInt(opts.startingSlide);}else{if(opts.backwards){opts.startingSlide=els.length-1;}}if(opts.random){opts.randomMap=[];for(var i=0;i<els.length;i++){opts.randomMap.push(i);}opts.randomMap.sort(function(a,b){return Math.random()-0.5;});opts.randomIndex=1;opts.startingSlide=opts.randomMap[1];}else{if(opts.startingSlide>=els.length){opts.startingSlide=0;}}opts.currSlide=opts.startingSlide||0;var first=opts.startingSlide;$slides.css({position:"absolute",top:0,left:0}).hide().each(function(i){var z;if(opts.backwards){z=first?i<=first?els.length+(i-first):first-i:els.length-i;}else{z=first?i>=first?els.length-(i-first):first-i:els.length-i;}$(this).css("z-index",z);});$(els[first]).css("opacity",1).show();removeFilter(els[first],opts);if(opts.fit&&opts.width){$slides.width(opts.width);}if(opts.fit&&opts.height&&opts.height!="auto"){$slides.height(opts.height);}var reshape=opts.containerResize&&!$cont.innerHeight();if(reshape){var maxw=0,maxh=0;for(var j=0;j<els.length;j++){var $e=$(els[j]),e=$e[0],w=$e.outerWidth(),h=$e.outerHeight();if(!w){w=e.offsetWidth||e.width||$e.attr("width");}if(!h){h=e.offsetHeight||e.height||$e.attr("height");}maxw=w>maxw?w:maxw;maxh=h>maxh?h:maxh;}if(maxw>0&&maxh>0){$cont.css({width:maxw+"px",height:maxh+"px"});}}if(opts.pause){$cont.hover(function(){this.cyclePause++;},function(){this.cyclePause--;});}if(supportMultiTransitions(opts)===false){return false;}var requeue=false;options.requeueAttempts=options.requeueAttempts||0;$slides.each(function(){var $el=$(this);this.cycleH=(opts.fit&&opts.height)?opts.height:($el.height()||this.offsetHeight||this.height||$el.attr("height")||0);this.cycleW=(opts.fit&&opts.width)?opts.width:($el.width()||this.offsetWidth||this.width||$el.attr("width")||0);if($el.is("img")){var loadingIE=($.browser.msie&&this.cycleW==28&&this.cycleH==30&&!this.complete);var loadingFF=($.browser.mozilla&&this.cycleW==34&&this.cycleH==19&&!this.complete);var loadingOp=($.browser.opera&&((this.cycleW==42&&this.cycleH==19)||(this.cycleW==37&&this.cycleH==17))&&!this.complete);var loadingOther=(this.cycleH==0&&this.cycleW==0&&!this.complete);if(loadingIE||loadingFF||loadingOp||loadingOther){if(o.s&&opts.requeueOnImageNotLoaded&&++options.requeueAttempts<100){log(options.requeueAttempts," - img slide not loaded, requeuing slideshow: ",this.src,this.cycleW,this.cycleH);setTimeout(function(){$(o.s,o.c).cycle(options);},opts.requeueTimeout);requeue=true;return false;}else{log("could not determine size of image: "+this.src,this.cycleW,this.cycleH);}}}return true;});if(requeue){return false;}opts.cssBefore=opts.cssBefore||{};opts.animIn=opts.animIn||{};opts.animOut=opts.animOut||{};$slides.not(":eq("+first+")").css(opts.cssBefore);if(opts.cssFirst){$($slides[first]).css(opts.cssFirst);}if(opts.timeout){opts.timeout=parseInt(opts.timeout);if(opts.speed.constructor==String){opts.speed=$.fx.speeds[opts.speed]||parseInt(opts.speed);}if(!opts.sync){opts.speed=opts.speed/2;}var buffer=opts.fx=="shuffle"?500:250;while((opts.timeout-opts.speed)<buffer){opts.timeout+=opts.speed;}}if(opts.easing){opts.easeIn=opts.easeOut=opts.easing;}if(!opts.speedIn){opts.speedIn=opts.speed;}if(!opts.speedOut){opts.speedOut=opts.speed;}opts.slideCount=els.length;opts.currSlide=opts.lastSlide=first;if(opts.random){if(++opts.randomIndex==els.length){opts.randomIndex=0;}opts.nextSlide=opts.randomMap[opts.randomIndex];}else{if(opts.backwards){opts.nextSlide=opts.startingSlide==0?(els.length-1):opts.startingSlide-1;}else{opts.nextSlide=opts.startingSlide>=(els.length-1)?0:opts.startingSlide+1;}}if(!opts.multiFx){var init=$.fn.cycle.transitions[opts.fx];if($.isFunction(init)){init($cont,$slides,opts);}else{if(opts.fx!="custom"&&!opts.multiFx){log("unknown transition: "+opts.fx,"; slideshow terminating");return false;}}}var e0=$slides[first];if(opts.before.length){opts.before[0].apply(e0,[e0,e0,opts,true]);}if(opts.after.length>1){opts.after[1].apply(e0,[e0,e0,opts,true]);}if(opts.next){$(opts.next).bind(opts.prevNextEvent,function(){return advance(opts,opts.rev?-1:1);});}if(opts.prev){$(opts.prev).bind(opts.prevNextEvent,function(){return advance(opts,opts.rev?1:-1);});}if(opts.pager||opts.pagerAnchorBuilder){buildPager(els,opts);}exposeAddSlide(opts,els);return opts;}function saveOriginalOpts(opts){opts.original={before:[],after:[]};opts.original.cssBefore=$.extend({},opts.cssBefore);opts.original.cssAfter=$.extend({},opts.cssAfter);opts.original.animIn=$.extend({},opts.animIn);opts.original.animOut=$.extend({},opts.animOut);$.each(opts.before,function(){opts.original.before.push(this);});$.each(opts.after,function(){opts.original.after.push(this);});}function supportMultiTransitions(opts){var i,tx,txs=$.fn.cycle.transitions;if(opts.fx.indexOf(",")>0){opts.multiFx=true;opts.fxs=opts.fx.replace(/\s*/g,"").split(",");for(i=0;i<opts.fxs.length;i++){var fx=opts.fxs[i];tx=txs[fx];if(!tx||!txs.hasOwnProperty(fx)||!$.isFunction(tx)){log("discarding unknown transition: ",fx);opts.fxs.splice(i,1);i--;}}if(!opts.fxs.length){log("No valid transitions named; slideshow terminating.");return false;}}else{if(opts.fx=="all"){opts.multiFx=true;opts.fxs=[];for(p in txs){tx=txs[p];if(txs.hasOwnProperty(p)&&$.isFunction(tx)){opts.fxs.push(p);}}}}if(opts.multiFx&&opts.randomizeEffects){var r1=Math.floor(Math.random()*20)+30;for(i=0;i<r1;i++){var r2=Math.floor(Math.random()*opts.fxs.length);opts.fxs.push(opts.fxs.splice(r2,1)[0]);}debug("randomized fx sequence: ",opts.fxs);}return true;}function exposeAddSlide(opts,els){opts.addSlide=function(newSlide,prepend){var $s=$(newSlide),s=$s[0];if(!opts.autostopCount){opts.countdown++;}els[prepend?"unshift":"push"](s);if(opts.els){opts.els[prepend?"unshift":"push"](s);}opts.slideCount=els.length;$s.css("position","absolute");$s[prepend?"prependTo":"appendTo"](opts.$cont);if(prepend){opts.currSlide++;opts.nextSlide++;}if(!$.support.opacity&&opts.cleartype&&!opts.cleartypeNoBg){clearTypeFix($s);}if(opts.fit&&opts.width){$s.width(opts.width);}if(opts.fit&&opts.height&&opts.height!="auto"){$slides.height(opts.height);}s.cycleH=(opts.fit&&opts.height)?opts.height:$s.height();s.cycleW=(opts.fit&&opts.width)?opts.width:$s.width();$s.css(opts.cssBefore);if(opts.pager||opts.pagerAnchorBuilder){$.fn.cycle.createPagerAnchor(els.length-1,s,$(opts.pager),els,opts);}if($.isFunction(opts.onAddSlide)){opts.onAddSlide($s);}else{$s.hide();}};}$.fn.cycle.resetState=function(opts,fx){fx=fx||opts.fx;opts.before=[];opts.after=[];opts.cssBefore=$.extend({},opts.original.cssBefore);opts.cssAfter=$.extend({},opts.original.cssAfter);opts.animIn=$.extend({},opts.original.animIn);opts.animOut=$.extend({},opts.original.animOut);opts.fxFn=null;$.each(opts.original.before,function(){opts.before.push(this);});$.each(opts.original.after,function(){opts.after.push(this);});var init=$.fn.cycle.transitions[fx];if($.isFunction(init)){init(opts.$cont,$(opts.elements),opts);}};function go(els,opts,manual,fwd){if(manual&&opts.busy&&opts.manualTrump){debug("manualTrump in go(), stopping active transition");$(els).stop(true,true);opts.busy=false;}if(opts.busy){debug("transition active, ignoring new tx request");return;}var p=opts.$cont[0],curr=els[opts.currSlide],next=els[opts.nextSlide];if(p.cycleStop!=opts.stopCount||p.cycleTimeout===0&&!manual){return;}if(!manual&&!p.cyclePause&&!opts.bounce&&((opts.autostop&&(--opts.countdown<=0))||(opts.nowrap&&!opts.random&&opts.nextSlide<opts.currSlide))){if(opts.end){opts.end(opts);}return;}var changed=false;if((manual||!p.cyclePause)&&(opts.nextSlide!=opts.currSlide)){changed=true;var fx=opts.fx;curr.cycleH=curr.cycleH||$(curr).height();curr.cycleW=curr.cycleW||$(curr).width();next.cycleH=next.cycleH||$(next).height();next.cycleW=next.cycleW||$(next).width();if(opts.multiFx){if(opts.lastFx==undefined||++opts.lastFx>=opts.fxs.length){opts.lastFx=0;}fx=opts.fxs[opts.lastFx];opts.currFx=fx;}if(opts.oneTimeFx){fx=opts.oneTimeFx;opts.oneTimeFx=null;}$.fn.cycle.resetState(opts,fx);if(opts.before.length){$.each(opts.before,function(i,o){if(p.cycleStop!=opts.stopCount){return;}o.apply(next,[curr,next,opts,fwd]);});}var after=function(){$.each(opts.after,function(i,o){if(p.cycleStop!=opts.stopCount){return;}o.apply(next,[curr,next,opts,fwd]);});};debug("tx firing; currSlide: "+opts.currSlide+"; nextSlide: "+opts.nextSlide);opts.busy=1;if(opts.fxFn){opts.fxFn(curr,next,opts,after,fwd,manual&&opts.fastOnEvent);}else{if($.isFunction($.fn.cycle[opts.fx])){$.fn.cycle[opts.fx](curr,next,opts,after,fwd,manual&&opts.fastOnEvent);}else{$.fn.cycle.custom(curr,next,opts,after,fwd,manual&&opts.fastOnEvent);}}}if(changed||opts.nextSlide==opts.currSlide){opts.lastSlide=opts.currSlide;if(opts.random){opts.currSlide=opts.nextSlide;if(++opts.randomIndex==els.length){opts.randomIndex=0;}opts.nextSlide=opts.randomMap[opts.randomIndex];if(opts.nextSlide==opts.currSlide){opts.nextSlide=(opts.currSlide==opts.slideCount-1)?0:opts.currSlide+1;}}else{if(opts.backwards){var roll=(opts.nextSlide-1)<0;if(roll&&opts.bounce){opts.backwards=!opts.backwards;opts.nextSlide=1;opts.currSlide=0;}else{opts.nextSlide=roll?(els.length-1):opts.nextSlide-1;opts.currSlide=roll?0:opts.nextSlide+1;}}else{var roll=(opts.nextSlide+1)==els.length;if(roll&&opts.bounce){opts.backwards=!opts.backwards;opts.nextSlide=els.length-2;opts.currSlide=els.length-1;}else{opts.nextSlide=roll?0:opts.nextSlide+1;opts.currSlide=roll?els.length-1:opts.nextSlide-1;}}}}if(changed&&opts.pager){opts.updateActivePagerLink(opts.pager,opts.currSlide,opts.activePagerClass);}var ms=0;if(opts.timeout&&!opts.continuous){ms=getTimeout(els[opts.currSlide],els[opts.nextSlide],opts,fwd);}else{if(opts.continuous&&p.cyclePause){ms=10;}}if(ms>0){p.cycleTimeout=setTimeout(function(){go(els,opts,0,(!opts.rev&&!opts.backwards));},ms);}}$.fn.cycle.updateActivePagerLink=function(pager,currSlide,clsName){$(pager).each(function(){$(this).children().removeClass(clsName).eq(currSlide).addClass(clsName);});};function getTimeout(curr,next,opts,fwd){if(opts.timeoutFn){var t=opts.timeoutFn.call(curr,curr,next,opts,fwd);while((t-opts.speed)<250){t+=opts.speed;}debug("calculated timeout: "+t+"; speed: "+opts.speed);if(t!==false){return t;}}return opts.timeout;}$.fn.cycle.next=function(opts){advance(opts,opts.rev?-1:1);};$.fn.cycle.prev=function(opts){advance(opts,opts.rev?1:-1);};function advance(opts,val){var els=opts.elements;var p=opts.$cont[0],timeout=p.cycleTimeout;if(timeout){clearTimeout(timeout);p.cycleTimeout=0;}if(opts.random&&val<0){opts.randomIndex--;if(--opts.randomIndex==-2){opts.randomIndex=els.length-2;}else{if(opts.randomIndex==-1){opts.randomIndex=els.length-1;}}opts.nextSlide=opts.randomMap[opts.randomIndex];}else{if(opts.random){opts.nextSlide=opts.randomMap[opts.randomIndex];}else{opts.nextSlide=opts.currSlide+val;if(opts.nextSlide<0){if(opts.nowrap){return false;}opts.nextSlide=els.length-1;}else{if(opts.nextSlide>=els.length){if(opts.nowrap){return false;}opts.nextSlide=0;}}}}var cb=opts.onPrevNextEvent||opts.prevNextClick;if($.isFunction(cb)){cb(val>0,opts.nextSlide,els[opts.nextSlide]);}go(els,opts,1,val>=0);return false;}function buildPager(els,opts){var $p=$(opts.pager);$.each(els,function(i,o){$.fn.cycle.createPagerAnchor(i,o,$p,els,opts);});opts.updateActivePagerLink(opts.pager,opts.startingSlide,opts.activePagerClass);}$.fn.cycle.createPagerAnchor=function(i,el,$p,els,opts){var a;if($.isFunction(opts.pagerAnchorBuilder)){a=opts.pagerAnchorBuilder(i,el);debug("pagerAnchorBuilder("+i+", el) returned: "+a);}else{a='<a href="#">'+(i+1)+"</a>";}if(!a){return;}var $a=$(a);if($a.parents("body").length===0){var arr=[];if($p.length>1){$p.each(function(){var $clone=$a.clone(true);$(this).append($clone);arr.push($clone[0]);});$a=$(arr);}else{$a.appendTo($p);}}opts.pagerAnchors=opts.pagerAnchors||[];opts.pagerAnchors.push($a);$a.bind(opts.pagerEvent,function(e){e.preventDefault();opts.nextSlide=i;var p=opts.$cont[0],timeout=p.cycleTimeout;if(timeout){clearTimeout(timeout);p.cycleTimeout=0;}var cb=opts.onPagerEvent||opts.pagerClick;if($.isFunction(cb)){cb(opts.nextSlide,els[opts.nextSlide]);}go(els,opts,1,opts.currSlide<i);});if(!/^click/.test(opts.pagerEvent)&&!opts.allowPagerClickBubble){$a.bind("click.cycle",function(){return false;});}if(opts.pauseOnPagerHover){$a.hover(function(){opts.$cont[0].cyclePause++;},function(){opts.$cont[0].cyclePause--;});}};$.fn.cycle.hopsFromLast=function(opts,fwd){var hops,l=opts.lastSlide,c=opts.currSlide;if(fwd){hops=c>l?c-l:opts.slideCount-l;}else{hops=c<l?l-c:l+opts.slideCount-c;}return hops;};function clearTypeFix($slides){debug("applying clearType background-color hack");function hex(s){s=parseInt(s).toString(16);return s.length<2?"0"+s:s;}function getBg(e){for(;e&&e.nodeName.toLowerCase()!="html";e=e.parentNode){var v=$.css(e,"background-color");if(v.indexOf("rgb")>=0){var rgb=v.match(/\d+/g);return"#"+hex(rgb[0])+hex(rgb[1])+hex(rgb[2]);}if(v&&v!="transparent"){return v;}}return"#ffffff";}$slides.each(function(){$(this).css("background-color",getBg(this));});}$.fn.cycle.commonReset=function(curr,next,opts,w,h,rev){$(opts.elements).not(curr).hide();opts.cssBefore.opacity=1;opts.cssBefore.display="block";if(w!==false&&next.cycleW>0){opts.cssBefore.width=next.cycleW;}if(h!==false&&next.cycleH>0){opts.cssBefore.height=next.cycleH;}opts.cssAfter=opts.cssAfter||{};opts.cssAfter.display="none";$(curr).css("zIndex",opts.slideCount+(rev===true?1:0));$(next).css("zIndex",opts.slideCount+(rev===true?0:1));};$.fn.cycle.custom=function(curr,next,opts,cb,fwd,speedOverride){var $l=$(curr),$n=$(next);var speedIn=opts.speedIn,speedOut=opts.speedOut,easeIn=opts.easeIn,easeOut=opts.easeOut;$n.css(opts.cssBefore);if(speedOverride){if(typeof speedOverride=="number"){speedIn=speedOut=speedOverride;}else{speedIn=speedOut=1;}easeIn=easeOut=null;}var fn=function(){$n.animate(opts.animIn,speedIn,easeIn,cb);};$l.animate(opts.animOut,speedOut,easeOut,function(){if(opts.cssAfter){$l.css(opts.cssAfter);}if(!opts.sync){fn();}});if(opts.sync){fn();}};$.fn.cycle.transitions={fade:function($cont,$slides,opts){$slides.not(":eq("+opts.currSlide+")").css("opacity",0);opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts);opts.cssBefore.opacity=0;});opts.animIn={opacity:1};opts.animOut={opacity:0};opts.cssBefore={top:0,left:0};}};$.fn.cycle.ver=function(){return ver;};$.fn.cycle.defaults={fx:"fade",timeout:4000,timeoutFn:null,continuous:0,speed:1000,speedIn:null,speedOut:null,next:null,prev:null,onPrevNextEvent:null,prevNextEvent:"click.cycle",pager:null,onPagerEvent:null,pagerEvent:"click.cycle",allowPagerClickBubble:false,pagerAnchorBuilder:null,before:null,after:null,end:null,easing:null,easeIn:null,easeOut:null,shuffle:null,animIn:null,animOut:null,cssBefore:null,cssAfter:null,fxFn:null,height:"auto",startingSlide:0,sync:1,random:0,fit:0,containerResize:1,pause:0,pauseOnPagerHover:0,autostop:0,autostopCount:0,delay:0,slideExpr:null,cleartype:!$.support.opacity,cleartypeNoBg:false,nowrap:0,fastOnEvent:0,randomizeEffects:1,rev:0,manualTrump:true,requeueOnImageNotLoaded:true,requeueTimeout:250,activePagerClass:"activeSlide",updateActivePagerLink:null,backwards:false};})(jQuery);
+/*
+ * jQuery Cycle Plugin Transition Definitions
+ * This script is a plugin for the jQuery Cycle Plugin
+ * Examples and documentation at: http://malsup.com/jquery/cycle/
+ * Copyright (c) 2007-2010 M. Alsup
+ * Version:	 2.72
+ * Dual licensed under the MIT and GPL licenses:
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.gnu.org/licenses/gpl.html
+ */
+(function($){$.fn.cycle.transitions.none=function($cont,$slides,opts){opts.fxFn=function(curr,next,opts,after){$(next).show();$(curr).hide();after();};};$.fn.cycle.transitions.scrollUp=function($cont,$slides,opts){$cont.css("overflow","hidden");opts.before.push($.fn.cycle.commonReset);var h=$cont.height();opts.cssBefore={top:h,left:0};opts.cssFirst={top:0};opts.animIn={top:0};opts.animOut={top:-h};};$.fn.cycle.transitions.scrollDown=function($cont,$slides,opts){$cont.css("overflow","hidden");opts.before.push($.fn.cycle.commonReset);var h=$cont.height();opts.cssFirst={top:0};opts.cssBefore={top:-h,left:0};opts.animIn={top:0};opts.animOut={top:h};};$.fn.cycle.transitions.scrollLeft=function($cont,$slides,opts){$cont.css("overflow","hidden");opts.before.push($.fn.cycle.commonReset);var w=$cont.width();opts.cssFirst={left:0};opts.cssBefore={left:w,top:0};opts.animIn={left:0};opts.animOut={left:0-w};};$.fn.cycle.transitions.scrollRight=function($cont,$slides,opts){$cont.css("overflow","hidden");opts.before.push($.fn.cycle.commonReset);var w=$cont.width();opts.cssFirst={left:0};opts.cssBefore={left:-w,top:0};opts.animIn={left:0};opts.animOut={left:w};};$.fn.cycle.transitions.scrollHorz=function($cont,$slides,opts){$cont.css("overflow","hidden").width();opts.before.push(function(curr,next,opts,fwd){$.fn.cycle.commonReset(curr,next,opts);opts.cssBefore.left=fwd?(next.cycleW-1):(1-next.cycleW);opts.animOut.left=fwd?-curr.cycleW:curr.cycleW;});opts.cssFirst={left:0};opts.cssBefore={top:0};opts.animIn={left:0};opts.animOut={top:0};};$.fn.cycle.transitions.scrollVert=function($cont,$slides,opts){$cont.css("overflow","hidden");opts.before.push(function(curr,next,opts,fwd){$.fn.cycle.commonReset(curr,next,opts);opts.cssBefore.top=fwd?(1-next.cycleH):(next.cycleH-1);opts.animOut.top=fwd?curr.cycleH:-curr.cycleH;});opts.cssFirst={top:0};opts.cssBefore={left:0};opts.animIn={top:0};opts.animOut={left:0};};$.fn.cycle.transitions.slideX=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$(opts.elements).not(curr).hide();$.fn.cycle.commonReset(curr,next,opts,false,true);opts.animIn.width=next.cycleW;});opts.cssBefore={left:0,top:0,width:0};opts.animIn={width:"show"};opts.animOut={width:0};};$.fn.cycle.transitions.slideY=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$(opts.elements).not(curr).hide();$.fn.cycle.commonReset(curr,next,opts,true,false);opts.animIn.height=next.cycleH;});opts.cssBefore={left:0,top:0,height:0};opts.animIn={height:"show"};opts.animOut={height:0};};$.fn.cycle.transitions.shuffle=function($cont,$slides,opts){var i,w=$cont.css("overflow","visible").width();$slides.css({left:0,top:0});opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,true,true,true);});if(!opts.speedAdjusted){opts.speed=opts.speed/2;opts.speedAdjusted=true;}opts.random=0;opts.shuffle=opts.shuffle||{left:-w,top:15};opts.els=[];for(i=0;i<$slides.length;i++){opts.els.push($slides[i]);}for(i=0;i<opts.currSlide;i++){opts.els.push(opts.els.shift());}opts.fxFn=function(curr,next,opts,cb,fwd){var $el=fwd?$(curr):$(next);$(next).css(opts.cssBefore);var count=opts.slideCount;$el.animate(opts.shuffle,opts.speedIn,opts.easeIn,function(){var hops=$.fn.cycle.hopsFromLast(opts,fwd);for(var k=0;k<hops;k++){fwd?opts.els.push(opts.els.shift()):opts.els.unshift(opts.els.pop());}if(fwd){for(var i=0,len=opts.els.length;i<len;i++){$(opts.els[i]).css("z-index",len-i+count);}}else{var z=$(curr).css("z-index");$el.css("z-index",parseInt(z)+1+count);}$el.animate({left:0,top:0},opts.speedOut,opts.easeOut,function(){$(fwd?this:curr).hide();if(cb){cb();}});});};opts.cssBefore={display:"block",opacity:1,top:0,left:0};};$.fn.cycle.transitions.turnUp=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,true,false);opts.cssBefore.top=next.cycleH;opts.animIn.height=next.cycleH;});opts.cssFirst={top:0};opts.cssBefore={left:0,height:0};opts.animIn={top:0};opts.animOut={height:0};};$.fn.cycle.transitions.turnDown=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,true,false);opts.animIn.height=next.cycleH;opts.animOut.top=curr.cycleH;});opts.cssFirst={top:0};opts.cssBefore={left:0,top:0,height:0};opts.animOut={height:0};};$.fn.cycle.transitions.turnLeft=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,false,true);opts.cssBefore.left=next.cycleW;opts.animIn.width=next.cycleW;});opts.cssBefore={top:0,width:0};opts.animIn={left:0};opts.animOut={width:0};};$.fn.cycle.transitions.turnRight=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,false,true);opts.animIn.width=next.cycleW;opts.animOut.left=curr.cycleW;});opts.cssBefore={top:0,left:0,width:0};opts.animIn={left:0};opts.animOut={width:0};};$.fn.cycle.transitions.zoom=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,false,false,true);opts.cssBefore.top=next.cycleH/2;opts.cssBefore.left=next.cycleW/2;opts.animIn={top:0,left:0,width:next.cycleW,height:next.cycleH};opts.animOut={width:0,height:0,top:curr.cycleH/2,left:curr.cycleW/2};});opts.cssFirst={top:0,left:0};opts.cssBefore={width:0,height:0};};$.fn.cycle.transitions.fadeZoom=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,false,false);opts.cssBefore.left=next.cycleW/2;opts.cssBefore.top=next.cycleH/2;opts.animIn={top:0,left:0,width:next.cycleW,height:next.cycleH};});opts.cssBefore={width:0,height:0};opts.animOut={opacity:0};};$.fn.cycle.transitions.blindX=function($cont,$slides,opts){var w=$cont.css("overflow","hidden").width();opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts);opts.animIn.width=next.cycleW;opts.animOut.left=curr.cycleW;});opts.cssBefore={left:w,top:0};opts.animIn={left:0};opts.animOut={left:w};};$.fn.cycle.transitions.blindY=function($cont,$slides,opts){var h=$cont.css("overflow","hidden").height();opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts);opts.animIn.height=next.cycleH;opts.animOut.top=curr.cycleH;});opts.cssBefore={top:h,left:0};opts.animIn={top:0};opts.animOut={top:h};};$.fn.cycle.transitions.blindZ=function($cont,$slides,opts){var h=$cont.css("overflow","hidden").height();var w=$cont.width();opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts);opts.animIn.height=next.cycleH;opts.animOut.top=curr.cycleH;});opts.cssBefore={top:h,left:w};opts.animIn={top:0,left:0};opts.animOut={top:h,left:w};};$.fn.cycle.transitions.growX=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,false,true);opts.cssBefore.left=this.cycleW/2;opts.animIn={left:0,width:this.cycleW};opts.animOut={left:0};});opts.cssBefore={width:0,top:0};};$.fn.cycle.transitions.growY=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,true,false);opts.cssBefore.top=this.cycleH/2;opts.animIn={top:0,height:this.cycleH};opts.animOut={top:0};});opts.cssBefore={height:0,left:0};};$.fn.cycle.transitions.curtainX=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,false,true,true);opts.cssBefore.left=next.cycleW/2;opts.animIn={left:0,width:this.cycleW};opts.animOut={left:curr.cycleW/2,width:0};});opts.cssBefore={top:0,width:0};};$.fn.cycle.transitions.curtainY=function($cont,$slides,opts){opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,true,false,true);opts.cssBefore.top=next.cycleH/2;opts.animIn={top:0,height:next.cycleH};opts.animOut={top:curr.cycleH/2,height:0};});opts.cssBefore={left:0,height:0};};$.fn.cycle.transitions.cover=function($cont,$slides,opts){var d=opts.direction||"left";var w=$cont.css("overflow","hidden").width();var h=$cont.height();opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts);if(d=="right"){opts.cssBefore.left=-w;}else{if(d=="up"){opts.cssBefore.top=h;}else{if(d=="down"){opts.cssBefore.top=-h;}else{opts.cssBefore.left=w;}}}});opts.animIn={left:0,top:0};opts.animOut={opacity:1};opts.cssBefore={top:0,left:0};};$.fn.cycle.transitions.uncover=function($cont,$slides,opts){var d=opts.direction||"left";var w=$cont.css("overflow","hidden").width();var h=$cont.height();opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,true,true,true);if(d=="right"){opts.animOut.left=w;}else{if(d=="up"){opts.animOut.top=-h;}else{if(d=="down"){opts.animOut.top=h;}else{opts.animOut.left=-w;}}}});opts.animIn={left:0,top:0};opts.animOut={opacity:1};opts.cssBefore={top:0,left:0};};$.fn.cycle.transitions.toss=function($cont,$slides,opts){var w=$cont.css("overflow","visible").width();var h=$cont.height();opts.before.push(function(curr,next,opts){$.fn.cycle.commonReset(curr,next,opts,true,true,true);if(!opts.animOut.left&&!opts.animOut.top){opts.animOut={left:w*2,top:-h/2,opacity:0};}else{opts.animOut.opacity=0;}});opts.cssBefore={left:0,top:0};opts.animIn={left:0};};$.fn.cycle.transitions.wipe=function($cont,$slides,opts){var w=$cont.css("overflow","hidden").width();var h=$cont.height();opts.cssBefore=opts.cssBefore||{};var clip;if(opts.clip){if(/l2r/.test(opts.clip)){clip="rect(0px 0px "+h+"px 0px)";}else{if(/r2l/.test(opts.clip)){clip="rect(0px "+w+"px "+h+"px "+w+"px)";}else{if(/t2b/.test(opts.clip)){clip="rect(0px "+w+"px 0px 0px)";}else{if(/b2t/.test(opts.clip)){clip="rect("+h+"px "+w+"px "+h+"px 0px)";}else{if(/zoom/.test(opts.clip)){var top=parseInt(h/2);var left=parseInt(w/2);clip="rect("+top+"px "+left+"px "+top+"px "+left+"px)";}}}}}}opts.cssBefore.clip=opts.cssBefore.clip||clip||"rect(0px 0px 0px 0px)";var d=opts.cssBefore.clip.match(/(\d+)/g);var t=parseInt(d[0]),r=parseInt(d[1]),b=parseInt(d[2]),l=parseInt(d[3]);opts.before.push(function(curr,next,opts){if(curr==next){return;}var $curr=$(curr),$next=$(next);$.fn.cycle.commonReset(curr,next,opts,true,true,false);opts.cssAfter.display="block";var step=1,count=parseInt((opts.speedIn/13))-1;(function f(){var tt=t?t-parseInt(step*(t/count)):0;var ll=l?l-parseInt(step*(l/count)):0;var bb=b<h?b+parseInt(step*((h-b)/count||1)):h;var rr=r<w?r+parseInt(step*((w-r)/count||1)):w;$next.css({clip:"rect("+tt+"px "+rr+"px "+bb+"px "+ll+"px)"});(step++<=count)?setTimeout(f,13):$curr.css("display","none");})();});opts.cssBefore={display:"block",opacity:1,top:0,left:0};opts.animIn={left:0};opts.animOut={left:0};};})(jQuery);
+
+//]]>
+</script>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery.noConflict();
+jQuery(function(){ 
+	jQuery('ul.menu-primary').superfish({ 
+	animation: {opacity:'show'},
+autoArrows:  true,
+                dropShadows: false, 
+                speed: 200,
+                delay: 800
+                });
+            });
+
+jQuery(function(){ 
+	jQuery('ul.menu-secondary').superfish({ 
+	animation: {opacity:'show'},
+autoArrows:  true,
+                dropShadows: false, 
+                speed: 200,
+                delay: 800
+                });
+            });
+
+jQuery(document).ready(function() {
+	jQuery('.fp-slides').cycle({
+		fx: 'scrollHorz',
+		timeout: 4000,
+		delay: 0,
+		speed: 400,
+		next: '.fp-next',
+		prev: '.fp-prev',
+		pager: '.fp-pager',
+		continuous: 0,
+		sync: 1,
+		pause: 1,
+		pauseOnPagerHover: 1,
+		cleartype: true,
+		cleartypeNoBg: true
+	});
+ });
+
+/* ]]> */
+
+</script>
+<script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/getSupportedSitesJSON.action" id="sufioIoScript1" charset="utf-8"></script><script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/relatedItems"></script><script type="text/javascript" src="chrome-extension://dlnembnfbcpjnepmfjmngjenhhajpdfd/resources/LocalScript.js"></script><script type="text/javascript" src="chrome-extension://dlnembnfbcpjnepmfjmngjenhhajpdfd/libraries/DataExchangeScript.js"></script><script type="text/javascript">LCS_FE1DEEEA_DB6D_44b8_83F0_34FC0F9D1052_g_DataObject.updateStorage("%7B%22toolbarID%22%3A%22471647753ad14bbbb118b33291161ba7%22%2C%22installer_name%22%3A%22sg_6R8RSu76nt_active_MB206_MB207_UA-25323614-27_2013-01-20-15-07-41%22%2C%22product_name%22%3A%22IB%20Updater%22%2C%22product_version%22%3A%222.0.0.578%22%2C%22WSG_upn2%22%3A%226R8RSu76nt%22%2C%22WSG_status%22%3A%22active%7C%7C%7C8641369544980787%22%2C%22WSG_redirectQueryParam1%22%3A%22MB206%22%2C%22WSG_redirectQueryParam2%22%3A%22MB207%22%2C%22WSG_gtQueryParam%22%3A%22UA-25323614-27%22%2C%22temp_installer_name%22%3A%22sg_6R8RSu76nt_active_MB206_MB207_UA-25323614-27_2013-01-20-15-07-41%22%2C%22WSG_lastUpdate%22%3A%221369542986680%7C%7C%7C8641369542986680%22%2C%22WSG_whiteList%22%3A%22%7B%5C%22search.babylon.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.imesh.net%5C%22%3A%5C%22q%5C%22%2C%5C%22www.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22home.mywebsearch.com%5C%22%3A%5C%22searchfor%5C%22%2C%5C%22search.mywebsearch.com%5C%22%3A%5C%22searchfor%5C%22%2C%5C%22search.mindspark.com%5C%22%3A%5C%22searchfor%5C%22%2C%5C%22search.conduit.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.zugo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22www2.mystart.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.mystart.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.bigseekpro.com%5C%22%3A%5C%22q%5C%22%2C%5C%22bigseekpro.com%5C%22%3A%5C%22q%5C%22%2C%5C%22bigspeedpro.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.esnips.com%5C%22%3A%5C%22searchQuery%5C%22%2C%5C%22search.foxtab.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.brothersoft.com%5C%22%3A%5C%22keyword%5C%22%2C%5C%22search.softonic.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.dogpile.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.infospace.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.iobit.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.iminent.com%5C%22%3A%5C%22%5C%22%2C%5C%22search.facemoods.com%5C%22%3A%5C%22s%5C%22%2C%5C%22www.plusnetwork.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.alothome.com%5C%22%3A%5C%22q%5C%22%2C%5C%22alothome.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.alothome.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.chatvibes.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.blekko.com%5C%22%3A%5C%22%5C%22%2C%5C%22www.searchnu.com%5C%22%3A%5C%22q%5C%22%2C%5C%22searchnu.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.icq.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.etype.com%5C%22%3A%5C%22query%5C%22%2C%5C%22isearch.babylon.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.utorrent.com%5C%22%3A%5C%22%5C%22%2C%5C%22search.bittorrent.com%5C%22%3A%5C%22%5C%22%2C%5C%22search.bearshare.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.bearshare.net%5C%22%3A%5C%22q%5C%22%2C%5C%22searchya.com%5C%22%3A%5C%22q%5C%22%2C%5C%22int.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.searchcompletion.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.adoresearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.searchcore.net%5C%22%3A%5C%22q%5C%22%2C%5C%22googosearch.info%5C%22%3A%5C%22terms%5C%22%2C%5C%22bar.searchqu.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.speedbit.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.toggle.com%5C%22%3A%5C%22q%5C%22%2C%5C%22click.searchnation.net%5C%22%3A%5C%22query%5C%22%2C%5C%22isearch.whitesmoke.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.handycafe.com%5C%22%3A%5C%22q%5C%22%2C%5C%22searchassist.babylon.com%5C%22%3A%5C%22q%5C%22%2C%5C%22searchnation.net%5C%22%3A%5C%22query%5C%22%2C%5C%22video.searchcompletion.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.searchbrowsing.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.anchorfree.net%5C%22%3A%5C%22q%5C%22%2C%5C%22search.hotspotshield.com%5C%22%3A%5C%22q%5C%22%2C%5C%22dts.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22uk.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.chatzum.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.phpnuke.org%5C%22%3A%5C%22q%5C%22%2C%5C%22www.i-mysearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.smartaddressbar.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.search-guru.com%5C%22%3A%5C%22q%5C%22%2C%5C%22searchgby.com%5C%22%3A%5C%22%5C%22%2C%5C%22thespecialsearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.bpath.com%5C%22%3A%5C%22q%5C%22%2C%5C%22start.funmoods.com%5C%22%3A%5C%22s%5C%22%2C%5C%22fr.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22de.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22it.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22es.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.imesh.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.swagbucks.com%5C%22%3A%5C%22q%5C%22%2C%5C%22isearch.avg.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.avg.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.yippy.com%5C%22%3A%5C%22query%5C%22%2C%5C%22cludr.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.vmn.net%5C%22%3A%5C%22q%5C%22%2C%5C%22www.gigablast.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.metacrawler.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.webcrawler.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.ixquick.com%5C%22%3A%5C%22%5C%22%2C%5C%22www.search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.excite.com%5C%22%3A%5C%22q%5C%22%2C%5C%22duckduckgo.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.lycos.com%5C%22%3A%5C%22q%5C%22%2C%5C%22webfetch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22monstercrawler.com%5C%22%3A%5C%22q%5C%22%2C%5C%22go.com%5C%22%3A%5C%22p%5C%22%2C%5C%22hotbot.com%5C%22%3A%5C%22keyword%5C%22%2C%5C%22home.myplaycity.com%5C%22%3A%5C%22s%5C%22%2C%5C%22www.findamo.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.gboxapp.com%5C%22%3A%5C%22q%5C%22%2C%5C%22start.iplay.com%5C%22%3A%5C%22q%5C%22%2C%5C%22home.speedbit.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.alot.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.searchplusnetwork.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.searchqu.net%5C%22%3A%5C%22%5C%22%2C%5C%22us.yhs4.search.yahoo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22search.insiteapp.com%5C%22%3A%5C%22q%5C%22%2C%5C%22somoto.com%5C%22%3A%5C%22q%5C%22%2C%5C%22blekko.com%5C%22%3A%5C%22%5C%22%2C%5C%22uk.yhs4.search.yahoo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22fr.yhs4.search.yahoo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22suggestor.netliker.com%5C%22%3A%5C%22%5C%22%2C%5C%22search.netliker.com%5C%22%3A%5C%22%5C%22%2C%5C%22insta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.fast-search.biz%5C%22%3A%5C%22q%5C%22%2C%5C%22start.facemoods.com%5C%22%3A%5C%22s%5C%22%2C%5C%22search.coolnovo.com%5C%22%3A%5C%22%5C%22%2C%5C%22chromeplus.info%5C%22%3A%5C%22q%5C%22%2C%5C%22in.yhs4.search.yahoo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22in.yhs.search.yahoo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22www.searchble.com%5C%22%3A%5C%22keyword%5C%22%2C%5C%22home.allgameshome.com%5C%22%3A%5C%22s%5C%22%2C%5C%22forsearch.net%5C%22%3A%5C%22q%5C%22%2C%5C%22allssearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.snap.do%5C%22%3A%5C%22q%5C%22%2C%5C%22us.yhs.search.yahoo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22uk.yhs.search.yahoo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22fr.yhs.search.yahoo.com%5C%22%3A%5C%22p%5C%22%2C%5C%22search.smartsearchbox.net%5C%22%3A%5C%22%5C%22%2C%5C%22search.seznam.cz%5C%22%3A%5C%22q%5C%22%2C%5C%22search.funmoods.com%5C%22%3A%5C%22s%5C%22%2C%5C%22search.avira.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.jzip.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.findeer.com%5C%22%3A%5C%22%5C%22%2C%5C%22search-faster.com%5C%22%3A%5C%22%5C%22%2C%5C%22dnssearch.rr.com%5C%22%3A%5C%22search%5C%22%2C%5C%22search.rr.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.kalloutsearch4.com%5C%22%3A%5C%22q%5C%22%2C%5C%22kalloutsearch4.com%5C%22%3A%5C%22Keywords%5C%22%2C%5C%22search.rapidns.net%5C%22%3A%5C%22SearchQuery%5C%22%2C%5C%22websearch.4shared.com%5C%22%3A%5C%22q%5C%22%2C%5C%22images.search.conduit.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.cpchero.biz%5C%22%3A%5C%22q%5C%22%2C%5C%22search.kikin.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.engine-search.biz%5C%22%3A%5C%22q%5C%22%2C%5C%22www.mysearchresults.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.vdc.com.vn%5C%22%3A%5C%22SearchQuery%5C%22%2C%5C%22search.charter.net%5C%22%3A%5C%22search%5C%22%2C%5C%22search-vbc.com%5C%22%3A%5C%22keywords%5C%22%2C%5C%22search.pch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.pantip.com%5C%22%3A%5C%22%5C%22%2C%5C%22www.startsearcher.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.icafemanager.com%5C%22%3A%5C%22q%5C%22%2C%5C%22aolsearcht10.search.aol.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.free.fr%5C%22%3A%5C%22%5C%22%2C%5C%22www.similarsitesearch.com%5C%22%3A%5C%22URL%5C%22%2C%5C%22qoqole.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.claro-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22isearch.claro-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.uncoverthenet.com/search%5C%22%3A%5C%22q%5C%22%2C%5C%22www.searchcanvas.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.etoolkit.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.searchalgo.com%5C%22%3A%5C%22q%5C%22%2C%5C%22bestsearchall.com%5C%22%3A%5C%22q%5C%22%2C%5C%22bestorganicsearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22mysearchproperties.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.treasuretrooper.com%5C%22%3A%5C%22q%5C%22%2C%5C%22btsearch.name%5C%22%3A%5C%22q%5C%22%2C%5C%22optu.search-help.net%5C%22%3A%5C%22search%5C%22%2C%5C%22search.clinck.in%5C%22%3A%5C%22q%5C%22%2C%5C%22search.shareazaweb.net%5C%22%3A%5C%22q%5C%22%2C%5C%22search.solarmash.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.surfcanyon.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.tedata.net%5C%22%3A%5C%22SearchQuery%5C%22%2C%5C%22www.gooofullsearch.com%5C%22%3A%5C%22keywords%5C%22%2C%5C%22www.alnaddy.com%5C%22%3A%5C%22q%5C%22%2C%5C%22searchsafer.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.searchqu.com%5C%22%3A%5C%22q%5C%22%2C%5C%22searchfunmoods.com%5C%22%3A%5C%22s%5C%22%2C%5C%22www.searchfunmoods.com%5C%22%3A%5C%22s%5C%22%2C%5C%22www.searchya.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.lphant.net%5C%22%3A%5C%22%5C%22%2C%5C%22searchremagnified.com%5C%22%3A%5C%22%5C%22%2C%5C%22www.pagequeryresults.com%5C%22%3A%5C%22%5C%22%2C%5C%22www.searchqueryresults.com%5C%22%3A%5C%22%5C%22%2C%5C%22domainhelp.search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.b1.org%5C%22%3A%5C%22q%5C%22%2C%5C%22search.pontofrio.com.br%5C%22%3A%5C%22q%5C%22%2C%5C%22search.maxonline.com.sg%5C%22%3A%5C%22q%5C%22%2C%5C%22search.us.com%5C%22%3A%5C%22k%5C%22%2C%5C%22www.picsearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.search-document.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.searchsafer.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.website-unavailable.com%5C%22%3A%5C%22q%5C%22%2C%5C%22fantastigames.metacrawler.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.appsarefun.info%5C%22%3A%5C%22%5C%22%2C%5C%22www.searchamong.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.savevalet.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.navegaki.com.br%5C%22%3A%5C%22q%5C%22%2C%5C%22my.rally.io%5C%22%3A%5C%22%5C%22%2C%5C%22isearch.glarysoft.com%5C%22%3A%5C%22q%5C%22%2C%5C%22websearch.mocaflix.com%5C%22%3A%5C%22s%5C%22%2C%5C%22search.fastaddressbar.com%5C%22%3A%5C%22s%5C%22%2C%5C%22search.certified-toolbar.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22mysearch.avg.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www1.search-results.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.searchya.com%5C%22%3A%5C%22q%5C%22%2C%5C%22websearch.just-browse.info%5C%22%3A%5C%22s%5C%22%2C%5C%22search.fbdownloader.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.startnow.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.protectedsearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22start.iminent.com%5C%22%3A%5C%22q%5C%22%2C%5C%22websearch.pu-results.info%5C%22%3A%5C%22s%5C%22%2C%5C%2222find.com%5C%22%3A%5C%22%5C%22%2C%5C%22search.comcast.net%5C%22%3A%5C%22q%5C%22%2C%5C%22rss2search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.searchinq.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.22find.com%5C%22%3A%5C%22%5C%22%2C%5C%22search.genieo.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.safesearch.net%5C%22%3A%5C%22q%5C%22%2C%5C%22isearch.fantastigames.com%5C%22%3A%5C%22q%5C%22%2C%5C%22nortonsafe.search.ask.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.nation.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.dnsrsearch.com%5C%22%3A%5C%22search%5C%22%2C%5C%22yourstartsearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22mixidj.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22searchiu.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www1.dlinksearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.eazel.com%5C%22%3A%5C%22q%5C%22%2C%5C%22en.eazel.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.smartsuggestor.net%5C%22%3A%5C%22s%5C%22%2C%5C%22mixidj.claro-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.buzzdock.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.oracle.com%5C%22%3A%5C%22q%5C%22%2C%5C%22visualbee.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22filesearch.setun.net%5C%22%3A%5C%22q%5C%22%2C%5C%22search.smartsuggestor.com%5C%22%3A%5C%22s%5C%22%2C%5C%22go.findrsearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22search.earthlink.net%5C%22%3A%5C%22q%5C%22%2C%5C%22search.netzero.net%5C%22%3A%5C%22query%5C%22%2C%5C%22www.holasearch.com%5C%22%3A%5C%22q%5C%22%2C%5C%22searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.31searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.99searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.28searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.29searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.38searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.39searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.50searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.100searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.20searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.24searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.45searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.55searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.60searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.70searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.88searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.47searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.32searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.48searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.53searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.40searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.66searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.34searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.49searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.30searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.41searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.36searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.52searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22www.25searchengines.com%5C%22%3A%5C%22query%5C%22%2C%5C%22home.maxwebsearch.com%5C%22%3A%5C%22query%5C%22%2C%5C%22polysearch.org%5C%22%3A%5C%22srch%5C%22%2C%5C%22search.bnpmedia.com%5C%22%3A%5C%22q%5C%22%2C%5C%22start.search.us.com%5C%22%3A%5C%22k%5C%22%2C%5C%22www.searchnfind.org%5C%22%3A%5C%22%5C%22%2C%5C%22searching-gambling.com%5C%22%3A%5C%22%5C%22%2C%5C%22search.easylifeapp.com%5C%22%3A%5C%22s%5C%22%2C%5C%22www.goodsearch.com%5C%22%3A%5C%22keywords%5C%22%2C%5C%22search.adlux.com%5C%22%3A%5C%22%5C%22%2C%5C%22websearch.good-results.info%5C%22%3A%5C%22s%5C%22%2C%5C%22search.beesq.net%5C%22%3A%5C%22k%5C%22%2C%5C%22www1.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.search.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.yhs.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22info.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www.yd.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www2.delta-search.com%5C%22%3A%5C%22q%5C%22%2C%5C%22www3.delta-search.com%5C%22%3A%5C%22q%5C%22%7D%7C%7C%7C8641369542986759%22%2C%22WSG_blackList%22%3A%22form%3DCONTLB%7Cbabsrc%3Dtoolbar%7Cbabsrc%3Dtb_ss%7CinvocationType%3Dtb50-ie-aolsoftonic-tbsbox-en-us%7CinvocationType%3Dtb50-ff-aolsoftonic-tbsbox-en-us%7Csrc%3Dtlbvw%7Csap%3Dtr%7Csrc%3D1%7C/toolbar%7CSearchSource%3D1%7CSearchSource%3D44%7Cqsrc%3D2871%7Cbabsrc%3DTB_def%7C%7C%7C8641369542986760%22%2C%22WSG_kswitch%22%3A%22not%20set%22%2C%22WSG_inactive_by_user%22%3A%22not%20set%22%2C%22WSG_debugMode%22%3A%22not%20set%22%2C%22WSG_showDialog%22%3A%22not%20set%22%2C%22WSG_dailyPing%22%3A%22true%7C%7C%7C1369629386688%22%2C%22WSG_installedPing%22%3A%22true%7C%7C%7C8641358665679730%22%2C%22WSG_toolbar_query%22%3A%22not%20set%22%2C%22WSG_geoRequest%22%3A%22TW%7C%7C%7C8641360140150495%22%7D");</script><script type="text/javascript" async="" src="./阿添BLOG小站  [C] AES加解密_files/gt.js"></script></head><style type="text/css">embed[type*="application/x-shockwave-flash"],embed[src*=".swf"],object[type*="application/x-shockwave-flash"],object[codetype*="application/x-shockwave-flash"],object[src*=".swf"],object[codebase*="swflash.cab"],object[classid*="D27CDB6E-AE6D-11cf-96B8-444553540000"],object[classid*="d27cdb6e-ae6d-11cf-96b8-444553540000"],object[classid*="D27CDB6E-AE6D-11cf-96B8-444553540000"]{	display: none !important;}</style><body>﻿<style type="text/css">
+b1{
+background: url(http://3.bp.blogspot.com/-uJFAuIHga1U/UAQdqPUcR2I/AAAAAAAADFs/fcgWqJYuoBY/s1600/blue.png) repeat bottom;
+line-height: 22px;
+}
+ 
+g1{
+background: url(http://2.bp.blogspot.com/-WLxu_AFXwl4/UAQdpqrlDxI/AAAAAAAADFg/fCQgtBFv41I/s1600/green.png) repeat bottom;
+line-height: 22px;
+}
+ 
+r{
+background: url(http://1.bp.blogspot.com/-n9YId_u70jo/UAQiwnlkmsI/AAAAAAAADGI/xXTDExmhmKA/s1600/red.png) repeat bottom;
+line-height: 22px;
+}
+</style>
+<script type="text/javascript">
+document.createElement("b1")
+document.createElement("g1")
+document.createElement("r")
+</script>
+<script charset="utf-8" src="./阿添BLOG小站  [C] AES加解密_files/encrypt-blog-posts.js" type="text/javascript"></script>
+<script type="text/javascript">var a=navigator,b="userAgent",c="indexOf",f="&m=1",g="(^|&)m=",h="?",k="?m=1";function l(){var d=window.location.href,e=d.split(h);switch(e.length){case 1:return d+k;case 2:return 0<=e[1].search(g)?null:d+f;default:return null}}if(-1!=a[b][c]("Mobile")&&-1!=a[b][c]("WebKit")&&-1==a[b][c]("iPad")||-1!=a[b][c]("Opera Mini")||-1!=a[b][c]("IEMobile")){var m=l();m&&window.location.replace(m)};
+</script><script type="text/javascript">
+if (window.jstiming) window.jstiming.load.tick('headEnd');
+</script>
+<!-- Syntax Highlighter Additions START -->
+<!-- SyntaxHighlighter starts -->
+<link href="./阿添BLOG小站  [C] AES加解密_files/shCore.css" rel="stylesheet" type="text/css">
+<link href="./阿添BLOG小站  [C] AES加解密_files/shCoreDefault.css" rel="stylesheet" type="text/css">
+<script src="./阿添BLOG小站  [C] AES加解密_files/shLegacy.js" type="text/javascript"></script><sfmsg id="sfMsgId" data="{&quot;imageCount&quot;:0,&quot;ip&quot;:&quot;1.1.1.1&quot;}"></sfmsg>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shCore.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushAS3.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushBash.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushCSharp.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushColdFusion.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushCpp.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushCss.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushDiff.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushErlang.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushGroovy.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushJScript.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushJava.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushJavaFX.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushPerl.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushPhp.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushPlain.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushPowerShell.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushPython.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushRuby.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushScala.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushSql.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushVb.js" type="text/javascript"></script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/shBrushXml.js" type="text/javascript"></script>
+<script language="javascript">
+SyntaxHighlighter.config.bloggerMode = true;
+SyntaxHighlighter.defaults['auto-links'] = false;
+SyntaxHighlighter.config.clipboardSwf = 'http://alexgorbatchev.com/pub/sh/current/scripts/clipboard.swf';
+SyntaxHighlighter.all();
+  
+</script>
+<!-- Syntax Highlighter Additions END -->
+
+<div id="wrapper1">
+<div id="wrapper">
+<div id="wrapper-bg">
+<div id="outer-wrapper"><div id="outer-wrapper1"><div id="wrap2">
+<!-- skip links for text browsers -->
+<span id="skiplinks" style="display:none;">
+<a href="http://blog.atien4u.com/2013/01/c-aes.html#main">skip to main </a> |
+      <a href="http://blog.atien4u.com/2013/01/c-aes.html#sidebar">skip to sidebar</a>
+</span>
+<div id="header-wrapper">
+<div class="header section" id="header"><div class="widget Header" id="Header1">
+<div id="header-inner">
+<a href="http://blog.atien4u.com/" style="display: block">
+<img alt="阿添BLOG小站" height="80px; " id="Header1_headerimg" src="./阿添BLOG小站  [C] AES加解密_files/%E6%9C%AA%E5%91%BD%E5%90%8D+-+2.png" style="display: block" width="400px; ">
+</a>
+</div>
+</div></div>
+<div class="ads-header section" id="ads-header"><div class="widget HTML" id="HTML102">
+<h2 class="title">Social Icons</h2>
+<div class="widget-content">
+<a href="http://twitter.com/ff320232" target="_blank"><img alt="twitter" src="./阿添BLOG小站  [C] AES加解密_files/twitter.png" title="twitter"></a><a href="http://facebook.com/ff320232" target="_blank"><img alt="facebook" src="./阿添BLOG小站  [C] AES加解密_files/facebook.png" title="facebook"></a><a href="https://plus.google.com/117843740229070112617" target="_blank"><img alt="google plus" src="./阿添BLOG小站  [C] AES加解密_files/gplus.png" title="google plus"></a><img alt="rss feed" src="./阿添BLOG小站  [C] AES加解密_files/rss.png" title="rss feed"><a href="mailto:ff320232@hotmail.com" target="_blank"><img alt="email" src="./阿添BLOG小站  [C] AES加解密_files/email.png" title="email"></a>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=HTML&widgetId=HTML102&action=editWidget&sectionId=ads-header" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML102&quot;));" target="configHTML102" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+</div>
+<div class="second-row">
+<div class="crosscol section" id="crosscol"><div class="widget PageList" id="PageList1">
+<h2>Pages</h2>
+<div class="widget-content">
+<ul>
+<li><a href="http://blog.atien4u.com/">首頁</a></li>
+<li><a href="http://blog.atien4u.com/p/blog-page.html">阿添是誰??</a></li>
+<li><a href="http://blog.atien4u.com/p/blog-page_7.html">通訊資源站</a></li>
+<li><a href="http://blog.atien4u.com/p/blog-page_2.html">網站空間申請</a></li>
+<li><a href="http://atien4u.com/mini">阿添雲端硬碟</a></li>
+</ul>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=PageList&widgetId=PageList1&action=editWidget&sectionId=crosscol" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;PageList1&quot;));" target="configPageList1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div></div>
+<div id="searchbox">
+<form action="http://blog.atien4u.com/search" id="searchthis" method="get">
+<div class="content">
+<input class="textfield" name="q" size="24" type="text" value="">
+<input class="button" type="submit" value="">
+</div>
+</form>
+</div></div>
+<div id="content-wrapper">
+<div id="main-wrapper">
+<div class="main section" id="main"><div class="widget Blog" id="Blog1">
+<div class="blog-posts hfeed">
+<!-- google_ad_section_start(name=default) -->
+
+          <div class="date-outer">
+        
+<h2 class="date-header"><span>1/02/2013</span></h2>
+
+          <div class="date-posts">
+        
+<div class="post-outer">
+<div class="post hentry" itemprop="blogPost" itemscope="itemscope" itemtype="http://schema.org/BlogPosting">
+<meta content="http://4.bp.blogspot.com/-Rfiw0CLL8MI/UOQAib2N0eI/AAAAAAAAD08/-rKNHHq3fjc/s400/%25E6%259C%25AA%25E5%2591%25BD%25E5%2590%258D.png" itemprop="image_url">
+<meta content="6707279719901209815" itemprop="blogId">
+<meta content="2067128892160109434" itemprop="postId">
+<a name="2067128892160109434"></a>
+<h3 class="post-title entry-title" itemprop="name">
+[C] AES加解密
+</h3>
+<div class="post-header">
+<div class="post-header-line-1"><span class="post-author vcard">
+張貼者：
+<span class="fn" itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person">
+<meta content="https://plus.google.com/117843740229070112617" itemprop="url">
+<a href="https://plus.google.com/117843740229070112617" rel="author" title="author profile">
+<span itemprop="name">邱振添</span>
+</a>
+</span>
+</span>
+<span class="post-timestamp">
+於
+<meta content="http://blog.atien4u.com/2013/01/c-aes.html" itemprop="url">
+<a class="timestamp-link" href="./阿添BLOG小站  [C] AES加解密_files/阿添BLOG小站  [C] AES加解密.htm" rel="bookmark" title="permanent link"><abbr class="published" itemprop="datePublished" title="2013-01-02T17:48:00+08:00">下午5:48:00</abbr></a>
+</span>
+<span class="post-comment-link">
+</span>
+<span class="post-icons">
+<span class="item-control blog-admin pid-1111784213">
+<a href="http://www.blogger.com/post-edit.g?blogID=6707279719901209815&postID=2067128892160109434&from=pencil" title="編輯文章">
+<img alt="" class="icon-action" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_edit_allbkg.gif" width="18">
+</a>
+</span>
+</span>
+</div>
+</div>
+<div class="post-body entry-content" id="post-body-2067128892160109434" itemprop="description articleBody">
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="http://4.bp.blogspot.com/-Rfiw0CLL8MI/UOQAib2N0eI/AAAAAAAAD08/-rKNHHq3fjc/s1600/%25E6%259C%25AA%25E5%2591%25BD%25E5%2590%258D.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="262" src="./阿添BLOG小站  [C] AES加解密_files/%E6%9C%AA%E5%91%BD%E5%90%8D.png" width="400"></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;">點圖可放大</td></tr>
+</tbody></table>
+<br>
+<blockquote class="tr_bq">
+下載: <a href="http://www.mediafire.com/?6j6evalowrt6032" target="_blank">點此下載</a><br>
+進入TestAESCipher\Debug\TestAESCipher.exe可直接執行檔案</blockquote>
+<br>
+<a name="more"></a><br>
+本專案是使用Visual Studio 2012所開發<br>
+因為沒辦法完全顯示程式碼，所以下面我釋放比較重要的部分<br>
+部分內容程式碼，請參考下載的附件比較完整<br>
+<br>
+<br>
+<div><div id="highlighter_836900" class="syntaxhighlighter  c"><div class="toolbar"><span><a href="http://blog.atien4u.com/2013/01/c-aes.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1">16</div><div class="line number17 index16 alt2">17</div><div class="line number18 index17 alt1">18</div><div class="line number19 index18 alt2">19</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="c preprocessor">#include "stdafx.h"</code></div><div class="line number2 index1 alt1"><code class="c preprocessor">#include "stdlib.h"</code></div><div class="line number3 index2 alt2"><code class="c preprocessor">#include "AES.h"</code></div><div class="line number4 index3 alt1"><code class="c color1 bold">int</code> <code class="c plain">main(</code><code class="c color1 bold">int</code> <code class="c plain">argc, </code><code class="c color1 bold">char</code><code class="c plain">* argv[])</code></div><div class="line number5 index4 alt2"><code class="c plain">{</code></div><div class="line number6 index5 alt1">&nbsp;</div><div class="line number7 index6 alt2"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c functions bold">printf</code><code class="c plain">(</code><code class="c string">"請輸入要加密的內容:"</code><code class="c plain">);</code></div><div class="line number8 index7 alt1"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c functions bold">scanf</code><code class="c plain">(</code><code class="c string">"%s"</code><code class="c plain">,&amp;str);</code></div><div class="line number9 index8 alt2"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c functions bold">printf</code><code class="c plain">(</code><code class="c string">"請輸入要加密的鑰匙:"</code><code class="c plain">);</code></div><div class="line number10 index9 alt1"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c functions bold">scanf</code><code class="c plain">(</code><code class="c string">"%s"</code><code class="c plain">,&amp;key);</code></div><div class="line number11 index10 alt2">&nbsp;</div><div class="line number12 index11 alt1"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c plain">AES aes(key);</code><code class="c comments">//設定KEY</code></div><div class="line number13 index12 alt2"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c functions bold">printf</code><code class="c plain">(</code><code class="c string">"加密:"</code><code class="c plain">);</code></div><div class="line number14 index13 alt1"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c plain">aes.Cipher((</code><code class="c keyword bold">void</code> <code class="c plain">*)str);</code></div><div class="line number15 index14 alt2">&nbsp;</div><div class="line number16 index15 alt1"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c functions bold">printf</code><code class="c plain">(</code><code class="c string">"解密:"</code><code class="c plain">);</code></div><div class="line number17 index16 alt2"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="c plain">aes.InvCipher((</code><code class="c keyword bold">void</code> <code class="c plain">*)str,i);</code></div><div class="line number18 index17 alt1"><code class="c spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code>&nbsp;</div><div class="line number19 index18 alt2"><code class="c plain">}</code></div></div></td></tr></tbody></table></div></div>
+<div class="wumii-hook"><div id="wumiiBtnDiv" style="clear:both;overflow:visible;position:relative;left:0;top:0;height:28px;margin:0;padding:10px 0 0;text-shadow: none;text-indent:0;">
+	    <div id="wumiiLoginTipsDiv" style="display:none;overflow:visible;position:absolute;width:418px;margin:0;padding:5px;background:url(&#39;http://static.wumii.cn/images/msgBox_shadow.png&#39;) repeat;_background:none;border-radius:5px;">
+		    <div id="wumiiLoginTipsInner" style="display:block;position:relative;margin:0;padding:25px 20px;border:1px solid #959595;background-color:#fff;">
+		        <a href="javascript:void(0);" id="wumiiCloseLoginTips" style="position:absolute;right:10px;top:10px;width:11px;height:11px;background:url(&#39;http://static.wumii.cn/images/blogWidget/app_login_img.png&#39;) no-repeat -37px -53px;text-decoration:none;"></a>
+		        <div id="wumiiLoginTipsContent" style="overflow:hidden;display:block;height:61px;margin:0;padding:0;">
+		            <p style="display:block;height:auto;line-height:20px;margin:0 0 15px;padding:0;color:#535353;text-align:center;text-indent:0;letter-spacing:0;font-size:12px;">想要保存喜欢过的文章吗？立即关联或<a href="http://www.wumii.com/reg/binding?ext=true" class="wumii-reg-btn" target="_blank" style="display:inline;padding:0;color:#009e96;">创建无觅帐号</a>？</p>
+		            <p style="display:block;height:26px;line-height:24px;margin:0;padding:0;text-align:center;text-indent:0;font-size:12px;" id="wumiiBindingBtns">
+		    	        <a href="http://www.wumii.com/reg/authapp?app=SINA&ext=true&c=false" target="_blank" class="wumii-binding-btn" style="float:left;display:inline;width:144px;height:26px;margin:0 15px 0 0;padding:0;background:url(&#39;http://static.wumii.cn/images/blogWidget/app_login_img.png&#39;) no-repeat;text-decoration:none;"></a>
+		    		    <a href="http://www.wumii.com/reg/authapp?app=QQ&ext=true&c=false" target="_blank" class="wumii-binding-btn" style="float:left;display:inline;width:144px;height:26px;margin:0;padding:0;background:url(&#39;http://static.wumii.cn/images/blogWidget/app_login_img.png&#39;) no-repeat 0 -26px;text-decoration:none;"></a>
+		    		    <a href="javascript:void(0);" id="wumiiNoTipsBtn" style="float:right;display:inline;width:auto;height:auto;margin:0;padding:0;color:#7d7d7d;text-decoration:none;letter-spacing:0;">不再提示！</a>
+		    	    </p>
+		        </div>
+		    </div>
+		    <div style="display:block;_display:none;position:absolute;left:50%;bottom:-16px;width:34px;height:22px;margin:0 0 0 -17px;padding:0;background:url(&#39;http://static.wumii.cn/images/blogWidget/app_login_img.png&#39;) no-repeat 0 -53px;_background:none;"></div>
+		</div>
+    <div id="wumiiLikeBtnDiv" style="position: static; float: left; display: inline; width: 89px; height: 28px; margin: 0px 0px 0px 208px; padding: 0px; background-image: url(http://static.wumii.cn/images/blogWidget/widget_buttons_deepBlue.png); text-indent: 0px; background-position: 0px 0px; background-repeat: no-repeat no-repeat;" onmouseover="this.style.backgroundPosition=&#39;-89px 0&#39;;" onmouseout="this.style.backgroundPosition=&#39;0 0&#39;;">
+        <a href="http://www.wumii.com/item/MSbUlMPD" target="_blank" id="wumiiNumLikes" style="float:left;width:38px;height:20px;line-height:21px;margin:4px 0 0 4px;padding:0;border:none;background-color:#fff;color:#385c80;letter-spacing:0;text-decoration:none;text-align:center;text-indent:0;font-size:12px;" onmouseover="this.style.fontWeight=&#39;bold&#39;;" onmouseout="this.style.fontWeight=&#39;normal&#39;;">0</a>
+        <span style="float:left;width:40px;height:29px;margin:0;padding:0;outline:none;cursor:pointer;" id="wumiiLikeBtn" hidefocus="true"></span>
+    </div>
+    <div id="wumiiRecommendBtnDiv" style="position:static;clear:none;float:left;display:inline;height:28px;margin:0;padding:0 5px;text-indent:0;">
+        <span id="wumiiRecommendBtn" hidefocus="true" style="float:left;display:inline;width:60px;height:28px;margin:0 0 0 5px;padding:0;background:url(&#39;http://static.wumii.cn/images/blogWidget/widget_buttons_deepBlue.png&#39;) no-repeat -267px 0;cursor:pointer;outline:none;" onmouseover="this.style.backgroundPosition=&#39;-328px 0&#39;;" onmouseout="this.style.backgroundPosition=&#39;-267px 0&#39;;"></span>
+        <img src="./阿添BLOG小站  [C] AES加解密_files/loading.gif" id="wumiiLoading" style="clear:none;display:none;height:15px;margin:7px 0 0 8px;padding:0;border:0;background:none;cursor:default;" alt="正在加载推荐文章">
+    </div>
+</div>
+<div class="wumii-related-items-div" style="margin: 0; border: none; padding: 0; clear: both; overflow: hidden; *zoom: 1; *position: relative;">
+    <div class="wumii-internal" style="padding: 0; margin: 0; border: none; clear: both; display: block;">
+        <div class="wumii-widget-title" style="margin: 0; border: none; padding: 20px 0 5px; _padding-top:10px; text-indent: 0; text-align: left; font-weight: bold; ">您可能也喜欢：</div>
+            <div class="wumii-image-row" style="clear: both; border: none; margin: 0 0 0 -1px; padding: 0; overflow: hidden; _zoom: 1;">
+                    <a class="wumii-image-block" hidefocus="true" title="資料結構-Do Not Hand-In Exercises-- Exercises:1" onmouseout="this.style.backgroundColor=&#39;&#39;" onmouseover="this.style.backgroundColor=&#39;#E3E4FA&#39;" style="display: block; float: left; text-decoration: none; border-bottom: none; cursor: pointer; position: relative; margin: 5px 0; padding: 5px; width: 102px; text-align: left; outline: none; background-image: none; border-left: 1px solid #DDDDDD !important;" href="http://blog.atien4u.com/2010/04/do-not-hand-in-exercises-exercises1.html" onmousedown="this.href=&#39;http://app.wumii.com/ext/redirect?url=http%3A%2F%2Fblog.atien4u.com%2F2010%2F04%2Fdo-not-hand-in-exercises-exercises1.html&amp;ts=&#39; + (new Date()).getTime() + &#39;&amp;from=http%3A%2F%2Fblog.atien4u.com%2F2013%2F01%2Fc-aes.html&#39; + &#39;&amp;ref=relatedItems&#39;; return true;" onmouseup="t=this; setTimeout(function() {t.href=&#39;http://blog.atien4u.com/2010/04/do-not-hand-in-exercises-exercises1.html&#39;;}, 50); return true;">
+                        <div class="wumii-image-border" style="margin: 0; padding: 0; width: auto; height: 100px; border: 1px solid #DDDDDD;"></div>
+                        <img class="wumii-image" onload="wumiiImageResize(this, 96);" onerror="wumiiImageError(this);" src="./阿添BLOG小站  [C] AES加解密_files/Eatpa6Ro.jpg" style="position: absolute; border: none; background-image: none; visibility: visible; padding: 0px; margin: 0px; width: 96px; height: 96px; clip: rect(0px 96px 96px 0px); left: 8px; top: 8px; background-position: initial initial; background-repeat: initial initial;">
+                        <div class="wumii-image-title" style="height: 60px; width: 100%; margin: 3px 0 0 0; padding: 0; text-indent: 0; border: none; font: 12px/15px arial; color: #333333; overflow: hidden;">資料結構-Do Not Hand-In Exercises-- Exercises:1</div>
+                    </a>
+                    <a class="wumii-image-block" hidefocus="true" title="C語言 如何知道檔案大小" onmouseout="this.style.backgroundColor=&#39;&#39;" onmouseover="this.style.backgroundColor=&#39;#E3E4FA&#39;" style="display: block; float: left; text-decoration: none; border-bottom-style: none; cursor: pointer; position: relative; margin: 5px 0px; padding: 5px; width: 102px; text-align: left; outline: none; background-image: none; border-left-width: 1px !important; border-left-style: solid !important; border-left-color: rgb(221, 221, 221) !important;" href="http://blog.atien4u.com/2013/05/c.html" onmousedown="this.href=&#39;http://app.wumii.com/ext/redirect?url=http%3A%2F%2Fblog.atien4u.com%2F2013%2F05%2Fc.html&amp;ts=&#39; + (new Date()).getTime() + &#39;&amp;from=http%3A%2F%2Fblog.atien4u.com%2F2013%2F01%2Fc-aes.html&#39; + &#39;&amp;ref=relatedItems&#39;; return true;" onmouseup="t=this; setTimeout(function() {t.href=&#39;http://blog.atien4u.com/2013/05/c.html&#39;;}, 50); return true;">
+                        <div class="wumii-image-border" style="margin: 0; padding: 0; width: auto; height: 100px; border: 1px solid #DDDDDD;"></div>
+                        <img class="wumii-image" onload="wumiiImageResize(this, 96);" onerror="wumiiImageError(this);" src="./阿添BLOG小站  [C] AES加解密_files/wordpress_default.gif" style="position: absolute; border: none; background-image: none; visibility: visible; padding: 0px; margin: 0px; width: 96px; height: 96px; clip: rect(0px 96px 96px 0px); left: 8px; top: 8px; background-position: initial initial; background-repeat: initial initial;">
+                        <div class="wumii-image-title" style="height: 60px; width: 100%; margin: 3px 0 0 0; padding: 0; text-indent: 0; border: none; font: 12px/15px arial; color: #333333; overflow: hidden;">C語言 如何知道檔案大小</div>
+                    </a>
+                    <a class="wumii-image-block" hidefocus="true" title="C語言教學手冊解答" onmouseout="this.style.backgroundColor=&#39;&#39;" onmouseover="this.style.backgroundColor=&#39;#E3E4FA&#39;" style="display: block; float: left; text-decoration: none; border-bottom: none; cursor: pointer; position: relative; margin: 5px 0; padding: 5px; width: 102px; text-align: left; outline: none; background-image: none; border-left: 1px solid #DDDDDD !important;" href="http://blog.atien4u.com/2009/11/c_29.html" onmousedown="this.href=&#39;http://app.wumii.com/ext/redirect?url=http%3A%2F%2Fblog.atien4u.com%2F2009%2F11%2Fc_29.html&amp;ts=&#39; + (new Date()).getTime() + &#39;&amp;from=http%3A%2F%2Fblog.atien4u.com%2F2013%2F01%2Fc-aes.html&#39; + &#39;&amp;ref=relatedItems&#39;; return true;" onmouseup="t=this; setTimeout(function() {t.href=&#39;http://blog.atien4u.com/2009/11/c_29.html&#39;;}, 50); return true;">
+                        <div class="wumii-image-border" style="margin: 0; padding: 0; width: auto; height: 100px; border: 1px solid #DDDDDD;"></div>
+                        <img class="wumii-image" onload="wumiiImageResize(this, 96);" onerror="wumiiImageError(this);" src="./阿添BLOG小站  [C] AES加解密_files/wordpress_default.gif" style="position: absolute; border: none; background-image: none; visibility: visible; padding: 0px; margin: 0px; width: 96px; height: 96px; clip: rect(0px 96px 96px 0px); left: 8px; top: 8px; background-position: initial initial; background-repeat: initial initial;">
+                        <div class="wumii-image-title" style="height: 60px; width: 100%; margin: 3px 0 0 0; padding: 0; text-indent: 0; border: none; font: 12px/15px arial; color: #333333; overflow: hidden;">C語言教學手冊解答</div>
+                    </a>
+                    <a class="wumii-image-block" hidefocus="true" title="[C]解決Dev C++無法在Windows8 上正常執行" onmouseout="this.style.backgroundColor=&#39;&#39;" onmouseover="this.style.backgroundColor=&#39;#E3E4FA&#39;" style="display: block; float: left; text-decoration: none; border-bottom: none; cursor: pointer; position: relative; margin: 5px 0; padding: 5px; width: 102px; text-align: left; outline: none; background-image: none; border-left: 1px solid #DDDDDD !important;" href="http://blog.atien4u.com/2013/01/cdev-cwindows.html" onmousedown="this.href=&#39;http://app.wumii.com/ext/redirect?url=http%3A%2F%2Fblog.atien4u.com%2F2013%2F01%2Fcdev-cwindows.html&amp;ts=&#39; + (new Date()).getTime() + &#39;&amp;from=http%3A%2F%2Fblog.atien4u.com%2F2013%2F01%2Fc-aes.html&#39; + &#39;&amp;ref=relatedItems&#39;; return true;" onmouseup="t=this; setTimeout(function() {t.href=&#39;http://blog.atien4u.com/2013/01/cdev-cwindows.html&#39;;}, 50); return true;">
+                        <div class="wumii-image-border" style="margin: 0; padding: 0; width: auto; height: 100px; border: 1px solid #DDDDDD;"></div>
+                        <img class="wumii-image" onload="wumiiImageResize(this, 96);" onerror="wumiiImageError(this);" src="./阿添BLOG小站  [C] AES加解密_files/261VRT3q.png" style="position: absolute; border: none; background-image: none; visibility: visible; padding: 0px; margin: 0px; width: 96px; height: 96px; clip: rect(0px 96px 96px 0px); left: 8px; top: 8px; background-position: initial initial; background-repeat: initial initial;">
+                        <div class="wumii-image-title" style="height: 60px; width: 100%; margin: 3px 0 0 0; padding: 0; text-indent: 0; border: none; font: 12px/15px arial; color: #333333; overflow: hidden;">[C]解決Dev C++無法在Windows8 上正常執行</div>
+                    </a>
+                    <a class="wumii-image-block" hidefocus="true" title="檔案傳送與效能分析" onmouseout="this.style.backgroundColor=&#39;&#39;" onmouseover="this.style.backgroundColor=&#39;#E3E4FA&#39;" style="display: block; float: left; text-decoration: none; border-bottom: none; cursor: pointer; position: relative; margin: 5px 0; padding: 5px; width: 102px; text-align: left; outline: none; background-image: none; border-left: 1px solid #DDDDDD !important;" href="http://blog.atien4u.com/2013/05/blog-post.html" onmousedown="this.href=&#39;http://app.wumii.com/ext/redirect?url=http%3A%2F%2Fblog.atien4u.com%2F2013%2F05%2Fblog-post.html&amp;ts=&#39; + (new Date()).getTime() + &#39;&amp;from=http%3A%2F%2Fblog.atien4u.com%2F2013%2F01%2Fc-aes.html&#39; + &#39;&amp;ref=relatedItems&#39;; return true;" onmouseup="t=this; setTimeout(function() {t.href=&#39;http://blog.atien4u.com/2013/05/blog-post.html&#39;;}, 50); return true;">
+                        <div class="wumii-image-border" style="margin: 0; padding: 0; width: auto; height: 100px; border: 1px solid #DDDDDD;"></div>
+                        <img class="wumii-image" onload="wumiiImageResize(this, 96);" onerror="wumiiImageError(this);" src="./阿添BLOG小站  [C] AES加解密_files/wordpress_default.gif" style="position: absolute; border: none; background-image: none; visibility: visible; padding: 0px; margin: 0px; width: 96px; height: 96px; clip: rect(0px 96px 96px 0px); left: 8px; top: 8px; background-position: initial initial; background-repeat: initial initial;">
+                        <div class="wumii-image-title" style="height: 60px; width: 100%; margin: 3px 0 0 0; padding: 0; text-indent: 0; border: none; font: 12px/15px arial; color: #333333; overflow: hidden;">檔案傳送與效能分析</div>
+                    </a>
+            </div>
+    </div>
+        <div style="margin: 0px; border: none; padding: 5px 0px; clear: both; text-align: right; width: 564px;">
+            <a href="http://www.wumii.com/widget/relatedItems" target="_blank" title="无觅相关文章插件" style="font-style: normal; font-variant: normal; font-weight: normal; font-size: 12px; line-height: normal; font-family: arial; color: rgb(187, 187, 187); border-bottom-style: none; word-wrap: normal; display: inline;">无觅</a>
+            
+        </div>
+</div>
+
+</div>
+<script>
+        var wumiiSitePrefix = "http://blog.atien4u.com/";
+    </script>
+<div style="clear: both;"></div>
+</div>
+<div class="post-footer">
+<div class="post-footer-line post-footer-line-1"><span class="post-labels">
+標籤：
+<a href="http://blog.atien4u.com/search/label/2%20%E5%AD%B8%E6%A0%A1%E7%9B%B8%E9%97%9C" rel="tag">2 學校相關</a>,
+<a href="http://blog.atien4u.com/search/label/2.1%20C%E8%AA%9E%E8%A8%80" rel="tag">2.1 C語言</a>
+</span>
+<span class="post-backlinks post-comment-link">
+</span>
+<span class="reaction-buttons">
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr>
+<td class="reactions-label-cell" nowrap="nowrap" valign="top" width="1%">
+<span class="reactions-label">
+對此篇文章感覺：</span>&nbsp;</td>
+<td><iframe allowtransparency="true" class="reactions-iframe" frameborder="0" name="reactions" scrolling="no" src="./阿添BLOG小站  [C] AES加解密_files/blog-post-reactions.htm" style=""></iframe></td>
+</tr></tbody></table>
+</span>
+<div class="post-share-buttons goog-inline-block">
+<a class="goog-inline-block share-button sb-email" href="http://www.blogger.com/share-post.g?blogID=6707279719901209815&postID=2067128892160109434&target=email" target="_blank" title="以電子郵件傳送這篇文章"><span class="share-button-link-text">以電子郵件傳送這篇文章</span></a><a class="goog-inline-block share-button sb-blog" href="http://www.blogger.com/share-post.g?blogID=6707279719901209815&postID=2067128892160109434&target=blog" onclick="window.open(this.href, &quot;_blank&quot;, &quot;height=270,width=475&quot;); return false;" target="_blank" title="BlogThis！"><span class="share-button-link-text">BlogThis！</span></a><a class="goog-inline-block share-button sb-twitter" href="http://www.blogger.com/share-post.g?blogID=6707279719901209815&postID=2067128892160109434&target=twitter" target="_blank" title="分享至 Twitter"><span class="share-button-link-text">分享至 Twitter</span></a><a class="goog-inline-block share-button sb-facebook" href="http://www.blogger.com/share-post.g?blogID=6707279719901209815&postID=2067128892160109434&target=facebook" onclick="window.open(this.href, &quot;_blank&quot;, &quot;height=430,width=640&quot;); return false;" target="_blank" title="分享至 Facebook"><span class="share-button-link-text">分享至 Facebook</span></a><div class="goog-inline-block dummy-container"><div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 300px; height: 20px; background-position: initial initial; background-repeat: initial initial;"><iframe frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 300px; margin: 0px; border-style: none; left: 0px; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1369544999608" name="I0_1369544999608" src="./阿添BLOG小站  [C] AES加解密_files/fastbutton.htm" allowtransparency="true" data-gapiattached="true" title="+1"></iframe></div></div>
+</div>
+</div>
+<div class="post-footer-line post-footer-line-2"></div>
+<div class="post-footer-line post-footer-line-3"></div>
+</div>
+</div>
+<script src="./阿添BLOG小站  [C] AES加解密_files/plusone.js" type="text/javascript" gapi_processed="true"></script>
+<div class="cmt_iframe_holder" data-href="http://blog.atien4u.com/2013/01/c-aes.html" data-viewtype="FILTERED_POSTMOD" id="gpluscomments" style="text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 581px; height: 603px; background-position: initial initial; background-repeat: initial initial;"><iframe frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 581px; margin: 0px; border-style: none; left: 0px; height: 603px;" tabindex="0" vspace="0" width="100%" id="I1_1369544999850" name="I1_1369544999850" src="./阿添BLOG小站  [C] AES加解密_files/comments.htm" allowtransparency="true" data-gapiattached="true" title="評論這個項目"></iframe></div>
+</div>
+<!-- google_ad_section_end(name=default) -->
+<div class="inline-ad">
+<script type="text/javascript"><!--
+google_ad_client="pub-2048273037593053";
+google_ad_host="pub-1556223355139109";
+google_ad_width=468;
+google_ad_height=15;
+google_ad_format="468x15_0ads_al_s";
+google_ad_host_channel="0001+S0021+L0007";
+google_color_border="FFFFFF";
+google_color_bg="FFFFFF";
+google_color_link="4E4E4E";
+google_color_url="ED1E24";
+google_color_text="0071BB";
+//--></script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<!-- google_ad_section_start -->
+
+        </div></div>
+      
+<!-- google_ad_section_end -->
+</div>
+<div class="blog-pager" id="blog-pager">
+<span id="blog-pager-newer-link">
+<a class="blog-pager-newer-link" href="http://blog.atien4u.com/2013/01/cdev-cwindows.html" id="Blog1_blog-pager-newer-link" title="較新的文章">較新的文章</a>
+</span>
+<span id="blog-pager-older-link">
+<a class="blog-pager-older-link" href="http://blog.atien4u.com/2013/01/cvisual-studioopengl.html" id="Blog1_blog-pager-older-link" title="較舊的文章">較舊的文章</a>
+</span>
+<a class="home-link" href="http://blog.atien4u.com/">首頁</a>
+</div>
+<div class="clear"></div>
+<div class="post-feeds">
+<div class="feed-links">
+訂閱：
+<a class="feed-link" href="http://blog.atien4u.com/feeds/2067128892160109434/comments/default" target="_blank" type="application/atom+xml">張貼意見 (Atom)</a>
+</div>
+</div>
+<script type="text/javascript">window.___gcfg = {'lang': 'zh_TW'};</script>
+</div></div>
+</div>
+<div id="sidebar-wrapper">
+<div class="sidebar section" id="sidebar"><div class="widget AdSense" id="AdSense1">
+<div class="widget-content">
+<script type="text/javascript"><!--
+google_ad_client="pub-2048273037593053";
+google_ad_host="pub-1556223355139109";
+google_alternate_ad_url="http://img2.blogblog.com/img/blogger_ad.html";
+google_ad_width=300;
+google_ad_height=250;
+google_ad_format="300x250_as";
+google_ad_type="text_image";
+google_ad_host_channel="0001+S0009+L0001";
+google_color_border="FFFFFF";
+google_color_bg="FFFFFF";
+google_color_link="0000FF";
+google_color_url="008000";
+google_color_text="000000";
+//--></script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=AdSense&widgetId=AdSense1&action=editWidget&sectionId=sidebar" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;AdSense1&quot;));" target="configAdSense1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget HTML" id="HTML99">
+<h2 class="title">Welcome Message</h2>
+<div class="widget-content">
+<div style="font-weight: normal;"><b>歡迎來到這裡</b></div><div style="font-weight: normal;"><b>善用上方的搜尋~希望這邊能讓你找到對你有用的訊息~!</b></div><div><b>
+</b><span style="font-weight: normal;font-size:medium;">如有想要設計APP、寫程式...等，都可與我做討論</span></div><div style="font-weight: normal;"><span style="font-size:100%;">註:以前的文章連結可能失連了，有需要請留言詢問</span></div><div style="font-weight: normal;">請善用搜尋、分類~找到自己想要的資訊</div><div style="font-weight: normal;">
+</div><div style="font-weight: normal;"><span style="color:#ff0000;">網站內的程式碼，因為UTF-8編碼的關係，會造成複製下來不能夠直接執行!</span></div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=HTML&widgetId=HTML99&action=editWidget&sectionId=sidebar" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML99&quot;));" target="configHTML99" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget PopularPosts" id="PopularPosts1">
+<h2>Popular Posts</h2>
+<div class="widget-content popular-posts">
+<ul>
+<li>
+<div class="item-content">
+<div class="item-thumbnail">
+<a href="http://blog.atien4u.com/2013/01/cdev-cwindows.html" target="_blank">
+<img alt="" border="0" height="72" src="./阿添BLOG小站  [C] AES加解密_files/b219ebc4b74543a9b47807531e178a82b80114c9.jpg" width="72">
+</a>
+</div>
+<div class="item-title"><a href="http://blog.atien4u.com/2013/01/cdev-cwindows.html">[C]解決Dev C++無法在Windows8 上正常執行</a></div>
+<div class="item-snippet">有許多人在windows 8下裝了Dev C++，在寫程式編譯時會出現g++.exe已停止工作(如下)       這是怎麼回事呢?  我想 是因為電腦心疼你不讓你寫作業 &nbsp; 因為你電腦安裝的 Dev C++ 版本的 &nbsp; MinGW&nbsp; &nbsp;與GCC版本太低了，必須要更新才可以!不知...</div>
+</div>
+<div style="clear: both;"></div>
+</li>
+<li>
+<div class="item-content">
+<div class="item-thumbnail">
+<a href="http://blog.atien4u.com/2013/05/tree.html" target="_blank">
+<img alt="" border="0" height="72" src="./阿添BLOG小站  [C] AES加解密_files/01.png" width="72">
+</a>
+</div>
+<div class="item-title"><a href="http://blog.atien4u.com/2013/05/tree.html">資料結構 Tree 建置 與 印出</a></div>
+<div class="item-snippet">有很多人不知道怎麼用C建立一顆簡單的樹...這邊PO上一個小範例  請注意這很久之前做的，程式上我有稍微修改~ 很多地方會有BUG&nbsp; (疑，主要是為了不讓同學直接抄答案...)   請將下面的程式碼做修改，達到以下目的  0.找出BUG  1.做交集聯集。  2.將樹改成 Com...</div>
+</div>
+<div style="clear: both;"></div>
+</li>
+<li>
+<div class="item-content">
+<div class="item-thumbnail">
+<a href="http://blog.atien4u.com/2013/01/iospp-jb.html" target="_blank">
+<img alt="" border="0" height="72" src="./阿添BLOG小站  [C] AES加解密_files/1.png" width="72">
+</a>
+</div>
+<div class="item-title"><a href="http://blog.atien4u.com/2013/01/iospp-jb.html">[IOS]PP助手- iphone、ipad 免JB免費安裝付費遊戲</a></div>
+<div class="item-snippet">   想JB不會JB? 想下載遊戲?  作為內地最大的第三方應用下載平台，PP助手完美支持iOS6，在設備管理方面有了多重保障，還新增了不用越獄，也可以免費使用正版付費應用。蘋果粉絲們可以放心升級iOS6，用PP助手不用越獄，照樣免費用平台上面的軟體!!   PP手機助手，同時支...</div>
+</div>
+<div style="clear: both;"></div>
+</li>
+<li>
+<div class="item-content">
+<div class="item-thumbnail">
+<a href="http://blog.atien4u.com/2010/10/tree.html" target="_blank">
+<img alt="" border="0" height="72" src="./阿添BLOG小站  [C] AES加解密_files/5062059723_b27db4bb71_t.jpg" width="72">
+</a>
+</div>
+<div class="item-title"><a href="http://blog.atien4u.com/2010/10/tree.html">資料結構與演算法-tree集合交聯集</a></div>
+<div class="item-snippet"> (本文章於2010.10.08PM11:22分第二次更新) 這是二下時趙老師出給我們的一個作業，作業內容是要利用tree來完成交集、聯集的運算，我程式的寫法沒有說寫得很活，只是大概寫一下而已。   因下面加密可能會將標頭檔給去除，在自己換一下   #include  &lt;s...</div>
+</div>
+<div style="clear: both;"></div>
+</li>
+</ul>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=PopularPosts&widgetId=PopularPosts1&action=editWidget&sectionId=sidebar" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;PopularPosts1&quot;));" target="configPopularPosts1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget HTML" id="HTML2">
+<h2 class="title">隨機文章</h2>
+<div class="widget-content">
+<script type="text/javascript">
+var randarray = new Array();var l=0;var flag;
+var numofpost=10;function randomposts(json){
+var total = parseInt(json.feed.openSearch$totalResults.$t,10);
+for(i=0;i < numofpost;){flag=0;randarray.length=numofpost;l=Math.floor(Math.random()*total);for(j in randarray){if(l==randarray[j]){ flag=1;}}
+if(flag==0&&l!=0){randarray[i++]=l;}}document.write('<ul>');
+for(n in randarray){ var p=randarray[n];var entry=json.feed.entry[p-1];
+for(k=0; k < entry.link.length; k++){if(entry.link[k].rel=='alternate'){var item = "<li>" + "<a href=" + entry.link[k].href + ">" + entry.title.$t + "</a> </li>";
+document.write(item);}}
+}document.write('</ul>');}
+</script>
+<script src="./阿添BLOG小站  [C] AES加解密_files/default" type="text/javascript"></script><ul><li><a href="http://blog.atien4u.com/2012/12/arduinogps.html">[Arduino]GPS 訊號處理</a> </li><li><a href="http://blog.atien4u.com/2013/01/atmegalcd-altium-library.html">ATmega、LCD 的 Altium Library </a> </li><li><a href="http://blog.atien4u.com/2013/01/blog-post_7.html">床是以高速移動的物體</a> </li><li><a href="http://blog.atien4u.com/2013/03/blog-post_19.html">紙牌魔術</a> </li><li><a href="http://blog.atien4u.com/2013/04/android-google-map-popview.html">android google map 氣泡地圖 (popview)</a> </li><li><a href="http://blog.atien4u.com/2010/03/2010.html">資料結構-老鼠走迷宮</a> </li><li><a href="http://blog.atien4u.com/2013/04/ubuntu-vmware-tools.html">Ubuntu 安裝 VMware Tools</a> </li><li><a href="http://blog.atien4u.com/2013/04/beagleboard-4linux-rootfs.html">[Beagleboard] 4.建立Linux rootfs</a> </li><li><a href="http://blog.atien4u.com/2013/05/linux-itoa.html">解決 linux 沒有 itoa 問題解法</a> </li><li><a href="http://blog.atien4u.com/2013/05/2_21.html">檔案傳送與效能分析(2)-基本的檔案傳送</a> </li></ul>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=HTML&widgetId=HTML2&action=editWidget&sectionId=sidebar" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML2&quot;));" target="configHTML2" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget HTML" id="HTML1">
+<div class="widget-content">
+<div align="left"><script charset="utf-8" language="JavaScript" src="http://www.blogad.com.tw/Transfer/ShowAdJs.aspx?P=ff320232&BM_ID=180285&C=B&BS=dotted&BT=180&BA=left&ac=1"></script></div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=HTML&widgetId=HTML1&action=editWidget&sectionId=sidebar" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML1&quot;));" target="configHTML1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget Attribution" id="Attribution1">
+<div class="widget-content" style="text-align: center;">
+由 <a href="http://www.blogger.com/" target="_blank">Blogger</a> 技術提供.
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=Attribution&widgetId=Attribution1&action=editWidget&sectionId=sidebar" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Attribution1&quot;));" target="configAttribution1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget PlusFollowers" id="PlusFollowers1">
+<h2 class="title">Google+ Followers</h2>
+<div class="widget-content">
+<div id="___plus_0" style="text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 339px; height: 284px; background-position: initial initial; background-repeat: initial initial;"><iframe frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 339px; margin: 0px; border-style: none; left: 0px; height: 284px;" tabindex="0" vspace="0" width="100%" id="I0_1369544999781" name="I0_1369544999781" src="./阿添BLOG小站  [C] AES加解密_files/followers.htm" allowtransparency="true" data-gapiattached="true" title="+1"></iframe></div>
+<script type="text/javascript">
+        window.___gcfg = {'lang': 'zh_TW'};
+      </script>
+</div>
+</div>
+</div>
+<div id="2columns">
+<div class="col-left">
+<div class="sidebar section" id="sidebar2"><div class="widget BlogArchive" id="BlogArchive1">
+<h2>Blog Archive</h2>
+<div class="widget-content">
+<div id="ArchiveList">
+<div id="BlogArchive1_ArchiveList">
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">▼&nbsp;</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2013-01-01T00:00:00%2B08:00&updated-max=2014-01-01T00:00:00%2B08:00&max-results=50">2013</a>
+<span class="post-count" dir="ltr">(92)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2013-05-01T00:00:00%2B08:00&updated-max=2013-06-01T00:00:00%2B08:00&max-results=13">五月</a>
+<span class="post-count" dir="ltr">(13)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_05_21_archive.html">五月 21</a>
+<span class="post-count" dir="ltr">(9)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_05_15_archive.html">五月 15</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_05_14_archive.html">五月 14</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_05_05_archive.html">五月 05</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2013-04-01T00:00:00%2B08:00&updated-max=2013-05-01T00:00:00%2B08:00&max-results=23">四月</a>
+<span class="post-count" dir="ltr">(23)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_28_archive.html">四月 28</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_23_archive.html">四月 23</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_19_archive.html">四月 19</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_17_archive.html">四月 17</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_16_archive.html">四月 16</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_15_archive.html">四月 15</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_14_archive.html">四月 14</a>
+<span class="post-count" dir="ltr">(5)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_13_archive.html">四月 13</a>
+<span class="post-count" dir="ltr">(4)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_11_archive.html">四月 11</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_10_archive.html">四月 10</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_09_archive.html">四月 09</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_02_archive.html">四月 02</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_04_01_archive.html">四月 01</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2013-03-01T00:00:00%2B08:00&updated-max=2013-04-01T00:00:00%2B08:00&max-results=19">三月</a>
+<span class="post-count" dir="ltr">(19)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_03_31_archive.html">三月 31</a>
+<span class="post-count" dir="ltr">(5)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_03_30_archive.html">三月 30</a>
+<span class="post-count" dir="ltr">(6)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_03_28_archive.html">三月 28</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_03_25_archive.html">三月 25</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_03_21_archive.html">三月 21</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_03_19_archive.html">三月 19</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_03_07_archive.html">三月 07</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2013-02-01T00:00:00%2B08:00&updated-max=2013-03-01T00:00:00%2B08:00&max-results=17">二月</a>
+<span class="post-count" dir="ltr">(17)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_02_26_archive.html">二月 26</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_02_25_archive.html">二月 25</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_02_23_archive.html">二月 23</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_02_21_archive.html">二月 21</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_02_20_archive.html">二月 20</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_02_19_archive.html">二月 19</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_02_18_archive.html">二月 18</a>
+<span class="post-count" dir="ltr">(6)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_02_05_archive.html">二月 05</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">▼&nbsp;</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2013-01-01T00:00:00%2B08:00&updated-max=2013-02-01T00:00:00%2B08:00&max-results=20">一月</a>
+<span class="post-count" dir="ltr">(20)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_23_archive.html">一月 23</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_20_archive.html">一月 20</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_13_archive.html">一月 13</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_11_archive.html">一月 11</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_09_archive.html">一月 09</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_08_archive.html">一月 08</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_07_archive.html">一月 07</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_03_archive.html">一月 03</a>
+<span class="post-count" dir="ltr">(5)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">▼&nbsp;</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_02_archive.html">一月 02</a>
+<span class="post-count" dir="ltr">(3)</span>
+<ul class="posts">
+<li><a href="http://blog.atien4u.com/2013/01/cdev-cwindows.html">[C]解決Dev C++無法在Windows8 上正常執行</a></li>
+<li><a href="./阿添BLOG小站  [C] AES加解密_files/阿添BLOG小站  [C] AES加解密.htm">[C] AES加解密</a></li>
+<li><a href="http://blog.atien4u.com/2013/01/cvisual-studioopengl.html">[C#]Visual Studio與OpenGL基本設定</a></li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2013_01_01_archive.html">一月 01</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2012-01-01T00:00:00%2B08:00&updated-max=2013-01-01T00:00:00%2B08:00&max-results=11">2012</a>
+<span class="post-count" dir="ltr">(11)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2012-12-01T00:00:00%2B08:00&updated-max=2013-01-01T00:00:00%2B08:00&max-results=11">十二月</a>
+<span class="post-count" dir="ltr">(11)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2012_12_31_archive.html">十二月 31</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2012_12_27_archive.html">十二月 27</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2012_12_26_archive.html">十二月 26</a>
+<span class="post-count" dir="ltr">(4)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2012_12_25_archive.html">十二月 25</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-01-01T00:00:00%2B08:00&updated-max=2011-01-01T00:00:00%2B08:00&max-results=34">2010</a>
+<span class="post-count" dir="ltr">(34)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-11-01T00:00:00%2B08:00&updated-max=2010-12-01T00:00:00%2B08:00&max-results=2">十一月</a>
+<span class="post-count" dir="ltr">(2)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_11_21_archive.html">十一月 21</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_11_12_archive.html">十一月 12</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-10-01T00:00:00%2B08:00&updated-max=2010-11-01T00:00:00%2B08:00&max-results=4">十月</a>
+<span class="post-count" dir="ltr">(4)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_10_28_archive.html">十月 28</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_10_08_archive.html">十月 08</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_10_02_archive.html">十月 02</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-06-01T00:00:00%2B08:00&updated-max=2010-07-01T00:00:00%2B08:00&max-results=5">六月</a>
+<span class="post-count" dir="ltr">(5)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_06_23_archive.html">六月 23</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_06_22_archive.html">六月 22</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_06_14_archive.html">六月 14</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_06_13_archive.html">六月 13</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_06_11_archive.html">六月 11</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-05-01T00:00:00%2B08:00&updated-max=2010-06-01T00:00:00%2B08:00&max-results=1">五月</a>
+<span class="post-count" dir="ltr">(1)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_05_02_archive.html">五月 02</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-04-01T00:00:00%2B08:00&updated-max=2010-05-01T00:00:00%2B08:00&max-results=7">四月</a>
+<span class="post-count" dir="ltr">(7)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_04_26_archive.html">四月 26</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_04_23_archive.html">四月 23</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_04_22_archive.html">四月 22</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_04_13_archive.html">四月 13</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_04_06_archive.html">四月 06</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-03-01T00:00:00%2B08:00&updated-max=2010-04-01T00:00:00%2B08:00&max-results=7">三月</a>
+<span class="post-count" dir="ltr">(7)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_03_23_archive.html">三月 23</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_03_15_archive.html">三月 15</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_03_14_archive.html">三月 14</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_03_13_archive.html">三月 13</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_03_09_archive.html">三月 09</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-02-01T00:00:00%2B08:00&updated-max=2010-03-01T00:00:00%2B08:00&max-results=2">二月</a>
+<span class="post-count" dir="ltr">(2)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_02_27_archive.html">二月 27</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2010-01-01T00:00:00%2B08:00&updated-max=2010-02-01T00:00:00%2B08:00&max-results=6">一月</a>
+<span class="post-count" dir="ltr">(6)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_01_04_archive.html">一月 04</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_01_02_archive.html">一月 02</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2010_01_01_archive.html">一月 01</a>
+<span class="post-count" dir="ltr">(4)</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2009-01-01T00:00:00%2B08:00&updated-max=2010-01-01T00:00:00%2B08:00&max-results=46">2009</a>
+<span class="post-count" dir="ltr">(46)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2009-12-01T00:00:00%2B08:00&updated-max=2010-01-01T00:00:00%2B08:00&max-results=31">十二月</a>
+<span class="post-count" dir="ltr">(31)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_31_archive.html">十二月 31</a>
+<span class="post-count" dir="ltr">(7)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_29_archive.html">十二月 29</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_27_archive.html">十二月 27</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_25_archive.html">十二月 25</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_22_archive.html">十二月 22</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_20_archive.html">十二月 20</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_15_archive.html">十二月 15</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_13_archive.html">十二月 13</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_05_archive.html">十二月 05</a>
+<span class="post-count" dir="ltr">(7)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_04_archive.html">十二月 04</a>
+<span class="post-count" dir="ltr">(6)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_12_03_archive.html">十二月 03</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/search?updated-min=2009-11-01T00:00:00%2B08:00&updated-max=2009-12-01T00:00:00%2B08:00&max-results=15">十一月</a>
+<span class="post-count" dir="ltr">(15)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://blog.atien4u.com/2009_11_30_archive.html">十一月 30</a>
+<span class="post-count" dir="ltr">(15)</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=BlogArchive&widgetId=BlogArchive1&action=editWidget&sectionId=sidebar2" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;BlogArchive1&quot;));" target="configBlogArchive1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget Stats" id="Stats1">
+<div class="widget-content">
+<div id="Stats1_content" style="">
+<img alt="Sparkline" height="30" id="Stats1_sparkline" width="75" src="./阿添BLOG小站  [C] AES加解密_files/chart">
+<span class="counter-wrapper text-counter-wrapper" id="Stats1_totalCount">68,127</span>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=Stats&widgetId=Stats1&action=editWidget&sectionId=sidebar2" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Stats1&quot;));" target="configStats1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="col-right">
+<div class="sidebar section" id="sidebar3"><div class="widget Label" id="Label1">
+<h2>Labels</h2>
+<div class="widget-content list-label-widget-content">
+<ul>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/1%20%E5%80%8B%E4%BA%BA%E6%BB%B4%E5%92%95">1 個人滴咕</a>
+<span dir="ltr">(9)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/1.2%20%E4%BD%9C%E5%93%81%E6%88%90%E6%9E%9C">1.2 作品成果</a>
+<span dir="ltr">(4)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/1.4%20%E6%96%87%E7%AB%A0%E5%88%86%E4%BA%AB">1.4 文章分享</a>
+<span dir="ltr">(8)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2%20%E5%AD%B8%E6%A0%A1%E7%9B%B8%E9%97%9C">2 學校相關</a>
+<span dir="ltr">(89)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.0%20%E5%BE%AE%E8%99%95%E7%90%86%E6%A9%9F">2.0 微處理機</a>
+<span dir="ltr">(25)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.1%20C%E8%AA%9E%E8%A8%80">2.1 C語言</a>
+<span dir="ltr">(25)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.2%20VB">2.2 VB</a>
+<span dir="ltr">(1)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.3%20C%23">2.3 C#</a>
+<span dir="ltr">(4)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.4%20OpenGL">2.4 OpenGL</a>
+<span dir="ltr">(3)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.5%20Arduino">2.5 Arduino</a>
+<span dir="ltr">(9)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.6%E7%B6%B2%E8%B7%AF%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88">2.6網路程式設計</a>
+<span dir="ltr">(13)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.7linux">2.7linux</a>
+<span dir="ltr">(29)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/2.8%20Android">2.8 Android</a>
+<span dir="ltr">(2)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/3%20%E7%BE%8E%E9%A3%9F%E9%9B%9C%E8%A8%98">3 美食雜記</a>
+<span dir="ltr">(1)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/3.1%E9%9B%B2%E5%98%89%E5%8D%97%E7%BE%8E%E9%A3%9F">3.1雲嘉南美食</a>
+<span dir="ltr">(1)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/4%20%E5%85%8D%E8%B2%BB%E8%B3%87%E6%BA%90">4 免費資源</a>
+<span dir="ltr">(4)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/4.1%20%E6%96%87%E6%9B%B8%E5%B7%A5%E5%85%B7">4.1 文書工具</a>
+<span dir="ltr">(1)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/4.4%20%E5%A5%BD%E7%8E%A9%E6%9C%89%E8%B6%A3">4.4 好玩有趣</a>
+<span dir="ltr">(4)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/4.5%20%E9%9F%B3%E6%A8%82%E9%9F%B3%E6%95%88">4.5 音樂音效</a>
+<span dir="ltr">(1)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/5%20%E7%B6%B2%E9%9A%9B%E7%B6%B2%E8%B7%AF%E7%9B%B8%E9%97%9C">5 網際網路相關</a>
+<span dir="ltr">(25)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/5.1%20%E5%A5%BD%E7%AB%99%E6%8E%A8%E8%96%A6">5.1 好站推薦</a>
+<span dir="ltr">(3)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/5.2%20%E9%83%A8%E8%90%BD%E6%A0%BC%E7%BE%8E%E5%8C%96">5.2 部落格美化</a>
+<span dir="ltr">(5)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/5.3%20%E7%B6%B2%E8%B7%AF%E6%87%89%E7%94%A8">5.3 網路應用</a>
+<span dir="ltr">(6)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/5.4%20%E8%BB%9F%E9%AB%94%E6%8E%A8%E8%96%A6">5.4 軟體推薦</a>
+<span dir="ltr">(7)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/5.5%20%E9%96%8B%E7%AE%B1%E6%96%87">5.5 開箱文</a>
+<span dir="ltr">(1)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/5.6%20IOS">5.6 IOS</a>
+<span dir="ltr">(3)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/5.7%20android">5.7 android</a>
+<span dir="ltr">(5)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/6%20%E5%BD%B1%E9%9F%B3%E5%88%86%E4%BA%AB">6 影音分享</a>
+<span dir="ltr">(12)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/6.1%20%E9%AD%94%E8%A1%93%E8%A1%A8%E6%BC%94">6.1 魔術表演</a>
+<span dir="ltr">(2)</span>
+</li>
+<li>
+<a dir="ltr" href="http://blog.atien4u.com/search/label/6.2%20%E9%9B%BB%E5%BD%B1">6.2 電影</a>
+<span dir="ltr">(2)</span>
+</li>
+</ul>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=Label&widgetId=Label1&action=editWidget&sectionId=sidebar3" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Label1&quot;));" target="configLabel1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div></div>
+</div></div>
+</div>
+<!-- spacer for skins that want sidebar and main to be the same height-->
+<div class="clear">&nbsp;</div>
+</div>
+<!-- end content-wrapper -->
+<div id="content-but"></div>
+</div></div>
+</div><!-- end outer-wrapper -->
+<div id="lower2">
+<div id="lower-wrapper2">
+<div id="lowerbar-wrapper2">
+<div class="lowerbar section" id="lowerbar21"><div class="widget HTML" id="HTML3">
+<div class="widget-content">
+<script type="text/javascript"><!--
+google_ad_client = "pub-2048273037593053";
+google_ad_host = "pub-1556223355139109";
+/* 200x200, 已建立 2010/6/3 */
+google_ad_slot = "2166040974";
+google_ad_width = 200;
+google_ad_height = 200;
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=HTML&widgetId=HTML3&action=editWidget&sectionId=lowerbar21" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML3&quot;));" target="configHTML3" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+</div>
+<div id="lowerbar-wrapper2">
+<div class="lowerbar section" id="lowerbar22"><div class="widget Profile" id="Profile1" style="">
+<h2>About Me</h2>
+<div class="widget-content">
+<a href="https://plus.google.com/117843740229070112617"><img alt="我的相片" class="profile-img" height="80" src="./阿添BLOG小站  [C] AES加解密_files/photo.jpg" width="80"></a>
+<dl class="profile-datablock">
+<dt class="profile-data">
+<a class="profile-name-link g-profile" href="https://plus.google.com/117843740229070112617" rel="author" style="background-image: url(//www.google.com/images/icons/ui/gprofile_button-16.png);" data-gapiscan="true" data-onload="true" data-gapiattached="true">
+邱振添
+</a>
+</dt>
+</dl>
+<a class="profile-link" href="https://plus.google.com/117843740229070112617" rel="author">檢視我的完整簡介</a>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=Profile&widgetId=Profile1&action=editWidget&sectionId=lowerbar22" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Profile1&quot;));" target="configProfile1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget Text" id="Text1">
+<div class="widget-content">
+進入<a href="http://www.blogger.com/">後台</a>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=6707279719901209815&widgetType=Text&widgetId=Text1&action=editWidget&sectionId=lowerbar22" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Text1&quot;));" target="configText1" title="編輯">
+<img alt="" height="18" src="./阿添BLOG小站  [C] AES加解密_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+</div>
+<div id="lowerbar-wrapper2">
+<div class="lowerbar section" id="lowerbar23"></div>
+</div>
+<div class="clear">&nbsp;</div>
+</div>
+</div>
+<div id="footer-bg">
+<div id="footer">
+<div class="first-links">Copyright (c) 2012 <a href="http://blog.atien4u.com/">阿添BLOG小站</a> | 
+ <a href="http://ff320232.blogspot.tw/">阿添部落格小站</a></div>
+</div></div></div></div></div>
+<script type="text/javascript">
+        var wumiiParams = "&num=5&mode=3&pf=Blogger";
+    </script>
+<script id="wumiiRelatedItems" src="./阿添BLOG小站  [C] AES加解密_files/relatedItemsWidget" type="text/javascript"></script>
+<a href="http://www.wumii.com/widget/relatedItems" style="border:0;">
+<img alt="无觅相关文章插件，迅速提升网站流量" src="./阿添BLOG小站  [C] AES加解密_files/pixel.png" style="border:0;padding:0;margin:0;">
+</a>
+<script type="text/javascript">
+if (window.jstiming) window.jstiming.load.tick('widgetJsBefore');
+</script><script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/2292841073-widgets.js"></script>
+<script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/plusone.js" gapi_processed="true"></script>
+<script type="text/javascript">
+if (typeof(BLOG_attachCsiOnload) != 'undefined' && BLOG_attachCsiOnload != null) { window['blogger_templates_experiment_id'] = "templatesV1";window['blogger_blog_id'] = '6707279719901209815';BLOG_attachCsiOnload('item_'); }_WidgetManager._Init('//www.blogger.com/rearrange?blogID\x3d6707279719901209815','//blog.atien4u.com/2013/01/c-aes.html','6707279719901209815');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '6707279719901209815', 'bloggerUrl': 'http://www.blogger.com', 'title': '阿添BLOG小站', 'pageType': 'item', 'url': 'http://blog.atien4u.com/2013/01/c-aes.html', 'canonicalUrl': 'http://blog.atien4u.com/2013/01/c-aes.html', 'canonicalHomepageUrl': 'http://blog.atien4u.com/', 'homepageUrl': 'http://blog.atien4u.com/', 'blogspotFaviconUrl': 'http://blog.atien4u.com/favicon.ico', 'enabledCommentProfileImages': true, 'adultContent': false, 'disableAdSenseWidget': false, 'analyticsAccountNumber': '', 'searchLabel': '', 'searchQuery': '', 'pageName': '[C] AES加解密', 'pageTitle': '阿添BLOG小站: [C] AES加解密', 'encoding': 'UTF-8', 'locale': 'zh_TW', 'localeUnderscoreDelimited': 'zh_tw', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': false, 'mobileClass': '', 'isPrivateBlog': false, 'languageDirection': 'ltr', 'feedLinks': '\74link rel\75\42alternate\42 type\75\42application/atom+xml\42 title\75\42阿添BLOG小站 - Atom\42 href\75\42http://blog.atien4u.com/feeds/posts/default\42 /\76\n\74link rel\75\42alternate\42 type\75\42application/rss+xml\42 title\75\42阿添BLOG小站 - RSS\42 href\75\42http://blog.atien4u.com/feeds/posts/default?alt\75rss\42 /\76\n\74link rel\75\42service.post\42 type\75\42application/atom+xml\42 title\75\42阿添BLOG小站 - Atom\42 href\75\42http://www.blogger.com/feeds/6707279719901209815/posts/default\42 /\76\n\74link rel\75\42EditURI\42 type\75\42application/rsd+xml\42 title\75\42RSD\42 href\75\42http://www.blogger.com/rsd.g?blogID\0756707279719901209815\42 /\76\n\74link rel\75\42alternate\42 type\75\42application/atom+xml\42 title\75\42阿添BLOG小站 - Atom\42 href\75\42http://blog.atien4u.com/feeds/2067128892160109434/comments/default\42 /\76\n', 'meTag': '', 'openIdOpTag': '', 'postImageThumbnailUrl': 'http://4.bp.blogspot.com/-Rfiw0CLL8MI/UOQAib2N0eI/AAAAAAAAD08/-rKNHHq3fjc/s72-c/%25E6%259C%25AA%25E5%2591%25BD%25E5%2590%258D.png', 'imageSrcTag': '\74link rel\75\42image_src\42 href\75\42http://4.bp.blogspot.com/-Rfiw0CLL8MI/UOQAib2N0eI/AAAAAAAAD08/-rKNHHq3fjc/s72-c/%25E6%259C%25AA%25E5%2591%25BD%25E5%2590%258D.png\42 /\76\n', 'latencyHeadScript': '\74script type\75\42text/javascript\42\76(function() { var b\75window,e\75\42jstiming\42,g\75\42tick\42;(function(){function d(a){this.t\75{};this.tick\75function(a,d,c){c\75void 0!\75c?c:(new Date).getTime();this.t[a]\75[c,d]};this[g](\42start\42,null,a)}var a\75new d;b.jstiming\75{Timer:d,load:a};if(b.performance\46\46b.performance.timing){var a\75b.performance.timing,c\75b[e].load,f\75a.navigationStart,a\75a.responseStart;0\74f\46\46a\76\75f\46\46(c[g](\42_wtsrt\42,void 0,f),c[g](\42wtsrt_\42,\42_wtsrt\42,a),c[g](\42tbsd_\42,\42wtsrt_\42))}try{a\75null,b.chrome\46\46b.chrome.csi\46\46(a\75Math.floor(b.chrome.csi().pageT),c\46\0460\74f\46\46(c[g](\42_tbnd\42,void 0,b.chrome.csi().startE),\nc[g](\42tbnd_\42,\42_tbnd\42,f))),null\75\75a\46\46b.gtbExternal\46\46(a\75b.gtbExternal.pageT()),null\75\75a\46\46b.external\46\46(a\75b.external.pageT,c\46\0460\74f\46\46(c[g](\42_tbnd\42,void 0,b.external.startE),c[g](\42tbnd_\42,\42_tbnd\42,f))),a\46\46(b[e].pt\75a)}catch(l){}})();b.tickAboveFold\75function(d){var a\0750;if(d.offsetParent){do a+\75d.offsetTop;while(d\75d.offsetParent)}d\75a;750\76\75d\46\46b[e].load[g](\42aft\42)};var h\75!1;function k(){h||(h\75!0,b[e].load[g](\42firstScrollTime\42))}b.addEventListener?b.addEventListener(\42scroll\42,k,!1):b.attachEvent(\42onscroll\42,k);\n })();\74/script\076', 'mobileHeadScript': '', 'adsenseClientId': 'pub-2048273037593053', 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/437c8f2d6b1382a8', 'plusOneApiSrc': 'https://apis.google.com/js/plusone.js', 'sf': 'n', 'tf': ''}}, {'name': 'skin', 'data': {'vars': {}, 'override': ''}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '/?view\75classic'}, 'flipcard': {'name': 'flipcard', 'url': '/?view\75flipcard'}, 'magazine': {'name': 'magazine', 'url': '/?view\75magazine'}, 'mosaic': {'name': 'mosaic', 'url': '/?view\75mosaic'}, 'sidebar': {'name': 'sidebar', 'url': '/?view\75sidebar'}, 'snapshot': {'name': 'snapshot', 'url': '/?view\75snapshot'}, 'timeslide': {'name': 'timeslide', 'url': '/?view\75timeslide'}}}]);
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML3', 'lowerbar21', null, document.getElementById('HTML3'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML4', 'slider-k', null, document.getElementById('HTML4'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML101', 'slider-k', null, document.getElementById('HTML101'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_PageListView', new _WidgetInfo('PageList1', 'crosscol', null, document.getElementById('PageList1'), {'title': 'Pages', 'links': [{'href': 'http://blog.atien4u.com/', 'title': '首頁', 'isCurrentPage': false}, {'href': 'http://blog.atien4u.com/p/blog-page.html', 'title': '阿添是誰??', 'isCurrentPage': false}, {'href': 'http://blog.atien4u.com/p/blog-page_7.html', 'title': '通訊資源站', 'isCurrentPage': false}, {'href': 'http://blog.atien4u.com/p/blog-page_2.html', 'title': '網站空間申請', 'isCurrentPage': false}, {'href': 'http://atien4u.com/mini', 'title': '阿添雲端硬碟', 'isCurrentPage': false}], 'mobile': false}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_ProfileView', new _WidgetInfo('Profile1', 'lowerbar22', null, document.getElementById('Profile1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_TextView', new _WidgetInfo('Text1', 'lowerbar22', null, document.getElementById('Text1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense1', 'sidebar', null, document.getElementById('AdSense1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML99', 'sidebar', null, document.getElementById('HTML99'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_PopularPostsView', new _WidgetInfo('PopularPosts1', 'sidebar', null, document.getElementById('PopularPosts1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML2', 'sidebar', null, document.getElementById('HTML2'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML1', 'sidebar', null, document.getElementById('HTML1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AttributionView', new _WidgetInfo('Attribution1', 'sidebar', null, document.getElementById('Attribution1'), {'attribution': '由 \74a href\75\47http://www.blogger.com\47 target\75\47_blank\47\76Blogger\74/a\76 技術提供.'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_PlusFollowersView', new _WidgetInfo('PlusFollowers1', 'sidebar', null, document.getElementById('PlusFollowers1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML102', 'ads-header', null, document.getElementById('HTML102'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebar2', null, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_StatsView', new _WidgetInfo('Stats1', 'sidebar2', null, document.getElementById('Stats1'), {'title': '', 'showGraphicalCounter': false, 'showAnimatedCounter': false, 'showSparkline': true, 'statsUrl': '//blog.atien4u.com/b/stats?style\75BLACK_TRANSPARENT\46timeRange\75ALL_TIME\46token\75bLf14D4BAAA.-wMSMrCWsbzbWnI38Qli77J93qGjpQUAlAUN7kWXRbw.ARfUgtBauXUwe7LyWCeQAw'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'header', null, document.getElementById('Header1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LabelView', new _WidgetInfo('Label1', 'sidebar3', null, document.getElementById('Label1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'main', null, document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'showBacklinks': true, 'postId': '2067128892160109434', 'legacyCommentModerationUrl': 'https://www.blogger.com/moderate-legacy-comment.g?blogID\0756707279719901209815', 'iframeCommentsId': 'gpluscomments', 'viewType': 'FILTERED_POSTMOD', 'lightboxEnabled': true, 'lightboxModuleUrl': '//www.blogger.com/static/v1/jsbin/4124531409-lbx__zh_tw.js', 'lightboxCssUrl': '//www.blogger.com/static/v1/v-css/228702327-lightbox_bundle.css'}, 'displayModeFull'));
+</script>
+
+<div id="LCS_FE1DEEEA_DB6D_44b8_83F0_34FC0F9D1052_communicationDiv" lcs_fe1deeea_db6d_44b8_83f0_34fc0f9d1052_valuename="WSG_status" lcs_fe1deeea_db6d_44b8_83f0_34fc0f9d1052_valueresult="active|||8641369545001201"></div><link type="text/css" rel="stylesheet" href="./阿添BLOG小站  [C] AES加解密_files/228702327-lightbox_bundle.css"><script type="text/javascript" src="./阿添BLOG小站  [C] AES加解密_files/4124531409-lbx__zh_tw.js"></script></body></html>

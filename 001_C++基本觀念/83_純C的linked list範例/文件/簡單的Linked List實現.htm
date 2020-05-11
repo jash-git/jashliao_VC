@@ -1,0 +1,544 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- saved from url=(0062)http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script async="" type="text/javascript" src="./簡單的Linked List實現_files/gpt.js"></script><script type="text/javascript" async="" src="./簡單的Linked List實現_files/ga.js"></script>
+
+<title>(原創) 簡單的Linked List實現 (C/C++) (C) (Data Structure) - 真 OO无双 - 博客园</title>
+<link type="text/css" rel="stylesheet" href="./簡單的Linked List實現_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./簡單的Linked List實現_files/style.css">
+<link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/oomusou/rss">
+<link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/oomusou/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/oomusou/wlwmanifest.xml">
+<script src="./簡單的Linked List實現_files/jquery.js" type="text/javascript"></script>  
+<script type="text/javascript">var currentBlogApp = 'oomusou';</script>
+<script src="./簡單的Linked List實現_files/blog-common.js" type="text/javascript"></script>
+<script async="" type="text/javascript" src="./簡單的Linked List實現_files/pubads_impl_31.js"></script><script type="text/javascript" src="./簡單的Linked List實現_files/osd.js"></script></head>
+<body>
+<a name="top"></a>
+
+<script type="text/javascript">
+	try {
+		if (screen.availWidth > 1200) {
+			document.getElementById("MainCss").href = '/Skins/BOOK/style2.css';
+		}
+	} catch (e) { }
+</script>
+
+<div id="header">
+<div id="HeaderTitle">
+<div id="Title">
+<a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cnblogs.com/oomusou/">真 OO无双 之 真乱舞书</a>
+</div>
+<div id="subTitle">寫程式是很快樂的一件事 Since Sep.15,2006</div>
+</div>
+</div>
+
+<div id="main">
+	
+
+	<div class="post">
+		<h2>
+			<a id="cb_post_title_url" href="./簡單的Linked List實現_files/簡單的Linked List實現.htm">(原創) 簡單的Linked List實現 (C/C++) (C) (Data Structure)</a>
+		</h2>
+		<div id="cnblogs_post_body"><strong>
+</strong><p><strong>Abstraction</strong><br>使用C語言簡單的實現linked list，並用C++的std::vector實作出相同的功能作比較。</p>
+<p><strong>Introduction</strong><br>學習資料結構，第一個要學的就是linked list，本文示範最簡單的linked list實現，包含建立與顯示，可把它當成linked list的標準範本，畢竟步驟都差不多。</p>
+<p>一個基本的問題：為什麼需要linked list?若要將大量資料存到記憶體，你會想到什麼?第一個想到的就是array，但C語言是個靜態語言，<strong>array必須事先宣告大小，這樣compiler才能進行最佳化</strong>，若到時候沒用這麼多記憶體，就白白浪費記憶體了。或許你會說array可以配合malloc()變成動態array，但前提是你必須告訴malloc()要建立多大的array，<strong>若連要建立多大的陣列也不確定</strong>，而是在run-time看有多少資料就建立多大，這時連malloc()的動態array也不能用了，此時就得靠linked list。</p>
+<p>linked list是資料結構的基礎，基本上就是靠struct如火車車廂那樣連在一起，run-time有需要時，在動態掛一個struct上去。</p>
+<p><strong>C語言</strong></p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #008080">1</span>&nbsp;<span style="COLOR: #008000">/*</span><span style="COLOR: #008000">&nbsp;<br></span><span style="COLOR: #008080">2</span>&nbsp;<span style="COLOR: #008000">(C) OOMusou 2008 </span><span style="COLOR: #008000; TEXT-DECORATION: underline">http://oomusou.cnblogs.com</span><span style="COLOR: #008000"><br></span><span style="COLOR: #008080">3</span>&nbsp;<span style="COLOR: #008000"><br></span><span style="COLOR: #008080">4</span>&nbsp;<span style="COLOR: #008000">Filename&nbsp;&nbsp;&nbsp; : DS_linked_list_simple.c<br></span><span style="COLOR: #008080">5</span>&nbsp;<span style="COLOR: #008000">Compiler&nbsp;&nbsp;&nbsp; : Visual C++ 8.0<br></span><span style="COLOR: #008080">6</span>&nbsp;<span style="COLOR: #008000">Description : Demo how to use malloc for linked list<br></span><span style="COLOR: #008080">7</span>&nbsp;<span style="COLOR: #008000">Release&nbsp;&nbsp;&nbsp;&nbsp; : 03/22/2008 1.0<br></span><span style="COLOR: #008080">8</span>&nbsp;<span style="COLOR: #008000"></span><span style="COLOR: #008000">*/</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">9</span>&nbsp;<span style="COLOR: #000000">#include </span><span style="COLOR: #000000">&lt;</span><span style="COLOR: #000000">stdio.h</span><span style="COLOR: #000000">&gt;</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">10</span>&nbsp;<span style="COLOR: #000000">#include </span><span style="COLOR: #000000">&lt;</span><span style="COLOR: #000000">stdlib.h</span><span style="COLOR: #000000">&gt;</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">11</span>&nbsp;<span style="COLOR: #000000">#include </span><span style="COLOR: #000000">&lt;</span><span style="COLOR: #0000ff">string</span><span style="COLOR: #000000">.h</span><span style="COLOR: #000000">&gt;</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">12</span>&nbsp;<span style="COLOR: #000000"><br></span><span style="COLOR: #008080">13</span>&nbsp;<span style="COLOR: #000000"></span><span style="COLOR: #0000ff">#define</span><span style="COLOR: #000000"> SLEN 255</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">14</span>&nbsp;<span style="COLOR: #000000"><br></span><span style="COLOR: #008080">15</span>&nbsp;<span style="COLOR: #000000"></span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list {<br></span><span style="COLOR: #008080">16</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">int</span><span style="COLOR: #000000">&nbsp; no;<br></span><span style="COLOR: #008080">17</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">char</span><span style="COLOR: #000000"> name[SLEN];<br></span><span style="COLOR: #008080">18</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">next;<br></span><span style="COLOR: #008080">19</span>&nbsp;<span style="COLOR: #000000">};<br></span><span style="COLOR: #008080">20</span>&nbsp;<span style="COLOR: #000000"><br></span><span style="COLOR: #008080">21</span>&nbsp;<span style="COLOR: #000000"></span><span style="COLOR: #0000ff">int</span><span style="COLOR: #000000"> main() {<br></span><span style="COLOR: #008080">22</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">int</span><span style="COLOR: #000000"> no;<br></span><span style="COLOR: #008080">23</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">char</span><span style="COLOR: #000000"> s[</span><span style="COLOR: #800080">255</span><span style="COLOR: #000000">];<br></span><span style="COLOR: #008080">24</span>&nbsp;<span style="COLOR: #000000">&nbsp; <br></span><span style="COLOR: #008080">25</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">head&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> NULL;<br></span><span style="COLOR: #008080">26</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> NULL;<br></span><span style="COLOR: #008080">27</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">prev&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> NULL;<br></span><span style="COLOR: #008080">28</span>&nbsp;<span style="COLOR: #000000">&nbsp; <br></span><span style="COLOR: #008080">29</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">while</span><span style="COLOR: #000000">(</span><span style="COLOR: #800080">1</span><span style="COLOR: #000000">) {<br></span><span style="COLOR: #008080">30</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; printf(</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">No. = </span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">);<br></span><span style="COLOR: #008080">31</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; scanf(</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">%d</span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">, </span><span style="COLOR: #000000">&amp;</span><span style="COLOR: #000000">no);<br></span><span style="COLOR: #008080">32</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; <br></span><span style="COLOR: #008080">33</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #0000ff">if</span><span style="COLOR: #000000"> (no </span><span style="COLOR: #000000">==</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #800080">0</span><span style="COLOR: #000000">)<br></span><span style="COLOR: #008080">34</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #0000ff">break</span><span style="COLOR: #000000">;<br></span><span style="COLOR: #008080">35</span>&nbsp;<span style="COLOR: #000000">&nbsp; <br></span><span style="COLOR: #008080">36</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; printf(</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">Name = </span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">);<br></span><span style="COLOR: #008080">37</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; scanf(</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">%s</span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">, s);<br></span><span style="COLOR: #008080">38</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; <br></span><span style="COLOR: #008080">39</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> (</span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">)malloc(</span><span style="COLOR: #0000ff">sizeof</span><span style="COLOR: #000000">(</span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list));<br></span><span style="COLOR: #008080">40</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #0000ff">if</span><span style="COLOR: #000000"> (current </span><span style="COLOR: #000000">==</span><span style="COLOR: #000000"> NULL)<br></span><span style="COLOR: #008080">41</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; exit(EXIT_FAILURE);<br></span><span style="COLOR: #008080">42</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br></span><span style="COLOR: #008080">43</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">next </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> NULL;<br></span><span style="COLOR: #008080">44</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; <br></span><span style="COLOR: #008080">45</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">no </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> no;<br></span><span style="COLOR: #008080">46</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; strncpy(current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">name, s, SLEN </span><span style="COLOR: #000000">-</span><span style="COLOR: #800080">1</span><span style="COLOR: #000000">);<br></span><span style="COLOR: #008080">47</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">name[SLEN </span><span style="COLOR: #000000">-</span><span style="COLOR: #800080">1</span><span style="COLOR: #000000">] </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #800000">'</span><span style="COLOR: #800000">\0</span><span style="COLOR: #800000">'</span><span style="COLOR: #000000">;<br></span><span style="COLOR: #008080">48</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; <br></span><span style="COLOR: #008080">49</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #0000ff">if</span><span style="COLOR: #000000"> (head </span><span style="COLOR: #000000">==</span><span style="COLOR: #000000"> NULL)<br></span><span style="COLOR: #008080">50</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; head </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current;<br></span><span style="COLOR: #008080">51</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #0000ff">else</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">52</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prev</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">next </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current;<br></span><span style="COLOR: #008080">53</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br></span><span style="COLOR: #008080">54</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; prev </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current;<br></span><span style="COLOR: #008080">55</span>&nbsp;<span style="COLOR: #000000">&nbsp; }<br></span><span style="COLOR: #008080">56</span>&nbsp;<span style="COLOR: #000000">&nbsp; <br></span><span style="COLOR: #008080">57</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #008000">//</span><span style="COLOR: #008000"> display linked list</span><span style="COLOR: #008000"><br></span><span style="COLOR: #008080">58</span>&nbsp;<span style="COLOR: #008000"></span><span style="COLOR: #000000">&nbsp; current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> head;<br></span><span style="COLOR: #008080">59</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">while</span><span style="COLOR: #000000">(current </span><span style="COLOR: #000000">!=</span><span style="COLOR: #000000"> NULL) {<br></span><span style="COLOR: #008080">60</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; printf(</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">No. = %d, Name = %s\n</span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">, current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">no, current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">name);<br></span><span style="COLOR: #008080">61</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">next;<br></span><span style="COLOR: #008080">62</span>&nbsp;<span style="COLOR: #000000">&nbsp; }<br></span><span style="COLOR: #008080">63</span>&nbsp;<span style="COLOR: #000000">&nbsp; <br></span><span style="COLOR: #008080">64</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #008000">//</span><span style="COLOR: #008000"> free linked list</span><span style="COLOR: #008000"><br></span><span style="COLOR: #008080">65</span>&nbsp;<span style="COLOR: #008000"></span><span style="COLOR: #000000">&nbsp; current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> head;<br></span><span style="COLOR: #008080">66</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">while</span><span style="COLOR: #000000">(current </span><span style="COLOR: #000000">!=</span><span style="COLOR: #000000"> NULL) {<br></span><span style="COLOR: #008080">67</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; prev </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current;<br></span><span style="COLOR: #008080">68</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">next;<br></span><span style="COLOR: #008080">69</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; free(prev);<br></span><span style="COLOR: #008080">70</span>&nbsp;<span style="COLOR: #000000">&nbsp; }<br></span><span style="COLOR: #008080">71</span>&nbsp;<span style="COLOR: #000000">}</span></div>
+<p><br><strong>執行結果</strong></p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #000000">No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">1</span><span style="COLOR: #000000"><br>Name </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> clare<br>No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">2</span><span style="COLOR: #000000"><br>Name </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> jessie<br>No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">0</span><span style="COLOR: #000000"><br>No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">1</span><span style="COLOR: #000000">,</span><span style="COLOR: #000000"> Name </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> clare<br>No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">2</span><span style="COLOR: #000000">,</span><span style="COLOR: #000000"> Name </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> jessie</span></div>
+<p><br>15行</p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list {<br>&nbsp; </span><span style="COLOR: #0000ff">int</span><span style="COLOR: #000000">&nbsp; no;<br>&nbsp; </span><span style="COLOR: #0000ff">char</span><span style="COLOR: #000000"> name[SLEN];<br>&nbsp; </span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">next;<br>};</span></div>
+<p><br>linked list的基礎就是struct，所以先建立一個自訂的struct型別，因為linked list是靠struct串聯起來，所以最後要多一個struct pointer指向下一個struct。</p>
+<p>25行</p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">head&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> NULL;<br></span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> NULL;<br></span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">prev&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> NULL;</span></div>
+<p><br>建立linked list最基本需要三個指標，head指向linked list的第一個struct，current指向目前剛建立的struct，prev則指向前一個struct，目的在指向下一個struct，對於未使用的pointer，一律指定為NULL，這是一個好的coding style，可以藉由判斷是否為NULL判斷此pointer是否被使用。</p>
+<p>39行</p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #000000">current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> (</span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list </span><span style="COLOR: #000000">*</span><span style="COLOR: #000000">)malloc(</span><span style="COLOR: #0000ff">sizeof</span><span style="COLOR: #000000">(</span><span style="COLOR: #0000ff">struct</span><span style="COLOR: #000000"> list));<br></span><span style="COLOR: #0000ff">if</span><span style="COLOR: #000000"> (current </span><span style="COLOR: #000000">==</span><span style="COLOR: #000000"> NULL)<br>&nbsp; exit(EXIT_FAILURE);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">next </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> NULL;</span></div>
+<p><br>每當有新資料，需要建立一個新的struct時，就用malloc()要一塊記憶體，由於malloc()傳回的是void *，所以要手動轉型成struct list *。但malloc()並不是一定會成功，若記憶體不足時，仍然會失敗，所以必須判斷是否傳回NULL。</p>
+<p>由於一個新的node，一定是linked list最後一個node，所以將current-&gt;next接null。<br></p>
+<p>45行</p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #000000">current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">no </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> no;<br>strncpy(current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">name, s, SLEN </span><span style="COLOR: #000000">-</span><span style="COLOR: #800080">1</span><span style="COLOR: #000000">);<br>current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">name[SLEN </span><span style="COLOR: #000000">-</span><span style="COLOR: #800080">1</span><span style="COLOR: #000000">] </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #800000">'</span><span style="COLOR: #800000">\0</span><span style="COLOR: #800000">'</span><span style="COLOR: #000000">;</span></div>
+<p><br>正式將輸入的資料填進struct，至於為什麼要用strncpy()而不用strcpy()呢?雖然strcpy()也可以，但strncpy()比較安全，若輸入的字串大小超過struct所定義的字串大小，則會只接受struct所接受的字串大小，而不會因為找不到'\0'而造成程式錯誤。</p>
+<p>49行</p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #0000ff">if</span><span style="COLOR: #000000"> (head </span><span style="COLOR: #000000">==</span><span style="COLOR: #000000"> NULL)<br>&nbsp; head </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current;<br></span><span style="COLOR: #0000ff">else</span><span style="COLOR: #000000"><br>&nbsp; prev</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">next </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>prev </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current;</span></div>
+<p><br>判斷若是第一個node，則將目前的node當成head，若不是第一個node，則將前一個node指向目前的node，完成linked list的連接。最後將目前的node當成前一個node，以備指向下一個node。</p>
+<p>58行</p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #008000">//</span><span style="COLOR: #008000"> display linked list</span><span style="COLOR: #008000"><br></span><span style="COLOR: #000000">current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> head;<br></span><span style="COLOR: #0000ff">while</span><span style="COLOR: #000000">(current </span><span style="COLOR: #000000">!=</span><span style="COLOR: #000000"> NULL) {<br>&nbsp; printf(</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">No. = %d, Name = %s\n</span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">, current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">no, current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">name);<br>&nbsp; current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">next;<br>}</span></div>
+<p><br>要重新顯示linked list，所以將指標再度指向第一個node，每當顯示一個node後，就指向下一個node，直到指到NULL為止。</p>
+<p>64行</p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #008000">//</span><span style="COLOR: #008000"> free linked list</span><span style="COLOR: #008000"><br></span><span style="COLOR: #000000">current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> head;<br></span><span style="COLOR: #0000ff">while</span><span style="COLOR: #000000">(current </span><span style="COLOR: #000000">!=</span><span style="COLOR: #000000"> NULL) {<br>&nbsp; prev </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current;<br>&nbsp; current </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> current</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">next;<br>&nbsp; free(prev);<br>}</span></div>
+<p><br>由於malloc()是將記憶體放在heap，而不是放在stack，所以並不會隨著function的結束而釋放，必須要手動使用free()釋放記憶體，否則會造成memory leak。</p>
+<p>再來看C++，由於STL已內建一些容器，所以不需再重新實作linked list，有兩個選擇：std::vector或者std::list。std::vector的優點是non-sequential access超快，新增資料於後端超快，但insert和erase任意資料則超慢；std::list則剛好相反，insert和erase速度超快，但non-sequential access超慢，由於本例只有新增與non-sequential access，所以適合std::vector。不過由於STL使用泛型技術，若將來需求改變，想改用std::list也沒關係，只要將容器改掉即可，剩下的都不用改，因為STL的演算法並不挑容器，這正是泛型偉大之處。</p>
+<p><strong>C++</strong></p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #008080">1</span>&nbsp;<span style="COLOR: #008000">/*</span><span style="COLOR: #008000">&nbsp;<br></span><span style="COLOR: #008080">2</span>&nbsp;<span style="COLOR: #008000">(C) OOMusou 2008 </span><span style="COLOR: #008000; TEXT-DECORATION: underline">http://oomusou.cnblogs.com</span><span style="COLOR: #008000"><br></span><span style="COLOR: #008080">3</span>&nbsp;<span style="COLOR: #008000"><br></span><span style="COLOR: #008080">4</span>&nbsp;<span style="COLOR: #008000">Filename&nbsp;&nbsp;&nbsp; : DS_linked_list_simple_vector_class.cpp<br></span><span style="COLOR: #008080">5</span>&nbsp;<span style="COLOR: #008000">Compiler&nbsp;&nbsp;&nbsp; : Visual C++ 8.0<br></span><span style="COLOR: #008080">6</span>&nbsp;<span style="COLOR: #008000">Description : Demo how to use vector instead of linked list<br></span><span style="COLOR: #008080">7</span>&nbsp;<span style="COLOR: #008000">Release&nbsp;&nbsp;&nbsp;&nbsp; : 03/22/2008 1.0<br></span><span style="COLOR: #008080">8</span>&nbsp;<span style="COLOR: #008000"></span><span style="COLOR: #008000">*/</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">9</span>&nbsp;<span style="COLOR: #000000">#include </span><span style="COLOR: #000000">&lt;</span><span style="COLOR: #000000">iostream</span><span style="COLOR: #000000">&gt;</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">10</span>&nbsp;<span style="COLOR: #000000">#include </span><span style="COLOR: #000000">&lt;</span><span style="COLOR: #0000ff">string</span><span style="COLOR: #000000">&gt;</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">11</span>&nbsp;<span style="COLOR: #000000">#include </span><span style="COLOR: #000000">&lt;</span><span style="COLOR: #000000">vector</span><span style="COLOR: #000000">&gt;</span><span style="COLOR: #000000"><br></span><span style="COLOR: #008080">12</span>&nbsp;<span style="COLOR: #000000"><br></span><span style="COLOR: #008080">13</span>&nbsp;<span style="COLOR: #000000"></span><span style="COLOR: #0000ff">using</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #0000ff">namespace</span><span style="COLOR: #000000"> std;<br></span><span style="COLOR: #008080">14</span>&nbsp;<span style="COLOR: #000000"><br></span><span style="COLOR: #008080">15</span>&nbsp;<span style="COLOR: #000000"></span><span style="COLOR: #0000ff">class</span><span style="COLOR: #000000"> List {<br></span><span style="COLOR: #008080">16</span>&nbsp;<span style="COLOR: #000000"></span><span style="COLOR: #0000ff">public</span><span style="COLOR: #000000">:<br></span><span style="COLOR: #008080">17</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">int</span><span style="COLOR: #000000"> no;<br></span><span style="COLOR: #008080">18</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">string</span><span style="COLOR: #000000"> name;<br></span><span style="COLOR: #008080">19</span>&nbsp;<span style="COLOR: #000000">};<br></span><span style="COLOR: #008080">20</span>&nbsp;<span style="COLOR: #000000"><br></span><span style="COLOR: #008080">21</span>&nbsp;<span style="COLOR: #000000"></span><span style="COLOR: #0000ff">int</span><span style="COLOR: #000000"> main() {<br></span><span style="COLOR: #008080">22</span>&nbsp;<span style="COLOR: #000000">&nbsp; vector</span><span style="COLOR: #000000">&lt;</span><span style="COLOR: #000000">List</span><span style="COLOR: #000000">&gt;</span><span style="COLOR: #000000"> vec;<br></span><span style="COLOR: #008080">23</span>&nbsp;<span style="COLOR: #000000">&nbsp; <br></span><span style="COLOR: #008080">24</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">while</span><span style="COLOR: #000000">(</span><span style="COLOR: #800080">1</span><span style="COLOR: #000000">) {<br></span><span style="COLOR: #008080">25</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; List list;<br></span><span style="COLOR: #008080">26</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; cout </span><span style="COLOR: #000000">&lt;&lt;</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">No. = </span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">;<br></span><span style="COLOR: #008080">27</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; cin </span><span style="COLOR: #000000">&gt;&gt;</span><span style="COLOR: #000000"> list.no;<br></span><span style="COLOR: #008080">28</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; <br></span><span style="COLOR: #008080">29</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #0000ff">if</span><span style="COLOR: #000000"> (list.no </span><span style="COLOR: #000000">==</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #800080">0</span><span style="COLOR: #000000">)<br></span><span style="COLOR: #008080">30</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style="COLOR: #0000ff">break</span><span style="COLOR: #000000">;<br></span><span style="COLOR: #008080">31</span>&nbsp;<span style="COLOR: #000000">&nbsp; <br></span><span style="COLOR: #008080">32</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; cout </span><span style="COLOR: #000000">&lt;&lt;</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">Name = </span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">;<br></span><span style="COLOR: #008080">33</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; cin </span><span style="COLOR: #000000">&gt;&gt;</span><span style="COLOR: #000000"> list.name;<br></span><span style="COLOR: #008080">34</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; <br></span><span style="COLOR: #008080">35</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; vec.push_back(list);<br></span><span style="COLOR: #008080">36</span>&nbsp;<span style="COLOR: #000000">&nbsp; }<br></span><span style="COLOR: #008080">37</span>&nbsp;<span style="COLOR: #000000">&nbsp; <br></span><span style="COLOR: #008080">38</span>&nbsp;<span style="COLOR: #000000">&nbsp; vector</span><span style="COLOR: #000000">&lt;</span><span style="COLOR: #000000">List</span><span style="COLOR: #000000">&gt;</span><span style="COLOR: #000000">::iterator iter </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> vec.begin();<br></span><span style="COLOR: #008080">39</span>&nbsp;<span style="COLOR: #000000">&nbsp; </span><span style="COLOR: #0000ff">for</span><span style="COLOR: #000000">(; iter </span><span style="COLOR: #000000">!=</span><span style="COLOR: #000000"> vec.end(); </span><span style="COLOR: #000000">++</span><span style="COLOR: #000000">iter)<br></span><span style="COLOR: #008080">40</span>&nbsp;<span style="COLOR: #000000">&nbsp;&nbsp;&nbsp; cout </span><span style="COLOR: #000000">&lt;&lt;</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">No. = </span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">&lt;&lt;</span><span style="COLOR: #000000"> iter</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">no </span><span style="COLOR: #000000">&lt;&lt;</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #800000">"</span><span style="COLOR: #800000">, Name = </span><span style="COLOR: #800000">"</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">&lt;&lt;</span><span style="COLOR: #000000"> iter</span><span style="COLOR: #000000">-&gt;</span><span style="COLOR: #000000">name </span><span style="COLOR: #000000">&lt;&lt;</span><span style="COLOR: #000000"> endl;<br></span><span style="COLOR: #008080">41</span>&nbsp;<span style="COLOR: #000000">}</span></div>
+<p><br></p>
+<p><strong>執行結果</strong></p>
+<div style="BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #cccccc 1px solid; PADDING-LEFT: 4px; FONT-SIZE: 13px; PADDING-BOTTOM: 4px; BORDER-LEFT: #cccccc 1px solid; WIDTH: 98%; WORD-BREAK: break-all; PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; BACKGROUND-COLOR: #eeeeee"><span style="COLOR: #000000">No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">1</span><span style="COLOR: #000000"><br>Name </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> clare<br>No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">2</span><span style="COLOR: #000000"><br>Name </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> jessie<br>No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">0</span><span style="COLOR: #000000"><br>No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">1</span><span style="COLOR: #000000">,</span><span style="COLOR: #000000"> Name </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> clare<br>No. </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000">&nbsp;</span><span style="COLOR: #000000">2</span><span style="COLOR: #000000">,</span><span style="COLOR: #000000"> Name </span><span style="COLOR: #000000">=</span><span style="COLOR: #000000"> jessie</span></div>
+<p><br>15行由struct改用了class，不過若繼續使用struct亦可，至於其他的程式都很直觀，就不再多做解釋。</p>
+<p><strong>Conclusion</strong><br>本文主要是討論使用C語言透過malloc()實現資料結構的linked list，以彌補靜態語言的不足，同時亦討論C++使用STL的替代方案與便利性，C與C++各擅勝場，你可自行決定使用C或C++。</p>
+<p><strong>See Also<br></strong><a href="http://www.cnblogs.com/oomusou/archive/2007/02/25/656359.html" target="_blank">(原創) C/C++哪些地方會用到pointer呢? (C/C++) (C)</a><br><a href="http://www.cnblogs.com/oomusou/archive/2008/03/21/1116740.html" target="_blank">(原創) 如何將輸入的字串存到記憶體後，再一起印出來? (C/C++) (C)</a> <br></p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="blog_post_info"><div id="BlogPostCategory">分类: <a href="http://www.cnblogs.com/oomusou/category/127748.html">Data Structure</a>, <a href="http://www.cnblogs.com/oomusou/category/70647.html">C/C++</a>, <a href="http://www.cnblogs.com/oomusou/category/104081.html">C</a></div>
+<div id="EntryTag"></div>
+<div id="green_channel">
+绿色通道：
+<a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(cb_entryId,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+<a id="green_channel_follow" onclick="c_follow();" href="javascript:void(0);">关注我</a>
+<a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a><a id="green_channel_contact" href="http://space.cnblogs.com/msg/send/%e7%9c%9f+OO%e6%97%a0%e5%8f%8c" target="_blank">与我联系</a>
+<a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./簡單的Linked List實現_files/icon_weibo_24.png" alt=""></a>
+</div>
+<div id="digg_block">
+<div id="author_profile">
+<div id="author_profile_info" class="author_profile_info">
+<a href="http://home.cnblogs.com/u/oomusou/" target="_blank"><img src="./簡單的Linked List實現_files/u17820.gif" class="author_avatar" alt=""></a>
+<div id="author_profile_detail" class="author_profile_info">
+<a href="http://home.cnblogs.com/u/oomusou/">真 OO无双</a><br>
+<a href="http://home.cnblogs.com/u/oomusou/followees">关注 - 0</a><br>
+<a href="http://home.cnblogs.com/u/oomusou/followers">粉丝 - 616</a>
+</div>
+</div>
+<div class="clear"></div>
+<div id="author_profile_honor"></div>
+<div id="author_profile_follow">
+<a href="javascript:void(0);" onclick="c_follow();return false;">+加关注</a>
+</div>
+</div>
+<div id="div_digg">										
+	<div class="diggit" onclick="votePost(cb_entryId,&#39;Digg&#39;)"> 
+		<span class="diggnum" id="digg_count">0</span>
+	</div>
+	<div class="buryit" onclick="votePost(cb_entryId,&#39;Bury&#39;)"> 
+		<span class="burynum" id="bury_count">0</span>
+	</div>
+	<div class="clear"></div>	
+	<div class="diggword" id="digg_tips">
+    (请您对文章做出评价)
+    </div>	
+</div>
+</div></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117389.html" class="p_n_p_prefix">« </a> 上一篇：<a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117389.html" title="发布于2008-03-22 09:56">(轉貼) 包道格：離美1年未用 綠卡就失效 (News)</a><br><a href="http://www.cnblogs.com/oomusou/archive/2008/03/24/1119012.html" class="p_n_p_prefix">» </a> 下一篇：<a href="http://www.cnblogs.com/oomusou/archive/2008/03/24/1119012.html" title="发布于2008-03-24 00:25">(原創) 二維陣列與字串陣列有什麼差異? (C/C++) (C)</a><br></div>
+</div>
+
+
+		<p class="postfoot">
+			posted on <span id="post-date">2008-03-22 15:26</span> <a href="http://www.cnblogs.com/oomusou/">真 OO无双</a> 阅读(<span id="post_view_count">58848</span>) 评论(<span id="post_comment_count">5</span>)  <a href="http://www.cnblogs.com/oomusou/admin/EditPosts.aspx?postid=1117686" rel="nofollow">编辑</a> <a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html#" onclick="AddToWz(1117686);return false;">收藏</a>
+		</p>
+	</div>
+	<script type="text/javascript">var allowComments=true,isLogined=false,cb_blogId=21379,cb_entryId=1117686,cb_blogApp=currentBlogApp,cb_blogUserGuid='c55f360b-63cf-dd11-9e4d-001cf0cd104b',cb_entryCreatedDate='2008/3/22 15:26:00';loadViewCount(cb_entryId);</script>
+	
+	<a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<a name="评论"></a>
+<div id="comments">
+<h3>评论</h3>
+	
+	
+			<h4>
+				<a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html#1165297" class="layer">#1楼</a><a name="1165297" id="comment_anchor_1165297"></a>
+					<span>
+						 <span class="comment_date">2008-04-22 11:43</span>
+					</span>
+				<a id="ctl00_CommentList_NameLink_0" target="_blank">Rogers[未注册用户]</a>
+			</h4>
+			<p>
+				</p><div id="comment_body_1165297" class="blog_comment_body">版主大人，您好:
+<br>感謝您發表的文章，
+<br>讓小弟我獲益良多...
+<br>小弟我是C語言的初學者(自學者)，
+<br>您這一篇介紹linked list的code，
+<br>似乎並沒有使用暫停如system("pause");的函數??
+<br>
+<br>是不是這樣，
+<br>所以我compile Run之後無法看到顯示的結果?
+<br>如:
+<br>No. = 1
+<br>Name = clare
+<br>No. = 2
+<br>Name = jessie
+<br>No. = 0
+<br>No. = 1, Name = clare
+<br>No. = 2, Name = jessie</div>
+				&nbsp;&nbsp;<span class="comment_actions"></span>
+			<p></p>
+		
+			<h4>
+				<a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html#1165319" class="layer">#2楼</a><a name="1165319" id="comment_anchor_1165319"></a>
+					<span>
+						 <span class="comment_date">2008-04-22 11:53</span>
+					</span>
+				<a id="ctl00_CommentList_NameLink_1" target="_blank">Rogers[未注册用户]</a>
+			</h4>
+			<p>
+				</p><div id="comment_body_1165319" class="blog_comment_body">承上文，(使用C語言)
+<br>所以我自行將system("pause");加入到第61行 或是 第69行，
+<br>顯示出來的結果皆不盡理想...
+<br>會隨著使用者輸入no.數目的多寡一併列印出同數目的: 請按任意鑑繼續
+<br>
+<br>(小弟我使用Dev-C++ )
+<br>
+<br>謝謝 感恩</div>
+				&nbsp;&nbsp;<span class="comment_actions"></span>
+			<p></p>
+		
+			<h4>
+				<a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html#1165504" class="layer">#3楼</a><a name="1165504" id="comment_anchor_1165504"></a>[<span class="louzhu">楼主</span>]
+					<span>
+						 <span class="comment_date">2008-04-22 13:50</span>
+					</span>
+				<a id="a_comment_author_1165504" href="http://www.cnblogs.com/oomusou/" target="_blank">真 OO无双</a> <a href="http://space.cnblogs.com/msg/send/%e7%9c%9f+OO%e6%97%a0%e5%8f%8c" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</h4>
+			<p>
+				</p><div id="comment_body_1165504" class="blog_comment_body">@Rogers
+<br>若用VC6, VC7, VC8，則使用ctrl + F5執行即可
+<br>不需加上system("pause"),自己會暫停
+<br>
+<br>我沒使用Dev C++
+<br>所以不清楚Dev C++，不好意思</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(1165504,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(1165504,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_1165504_avatar" style="display:none;">http://pic.cnitblog.com/face/u17820.gif</span>
+				&nbsp;&nbsp;<span class="comment_actions"></span>
+			<p></p>
+		
+			<h4>
+				<a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html#1171782" class="layer">#4楼</a><a name="1171782" id="comment_anchor_1171782"></a>
+					<span>
+						 <span class="comment_date">2008-04-26 07:54</span>
+					</span>
+				<a id="ctl00_CommentList_NameLink_3" target="_blank">littlepotato[未注册用户]</a>
+			</h4>
+			<p>
+				</p><div id="comment_body_1171782" class="blog_comment_body">其實可以用 c99 或gnu extension； 在更早以前就有可變長度的 trick，方法是用 struct:
+<br>
+<br>struct aa {
+<br>  int size;
+<br>  char data[0];
+<br>};
+<br>
+<br>func(len)
+<br>{
+<br>  struct aa *ptr;
+<br>  ptr = malloc(sizeof(struct aa) + sizeof(char)*len);
+<br>...
+<br>}
+<br>
+<br>gcc -0 aa -std=c99 aa.c
+<br>
+<br>--
+<br>用 gnu extension 比較方便。</div>
+				&nbsp;&nbsp;<span class="comment_actions"></span>
+			<p></p>
+		
+			<h4>
+				<a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html#1569083" class="layer">#5楼</a><a name="1569083" id="comment_anchor_1569083"></a><span id="comment-maxId" style="display:none;">1569083</span><span id="comment-maxDate" style="display:none;">2009/6/26 13:31:44</span>
+					<span>
+						 <span class="comment_date">2009-06-26 13:31</span>
+					</span>
+				<a id="ctl00_CommentList_NameLink_4" target="_blank">小魔女[未注册用户]</a>
+			</h4>
+			<p>
+				</p><div id="comment_body_1569083" class="blog_comment_body">感謝你的文章，<br>簡單易懂好修改。<br>謝謝。<br><br></div>
+				&nbsp;&nbsp;<span class="comment_actions"></span>
+			<p></p>
+		
+</div><div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" id="lnk_RefreshComments" onclick="return RefreshCommentList();">刷新评论</a><a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html#" onclick="return RefreshPage();">刷新页面</a><a href="http://www.cnblogs.com/oomusou/archive/2008/03/22/1117686.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="site_nav_under"><a href="http://www.cnblogs.com/" target="_blank" title="程序员的网上家园">博客园首页</a><a href="http://q.cnblogs.com/" target="_blank" title="程序员问答社区">博问</a><a href="http://news.cnblogs.com/" target="_blank" title="IT新闻">新闻</a><a href="http://home.cnblogs.com/ing/" target="_blank">闪存</a><a href="http://job.cnblogs.com/" target="_blank">程序员招聘</a><a href="http://kb.cnblogs.com/" target="_blank">知识库</a></div>
+<div id="ad_under_post_holder">
+
+<div id="google_ad_c1" class="c_ad_block">
+    <!-- cnblogs_blogpost_C1_sitehome -->
+    <div id="div-gpt-ad-1346480159711-0" style="width:300px; height:250px;">
+    
+    <div id="google_ads_iframe_/1090369/cnblogs_blogpost_C1_sitehome_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/cnblogs_blogpost_C1_sitehome_0" name="google_ads_iframe_/1090369/cnblogs_blogpost_C1_sitehome_0" width="300" height="250" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" src="javascript:"<html><body style='background:transparent'></body></html>"" style="border: 0px; vertical-align: bottom;"></iframe></div><iframe id="google_ads_iframe_/1090369/cnblogs_blogpost_C1_sitehome_0__hidden__" name="google_ads_iframe_/1090369/cnblogs_blogpost_C1_sitehome_0__hidden__" width="0" height="0" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" src="javascript:"<html><body style='background:transparent'></body></html>"" style="border: 0px; vertical-align: bottom; visibility: hidden; display: none;"></iframe></div>
+</div>
+<div id="blog_news_kb"><div class="itnews c_ad_block"><b>最新IT新闻</b>:<br> ·  <a href="http://news.cnblogs.com/n/194173/" target="_blank">三星和HTC设备因作弊被剔除出Futuremark排名</a><br> ·  <a href="http://news.cnblogs.com/n/194172/" target="_blank">腾讯回应360公开信：做企业不是比谁的嗓门大</a><br> ·  <a href="http://news.cnblogs.com/n/194171/" target="_blank">淘宝网推“扫码购”服务 “双12”将送超亿红包</a><br> ·  <a href="http://news.cnblogs.com/n/194170/" target="_blank">Canalys：2014年平板电脑将超计算机出货量50%</a><br> ·  <a href="http://news.cnblogs.com/n/194168/" target="_blank">只有四分之一的雅虎雇员使用自家的Yahoo Mail</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div><div class="itnews c_ad_block" id="kb_block"><b>最新知识库文章</b>:<br><div id="kb_recent"> ·  <a href="http://kb.cnblogs.com/page/191938/" target="_blank">对于现代开发来说，Javascript就是一种垃圾语言</a><br> ·  <a href="http://kb.cnblogs.com/page/193913/" target="_blank">教你一眼认出英语单词的意思</a><br> ·  <a href="http://kb.cnblogs.com/page/193912/" target="_blank">数学之美</a><br> ·  <a href="http://kb.cnblogs.com/page/186516/" target="_blank">理解本真的REST架构风格</a><br> ·  <a href="http://kb.cnblogs.com/page/186836/" target="_blank">工程师的生活</a><br></div>» <a href="http://kb.cnblogs.com/" target="_blank">更多知识库文章...</a></div></div></div>
+<script type="text/javascript">
+var enableGoogleAd = true;
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+fixPostBodyFormat();
+loadAdUnderPost();
+</script>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+loadBlogSignature();
+LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate);
+GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+</script>
+<script type="text/javascript">
+    $.ajax({ url: 'http://counter.cnblogs.com/blog/post/' + cb_entryId, type: 'get', dataType: 'script', cache: true });
+</script>
+</div>
+
+	
+<p id="footer">
+	Powered by: 
+	<br>
+	
+	<a id="Footer1_Hyperlink3" name="Hyperlink1" href="http://www.cnblogs.com/" style="font-family:Verdana;font-size:12px;">博客园</a>
+	<br>
+	Copyright © 真 OO无双
+</p>
+</div>
+<div id="rightmenu">
+	
+		<div id="blog-calendar-block" style="display:none"><div id="blog-calendar"></div>
+</div>
+		
+<h3>导航</h3>
+<ul>
+			<li><a id="MyLinks1_HomeLink" href="http://www.cnblogs.com/">博客园</a></li>
+			<li><a id="MyLinks1_MyHomeLink" href="http://www.cnblogs.com/oomusou/">首页</a></li>
+			<li><a id="MyLinks1_NewPostLink" rel="nofollow" href="http://www.cnblogs.com/oomusou/admin/EditPosts.aspx?opt=1">新随笔</a></li>
+			<li><a id="MyLinks1_ContactLink" accesskey="9" rel="nofollow" href="http://space.cnblogs.com/msg/send/%e7%9c%9f+OO%e6%97%a0%e5%8f%8c">联系</a></li>
+			<li><a id="MyLinks1_Syndication" href="http://www.cnblogs.com/oomusou/rss">订阅</a><a id="MyLinks1_XMLLink" href="http://www.cnblogs.com/oomusou/rss"><img src="./簡單的Linked List實現_files/xml.gif" alt="订阅"></a>
+			</li><li><a id="MyLinks1_Admin" rel="nofollow" href="http://www.cnblogs.com/oomusou/admin/EditPosts.aspx">管理</a></li>
+</ul>
+		
+		
+<h3>公告</h3>
+	<div id="blog-news"><p>
+<a target="_blank" href="http://blog.chinatimes.com/" title="中時部落格2010嚴選優格"><img height="31" width="88" src="./簡單的Linked List實現_files/emblem-2010_e774afe4-5ef7-49ae-990c-daf06b3bb1ba.gif" alt="emblem-2010" border="0" title="emblem-2010" style="display: inline; border-width: 0px;"></a>
+</p><p>
+<a href="http://blogaward.chinatimes.com/" target="_blank">
+<img height="135" width="135" src="./簡單的Linked List實現_files/first2009-011_f4c751b5-187e-46c6-b7ae-27131b0010de.jpg" alt="first2009-011" border="0" title="first2009-011" style="display: inline; border: 0px;"></a></p>
+<p>
+</p><p>我是一個小小的數位IC工程師，從事SOC IP開發，業餘則喜歡研究FPGA、Embedded System、OS、MFC、NET與OOP相關技術。我並不是靠寫Blog或寫書維生，<b>只是記下來怕自己忘記</b>，所以不加任何廣告。所有文章與程式碼歡迎轉載使用。</p><div id="profile_block">昵称：<a href="http://home.cnblogs.com/u/oomusou/">真 OO无双</a><br>园龄：<a href="http://home.cnblogs.com/u/oomusou/" title="入园时间：2006-09-15">7年2个月</a><br>粉丝：<a href="http://home.cnblogs.com/u/oomusou/followers/">616</a><br>关注：<a href="http://home.cnblogs.com/u/oomusou/followees/">0</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="cnblogs.UserManager.FollowBlogger(&#39;c55f360b-63cf-dd11-9e4d-001cf0cd104b&#39;)">+加关注</a></div></div></div><script type="text/javascript">loadBlogNews();</script>
+
+		<div id="blog-sidecolumn">
+		<h3>随笔分类<span style="font-size:11px;font-weight:normal">(2095)</span></h3>
+		
+				<ul>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_0" href="http://www.cnblogs.com/oomusou/category/107216.html">μC/OS-II(9)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_1" href="http://www.cnblogs.com/oomusou/category/84450.html">.NET(112)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_2" href="http://www.cnblogs.com/oomusou/category/306831.html">ARM(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_3" href="http://www.cnblogs.com/oomusou/category/104123.html">ASP.NET(9)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_4" href="http://www.cnblogs.com/oomusou/category/104086.html">boost(7)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_5" href="http://www.cnblogs.com/oomusou/category/104081.html">C(81)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_6" href="http://www.cnblogs.com/oomusou/category/72218.html">C#(46)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_7" href="http://www.cnblogs.com/oomusou/category/70647.html">C/C++(287)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_8" href="http://www.cnblogs.com/oomusou/category/73539.html">C++/CLI(33)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_9" href="http://www.cnblogs.com/oomusou/category/134249.html">C2H(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_10" href="http://www.cnblogs.com/oomusou/category/139072.html">CentOS(12)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_11" href="http://www.cnblogs.com/oomusou/category/106941.html">CSS(7)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_12" href="http://www.cnblogs.com/oomusou/category/127748.html">Data Structure(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_13" href="http://www.cnblogs.com/oomusou/category/134303.html">Database(12)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_14" href="http://www.cnblogs.com/oomusou/category/110932.html">DE2(56)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_15" href="http://www.cnblogs.com/oomusou/category/149442.html">DE2-70(42)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_16" href="http://www.cnblogs.com/oomusou/category/181211.html">Debussy(6)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_17" href="http://www.cnblogs.com/oomusou/category/82066.html">Design Pattern(22)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_18" href="http://www.cnblogs.com/oomusou/category/99885.html">DirectX(6)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_19" href="http://www.cnblogs.com/oomusou/category/142975.html">DSP Builder(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_20" href="http://www.cnblogs.com/oomusou/category/144571.html">English(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_21" href="http://www.cnblogs.com/oomusou/category/212549.html">Excel(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_22" href="http://www.cnblogs.com/oomusou/category/110059.html">FireFox(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_23" href="http://www.cnblogs.com/oomusou/category/109896.html">g++(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_24" href="http://www.cnblogs.com/oomusou/category/109895.html">gcc(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_25" href="http://www.cnblogs.com/oomusou/category/134752.html">GDI+(15)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_26" href="http://www.cnblogs.com/oomusou/category/106940.html">HTML(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_27" href="http://www.cnblogs.com/oomusou/category/112218.html">IE(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_28" href="http://www.cnblogs.com/oomusou/category/72129.html">Image Processing(35)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_29" href="http://www.cnblogs.com/oomusou/category/291594.html">iOS(2)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_30" href="http://www.cnblogs.com/oomusou/category/291593.html">iPad(2)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_31" href="http://www.cnblogs.com/oomusou/category/216779.html">iPhone(7)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_32" href="http://www.cnblogs.com/oomusou/category/282922.html">ISE(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_33" href="http://www.cnblogs.com/oomusou/category/302746.html">iTunes(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_34" href="http://www.cnblogs.com/oomusou/category/144860.html">Japanese(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_35" href="http://www.cnblogs.com/oomusou/category/84452.html">Java(15)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_36" href="http://www.cnblogs.com/oomusou/category/77243.html">JavaScript(9)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_37" href="http://www.cnblogs.com/oomusou/category/84453.html">Linux(42)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_38" href="http://www.cnblogs.com/oomusou/category/142976.html">Matlab(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_39" href="http://www.cnblogs.com/oomusou/category/111133.html">MegaCore (10)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_40" href="http://www.cnblogs.com/oomusou/category/75852.html">Misc(20)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_41" href="http://www.cnblogs.com/oomusou/category/109368.html">ModelSim(13)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_42" href="http://www.cnblogs.com/oomusou/category/141500.html">NB(34)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_43" href="http://www.cnblogs.com/oomusou/category/181209.html">NC-Verilog(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_44" href="http://www.cnblogs.com/oomusou/category/349792.html">NEEK</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_45" href="http://www.cnblogs.com/oomusou/category/71400.html">News(77)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_46" href="http://www.cnblogs.com/oomusou/category/106931.html">Nios II(76)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_47" href="http://www.cnblogs.com/oomusou/category/283518.html">nLint(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_48" href="http://www.cnblogs.com/oomusou/category/70268.html">N-Tier(7)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_49" href="http://www.cnblogs.com/oomusou/category/85735.html">OO(47)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_50" href="http://www.cnblogs.com/oomusou/category/125127.html">OpenMP(2)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_51" href="http://www.cnblogs.com/oomusou/category/107021.html">OS(59)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_52" href="http://www.cnblogs.com/oomusou/category/141501.html">P7010(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_53" href="http://www.cnblogs.com/oomusou/category/70223.html">PetShop(6)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_54" href="http://www.cnblogs.com/oomusou/category/328571.html">Qsys(6)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_55" href="http://www.cnblogs.com/oomusou/category/106930.html">Quartus II(67)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_56" href="http://www.cnblogs.com/oomusou/category/326086.html">RedHat(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_57" href="http://www.cnblogs.com/oomusou/category/306824.html">RVDS(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_58" href="http://www.cnblogs.com/oomusou/category/126575.html">SignalTap II(6)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_59" href="http://www.cnblogs.com/oomusou/category/104714.html">SOC(257)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_60" href="http://www.cnblogs.com/oomusou/category/114505.html">SOPC Builder(39)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_61" href="http://www.cnblogs.com/oomusou/category/84451.html">SQL Server(5)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_62" href="http://www.cnblogs.com/oomusou/category/104083.html">STL(41)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_63" href="http://www.cnblogs.com/oomusou/category/174975.html">Synplify(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_64" href="http://www.cnblogs.com/oomusou/category/73112.html">SystemC(8)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_65" href="http://www.cnblogs.com/oomusou/category/285481.html">Tcl(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_66" href="http://www.cnblogs.com/oomusou/category/104085.html">template(27)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_67" href="http://www.cnblogs.com/oomusou/category/112889.html">ThinkPad(30)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_68" href="http://www.cnblogs.com/oomusou/category/104087.html">TMP(2)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_69" href="http://www.cnblogs.com/oomusou/category/151132.html">TRDB-D5M(8)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_70" href="http://www.cnblogs.com/oomusou/category/151916.html">TRDB-DC2(5)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_71" href="http://www.cnblogs.com/oomusou/category/156771.html">TRDB-LCM(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_72" href="http://www.cnblogs.com/oomusou/category/156772.html">TRDB-LTM(7)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_73" href="http://www.cnblogs.com/oomusou/category/107024.html">T-SQL(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_74" href="http://www.cnblogs.com/oomusou/category/109893.html">Ubuntu(8)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_75" href="http://www.cnblogs.com/oomusou/category/305159.html">UltraEdit(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_76" href="http://www.cnblogs.com/oomusou/category/75678.html">UML(5)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_77" href="http://www.cnblogs.com/oomusou/category/106261.html">VC++(10)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_78" href="http://www.cnblogs.com/oomusou/category/305158.html">VCS(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_79" href="http://www.cnblogs.com/oomusou/category/303211.html">Verdi(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_80" href="http://www.cnblogs.com/oomusou/category/84456.html">Verilog(74)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_81" href="http://www.cnblogs.com/oomusou/category/182632.html">Verilog PLI(7)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_82" href="http://www.cnblogs.com/oomusou/category/143105.html">VHDL(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_83" href="http://www.cnblogs.com/oomusou/category/317412.html">VirtualBox(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_84" href="http://www.cnblogs.com/oomusou/category/212548.html">Visual BASIC(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_85" href="http://www.cnblogs.com/oomusou/category/82572.html">Visual FoxPro(8)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_86" href="http://www.cnblogs.com/oomusou/category/105928.html">Visual Studio(9)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_87" href="http://www.cnblogs.com/oomusou/category/139471.html">VMWare(4)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_88" href="http://www.cnblogs.com/oomusou/category/84586.html">Web(26)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_89" href="http://www.cnblogs.com/oomusou/category/331219.html">Win32 API</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_90" href="http://www.cnblogs.com/oomusou/category/85381.html">Windows(21)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_91" href="http://www.cnblogs.com/oomusou/category/85205.html">Windows CE(2)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_92" href="http://www.cnblogs.com/oomusou/category/107725.html">Windows Form(2)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_93" href="http://www.cnblogs.com/oomusou/category/142686.html">Windows Live Writer(5)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_94" href="http://www.cnblogs.com/oomusou/category/172992.html">Word</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_95" href="http://www.cnblogs.com/oomusou/category/141503.html">X300(5)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_96" href="http://www.cnblogs.com/oomusou/category/141502.html">X61(5)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_97" href="http://www.cnblogs.com/oomusou/category/121800.html">XML(1)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_98" href="http://www.cnblogs.com/oomusou/category/139601.html">μClinux(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_99" href="http://www.cnblogs.com/oomusou/category/133438.html">翻譯(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_100" href="http://www.cnblogs.com/oomusou/category/85351.html">美食(3)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_101" href="http://www.cnblogs.com/oomusou/category/70221.html">日記(68)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_102" href="http://www.cnblogs.com/oomusou/category/85262.html">推薦軟體(5)</a> </li>
+			
+				<li><a id="ctl01_CatList_LinkList_0_Link_103" href="http://www.cnblogs.com/oomusou/category/84183.html">中森明菜(11)</a> </li>
+			
+				</ul>
+			
+	</div><script type="text/javascript">loadBlogSideColumn();</script>
+	
+</div>
+			
+			
+			
+			
+			 
+
+	
+
+<script type="text/javascript" src="./簡單的Linked List實現_files/google-analytics.js"></script>
+
+
+<iframe id="google_osd_static_frame_2396722538396" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe></body></html>

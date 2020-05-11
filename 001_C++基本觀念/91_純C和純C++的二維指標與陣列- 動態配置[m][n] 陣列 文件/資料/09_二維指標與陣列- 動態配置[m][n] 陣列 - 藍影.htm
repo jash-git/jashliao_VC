@@ -1,0 +1,1360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0187)http://edisonshih.pixnet.net/blog/post/28004686-09_%E4%BA%8C%E7%B6%AD%E6%8C%87%E6%A8%99%E8%88%87%E9%99%A3%E5%88%97---%E5%8B%95%E6%85%8B%E9%85%8D%E7%BD%AE-%5Bm%5D%5Bn%5D-%E9%99%A3%E5%88%97 -->
+<html lang="zh-TW" itemscope="" itemtype="http://schema.org/Blog"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/cb=gapi.loaded_1" async=""></script><script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/cb=gapi.loaded_0" async=""></script><script type="text/javascript" async="" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/plusone.js" gapi_processed="true"></script><script type="text/javascript" async="" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/plusone(1).js" gapi_processed="true"></script><script async="" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/pi.min.js"></script><script type="text/javascript" async="" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/ga.js"></script><script type="text/javascript" async="" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/mixpanel-2.2.min.js"></script><script type="text/javascript" async="" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/atrk.js"></script><script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/checklogin.min.js"></script><style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-start{clip:rect(0,auto,auto,0);-ms-zoom:1.0001;}.ng-animate-active{clip:rect(-1px,auto,auto,0);-ms-zoom:1;}</style>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="twitter:card" content="summary">
+<meta name="description" content="在進入這階段時，請先確定前八個階段都確定會了再下來會好些。另外，有篇文章請先看過... [console] 一維陣列與指標[console] 二維陣列基本介紹[console] 二維陣列與指標 在介紹">
+<meta name="twitter:description" content="在進入這階段時，請先確定前八個階段都確定會了再下來會好些。另外，有篇文章請先看過... [console] 一維陣列與指標[console] 二維陣列基本介紹[console] 二維陣列與指標 在介紹">
+<meta name="twitter:site" content="@pixnet">
+<meta name="author" content="Edison (EdisonShih)">
+<meta name="author-avatar-20" content="http://s.pimg.tw/avatar/edisonshih/0/0/zoomcrop/20x20.png?v=1287385120">
+<meta name="generator" content="PChoc">
+<meta name="keywords" content=",數位生活,指標特輯,09_二維指標與陣列 - 動態配置 [m][n] 陣列">
+<link rel="canonical" href="http://edisonshih.pixnet.net/blog/post/28004686-09_%e4%ba%8c%e7%b6%ad%e6%8c%87%e6%a8%99%e8%88%87%e9%99%a3%e5%88%97---%e5%8b%95%e6%85%8b%e9%85%8d%e7%bd%ae-%5bm%5d%5bn%5d-%e9%99%a3%e5%88%97">
+<meta name="twitter:url" content="http://edisonshih.pixnet.net/blog/post/28004686">
+<meta property="og:url" content="http://edisonshih.pixnet.net/blog/post/28004686">
+<meta name="twitter:image" content="">
+<link rel="prev" href="http://edisonshih.pixnet.net/blog/post/27974938">
+<link rel="next" href="http://edisonshih.pixnet.net/blog/post/28005001">
+<link rel="alternate" type="application/json+oembed" href="http://api.pixnet.cc/oembed?url=http%3A%2F%2Fedisonshih.pixnet.net%2Fblog%2Fpost%2F28004686&format=json" title="PIXNET oEmbed Profile">
+<link rel="alternate" type="text/xml+oembed" href="http://api.pixnet.cc/oembed?url=http%3A%2F%2Fedisonshih.pixnet.net%2Fblog%2Fpost%2F28004686&format=xml" title="PIXNET oEmbed Profile">
+<link rel="search" type="application/opensearchdescription+xml" href="http://edisonshih.pixnet.net/blog/opensearch" title="藍影">
+<title>09_二維指標與陣列 - 動態配置 [m][n] 陣列 @ 藍影 :: 痞客邦 PIXNET ::</title>
+<meta name="twitter:title" content="09_二維指標與陣列 - 動態配置 [m][n] 陣列 @ 藍影 :: 痞客邦 PIXNET ::">
+<!--<base href="http://edisonshih.pixnet.net/blog/post/28004686">--><base href=".">
+<style type="text/css">
+#links-row-1 #f480594-Mib-ad-sidebar-v2-f480594 {display: block !important; min-width: 160px !important; min-height: 270px !important; margin-top: 0; z-index:100;}
+.f480594-Mib-ad-sidebar-v2-f480594 * { padding: 0 ; margin: 0 ; border: 0; vertical-align: baseline; display: block; line-height: 1; }
+#f480594-Mib-ad-sidebar-v2-f480594 .box-text { overflow:hidden; padding:0; margin:0; }
+.f480594-Mib-border-f480594 { padding: 0; min-width: 180px; min-height: 280px; margin: 12px auto; overflow: hidden; text-align:center; }
+.f480594-Mib-border-f480594 img, .f480594-Mib-border-f480594 div { margin:0 auto; display:inline-block; min-width:160px; min-height:240px; }
+</style>
+<link rel="stylesheet" href="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/lang-css.css" type="text/css">
+<link rel="stylesheet" href="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/iframe-popup.css" type="text/css">
+<link rel="stylesheet" href="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/plugins.min.css" type="text/css">
+<link rel="stylesheet" href="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/openid-comment.css" type="text/css">
+<link rel="stylesheet" href="http://front.pixfs.net/css/guestbook/style.min.css?v=1a0aeddf7dee2c020e6989a12bf77e4e">
+<link rel="stylesheet" href="http://front.pixfs.net/module/topbar/css/blogtopbar.min.css?v=1a0aeddf7dee2c020e6989a12bf77e4e">
+<link rel="stylesheet" href="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/normal.css" type="text/css">
+<link rel="stylesheet" href="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/iframe-popup.css" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://feed.pixnet.net/blog/posts/rss/edisonshih">
+<link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="http://feed.pixnet.net/blog/posts/atom/edisonshih">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://api.pixnet.cc/blog/xmlrpc?rsd=EdisonShih">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://api.pixnet.cc/static/blog/wlwmanifest.xml">
+<script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/jquery.min.js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/json2.min.js" type="text/javascript"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/angular.min.js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/spin.min.js" type="text/javascript"></script><style type="text/css"></style>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/angular-spinner.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+var pix = pix || {};
+pix.panelsite = 'panel.pixnet.cc';
+pix.apisite = 'api.pixnet.cc';
+pix.login_name = '0c3fbce3612bc3b5fe63240459d3b0e2';
+pix.visitor = "M2UxMGI1MTYyMzZkNDJjNTRjZDY3ZTVhYjUxMjg2ZTA=";
+pix.openid = "M2UxMGI1MTYyMzZkNDJjNTRjZDY3ZTVhYjUxMjg2ZTA=";
+pix.owner = 'EdisonShih';
+pix.server_name = 'edisonshih.pixnet.net';
+pix.sToken = "e848d9b45352112b6314b0375eb1aa45";
+pix.pixfssite = 's.pixfs.net';
+pix.checklogin_version = 2;
+// timezone: "";
+//-->
+</script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/checklogin.php" type="text/javascript"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/checklogin.min(1).js" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+jQuery.noConflict();
+var pix = pix || {};
+//-->
+</script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/zh_TW.js" type="text/javascript"></script>
+<script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/zh_TW(1).js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/pix.min.js" type="text/javascript"></script><script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/tools.min.js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/pix-addon.min.js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/all.min.js" type="text/javascript"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/blog.min.js" type="text/javascript"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/fix_object_id.min.js" type="text/javascript"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/search_selection.min.js" type="text/javascript"></script>
+<meta itemprop="name" content="09_二維指標與陣列 - 動態配置 [m][n] 陣列 @ 藍影 :: 痞客邦 PIXNET ::">
+<meta itemprop="description" content="在進入這階段時，請先確定前八個階段都確定會了再下來會好些。另外，有篇文章請先看過... [console] 一維陣列與指標[console] 二維陣列基本介紹[console] 二維陣列與指標 在介紹">
+
+<script type="text/javascript">
+<!--
+var pix = pix || {};
+pix.js_error_type = pix.js_error_type || 'frontblog';
+//-->
+</script>
+<script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/pixlogger.min.js"></script>
+<script type="text/javascript">
+<!--
+(function(){
+    if (window.size().height > 10 && window.size().width > 10) {
+        var i = new Image(1,1);
+        i.src = '//counter.pixplug.in/count.php?timestamp=1410610122&random=1303326829&check=3009642844&data[blog]=%7B%22blogid%22%3A%221933440%22%7D&data[blogarticle]=%7B%22blogid%22%3A%221933440%22%2C%22articleid%22%3A%2228004686%22%7D&height=' + window.size().height + '&width=' + window.size().width + '&referer=' + encodeURI(document.referrer);
+        i.onload = function() { return; }
+    }
+})();
+//-->
+</script>
+<!-- Head Modified: 1410610122 -->
+<!-- async script -->
+<script type="text/javascript">
+<!--
+jQuery.ajaxSetup({ cache: true });
+jQuery.getScript("//js.pixplug.in/addon/11/production.js?v=1408439239", function(data, textStatus) { jQuery.ajaxSetup({cache: true});jQuery.pixAddonRelatedArticle({"blog_relatedarticleshow":"post","blog_relatedarticle":"site","blog_relatedtemplate":"system","addon_username":"edisonshih","addon_expired_at":0,"addon_ismobile":false});jQuery.ajaxSetup({cache: false}); });
+jQuery.ajaxSetup({ cache: false });
+//-->
+</script>
+
+<!-- load sync script -->
+
+<!-- execute sync addon -->
+<script type="text/javascript">
+<!--
+var pix = pix || {};
+pix.visitor_url = "http://edisonshih.pixnet.net/blog";
+pix.visitor_timestamp = "1410610122";
+pix.visitor_nonce = "1210442094";
+pix.visitor_public = "LumrRMVHhADdttHSeUhMM8S3";
+pix.visitor_sig = "ae8d788a43ccd2c0ddb0726a249fb447";
+pix.user_name = null;
+pix.avatar_version = 0;
+(function() {
+    var js = document.createElement('script');
+    js.src = "\/\/s.pixfs.net\/visitor.pixplug.in\/checklogin.min.js?v=1a0aeddf7dee2c020e6989a12bf77e4e";
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(js, s);
+})();
+//-->
+</script>
+    <script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/checkloop.min.js"></script>
+<meta http-equiv="imagetoolbar" content="no">
+<script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/swfobject.js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/mib_falcon.min.js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/ada" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/new.css"><script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/getdata.php"></script><script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/checklogin"></script><style type="text/css">.fb_hidden{position:absolute;top:-10000px;z-index:10001}.fb_invisible{display:none}.fb_reset{background:none;border:0;border-spacing:0;color:#000;cursor:auto;direction:ltr;font-family:"lucida grande", tahoma, verdana, arial, sans-serif;font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal}.fb_reset>div{overflow:hidden}.fb_link img{border:none}
+.fb_dialog{background:rgba(82, 82, 82, .7);position:absolute;top:-10000px;z-index:10001}.fb_reset .fb_dialog_legacy{overflow:visible}.fb_dialog_advanced{padding:10px;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px}.fb_dialog_content{background:#fff;color:#333}.fb_dialog_close_icon{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif);cursor:pointer;display:block;height:15px;position:absolute;right:18px;top:17px;width:15px}.fb_dialog_mobile .fb_dialog_close_icon{top:5px;left:5px;right:auto}.fb_dialog_padding{background-color:transparent;position:absolute;width:1px;z-index:-1}.fb_dialog_close_icon:hover{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif)}.fb_dialog_close_icon:active{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif)}.fb_dialog_loader{background-color:#f2f2f2;border:1px solid #606060;font-size:25px;padding:20px}.fb_dialog_top_left,.fb_dialog_top_right,.fb_dialog_bottom_left,.fb_dialog_bottom_right{height:10px;width:10px;overflow:hidden;position:absolute}.fb_dialog_top_left{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 0;left:-10px;top:-10px}.fb_dialog_top_right{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -10px;right:-10px;top:-10px}.fb_dialog_bottom_left{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -20px;bottom:-10px;left:-10px}.fb_dialog_bottom_right{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -30px;right:-10px;bottom:-10px}.fb_dialog_vert_left,.fb_dialog_vert_right,.fb_dialog_horiz_top,.fb_dialog_horiz_bottom{position:absolute;background:#525252;filter:alpha(opacity=70);opacity:.7}.fb_dialog_vert_left,.fb_dialog_vert_right{width:10px;height:100%}.fb_dialog_vert_left{margin-left:-10px}.fb_dialog_vert_right{right:0;margin-right:-10px}.fb_dialog_horiz_top,.fb_dialog_horiz_bottom{width:100%;height:10px}.fb_dialog_horiz_top{margin-top:-10px}.fb_dialog_horiz_bottom{bottom:0;margin-bottom:-10px}.fb_dialog_iframe{line-height:0}.fb_dialog_content .dialog_title{background:#6d84b4;border:1px solid #3b5998;color:#fff;font-size:15px;font-weight:bold;margin:0}.fb_dialog_content .dialog_title>span{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yd/r/Cou7n-nqK52.gif) no-repeat 5px 50%;float:left;padding:5px 0 7px 26px}body.fb_hidden{-webkit-transform:none;height:100%;margin:0;overflow:visible;position:absolute;top:-10000px;left:0;width:100%}.fb_dialog.fb_dialog_mobile.loading{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ya/r/3rhSv5V8j3o.gif) white no-repeat 50% 50%;min-height:100%;min-width:100%;overflow:hidden;position:absolute;top:0;z-index:10001}.fb_dialog.fb_dialog_mobile.loading.centered{max-height:590px;min-height:590px;max-width:500px;min-width:500px}#fb-root #fb_dialog_ipad_overlay{background:rgba(0, 0, 0, .45);position:absolute;left:0;top:0;width:100%;min-height:100%;z-index:10000}#fb-root #fb_dialog_ipad_overlay.hidden{display:none}.fb_dialog.fb_dialog_mobile.loading iframe{visibility:hidden}.fb_dialog_content .dialog_header{-webkit-box-shadow:white 0 1px 1px -1px inset;background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#738ABA), to(#2C4987));border-bottom:1px solid;border-color:#1d4088;color:#fff;font:14px Helvetica, sans-serif;font-weight:bold;text-overflow:ellipsis;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0;vertical-align:middle;white-space:nowrap}.fb_dialog_content .dialog_header table{-webkit-font-smoothing:subpixel-antialiased;height:43px;width:100%}.fb_dialog_content .dialog_header td.header_left{font-size:13px;padding-left:5px;vertical-align:middle;width:60px}.fb_dialog_content .dialog_header td.header_right{font-size:13px;padding-right:5px;vertical-align:middle;width:60px}.fb_dialog_content .touchable_button{background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#4966A6), color-stop(.5, #355492), to(#2A4887));border:1px solid #29447e;-webkit-background-clip:padding-box;-webkit-border-radius:3px;-webkit-box-shadow:rgba(0, 0, 0, .117188) 0 1px 1px inset, rgba(255, 255, 255, .167969) 0 1px 0;display:inline-block;margin-top:3px;max-width:85px;line-height:18px;padding:4px 12px;position:relative}.fb_dialog_content .dialog_header .touchable_button input{border:none;background:none;color:#fff;font:12px Helvetica, sans-serif;font-weight:bold;margin:2px -12px;padding:2px 6px 3px 6px;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog_content .dialog_header .header_center{color:#fff;font-size:17px;font-weight:bold;line-height:18px;text-align:center;vertical-align:middle}.fb_dialog_content .dialog_content{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;border:1px solid #555;border-bottom:0;border-top:0;height:150px}.fb_dialog_content .dialog_footer{background:#f2f2f2;border:1px solid #555;border-top-color:#ccc;height:40px}#fb_dialog_loader_close{float:left}.fb_dialog.fb_dialog_mobile .fb_dialog_close_button{text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog.fb_dialog_mobile .fb_dialog_close_icon{visibility:hidden}
+.fb_iframe_widget{display:inline-block;position:relative}.fb_iframe_widget span{display:inline-block;position:relative;text-align:justify}.fb_iframe_widget iframe{position:absolute}.fb_iframe_widget_lift{z-index:1}.fb_hide_iframes iframe{position:relative;left:-10000px}.fb_iframe_widget_loader{position:relative;display:inline-block}.fb_iframe_widget_fluid{display:inline}.fb_iframe_widget_fluid span{width:100%}.fb_iframe_widget_loader iframe{min-height:32px;z-index:2;zoom:1}.fb_iframe_widget_loader .FB_Loader{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/y9/r/jKEcVPZFk-2.gif) no-repeat;height:32px;width:32px;margin-left:-16px;position:absolute;left:50%;z-index:4}
+.fbpluginrecommendationsbarleft,.fbpluginrecommendationsbarright{position:fixed !important;bottom:0;z-index:999}.fbpluginrecommendationsbarleft{left:10px}.fbpluginrecommendationsbarright{right:10px}</style></head>
+
+<body id="article-main" data-ng-controller="MainCtrl" class="category_1571325 article_28004686 folder_1337279" ondragstart="return false" oncontextmenu="return false" onselectstart="return false" style="-moz-user-select: none;">
+
+<div data-config="" data-is-owner="false" data-stoken="e848d9b45352112b6314b0375eb1aa45" data-guest-name="" data-open-comment-form-trace-link="//counter.pixplug.in/count.php?timestamp=1410610122&amp;random=4202224230&amp;check=4215280115&amp;no_timeout=1&amp;data[counter]=%7B%22tag_id%22%3A451%2C%22id%22%3A%22open-comment-form%22%2C%22no_timeout%22%3Atrue%7D" data-guest-avatar=""></div>
+
+<script type="text/javascript">
+_atrk_opts = { atrk_acct:"H00Mh1aIE700wg", domain:"pixnet.net",dynamic: true};
+(function() { var as = document.createElement('script'); as.type = 'text/javascript'; as.async = true; as.src = "https://d31qbv1cthcecs.cloudfront.net/atrk.js"; var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(as, s); })();
+</script>
+<noscript>&lt;img src="https://d5nxst8fruw4z.cloudfront.net/atrk.gif?account=H00Mh1aIE700wg" style="display:none" height="1" width="1" alt="" /&gt;</noscript>
+  <div id="topbar" class="topbar cssanimations borderradius boxshadow cssgradients">
+    <h2 class="topbar__logo"><a href="http://www.pixnet.net/" title="痞客邦 PIXNET">痞客邦 PIXNET</a></h2>
+
+    <form class="topbar__search" id="topbar__search" action="http://www.pixnet.net/searcharticle" target="_search">
+        <input type="text" name="q" class="topbar__search__input" id="topbar__search__input" placeholder="哈囉～你今天想搜尋什麼關鍵字呢？" value="" maxlength="32" tabindex="1" autocomplete="off">
+        <button type="reset" class="topbar__search__reset">×</button>
+
+        <div class="topbar__search__btns">
+            <button class="topbar__search__submit" name="search" type="submit" title="找文章" value="searcharticle" tabindex="2" data-counterlink="//counter.pixplug.in/count.php?timestamp=1410610122&amp;random=199448452&amp;check=202852501&amp;no_timeout=1&amp;data[counter]=%7B%22tag_id%22%3A30%2C%22id%22%3A%22search-articles-click%22%2C%22no_timeout%22%3Atrue%7D">找文章</button>
+            <button class="topbar__search__submit" name="search" type="submit" title="找部落客" value="searchblog" tabindex="3" data-counterlink="//counter.pixplug.in/count.php?timestamp=1410610122&amp;random=252732515&amp;check=1150943098&amp;no_timeout=1&amp;data[counter]=%7B%22tag_id%22%3A30%2C%22id%22%3A%22search-bloggers-click%22%2C%22no_timeout%22%3Atrue%7D">找部落客</button>
+        </div>
+
+
+        <ul class="topbar__search__suggestion"></ul>
+    </form>
+
+    <div class="topbar__announce">
+        <a href="http://admin.pixnet.net/blog/post/41093797-%5b%e5%85%ac%e5%91%8a%5d-%e7%97%9e%e5%ae%a2%e9%82%a6%e3%80%8c%e6%87%89%e7%94%a8%e5%b8%82%e9%9b%86%e3%80%8d%e6%96%b0-app-%e4%b8%8a%e6%9e%b6%ef%bc%8difontcl" class="topbar__announce__item" title="[公告] 痞客邦「應用市集」新 App 上架－iFontCloud Professional" target="_announce" tabindex="-1">[公告] 痞客邦「應用市集」新 App 上架－iFontCloud Professional</a><a href="http://admin.pixnet.net/blog/post/41024056-%5b%e5%85%ac%e5%91%8a%5d-%e7%97%9e%e5%ae%a2%e9%82%a6%e5%be%8c%e5%8f%b0%e7%99%bc%e8%a1%a8%e6%96%87%e7%ab%a0%e6%8f%90%e4%be%9b%e6%8f%92%e5%85%a5%e5%a4%9a%e5%bc%b5%e5%9c%96%e7%89%87" class="topbar__announce__item topbar__announce__item--hide" title="[公告] 痞客邦後台發表文章提供插入多張圖片新功能" target="_announce" tabindex="-1">[公告] 痞客邦後台發表文章提供插入多張圖片新功能</a><a href="http://admin.pixnet.net/blog/post/40930213-%5b%e5%85%ac%e5%91%8a%5d%e7%97%9e%e5%ae%a2%e9%82%a6%e6%96%b0%e6%9c%8d%e5%8b%99%e4%b8%8a%e7%b7%9a-%e9%83%a8%e8%90%bd%e5%ae%a2%e5%95%86%e5%ba%97%e8%81%9a%e9%9b%86%e5%b0%b1%e5%9c%a8" class="topbar__announce__item topbar__announce__item--hide" title="[公告]痞客邦新服務上線 部落客商店聚集就在《痞市集》" target="_announce" tabindex="-1">[公告]痞客邦新服務上線 部落客商店聚集就在《痞市集》</a><a href="http://admin.pixnet.net/blog/post/40883695-%5b%e5%85%ac%e5%91%8a%5d-%e9%83%a8%e8%90%bd%e6%a0%bc%e3%80%8c%e5%bf%ab%e6%8d%b7%e5%8a%9f%e8%83%bdbar%e3%80%8d%e6%94%b9%e7%89%88%e4%bb%8b%e7%b4%b9" class="topbar__announce__item topbar__announce__item--hide" title="[公告] 部落格「快捷功能BAR」改版介紹" target="_announce" tabindex="-1">[公告] 部落格「快捷功能BAR」改版介紹</a><a href="http://admin.pixnet.net/blog/post/40864030-%5b%e5%85%ac%e5%91%8a%5d-%e7%97%9e%e5%ae%a2%e9%82%a6%e3%80%8c%e5%bf%ab%e6%8d%b7%e5%8a%9f%e8%83%bdbar%e3%80%8d6%e6%9c%884%e6%97%a5%e6%94%b9%e7%89%88%e9%80%9a%e7%9f%a5" class="topbar__announce__item topbar__announce__item--hide" title="[公告] 痞客邦「快捷功能BAR」6月4日改版通知" target="_announce" tabindex="-1">[公告] 痞客邦「快捷功能BAR」6月4日改版通知</a>    </div>
+
+    <div class="topbar__nav">
+
+    
+        <div class="topbar__user">
+            <a id="topbar__user__login" href="http://www.pixnet.net/?done=http%3A%2F%2Fedisonshih.pixnet.net%2Fblog%2Fpost%2F28004686-09_%25E4%25BA%258C%25E7%25B6%25AD%25E6%258C%2587%25E6%25A8%2599%25E8%2588%2587%25E9%2599%25A3%25E5%2588%2597---%25E5%258B%2595%25E6%2585%258B%25E9%2585%258D%25E7%25BD%25AE-%255Bm%255D%255Bn%255D-%25E9%2599%25A3%25E5%2588%2597">登入</a>
+        </div>
+
+    
+        <div class="topbar__lang">
+            <a href="http://edisonshih.pixnet.net/blog/post/28004686###" class="topbar__lang__switcher topbar__dropdown-btn" title="語系">繁中</a>
+
+            <ul class="topbar__lang__lists topbar__dropdown-lists">
+                                <li class="topbar__lang__list"><a href="http://edisonshih.pixnet.net/blog/post/28004686###" data-lang="en_US">EN</a></li>
+                                <li class="topbar__lang__list"><a href="http://edisonshih.pixnet.net/blog/post/28004686###" data-lang="zh_CN">簡中</a></li>
+                                <li class="topbar__lang__list"><a href="http://edisonshih.pixnet.net/blog/post/28004686###" data-lang="ja_JP">日語</a></li>
+                            </ul>
+        </div>
+
+    </div>
+
+</div>
+
+  <div id="body-div">
+  <a name="top"></a>
+  <div id="container">
+    <div id="container2">
+      <div id="container3">
+          <div id="header">
+            <div id="banner">
+		<h1><a href="http://edisonshih.pixnet.net/blog">藍影</a></h1>
+              <p class="skiplink"><a href="http://edisonshih.pixnet.net/blog/post/28004686#article-area" title="skip the page header to the main content">跳到主文</a></p>
+              <h2>生命就是享受不停學習的過程..</h2>
+	      <p id="blog-category">部落格全站分類：<a href="http://www.pixnet.net/blog/bloggers/category/15" target="_blank">數位生活</a></p>
+            </div>
+            <ul id="navigation">
+              <li id="link-album"><a href="http://edisonshih.pixnet.net/album" title="go to gallery page of this user">相簿</a></li>
+              <li id="link-blog"><a href="http://edisonshih.pixnet.net/blog" title="go to index page of this blog">部落格</a></li>
+              <li id="link-guestbook"><a href="http://edisonshih.pixnet.net/guestbook" title="go to guestbook page of this user">留言</a></li>
+              <li id="link-profile"><a href="http://www.pixnet.net/blog/profile/EdisonShih" title="go to profile page of this user">名片</a></li>
+            </ul>
+          </div><!-- #header//-->
+          <div id="main">
+            <div id="content">
+				<div id="article-area">
+    <div id="article-box">
+    		<div class="article">
+	    <ul class="article-head">
+		<li class="publish"><span class="month">Sep </span><span class="date">13 </span><span class="day">Sun </span><span class="year">2009 </span><span class="time">08:36</span></li>
+		<li class="title" id="article-28004686" data-hot-link="//www.pixnet.net/blog/articles/category/0" data-site-category="數位生活" data-site-category-id="24"><h2><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> <a href="http://edisonshih.pixnet.net/blog/post/28004686">09_二維指標與陣列 - 動態配置 [m][n] 陣列</a></h2></li>
+	    </ul>
+	    <div class="article-body">
+	    		<div class="bookmark"><span style="position:relative;top:-7px;">分享:</span>&nbsp;<a title="喀嚓到7Headlines" href="javascript:(function(){var%20pixheadlines=document.createElement('script');pixheadlines.setAttribute('language','javascript');pixheadlines.setAttribute('src','http://www.7headlines.com/static/js/clip.min.js?random=411.64116002619267');document.getElementsByTagName('head')[0].appendChild(pixheadlines);})();"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/7headlines.gif" title="7Headlines" alt="7Headlines" border="0" style="height:20px;width:55px;"></a>&nbsp;<a title="分享至facebook" data-bookmark-type="facebook"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/facebook.gif" title="facebook" alt="facebook" border="0" style="width:18px;height:20px;"></a>&nbsp;<a title="分享至PLURK" data-bookmark-type="plurk"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/plurk.gif" title="PLURK" alt="PLURK" border="0" style="width:18px;height:20px;"></a>&nbsp;<a title="分享至twitter" data-bookmark-type="twitter"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/twitter.gif" title="twitter" alt="twitter" border="0" style="width:18px;height:20px;"></a>&nbsp;<div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 32px; height: 20px; background: transparent;"><iframe frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 32px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1410610187042" name="I0_1410610187042" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/fastbutton.htm" data-gapiattached="true" title="+1"></iframe></div>&nbsp;<iframe src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/like.htm" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:90px; height:21px;" allowtransparency="true"></iframe></div><div class="article-content">
+		                        <div class="article-content-inner"><p>在進入這階段時，請先確定前八個階段都確定會了再下來會好些。另外，有篇文章請先看過...</p>
+<p><a href="http://edisonshih.pixnet.net/blog/post/27344161">[console] 一維陣列與指標</a><br><a href="http://edisonshih.pixnet.net/blog/post/27344364">[console] 二維陣列基本介紹</a><br><a href="http://edisonshih.pixnet.net/blog/post/27344364">[console] 二維陣列與指標</a></p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">在介紹完一維陣列的動態配置之後，接下來探討更常用的</span> – <span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">使用指標配置二維動態陣列。這種方式和配置一維陣列非常像，假設我們要配置一個</span> 2*4 <span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">的矩陣，</span></p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">其矩陣內容如下：</span></p>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="padding-right: 5.4pt; padding-left: 5.4pt; padding-bottom: 0cm; padding-top: 0cm;" width="111">
+<p style="text-align: center;" align="center">&nbsp;</p>
+</td>
+<td style="border-right: medium none; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="111">
+<p style="text-align: center;" align="center">COL1</p>
+</td>
+<td style="border-right: medium none; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="111">
+<p style="text-align: center;" align="center">COL2</p>
+</td>
+<td style="border-right: medium none; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="112">
+<p style="text-align: center;" align="center">COL3</p>
+</td>
+<td style="border-right: medium none; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="112">
+<p style="text-align: center;" align="center">COL4</p>
+</td>
+</tr>
+<tr>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: medium none;" width="111">
+<p style="text-align: center;" align="center">ROW1</p>
+</td>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="111">
+<p style="text-align: center;" align="center">0</p>
+</td>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="111">
+<p style="text-align: center;" align="center">1</p>
+</td>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="112">
+<p style="text-align: center;" align="center">2</p>
+</td>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="112">
+<p style="text-align: center;" align="center">3</p>
+</td>
+</tr>
+<tr>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: medium none;" width="111">
+<p style="text-align: center;" align="center">ROW2</p>
+</td>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="111">
+<p style="text-align: center;" align="center">4</p>
+</td>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="111">
+<p style="text-align: center;" align="center">5</p>
+</td>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="112">
+<p style="text-align: center;" align="center">6</p>
+</td>
+<td style="border-right: black 1pt solid; padding-right: 5.4pt; border-top: medium none; padding-left: 5.4pt; padding-bottom: 0cm; border-left: medium none; padding-top: 0cm; border-bottom: black 1pt solid;" width="112">
+<p style="text-align: center;" align="center">7</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">我們於</span><a href="http://edisonshih.pixnet.net/blog/post/27974938">08_</a><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;"><a href="http://edisonshih.pixnet.net/blog/post/27974938">使用指標建立一維動態陣列</a>時有提到，</span>C<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">語言配置動態陣列的語法：</span></p>
+<p><strong><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">資料型態</span> *ptr;</strong><br><strong>ptr = (</strong><strong><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">資料型態</span>*)malloc(sizeof(</strong><strong><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">資料型態</span>)*cnt);</strong></p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">而今天我們要配置的是二維陣列，所使用到的指標是二次指標，也就是</span> int**<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">，說白了，就是指標的指標。現在，在上列的語法中，我們把</span> “<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">資料型態</span>” <span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">全都以</span>int * <span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">代替，</span>ptr<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">以</span> ptr2<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">取代</span>(<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">因為是二維，變數方便辨識</span>)<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">，至於</span>cnt <span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">先用</span> ROW<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">代替。變成了下面這樣：</span></p>
+<p><strong>int &nbsp;**ptr2;</strong><br><strong>ptr2 = (int**)malloc(sizeof(int*)*ROW);</strong></p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">沒錯！這就是二維動態陣列配置的第一步，它的實際意思就是：配置了</span>ROW<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">個整數指標陣列</span>(<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">現在知道指標陣列是拿來幹嘛的了吧！就是要拿來再生成其它的動態陣列</span>)<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">。接下來，我們再利用每個指標陣列</span>(<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">共</span>ROW<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">個</span>)<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">再去生成</span>COL<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">個整數陣列，所以所得到的二維陣列大小剛好就是</span> ROW * COL<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">。</span></p>
+<p><strong>for(int i=0; i&lt; ROW; i++) ptr2[i] = (int*)malloc(sizeof(int)*COL);</strong></p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">接下來的動作，就和存取一般的二維陣列沒什麼二樣了。要特別注意的是，記憶體釋放要釋放完整！由於我們是先配置了</span>ROW <span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">個指標陣列，再配置整數陣列，所以我們要先釋放每個指標陣列</span>(ptr2[i])<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">後，再釋放二次指標</span>(ptr2)<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">。範例如下所示。</span></p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;"><strong>1. 原始碼 - C</strong></span></p>
+<p>// ====================================<br>// FileName: Ptr2Dim_C.cpp<br>// Author&nbsp; : Edison.Shih.<br>// Complier: VC 2008</p>
+<p>#include &lt;stdio.h&gt;<br>#include &lt;stdlib.h&gt;</p>
+<p>#define ROW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2<br>#define COL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4</p>
+<p>// ==================================== <br>// main function<br>int main(int argc, char**argv)<br>{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int i=0, j=0;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int **ptr2 = NULL;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 生成一維指標陣列<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ptr2 = (int**)malloc(sizeof(int*)*ROW); </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 每個指標陣列再生成整數陣列<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(i=0; i&lt;ROW; i++) ptr2[i] = (int*)malloc(sizeof(int)*COL);</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // write<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int cnt = 0;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(i=0; i&lt;ROW; i++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(j=0; j&lt;COL; j++) ptr2[i][j] = cnt++;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // read value and address<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(i=0; i&lt;ROW; i++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(j=0; j&lt;COL; j++) printf("ptr2[%d][%d]=%d(%0X)\n", i, j, ptr2[i][j], &amp;ptr2[i][j]);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 釋放指標陣列<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(i=0; i&lt;ROW; i++) free(ptr2[i]); </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 釋放指標<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; free(ptr2);</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return 0;<br>}</p>
+<p><strong><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">2. 原始碼</span> - C++</strong></p>
+<p>// ====================================<br>// FileName: Ptr2Dim_Plus.cpp<br>// Author&nbsp; : Edison.Shih.<br>// Complier: VC 2008</p>
+<p>#include &lt;iostream&gt;<br>using namespace std;</p>
+<p>#define ROW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2<br>#define COL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4</p>
+<p>// ==================================== <br>// main function<br>int main(int argc, char**argv)<br>{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int i=0, j=0;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int **ptr2 = NULL;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 生成一維指標陣列<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ptr2 = new int*[ROW];</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 每個指標陣列再生成整數陣列<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(i=0; i&lt;ROW; i++) ptr2[i] = new int[COL];</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // write<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int cnt = 0;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(i=0; i&lt;ROW; i++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(j=0; j&lt;COL; j++) ptr2[i][j] = cnt++;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // read value and address<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(i=0; i&lt;ROW; i++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(j=0; j&lt;COL; j++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cout &lt;&lt; "ptr2[" &lt;&lt; i &lt;&lt; "][" &lt;&lt; j&lt;&lt; "]=" &lt;&lt; ptr2[i][j];<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cout &lt;&lt; "(" &lt;&lt; hex &lt;&lt; &amp;ptr2[i][j] &lt;&lt; ")" &lt;&lt; endl;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 釋放指標陣列<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(i=0; i&lt;ROW; i++) delete ptr2[i];</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 釋放指標<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delete ptr2;</p>
+<p><strong><span style="color: #ff0000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 事實上, 上面那二行用 delete [] ptr2; 就行了</span></strong></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return 0;<br>}</p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;"><strong>3. 執行結果</strong></span></p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;"><span style="font-size: 12pt;">ptr2[0][0]=0(384430)<br>ptr2[0][1]=1(384434)<br>ptr2[0][2]=2(384438)<br>ptr2[0][3]=3(38443C)<br>ptr2[1][0]=4(384470)<br>ptr2[1][1]=5(384474)<br>ptr2[1][2]=6(384478)<br>ptr2[1][3]=7(38447C)</span><br></span></p>
+<p><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">請注意，執行結果中，雖然是二維指標陣列，但是所配置的記憶體空間卻是連續的。</span></p>
+<p><strong>4. Memory leak</strong><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;"><strong>問題：</strong>在</span><a href="http://edisonshih.pixnet.net/blog/post/27974938">8_</a><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;"><a href="http://edisonshih.pixnet.net/blog/post/27974938">使用指標建立一維動態陣列</a>時有提到，如果配置了記憶體空間沒有釋放完全，將造成程式所吃的記憶體會愈來愈多，最後將因資源潰乏導致程式無法順利結束，這種問題便稱為</span> memory leak<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">。一般而言，</span>memory leak<span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">是因為記憶體空間沒有進行釋放或釋放不完全引起的，而且除錯階段也不好抓，更是一般設計者的困擾。(由於我找不到memory leak 適當的中文，所以並沒有進行中文的翻譯。)</span></p>
+<p><strong><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">5. 記憶體碎片化</span>(memory fragment)</strong><span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;"><strong>問題：</strong>上例的方式，當我們的</span> ROW <span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">及</span> COL <span style="font-family: &#39;新細明體&#39;,&#39;serif&#39;;">過大時，將會使得記憶體位址不連續，這個問題會使得到時存取陣列時，速度將變慢。關於避免記憶體碎片化問題有點艱澀，在這裡避開暫不討論。</span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p></div>		</div><div class="pix-related-post pix-related-post-showed"><div class="demo recommended-posts recommended-posts1 nobg"><h5><span>您可能會有興趣的文章</span></h5><img class="recommended-post-image" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/100x100.png" style="width: 100px;"><ul class="demo"><li meta="http://s2.pimg.tw/avatar/joylai1234/0/0/zoomcrop/100x100.png?v=1296827958"><a href="http://www.7headlines.com/article/r?link=http%3A%2F%2Fjoylai1234.pixnet.net%2Fblog%2Fpost%2F13422746" class="source-emma selected redirected" target="_blank">C++</a></li><li meta="http://s6.pimg.tw/avatar/shinbox/0/0/zoomcrop/100x100.png?v=1348590736"><a href="http://www.7headlines.com/article/r?link=http%3A%2F%2Fshinbox.pixnet.net%2Fblog%2Fpost%2F21588470" class="source-emma redirected" target="_blank">把部落格新文章放到自己的網頁上 - Blogger篇</a></li><li meta="http://imageproxy.pimg.tw/resize?url=http%3A%2F%2Ftw.m.yimg.com%2Fres%2Fgdsale%2Fst_pic%2F4629%2Fst-4629670-s400.jpg"><a href="http://buy.yahoo.com.tw/gdsale/gdsale.asp?gdid=4629670&act=gdsearch&co_servername=e3f9d65a19e97b8ad4c0547de27c5982" class="source-yahoopartner" target="_blank">earth music&amp;ecology 結構式點點上衣</a></li><li meta="//af.pixnet.net/9c71f6d0-1629-0132-11ef-00e081b1464e.jpg?v=cfcd208495d565ef66e7dff9f98764da"><a href="http://ad.pixnet.net/newdirect.php?aid=141410" class="source-ad" target="_blank">買淘寶! 用玉山WebATM/ATM就購</a></li></ul></div></div> <!-- .article-content //-->
+		<p class="author">
+		    Edison 發表在 <a href="http://www.pixnet.net/">痞客邦 PIXNET</a>                    <a href="http://edisonshih.pixnet.net/blog/post/28004686#comments">留言</a>(5) <a href="http://edisonshih.pixnet.net/blog/post/28004686#trackback">引用</a>(0) <span class="author-views">人氣(<span id="BlogArticleCount-28004686">15209</span>)</span>
+		    		</p> <!-- .author //-->
+		<div class="forward"><form method="POST" id="0rz-form" action="http://0rz.tw/create" target="_blank"><input type="hidden" name="url" value="http://edisonshih.pixnet.net/blog/post/28004686"> </form><a href="http://edisonshih.pixnet.net/blog/post/28004686#" data-0rz-url="true"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/push_0rz_icon.gif">產生短網址</a>
+		    <a href="javascript:;" onclick="pix.sendForwardTo(&#39;%E6%82%A8%E7%9A%84%E5%A5%BD%E6%9C%8B%E5%8F%8B%E9%82%80%E8%AB%8B%E6%82%A8%E8%A7%80%E7%9C%8B%20EdisonShih%20%E7%9A%84%E7%97%9E%E5%AE%A2%E9%82%A6%20PIXNET%20%E9%83%A8%E8%90%BD%E6%A0%BC%E6%96%87%E7%AB%A0-09_%E4%BA%8C%E7%B6%AD%E6%8C%87%E6%A8%99%E8%88%87%E9%99%A3%E5%88%97%20-%20%E5%8B%95%E6%85%8B%E9%85%8D%E7%BD%AE%20%5Bm%5D%5Bn%5D%20%E9%99%A3%E5%88%97&#39;,&#39;%E6%82%A8%E5%A5%BD%EF%BC%8C%0A%0A%E6%82%A8%E7%9A%84%E5%A5%BD%E6%9C%8B%E5%8F%8B%E9%82%80%E8%AB%8B%E6%82%A8%E8%A7%80%E7%9C%8B%20EdisonShih%20%E7%9A%84%E7%97%9E%E5%AE%A2%E9%82%A6%20PIXNET%20%E9%83%A8%E8%90%BD%E6%A0%BC%E6%96%87%E7%AB%A0-09_%E4%BA%8C%E7%B6%AD%E6%8C%87%E6%A8%99%E8%88%87%E9%99%A3%E5%88%97%20-%20%E5%8B%95%E6%85%8B%E9%85%8D%E7%BD%AE%20%5Bm%5D%5Bn%5D%20%E9%99%A3%E5%88%97%0A%E8%B6%8A%E5%A4%9A%E4%BA%BA%E7%9C%8B%E5%88%B0%EF%BC%8C%E5%8F%AF%E5%B9%AB%E4%BB%96%E5%A2%9E%E5%8A%A0%E8%B6%8A%E5%A4%9A%E4%BA%BA%E6%B0%A3%E5%96%94%7EGO%EF%BC%81%0A----------%0ASeptember13%2C2009%0A09_%E4%BA%8C%E7%B6%AD%E6%8C%87%E6%A8%99%E8%88%87%E9%99%A3%E5%88%97%20-%20%E5%8B%95%E6%85%8B%E9%85%8D%E7%BD%AE%20%5Bm%5D%5Bn%5D%20%E9%99%A3%E5%88%97%0A%0A%E5%9C%A8%E9%80%B2%E5%85%A5%E9%80%99%E9%9A%8E%E6%AE%B5%E6%99%82%EF%BC%8C%E8%AB%8B%E5%85%88%E7%A2%BA%E5%AE%9A%E5%89%8D%E5%85%AB%E5%80%8B%E9%9A%8E%E6%AE%B5%E9%83%BD%E7%A2%BA%E5%AE%9A%E6%9C%83%E4%BA%86%E5%86%8D%E4%B8%8B%E4%BE%86%E6%9C%83%E5%A5%BD%E4%BA%9B%E3%80%82%E5%8F%A6%E5%A4%96%EF%BC%8C%E6%9C%89%0A----------%0A%E9%A6%AC%E4%B8%8A%E7%9C%8B%20http%3A%2F%2Fedisonshih.pixnet.net%2Fblog%2Fpost%2F28004686%0A----------%0A%E7%97%9E%E5%AE%A2%E9%82%A6%20PIXNET%0Ahttp%3A%2F%2Fwww.pixnet.net%2F&#39;)">E-mail轉寄</a> <a href="javascript:;" onclick="pix.forwardToGB(28004686);">轉寄至留言板</a>
+		</div> <!-- .forward //-->
+		<br>
+<center style="position: static ! important; display:block !important;visibility: visible !important;">
+<style>
+#pixblogad {
+    clear:both;
+    width:486px;
+    border-radius:7px;
+    margin-bottom:10px;
+    box-shadow:0px 0px 2px #CCC;
+    font-family:Helvetica, Verdana, sans-serif;
+}
+#pixblogad-banner {
+    padding:7px;
+    border-radius:7px 7px 0 0;
+    border:1px solid #DDD;
+    border-bottom:1px solid #FFFFFF;
+    background:url(http://s.pixfs.net/blog/images/blogads/top-bg.png) repeat-x;
+}
+
+#pixblogad-banner #blog468x60Banner {
+    width: 468px;
+    height: 60px;
+    border:1px solid #1B1B1B;
+}
+#pixblogad-text {
+    border-radius:0 0 7px 7px;
+    height:30px;
+    line-height:30px;
+    border:1px solid #DDD;
+    border-top:1px solid #DEDEDE;
+    background:url(http://s.pixfs.net/blog/images/blogads/bot-bg.png) repeat-x;
+}
+#pixblogad-text a {
+    text-align:left;
+    color:#367CD0;
+    text-decoration:underline;
+    width:180px;
+    padding-left:60px;
+    float:left;
+    background:url(http://s.pixfs.net/blog/images/blogads/ad-bullet.png) 50px center no-repeat;
+}
+#pixblogad-text a:hover {
+    color:#444;
+}
+
+#pixblogad.pixblogad-new {
+	box-shadow:none;
+	margin-bottom:15px;
+}
+
+.pixblogad-new #pixblogad-banner {
+	border-radius:4px;
+	margin-bottom:15px;
+	background: #fff9d7;
+	border: 1px solid #e2c822;
+}
+
+.pixblogad-new #pixblogad-text {
+	border-radius:4px;
+    background: #fff9d7;
+	border: 1px solid #e2c822;
+}
+
+.pixblogad-new #pixblogad-text a {
+	color:#2518b5;
+}
+</style>
+<div id="pixblogad" class="pixblogad-new">
+    <div id="pixblogad-banner">
+        <div id="blog468x60Banner">    <a target="_blank" href="http://ad.pixnet.net/newdirect.php?aid=140720" style="display: inline ! important; visibility: visible ! important;">
+	<img border="0" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/5316e210-1632-0132-11f4-00e081b1464e.jpg" style="display: inline ! important; visibility: visible ! important;">
+    </a>
+    </div>
+    </div>
+    <div id="pixblogad-text" style="">
+                    <a target="_blank" href="http://ad.pixnet.net/newdirect.php?aid=137532">這個部落格你一定知道！</a>
+<a target="_blank" href="http://ad.pixnet.net/newdirect.php?aid=137640">揭開人氣部落客神秘面紗</a>
+</div>
+
+</div>
+</center>
+	    </div> <!-- .article-body //-->
+	    <div class="article-footer">
+		<ul class="refer">
+		    <li>全站分類：<a href="http://www.pixnet.net/blog/articles/category/24">數位生活</a></li>		    <li>個人分類：<a href="http://edisonshih.pixnet.net/blog/category/1571325">指標特輯</a></li>		    <li>此分類上一篇：<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂">  <a href="http://edisonshih.pixnet.net/blog/post/27974938">08_使用指標建立一維動態陣列</a></li>
+<li>此分類下一篇：<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂">  <a href="http://edisonshih.pixnet.net/blog/post/28005001">10_memory leak問題</a></li>
+		    <li>上一篇：<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂">  <a rel="prev" href="http://edisonshih.pixnet.net/blog/post/27974938" data-public-at="1252630066" data-thumb="http://s.pixfs.net/mobile/images/blog/article-image.png">08_使用指標建立一維動態陣列</a></li>
+<li>下一篇：<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂">  <a rel="next" href="http://edisonshih.pixnet.net/blog/post/28005001" data-public-at="1252804883" data-thumb="http://s9.pimg.tw/album/edisonshih/element/131242289_4aac4d7085c3a/zoomcrop/90x90.jpg">10_memory leak問題</a></li>
+		</ul>
+		<div class="history">
+<h6>歷史上的今天</h6>
+<ul>
+<li>2009: <img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> <a href="http://edisonshih.pixnet.net/blog/post/28005680">13_指標特輯彙整</a></li>
+<li>2009: <img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> <a href="http://edisonshih.pixnet.net/blog/post/28005954">12_指標當參數常發生的錯誤</a></li>
+<li>2009: <img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> <a href="http://edisonshih.pixnet.net/blog/post/28005483">11_以一維指標表示二維、三維陣列</a></li>
+<li>2009: <img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> <a href="http://edisonshih.pixnet.net/blog/post/28005001">10_memory leak問題</a></li>
+</ul>
+</div>
+	    		<div class="back-to-top"><a href="http://edisonshih.pixnet.net/blog/post/28004686#top" title="back to the top of the page">▲top</a></div>
+	    </div> <!-- .article-footer //-->
+        </div>
+	</div> <!-- #article-box //-->
+		  <div id="user-post">
+    <div id="trackback-box" class="user-post-box">
+    <a name="trackback"></a>
+    <h3 id="trackback-title" class="user-post-title" style="cursor:hand;cursor:pointer;" onclick="pix.commentSwitch(&#39;trackback-text&#39;,&#39;trackback-text-switch&#39;);"><img id="trackback-text-switch" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/minus.gif" alt="open trackbacks list"> <span>引用列表 (0)</span></h3>
+    <div id="trackback-url">
+	<input type="text" id="trackback-input" value="http://edisonshih.pixnet.net/blog/trackback/28f2e7374d/28004686"> 
+	<input type="button" value="點我複製" id="d_clip_button">
+<script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/ZeroClipboard.js"></script>
+<script type="text/javascript"><!--
+jQuery(document).ready(function(){
+    jQuery('#d_clip_button').mouseover(function(){
+        if (jQuery(this).data('clipboard-loaded')) {
+            return;
+        }
+        jQuery(this).data('clipboard-loaded', true);
+        ZeroClipboard.setMoviePath('//libs.pixfs.net/ZeroClipboard/1.0.7/ZeroClipboard.swf');
+        var clip = new ZeroClipboard.Client();
+        clip.setHandCursor(true);
+        clip.addEventListener('onMouseDown', function(client) {
+            clip.setText( jQuery('#trackback-input').val());
+        });
+        clip.addEventListener('onComplete', function(client) {
+            alert('複製完成');
+        });
+        clip.glue('d_clip_button');
+    });
+});
+//--></script>
+            </div>
+      <div id="trackback-text" class="user-post-text">
+            </div> <!-- #trackback-text //-->
+    </div> <!-- #trackback-box //-->
+    <div id="comment-box" class="user-post-box">
+      <a name="comments"></a>
+      <h3 id="comment-title" class="user-post-title" onclick="pix.commentSwitch(&#39;comment-text&#39;,&#39;comment-text-switch&#39;);" style="cursor:hand;cursor:pointer;"><img id="comment-text-switch" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/minus.gif"> <span>留言列表 (5)</span></h3>
+      <div class="post-comment"><a href="http://edisonshih.pixnet.net/blog/post/28004686-09_%E4%BA%8C%E7%B6%AD%E6%8C%87%E6%A8%99%E8%88%87%E9%99%A3%E5%88%97---%E5%8B%95%E6%85%8B%E9%85%8D%E7%BD%AE-%5Bm%5D%5Bn%5D-%E9%99%A3%E5%88%97#comment-form">發表留言</a></div>
+
+      <div id="comment-text" class="user-post-text">
+	  	<ul class="single-post">
+		    <li class="post-info">
+		<a name="comment-31523476"> </a>
+		<span class="floor">#1</span>
+		<span class="user-name"> 訪客</span>								<span class="post-time">於 2010/11/30 03:31</span>
+			    </li>
+	    <li class="post-photo">
+		<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/avatar-neutral.png" alt="訪客" height="90" width="90">	    </li>
+		    <li class="post-text">
+	                <p id="comment-31523476"></p>
+            		for (i=0; i&lt;ROW; i++) ptr2[i] = (i1。ni*)malloc(sizeof(int)*COL);<br>
+                                                   1。 ?	    	    </li>
+	    			    <li class="reply-text">
+		網頁處理錯誤, 我再改過。<br>
+@ 已修正校閱完畢。可否請問是不是有人推薦你來這裡看指標呢？		<p><a href="http://edisonshih.pixnet.net/blog" target="_blank">Edison</a> 於 2010/11/30 03:37 回覆	    </p></li>
+			    	</ul>
+      	<ul class="single-post">
+		    <li class="post-info">
+		<a name="comment-31532448"> </a>
+		<span class="floor">#2</span>
+		<span class="user-name"> Sportsman</span>								<span class="post-time">於 2010/11/30 12:40</span>
+			    </li>
+	    <li class="post-photo">
+		<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/avatar-neutral.png" alt="Sportsman" height="90" width="90">	    </li>
+		    <li class="post-text">
+	                <p id="comment-31532448"></p>
+            		沒有耶...自己搜尋到大大的網誌@@	    	    </li>
+	    			    	</ul>
+      	<ul class="single-post">
+		    <li class="post-info">
+		<a name="comment-36005384"> </a>
+		<span class="floor">#3</span>
+		<span class="user-name"> Benjamin</span>								<span class="post-time">於 2013/07/04 18:15</span>
+			    </li>
+	    <li class="post-photo">
+		<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/avatar-neutral.png" alt="Benjamin" height="90" width="90">	    </li>
+		    <li class="post-text">
+	                <p id="comment-36005384"></p>
+            		不好意思<br>
+C++的釋放部分看起來怪怪的<br>
+<br>
+for(i=0; i&lt;ROW; i++) delete ptr2[i];<br>
+應改成<br>
+for(i=0; i&lt;ROW; i++) delete [] ptr2[i];<br>
+<br>
+delete ptr2;<br>
+則改成<br>
+delete [] ptr2;<br>
+<br>
+詳細的原因請看 此網頁的#1 謝謝~<br>
+<a target="_blank" href="http://bbs.csdn.net/topics/390313693" rel="nofollow">http://bbs.csdn.net/topics/390313693</a>	    	    </li>
+	    			    	</ul>
+      	<ul class="single-post">
+		    <li class="post-info">
+		<a name="comment-36050745"> </a>
+		<span class="floor">#4</span>
+		<span class="user-name"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/openid-pixnet-icon.gif" class="identity-provider comment-icon" style="vertical-align:middle;"> <a href="http://edisonx.pixnet.net/blog" target="_blank" rel="nofollow">edisonx</a></span>				<a class="homepage" rel="nofollow" href="http://edisonx.pixnet.net/blog" target="_blank"><img class="comment-icon" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/info-website.gif" alt="edisonx" title="edisonx" style="vertical-align:middle;"></a>
+                
+								<span class="post-time">於 2013/07/12 02:36</span>
+			    </li>
+	    <li class="post-photo">
+		<a href="http://edisonx.pixnet.net/blog" target="_blank" rel="nofollow"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/90x90.png" alt="edisonx" height="90" width="90"></a>	    </li>
+		    <li class="post-text">
+	                <p id="comment-36050745"></p>
+            		可能你沒看到我下面的註解，上面兩行直接用 delete [] ptr2 過去就行了。	    	    </li>
+	    			    	</ul>
+      	<ul class="single-post secret">
+		    <li class="post-text">
+	    	    悄悄話	    	    </li>
+	    	</ul>
+            </div> <!-- #comment-text //-->
+      <a name="comment-form"></a>
+<form class="json-form" target="_blank" method="POST" action="http://edisonshih.pixnet.net/blog/postcomment/28004686">
+    <input type="hidden" name="sToken" value="e848d9b45352112b6314b0375eb1aa45">
+    <div id="comment-area">
+        <div id="comment-area-2">
+            <iframe src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/blogarticle.htm" marginheight="0" marginwidth="0" frameborder="0" scrolling="no" border="0"></iframe>
+                        <div class="comment-identity identity-logout">
+                <div class="choose-identity">
+                    <a href="http://www.pixnet.net/?done=http%3A%2F%2Fedisonshih.pixnet.net%2Fblog%2Fpost%2F28004686%23comment-form" class="openid-pixnet"><span class="invisible">PIXNET</span></a>
+                    <a href="http://panel.pixnet.cc/login/facebooklogin?done=http%3A%2F%2Fedisonshih.pixnet.net%2Fapi%2Fpopuplogin%3Fdone%3Dhttp%253A%252F%252Fedisonshih.pixnet.net%252Fblog%252Fpost%252F28004686%2523comment-form&without_signup=1&without_full_perm=1" class="openid-facebook" onclick="window.open(this.href, &#39;login&#39;, config=&#39;height=650,width=650,scrollbars=1,resizable=0&#39;); return false; "><span class="invisible">Facebook</span></a>
+                    <a href="http://panel.pixnet.cc/login/openid?done=http%3A%2F%2Fedisonshih.pixnet.net%2Fapi%2Fpopuplogin%3Fdone%3Dhttp%253A%252F%252Fedisonshih.pixnet.net%252Fblog%252Fpost%252F28004686%2523comment-form&openid=https%3A%2F%2Fme.yahoo.com%2F&without_signup=1" class="openid-yahoo" onclick="window.open(this.href, &#39;login&#39;, config=&#39;height=500,width=450,scrollbars=1,resizable=0&#39;); return false; "><span class="invisible">Yahoo!</span></a>
+                    <a href="http://panel.pixnet.cc/login/openid?done=http%3A%2F%2Fedisonshih.pixnet.net%2Fapi%2Fpopuplogin%3Fdone%3Dhttp%253A%252F%252Fedisonshih.pixnet.net%252Fblog%252Fpost%252F28004686%2523comment-form&openid=https%3A%2F%2Fwww.google.com%2Faccounts%2Fo8%2Fid&without_signup=1" class="openid-google" onclick="window.open(this.href, &#39;login&#39;, config=&#39;height=500,width=450,scrollbars=1,resizable=0&#39;); return false; "><span class="invisible">Google</span></a>
+                    <a href="http://panel.pixnet.cc/login/livelogin?done=http%3A%2F%2Fedisonshih.pixnet.net%2Fapi%2Fpopuplogin%3Fdone%3Dhttp%253A%252F%252Fedisonshih.pixnet.net%252Fblog%252Fpost%252F28004686%2523comment-form&without_signup=1" class="openid-msn" onclick="window.open(this.href, &#39;login&#39;, config=&#39;height=500,width=470,scrollbars=1,resizable=0&#39;); return false; "><span class="invisible">MSN</span></a>
+                </div>
+            </div>
+                        <div class="comment-body">
+                                                        <p>您尚未登入，將以<b>訪客</b>身份留言。亦可以上方服務帳號登入留言</p>
+                    <input type="text" name="blogcommenttext_name" id="comment_showname" class="comment-name" placeholder="您的暱稱 ...">                                    <div class="comment-textarea">
+                    <textarea name="blogcommenttext_body" id="comment_text" placeholder="留個言吧 ..."></textarea>                                        <div class="private-message"><label><input type="checkbox" name="blogcomment_open" id="comment_open" value="0">悄悄話</label></div>
+                                        <div id="nologin_hidden_msg" class="private-notice" style="display: none">訪客身份留言將無法觀看版主回覆，建議您登入之後再留言。</div>
+                                                        </div><!-- .comment-textarea -->
+
+                                <div id="comment-area-ad" style="display:none">
+                                    </div>
+                <div class="captcha" style="display:none" id="captcha">
+                    <a id="authcode-link-url" href="http://edisonshih.pixnet.net/blog/post/28004686#" target="_blank"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/200x50.jpeg" id="authcode-url" class="authcode-url"></a>
+                    <div>請輸入左方認證碼：<input type="text" name="authCode" class="text-input"><a class="reload-captcha" href="http://edisonshih.pixnet.net/blog/post/28004686#">看不懂,換張圖</a></div>
+                </div>
+                
+                <div class="comment-extra">
+                    <div id="unfold-comment-extra"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/comment-unfold.jpg"> 其他選項</div>
+                    <button type="submit"><span>送出留言</span></button>
+                </div>
+
+                <div id="comment-extra" class="extra" style="display:none"><input type="text" name="blogcommenttext_mail" class="text-input" id="comment_mail" placeholder="電子郵件 ..."><input type="text" name="blogcommenttext_url" class="text-input" id="comment_url" placeholder="個人網頁 ..."></div>
+                            </div><!--.comment-middle-->
+        </div><!-- #comment-area-2-->
+    </div><!-- #comment-area -->
+</form>
+<script type="text/javascript">
+<!--
+(function($){
+var pixform = {};
+
+pixform.confirm_popup = true;
+
+// 偵測是瀏覽器是否支援 input 的 placeholder 屬性
+var tmp = document.createElement('input');
+pixform.usePlaceholder = false;
+if ('undefined' !== typeof tmp.placeholder) {
+    pixform.usePlaceholder = true;
+}
+
+pixform.checkCommentFormWithPlaceholder= function() {
+    var commenturl = $('#comment_url');
+    var errMsg = '';
+    if  ('' === $('#comment_text').val()) {
+        errMsg = _('請輸入留言內容！');
+    }
+    var commenturl_val = $.trim(commenturl.val());
+    if (commenturl_val.length > 0 && !/^https?:\/\//.test(commenturl_val)) {
+        errMsg = _('請輸入正確的網址！');
+    }
+
+    if (errMsg !== "") {
+        alert(errMsg);
+        return false;
+    } else {
+        if ('http://' === commenturl_val) {
+            commenturl.val('');
+        }
+        return true;
+    }
+};
+
+pixform.checkCommentFormWithoutPlaceholder= function() {
+    var commenturl = $('#comment_url');
+    var commentmail = $('#comment_mail');
+    var commentname = $('#comment_showname');
+
+    var errMsg = '';
+    if  ('' === $('#comment_text').val() || $('#comment_text').hasClass('input-empty')) {
+        errMsg = _('請輸入留言內容！');
+    }
+    var commenturl_val = commenturl.hasClass('input-empty') ? '' : $.trim(commenturl.val());
+    commenturl.val(commenturl_val);
+    var commentmail_val = commentmail.hasClass('input-empty') ? '' : $.trim(commentmail.val());
+    commentmail.val(commentmail_val);
+    var commentname_val = commentname.hasClass('input-empty') ? '' : $.trim(commentname.val());
+    commentname.val(commentname_val);
+    if (commenturl_val.length > 0 && !/^https?:\/\//.test(commenturl_val)) {
+        errMsg = _('請輸入正確的網址！');
+    }
+
+    if (errMsg !== "") {
+        alert(errMsg);
+        return false;
+    } else {
+        if ('http://' === commenturl_val) {
+            commenturl.val('');
+        }
+        return true;
+    }
+};
+
+pixform.setInputWithPlaceholder = function() {
+    var $captcha = $('#captcha'), $ad = $('#comment-area-ad');
+    $.each(new Array($('#comment_showname'), $('#comment_text')), function(i, e){
+        return (function($obj) {
+            $obj.focus(function(){
+                $captcha.show();
+                $ad.show();
+            });
+        })(e);
+    });
+};
+
+pixform.setInputWithoutPlaceholder = function() {
+    var $input, $captcha = $('#captcha'), $ad = $('#comment-area-ad');
+    var columns = new Array();
+    columns['comment_mail'] = "\u96fb\u5b50\u90f5\u4ef6 ...";
+    columns['comment_url'] = "\u500b\u4eba\u7db2\u9801 ...";
+    columns['comment_text'] = "\u7559\u500b\u8a00\u5427 ...";
+    columns['comment_showname'] = "\u60a8\u7684\u66b1\u7a31 ...";
+    for (var id in columns) {
+        $input = $('#' + id);
+        if (0 == $input.size()) {
+            continue;
+        }
+        $input.focus(function(){
+            return (function($obj) {
+                if ($obj.hasClass('input-empty')) {
+                    $obj.val('').css('color', '#000').removeClass('input-empty');
+                }
+                if ('comment_showname' == $obj.attr('id') || 'comment_text' == $obj.attr('id')) {
+                    $captcha.show();
+                    $ad.show();
+                }
+            })($(this));
+        }).blur(function(){
+            return (function($obj) {
+                if (!$obj.val()) {
+                    $obj.val(columns[$obj.attr('id')]).addClass('input-empty').css('color', '#bbb');
+                }
+            })($(this));
+        }).blur();
+    }
+};
+
+pixform.setCommentForm = function() {
+    if (pixform.usePlaceholder) {
+        pixform.setInputWithPlaceholder();
+    } else {
+        pixform.setInputWithoutPlaceholder();
+    }
+
+    $('#unfold-comment-extra').click(function(){
+        $('#comment-extra').toggle();
+        return false;
+    });
+
+            $('#comment_open').click(function() {
+            if ($(this).is(':checked')) {
+                $('#nologin_hidden_msg').show();
+            } else {
+                $('#nologin_hidden_msg').hide();
+            }
+        });
+    
+    $('.json-form').live('submit', function(){
+        if (pixform.usePlaceholder) {
+            if (!pixform.checkCommentFormWithPlaceholder()) {
+                return false;
+            }
+        } else {
+            if (!pixform.checkCommentFormWithoutPlaceholder()) {
+                return false;
+            }
+        }
+
+        var data = $(this).serializeArray();
+        if (pixform.confirm_popup) {
+            var newWindow = window.open('', '_comment_popup', 'height=0,width=0');
+        }
+        if ('undefined' !== typeof(pix.stringify)) {
+            JSON.stringify = pix.stringify;
+            JSON.parse = pix.parse;
+        }
+        $.post($(this).attr('action'), data, function(ret){
+            if (ret.error){
+                if (pixform.confirm_popup) {
+                    newWindow.close();
+                }
+                alert(ret.message);
+                if (ret.authcode_url) {
+                    $('img.authcode-url').attr('src', ret.authcode_url);
+                    $('input[name="authCode"]').val('');
+                }
+                return;
+            }
+            if (pixform.confirm_popup) {
+                newWindow.location = ret.redirect;
+                return;
+            } else {
+                alert(ret.message);
+                window.location.reload();
+            }
+        }, 'json');
+        return false;
+    });
+
+    $('a.reload-captcha').live('click', function(){
+        var action = $(this).parents('form').first().attr('action');
+        $.post(action, {"sToken": $('input[name="sToken"]').val(), "reload-captcha": 1} ,function(ret) {
+            if (ret.error) {
+                alert(ret.message);
+                return;
+            }
+            if (ret.authcode_url) {
+                $('img.authcode-url').attr('src', ret.authcode_url);
+                $('input[name="authCode"]').val('');
+                if (ret.advert_url) {
+                    $('#authcode-link-url').attr('href', ret.advert_url);
+                }
+            }
+            return;
+        }, 'json');
+        return false;
+    });
+};
+
+pixform.setCommentForm();
+
+})(jQuery);
+//-->
+</script>
+
+    </div> <!--  #comment-box //-->
+  </div> <!-- #user-post //-->
+<script type="text/javascript">
+<!--
+jQuery(function() {
+    jQuery('.comment-icon').attr('style', 'vertical-align:middle;');
+});
+// -->
+</script>
+
+
+	    </div> <!-- #article-area //-->
+            </div> <!-- #content //-->
+            <div id="links">
+              <div id="links-row-1">
+                                                      <div class="hslice box" id="f480594-Mib-ad-sidebar-v2-f480594">
+                      <div class="box-text entry-content">
+                          <div class="f480594-Mib-border-f480594 dark">
+                              <div class="f480594-Sitemajidr-f480594" model="180x280"><a href="http://falcon.pixanalytics.com/mib/adc?a=698168eb95450981c2c8ff5bdc978f3b&s=1&h=e046dc99995afe5f5ad16202f2d57ca1&u=4dfee12a76464af89777bc9e9c99c3cd&v=1dfc2135855aeba7d32345c6cc13c7ce&c=CgEB21K4GvABwwGMAxq9Ag==" target="_blank"><img style="margin:0 auto;display:block;min-width:180px;min-height:280px;" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/698168eb95450981c2c8ff5bdc978f3b-8c2ccafa7ce12c4c.jpg"></a></div>
+                          </div><!-- /.mib-border -->
+                      </div>
+                  </div>
+                                    <script type="text/javascript">
+pix.MIB.config = {
+    hosthash: 'e046dc99995afe5f5ad16202f2d57ca1',
+    dr: {source: 'EdisonShih'},
+    goldAds: pix.MIB.util.Dom.getElementsByClassName('f480594-Sitemajidr-f480594'),
+    uniq: '8692eba43a90d3fe03cc179abf1fd403cbd6e84610122',
+    percentSite: 'http://falcon.pixanalytics.com/mib/vap',
+    falconSite: 'http://falcon.pixanalytics.com',
+    cate: '15',
+    article_cate_id: '24',
+    playMediaAd: 0};
+
+(function() {
+    var goldAds = pix.MIB.config.goldAds;
+    if (goldAds[0]) {
+        pix.MIB.ysm.adgen();
+    }
+})();
+</script>
+                  
+                                    <div class="hslice box folder" id="box759578">
+    <h4 class="box-title entry-title">
+	痞客邦新服務7Headlines	    </h4>
+    <div class="box-text entry-content">
+
+<iframe src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/sticker.htm" width="200" height="480" scrolling="no" frameborder="0"></iframe>    </div>
+</div> <!-- #box759578 //-->
+<div class="hslice box" id="announce">
+    <h4 class="box-title entry-title">
+	站方公告	    </h4>
+    <div class="box-text entry-content">
+
+<ul>
+    <li><a href="http://admin.pixnet.net/blog/post/41093797-%5b%e5%85%ac%e5%91%8a%5d-%e7%97%9e%e5%ae%a2%e9%82%a6%e3%80%8c%e6%87%89%e7%94%a8%e5%b8%82%e9%9b%86%e3%80%8d%e6%96%b0-app-%e4%b8%8a%e6%9e%b6%ef%bc%8difontcl" target="_blank">[公告] 痞客邦「應用市集」新 App 上架－iFontCloud Professional</a></li><li><a href="http://admin.pixnet.net/blog/post/41059990-%5b%e5%85%ac%e5%91%8a%5d-%e6%96%87%e7%ab%a0%e5%9c%96%e7%89%87%e3%80%81%e7%9b%b8%e7%b0%bf%e5%9c%96%e7%89%87%e3%80%81%e9%83%a8%e8%90%bd%e6%a0%bc%e4%ba%ba%e6%b0%a3%e7%84%a1%e6%b3%95" target="_blank">[公告] 文章圖片、相簿圖片、部落格人氣無法正常顯示 (已修復)</a></li><li><a href="http://admin.pixnet.net/blog/post/41024056-%5b%e5%85%ac%e5%91%8a%5d-%e7%97%9e%e5%ae%a2%e9%82%a6%e5%be%8c%e5%8f%b0%e7%99%bc%e8%a1%a8%e6%96%87%e7%ab%a0%e6%8f%90%e4%be%9b%e6%8f%92%e5%85%a5%e5%a4%9a%e5%bc%b5%e5%9c%96%e7%89%87" target="_blank">[公告] 痞客邦後台發表文章提供插入多張圖片新功能</a></li></ul>    </div>
+</div> <!-- #announce //-->
+<div class="hslice box" id="events">
+    <h4 class="box-title entry-title">
+	活動快報	    </h4>
+    <div class="box-text entry-content">
+
+<ul>
+<div id="express-box" style="font-family:arial !important; letter-spacing: 0px ;line-height: 15px !important;background:url(&#39;http://pic.pimg.tw/pixnetvisual/49c36d44ea331.gif&#39;) -10px -10px  ; height:205px ; width:170px ; overflow:hidden ;padding: 0 !important ;">
+<h3 style="margin: 0 ; font-weight:normal ; padding: 10px 7px 10px 10px ; *padding: 10px 7px 8px 10px ;">
+<a target="blank" href="http://channel.pixnet.net/newdirect.php?blog=EdisonShih&serial=6044&url=http%3A%2F%2Flovelybloggers.pixnet.net%2Fcoblog%2Fpost%2F183577705" style="color:#555 !important ; font-family:arial !important; border: 0 !important ; text-decoration:none ; font-size:15px !important; height:16px ; display:block ;overflow:hidden ; padding: 0px ;*padding: 2px 0px 0px 0px ; line-height: 15px !important;">分享留言抽緊塑乳霜</a>
+</h3>
+<a href="http://channel.pixnet.net/newdirect.php?blog=EdisonShih&serial=6044&url=http%3A%2F%2Flovelybloggers.pixnet.net%2Fcoblog%2Fpost%2F183577705" target="_blank"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/1409545683-1411453365.jpg" style="margin: 0px 0px 0px 5px !important; border: 0px;max-width:160px;"></a>
+<a id="express-desc" target="blank" href="http://channel.pixnet.net/newdirect.php?blog=EdisonShih&serial=6044&url=http%3A%2F%2Flovelybloggers.pixnet.net%2Fcoblog%2Fpost%2F183577705" style="color:#444 !important ; text-align:left ;font-family:arial !important; text-decoration:none ; font-size:12px !important; display:block ; margin:6px 6px 7px 13px !important; *margin: 2px 6px 7px 13px !important; line-height:140% ; height:31px ; overflow:hidden ; width: 151px ; border: 0 !important ;">擊退歲月，彈力新生！即日起至2014/9/30前，留言寫...</a>
+<a id="express-more" target="blank" href="http://channel.pixnet.net/newdirect.php?blog=EdisonShih&serial=0&url=http%3A%2F%2Fchannel.pixnet.net%2Fevents" style="text-align:left ;display:block ; text-indent:-5000px ; height:30px ;">看更多活動好康</a>
+</div>
+
+<script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/c.js"></script>
+<script type="text/javascript"><!--
+var _type;
+_type = "channel_events_blog_sticker";
+_uCount();
+//--></script>
+</ul>    </div>
+</div> <!-- #events //-->
+<div id="user-info" class="hslice box">
+    <h4 class="box-title entry-title">
+	個人資訊	    </h4>
+    <div class="box-text entry-content">
+	<a class="user-img" href="http://www.pixnet.net/blog/profile/EdisonShih"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/90x90(1).png"></a>
+	<div class="user-action">
+	    				<input type="button" value="加入好友" class="add_friend">
+						<input type="button" value="加入訂閱" class="add_subs">
+			    	</div>
+	<dl>
+            <dt>暱稱：</dt><dd>Edison</dd>
+	    <dt>分類：</dt><dd><a href="http://www.pixnet.net/blog/bloggers/category/15">數位生活</a></dd>
+	    	    <dt>好友：</dt><dd>共1位 <a href="http://edisonshih.pixnet.net/blog/post/28004686#" id="user-info-open-friends-iframe">(看全部)</a></dd>
+	    	    	    		<dt>生日：</dt>
+				<dd>未填寫</dd>
+			    	    	    	    	    	    		<dt>地區：</dt>
+				<dd>未填寫</dd>
+			    	    	    	    	    	    	    	    	    	    	    	    	    	</dl>
+    </div>
+</div>
+<script type="text/javascript">
+<!--
+jQuery(function($) {
+    pix.iframePopup.init('#popup-frame', "http:\/\/edisonshih.pixnet.net\/friend\/list", '#user-info-open-friends-iframe', '#popup-frame .frame-close', "Edison \u7684\u597d\u53cb\u5217\u8868");
+    var $add_friend = $('#user-info').find('input.add_friend');
+    var $add_subs = $('#user-info').find('input.add_subs');
+    $add_friend.add($add_subs).click(function(e){
+                    window.location = 'http://' + "www.pixnet.net" + '?done=' + encodeURIComponent(window.location);
+            });
+});
+//-->
+</script>
+<div class="hslice box" id="hot-article">
+    <h4 class="box-title entry-title">
+	熱門文章	    </h4>
+    <div class="box-text entry-content">
+
+<ul id="hotArtUl"><li><a href="http://edisonshih.pixnet.net/blog/post/30373432"><span>(30077)</span>基因演算法(Genetic Algorithms, GA) - Introduction and C Code</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/27974938"><span>(17553)</span>08_使用指標建立一維動態陣列</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/28020065"><span>(15696)</span>快取記憶體(cache) - 虛擬記憶體 - pagefile.sys</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/28004686"><span>(15208)</span>09_二維指標與陣列 - 動態配置 [m][n] 陣列</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/28109815"><span>(9511)</span>xcopy - 檔案.資料夾複製指令</a></li>
+</ul>
+<script type="text/javascript">
+<!--
+jQuery('#hot-article #hotArtUl').load('/blog/hotarticledata?limit=5');
+// -->
+</script>
+    </div>
+</div> <!-- #hot-article //-->
+<div class="hslice box" id="category">
+    <h4 class="box-title entry-title">
+	文章分類	    </h4>
+    <div class="box-text entry-content">
+
+<div class="box-more">
+<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/expand.gif" alt="unfold all categories" style="cursor:hand;cursor:pointer;" onclick="pix.openAllCategory(&#39;open&#39;);">
+<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/collapse.gif" alt="fold all categories" style="cursor:hand;cursor:pointer;" onclick="pix.openAllCategory(&#39;close&#39;);">
+</div>
+
+<div class="inner-box">
+    <h6 style="cursor:hand;cursor:pointer;" onclick="pix.commentSwitch(&#39;category-1337279&#39;,&#39;category-1337279-switch&#39;);"><img id="category-1337279-switch" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/plus.gif" border="0" alt="展開分類"> C/C++ 程式設計 (8)</h6>
+<ul id="category-1337279" style="display: none;"><!-- ie6bug
+--><li><a href="http://edisonshih.pixnet.net/blog/category/1648589">程式亂語 (3)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1445774">基礎筆記 (12)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1445777">Win32視窗設計 (7)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1570948">數的特性 (6)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1571325">指標特輯 (13)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1619826">方程式求解 (4)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1619827">線性代數問題 (6)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1645141">作業文 (12)</a></li><!-- ie6bug --></ul>
+</div>
+<div class="inner-box">
+    <h6 style="cursor:hand;cursor:pointer;" onclick="pix.commentSwitch(&#39;category-1350261&#39;,&#39;category-1350261-switch&#39;);"><img id="category-1350261-switch" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/plus.gif" border="0" alt="展開分類"> 軟體應用 (3)</h6>
+<ul id="category-1350261" style="display: none;"><!-- ie6bug
+--><li><a href="http://edisonshih.pixnet.net/blog/category/1556624">Application (1)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1556625">Windows Operation. (7)</a></li><!-- ie6bug --><li><a href="http://edisonshih.pixnet.net/blog/category/1575414">命令提示字元 (3)</a></li><!-- ie6bug --></ul>
+</div>
+<div class="inner-box">
+    <h6 style="cursor:hand;cursor:pointer;" onclick="pix.commentSwitch(&#39;category-1352350&#39;,&#39;category-1352350-switch&#39;);"><img id="category-1352350-switch" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/plus.gif" border="0" alt="展開分類"> 非資工演算法 (1)</h6>
+<ul id="category-1352350" style="display: none;"><!-- ie6bug
+--><li><a href="http://edisonshih.pixnet.net/blog/category/1615616">NP 問題演算法 (1)</a></li><!-- ie6bug --></ul>
+</div>
+<ul><!-- ie6bug
+--></ul>
+    </div>
+</div> <!-- #category //-->
+<div class="hslice box" id="recent-article">
+    <h4 class="box-title entry-title">
+	最新文章	    </h4>
+    <div class="box-text entry-content">
+
+<ul>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32630884"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> 準備搬家</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32478585"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> [作業文] 井字遊戲</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32457789"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> [作業文] 星號問題種類</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32450181"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> [作業文] 太陽星星月亮 - 畫數字問題</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32419157"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> [作業文] 太陽星星月亮 - 中空凌形問題</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32408131"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> [轉載] 送給正在學習C++朋友的50條建議</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32361727"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> 初學者對 IDE / C(++) 的錯誤認知</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32355553"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> [作業文] 一行版九九乘法表</a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32335709"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> [作業文] cos(x) = 1- x^2/2! + x^4/4! - ....... x^n/n! </a></li>
+<li><a href="http://edisonshih.pixnet.net/blog/post/32335583"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/set-to-top.gif" border="0" alt="置頂"> [作業文] x/1! - x^2/2! + x^3/3! - ... x^n/n!</a></li>
+</ul>
+    </div>
+</div> <!-- #recent-article //-->
+<div class="hslice box" id="latest-comment">
+    <h4 class="box-title entry-title">
+	最新迴響	    </h4>
+    <div class="box-text entry-content"><ul><!-- ie6bug
+--><li>
+<span>09/08</span>
+b3cru：<a href="http://edisonshih.pixnet.net/blog/post/32335709#comment-41128907">﹍ｊｎdiq２
+
+太○棒◎了﹉ 找...</a>
+</li><!-- ie6bug
+--><li>
+<span>09/01</span>
+C：<a href="http://edisonshih.pixnet.net/blog/post/27974938#comment-41109167">C99裡面明文規定可以使用int ...</a>
+</li><!-- ie6bug
+--><li>
+<span>08/31</span>
+C：<a href="http://edisonshih.pixnet.net/blog/post/27961904#comment-41107097">printf("%p",&amp;ptr);</a>
+</li><!-- ie6bug
+--><li>
+<span>08/07</span>
+訪客：<a href="http://edisonshih.pixnet.net/blog/post/27961535#comment-41070395">感謝 很詳盡</a>
+</li><!-- ie6bug
+--><li>
+<span>07/09</span>
+h0ps55y：<a href="http://edisonshih.pixnet.net/blog/post/32355553#comment-41010317">ｔwｇｃh717
+
+太◇棒◎了◎ 找...</a>
+</li><!-- ie6bug
+--><li>
+<span>07/08</span>
+訪客：<a href="http://edisonshih.pixnet.net/blog/post/27961535#comment-41007128">很清楚
+
+學校兩小時聽不懂這...</a>
+</li><!-- ie6bug
+--><li>
+<span>04/28</span>
+版主回覆：<a href="http://edisonshih.pixnet.net/blog/post/27945935#comment-40822324">照定義本來就有 0~9 ，確認了...</a>
+</li><!-- ie6bug
+--><li>
+<span>04/26</span>
+...：<a href="http://edisonshih.pixnet.net/blog/post/27945935#comment-40822324">阿姆斯壯數怎麼有1~9= =!!
+
+</a>
+</li><!-- ie6bug
+--><li>
+<span>03/25</span>
+版主回覆：<a href="http://edisonshih.pixnet.net/blog/post/30287155#comment-40725625">這裡的程式碼是較單純的，假...</a>
+</li><!-- ie6bug
+--><li>
+<span>03/19</span>
+zzz1992013@hotmail.com.tw：<a href="http://edisonshih.pixnet.net/blog/post/30287155#comment-40725625">請問該怎麼做輸入陣列的部分?...</a>
+</li><!-- ie6bug
+--></ul>
+</div>
+</div> <!-- #latest-comment //-->
+<div class="hslice box" id="latest-trackback">
+    <h4 class="box-title entry-title">
+	最新引用	    </h4>
+    <div class="box-text entry-content">
+
+<ul>
+</ul>
+    </div>
+</div> <!-- #latest-trackback //-->
+<div class="hslice box" id="archive">
+    <h4 class="box-title entry-title">
+	文章精選	    </h4>
+    <div class="box-text entry-content">
+
+<select onchange="pix.gotoArchive(this);">
+<option value="-pixnet-">文章精選</option>
+<option value="/blog/archives/201011">2010 十一月 (6)</option>
+<option value="/blog/archives/201010">2010 十月 (10)</option>
+<option value="/blog/archives/201003">2010 三月 (11)</option>
+<option value="/blog/archives/201002">2010 二月 (13)</option>
+<option value="/blog/archives/201001">2010 一月 (2)</option>
+<option value="/blog/archives/200909">2009 九月 (24)</option>
+<option value="/blog/archives/200908">2009 八月 (8)</option>
+<option value="/blog/archives/200907">2009 七月 (1)</option>
+</select>
+<div class="box-more">
+<a href="http://edisonshih.pixnet.net/blog/listall/1">所有文章列表</a>
+</div>
+    </div>
+</div> <!-- #archive //-->
+<div class="hslice box" id="search">
+    <h4 class="box-title entry-title">
+	文章搜尋	    </h4>
+    <div class="box-text entry-content">
+
+<form method="post" action="http://edisonshih.pixnet.net/blog/search/" id="search-form" data-wording-needkeyword="請輸入關鍵字">
+	<ul>
+	    <li><input name="search-target" id="search-target" type="text"></li>
+	    <li><input id="search-submit" type="submit" value="搜尋"></li>
+	</ul>
+    </form>
+    <script type="text/javascript">//<!--
+    jQuery('#search-form').submit(function(event){
+        if ('' === jQuery('#search-target').val()) {
+            alert(jQuery(this).attr('data-wording-needkeyword'));
+            event.preventDefault();
+        }
+    });
+    //--></script>
+    </div>
+</div> <!-- #search //-->
+<div class="hslice box" id="feed">
+    <h4 class="box-title entry-title">
+	新聞交換(RSS)	    </h4>
+    <div class="box-text entry-content">
+
+    <ul>
+      <li><a title="pixnet rss" href="http://edisonshih.pixnet.net/blog/feed/rss"><img alt="pixnet rss for articles" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/pixnet-rss.gif"></a></li><!--
+      --><li><a title="pixnet atom rss" href="http://edisonshih.pixnet.net/blog/feed/atom"><img alt="pixnet atom rss for articles" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/pixnet-atom.gif"></a></li><!--
+      --><li><a title="reply rss" href="http://edisonshih.pixnet.net/blog/comments/feed"><img alt="pixnet rss for reply" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/reply-rss.gif"></a></li><!--
+    --></ul>
+    </div>
+</div> <!-- #feed //-->
+<div class="hslice box" id="visitor">
+    <h4 class="box-title entry-title">
+	誰來我家	    </h4>
+    <div class="box-text entry-content"><ul id="ul-visitors">
+<!-- ie6bug //--><li><a href="http://carrie19968097.pixnet.net/" target="_blank"><img width="50" height="50" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/50x50.jpg" alt="headshot from friends" title="carrie19968097"></a></li><li><a href="http://abigail111.pixnet.net/" target="_blank"><img width="50" height="50" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/50x50(1).jpg" alt="headshot from friends" title="abigail111"></a></li><li><a href="http://h1924comtw.pixnet.net/" target="_blank"><img width="50" height="50" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/50x50(2).jpg" alt="headshot from friends" title="h1924comtw"></a></li><li><a href="http://hgii3211.pixnet.net/" target="_blank"><img width="50" height="50" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/50x50(3).jpg" alt="headshot from friends" title="hgii3211"></a></li><li><a href="http://pidaee.pixnet.net/" target="_blank"><img width="50" height="50" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/50x50(4).jpg" alt="headshot from friends" title="pidaee"></a></li></ul>
+
+</div>
+</div> <!-- #visitor //-->
+<div class="hslice box" id="counter">
+    <h4 class="box-title entry-title">
+	參觀人氣	    </h4>
+    <div class="box-text entry-content">
+
+<ul>
+    <li>本日人氣：<span id="blog_hit_daily">54</span></li>
+    <li>累積人氣：<span id="blog_hit_total">205090</span></li>
+</ul>
+<script type="text/javascript"><!--
+    jQuery.getScript('//counter.pixplug.in/getcounter.php?now=1410610122&random=1221895186&data[%23BlogArticleCount-28004686]=%7B%22counter%22%3A%5B%22blogarticle%22%2C%221933440%22%2C%2228004686%22%2C%22total%22%5D%2C%22options%22%3A%5B%5D%7D&data[%23blog_hit_daily]=%7B%22counter%22%3A%5B%22blog%22%2C%221933440%22%2C1%2C%22daily%22%5D%2C%22options%22%3A%5B%5D%7D&data[%23blog_hit_total]=%7B%22counter%22%3A%5B%22blog%22%2C%221933440%22%2C1%2C%22total%22%5D%2C%22options%22%3A%5B%5D%7D&check=2311959166');
+//--></script>
+    </div>
+</div> <!-- #counter //-->
+<div class="hslice box" id="qrcode">
+    <h4 class="box-title entry-title">
+	QR Code	    </h4>
+    <div class="box-text entry-content">
+
+<div class="qrcode">
+<img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/28004686-09_二維指標與陣列---動態配置-[m][n]-陣列.png">
+</div>
+    </div>
+</div> <!-- #qrcode //-->
+<div class="hslice box" id="powered">
+    <h4 class="box-title entry-title">
+	POWERED BY	    </h4>
+    <div class="box-text entry-content">
+
+    <ul>
+	<li><a title="pixnet" href="http://www.pixnet.net/"><img src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/pixnet-logo.png"></a></li>
+		<li><a href="http://www.pixnet.net/?done=http%3A%2F%2Fedisonshih.pixnet.net%2Fblog%2Fpost%2F28004686-09_%25E4%25BA%258C%25E7%25B6%25AD%25E6%258C%2587%25E6%25A8%2599%25E8%2588%2587%25E9%2599%25A3%25E5%2588%2597---%25E5%258B%2595%25E6%2585%258B%25E9%2585%258D%25E7%25BD%25AE-%255Bm%255D%255Bn%255D-%25E9%2599%25A3%25E5%2588%2597">(登入)</a></li><!--
+	    --></ul>
+    </div>
+</div> <!-- #powered //-->
+
+              </div> <!-- #links-row-1 //-->
+              <div id="links-row-2">
+                                </div> <!-- #links-row-2 //-->
+            </div> <!-- #links //-->
+          </div> <!-- #main //-->
+          <div id="footer">
+	  <p></p>
+            <div id="bottom">
+              <a class="bottom-skiplink" href="http://edisonshih.pixnet.net/blog/post/28004686-09_%E4%BA%8C%E7%B6%AD%E6%8C%87%E6%A8%99%E8%88%87%E9%99%A3%E5%88%97---%E5%8B%95%E6%85%8B%E9%85%8D%E7%BD%AE-%5Bm%5D%5Bn%5D-%E9%99%A3%E5%88%97/#top" title="back to the top of the page">回到頁首</a>
+              <a class="bottom-skiplink" href="http://edisonshih.pixnet.net/blog/post/28004686-09_%E4%BA%8C%E7%B6%AD%E6%8C%87%E6%A8%99%E8%88%87%E9%99%A3%E5%88%97---%E5%8B%95%E6%85%8B%E9%85%8D%E7%BD%AE-%5Bm%5D%5Bn%5D-%E9%99%A3%E5%88%97#article-area" title="back to the main cotent of the page">回到主文</a>
+	      <a class="bottom-pixnet" href="http://panel.pixnet.cc/signup/step1">免費註冊</a>
+	      <a target="_blank" class="bottom-pixnet" href="http://help.pixnet.tw/">客服中心</a>
+              <a target="_blank" class="bottom-pixnet" href="http://www.pixnet.net/">痞客邦首頁</a>
+	      © 2003 - 2014 PIXNET
+            </div>
+          </div> <!-- #footer //-->
+        </div> <!-- #container3 //-->
+      <div id="extradiv11"></div>
+      <div id="extradiv10"></div>
+      <div id="extradiv9"></div>
+      <div id="extradiv8"></div>
+    </div> <!-- #container2 //-->
+    <div id="extradiv7"></div>
+    <div id="extradiv6"></div>
+    <div id="extradiv5"></div>
+    <div id="extradiv4"></div>
+  </div> <!-- #container //-->
+  <div id="extradiv3"></div>
+  <div id="extradiv2"></div>
+  <div id="extradiv1"></div>
+  <div id="extradiv0"></div>
+  </div> <!-- #body-div //-->
+<div id="tipLang" style="display:none;z-index:2147483647" class="barmenu">
+    <ul class="lang-list" id="lang-list">
+	<li><a href="http://edisonshih.pixnet.net/blog/post/28004686#" onclick="pix.setLocale(&#39;zh_TW&#39;); return false;">繁體中文</a></li>
+	<li><a href="http://edisonshih.pixnet.net/blog/post/28004686#" onclick="pix.setLocale(&#39;zh_CN&#39;); return false;">简体中文</a></li>
+	<li><a href="http://edisonshih.pixnet.net/blog/post/28004686#" onclick="pix.setLocale(&#39;en_US&#39;); return false;">English</a></li>
+	<li><a href="http://edisonshih.pixnet.net/blog/post/28004686#" onclick="pix.setLocale(&#39;ja_JP&#39;); return false;">日本語</a></li>
+    </ul>
+</div>
+<script type="text/javascript">
+<!--
+jQuery(window).load(function() {
+    //autoImgResize
+  '1';
+      jQuery.settings = jQuery.settings || {};
+    jQuery.settings.autoImgResize = {
+      mode:+'1',
+      resizWidth:+'400',
+      selector:'content'
+    };
+
+    if (2 === jQuery.settings.autoImgResize.mode) {
+      jQuery.settings.autoImgResize.resizWidth = jQuery('.article-content').width();
+    }
+    pix.autoImgResize(jQuery.settings.autoImgResize.resizWidth, jQuery.settings.autoImgResize.selector);
+  
+
+});
+//-->
+</script>
+<script type="text/javascript">
+<!--
+jQuery(function() {
+    pix.fixPixnetPlayerID();
+    jQuery('.article-head').find('.column-star').each(function() {
+        var column_link = jQuery(this).attr('data-column-link');
+        jQuery(this).find('h2').append(' <a title="專欄之星" href="' + column_link + '" target="_blank"><img title="專欄之星" alt="column star article" src="http://s.pixfs.net/blog/images/choc/column_star.gif"></a>');
+    });
+    jQuery('.article-hot').each(function() {
+	jQuery(this).find('h2').append(' <a class="__dailyhotclass" title="本日熱門" href="' + jQuery(this).attr('data-hot-link') + '" target="_blank"><img title="熱門文章" alt="hot article today" src="http://s.pixfs.net/blog/images/choc/today_hot.gif"></a>');
+    });
+});
+//-->
+</script>
+<script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/related-7headlines.min.js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/mixpanel.js"></script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/blog-mixpanel.min.js"></script>
+<script type="text/javascript">
+<!--
+  var _gaq = _gaq || [];
+  _gaq.push(
+    ['_setAccount', 'UA-408650-10'],
+    ['_setDetectTitle', false],
+    ['_setDomainName', 'none'],
+    ['_setAllowLinker', true],
+    ['_setVar', 'GUEST'],
+    ['_setVar', 'nonVIP'],
+    ['_setCustomVar', 1, 'member', 'GUEST'],
+    ['_setCustomVar', 2, 'vip', 'nonVIP'],
+    ['_trackPageview', '/blog/'],
+    ['_trackPageLoadTime'],
+
+    ['t2._setAccount', 'UA-408650-5'],
+    ['t2._setDomainName','none'],
+    ['t2._setAllowLinker', true],
+    ['t2._trackPageview', '/_user/EdisonShih'],
+    ['t2._trackPageview']
+
+      );
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+
+
+(function($, undefined) {
+$(function() {
+    var _topbar = $('#topbar');
+    _topbar.find('.topbar__logo').on('click', 'a', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-logo', 'GUEST']);
+    });
+    _topbar.find('#topbar__search').on('submit', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-search-button', 'GUEST']);
+    });
+    _topbar.find('.topbar__announce').on('click', '.topbar__announce__item', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-announce', 'GUEST']);
+    });
+
+    _topbar.find('.topbar__notification__counter').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-notification-counter', 'GUEST']);
+    });
+    _topbar.find('.topbar__notification__list--header__link').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-notification-setting', 'GUEST']);
+    });
+    _topbar.find('.topbar__notification__list--footer__link').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-notification-showall', 'GUEST']);
+    });
+
+    _topbar.find('#topbar__user__login').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-login', 'GUEST']);
+    });
+
+    _topbar.find('#topbar__user__list__link--blog').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-myblog', '']);
+    });
+    _topbar.find('#topbar__user__list__link--articlenew').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-articlenew', '']);
+    });
+    _topbar.find('#topbar__user__list__link--panelsite').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-panelsite', '']);
+    });
+    _topbar.find('#topbar__user__list__link--logout').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-logout', '']);
+    });
+
+    _topbar.find('.topbar__lang').on('click', function() {
+        _gaq.push(['_trackEvent', 'blog-bar', 'click-language-switcher', 'GUEST']);
+    });
+});
+})(jQuery);
+
+//-->
+</script>
+
+<div id="popup-frame" style="display:none">
+    <div id="frame-dimmer"></div>
+    <div id="frame-box">
+       <div id="frame-border"></div>
+       <div id="frame-header">
+           <h3></h3>
+	   <a href="http://edisonshih.pixnet.net/blog/post/28004686#" class="frame-close" title="關閉視窗"><span>關閉視窗</span></a>
+       </div>
+       <div id="frame-content"></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/c.js"></script>
+<script type="text/javascript">
+<!--
+var _type = 'front_blog'; _uCount();
+var _type = 'front_blog_byarticlecategory:24'; _uCount();
+var _type = 'front_blog_bysitecategory:15'; _uCount();
+if (document.location.toString().indexOf('/post/') != -1) {
+    var _type = 'front_blog_post'; _uCount();
+    var _type = 'front_blog_post_nonvip'; _uCount();
+}
+
+if (document.location.toString().indexOf('/search/') != -1) {
+    var _type = 'front_blog_search'; _uCount();
+}
+//-->
+</script>
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/r.js" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+_currentPageUsername = 'EdisonShih';
+_refererCount();
+//-->
+</script>
+<script>
+var _piq = _piq || [];
+_piq.push(
+    ['setCustomVar', 'venue', 'pixnet'],
+    ['setCustomVar', 'author_id', pix.owner],
+        ['setCustomVar', 'article_category_id', "24"],
+        ['setCustomVar', 'nonce', pix.login_name],
+    ['setCustomVar', 'visitor_id', pix.visitor],
+    ['setCustomVar', 'visitor_openid', pix.openid],
+    ['trackPageView']
+);
+
+(function(d, t, u, f, j) {
+    f = d.getElementsByTagName(t)[0];
+    j = d.createElement(t);
+    j.async = 1;
+    j.src = u;
+    f.parentNode.insertBefore(j, f);
+})(document, 'script', '//s.pixanalytics.com/js/pi.min.js');
+</script>
+        <script type="text/javascript">
+        <!--
+            jQuery(function(){
+                jQuery.getScript('//ad.pixnet.net/field.php?test_no_video_ad=&fields[]=blog468x60Banner,203&fields[]=%3Epixblogad-text,649&fields[]=%3Epixblogad-text,651&fields[]=%3Ecomment-area-ad,799');
+            });
+        //-->
+        </script>
+        
+<!-- Modified: 1410610122 -->
+<!-- async script -->
+<script type="text/javascript">
+<!--
+jQuery.ajaxSetup({ cache: true });
+jQuery.getScript("//js.pixplug.in/addon/86/production.js?v=1384155618", function(data, textStatus) { jQuery.pixBookmarkButtons({"position":"top","addon_username":"edisonshih","addon_expired_at":0,"addon_ismobile":false}); });
+jQuery.getScript("//js.pixplug.in/addon/96/production.js?v=1380100897", function(data, textStatus) { jQuery.pix0rz({"addon_username":"edisonshih","addon_expired_at":0,"addon_ismobile":false}); });
+jQuery.getScript("//js.pixplug.in/addon/98/production.js?v=1402911687", function(data, textStatus) { jQuery.pixShowPlurk({"addon_username":"edisonshih","addon_expired_at":0,"addon_ismobile":false}); });
+jQuery.getScript("//js.pixplug.in/addon/206/production.js?v=1402911599", function(data, textStatus) { jQuery.pixShowTwitter({"addon_username":"edisonshih","addon_expired_at":0,"addon_ismobile":false}); });
+jQuery.ajaxSetup({ cache: false });
+//-->
+</script>
+
+<!-- load sync script -->
+
+<!-- execute sync addon -->
+<script type="text/javascript"></script>
+
+
+<script src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/blogtopbar.min.js"></script>
+
+
+
+<div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div><iframe name="fb_xdm_frame_http" frameborder="0" allowtransparency="true" scrolling="no" id="fb_xdm_frame_http" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tabindex="-1" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/ZEbdHPQfV3x.htm" style="border: none;"></iframe><iframe name="fb_xdm_frame_https" frameborder="0" allowtransparency="true" scrolling="no" id="fb_xdm_frame_https" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tabindex="-1" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/ZEbdHPQfV3x(1).htm" style="border: none;"></iframe></div></div><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div></div></div></div><iframe name="oauth2relay545219001" id="oauth2relay545219001" src="./09_二維指標與陣列- 動態配置[m][n] 陣列 - 藍影_files/postmessageRelay.htm" tabindex="-1" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe></body></html>
