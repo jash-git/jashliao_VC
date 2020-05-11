@@ -1,0 +1,142 @@
+<HTML>
+
+<HEAD>
+<TITLE>Alchemy Lab - CInfoZip MFC class</TITLE>
+<META NAME="KEYWORDS"    CONTENT="">
+<META NAME="DESCRIPTION" CONTENT="CInfoZip: ZIP/UnZIP MFC class ">
+</HEAD>
+
+<BODY BASEFONT SIZE="3"
+      TEXT    = "#cccc99"
+      BGCOLOR = "black"
+      LINK    = "silver"  
+      VLINK   = "silver"
+      ALINK   = "red">
+
+<FONT SIZE="-3" COLOR="black">
+
+</FONT><BR>
+
+<FONT FACE="verdana" SIZE="2">
+
+<CENTER>
+<H3><FONT COLOR="#ac7228">CInfoZip MFC class</FONT></H3>
+</CENTER>
+
+<TABLE BORDER="0">
+<TD WIDTH=500><FONT FACE="verdana" SIZE="2">
+
+CInfoZip is an MFC class, wrapping functionality of
+<A HREF="http://www.cdrom.com/pub/infozip/" TARGET="new">InfoZip</A>,
+a great and powerfull free ZIP/UnZIP libraries. CInfoZip was designed to bring
+compression power to <A HREF="../../products/automail/">AutoMail</A>, a small
+handy application, that will help you sending files by e-mail directly from
+Windows Explorer context menu or from DOS command prompt. CInfoZip does not
+perform compression itself, it provides easy-to-use interface to InfoZip DLLs
+(included in CInfoZip package).
+
+</FONT></TD>
+
+<TD>
+<FONT FACE="verdana" SIZE="2">
+<BLOCKQUOTE>
+<STRONG>Our products:<P>
+<A HREF="http://www.alchemy-lab.com/products/automail/">AutoMail</A><BR>
+<A HREF="http://www.alchemy-lab.com/products/describe/">Alchemy Description</A>
+</STRONG></BLOCKQUOTE>
+</FONT>
+</TD>
+</TABLE>
+
+<P>
+
+To use CInfoZip you should:<P>
+
+<STRONG><FONT COLOR="silver">1.</FONT></STRONG>
+Add CInfoZip files to your project and place ZIPDLL.DLL and UNZDLL.DLL files
+into your EXE working directory (\DEBUG\ or \RELEASE\). You may use only one of
+these DLLs if you need to support compression or decompression <I>only</I>.
+
+<P>
+
+<STRONG><FONT COLOR="silver">2.</FONT></STRONG>
+Within your code create CInfoZip class and add initialization method calls:
+<BLOCKQUOTE>
+	<FONT COLOR="silver">
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::InitializeZip<FONT COLOR="#ac7228">();</FONT><BR>
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::InitializeUnzip<FONT COLOR="#ac7228">();</FONT><BR>
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::Initialize<FONT COLOR="#ac7228">();</FONT>
+	</FONT>
+</BLOCKQUOTE>
+The first two functions load InfoZip DLLs, retrieve pointers to their procedures
+they will be using, and return TRUE if all necessary data was successfully
+retrieved and FALSE otherwise. The last one initializes both ZIP and UnZIP DLLs.
+
+<P>
+
+<STRONG><FONT COLOR="silver">3.</FONT></STRONG>
+To add/extract files to/from archive please call:
+<BLOCKQUOTE>
+	<FONT COLOR="silver">
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::AddFiles<FONT COLOR="#ac7228">(const char</FONT> *pszArchive<FONT COLOR="#ac7228">, char</FONT> **paFiles<FONT COLOR="#ac7228">, int</FONT> iFileCount<FONT COLOR="#ac7228">);</FONT><BR>
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::ExtractFiles<FONT COLOR="#ac7228">(const char </FONT> *pszArchive<FONT COLOR="#ac7228">, const char * </FONT>pszTargetFolder<FONT COLOR="#ac7228">);</FONT>
+	</FONT>
+</BLOCKQUOTE>
+where pszArchive is a NULL-terminated string, containing full path and name of
+the archive file, paFiles - array of NULL-terminated strings containing file
+names with full path, iFileCount is a number of files in paFiles array and
+pszTargetFolder is a full path of the folder extracted files will be placed in.
+
+<P>
+
+<STRONG><FONT COLOR="silver">4.</FONT></STRONG>
+When using these methods compression and extraction are performed with some
+predefined parameters set in:
+<BLOCKQUOTE>
+	<FONT COLOR="silver">
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::SetDefaultValues<FONT COLOR="#ac7228">(</FONT>CZipParams *pParams<FONT COLOR="#ac7228">);</FONT><BR>
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::SetDefaultValues<FONT COLOR="#ac7228">(</FONT>CUnzipParams *pParams<FONT COLOR="#ac7228">);</FONT>
+	</FONT>
+</BLOCKQUOTE>
+If you need to perform ZIP operations with different parameters, you should
+create a structure of type CZipParams/CUnzipParams, fill it with your values
+(or call SetDefaultParams and then change some structure members) and then call
+CInfoZip::Execute method:
+<BLOCKQUOTE>
+	<FONT COLOR="silver">
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::Execute<FONT COLOR="#ac7228">(</FONT>CZipParams *pParams<FONT COLOR="#ac7228">);</FONT><BR>
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::Execute<FONT COLOR="#ac7228">(</FONT>CUnzipParams *pParams<FONT COLOR="#ac7228">);</FONT>
+	</FONT>
+</BLOCKQUOTE>
+
+<STRONG><FONT COLOR="silver">5.</FONT></STRONG>
+After you've finished working with CInfoZip, release allocated resources and
+loaded DLLs by calling:
+<BLOCKQUOTE>
+	<FONT COLOR="silver">
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::FinalizeZip<FONT COLOR="#ac7228">();</FONT><BR>
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::FinalizeUnzip<FONT COLOR="#ac7228">();</FONT><BR>
+	<FONT COLOR="#ac7228">BOOL</FONT> CInfoZip::Finalize<FONT COLOR="#ac7228">();</FONT>
+	</FONT>
+</BLOCKQUOTE>
+
+Want to see how it <I>really</I> works? We have written it for our primary
+product - AutoMail. AutoMail is widely distributed and have thousands users, so
+you can be sure it really works - or you can download it and check yourself.
+AutoMail it can help you send files by e-mail from Windows Explorer context menu,
+command promt box and from your programs and batch  files.
+
+<BLOCKQUOTE>
+<A HREF="http://www.alchemy-lab.com/products/automail/automail.zip"><B>Download AutoMail</B> (140K)</A><BR>
+<A HREF="mailto:robot@eserv.ru?subject=subscribe alchemy-lab"><B>Subscribe to the mailing list</B></A><BR>
+</BLOCKQUOTE>
+
+<HR>
+
+<P><FONT SIZE="-3" FACE="arial"><CENTER>
+	Copyright (C) <A HREF="mailto:info@alchemy-lab.com">Alchemy Lab</A>, 1999<BR>
+	<A HREF="http://www.alchemy-lab.com/">Home</A>
+</CENTER><P></FONT>
+
+</BODY>
+</HTML>
