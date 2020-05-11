@@ -1,0 +1,246 @@
+%{
+/*
+     YABASIC --- a tiny integrated Basic Compiler/Interpreter
+
+     FLEX - part
+     
+     this Program is subject to the GNU General Public License;
+     see the file yabasic.c for details.
+*/
+
+#include <string.h>
+#undef WINDOWS
+
+#include "bison.h"       /* get tokens from BISON */
+#ifndef YABASIC_INCLUDED
+#include "yabasic.h"     /* definitions of yabasic */
+#endif
+
+void switch_to_my_file(FILE *inputfile); /* switches input to given file */
+%}
+
+NAME [A-Za-z][A-za-z0-9]*
+%option noyywrap
+%x RET
+%x PRELNO
+%x POSTLNO
+
+%%
+[ \t]* {BEGIN INITIAL;}     /* ignore whitespace */
+<RET>[ \t]* {BEGIN INITIAL;} /* still ignore whitespace */
+
+^[ \t]*[0-9]* {BEGIN PRELNO;yyless(0);return tLABEL;}
+<RET>^[ \t]*[0-9]* {BEGIN PRELNO;yyless(0);return tLABEL;}
+<PRELNO>[ \t]* {}
+<PRELNO>[0-9]* {
+  BEGIN POSTLNO;
+  yylval.symbol=(char *)my_strdup(yytext);
+  return tSYMBOL;
+}
+<POSTLNO>[ \t] {BEGIN INITIAL; yylval.sep=0;return tSEP;}
+<POSTLNO>\n {BEGIN INITIAL;yylval.sep=1;return tSEP;}
+<PRELNO>\n {BEGIN INITIAL;yylval.sep=1;return tSEP;}
+<POSTLNO>. {return yytext[0];}
+<PRELNO>. {return yytext[0];}
+
+
+<<EOF>> {yylval.sep=0;return tEOFILE;}
+<RET>\n {yylval.sep=1;return (interactive) ? tEOFILE:tSEP;}
+<RET>[^\n] {BEGIN INITIAL;unput(yytext[0]);}
+\n {BEGIN RET;yylval.sep=1;return tSEP;}
+: {yylval.sep=0;return tSEP;}
+
+REM.*\n {yylval.sep=1;return tSEP;}  /* comments span 'til end of line */
+^#.*\n {yylval.sep=1;return tSEP;} /* '#' may introduce comments too */
+
+FOR return tFOR;
+TO return tTO;
+STEP return tSTEP;
+NEXT return tNEXT;
+GOTO return tGOTO;
+GOSUB return tGOSUB;
+ON return tON;
+INTERRUPT return tINTERRUPT;
+BREAK return tBREAK;
+CONTINUE return tCONTINUE;
+LABEL return tLABEL;
+IF return tIF;
+THEN return tTHEN;
+ELSE return tELSE;
+ENDIF return tENDIF;
+FI return tENDIF;
+OPEN return tOPEN;
+CLOSE return tCLOSE;
+PRINT return tPRINT;
+REVERSE return tREVERSE;
+\? return tPRINT;
+INPUT return tINPUT;
+RETURN return tRETURN;
+DIM return tDIM;
+END return tEND;
+READ return tREAD;
+DATA return tDATA;
+RESTORE return tRESTORE;
+AND return tAND;
+OR return tOR;
+NOT return tNOT;
+WINDOW return tWINDOW;
+ORIGIN return tORIGIN;
+PRINTER return tPRINTER;
+DOT return tDOT;
+LINE return tLINE;
+CURVE return tCURVE;
+CIRCLE return tCIRCLE;
+CLEAR return tCLEAR;
+TEXT return tTEXT;
+MAP return tMAP;
+XMAP return tXMAP;
+MAPX return tXMAP;
+YMAP return tYMAP;
+MAPY return tYMAP;
+ARROW return tARROW;
+XTICK return tXTICK;
+YTICK return tYTICK;
+BOX return tBOX;
+RECTANGLE return tRECT;
+RECT return tRECT;
+FRAME return tRECT;
+MARKER return tMARKER;
+NEW return tNEW;
+WAIT return tWAIT;
+PAUSE return tWAIT;
+BELL return tBELL;
+BEEP return tBELL;
+
+SIN return tSIN;
+ASIN return tASIN;
+COS return tCOS;
+ACOS return tACOS;
+TAN return tTAN;
+ATAN return tATAN;
+EXP return tEXP;
+LOG return tLOG;
+SQRT return tSQRT;
+INT return tINT;
+FRAC return tFRAC;
+MOD return tMOD;
+RAN return tRAN;
+MIN return tMIN;
+MAX return tMAX;
+"LEFT$" return tLEFT;
+"RIGHT$" return tRIGHT;
+"MID$" return tMID;
+"LOWER$" return tLOWER;
+"UPPER$" return tUPPER;
+"LTRIM$" return tLTRIM;
+"RTRIM$" return tRTRIM;
+"TRIM$" return tTRIM;
+INSTR return tINSTR;
+LEN return tLEN;
+VAL return tVAL;
+EOF return tMYEOF;
+"STR$" return tSTR;
+"INKEY$" return tINKEY;
+"INKEY$()" return tINKEY;
+"CHR$" return tCHR;
+ASC return tASC;
+AT return tAT;
+@ return tAT;
+SCREEN return tSCREEN;
+"SYSTEM$" return tSYSTEM;
+SYSTEM return tSYSTEM2;
+"DATE$" return tDATE;
+"TIME$" return tTIME;
+PEEK return tPEEK;
+"PEEK$" return tPEEK2;
+Poke return tPOKE;
+
+
+"<>" return tNEQ;
+"<=" return tLEQ;
+">=" return tGEQ;
+"=" return tEQU;
+"<" return tLTN;
+">" return tGTN;
+
+[-+*/:(),.;] {return yytext[0];}
+
+[0-9]+ {
+  yylval.digits=(char *)my_strdup(yytext);
+  return tDIGITS;
+}
+
+(([0-9]+|([0-9]*\.[0-9]*))([eE][-+]?[0-9]+)?) {
+  { float f;
+    sscanf(yytext,"%g",&f);
+    yylval.fnum=f;
+    return tFNUM;
+  }
+}
+
+{NAME} {
+  yylval.symbol=(char *)my_strdup(yytext);
+  return tSYMBOL;
+}
+
+  /* Symbols with a trailing $-sign are treated special */
+{NAME}\$ {
+  yylval.strsym=(char *)my_strdup(yytext);
+  return tSTRSYM;
+}
+
+\"([^\"\n]|"\\\"")*\" {
+  yylval.string=(char *)my_strdup(yytext+1);
+  *(yylval.string+yyleng-2)='\0';
+  replace(yylval.string);
+  return tSTRING;
+}
+
+\"([^\"\n]|"\\\"")*\n {
+  yylval.string=NULL;
+  return tSTRING;
+}
+
+. {return yytext[0];}
+
+%%
+void yyerror(char *msg)
+{
+  int i,j;
+  char c=' ';	
+  
+  sprintf(string,"%s at %n",msg,&j);
+  if (*yytext=='\n') {
+    sprintf(string+j,"end of line");
+  }
+  else {
+    i=0;
+    string[j++]='\"';
+    while(yytext[i]) {
+      if (isprint(yytext[i])) string[j++]=yytext[i++];
+      else {
+	sprintf(string+j,"0x%02x",yytext[i]);
+	j+=4;
+	break;
+      }
+    }
+    string[j++]='\"';
+    string[j]='\0';
+  }
+  error(ERROR,string);
+
+  if (c!=' ') unput(c); /* stop gcc from complaining about yyunput ... */
+
+  return;
+}
+
+void switch_to_my_file(FILE *inputfile) /* switches lex input to given file */
+{
+  YY_BUFFER_STATE my_buffer;
+
+  my_buffer=yy_create_buffer(inputfile,YY_BUF_SIZE);
+  yy_switch_to_buffer(my_buffer);
+
+  return;
+}
+

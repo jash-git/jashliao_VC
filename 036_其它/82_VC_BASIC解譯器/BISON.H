@@ -1,0 +1,123 @@
+typedef union {
+  double fnum;          /* double number */
+  int inum;             /* integer number */
+  int token;            /* token of command */
+  int sep;              /* number of newlines */
+  char *string;         /* quoted string */
+  char *symbol;         /* general symbol */
+  char *digits;         /* string of digits */
+  char *strsym;         /* string symbol */
+} YYSTYPE;
+#define	tSEP	258
+#define	tEOFILE	259
+#define	tFNUM	260
+#define	tSYMBOL	261
+#define	tSTRSYM	262
+#define	tDIGITS	263
+#define	tSTRING	264
+#define	tFOR	265
+#define	tTO	266
+#define	tSTEP	267
+#define	tNEXT	268
+#define	tGOTO	269
+#define	tGOSUB	270
+#define	tLABEL	271
+#define	tON	272
+#define	tINTERRUPT	273
+#define	tBREAK	274
+#define	tCONTINUE	275
+#define	tIF	276
+#define	tTHEN	277
+#define	tELSE	278
+#define	tELSIF	279
+#define	tENDIF	280
+#define	tUSING	281
+#define	tPRINT	282
+#define	tINPUT	283
+#define	tLINE	284
+#define	tRETURN	285
+#define	tDIM	286
+#define	tEND	287
+#define	tAT	288
+#define	tSCREEN	289
+#define	tREVERSE	290
+#define	tAND	291
+#define	tOR	292
+#define	tNOT	293
+#define	tNEQ	294
+#define	tLEQ	295
+#define	tGEQ	296
+#define	tLTN	297
+#define	tGTN	298
+#define	tEQU	299
+#define	tREAD	300
+#define	tDATA	301
+#define	tRESTORE	302
+#define	tOPEN	303
+#define	tCLOSE	304
+#define	tORIGIN	305
+#define	tWINDOW	306
+#define	tDOT	307
+#define	tCIRCLE	308
+#define	tTEXT	309
+#define	tCLEAR	310
+#define	tPRINTER	311
+#define	tWAIT	312
+#define	tBELL	313
+#define	tMAP	314
+#define	tXMAP	315
+#define	tYMAP	316
+#define	tARROW	317
+#define	tXTICK	318
+#define	tYTICK	319
+#define	tBOX	320
+#define	tRECT	321
+#define	tNEW	322
+#define	tMARKER	323
+#define	tCURVE	324
+#define	tSIN	325
+#define	tASIN	326
+#define	tCOS	327
+#define	tACOS	328
+#define	tTAN	329
+#define	tATAN	330
+#define	tEXP	331
+#define	tLOG	332
+#define	tSQRT	333
+#define	tSQR	334
+#define	tMYEOF	335
+#define	tABS	336
+#define	tSIG	337
+#define	tINT	338
+#define	tFRAC	339
+#define	tMOD	340
+#define	tRAN	341
+#define	tLEN	342
+#define	tVAL	343
+#define	tLEFT	344
+#define	tRIGHT	345
+#define	tMID	346
+#define	tMIN	347
+#define	tMAX	348
+#define	tSTR	349
+#define	tINKEY	350
+#define	tCHR	351
+#define	tASC	352
+#define	tUPPER	353
+#define	tLOWER	354
+#define	tTRIM	355
+#define	tLTRIM	356
+#define	tRTRIM	357
+#define	tINSTR	358
+#define	tSYSTEM	359
+#define	tSYSTEM2	360
+#define	tPEEK	361
+#define	tPEEK2	362
+#define	tPOKE	363
+#define	tDATE	364
+#define	tTIME	365
+#define	tTOKEN	366
+#define	UMINUS	367
+
+
+extern YYSTYPE yylval;

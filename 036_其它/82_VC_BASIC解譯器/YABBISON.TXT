@@ -1,0 +1,415 @@
+%{
+/*
+     YABASIC --- a tiny integrated Basic Compiler/Interpreter
+
+     BISON - part
+     
+     this Program is subject to the GNU General Public License;
+     see the file yabasic.c for details.
+*/
+
+
+#undef WINDOWS
+
+#ifndef YABASIC_INCLUDED
+#include "yabasic.h"     /* definitions of yabasic */
+#endif
+
+#include <malloc.h>
+
+#if HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
+void __yy_bcopy(char *,char *,int); /* prototype missing */
+
+int tileol; /* true, read should go to eon of line */
+int yylineno=1;
+int yylex(void);
+%}
+
+%union {
+  double fnum;          /* float number */
+  int inum;             /* integer number */
+  int token;            /* token of command */
+  int sep;              /* number of newlines */
+  char *string;         /* quoted string */
+  char *symbol;         /* general symbol */
+  char *digits;         /* string of digits */
+  char *strsym;         /* string symbol */
+}
+
+%type <fnum> const
+%type <fnum> number
+%type <inum> intnum
+%type <symbol> symbol_or_lineno
+%type <inum> hashed_number
+%type <sep> tSEP
+%type <sep> tEOFILE
+
+%token <fnum> tFNUM
+%token <symbol> tSYMBOL
+%token <strsym> tSTRSYM
+%token <digits> tDIGITS
+%token <string> tSTRING
+
+%token tFOR tTO tSTEP tNEXT tGOTO tGOSUB tLABEL tON
+%token tINTERRUPT tBREAK tCONTINUE tSEP tEOFILE
+%token tIF tTHEN tELSE tENDIF
+%token tPRINT tINPUT tLINE tRETURN tDIM tEND tAT tSCREEN tREVERSE
+%token tAND tOR tNOT
+%token tNEQ tLEQ tGEQ tLTN tGTN tEQU
+%token tREAD tDATA tRESTORE
+%token tOPEN tCLOSE tORIGIN
+%token tWINDOW tDOT tLINE tCIRCLE tTEXT tCLEAR tPRINTER
+%token tWAIT tBELL tMAP tXMAP tYMAP tARROW tXTICK tYTICK
+%token tBOX tRECT tNEW tMARKER tCURVE
+
+%token tSIN tASIN tCOS tACOS tTAN tATAN tEXP tLOG tSQRT tMYEOF
+%token tINT tFRAC tMOD tRAN tLEN tVAL tLEFT tRIGHT tMID tLEN tMIN tMAX
+%token tSTR tINKEY tCHR tASC tUPPER tLOWER tTRIM tLTRIM tRTRIM tINSTR 
+%token tSYSTEM tSYSTEM2 tPEEK tPEEK2 tPOKE tDATE tTIME
+
+%left tOR
+%left tAND
+%left tNOT
+
+%left '-' '+'
+%left '*' '/'
+%left '^'
+%nonassoc UMINUS
+
+%%
+
+program: statement_list tEOFILE {end_of_file=TRUE;YYACCEPT;}
+  ;
+
+statement_list: statement
+  | statement_list {if (errorlevel<=ERROR) {YYABORT;}} 
+    tSEP {yylineno+=$3;} statement
+  ;
+
+statement:  /* empty */
+  | string_assignment 
+  | assignment
+  | for_loop 
+  | if_clause
+  | tGOTO symbol_or_lineno {create_goto($2);}
+  | tGOSUB symbol_or_lineno {create_gosub($2);}
+  | tON tINTERRUPT tBREAK {create_exception(TRUE);}
+  | tON tINTERRUPT tCONTINUE {create_exception(FALSE);}
+  | tON expression tGOTO {add_command(cSKIPPER);}
+    goto_list {add_command(cNOP);}
+  | tON expression tGOSUB {add_command(cSKIPPER);} 
+    gosub_list {add_command(cNOP);}
+  | tLABEL symbol_or_lineno {create_label($2);}
+  | tOPEN hashed_number ',' string_expression ',' string_expression
+    {create_myopen($2,'+');}
+  | tOPEN hashed_number ',' string_expression {create_myopen($2,'-');}
+  | tCLOSE hashed_number {create_myclose($2);}
+  | tPRINT printintro printlist {create_revert(FALSE);} semicolon
+  | tINPUT {tileol=FALSE;} inputintro inputlist 
+  | tLINE tINPUT {tileol=TRUE;} inputintro inputlist 
+  | tREAD readlist
+  | tDATA datalist
+  | tRESTORE {create_restore("");}
+  | tRESTORE symbol_or_lineno {create_restore($2);}
+  | tRETURN {add_command(cRETURN);}
+  | tDIM dimlist 
+  | tOPEN tWINDOW expression ',' expression {create_openwin(FALSE);}
+  | tOPEN tWINDOW expression ',' expression ',' string_expression 
+         {create_openwin(TRUE);}
+  | tWINDOW tORIGIN string_expression {add_command(cMOVEORIGIN);}
+  | tDOT mapping {add_command(cDOT);}
+  | tLINE mapping tTO mapping {create_line('l');}
+  | tLINE tTO mapping {create_line('t');}
+  | tNEW tCURVE {create_line('n');}
+  | tCIRCLE mapping ',' expression {add_command(cCIRCLE)}
+  | tTEXT mapping ',' string_expression {create_text(FALSE);}
+  | tTEXT mapping ',' string_expression ',' string_expression
+        {create_text(TRUE);}
+  | tMAP expression ',' expression ',' expression ',' expression tTO
+        expression ',' expression ',' expression ',' expression 
+        {add_command(cMAKEMAP);}
+  | tARROW mapping tTO mapping {create_line('a');}
+  | tXTICK mapping ',' string_expression {create_tick(1);}
+  | tYTICK mapping ',' string_expression {create_tick(3);}
+  | tXTICK mapping {create_tick(0);}
+  | tYTICK mapping {create_tick(2);}
+  | tRECT mapping tTO mapping {create_rect(FALSE);}
+  | tBOX mapping tTO mapping {create_rect(TRUE);}
+  | tMARKER mapping ',' string_expression {create_marker(3);}
+  | tMARKER mapping ',' string_expression ',' expression {create_marker(4);}
+  | tMARKER mapping ',' string_expression ',' expression ',' expression {create_marker(5);}
+  | tCLOSE tWINDOW {add_command(cCLOSEWIN);}
+  | tCLEAR tWINDOW {add_command(cCLEARWIN);}
+  | tCLEAR tSCREEN {add_command(cCLEARSCR);}
+  | tOPEN tPRINTER {create_openprinter(0);}
+  | tOPEN tPRINTER string_expression {create_openprinter(1);}
+  | tCLOSE tPRINTER {add_command(cCLOSEPRN);}
+  | tWAIT expression {add_command(cWAIT);}
+  | tBELL {add_command(cBELL);}
+  | tINKEY {create_function(fINKEY); create_popstrsym(NULL);}
+  | tSYSTEM2 '(' string_expression ')' {create_function(fSYSTEM2);
+	create_popdblsym(NULL);}
+  | tPOKE string_expression ',' string_expression {create_poke('s');}
+  | tPOKE string_expression ',' expression {create_poke('d');}
+  | tEND {add_command(cEND);};
+
+string_assignment: tSTRSYM tEQU string_expression {create_popstrsym($1);}
+  | tMID '(' tSTRSYM {create_pushstrptr($3);} ',' expression ',' expression ')' tEQU string_expression {create_changestring(fMID);}
+  | tLEFT '(' tSTRSYM {create_pushstrptr($3);} ',' expression ')' tEQU string_expression {create_changestring(fLEFT);}
+  | tRIGHT '(' tSTRSYM {create_pushstrptr($3);} ',' expression ')' tEQU string_expression {create_changestring(fRIGHT);}
+  | tSTRSYM '(' {pushcounter();} indexlist ')' tEQU string_expression {create_doarray($1,ASSIGNSTRINGARRAY);}
+  | tMID '(' tSTRSYM '(' {pushcounter();} indexlist ')' {create_doarray($3,GETSTRINGPOINTER);} ',' expression ',' expression ')' tEQU string_expression {create_changestring(fMID);}
+  | tLEFT '(' tSTRSYM '(' {pushcounter();} indexlist ')' {create_doarray($3,GETSTRINGPOINTER);} ',' expression ')' tEQU string_expression {create_changestring(fLEFT);}
+  | tRIGHT '(' tSTRSYM '(' {pushcounter();} indexlist ')' {create_doarray($3,GETSTRINGPOINTER);} ',' expression ')' tEQU string_expression {create_changestring(fRIGHT);}
+  ;
+
+string_expression: tSTRSYM {create_pushstrsym($1);}
+  | string_function;
+  | tSTRING {if ($1==NULL) {error(ERROR,"String not terminated");create_pushstr("");} else {create_pushstr($1);}}
+  | string_expression '+' string_expression {add_command(cCONCAT);}
+  | tSTRSYM '(' {pushcounter();} indexlist ')' {create_doarray($1,CALLSTRINGARRAY);}
+  | '(' string_expression ')'
+  ;
+
+string_function: tLEFT '(' string_expression ',' expression ')' {create_function(fLEFT);}
+  | tRIGHT '(' string_expression ',' expression ')' {create_function(fRIGHT);}
+  | tMID '(' string_expression ',' expression ',' expression ')' {create_function(fMID);}
+  | tSTR '(' expression ')' {create_function(fSTR);}
+  | tSTR '(' expression ',' string_expression ')' {create_function(fSTR2);} 
+  | tINKEY {create_function(fINKEY);}
+  | tCHR '(' expression ')' {create_function(fCHR);}
+  | tUPPER '(' string_expression ')' {create_function(fUPPER);}
+  | tLOWER '(' string_expression ')' {create_function(fLOWER);}
+  | tLTRIM '(' string_expression ')' {create_function(fLTRIM);}
+  | tRTRIM '(' string_expression ')' {create_function(fRTRIM);}
+  | tTRIM '(' string_expression ')' {create_function(fTRIM);}
+  | tSYSTEM '(' string_expression ')' {create_function(fSYSTEM);}
+  | tDATE {create_function(fDATE);}
+  | tTIME {create_function(fTIME);}
+  | tPEEK2 '(' string_expression ')' {create_function(fPEEK2);}
+  ;
+
+assignment: tSYMBOL tEQU expression {create_popdblsym($1);} 
+  | tSYMBOL '(' {pushcounter();} indexlist ')' tEQU expression {create_doarray($1,ASSIGNARRAY);}
+  ;
+
+expression: number {create_pushdbl($1);}
+  | function
+  | tSYMBOL {create_pushdblsym($1);}
+  | tSYMBOL '(' {pushcounter();} indexlist ')' {create_doarray($1,CALLARRAY);};
+  | '(' expression ')' 
+  | expression '+' expression {create_dblbin('+');}
+  | expression '-' expression {create_dblbin('-');}
+  | expression '*' expression {create_dblbin('*');}
+  | expression '/' expression {create_dblbin('/');}
+  | expression '^' expression {create_dblbin('^');}
+  | '-' expression %prec UMINUS {add_command(cNEGATE);}
+  ;
+
+mapping: expression ',' expression
+  | tMAP '(' expression ',' expression ')' {add_command(cMAP);}
+  ;
+
+function: tSIN '(' expression ')' {create_function(fSIN);}
+  | tASIN '(' expression ')' {create_function(fASIN);}
+  | tCOS '(' expression ')' {create_function(fCOS);}
+  | tACOS '(' expression ')' {create_function(fACOS);}
+  | tTAN '(' expression ')' {create_function(fTAN);}
+  | tATAN '(' expression ')' {create_function(fATAN);}
+  | tATAN '(' expression ',' expression  ')' {create_function(fATAN2);}
+  | tEXP '(' expression ')' {create_function(fEXP);}
+  | tLOG '(' expression ')' {create_function(fLOG);}
+  | tSQRT '(' expression ')' {create_function(fSQRT);}
+  | tINT '(' expression ')' {create_function(fINT);}
+  | tFRAC '(' expression ')' {create_function(fFRAC);}
+  | tMOD '(' expression ',' expression ')' {create_function(fMOD);}
+  | tRAN '(' expression ')' {create_function(fRAN);}
+  | tRAN '(' ')' {create_function(fRAN2);}
+  | tMIN '(' expression ',' expression ')' {create_function(fMIN);}
+  | tMAX '(' expression ',' expression ')' {create_function(fMAX);}
+  | tXMAP '(' expression ')' {create_function(fXMAP);}
+  | tYMAP '(' expression ')' {create_function(fYMAP);}
+  | tLEN '(' string_expression ')' {create_function(fLEN);}
+  | tVAL '(' string_expression ')' {create_function(fVAL);}
+  | tASC '(' string_expression ')' {create_function(fASC);}
+  | tINSTR '(' string_expression ',' string_expression ')' {create_function(fINSTR);}
+  | tSYSTEM2 '(' string_expression ')' {create_function(fSYSTEM2);}
+  | tPEEK '(' string_expression ')' {create_function(fPEEK);}
+  ;
+
+const: number {$$=$1;}
+  | '+' number {$$=$2;}
+  | '-' number {$$=-$2;}
+  ;
+
+number: tFNUM {$$=$1;}
+  | tDIGITS {$$=atoi($1);}
+  ;
+
+intnum: tDIGITS {$$=atoi($1);}
+  ;
+
+symbol_or_lineno: tDIGITS {$$=$1;}
+  | tSYMBOL {$$=$1;}
+  ;
+
+dimlist: tSYMBOL '(' {pushcounter();} indexlist ')' {create_dim($1,'d');}
+  | dimlist ',' tSYMBOL '(' {pushcounter();} indexlist ')' {create_dim($3,'d');}
+  | tSTRSYM '(' {pushcounter();} indexlist ')' {create_dim($1,'s');}
+  | dimlist ',' tSTRSYM '(' {pushcounter();} indexlist ')' {create_dim($3,'s');}
+  ;
+
+indexlist: expression {inccounter();}
+  | indexlist ',' expression {inccounter();}
+  ;
+ 
+for_loop: tFOR tSYMBOL tEQU expression 
+            {pushname($2); /* will be used by next_symbol to check equality */
+	     add_command(cDUPLICATE);
+	     create_popdblsym($2);} /* for-variable gets value of expression */
+	  tTO expression 
+	  step_part { /* pushes another expression */
+	     newfor();
+	     pushfor();
+	     create_forprepare();
+	     pushgoto(); /* creates a label implicitly */
+	     create_pushdblsym($2);
+	     pushfor();
+	     create_forcheck();
+	     add_command(cDECIDE);
+             pushlabel();}
+	  tSEP {yylineno+=$10;}
+	     {pushfor();}
+          statement_list {
+	     create_pushdblsym($2);
+	     create_forincrement();
+	     create_popdblsym($2);
+             swap();popgoto();poplabel();}
+          next_or_eofile next_symbol
+  ;
+
+next_or_eofile: tNEXT
+  | tEOFILE {end_of_file=TRUE;
+	    error(ERROR,"'next' statement is missing"); YYABORT;}
+
+step_part: {create_pushdbl(1.0);} /* can be omitted */
+  | tSTEP expression
+  ;
+
+next_symbol:  {pop();}/* can be omitted */
+  | tSYMBOL {if (strcmp(pop()->pointer,$1)) 
+             {error(ERROR,"'for' and 'next' do not match"); YYABORT;}
+           }
+  ;
+
+if_clause: tIF condition {add_command(cDECIDE);pushlabel();}
+           tTHEN statement_list {pushlabel();swap();poplabel();}
+           else_part {poplabel();}
+           endif_or_eof
+  ;
+
+endif_or_eof: tENDIF
+  | tEOFILE {end_of_file=TRUE;
+            error(ERROR,"'endif'-statement is missing"); YYABORT;}
+
+condition: '(' condition ')'
+  | condition tOR condition {create_boole('|');}
+  | condition tAND condition {create_boole('&');}
+  | tNOT condition {create_boole('!');}
+  | string_expression tEQU string_expression {create_strrelop('=');}
+  | string_expression tNEQ string_expression {create_strrelop('!');}
+  | string_expression tLTN string_expression {create_strrelop('<');}
+  | string_expression tLEQ string_expression {create_strrelop('{');}
+  | string_expression tGTN string_expression {create_strrelop('>');}
+  | string_expression tGEQ string_expression {create_strrelop('}');}
+  | expression tEQU expression {create_dblrelop('=');}
+  | expression tNEQ expression {create_dblrelop('!');}
+  | expression tLTN expression {create_dblrelop('<');}
+  | expression tLEQ expression {create_dblrelop('{');}
+  | expression tGTN expression {create_dblrelop('>');}
+  | expression tGEQ expression {create_dblrelop('}');}
+  | tMYEOF '(' hashed_number ')' {create_testeof($3);}
+  ;
+
+else_part: /* can be omitted */
+  | tELSE statement_list
+  ;
+
+inputlist: input
+  | input ',' {add_command(cCHKPROMPT);} inputlist
+  ;
+
+input: tSYMBOL {create_myread('d',tileol);create_popdblsym($1);}
+  | tSYMBOL '(' {pushcounter();} indexlist ')' 
+    {create_myread('d',tileol);create_doarray($1,ASSIGNARRAY);}
+  | tSTRSYM {create_myread('s',tileol);create_popstrsym($1);}
+  | tSTRSYM '(' {pushcounter();} indexlist ')' 
+    {create_myread('s',tileol);create_doarray($1,ASSIGNSTRINGARRAY);}
+  ;
+
+readlist: readitem
+  | readlist ',' readitem
+  ;
+
+readitem: tSYMBOL {create_readdata('d');create_popdblsym($1);}
+  | tSYMBOL '(' {pushcounter();} indexlist ')' 
+    {create_readdata('d');create_doarray($1,ASSIGNARRAY);}
+  | tSTRSYM {create_readdata('s');create_popstrsym($1);}
+  | tSTRSYM '(' {pushcounter();} indexlist ')' 
+    {create_readdata('s');create_doarray($1,ASSIGNSTRINGARRAY);}
+  ;
+
+datalist: tSTRING {create_strdata($1);}
+  | const {create_dbldata($1);}
+  | datalist ','  tSTRING {create_strdata($3);}
+  | datalist ',' const {create_dbldata($3);}
+  ;
+
+printlist:  /* possible empty */
+  | expression {create_print('d');}
+  | printlist ',' expression {create_print('d');} 
+  | string_expression {create_print('s');} 
+  | printlist ',' string_expression {create_print('s');}
+  ;
+
+inputintro: stream
+  | {create_myswitch(0);} prompt 
+  | position {create_myswitch(0);} prompt
+  ;
+
+printintro: {create_myswitch(0);} /* can be empty */
+  | stream
+  | tREVERSE {create_revert(TRUE);create_myswitch(0);}
+  | position {create_myswitch(0);}
+  | tREVERSE position {create_revert(TRUE);create_myswitch(0);}
+  ;  
+
+prompt: /* empty */ {create_onestring("?");}
+  | tSTRING {create_onestring($1);}
+  | tSTRING ',' {create_onestring($1);}
+  ;
+
+position: tAT '(' expression ',' expression ')' {add_command(cMOVE);}
+  ;
+
+stream: '#' intnum {create_myswitch($2);}
+  ;
+
+hashed_number: '#' intnum {$$=$2;}
+  | intnum {$$=$1;} /* need not contain hash */
+  ;
+
+semicolon: /* can be left out */ {create_print('n');}
+  | ';'
+  ;
+
+goto_list: symbol_or_lineno {create_goto($1);add_command(cFINDNOP);}
+  | goto_list ',' symbol_or_lineno {create_goto($3);add_command(cFINDNOP);}
+  ;
+
+gosub_list: symbol_or_lineno {create_gosub($1);add_command(cFINDNOP);}
+  | gosub_list ',' symbol_or_lineno {create_gosub($3);add_command(cFINDNOP);}
+  ;
