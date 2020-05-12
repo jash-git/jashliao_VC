@@ -1,0 +1,44 @@
+VC：CxImage 試用 檢舉 分類：程式相關筆記2006/03/24 15:07
+為了讓自己的 MFC 程式能開啟一些常用的圖檔格式，但自己只寫過開啟BMP的方法，所以希望能找到一些現成能用的東西。聽到 CxImage 這個東西。
+
+http://www.codeproject.com/bitmap/cximage.asp
+
+ 
+
+ 
+
+【嘗試安裝】
+
+下載回來後，裡面雖然有完整的說明文件，但似乎找不到安裝說明，有點頭痛。試著把裡面各個目錄中的專案都 running 過一次後，結果產生了以下的 *.lib 檔案：CxImage.lib、j2k.lib、jasper.lib、jbig.lib、jpeg.lib、png.lib、tiff.lib、zlib.lib，將它們放入 Microsoft Visual Studio\VC98\Lib 中，接著將 CxImage 目錄中的 *.h、*.cpp 拷貝到 Microsoft Visual Studio\VC98\Include\CxImage 目錄中〈本來想拷備到自己的專案中，但是怕太亂...〉，最後用以下方式連結：
+
+#pragma comment (lib, "CxImage.lib")
+#pragma comment (lib, "j2k.lib")
+#pragma comment (lib, "jasper.lib")
+#pragma comment (lib, "jbig.lib")
+#pragma comment (lib, "jpeg.lib")
+#pragma comment (lib, "png.lib")
+#pragma comment (lib, "tiff.lib")
+#pragma comment (lib, "zlib.lib")
+#include <CxImage/ximage.h>
+
+ 
+
+結果可以成功編譯，接著看看是不是真的能使用：
+
+Document 中：
+CxImage myImage;
+myImage.Load("test.jpg", 0);
+
+View 中：
+pDoc->myImage.Draw( pDC->GetSafeHdc(), 0, 0, -1, -1, NULL, false);
+
+ 
+
+圖片真的成功讀進來了。其實把它當函數庫用就可以了。雖然還是對自己的安裝過程感到有點不安，不過至少能用了，剩下的東西可以慢慢研究。
+
+ 
+
+ 
+
+《環境：Visual Studio 6.0》
+
