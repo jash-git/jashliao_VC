@@ -1,0 +1,728 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0073)http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script charset="utf-8" src="./02_files/t.js.下載"></script><script charset="utf-8" src="./02_files/s.js.下載"></script><script charset="utf-8" src="./02_files/s.js.下載"></script>
+
+<meta http-equiv="Content-Language" content="zh-CN">
+<title>FreeImage使用基础，图像旋转，图像滤波_博客园</title>
+
+<meta http-equiv="keywords" content="freeimage,基础,图像,旋转,滤波">
+<meta http-equiv="description" content="FreeImage使用基础，图像旋转，图像滤波,freeimage,基础,图像,旋转,滤波,博客园">
+<meta name="keywords" content="freeimage,基础,图像,旋转,滤波">
+<meta name="description" content="FreeImage使用基础，图像旋转，图像滤波,freeimage,基础,图像,旋转,滤波,博客园">
+<meta name="robots" content="all">
+<meta name="googlebot" content="index,follow">
+<meta name="revisit-after" content="7 days">
+<link rel="shortcut icon" href="http://www.makaidong.com/favicon.ico">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link rel="stylesheet" rev="stylesheet" href="./02_files/makaidong.css" type="text/css" media="screen">
+	
+
+<script src="./02_files/hm.js.下載"></script><script src="./02_files/hm.js.下載"></script><script src="./02_files/share.js.下載"></script><script src="./02_files/share.js.下載"></script><link rel="stylesheet" href="./02_files/slide_share.css"><style>html #hm_t_undefined .hm-t-go-top {position:fixed;right:2px;bottom:2px;z-index:99998;cursor:pointer;width:40px;height:37px!important;text-align:center;white-space:normal;font-size:14px;line-height:17px;padding-top:3px;color:#fff;background:#404040;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAAAXCAYAAABH92JbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMjgwMTE3NDA3MjA2ODExODA4M0UyNDA4ODdDRTZBQiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBQjc5RkRFNkI5ODMxMUUzQkZGNDhENEJFQjM2OTcyRiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBQjc5RkRFNUI5ODMxMUUzQkZGNDhENEJFQjM2OTcyRiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDI4MDExNzQwNzIwNjgxMTgwODNFMjQwODg3Q0U2QUIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MDI4MDExNzQwNzIwNjgxMTgwODNFMjQwODg3Q0U2QUIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5HPYM5AAACC0lEQVR42uyZTSgEYRjH90NoqaVcpDblvKW2XOSkNh8H5Yac9sBBDqQokiJKSMpNTi5OPo6Ktsgu67JcUHIXWfK1u3b8Xx6Zxuzu+64dM83uv34zNfu8b8/8Z+d5P8YqSZLFJNLsRmyWvIRMKgVD4AhEwA3YAV0pzGwEqyAEwmAddIICHe7FqhnsdQM14FxKLj+ooFiGE2ykiD8GVbJ4I1ELAnTmasMODnAhpVcIFIMicMgRH6Z4IxnUAh4pP3Zu5TVpUOLXDJgWiB8wkEF9IK7IL07X05oUFLjpZ4JXQQOYYwfzafJcoDjVPqw43KE4lWtUTF+AQ8eBqQSsgTaO2E0apJ7URrdCDZOM62hQJfBzGmShOD+1+2XSiYaJ7utkkBsEgEewnYfauZUmzWmU6DuY0sEgLzgArgzbu6i992cu/1WclqXsa1iHIt0DYlnKP0b9fRZu5pWdZs7dWXqa7B80+s//oF5aMSjflGqBPq5BQnFtVv4UmGHjIPEH96PAZ6C5kVMwf6daPzbFKnqCqvx9Bk/yFjSBFTMvcL+1DerAmUA/p9Rm1+y7AHJdgnqwx9EHm1s0gKtc2CpR6gE00/ZHMm3RKxbJlf0kNb2BDrCk8hsbDdvBay5tuiUTGxL7waTs2iLw0YTR9BLZQRwDUVqwjuTS9q3VRB8C1OQUnM6UqdXX/IcADn0IMADs2AqDOPSutQAAAABJRU5ErkJggg==) no-repeat -42px center #666;*background-image:url(http://ecma.bdimg.com/holmes/t-popup-icons-png8.png);_position:absolute;_top:expression(eval(document.documentElement.scrollTop+(document.documentElement.clientHeight||document.body.clientHeight)-this.offsetHeight-2));}</style><style>html #hm_t_undefined .hm-t-go-top {position:fixed;right:2px;bottom:2px;z-index:99998;cursor:pointer;width:40px;height:37px!important;text-align:center;white-space:normal;font-size:14px;line-height:17px;padding-top:3px;color:#fff;background:#404040;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAAAXCAYAAABH92JbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMjgwMTE3NDA3MjA2ODExODA4M0UyNDA4ODdDRTZBQiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBQjc5RkRFNkI5ODMxMUUzQkZGNDhENEJFQjM2OTcyRiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBQjc5RkRFNUI5ODMxMUUzQkZGNDhENEJFQjM2OTcyRiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDI4MDExNzQwNzIwNjgxMTgwODNFMjQwODg3Q0U2QUIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MDI4MDExNzQwNzIwNjgxMTgwODNFMjQwODg3Q0U2QUIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5HPYM5AAACC0lEQVR42uyZTSgEYRjH90NoqaVcpDblvKW2XOSkNh8H5Yac9sBBDqQokiJKSMpNTi5OPo6Ktsgu67JcUHIXWfK1u3b8Xx6Zxuzu+64dM83uv34zNfu8b8/8Z+d5P8YqSZLFJNLsRmyWvIRMKgVD4AhEwA3YAV0pzGwEqyAEwmAddIICHe7FqhnsdQM14FxKLj+ooFiGE2ykiD8GVbJ4I1ELAnTmasMODnAhpVcIFIMicMgRH6Z4IxnUAh4pP3Zu5TVpUOLXDJgWiB8wkEF9IK7IL07X05oUFLjpZ4JXQQOYYwfzafJcoDjVPqw43KE4lWtUTF+AQ8eBqQSsgTaO2E0apJ7URrdCDZOM62hQJfBzGmShOD+1+2XSiYaJ7utkkBsEgEewnYfauZUmzWmU6DuY0sEgLzgArgzbu6i992cu/1WclqXsa1iHIt0DYlnKP0b9fRZu5pWdZs7dWXqa7B80+s//oF5aMSjflGqBPq5BQnFtVv4UmGHjIPEH96PAZ6C5kVMwf6daPzbFKnqCqvx9Bk/yFjSBFTMvcL+1DerAmUA/p9Rm1+y7AHJdgnqwx9EHm1s0gKtc2CpR6gE00/ZHMm3RKxbJlf0kNb2BDrCk8hsbDdvBay5tuiUTGxL7waTs2iLw0YTR9BLZQRwDUVqwjuTS9q3VRB8C1OQUnM6UqdXX/IcADn0IMADs2AqDOPSutQAAAABJRU5ErkJggg==) no-repeat -42px center #666;*background-image:url(http://ecma.bdimg.com/holmes/t-popup-icons-png8.png);_position:absolute;_top:expression(eval(document.documentElement.scrollTop+(document.documentElement.clientHeight||document.body.clientHeight)-this.offsetHeight-2));}</style><style>html{_background-image:url(about:blank);_background-attachment:fixed}</style><link rel="stylesheet" href="./02_files/share_style0_16.css"><link rel="stylesheet" href="./02_files/share_popup.css"><link rel="stylesheet" href="./02_files/select_share.css"></head>
+<body>
+ <div id="wrap">
+  <div id="header">
+
+  
+           <div id="logo">
+		<h1><a href="http://www.makaidong.com/" title="马开东博客">马开东博客</a></h1><p>关注程序员_创业者_互联网_站长SEO_IT技术聚合_科技新闻资讯_数据挖掘</p>
+
+           </div>
+        <div id="toptool"></div>
+    </div>
+        <div id="nav">
+           <div class="left">
+           <ul id="menu" class="menu">
+           <li><a href="http://www.makaidong.com/" title="首页"><span id="menuON">首页</span></a></li>
+           <li><a href="http://www.makaidong.com/%E9%A9%AC%E5%BC%80%E4%B8%9C%E5%8D%9A%E5%AE%A2/index.html" title="马开东博客"><span id="menuON">博客</span></a></li>
+           <li><a href="http://www.makaidong.com/%E5%A5%87%E8%99%8E360/index.html" title="奇虎360"><span id="menuON">奇虎360</span></a></li>
+           <li><a href="http://www.makaidong.com/%E7%AB%99%E9%95%BF%E6%96%B0%E9%97%BB/index.html" title="站长新闻"><span id="menuON">站长新闻</span></a></li>
+           <li><a href="http://www.makaidong.com/IT%E6%96%B0%E9%97%BB/index.html" title="IT新闻"><span id="menuON">IT新闻</span></a></li>
+           <li><a href="http://www.makaidong.com/%E5%A5%BD%E6%96%87%E5%88%86%E4%BA%AB/index.html" title="好文分享"><span id="menuON">好文分享</span></a></li>
+           <li><a href="http://www.makaidong.com/IT%E6%AE%B5%E5%AD%90/index.html" title="IT段子"><span id="menuON">IT段子</span></a></li>
+           <li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%A4%A7%E5%85%A8/index.html" title="博客大全"><span id="menuON">博客大全</span></a></li>
+           
+           </ul></div> 
+        </div>
+      </div>
+		<nav id="navs-wrap">
+       
+        
+         <span id="navs" class="menu">
+         </span>
+ 
+	
+        </nav>
+<div id="container">
+<div class="content">
+<div id="ads-banner"></div>
+<dl class="post" id="post-1">
+  <div class="website">当前位置：<a href="http://www.makaidong.com/">首页</a> &gt; <a target="_blank" href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/">博客园</a> &gt;FreeImage使用基础，图像旋转，图像滤波</div>
+  <div class="clear"></div>
+<div class="post-title">
+
+<h1>FreeImage使用基础，图像旋转，图像滤波</h1>
+   
+<h6> &nbsp; 作者：Let it be! &nbsp; 来源： 博客园-wangshide &nbsp;
+            <span id="cancelSpan" style="display:none; cursor: pointer;">取消收藏</span>
+            <span id="comfirmSpan" style="display:none;cursor: pointer;">收藏</span>
+            <div id="ckepop"></div></h6>
+            </div>
+<div class="clear"></div>
+<div class="comment-title"><h3><ul><li class="current">正文</li><li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#comment">点这评论</a></li></ul></h3></div>
+<dd class="con">
+
+
+		             
+
+
+              <div class="cnblogs_code"> 
+ <pre><strong><span style="font-size: 15px;">1. 使用了 freeImage 图像库进行图像读取，保存（如何将图片转为矩阵，如何处理图片的颜色（rgb），透明等信息）</span></strong><br><strong><span style="font-size: 15px;"><br>2. 图像旋转<br></span></strong><br><strong><span style="font-size: 15px;">3. 高斯图像滤波<br></span></strong><br><br>#include &lt;stdio.h&gt;<span style="color: #000000;">
+#include </span>&lt;stdlib.h&gt;<span style="color: #000000;">
+#include </span>&lt;malloc.h&gt;<span style="color: #000000;">
+#include </span><span style="color: #800000;">"</span><span style="color: #800000;">FreeImage.h</span><span style="color: #800000;">"</span><span style="color: #000000;">
+#include </span>&lt;math.h&gt;<span style="color: #000000;">
+#include </span>&lt;time.h&gt;
+<span style="color: #0000ff;">#pragma</span> comment(lib, "FreeImage.lib")
+
+<span style="color: #0000ff;">#define</span>  PI  3.141592645
+<span style="color: #008000;">//</span><span style="color: #008000;"> 自定义一个4字节的结构体</span>
+<span style="color: #0000ff;">class</span><span style="color: #000000;"> byte4
+{
+</span><span style="color: #0000ff;">public</span><span style="color: #000000;">:
+    BYTE r; </span><span style="color: #008000;">//</span><span style="color: #008000;"> 用于存放 red</span>
+    BYTE g; <span style="color: #008000;">//</span><span style="color: #008000;"> 用于存放 green</span>
+    BYTE b; <span style="color: #008000;">//</span><span style="color: #008000;"> 用于存放 blue</span>
+    BYTE a; <span style="color: #008000;">//</span><span style="color: #008000;"> 用于存放 alpha</span>
+<span style="color: #000000;">};
+
+</span><span style="color: #0000ff;">static</span> <span style="color: #0000ff;">int</span> maskHeight = <span style="color: #800080;">3</span><span style="color: #000000;">; // 掩模高度
+</span><span style="color: #0000ff;">static</span> <span style="color: #0000ff;">int</span> maskWidth  = <span style="color: #800080;">3</span><span style="color: #000000;">; // 掩模宽度
+</span><span style="color: #008000;">//</span><span style="color: #008000;">高斯滤波掩模</span>
+<span style="color: #0000ff;">float</span> mask[<span style="color: #800080;">3</span>][<span style="color: #800080;">3</span>] =<span style="color: #000000;"> 
+    {
+    {</span><span style="color: #800080;">0.0751</span> ,  <span style="color: #800080;">0.1238</span>  , <span style="color: #800080;">0.0751</span><span style="color: #000000;">},
+    {</span><span style="color: #800080;">0.1238</span> ,  <span style="color: #800080;">0.2042</span>  , <span style="color: #800080;">0.1238</span><span style="color: #000000;">},
+    {</span><span style="color: #800080;">0.0751</span> ,  <span style="color: #800080;">0.1238</span>  ,  <span style="color: #800080;">0.0751</span><span style="color: #000000;">}};
+</span><span style="color: #008000;">//</span><span style="color: #008000;">串行图像滤波</span>
+<span style="color: #0000ff;">void</span> cpu_filter(byte4** inbuf,  byte4** outbuf, <span style="color: #0000ff;">int</span> w, <span style="color: #0000ff;">int</span><span style="color: #000000;"> h)
+{
+    </span><span style="color: #0000ff;">for</span>(<span style="color: #0000ff;">int</span> row = <span style="color: #800080;">1</span>; row &lt; h - <span style="color: #800080;">1</span>; row ++<span style="color: #000000;">)
+    {
+        </span><span style="color: #0000ff;">for</span>(<span style="color: #0000ff;">int</span> col = <span style="color: #800080;">1</span>; col &lt; w - <span style="color: #800080;">1</span>; col ++<span style="color: #000000;">)
+        {
+            outbuf[row][col].r </span>= <span style="color: #800080;">0</span><span style="color: #000000;">;
+            outbuf[row][col].g </span>= <span style="color: #800080;">0</span><span style="color: #000000;">;
+            outbuf[row][col].b </span>= <span style="color: #800080;">0</span><span style="color: #000000;">;
+            outbuf[row][col].a </span>= <span style="color: #800080;">0</span><span style="color: #000000;">;
+            </span><span style="color: #0000ff;">float</span> t1 = <span style="color: #800080;">0</span>, t2 = <span style="color: #800080;">0</span>, t3 = <span style="color: #800080;">0</span>, t4 = <span style="color: #800080;">0</span><span style="color: #000000;">;
+            </span><span style="color: #0000ff;">for</span>(<span style="color: #0000ff;">int</span> i = <span style="color: #800080;">0</span>; i &lt; maskHeight; i ++<span style="color: #000000;">)
+                </span><span style="color: #0000ff;">for</span>(<span style="color: #0000ff;">int</span> j = <span style="color: #800080;">0</span>; j &lt; maskWidth; j++<span style="color: #000000;">)
+                {
+                     t1 </span>+= inbuf[row + i - <span style="color: #800080;">1</span>][col + j - <span style="color: #800080;">1</span>].r *<span style="color: #000000;"> mask[i][j];
+                     t2 </span>+= inbuf[row + i - <span style="color: #800080;">1</span>][col + j - <span style="color: #800080;">1</span>].g *<span style="color: #000000;"> mask[i][j];
+                     t3 </span>+= inbuf[row + i - <span style="color: #800080;">1</span>][col + j - <span style="color: #800080;">1</span>].b *<span style="color: #000000;"> mask[i][j];
+                     t4 </span>+= inbuf[row + i - <span style="color: #800080;">1</span>][col + j - <span style="color: #800080;">1</span>].a *<span style="color: #000000;"> mask[i][j];
+                }
+
+            outbuf[row][col].r </span>= (<span style="color: #0000ff;">int</span><span style="color: #000000;">)t1;
+            outbuf[row][col].g </span>= (<span style="color: #0000ff;">int</span><span style="color: #000000;">)t2;
+            outbuf[row][col].b </span>= (<span style="color: #0000ff;">int</span><span style="color: #000000;">)t3;
+            outbuf[row][col].a </span>= (<span style="color: #0000ff;">int</span><span style="color: #000000;">)t4;
+        }
+    }
+}
+</span><span style="color: #008000;">//</span><span style="color: #008000;">CPU旋转图像</span>
+<span style="color: #0000ff;">void</span> cpu_rotate(byte4** inbuf, byte4** outbuf, <span style="color: #0000ff;">int</span> w, <span style="color: #0000ff;">int</span> h, <span style="color: #0000ff;">float</span><span style="color: #000000;"> angle)
+{
+    </span><span style="color: #0000ff;">if</span>(w % <span style="color: #800080;">2</span> == <span style="color: #800080;">0</span>) w --<span style="color: #000000;">;
+    </span><span style="color: #0000ff;">if</span>(h % <span style="color: #800080;">2</span> == <span style="color: #800080;">0</span>) h --<span style="color: #000000;">;
+    </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> i, j;
+    </span><span style="color: #0000ff;">int</span> xc = w/<span style="color: #800080;">2</span><span style="color: #000000;">;
+    </span><span style="color: #0000ff;">int</span> yc = h/<span style="color: #800080;">2</span><span style="color: #000000;">;
+
+    </span><span style="color: #0000ff;">float</span> cosTheta = cos(PI * angle/<span style="color: #800080;">180</span><span style="color: #000000;">);
+    </span><span style="color: #0000ff;">float</span> sinTheta = sin(PI * angle/<span style="color: #800080;">180</span><span style="color: #000000;">);
+
+    </span><span style="color: #0000ff;">for</span>(i = <span style="color: #800080;">0</span>; i &lt; h; i++<span style="color: #000000;">)
+    {
+        </span><span style="color: #0000ff;">for</span>(j=<span style="color: #800080;">0</span>; j&lt; w; j++<span style="color: #000000;">)
+        {
+            </span><span style="color: #0000ff;">int</span> xpos = (<span style="color: #0000ff;">int</span>)( (i-xc)*cosTheta  + (j-yc)*sinTheta +<span style="color: #000000;"> xc );    
+            </span><span style="color: #0000ff;">int</span> ypos = (<span style="color: #0000ff;">int</span>)( -(i-xc)*sinTheta + (j-yc)*cosTheta +<span style="color: #000000;"> yc ); 
+
+            </span><span style="color: #0000ff;">if</span>(xpos&gt;=<span style="color: #800080;">0</span> &amp;&amp; ypos&gt;=<span style="color: #800080;">0</span> &amp;&amp; xpos&lt;h &amp;&amp; ypos &lt;<span style="color: #000000;"> w )
+                outbuf[xpos][ypos] </span>=<span style="color: #000000;"> inbuf[i][j];
+        }
+    }
+}
+</span><span style="color: #0000ff;">void</span> main(<span style="color: #0000ff;">int</span> argc, <span style="color: #0000ff;">char</span>*<span style="color: #000000;"> argv)
+{
+
+
+    </span><span style="color: #0000ff;">char</span> * imageFile = <span style="color: #800000;">"</span><span style="color: #800000;">lenna.PNG</span><span style="color: #800000;">"</span><span style="color: #000000;">;
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 初始化</span>
+<span style="color: #000000;">    FreeImage_Initialise(TRUE);
+
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 读取图像</span>
+    FIBITMAP * bitmap =<span style="color: #000000;"> FreeImage_Load(FIF_PNG, imageFile, PNG_DEFAULT);
+    </span><span style="color: #0000ff;">if</span>(bitmap) printf(<span style="color: #800000;">"</span><span style="color: #800000;">Image Load successfully!\n</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 获得图像的宽和高（像素）</span>
+    <span style="color: #0000ff;">int</span> width  =<span style="color: #000000;"> FreeImage_GetWidth(bitmap);
+    </span><span style="color: #0000ff;">int</span> height =<span style="color: #000000;"> FreeImage_GetHeight(bitmap);
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 计算每个像素的字节数</span>
+    <span style="color: #008000;">/*</span><span style="color: #008000;">**********************************************************************</span><span style="color: #008000;">*/</span>
+    <span style="color: #008000;">/*</span><span style="color: #008000;"> 已经测试有JPEG格式：每像素字节数3                                      </span><span style="color: #008000;">*/</span>
+    <span style="color: #008000;">/*</span><span style="color: #008000;"> 已经测试有JPEG格式：每像素字节数4                                      </span><span style="color: #008000;">*/</span>
+    <span style="color: #008000;">/*</span><span style="color: #008000;">**********************************************************************</span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">int</span> bytespp = FreeImage_GetLine(bitmap)/<span style="color: #000000;"> width;
+    printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">Width:%d\t Height:%d\t 每像素字节数:%d\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, width, height, bytespp);
+
+
+
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 测试 int, float, byte4的各自的字节数</span>
+    printf(<span style="color: #800000;">"</span><span style="color: #800000;">int: %d \nfloat: %d\nbyte4: %d\n</span><span style="color: #800000;">"</span>, <span style="color: #0000ff;">sizeof</span>(<span style="color: #0000ff;">int</span>), <span style="color: #0000ff;">sizeof</span>(<span style="color: #0000ff;">float</span>), <span style="color: #0000ff;">sizeof</span><span style="color: #000000;">(byte4));
+
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 用于存放像素值得矩阵</span>
+    byte4 **<span style="color: #000000;">matrix;
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 动态开辟2维数组</span>
+    matrix = (byte4 **)calloc(height, <span style="color: #0000ff;">sizeof</span>(byte4*<span style="color: #000000;">));
+    </span><span style="color: #0000ff;">for</span>(<span style="color: #0000ff;">int</span> i = <span style="color: #800080;">0</span>; i &lt; height; i++<span style="color: #000000;">)
+    {
+        matrix[i] </span>= (byte4*)calloc(width, <span style="color: #0000ff;">sizeof</span><span style="color: #000000;">(byte4));
+    }
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 用于存放输出像素值矩阵</span>
+    byte4 **<span style="color: #000000;"> matrix_dst;
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 动态开辟2维数组</span>
+    matrix_dst = (byte4 **)calloc(height, <span style="color: #0000ff;">sizeof</span>(byte4*<span style="color: #000000;">));
+    </span><span style="color: #0000ff;">for</span>(<span style="color: #0000ff;">int</span> i = <span style="color: #800080;">0</span>; i &lt; height; i++<span style="color: #000000;">)
+    {
+        matrix_dst[i] </span>= (byte4*)calloc(width, <span style="color: #0000ff;">sizeof</span><span style="color: #000000;">(byte4));
+    }
+    </span><span style="color: #0000ff;">if</span>(matrix &amp;&amp;<span style="color: #000000;"> matrix_dst)
+        printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">内存申请成功！\n</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+
+    </span><span style="color: #0000ff;">for</span>(unsigned y = <span style="color: #800080;">0</span>; y &lt; height; y++<span style="color: #000000;">)
+    {
+        BYTE </span>*bitsLine =<span style="color: #000000;"> FreeImage_GetScanLine(bitmap, y);
+        </span><span style="color: #0000ff;">for</span>(unsigned x = <span style="color: #800080;">0</span>; x &lt; width; x++<span style="color: #000000;">)
+        {
+            </span><span style="color: #008000;">//</span><span style="color: #008000;"> 设置像素颜色</span>
+            matrix[y][x].r =<span style="color: #000000;"> bitsLine[FI_RGBA_RED]   ;
+            matrix[y][x].g </span>=<span style="color: #000000;"> bitsLine[FI_RGBA_GREEN] ;
+            matrix[y][x].b </span>=<span style="color: #000000;"> bitsLine[FI_RGBA_BLUE]  ;
+            matrix[y][x].a </span>=<span style="color: #000000;"> bitsLine[FI_RGBA_ALPHA] ;
+            bitsLine </span>+=<span style="color: #000000;"> bytespp;            
+        }
+    }
+
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 执行旋转， 滤波</span>
+    <span style="color: #0000ff;">int</span> start =<span style="color: #000000;"> clock();
+<span style="font-size: 15px; color: #00ff00;"> // cpu_rotate(matrix, matrix_dst, width, height, </span></span><span style="font-size: 15px;"><span style="color: #00ff00;">90</span><span style="color: #000000;"><span style="color: #00ff00;">); cpu_filter(matrix, matrix_dst, width, height);</span> printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">Time elapsed: %d ms\n</span><span style="color: #800000;">"</span>, (clock() -<span style="color: #000000;"> start)); </span></span><span style="color: #008000;">//</span><span style="color: #008000;"> 输出FreeImage 图像</span>
+    FIBITMAP * dst =<span style="color: #000000;">  bitmap;
+
+    </span><span style="color: #0000ff;">for</span>(unsigned y = <span style="color: #800080;">0</span>; y &lt; height; y++<span style="color: #000000;">)
+    {
+        BYTE </span>*bitsLine =<span style="color: #000000;"> FreeImage_GetScanLine(dst, y);
+        </span><span style="color: #0000ff;">for</span>(unsigned x = <span style="color: #800080;">0</span>; x &lt; width; x++<span style="color: #000000;">)
+        {
+            </span><span style="color: #008000;">//</span><span style="color: #008000;"> 设置像素颜色</span>
+            bitsLine[FI_RGBA_RED]   =<span style="color: #000000;"> matrix_dst[y][x].r ;
+            bitsLine[FI_RGBA_GREEN] </span>=<span style="color: #000000;"> matrix_dst[y][x].g ;
+            bitsLine[FI_RGBA_BLUE]  </span>=<span style="color: #000000;"> matrix_dst[y][x].b ;
+            bitsLine[FI_RGBA_ALPHA] </span>=<span style="color: #000000;"> matrix_dst[y][x].a ;
+            bitsLine </span>+=<span style="color: #000000;"> bytespp;
+        }
+    }
+
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> 存储图像</span>
+    FreeImage_Save(FIF_PNG, dst, <span style="color: #800000;">"</span><span style="color: #800000;">dst.png</span><span style="color: #800000;">"</span><span style="color: #000000;">, PNG_DEFAULT);
+    getchar();
+}</span></pre> 
+</div>  
+      <center>
+     <div class="pagebar"><div>
+<a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html">[<span class="p2-crr">1</span>]</a>&nbsp;<a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235_2.html">[2]</a>&nbsp;<a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235_2.html">[下一页]</a>
+</div>
+</div>
+     </center>
+     
+     <blockquote><p><strong>相关阅读：</strong></p>
+     
+				
+				<ul>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118872.html" title="python学习1-基本概念" target="_blank">     python学习1-基本概念</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118842.html" title="Python学习2-基础知识" target="_blank">     Python学习2-基础知识</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118705.html" title="asp.netC#利用QRCode生成二维码续-在二维码图片中心加Logo或图像 ." target="_blank">     asp.netC#利用QRCode生成二维码续-在二维码图片中心加Logo或图像 .</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118695.html" title="在实际的运用中，我经常遇到需要对基础表的数据进行筛选后再进行行转列" target="_blank">     在实际的运用中，我经常遇到需要对基础表的数据进行筛选后再进行行转列</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118654.html" title="TSQL基础四" target="_blank">     TSQL基础四</a></li>
+				</ul>
+				
+ 
+     
+     </blockquote>
+        <script language="javascript">var url = window.location.href;document.write("此文链接：<a  target='_blank' href="+url+">"+url+"</a><div class=fgline  ></div>");document.write("转载请注明出处：<a target='_blank' href="+url+">"+document.title+"</a>");</script>此文链接：<a target="_blank" href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html">http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html</a><div class="fgline"></div>转载请注明出处：<a target="_blank" href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html">FreeImage使用基础，图像旋转，图像滤波_博客园</a>
+           <p>来源：<a rel="author" href="http://www.makaidong.com/" title="马开东博客">马开东博客</a>（微信/QQ：420434200,微信公众号：makaidong-com）<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 欢迎分享本文，转载请保留出处！</p>
+      
+  
+		 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 【原文阅读】:<a rel="nofollow" class="button big blue" target="_blank" title="FreeImage使用基础，图像旋转，图像滤波" href="http://www.cnblogs.com/wangshide/archive/2012/04/25/2470693.html">http://www.cnblogs.com/wangshide/archive/2012/04/25/2470693.html</a>
+	 
+           
+            <div class="other">
+				<ul>
+				<li><strong>上一篇：</strong>没有了</li>
+				<li><strong>下一篇：</strong><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119234.html">Computer Science Common Room</a></li>
+				</ul>
+            </div>
+			
+
+<div id="wenad">
+
+</div>
+</dd>
+<dd class="post-info">
+
+<div id="hm_t_tuijian"></div>
+     	    
+</dd>
+</dl>
+
+
+没有了
+				
+<a class="prev" href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119234.html"></a>
+<div id="comments"><div class="comment-title"><h3><ul>
+<a name="comment"></a><li id="tabcomment1" onclick="setTab(&#39;tabcomment&#39;,1,2)" class="current">评论:</li>
+<li id="tabcomment2" onclick="setTab(&#39;tabcomment&#39;,2,2)"><strong style="color:#F00">赞助本站</strong></li></ul></h3> </div>
+<div id="contabcomment1">		<div id="endad">
+<center>
+</center></div>
+<div class="post" id="divCommentPost">
+<div id="post-comment-title"><span id="comment-reply">发表一针见血的评论,你还等什么？</span>            ◎欢迎参与讨论，我的微信公众号是：<span class="gzhao">makaidong-com</span></div>
+    <div id="post-comment-body">
+             
+      
+        <div id="submit-box">
+        </div>
+
+    </div>
+</div>
+</div>
+<div id="contabcomment2" class="nodis">
+<div class="error-tip">
+  <a href="http://www.makaidong.com/zanzhu.html" target="_blank" rel="nofollow"><img src="./02_files/alipay.gif" alt="马开东博客赞助" border="0" title="马开东的支付二维码" data-bd-imgshare-binded="1"></a></div>
+</div>
+<div class="like">
+<h3>【相关文章】</h3>
+<ul><ul>
+				
+				
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118872.html" title="python学习1-基本概念" target="_blank">     python学习1-基本概念</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118842.html" title="Python学习2-基础知识" target="_blank">     Python学习2-基础知识</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118705.html" title="asp.netC#利用QRCode生成二维码续-在二维码图片中心加Logo或图像 ." target="_blank">     asp.netC#利用QRCode生成二维码续-在二维码图片中心加Logo或图像 .</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118695.html" title="在实际的运用中，我经常遇到需要对基础表的数据进行筛选后再进行行转列" target="_blank">     在实际的运用中，我经常遇到需要对基础表的数据进行筛选后再进行行转列</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118654.html" title="TSQL基础四" target="_blank">     TSQL基础四</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118448.html" title="程序员编程艺术第一章左旋转字符串" target="_blank">     程序员编程艺术第一章左旋转字符串</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118387.html" title="程序员编程艺术算法卷：第一章左旋转字符串" target="_blank">     程序员编程艺术算法卷：第一章左旋转字符串</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118382.html" title="程序员面试题狂想曲：第一章左旋转字符串" target="_blank">     程序员面试题狂想曲：第一章左旋转字符串</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118285.html" title="面向接口编程详解一——思想基础" target="_blank">     面向接口编程详解一——思想基础</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118266.html" title="JS基础之undefined与null的区别" target="_blank">     JS基础之undefined与null的区别</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118219.html" title="js 基础" target="_blank">     js 基础</a></li>
+				<li><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118192.html" title="asp.net2.0C#图像处理类转" target="_blank">     asp.net2.0C#图像处理类转</a></li>
+		
+		</ul>
+</ul>
+</div>
+</div>
+</div>
+	
+
+<div class="sidebar">
+<div class="sidebar-inner">
+<dl class="widget recent-posts" id="divFunction15">
+
+<dd><h3>站内搜索</h3></dd>
+<span id="makaidong_search"></span>
+<dt>
+<ul>
+<div id="r_a_0"></div>
+</ul>
+</dt>
+</dl>
+
+<dl class="widget recent-posts" id="article_month">
+
+<dd><h3>每日最新文章</h3></dd>
+
+<dt>
+<ul>
+<ul>
+
+ 				                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html" title="FreeImage使用基础，图像旋转，图像滤波" target="_blank">
+FreeImage使用基础，图像旋转，图像滤波                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119234.html" title="Computer Science Common Room" target="_blank">
+Computer Science Common Room                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119233.html" title="数组遍历判断两个输入框之间是否有输入重复的值" target="_blank">
+数组遍历判断两个输入框之间是否有输入重复                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119232.html" title="Atlas学习笔记之listView" target="_blank">
+Atlas学习笔记之listView                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119231.html" title="GridView显示总合计" target="_blank">
+GridView显示总合计                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119230.html" title="验证视图状态 MAC 失败" target="_blank">
+验证视图状态 MAC 失败                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119229.html" title="用VML实现画流程图" target="_blank">
+用VML实现画流程图                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119228.html" title="Sage Accpac ERP 销售订单模块激活问题" target="_blank">
+Sage Accpac ERP 销售订单模块激活问题                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119227.html" title="AJAX循环注册客户端事件" target="_blank">
+AJAX循环注册客户端事件                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119226.html" title="datalist嵌套TreeView" target="_blank">
+datalist嵌套TreeView                </a>
+                </li>
+</ul>
+</ul>
+<div id="r_a_1"></div>
+</dt>
+</dl>
+
+
+
+
+
+<dl class="widget recent-posts" id="article_month">
+
+<dd><h3>每日最热文章</h3></dd>
+
+<dt>
+<ul>
+<ul>
+
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119228.html" title="Sage Accpac ERP 销售订单模块激活问题" target="_blank">
+Sage Accpac ERP 销售订单模块激活问题                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119216.html" title="等咱有钱了男生版" target="_blank">
+等咱有钱了男生版                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118159.html" title="不重复的随机数存储过程" target="_blank">
+不重复的随机数存储过程                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/116884.html" title="ZVC运行库版本不同导致链接.LIB静态库时发生重复定义问题的一个案例分析和总结" target="_blank">
+ZVC运行库版本不同导致链接.LIB静态库时发                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118192.html" title="asp.net2.0C#图像处理类转" target="_blank">
+asp.net2.0C#图像处理类转                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/117925.html" title="Android界面设计左侧隐藏菜单右边显示contentdemo" target="_blank">
+Android界面设计左侧隐藏菜单右边显示conte                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118312.html" title="首发 ZendStudio下载，注册与破解" target="_blank">
+首发 ZendStudio下载，注册与破解                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119123.html" title="netty源码学习—课堂2" target="_blank">
+netty源码学习—课堂2                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119231.html" title="GridView显示总合计" target="_blank">
+GridView显示总合计                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118009.html" title="关于C#的MainString args参数输入问题" target="_blank">
+关于C#的MainString args参数输入问题                </a>
+                </li>
+</ul>
+</ul>
+<div id="r_a_2"></div>
+</dt>
+</dl>
+
+
+<dl class="widget recent-posts" id="article_month">
+
+<dd><h3>本周最热文章</h3></dd>
+
+<dt>
+<ul>
+<ul>
+
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118842.html" title="Python学习2-基础知识" target="_blank">
+Python学习2-基础知识                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119016.html" title="html5 css3学习资料教程实例收集" target="_blank">
+html5 css3学习资料教程实例收集                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118159.html" title="不重复的随机数存储过程" target="_blank">
+不重复的随机数存储过程                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/117345.html" title="FLEAPHP操作两个数据库" target="_blank">
+FLEAPHP操作两个数据库                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119225.html" title="GridView双击某行弹出一新窗口" target="_blank">
+GridView双击某行弹出一新窗口                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118611.html" title="A damn at han’s Windows phone book 笔记0-1" target="_blank">
+A damn at han’s Windows phone book 笔记                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118930.html" title="功能完善的 jquery validator 完成用户注册的验证" target="_blank">
+功能完善的 jquery validator 完成用户注册                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/117242.html" title="php遍历文件夹读取文件夹中图片并分页显示图片" target="_blank">
+php遍历文件夹读取文件夹中图片并分页显示                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118053.html" title="C++对象内存布局--⑥GCC编译器-虚拟继承的虚基类表可能有两个" target="_blank">
+C++对象内存布局--⑥GCC编译器-虚拟继承的                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/116830.html" title="K老在拿图灵奖时的发言：Computer Programming as an Art" target="_blank">
+K老在拿图灵奖时的发言：Computer Programm                </a>
+                </li>
+</ul>
+</ul>
+<div id="r_a_3"></div>
+</dt>
+</dl>
+
+<dl class="widget recent-posts" id="article_month">
+
+<dd><h3>本月最热文章</h3></dd>
+
+<dt>
+<ul>
+<ul>
+
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119123.html" title="netty源码学习—课堂2" target="_blank">
+netty源码学习—课堂2                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118611.html" title="A damn at han’s Windows phone book 笔记0-1" target="_blank">
+A damn at han’s Windows phone book 笔记                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119223.html" title="戒烟第五天" target="_blank">
+戒烟第五天                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119016.html" title="html5 css3学习资料教程实例收集" target="_blank">
+html5 css3学习资料教程实例收集                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119230.html" title="验证视图状态 MAC 失败" target="_blank">
+验证视图状态 MAC 失败                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118224.html" title="复习asp.net form验证" target="_blank">
+复习asp.net form验证                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119229.html" title="用VML实现画流程图" target="_blank">
+用VML实现画流程图                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118053.html" title="C++对象内存布局--⑥GCC编译器-虚拟继承的虚基类表可能有两个" target="_blank">
+C++对象内存布局--⑥GCC编译器-虚拟继承的                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118312.html" title="首发 ZendStudio下载，注册与破解" target="_blank">
+首发 ZendStudio下载，注册与破解                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119135.html" title="map, list常用遍历, pattern匹配, 文件读取, ThreadLocal" target="_blank">
+map, list常用遍历, pattern匹配, 文件读取                </a>
+                </li>
+</ul>
+</ul>
+<div id="r_a_4"></div>
+</dt>
+</dl>
+
+
+
+
+<dl class="widget recent-posts" id="divFunction18">
+
+<dt>
+<ul>
+</ul>
+</dt>
+</dl><dl class="widget recent-posts" id="article_year">
+
+<dd><h3>本年最热文章</h3></dd>
+
+<dt>
+<ul>
+<ul>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119211.html" title="window.onload覆盖问题" target="_blank">
+window.onload覆盖问题                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118387.html" title="程序员编程艺术算法卷：第一章左旋转字符串" target="_blank">
+程序员编程艺术算法卷：第一章左旋转字符串                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118192.html" title="asp.net2.0C#图像处理类转" target="_blank">
+asp.net2.0C#图像处理类转                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/117023.html" title="总结: 重复提交重复刷新防止后退的问题以及处理方式 来自CSDN" target="_blank">
+总结: 重复提交重复刷新防止后退的问题以及                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119212.html" title="用CSS控制li标记样式" target="_blank">
+用CSS控制li标记样式                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119207.html" title="翟鸿燊-国学应用大智慧笔记" target="_blank">
+翟鸿燊-国学应用大智慧笔记                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118930.html" title="功能完善的 jquery validator 完成用户注册的验证" target="_blank">
+功能完善的 jquery validator 完成用户注册                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/118695.html" title="在实际的运用中，我经常遇到需要对基础表的数据进行筛选后再进行行转列" target="_blank">
+在实际的运用中，我经常遇到需要对基础表的                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119213.html" title="GridView三层嵌套加折叠" target="_blank">
+GridView三层嵌套加折叠                </a>
+                </li>
+                  <li>
+                <a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/116989.html" title="BookAlgorithms on Strings, Trees and Sequences: Computer Science and Computational Biology" target="_blank">
+BookAlgorithms on Strings, Trees and Seq                </a>
+                </li>
+                
+</ul>
+</ul>
+
+<div id="r_a_5"></div>
+
+</dt>
+</dl><dl class="widget recent-posts" id="divFunction19">
+
+<dt>
+<ul>
+</ul>
+</dt>
+</dl>
+<dl class="widget recent-posts" id="divFunction21">
+
+<dt>
+<ul>
+</ul>
+</dt>
+</dl>
+<div id="box"> <div id="float" class="div1"> 
+<div id="dingyue"></div>
+<div id="wenzhang"></div>
+<center>
+</center>
+</div>
+</div>
+</div>
+</div></div> 
+<span id="prev"></span>
+<span id="next"></span>
+<center>
+	 <div id="footer">
+     <div class="foot">
+<div class="clear-10"></div>
+<div class="footBg">
+
+    <div class="footBglm">
+    <a target="_blank" href="http://www.makaidong.com/about.html">关于我们</a> - 
+    <a target="_blank" href="http://www.makaidong.com/lxwm.html">联系我们</a> - 
+    <a target="_blank" href="http://www.makaidong.com/zhaopin.html">诚聘英才</a> -
+    <a target="_blank" href="http://www.makaidong.com/yqlj.html">友情链接</a> - 
+    <a target="_blank" href="http://www.makaidong.com/download/index.html">程序下载</a> - 
+    <a target="_blank" href="http://www.makaidong.com/hzfw.html">合作服务</a> - 
+    <a target="_blank" href="http://www.makaidong.com/xkxy.html">许可协议</a> - 
+    <a onclick="SetHome(window.location)" href="javascript:void(0)">设为首页</a> - 
+    <a onclick="AddFavorite(window.location,document.title)" href="javascript:void(0)">加入收藏</a> - 
+     <a target="_blank" href="http://www.makaidong.com/%E6%8A%95%E6%94%BE%E5%B9%BF%E5%91%8A.html"><span style="color:red;">投放广告</span></a> -
+   <a target="_blank" href="http://www.makaidong.com/%E8%B4%AD%E4%B9%B0%E6%9C%AC%E7%AB%99%E7%A8%8B%E5%BA%8F.html"><span style="color:red;">购买本站程序</span></a> - 
+    <a target="_blank" href="http://www.makaidong.com/zanzhu.html" style="color:red;">赞助本站</a>
+ 
+    </div>
+     <span id="c_a_dbtj_blog"></span> 
+    <div class="clear-10"></div>
+    电话：15110131480　 <a target="_blank" rel="nofollow" href="javascript:if(confirm(&#39;http://wpa.qq.com/msgrd?v=3&amp;uin=420434200&amp;site=qq&amp;menu=yes &#39;))window.location=&#39;http://wpa.qq.com/msgrd?v=3&amp;uin=420434200&amp;site=qq&amp;menu=yes&#39;">QQ 420434200</a> <span id="process_time"></span> <br>
+   Powered by <a target="_blank" href="http://www.makaidong.com/">马开东博客</a> Copyright © 2013-2015 www.makaidong.com, All Rights Reserved 
+    <span id="pvuv"> 浏览量<span id="pv"></span>  访客数<span id="visitor"></span></span>
+
+</div>
+    	
+    
+	
+	
+
+      </div>
+      
+<script src="./02_files/common.js.下載" type="text/javascript"></script><script>window._bd_share_config={'common':{'bdSnsKey':{},'bdText':'','bdMini':'2','bdMiniList':['youdao','evernotecn','copy','print','mail','mshare','weixin','qzone','sqq','tsina','bdysc','renren','tqq','bdxc','kaixin001','tqf','tieba','douban','bdhome','thx','ibaidu','meilishuo','mogujie','diandian','huaban','duitang','hx','fx','sdo','qingbiji','people','xinhua','isohu','yaolan','wealink','ty','iguba','fbook','twi','linkedin','h163'],'bdPic':'','bdStyle':'0','bdSize':'16'},'slide':{'type':'slide','bdImg':'0','bdPos':'right','bdTop':'0'},'image':{'viewList':['qzone','tsina','tqq','renren','weixin'],'viewText':'分享到：','viewSize':'32'},'selectShare':{'bdContainerClass':null,'bdSelectMiniList':['qzone','tsina','tqq','renren','weixin']}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<script language="javascript" type="text/javascript" src="./02_files/19218112.js.下載"></script><a href="http://www.51.la/?comId=19218112" title="51.La 网站流量统计系统" target="_blank"><span style="display:inline-block;background-color:#EF5350;color:#fff;padding:2px 5px;font-family:arial;font-size:12px;font-weight:bold;">51La</span></a>
+<script src="./02_files/z_stat.php" language="JavaScript"></script><script src="./02_files/core.php" charset="utf-8" type="text/javascript"></script><a href="http://www.cnzz.com/stat/website.php?web_id=4326382" target="_blank" title="站长统计">站长统计</a>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?407de122f8b3535b7f5536fe82ead8c9';
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</div>
+</center>
+	<script src="./02_files/common.js.下載" type="text/javascript"></script><script>window._bd_share_config={'common':{'bdSnsKey':{},'bdText':'','bdMini':'2','bdMiniList':['youdao','evernotecn','copy','print','mail','mshare','weixin','qzone','sqq','tsina','bdysc','renren','tqq','bdxc','kaixin001','tqf','tieba','douban','bdhome','thx','ibaidu','meilishuo','mogujie','diandian','huaban','duitang','hx','fx','sdo','qingbiji','people','xinhua','isohu','yaolan','wealink','ty','iguba','fbook','twi','linkedin','h163'],'bdPic':'','bdStyle':'0','bdSize':'16'},'slide':{'type':'slide','bdImg':'0','bdPos':'right','bdTop':'0'},'image':{'viewList':['qzone','tsina','tqq','renren','weixin'],'viewText':'分享到：','viewSize':'32'},'selectShare':{'bdContainerClass':null,'bdSelectMiniList':['qzone','tsina','tqq','renren','weixin']}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<script language="javascript" type="text/javascript" src="./02_files/19218112.js.下載"></script><a href="http://www.51.la/?comId=19218112" title="51.La 网站流量统计系统" target="_blank"><span style="display:inline-block;background-color:#EF5350;color:#fff;padding:2px 5px;font-family:arial;font-size:12px;font-weight:bold;">51La</span></a>
+<script src="./02_files/z_stat.php" language="JavaScript"></script><script src="./02_files/core.php" charset="utf-8" type="text/javascript"></script><a href="http://www.cnzz.com/stat/website.php?web_id=4326382" target="_blank" title="站长统计">站长统计</a>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?407de122f8b3535b7f5536fe82ead8c9';
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div class="bdshare-slide-button-box bdshare-slide-style-r0" style="top: 0px; width: 0px; z-index: 99999; right: 0px;" data-bd-bind="1521943720177"><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" onclick="return false;" class="bdshare-slide-button" style="left: -24px;"></a><div class="bdshare-slide-list-box" style="width: 0px; display: none;"><div class="bdshare-slide-top">分享到</div><div class="bdshare-slide-list"><ul class="bdshare-slide-list-ul" style="width: 226px;"></ul></div><div class="bdshare-slide-bottom" style="width: 226px;"><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" onclick="return false;" class="slide-more" data-cmd="more">更多...</a></div></div></div><div id="bdimgshare_1521943720192" class="sr-bdimgshare sr-bdimgshare-list sr-bdimgshare-32 sr-bdimgshare-black" style="height:48px;line-height:38px;font-size:14px;width:autopx;display:none;" data-bd-bind="1521943720191"><div class="bdimgshare-bg"></div><div class="bdimgshare-content bdsharebuttonbox bdshare-button-style0-32"><label class="bdimgshare-lbl">分享到：</label><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" onclick="return false;" class="bds_qzone" data-cmd="qzone" hidefocus=""></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" onclick="return false;" class="bds_tsina" data-cmd="tsina" hidefocus=""></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" onclick="return false;" class="bds_tqq" data-cmd="tqq" hidefocus=""></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" onclick="return false;" class="bds_renren" data-cmd="renren" hidefocus=""></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" onclick="return false;" class="bds_weixin" data-cmd="weixin" hidefocus=""></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" onclick="return false;" class="bds_more" data-cmd="more" hidefocus=""></a></div></div><iframe frameborder="0" id="bdSharePopup_selectshare1521943720197bg" class="bdselect_share_bg" style="display:none;" src="./02_files/saved_resource.html"></iframe><div id="bdSharePopup_selectshare1521943720197box" style="display: none;" share-type="selectshare" class="bdselect_share_box" data-bd-bind="1521943720196"><div class="selectshare-mod-triangle"><div class="triangle-border"></div><div class="triangle-inset"></div></div><div class="bdselect_share_head"><span>分享到</span><a href="http://www.baidu.com/s?wd=&amp;tn=SE_hldp08010_vurs2xrp" class="bdselect_share_dialog_search" target="_blank"><i class="bdselect_share_dialog_search_i"></i><span class="bdselect_share_dialog_search_span">百度一下</span></a><a class="bdselect_share_dialog_close"></a></div><div class="bdselect_share_content"><ul class="bdselect_share_list bdshare-button-style0-16"><div class="bdselect_share_partners"><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" class="bds_qzone" data-cmd="qzone"></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" class="bds_tsina" data-cmd="tsina"></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" class="bds_tqq" data-cmd="tqq"></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" class="bds_renren" data-cmd="renren"></a><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" class="bds_weixin" data-cmd="weixin"></a></div><a href="http://www.makaidong.com/%E5%8D%9A%E5%AE%A2%E5%9B%AD/20150927/119235.html#" class="bds_more" data-cmd="more"></a></ul></div></div><div id="hm_t_undefined" class="hm-t-container"><div class="hm-t-go-top" style="display: none;"></div></div><div id="hm_t_undefined" class="hm-t-container"><div class="hm-t-go-top" style="display: none;"></div></div><div id="hm_t_23515" style="display: block; margin: 0px; padding: 0px; float: none; clear: none; overflow: hidden; position: fixed; border: 0px; background: none; max-width: none; max-height: none; border-radius: 0px; box-shadow: none; transition: none; text-align: left; box-sizing: content-box; bottom: 2px; z-index: 2147483646; left: 2px; width: 274px; height: 331px;"><div style="display: block; margin: 0px; padding: 0px; float: none; clear: none; overflow: hidden; position: relative; border: 0px; background: none; max-width: none; max-height: none; border-radius: 0px; box-shadow: none; transition: none; text-align: left; box-sizing: content-box; width: 100%; height: 100%;"></div></div></body></html>
