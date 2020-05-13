@@ -1,0 +1,1 @@
+net use \\172.17.254.110\c$ "nabro" /user:nabro

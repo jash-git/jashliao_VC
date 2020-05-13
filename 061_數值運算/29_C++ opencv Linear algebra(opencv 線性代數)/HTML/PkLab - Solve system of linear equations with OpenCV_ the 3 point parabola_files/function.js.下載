@@ -1,0 +1,290 @@
+/*
+ * Encode UFT-8 Without BOM (àèìòù)
+ */
+/*------------------------------------------------------------------------------
+ MyMemory Knowledge Storage System 
+ By PkLab - Mechatronics
+ site:http://www.pklab.net/
+ Copyright (C) 2009  pklab è
+
+ $Author: rack1 $
+ $LastChangedDate: 2013-02-16 17:07:05 +0100 (sab, 16 feb 2013) $
+ $Rev: 134 $
+
+ DESCRIPTION
+ -----------
+ Some Useful javascript function 
+ ------------------------------------------------------------------------------*/
+function randomString(length) {
+	var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	var result = '';
+	for (var i = length; i > 0; --i)
+		result += chars[Math.round(Math.random() * (chars.length - 1))];
+	return result;
+}
+
+String.prototype.trim = function() {
+	return this.replace(/^\s*/, "").replace(/\s*$/, "");
+}
+
+/**
+ * Nasconde tutti i div di nome="nameOfGroup" e mostra il div con id=divId Utile
+ * per gestire visualizzare layer sovrapposti da visualizzazare ad uno alla
+ * volta USO HTML <a href="javascript:Mostra('IT','ABS');">ITALIANO</a> <a
+ * href="javascript:Mostra('EN','ABS');">INGLESE</a> <div name="ABS" id="EN"
+ * style="position:absolute; left:10px; top:31px; width:320px; height:76px;
+ * z-index:1; overflow: auto; visibility: hidden;">INGLESE</div> <div
+ * name="ABS" id="IT" style="position:absolute; left:10px; top:31px;
+ * width:320px; height:76px; z-index:2; overflow: auto;">ITALIANO</div>
+ * 
+ */
+function MostraLayer(divId, nameOfGroup) {
+	// document.write(id);
+
+	var L = document.getElementsByName(nameOfGroup);
+	for (i = 0; i < L.length; i++) {
+		L[i].style.visibility = "hidden";
+	}
+
+	var l = document.getElementById(divId);
+	l.style.visibility = "visible";
+}
+
+/**
+ * Copy selected item of select field to text field
+ * http://www.programmingtalk.com/showthread.php?t=31794
+ */
+function moveOptions(theSelFrom, theTextTo, theLogic) {
+	var NS4 = (navigator.appName == "Netscape" && parseInt(navigator.appVersion) < 5);
+	var selLength = theSelFrom.length;
+	var selLogicLength = theLogic.length;
+
+	var i;
+	var selected;
+	var op= 'OR';
+	
+	//find the logic operator
+	for (i = selLogicLength - 1; i >= 0; i--) {
+		if (theLogic.options[i].selected) {
+			op = theLogic.options[i].text.trim();
+		}
+	}
+
+	// Find the selected Options in reverse order
+	// and delete them from the 'from' Select.
+	for (i = selLength - 1; i >= 0; i--) {
+		if (theSelFrom.options[i].selected) {
+			if (theTextTo.value == '')
+				theTextTo.value = theSelFrom.options[i].text.trim();
+			else
+				theTextTo.value = theTextTo.value + ',' + op + ' ' +
+						theSelFrom.options[i].text.trim();
+			// if (theTextTo.value!='') theTextTo.value = theTextTo.value+ ' OR
+			// '
+			// theTextTo.value =
+			// theTextTo.value+'\''+theSelFrom.options[i].text.trim()+'\'';
+			// theTextTo.value =
+			// theTextTo.value+','+theSelFrom.options[i].text.trim();
+			break;
+		}
+	}
+
+	if (NS4)
+		history.go(0);
+}
+
+/*******************************************************************************
+ * You may use this code for free on any web page provided that these comment
+ * lines and the following credit remain in the code. Floating Div from
+ * http://www.javascript-fx.com
+ * http://www.javascript-fx.com/submitscripts/float/float.html
+ ******************************************************************************/
+// function JSFX_FloatDiv(id, sx, sy){
+// var ns = (navigator.appName.indexOf("Netscape") != -1);
+// var d = document;
+// var el=d.getElementById?d.getElementById(id):d.all?d.all[id]:d.layers[id];
+// if (el==null)
+// {
+// Alert("EL is null");
+// return "";
+// }
+//	
+// var px = document.layers ? "" : "px";
+// window[id + "_obj"] = el;
+// if(d.layers)el.style=el;
+// el.cx = el.sx = sx;el.cy = el.sy = sy;
+// el.sP=function(x,y){this.style.left=x+px;this.style.top=y+px;};
+//
+// el.floatIt=function()
+// {
+// var pX, pY;
+// pX = (this.sx >= 0) ? 0 : ns ? innerWidth :
+// document.documentElement && document.documentElement.clientWidth ?
+// document.documentElement.clientWidth : document.body.clientWidth;
+// pY = ns ? pageYOffset : document.documentElement &&
+// document.documentElement.scrollTop ?
+// document.documentElement.scrollTop : document.body.scrollTop;
+// if(this.sy<0)
+// pY += ns ? innerHeight : document.documentElement &&
+// document.documentElement.clientHeight ?
+// document.documentElement.clientHeight : document.body.clientHeight;
+// //-PKLAB permette uno scroll morbido this.cx += (pX + this.sx -
+// this.cx)/8;this.cy += (pY + this.sy - this.cy)/8;
+// this.cx += (pX + this.sx - this.cx);this.cy += (pY + this.sy - this.cy);
+// //+PKLAB Posizionamento netto
+// this.sP(this.cx, this.cy);
+// setTimeout(this.id + "_obj.floatIt()", 40);
+// }
+// return el;
+// }
+/** ******************************************************** */
+
+/**
+ * Finding the size of the browser window
+ * 
+ * http://www.howtocreate.co.uk/tutorials/javascript/browserwindow
+ */
+function MyWidth() {
+	var myWidth = 0, myHeight = 0;
+	if (typeof (window.innerWidth) == 'number') {
+		// Non-IE
+		myWidth = window.innerWidth;
+		myHeight = window.innerHeight;
+	} else if (document.documentElement
+			&& (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
+		// IE 6+ in 'standards compliant mode'
+		myWidth = document.documentElement.clientWidth;
+		myHeight = document.documentElement.clientHeight;
+	} else if (document.body
+			&& (document.body.clientWidth || document.body.clientHeight)) {
+		// IE 4 compatible
+		myWidth = document.body.clientWidth;
+		myHeight = document.body.clientHeight;
+	}
+	return myWidth;
+}
+function MyHeight() {
+	var myWidth = 0, myHeight = 0;
+	if (typeof (window.innerWidth) == 'number') {
+		// Non-IE
+		myWidth = window.innerWidth;
+		myHeight = window.innerHeight;
+	} else if (document.documentElement
+			&& (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
+		// IE 6+ in 'standards compliant mode'
+		myWidth = document.documentElement.clientWidth;
+		myHeight = document.documentElement.clientHeight;
+	} else if (document.body
+			&& (document.body.clientWidth || document.body.clientHeight)) {
+		// IE 4 compatible
+		myWidth = document.body.clientWidth;
+		myHeight = document.body.clientHeight;
+	}
+	return myHeight;
+}
+
+/**
+ * Aggiunge codice HTML nella pagina corrente
+ * 
+ * DivId Id della <div> in cui inserire l'elemento InsBeforeId Id elemento prima
+ * del quale inserire l'elemento (contenuto in DivID) NewItem Codice HTML
+ * dell'elemento da inserire
+ */
+function AddHtmlItem(DivId, InsBeforeId, NewItem) {
+	div = document.getElementById(DivId);
+	button = document.getElementById(InsBeforeId);
+	newnode = document.createElement("span");
+	newnode.innerHTML = NewItem;
+	div.insertBefore(newnode, button);
+}
+
+/**
+ * Aggiunge codice HTML nella pagina corrente
+ * 
+ * DivId Id della <div> in cui inserire l'elemento InsBeforeId Id elemento prima
+ * del quale inserire l'elemento (contenuto in DivID) NewItem Codice HTML
+ * dell'elemento da inserire
+ */
+function AddDocFather(DivId, InsBeforeId, NewFather) {
+	var item = NewFather.split(":") // NewFather e' nella forma ord:id:name
+	var ord = item[0];
+	var id = item[1];
+	var name = item[2];
+	var str = randomString(5);
+
+	var strID = id + "-" + str;
+
+	var NewItem = "<label><input type='checkbox' name='Fathers[" + id
+			+ "]' value='" + id + "' checked>" + name + "</label>"
+			+ "<input type='hidden' name='FathersOrd[" + id + "]'  value='"
+			+ ord + "'>\n";
+
+	div = document.getElementById(DivId);
+	button = document.getElementById(InsBeforeId);
+	newnode = document.createElement("span");
+	newnode.innerHTML = NewItem;
+	div.insertBefore(newnode, button);
+}
+
+function SetValById(id, val) {
+	document.getElementById(id).value = val;
+}
+
+/**
+ * Displays an confirmation box beforme to submit a "DROP/DELETE/ALTER" query.
+ * This function is called while clicking links
+ * 
+ * @param object
+ *            the link
+ * @param object
+ *            the sql query to submit
+ * 
+ * @return boolean whether to run the query or not
+ */
+function confirmLink(theLink, theSqlQuery) {
+	confirmMsg = "Confirm";
+	// Confirmation is not required in the configuration file
+	// or browser is Opera (crappy js implementation)
+	if (confirmMsg == '' || typeof (window.opera) != 'undefined') {
+		return true;
+	}
+
+	var is_confirmed = confirm(confirmMsg + ' :\n' + theSqlQuery);
+	if (is_confirmed) {
+		theLink.href += '&is_js_confirmed=1';
+	}
+
+	return is_confirmed;
+} // end of the 'confirmLink()' function
+
+function openWin(file) {
+	open(
+			file,
+			"",
+			"height=500,width=550,status=yes,toolbar=no,menubar=yes,scrollbars=yes,resizable=yes");
+}
+
+function typeEmail(user, domain) {
+	document.write("<a href=mailto:" + user + "_at_" + domain + ">" + user
+			+ "_at_" + domain + "<\/a>");
+}
+
+function CommentFormValidator(form)
+{
+
+    if (form.name.value == "")
+    {
+    	window.alert("Please enter your name.");
+        form.name.focus();
+        return (false);
+    }
+
+    if (form.message.value == "")
+    {
+    	window.alert("Please enter your message.");
+        form.message.focus();
+        return (false);
+    }
+
+    return (true);
+}
