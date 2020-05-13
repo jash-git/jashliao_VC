@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0056)http://www.functionx.com/visualc/controls/filedialog.htm -->
+<HTML><HEAD><TITLE>MFC Controls - File Dialog</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META 
+content="MFC, C, C++, Visual C++, ListView, CListView, CListCtrl, Microsoft, API, Programming" 
+name=keywords>
+<META 
+content="This is our Visual C++/MFC tutorial. We explore different classes that are part of the MFC library." 
+name=description>
+<META content="MSHTML 6.00.2800.1491" name=GENERATOR>
+<META content=FrontPage.Editor.Document name=ProgId><LINK 
+href="MFC Controls - File Dialog.files/Lessons.css" type=text/css 
+rel=stylesheet></HEAD>
+<BODY leftMargin=0 topMargin=0 marginheight="0" marginwidth="0">
+<TABLE cellSpacing=1 cellPadding=0 width=800 border=0>
+  <TBODY>
+  <TR>
+    <TD align=middle width="100%">
+      <SCRIPT language=JavaScript1.1 
+      src="MFC Controls - File Dialog.files/ctpub_adserv" 
+      type=text/javascript></SCRIPT>
+    </TD></TR></TBODY></TABLE>&nbsp; 
+<TABLE cellSpacing=0 cellPadding=0 width=660 border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=center align=middle width="10%"><A 
+      href="http://www.functionx.com/visualc/index.htm"><IMG height=60 alt=Home 
+      src="MFC Controls - File Dialog.files/ftxlogo2.gif" width=51 
+    border=0></A></TD>
+    <TD width="90%">
+      <P class=maintitle>The File Dialog</P></TD></TR>
+  <TR>
+    <TD width="100%" bgColor=#cc3300 colSpan=2 
+height=2></TD></TR></TBODY></TABLE>&nbsp; 
+<TABLE width=832 border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top width=661>
+      <TABLE cellSpacing=0 cellPadding=0 width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=paratitle>Overview</P></TD></TR>
+        <TR>
+          <TD width="100%" bgColor=#ff0000 height=2></TD></TR></TBODY></TABLE>
+      <TABLE width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=parajust>Microsoft Windows provides a series of objects 
+            called Common Dialog boxes. One of them is intended for file 
+            processing. The beauty of these dialog boxes is that they are highly 
+            configured to handle their intended job but you can still customize 
+            them as you see fit. 
+            <P class=parajust>The File Dialog box is a control used to open or 
+            save a file. To use a File Dialog, you can first declare a 
+            <B>CFileDialog</B> variable using its constructor whose syntax 
+            is:</P></TD></TR></TBODY></TABLE><PRE>CFileDialog(BOOL <I>bOpenFileDialog</I>,
+	   LPCTSTR <I>lpszDefExt</I> = NULL,
+	   LPCTSTR <I>lpszFileName</I> = NULL,
+	   DWORD <I>dwFlags</I> = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+	   LPCTSTR <I>lpszFilter</I> = NULL,
+	   CWnd* <I>pParentWnd</I> = NULL );</PRE>
+      <TABLE width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=parajust>The <B>CFileDialog</B> constructor requires one 
+            argument: the <I>bOpenFileDialog</I>.</P>
+            <P class=parajust>The second argument, <I>lpszDefExt</I>, is the 
+            default extension that should be used or applied on the file.</P>
+            <P class=parajust>The <I>dwFlags</I> parameter specifies the options 
+            to use on the dialog box.</P>
+            <P class=parajust>The <I>lpszFilter</I> string specifies the types 
+            of files that will be dealt with.</P>
+            <P class=parajust>The <I>pParentWnd</I> parameter is a pointer to 
+            the parent of the dialog box, if the dialog box has 
+        one.</P></TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=0 cellPadding=0 width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=paratitle>File Saving</P></TD></TR>
+        <TR>
+          <TD width="100%" bgColor=#ff0000 height=2></TD></TR></TBODY></TABLE>
+      <TABLE width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=parajust>One of the operations you can allow a user to 
+            perform on a file is to save it, either after creating it or after 
+            saving. If you want to save a file, pass the first argument of the 
+            <B>CFileDialog</B> constructor as 
+      <B>FALSE</B>.</P></TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=0 cellPadding=0 width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=paratitle>File Opening</P></TD></TR>
+        <TR>
+          <TD width="100%" bgColor=#ff0000 height=2></TD></TR></TBODY></TABLE>
+      <TABLE width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=parajust>As opposed to saing a file, you can allow the user 
+            to open one. To create a File Dialog box that the user can use to 
+            open a file, pass the first argument of the <B>CFileDialog</B> 
+            constructor as <B>TRUE</B>.</P></TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=0 cellPadding=0 width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=paratitle>File Dialog Properties</P></TD></TR>
+        <TR>
+          <TD width="100%" bgColor=#ff0000 height=2></TD></TR></TBODY></TABLE>
+      <TABLE width=660 border=0>
+        <TBODY>
+        <TR>
+          <TD width="100%">
+            <P class=parajust>The&nbsp;only member variable that the File Dialog 
+            has is called <B>m_ofn</B>. It is an object derived from a Win32 
+            class (or structure) called <B>OPENFILENAME</B>. In fact, the MFC 
+            doesn't do miracles than the Win32 would. The MFC only provides some 
+            type of "translation" of the Win32 library on this issue. 
+            <P class=parajust>The OPENFILENAME class is defined as follows: 
+          </P></TD></TR></TBODY></TABLE></TD>
+    <TD vAlign=top width=157>
+      <SCRIPT type=text/javascript><!--
+google_ad_client = "pub-3968514660870014";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+//--></SCRIPT>
+
+      <SCRIPT src="MFC Controls - File Dialog.files/show_ads.js" 
+      type=text/javascript>
+</SCRIPT>
+    </TD></TR></TBODY></TABLE><PRE>typedef struct tagOFN { 
+  DWORD         lStructSize; 
+  HWND          hwndOwner; 
+  HINSTANCE     hInstance; 
+  LPCTSTR       lpstrFilter; 
+  LPTSTR        lpstrCustomFilter; 
+  DWORD         nMaxCustFilter; 
+  DWORD         nFilterIndex; 
+  LPTSTR        lpstrFile; 
+  DWORD         nMaxFile; 
+  LPTSTR        lpstrFileTitle; 
+  DWORD         nMaxFileTitle; 
+  LPCTSTR       lpstrInitialDir; 
+  LPCTSTR       lpstrTitle; 
+  DWORD         Flags; 
+  WORD          nFileOffset; 
+  WORD          nFileExtension; 
+  LPCTSTR       lpstrDefExt; 
+  LPARAM        lCustData; 
+  LPOFNHOOKPROC lpfnHook; 
+  LPCTSTR       lpTemplateName; 
+#if (_WIN32_WINNT &gt;= 0x0500)
+  void *        pvReserved;
+  DWORD         dwReserved;
+  DWORD         FlagsEx;
+#endif // (_WIN32_WINNT &gt;= 0x0500)
+} OPENFILENAME, *LPOPENFILENAME; 
+</PRE>
+<TABLE cellSpacing=0 cellPadding=0 width=660 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <P class=paratitle>File Dialog Operations</P></TD></TR>
+  <TR>
+    <TD width="100%" bgColor=#ff0000 height=2></TD></TR></TBODY></TABLE>
+<TABLE width=660 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <P class=parajust>In order to use a File Dialog box, the user must open 
+      it. This can be done by calling the <B>CFileDialog::DoModal()</B> method. 
+      <P class=parajust>When it comes up, the File Dialog displays two buttons 
+      regularly available on a normal dialog box. If the file is being opened, 
+      the buttons are Open and Cancel. If the user is saving a file, the buttons 
+      are Save and Cancel. After using the dialog box, either to open or to save 
+      a file, the user can click Open/Save or Cancel. If the user clicks Open or 
+      Save, the dialog box is (partly) equipped to validate the operation. For 
+      example, if the user clicks Open, the dialog box is configured to make 
+      sure that the user selected a file. If the user clicks Save, he or she 
+      should have given a name to the file. To dismiss the dialog box without 
+      continuing with the intended operation, the user can click Cancel. If the 
+      user clicks Cancel, the dialog box throws a <B>CommDlgExtendedError</B>. 
+      This error allows you to find out what happens: maybe the user didn't 
+      click Cancel, maybe the dialog box was not even created, maybe this, maybe 
+      that. This error allows you to diagnose a potential problem and deal with 
+      it. If you don't want to go through this, you can just cancel the 
+      operation yourself.
+      <P class=parajust>After displaying the File Dialog box, in other to 
+      effectively perform an intended operation, the user must provide a name 
+      for the file. To find out what name the user provided, you can call the 
+      <B>CFileDialog::GetFileName()</B> method. Its syntax is: 
+</P></TD></TR></TBODY></TABLE><PRE>CString GetFileName( ) const;</PRE>
+<TABLE width=660 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <P class=parajust>A file name is indeed made of various sections. In the 
+      strict sense, the file name is a long string that starts from its drive 
+      all the way to its "normal" name. This is also referred to as its path. To 
+      get the path of the being dealt with, you can call the 
+      <B>CFileDialog::GetPathName()</B> method. Its syntax is: 
+</P></TD></TR></TBODY></TABLE><PRE>CString GetPathName( ) const;</PRE>
+<TABLE width=660 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <P class=parajust>In the traditional sense, the name of a file ends with 
+      2, 3, or 4 characters known as its extension. For example, the extension 
+      of a Microsoft Word file is doc. The extension of a Perl file is pl. After 
+      the user has dealt with a file or while dealing with it, to find out the 
+      extension of that file, you can call the <B>CFileDialog::GetFileExt()</B> 
+      method. Its syntax is: </P></TD></TR></TBODY></TABLE><PRE>CString GetFileExt( ) const;</PRE>
+<TABLE cellSpacing=0 cellPadding=0 width=660 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <P class=ExoTitle><IMG height=20 
+      src="MFC Controls - File Dialog.files/practical1.gif" width=21 border=0> 
+      Practical Learning: Using the File Dialog Box</P></TD></TR>
+  <TR>
+    <TD width="100%" bgColor=#ff00ff height=1></TD></TR></TBODY></TABLE>
+<TABLE width=660 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <OL>
+        <LI>If you want to follow with this example, create a New Dialog Based 
+        application named FileProc 
+        <LI>Design the dialog box as follows:<BR>&nbsp; 
+        <TABLE width=618 border=0>
+          <TBODY>
+          <TR>
+            <TD align=middle width=610><IMG height=229 
+              src="MFC Controls - File Dialog.files/fileproc1.gif" width=370 
+              border=0></TD></TR>
+          <TR>
+            <TD width=610>
+              <TABLE width=541 border=1>
+                <TBODY>
+                <TR>
+                  <TD width=94 colSpan=2>Control</TD>
+                  <TD width=128>ID</TD>
+                  <TD width=112>Caption</TD>
+                  <TD width=144>Additional Properties</TD></TR>
+                <TR>
+                  <TD>Static Text</TD>
+                  <TD><IMG height=22 alt="Static Text" 
+                    src="MFC Controls - File Dialog.files/statictext1.gif" 
+                    width=25 border=0></TD>
+                  <TD></TD>
+                  <TD>Make:
+                    <P></P></TD>
+                  <TD>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Edit Box</TD>
+                  <TD width=28 height=23 0? 
+                  src="../controls/controls/slider1.gif"><IMG height=23 
+                    src="MFC Controls - File Dialog.files/editbox1.gif" width=26 
+                    border=0></TD>
+                  <TD width=128>IDC_MAKE</TD>
+                  <TD width=112>&nbsp;</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Static Text</TD>
+                  <TD width=28><IMG height=22 
+                    src="MFC Controls - File Dialog.files/statictext1.gif" 
+                    width=25 border=0></TD>
+                  <TD width=128>&nbsp;</TD>
+                  <TD width=112>Model:</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Edit Box</TD>
+                  <TD width=28><IMG height=23 
+                    src="MFC Controls - File Dialog.files/editbox1.gif" width=26 
+                    border=0></TD>
+                  <TD width=128>IDC_MODEL</TD>
+                  <TD width=112>&nbsp;</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Static Text</TD>
+                  <TD width=28><IMG height=22 
+                    src="MFC Controls - File Dialog.files/statictext1.gif" 
+                    width=25 border=0></TD>
+                  <TD width=128>&nbsp;</TD>
+                  <TD width=112>Year:</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Edit Box</TD>
+                  <TD width=28><IMG height=23 
+                    src="MFC Controls - File Dialog.files/editbox1.gif" width=26 
+                    border=0></TD>
+                  <TD width=128>IDC_YEAR</TD>
+                  <TD width=112>&nbsp;</TD>
+                  <TD width=144>Align Text: Right</TD></TR>
+                <TR>
+                  <TD width=95>Static Text</TD>
+                  <TD width=28><IMG height=22 
+                    src="MFC Controls - File Dialog.files/statictext1.gif" 
+                    width=25 border=0></TD>
+                  <TD width=128>&nbsp;</TD>
+                  <TD width=112>Mileage:</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Edit Box</TD>
+                  <TD width=28><IMG height=23 
+                    src="MFC Controls - File Dialog.files/editbox1.gif" width=26 
+                    border=0></TD>
+                  <TD width=128>IDC_MILEAGE</TD>
+                  <TD width=112>&nbsp;</TD>
+                  <TD width=144>Align Text: Right</TD></TR>
+                <TR>
+                  <TD width=95>Static Text</TD>
+                  <TD width=28><IMG height=22 
+                    src="MFC Controls - File Dialog.files/statictext1.gif" 
+                    width=25 border=0></TD>
+                  <TD width=128>&nbsp;</TD>
+                  <TD width=112>Owner</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Edit Box</TD>
+                  <TD width=28><IMG height=23 
+                    src="MFC Controls - File Dialog.files/editbox1.gif" width=26 
+                    border=0></TD>
+                  <TD width=128>IDC_OWNER</TD>
+                  <TD width=112>&nbsp;</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Button</TD>
+                  <TD width=28><IMG height=23 
+                    src="MFC Controls - File Dialog.files/button1.gif" width=25 
+                    border=0></TD>
+                  <TD width=128>IDC_SAVE_BTN</TD>
+                  <TD width=112>&amp;Save</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Button</TD>
+                  <TD width=28><IMG height=23 
+                    src="MFC Controls - File Dialog.files/button1.gif" width=25 
+                    border=0></TD>
+                  <TD width=128>IDC_OPEN_BTN</TD>
+                  <TD width=112>&amp;Open</TD>
+                  <TD width=144>&nbsp;</TD></TR>
+                <TR>
+                  <TD width=95>Button</TD>
+                  <TD width=28><IMG height=23 
+                    src="MFC Controls - File Dialog.files/button1.gif" width=25 
+                    border=0></TD>
+                  <TD width=128>IDCANCEL</TD>
+                  <TD width=112>Close</TD>
+                  <TD width=144>&nbsp;</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+        <LI>Using either the ClassWizard or the Add Member Variable Wizard, add 
+        the following member variables to the controls:<BR>&nbsp; 
+        <TABLE width=270 border=1>
+          <TBODY>
+          <TR>
+            <TD width=107>Identifier</TD>
+            <TD align=middle width=141 colSpan=2>Value Variable</TD></TR>
+          <TR>
+            <TD width=107>IDC_MAKE</TD>
+            <TD width=67>CString</TD>
+            <TD width=74>m_Make</TD></TR>
+          <TR>
+            <TD width=107>IDC_MODEL</TD>
+            <TD width=67>CString</TD>
+            <TD width=74>m_Model</TD></TR>
+          <TR>
+            <TD width=107>IDC_YEAR</TD>
+            <TD width=67>CString</TD>
+            <TD width=74>m_Year</TD></TR>
+          <TR>
+            <TD width=107>IDC_MILEAGE</TD>
+            <TD width=67>CString</TD>
+            <TD width=74>m_Doors</TD></TR>
+          <TR>
+            <TD width=107>IDC_OWNER</TD>
+            <TD width=67>CString</TD>
+            <TD width=74>m_Owner</TD></TR></TBODY></TABLE>
+        <LI>Generate a BN_CLICKED message for the IDC_SAVE_BTN button and, after 
+        accepting the suggested name of the event, implement it as 
+        follows:<BR>&nbsp; 
+        <TABLE width=593 border=0>
+          <TBODY>
+          <TR>
+            <TD width=585><PRE>void CFileProc1Dlg::OnSaveBtn() 
+{
+	// TODO: Add your control notification handler code here
+	this-&gt;UpdateData();
+
+	CFile f;
+
+	char strFilter[] = { "BCR Files (*.bcr)|*.bcr|All Files (*.*)|*.*||" };
+
+	CFileDialog FileDlg(FALSE, ".bcr", NULL, 0, strFilter);
+
+	if( FileDlg.DoModal() == IDOK )
+	{
+		f.Open(FileDlg.GetFileName(), CFile::modeCreate | CFile::modeWrite);
+		CArchive ar(&amp;f, CArchive::store);
+
+		ar &lt;&lt; m_Make &lt;&lt; m_Model &lt;&lt; m_Year &lt;&lt; m_Mileage &lt;&lt; m_Owner;
+		ar.Close();
+	}
+	else
+		return;
+
+	f.Close();
+}</PRE></TD></TR></TBODY></TABLE>
+        <LI>Generate a BN_CLICKED message for the IDC_OPEN_BTN button and, after 
+        accepting the suggested name of the event, implement it as 
+        follows:<BR>&nbsp; 
+        <TABLE width=597 border=0>
+          <TBODY>
+          <TR>
+            <TD width=589><PRE>void CFileProc1Dlg::OnOpenBtn() 
+{
+	// TODO: Add your control notification handler code here
+	this-&gt;UpdateData();
+
+	CFile f;
+
+	char strFilter[] = { "BCR Files (*.bcr)|*.bcr|All Files (*.*)|*.*||" };
+
+	CFileDialog FileDlg(TRUE, ".bcr", NULL, 0, strFilter);
+
+	if( FileDlg.DoModal() == IDOK )
+	{
+		if( f.Open(FileDlg.GetFileName(), CFile::modeRead) == FALSE )
+			return;
+		CArchive ar(&amp;f, CArchive::load);
+
+		ar &gt;&gt; m_Make &gt;&gt; m_Model &gt;&gt; m_Year &gt;&gt; m_Mileage &gt;&gt; m_Owner;
+		ar.Close();
+	}
+	else
+		return;
+
+	f.Close();
+	this-&gt;UpdateData(FALSE);
+}</PRE></TD></TR></TBODY></TABLE>
+        <LI>
+        <P>Test the application </P>
+        <LI>
+        <P>Create and save a file<BR>&nbsp;<BR><IMG height=229 
+        src="MFC Controls - File Dialog.files/fileproc2.gif" width=369 border=0> 
+        </P>
+        <LI>
+        <P>Close the dialog box </P>
+        <LI>
+        <P>Test the application again </P>
+        <LI>
+        <P>Open the previously created file 
+</P></LI></OL></TD></TR></TBODY></TABLE>&nbsp; 
+<TABLE width=660 border=0>
+  <TBODY>
+  <TR>
+    <TD width="100%">
+      <HR color=#ff0000>
+    </TD></TR>
+  <TR>
+    <TD align=middle width="100%"><A 
+      href="http://www.functionx.com/visualc/index.htm">Copyright © 2004-2005 
+      FunctionX, Inc.</A></TD></TR>
+  <TR>
+    <TD width="100%">
+      <HR color=#ff0000>
+    </TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=1 cellPadding=0 width=764 border=0>
+  <TBODY>
+  <TR>
+    <TD align=middle width=758><!-- Casale Media 2004 (C) --><!-- Ad Format: Leaderboard --><!-- Domain(s): functionx.com -->
+      <SCRIPT language=Javascript><!--
+var d=new Date();var r=(d.getTime()%8673806982)+Math.random();var uu=escape(window.location.href);
+var wh='" width="728" height="90" ';var host='.casalemedia.com/';var dc=document;
+var fr='marginwidth="0" hspace="0" vspace="0" frameborder="0" scrolling="no">';
+dc.write('<ifr'+'ame src="http://as'+host+'s?s=56757&u='+uu+'&f=2&id='+r+wh+fr);
+dc.write('<a hr'+'ef="http://c'+host+'c?s=56757&f=2&id='+r+'" target="_blank">');
+dc.write('<i'+'mg src="http://as'+host+'s?s=56757&u='+uu+'&f=2&id='+r+'&if=0'+wh+'border="0"></a></ifr'+'ame>');
+//--></SCRIPT>
+      <NOSCRIPT><IFRAME marginWidth=0 
+      src="MFC Controls - File Dialog.files/ctpub_adserv.htm" frameBorder=0 
+      width=728 scrolling=no 
+      height=90>
+      <a href="http://c.casalemedia.com/c?s=56757&amp;f=2&amp;id=0" target="_blank"><img src="http://as.casalemedia.com/s?s=56757&amp;u=http%3A%2F%2Ffunctionx.com&amp;f=2&amp;id=0&amp;if=0" border="0"></a></iframe></IFRAME></NOSCRIPT></TD></TR></TBODY></TABLE></BODY></HTML>

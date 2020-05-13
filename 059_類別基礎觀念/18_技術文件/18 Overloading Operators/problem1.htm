@@ -1,0 +1,233 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Well</title>
+</head>
+
+<body>
+
+<div>
+  <font face="MingLiu" size="2">Well, as we can see ...</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">You defined a matrix1 class ...</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">class matrix1:public matrix&lt;T&gt;<br>
+  {</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">protected:<br>
+  &nbsp;int row,col;</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">public:<br>
+  &nbsp;matrix1(int row,int col);<br>
+  &nbsp;~matrix1();<br>
+  &nbsp;matrix1 *operator +(matrix1 <font color="#ff0000" size="5"><strong>*matrixB</strong></font>);<br>
+  &nbsp;matrix1 *operator -(matrix1 *matrixB);<br>
+  &nbsp;matrix1 *operator *(matrix1 *matrixB);<br>
+  &nbsp;<br>
+  };</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">--------------------------------------------------</font>
+</div>
+<div>
+  <font face="MingLiu" size="2">Based on your design, you can use following 
+  instructions to do operation + for this kind of objects.</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  matrix1 A(1,2),B(1,2);</font>
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  matrix1 *C=A+<font color="#ff0000" size="5"><strong>&amp;</strong></font>B;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  &lt;===&gt; matrix *c= <font color="#ff0000" face="標楷體" size="5"><strong>A.</strong></font>operator+(<font color="#ff0000" size="4"><strong>&amp;</strong></font>B)</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">It's ok!&nbsp;&nbsp; ( Why &amp; ??: Since you 
+  define the operator+&nbsp;method which needs a pointer type paramenter,<font color="#ff0000" size="5"><strong>*matrixB)</strong></font></font>
+</div>
+<div>
+  <font face="細明體" size="2">Note:</font>
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  A <font color="#ff0000" size="6"><strong>+ </strong><font color="#000000" size="2">&amp;</font></font>B&nbsp;&nbsp; 
+  &lt;===&gt;&nbsp; A <font color="#ff0000" size="5"><strong>.operator+ </strong></font>(&amp;B)</font>
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  ^^^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  ^^^^^^^^^^^^^^^^^^^^</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="MingLiu" size="2">Back to your problem.</font>
+</div>
+<div>
+  <font face="細明體" size="2">You decalare two Matrix objects.</font>
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  matrix1&lt;int&gt; *A=new matrix1&lt;int&gt;(row,col);</font>
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  matrix1&lt;int&gt; *B=new matrix1&lt;int&gt;(row,col);</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">and use following instruct to do + operation.</font>
+</div>
+<div>
+  <font face="MingLiu" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  matrix1&lt;int&gt; *C=A + B; // &lt;&lt;---&nbsp;&nbsp; Error</font>
+</div>
+<div>
+  <font face="細明體" size="2">There is a error on the instruction!</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">Did you remember the note:</font>
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A + B 
+  &lt;===&gt; </font>&nbsp;<font face="細明體" size="2">A.operator+(B)</font>
+</div>
+<div>
+  <font face="細明體" size="2">But you defined the variable A as a <font color="#ff0000" size="5"><strong>pointer 
+  </strong></font>type of matrix1&lt;int&gt;, that is</font>
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  matrix1&lt;int&gt; *A=new matrix1&lt;int&gt;(row,col);</font>
+</div>
+<div>
+  <font face="細明體" size="2">You cannot use &quot;<font color="#ff0000" size="5"><strong>.</strong></font>&quot; 
+  to reference a class member function but use &quot;<font color="#ff0000" size="5"><strong>-&gt;</strong></font>&quot; 
+  to reference it.</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">That is why the &quot;matrix1&lt;int&gt; 
+  *C=A-&gt;operator+(B)&quot; is work and &quot;matrix1&lt;int&gt; *C=A+B &quot; 
+  don't.</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="MingLiu" size="2">So the solution is that</font>
+</div>
+<div>
+  <font face="細明體" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  matrix1&lt;int&gt; *C=(*A)+B;</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">I had written a solutoin that was attached in 
+  this message.</font>
+</div>
+<div>
+  <font face="細明體" size="2">You can try it and find out the problem!</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  <font face="細明體" size="2">Good luck &amp; enjoy.</font>
+</div>
+<div>
+  <font face="細明體" size="2">Jing. (井民全)</font>
+</div>
+<div>
+  &nbsp;
+</div>
+<div>
+  ----- Original Message -----
+</div>
+<blockquote style="BORDER-LEFT: #000000 2px solid; MARGIN-LEFT: 5px; MARGIN-RIGHT: 0px; PADDING-LEFT: 5px; PADDING-RIGHT: 0px">
+  <div style="BACKGROUND: #e4e4e4; FONT: 10pt 新細明體; font-color: black">
+    <b>From:</b> <a href="mailto:lee_ct@myson.com.tw" title="lee_ct@myson.com.tw">LEE_CT</a>
+  </div>
+  <div style="FONT: 10pt 新細明體">
+    <b>To:</b> <a href="mailto:ching@debut.cis.nctu.edu.tw" title="ching@debut.cis.nctu.edu.tw">Jing</a>
+  </div>
+  <div style="FONT: 10pt 新細明體">
+    <b>Sent:</b> Sunday, February 24, 2002 3:29 PM
+  </div>
+  <div style="FONT: 10pt 新細明體">
+    <b>Subject:</b> ask question
+  </div>
+  <div>
+    <br>
+  </div>
+  <div>
+    <font size="2">dear teacher</font>
+  </div>
+  <div>
+    <font size="2">I am 李金聰.</font>
+  </div>
+  <div>
+    <font size="2">Please check my homework.</font>
+  </div>
+  <div>
+    <font size="2">Why can't I use operator overloading?</font>
+  </div>
+  <div>
+    <font size="2">If I use: C=A-&gt;operator+(B):is O.K.</font>
+  </div>
+  <div>
+    <font size="2">If I use:C=A+B;it shows :can't add two pointers,</font>
+  </div>
+  <div>
+    <font size="2">Thank you;</font>
+  </div>
+  <div>
+    &nbsp;
+  </div>
+  <div>
+    <font size="2">Best regards.&nbsp;&nbsp;</font>
+  </div>
+</blockquote>
+
+</body>
+
+</html>

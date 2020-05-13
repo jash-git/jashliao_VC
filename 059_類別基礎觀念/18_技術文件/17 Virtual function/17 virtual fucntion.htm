@@ -1,0 +1,615 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-tw">
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Virtual Function</title>
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" link="#99FFFF" vlink="#CCCCCC">
+<h1 align="center">Virtual Function </h1>
+<h1 align="center">　</h1>
+<pre align="left" style="line-height: 150%; margin: 0"> <b><font size="3">考慮下面的程式碼    </font></b> </pre>
+<blockquote> 
+  <table width="75%" border="1">
+    <tr> 
+      <td> 
+        <pre><b><font face="Arial, Helvetica, sans-serif" size="3">class Vehicle  // </font><font size="3">載運工具基礎類別
+    </font><font face="Arial, Helvetica, sans-serif" size="3">{
+        public:
+            Vehicle();                                       // </font><font size="3">建構子
+     </font><font face="Arial, Helvetica, sans-serif" size="3">Vehicle(int wt);
+                                                                     // interface.. now virtual!
+            <font color="#FF00FF">virtual</font> int <font color="#00FF00">getweight</font>() const;
+            <font color="#FF00FF">virtual</font> void setweight(int wt);        
+          
+        private:
+            int weight;                                      // </font><font size="3">車子的重量
+     </font><font face="Arial, Helvetica, sans-serif" size="3">};
+
+    
+    int Vehicle::<font color="#00FF00">getweight</font>() const         // </font><font size="3">基礎類別 自己的 </font><font face="Arial, Helvetica, sans-serif" size="3">getweight() function:
+    {
+        return (weight);
+    }</font></b></pre>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <table width="75%" border="1">
+    <tr> 
+      <td> 
+        <pre><b><font color="#FFFFFF"><font face="Arial, Helvetica, sans-serif" size="3"> </font></font><font color="#FFFFFF" size="3">
+  </font><font face="Arial, Helvetica, sans-serif" size="3"><font color="#FFFFFF"><font color="#FF00FF">class</font> Land: public<font color="#00FF00"> Vehicle</font></font><font color="#00FF00">             </font></font><font face="Arial, Helvetica, sans-serif" size="3" color="#FFFFFF">// </font><font color="#FFFFFF" size="3">陸上交通工具類別 </font><font color="#FFFF00" size="3">繼承</font><font color="#FFFFFF" size="3">了基礎類別</font><font color="#FFFFFF"><font size="3">
+    </font><font face="Arial, Helvetica, sans-serif" size="3">{
+        ...
+    };
+
+    </font><font size="3">
+  </font><font face="Arial, Helvetica, sans-serif" size="3"><font color="#FF00FF">class</font> Auto: public<font color="#00FF00"> Land</font></font></font><font color="#00FF00" face="Arial, Helvetica, sans-serif" size="3">                 </font><font color="#FFFFFF"><font face="Arial, Helvetica, sans-serif" size="3">//</font><font size="3"> 汽車類別</font><font face="Arial, Helvetica, sans-serif" size="3">&lt;--(</font></font><font color="#FFFF00"><font size="3">繼承</font><font face="Arial, Helvetica, sans-serif" size="3">)</font></font><font color="#FFFFFF"><font face="Arial, Helvetica, sans-serif" size="3"> </font><font size="3">陸上交通工具類別</font></font><font color="#FFFFFF">
+    {
+        ...
+    }</font></b><font face="Arial, Helvetica, sans-serif" size="4" color="#FFFFFF">;
+</font></pre>
+      </td>
+    </tr>
+  </table>
+  <pre><b><font face="Arial, Helvetica, sans-serif" size="3">
+</font></b><font face="Arial, Helvetica, sans-serif" size="4"><img src="line4.gif" width="335" height="20">
+</font></pre>
+  <table width="75%" border="1">
+    <tr> 
+      <td> 
+        <pre><font size="4">
+  </font><font face="Arial, Helvetica, sans-serif" size="4"><font color="#FF00FF">class</font> Truck: public <font color="#00FF00">Auto                  </font></font><font face="Arial, Helvetica, sans-serif" size="4">//</font><font size="4">卡車類別 </font><font face="Arial, Helvetica, sans-serif" size="4">&lt;--(</font><font size="4" color="#FFFF00"><b>繼承</b></font><font face="Arial, Helvetica, sans-serif" size="4">) </font><font size="4">汽車類別
+    </font><font face="Arial, Helvetica, sans-serif" size="4">{
+        public:
+            Truck();                                     // </font><font size="4">卡車的<font color="#FFFF00">建構子</font>			</font></pre>
+        <pre><font size="4">       // 設定相關資訊的建構子: 重量 速度 名稱 可牽引的重量
+       </font><font face="Arial, Helvetica, sans-serif" size="4">Truck(int engine_wt, int sp, char const *nm, int trailer_wt); </font><font size="4">
+
+                            </font><font face="Arial, Helvetica, sans-serif" size="4">
+           <font color="#FFFF00"> void setweight(int engine_wt, int trailer_wt);</font>
+                           
+            <font color="#FFFF00">int <font color="#00FF00">getweight</font>() const;</font>
+
+        private:
+            int   trailer_weight;          // </font><font size="4">牽引的重量
+                
+    </font><font face="Arial, Helvetica, sans-serif" size="4">};
+
+    // Truck's own getweight() function
+    int Truck::getweight() const
+    {
+        return (<font color="#FF0000">Auto::getweight() </font>+ trailer_wt);
+    }</font></pre>
+      </td>
+    </tr>
+  </table>
+  <pre><font face="Arial, Helvetica, sans-serif" size="4">
+     </font></pre>
+  <p><a name="Virtual2"></a> <img src="line2.gif" width="686" height="41"></p>          
+  <h1>Which function to call ?</h1>
+  <blockquote> 
+    <pre><font face="Arial, Helvetica, sans-serif" size="3">
+<b>    Vehicle   v(1200);                         // <font color="#FFFF00">vehicle</font> with weight 1200
+    Truck      t(6000, 115,  &quot;Scania&quot;,  15000);
+     Vehicle   *vp;                               // generic vehicle pointer</b></font></pre>
+    <pre><b><font face="Arial, Helvetica, sans-serif" size="3">    int main()
+    {
+        vp = &amp;v;
+                   printf(&quot;%d\n&quot;, <font color="#00FF00">vp-&gt;getweight()</font>);
+       
+        <font color="#FFFF00">vp = &amp;t;                                                           // &nbsp;</font></font><font color="#FFFF00" size="3">現在把 </font><font face="Arial, Helvetica, sans-serif" size="3">Vehicle </font><font color="#FFFF00" size="3">指標變數 </font><font face="Arial, Helvetica, sans-serif" size="3">reference </font><font color="#FFFF00" size="3">到 卡車</font><font size="3">
+        </font><font face="Arial, Helvetica, sans-serif" size="3">printf(&quot;%d\n&quot;, <font color="#00FF00">vp-&gt;getweight()</font>);        
+
+        return (0);
+    }</font></b>
+<font face="Arial, Helvetica, sans-serif" size="4"><img src="line4.gif" width="335" height="20"></font>
+</pre>
+  </blockquote>
+  <h3><img src="button2.gif" width="32" height="32">如何利用 Virtual function 完成獨立性質的軟體</h3>          
+  <p>　</p>        
+  <p>　</p>        
+  <p><font size="5">我們不希望,改變需求就必須改寫整個程式!!</font></p>        
+  <p align="center"><b><font size="5" color="#00FF00">徹底的把</font><font size="5" color="#CCCCFF">平台相關</font><font size="5" color="#00FF00">與</font><font size="5" color="#CCCCFF">平台無關</font><font size="5" color="#00FF00">的程式碼分開!!</font></b></p>        
+  <p align="center">　</p>        
+  <p align="center">　</p>        
+  <blockquote> 
+    <h4>問題 1: Windows版本, linux 版本 .......Plam版本</h4>          
+    <h4>問題 2: MFC, OWL , X Window ,OpenWin ..</h4>          
+    <h4><font color="#00FFFF" size="5"><b>思考解決方案與策略:</b></font></h4>
+    <blockquote> 
+      <h4 align="left"> <img src="button7.gif" width="20" height="20">演算法通吃所有平台  
+      ==&gt;&nbsp;</h4>
+      <blockquote>
+        <blockquote>
+      <h4 align="left"> 把<b><font color="#CCCCFF" size="5">平台無關</font></b>的程式碼放到<font color="#00FF00"><b>基礎類別</b></font>中</h4>
+          <p align="left">把<font color="#CCCCFF" size="5"><b> 過去到未來  
+          100年都不會變的流程 </b></font>放到<font color="#00FF00"><b>基礎類別</b></font>中</p> 
+        </blockquote>
+      </blockquote>
+      <h4 align="left"><img src="button7.gif" width="20" height="20">平台相關函式放在衍生類別中  
+      =&gt;</h4>
+      <blockquote>
+        <blockquote>
+      <p align="left">把<font color="#CCCCFF" size="5"><b>平台相關</b></font>的程式碼放到<font color="#00FFFF">衍生類別</font>中</p>
+      <p align="left">把 <font color="#CCCCFF" size="5"><b>隨時會改變的流程</b></font>  
+      如 使用者介面,使用者操作方法 放到<font color="#00FFFF">衍生類別</font>中</p> 
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <h4>架構如下:</h4>
+    <h4>假設 Derived 繼承 <font color="#FFFFFF">Comm</font><font face="Arial, Helvetica, sans-serif" size="3">PlatForm</font>          
+      :</h4>          
+    <blockquote> 
+      <h4><img src="SoftIndep.gif" width="391" height="154"></h4>
+    </blockquote>
+    <h4>共用平台</h4>
+    <table width="75%" border="1">
+      <tr> 
+        <td> 
+          <pre><b><font size="4">
+<font face="Arial, Helvetica, sans-serif"><font color="#FF00FF">class</font> CommPlatForm
+{
+public:
+    int BaseData;
+    CommPlatForm() 
+    {
+        BaseData=0;
+    }
+    void Algorithm(int data)     // </font>演算法通吃所有平台
+  <font face="Arial, Helvetica, sans-serif">{
+        SetData(data);               //</font><font color="#00FF00">在演算法中<font face="Arial, Helvetica, sans-serif">,</font>你可能須要使用平台相關的函式</font>
+  <font face="Arial, Helvetica, sans-serif">}
+	<font color="#FF00FF"> <font color="#FF0000">  // &lt;&lt;</font></font></font><font color="#FF0000">但是 </font><font face="Arial, Helvetica, sans-serif">base </font><font color="#FF0000">是否可以呼叫</font><font face="Arial, Helvetica, sans-serif">derived class </font><font color="#FF0000">的</font><font face="Arial, Helvetica, sans-serif">function</font><font color="#FF0000">嗎</font><font face="Arial, Helvetica, sans-serif"><font color="#FF00FF"><font color="#FF0000">?&gt;</font>&gt;</font>
+    
+          /*
+          </font>答案<font face="Arial, Helvetica, sans-serif">: Base </font>中的 <font face="Arial, Helvetica, sans-serif">function </font>只能呼叫自己有定義的<font face="Arial, Helvetica, sans-serif">function.
+                </font>若要呼叫<font face="Arial, Helvetica, sans-serif">Derived function,</font>只能靠<font face="Arial, Helvetica, sans-serif">virtual function(  </font><font color="#FFFF00">即呼叫 </font><font face="Arial, Helvetica, sans-serif"><font color="#FFFF00">interface</font>)</font></font></b></pre>
+          <pre><font size="4">      */<b><font face="Arial, Helvetica, sans-serif">
+               </font></b><font face="Arial, Helvetica, sans-serif"><font color="#00FF00">  <font color="#FF00FF"><b>virtual</b></font> void SetData(int data)
+                 {
+                     BaseData=data;
+                 }</font><b>
+          
+};</b></font>
+		  </font></pre>
+        </td>
+      </tr>
+    </table>
+    <h3><font face="Arial, Helvetica, sans-serif" size="3">Windows </font><font size="3"> 平台的類別          
+    </font><font face="Arial, Helvetica, sans-serif" size="3"> :</font></h3>
+    <table width="75%" border="1">
+      <tr> 
+        <td> 
+          <pre><font face="Arial, Helvetica, sans-serif" size="3">/* 
+       - </font><font size="3">只記錄與 </font><font face="Arial, Helvetica, sans-serif" size="3">windows</font><font size="3">相關的 </font><font face="Arial, Helvetica, sans-serif" size="3">member functions
+*/
+</font><font face="Arial, Helvetica, sans-serif" color="#FF00FF" size="3">class</font><font face="Arial, Helvetica, sans-serif" color="#00FF00" size="3"> <font color="#FFFFFF">WindowsPlatForm</font></font><font color="#FFFFFF" face="Arial, Helvetica, sans-serif" size="5"><b>  :</b> </font><font face="Arial, Helvetica, sans-serif" color="#00FF00" size="3">public </font><font face="Arial, Helvetica, sans-serif" color="#00FF33" size="3"><font color="#00FF00">Comm</font></font><font face="Arial, Helvetica, sans-serif" size="3" color="#00FF00">PlatForm              </font><font face="Arial, Helvetica, sans-serif" size="3">// Windows </font><font size="3">繼承公用平台</font><font face="Arial, Helvetica, sans-serif" size="3">,
+{                                                                                                    //   </font><font size="3">連帶的 <font color="#00FF00"><b>共同演算法也一併繼承過來</b></font>
+</font><font face="Arial, Helvetica, sans-serif" size="3">public:	
+         int DerivedData;
+
+         </font><font face="Arial, Helvetica, sans-serif" color="#00FF00" size="3"><font color="#FFFFFF">WindowsPlatForm</font></font><font face="Arial, Helvetica, sans-serif" size="3">()</font><b><font face="Arial, Helvetica, sans-serif" size="6"> : </font></b><font color="#00FF00">Comm</font><font face="Arial, Helvetica, sans-serif" size="3" color="#00FF00">PlatForm</font><font face="Arial, Helvetica, sans-serif" size="3">()
+         {    DerivedData=0;     }
+
+         <font color="#FFFF00">void SetData(int data)                 // Windows</font></font><font color="#FFFF00" size="3">相關的程式碼
+    </font><font face="Arial, Helvetica, sans-serif" size="3"><font color="#FFFF00">{
+         		DerivedData=data;
+        }</font>
+}</font><b><font face="Arial, Helvetica, sans-serif" size="5">;</font></b></pre>
+        </td>
+      </tr>
+    </table>
+    <h4>一般操作使用方面:</h4>
+    <table width="75%" border="1">
+      <tr> 
+        <td> 
+          <pre><b><font size="3"><font face="Arial, Helvetica, sans-serif">// </font></font><font size="3">假設在</font><font face="Arial, Helvetica, sans-serif">Window</font><font size="3">平台開發程式
+</font><font face="Arial, Helvetica, sans-serif"><font size="3"><font color="#00FF00">int main(int argc, char* argv[])</font>
+{
+       <font color="#00FF00"><font color="#FFFFFF">WindowsPlatForm</font></font></font> <font color="#00FFFF" size="3">MyWinAp</font><font size="3">;</font></font></b></pre>
+          <pre><b><font size="3" face="Arial, Helvetica, sans-serif">       </font><font face="Arial, Helvetica, sans-serif">CommPlatForm *p=&amp;MyWinAp;</font></b></pre>
+          <pre><b><font face="Arial, Helvetica, sans-serif"> <font color="#FFFF00" size="5">// </font></font><font color="#FFFF00" size="5">執行演算法 (注意: 使用一般型態)</font></b></pre>
+          <pre><b><font face="Arial, Helvetica, sans-serif">       p-&gt;Algorithm(1234);	    </font></b></pre>
+          <pre><b><font face="Arial, Helvetica, sans-serif"><font size="3">
+       // <font color="#00FFFF">MyWinAp</font>.Algorithm(1234); 
+       return 0;
+}</font></font></b>
+</pre>
+        </td>
+      </tr>
+    </table>
+    <h4>當新的任務要將程式轉到 linux上時只需要</h4>          
+    <h4><img src="PointRight.gif" width="32" height="32">實作 一個 linux相關的 class           
+      即可, 共用class根本就不用動</h4>          
+    <table width="75%" border="1">
+      <tr> 
+        <td> 
+          <pre><font face="Arial, Helvetica, sans-serif" size="3">/* 
+       - </font><font size="3">只記錄與 </font><font face="Arial, Helvetica, sans-serif" size="3">Linux </font><font size="3">相關的 </font><font face="Arial, Helvetica, sans-serif" size="3">member functions
+*/
+</font><font face="Arial, Helvetica, sans-serif" color="#FF00FF" size="3">class</font><font face="Arial, Helvetica, sans-serif" color="#00FF00" size="3"> <font color="#FFFFFF">LinuxPlatForm  </font></font><b><font color="#FFFFFF" face="Arial, Helvetica, sans-serif" size="5">:</font></b><font face="Arial, Helvetica, sans-serif" color="#00FF00" size="3"> public </font><font face="Arial, Helvetica, sans-serif" color="#00FF33" size="3"><font color="#00FF00">Comm</font></font><font face="Arial, Helvetica, sans-serif" size="3" color="#00FF00">PlatForm</font><font face="Arial, Helvetica, sans-serif" size="3">
+{
+public</font><b><font face="Arial, Helvetica, sans-serif" size="5">:</font></b><font face="Arial, Helvetica, sans-serif" size="3">	
+         int DerivedData;
+
+         </font><font face="Arial, Helvetica, sans-serif" color="#00FF00" size="3"><font color="#FFFFFF">LinuxPlatForm</font></font><font face="Arial, Helvetica, sans-serif" size="3">() : </font><font face="Arial, Helvetica, sans-serif" color="#00FF33" size="3"><font color="#00FF00">Comm</font></font><font face="Arial, Helvetica, sans-serif" size="3" color="#00FF00">PlatForm</font><font face="Arial, Helvetica, sans-serif" size="3">()
+         {    DerivedData=0;     }
+
+         <font color="#FFFF00">void SetData(int data)                 // Linux </font></font><font color="#FFFF00" size="3">相關的程式碼
+    </font><font face="Arial, Helvetica, sans-serif" size="3"><font color="#FFFF00">{
+         		DerivedData=data;
+         }</font>
+}</font><b><font face="Arial, Helvetica, sans-serif" size="5">;</font></b></pre>
+        </td>
+      </tr>
+    </table>
+    <p>&nbsp;</p>
+    <table width="75%" border="1">
+      <tr> 
+        <td> 
+          <pre><b><font size="3"><font face="Arial, Helvetica, sans-serif">// </font></font><font size="3">假設在 <font face="Arial, Helvetica, sans-serif">Linux </font>平台開發程式
+<font face="Arial, Helvetica, sans-serif"><font color="#00FF00">int main(int argc, char* argv[])</font>
+{
+       </font></font></b><font face="Arial, Helvetica, sans-serif" color="#00FF00" size="3"><font color="#FFFFFF">LinuxPlatForm</font></font><b><font face="Arial, Helvetica, sans-serif" size="3" color="#FFFFFF"> </font></b><font face="Arial, Helvetica, sans-serif"><b><font color="#00FFFF" size="3">MyLinAp</font><font size="3">;
+       </font><font face="Arial, Helvetica, sans-serif"><b><font color="#00FFFF" size="3">MyLinAp</font><font size="3"></font></b></font><font size="3">.Algorithm(1234); 
+       return 0;
+}</font></b></font>
+</pre>
+        </td>
+      </tr>
+    </table>
+    <h4 align="right">範例程式:</h4>
+    <h4 align="right">VirtualFunDemo1.cpp</h4>
+    <h4 align="right">virtual function BCB實際 example</h4>          
+    <blockquote> 
+      <h4 align="right"> bcbVirtualDemo.cpp</h4>
+    </blockquote>
+  </blockquote>
+  <h1><img src="line2.gif" width="686" height="41"><br>
+    虛擬解構式</h1>
+  <h4><img src="button2.gif" width="32" height="32">C++ compiler <font color="#CCCCFF" size="5"><b> 無法在compile-time  
+  得知</b></font>那一個 function應該被呼叫, </h4>          
+  <h4>而利用virtual function的多型功能動態的找出適當的 function</h4>          
+  <h4>考慮下面的 code:</h4>          
+  <blockquote> 
+    <h4>&lt;<font color="#00FFFF">假設 Person 繼承 Sortable </font> &gt;</h4>         
+    <table width="88%" border="1">
+      <tr> 
+        <td> 
+          <h4><font color="#99FF99">Sortable *sp;</font></h4>
+          <h4><font color="#99FF99">Person *pp=new Person(&quot;Frank&quot;,&quot;frank@icce.rug.nl&quot;,&quot;363 
+            3688&quot;);</font></h4>
+          <h4><font color="#FFFF00">sp=pp;&nbsp;&nbsp;&nbsp;&nbsp; // 用       
+          基礎類別指標變數 reference Person</font></h4>      
+          <h4><font color="#FF3333">delete sp; </font>// 那一個 的解構式會被呼叫 ? (Person           
+            or Sortable)</h4>          
+          <pre>&nbsp;</pre>
+        </td>
+      </tr>
+    </table>
+    <h4>&lt;解答&gt;</h4>
+    <blockquote> 
+      <h4> 若不加入 virtual 在sp的解構式中,則 <font color="#CCCCFF" size="5"> delete sp 會呼叫 sp的解構子</font>,而非 Person的解構子.</h4>          
+    </blockquote>
+  </blockquote>
+  <h4 align="right"> 範例程式: <font color="#CCCCFF"> VirtualDestructor.cpp</font> </h4>   
+  <h4><img src="line4.gif" width="335" height="20"></h4>
+  <h4>C++ 允許 解構式虛擬化, 以確定呼叫正確的解構式</h4>          
+  <h4><img src="PointRight.gif" width="32" height="32"> 所以應該在基礎類別 Sortable 的解構式中加入           
+    virtual.</h4>
+  <blockquote> 
+    <blockquote> 
+      <h4> <font color="#00FF00" size="5">virtual</font> <font color="#CCFFCC"> 
+      ~Sortable()</font></h4>
+      <h4><font color="#CCFFCC">{</font></h4>
+      <h4><font color="#CCFFCC">}</font></h4>
+    </blockquote>
+    <h4>如此 <font color="#FF6666">delete sp;</font> 才會呼叫正確的 Person的解構式.</h4>          
+  </blockquote>
+  <h4><font color="#FF00FF">問題:</font></h4>
+  <blockquote> 
+    <h4> Delete Derived 會呼叫 Derived虛擬解構式,<br>          
+    但是<font color="#FF0000">程式會繼續呼叫 Base 的解構式嗎?</font></h4>          
+  </blockquote>
+  <h4>&lt;解答&gt;</h4>
+  <blockquote> 
+    <blockquote> 
+      <h4>是的. 解構的順序為 ~Derived() -&gt; ~Base()</h4>          
+    </blockquote>
+    <h4 align="right">範例程式: *<font color="#9999CC">VirtualFunDemo2.cpp</font></h4>  
+  </blockquote>
+  <h4><img src="line2.gif" width="686" height="41"></h4>
+  <h1>多重繼承下的虛擬函式</h1>
+  <h4><img src="button2.gif" width="32" height="32">一個衍生類別可能繼承多個基礎類別</h4>
+  <h4>考慮下面的 code</h4>          
+  <blockquote> 
+    <blockquote> 
+      <blockquote> 
+        <pre><font color="#CCFFCC" face="Arial, Helvetica, sans-serif"><b>class Base
+ {
+           public:
+           		void setfield(int val)
+          		 { field = val; }
+           		int <font color="#FFFF00">getfield</font>() const
+           	 	{ return (field); }
+           private:
+           		int  field;
+ };</b></font></pre>
+        <pre>　</pre>
+        <pre><b><font size="5"><font color="#FFFF00"><font face="Arial, Helvetica, sans-serif">// </font>注意<font face="Arial, Helvetica, sans-serif">: </font>這裡是</font><font color="#00FF00" size="4">重複繼承</font><font color="#FFFF00">了 <font face="Arial, Helvetica, sans-serif">Base</font></font></font></b></pre>
+        <pre><b><font color="#CCFFCC" face="Arial, Helvetica, sans-serif"> class Derived: </font><font color="#FF6666" face="Arial, Helvetica, sans-serif" size="5">public Base, public Base  </font><font size="5"><font color="#FF6666" face="Arial, Helvetica, sans-serif">    </font></font><font color="#CCFFCC" face="Arial, Helvetica, sans-serif">
+ {
+ };</font></b></pre>
+        <pre>　</pre>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+  <h4><b>有兩個基礎類別被<font color="#FFFF00">重覆的繼承</font></b><font color="#CCFFCC" face="Arial, Helvetica, sans-serif">,</font>此時若衍生類別<font color="#00FF00">呼叫    
+  <font face="Arial, Helvetica, sans-serif"> 
+    -&gt; getfield()</font></font>時<font color="#FF6666" face="Arial, Helvetica, sans-serif">,</font><font color="#FF6666">則到底是那一個被呼叫</font><font color="#FF6666" face="Arial, Helvetica, sans-serif">?</font></h4>
+  <h4><img src="line4.gif" width="335" height="20"></h4>
+  <h4>程<font color="#FFFFFF">式很大的時候</font><font color="#CCFFCC" face="Arial, Helvetica, sans-serif">,</font><font color="#FFFFFF"><font color="#CCFFCC">則會亦有類似狀況 
+    </font>  
+    </font><font color="#CCCCFF" size="5">(因為基礎類別可能不是你寫的)</font><font color="#CCFFCC"><br>
+    </font></h4>
+  <blockquote> 
+    <blockquote> 
+      <h4>如:</h4>
+      <h4>1. 一個 AirAuto 是一個 Auto, 因此也是一個路上交通工具 (Land class), 並且是一個運輸工具 (<font color="#FF6666">Vehicle           
+        class</font>)</h4>
+      <h4>2. 然而 AirAuto 也是一個空中交通工具 (Air), 所以也是一個運輸工具 (<font color="#FF6666">Vehicle           
+        class</font>) </h4>
+    </blockquote>
+  </blockquote>
+  <h4> 多重繼承推導圖與內部結構圖 (重複的 class Vehicle)</h4>          
+  <blockquote> 
+    <blockquote> 
+      <blockquote> 
+        <blockquote> 
+          <h4><img src="ambiguity.gif" width="196" height="146"> <img src="internal.gif" width="196" height="146"> 
+            <br>
+          </h4>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+  <h4>解決方法:</h4>
+  <h4><img src="button3.gif" width="20" height="27"> (一) 使用指示運算子指定 getweight()是屬於           
+    Land還是Air的 Function.</h4>          
+  <h4>如</h4>
+  <blockquote> 
+    <blockquote> 
+      <h4><b>AirAuto cool;</b></h4>          
+      <h4><b>printf(&quot;%d\n&quot;, <font color="#99FF99">cool.<font color="#FF00FF">Auto::getweight()</font></font>);           
+        //使用Auto的getweight()</b></h4>
+    </blockquote>
+  </blockquote>
+  <h4><img src="button3.gif" width="20" height="27"> (二) 直接為 AirAuto寫一個getweight,明確的指出           
+    getweight</h4>
+  <h4>如</h4>
+  <blockquote> 
+    <blockquote> 
+      <h4>int <font color="#FF00FF">AirAuto</font>::getweight() const // 在AirAuto中新增一個getweight<br>          
+        {</h4>
+      <blockquote> 
+        <h4>return(Auto::getweight());</h4>
+      </blockquote>
+      <h4><br>
+        }</h4>
+      <h4><img src="line4.gif" width="335" height="20"></h4>
+    </blockquote>
+  </blockquote>
+  <h4><img src="button4.gif" width="40" height="40">  <font color="#CCCCFF" size="5">更好的解決方法</font> Virtual Base classes          
+  (<font color="#00FF00" size="5">虛擬繼承</font>) 
+  </h4>
+  <h4><font color="#CCFFCC" face="Arial, Helvetica, sans-serif"><img src="PointRight.gif" width="32" height="32"></font>前面的方法中,           
+    兩個運輸工具 (Vehicle class)有兩個weight,會造成 access的混淆並且形成空間的浪費</h4>          
+  <h4><font color="#CCCCFF">對於一個 AirAuto, 我們只須要一個 weight.</font></h4>          
+  <h4>考慮下面的 code 與內部結構</h4>          
+  <table width="91%" border="0">
+    <tr> 
+      <td width="62%"> 
+        <blockquote> 
+          <blockquote> 
+            <h4><b>class Land:<font color="#CCFFCC"> <font color="#FF00FF">virtual</font>           
+              public Vehicle</font> <br>
+              {<br>
+              ...<br>
+              };</b></h4>
+            <p><b> class Air: <font color="#FF00FF">virtual</font><font color="#CCFFCC"> 
+              public Vehicle</font><br>
+              {<br>
+              ...<br>
+              };</b></p>
+            <blockquote> 
+              <blockquote> 
+                <blockquote> 
+                  <blockquote> 
+                    <p></p>
+                  </blockquote>
+                </blockquote>
+              </blockquote>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+        <p></p>
+      </td>
+      <td width="38%"><img src="virtbase.gif" width="196" height="146"></td>
+    </tr>
+  </table>
+  <h4><img src="button2.gif" width="32" height="32">虛擬繼承與虛擬函數不同的地方在於=&gt;虛擬繼承完全可以在           
+    compile-time 解析</h4>          
+  <h4 align="right">&nbsp;完整程式範例: VirtualDerived.dsw</h4>      
+  <h4><img src="line2.gif" width="686" height="41"></h4>
+  <h1>執行時期的形態辨別</h1>
+  <h4><font color="#CCFFCC"><img src="PointRight.gif" width="32" height="32"></font>由前面的例子中,我們可以看到          
+  <font color="#FFFF00" size="5"> 
+    一個基礎類別的指標,可能指的是衍生類別</font>.&nbsp;</h4>        
+  <p>　</p>        
+  <h4 align="center"><font size="5"> 我們要如何得知目前的指標到底是那一種型態?</font></h4>        
+  <p align="center">　</p>        
+  <h4>C++ 利用 </h4>          
+  <h4><img src="button3.gif" width="20" height="27"> <font color="#FF6666">typeid</font>           
+    指出目前的指標到底是那一種型態. (<font color="#CCCCFF" size="6">傳回字串告訴你</font>)</h4>        
+  <h4><img src="button3.gif" width="20" height="27"><font color="#FF6666">   dynamic_cast</font> 
+  運算子來將一個指標<font color="#00FF33" size="5">轉換</font>成 <font color="#CCCCFF">基礎類別型態 </font>或 <font color="#CCCCFF">衍生類別型態</font>.</h4>          
+  <h4><img src="button1.gif" width="90" height="68">注意: 在Virsual Studio中,必須設定           
+    GR才能允許 dynamic_cast.</h4>          
+  <h4>[project]-&gt;[setting...]-&gt;[C++]-&gt;[C++ Language]: Enable Run-Time 
+    Type Information(RTTI)</h4>
+  <p>　</p>        
+  <h4><font color="#00FFFF">考慮下面的 dynamic_cast 範例</font></h4>          
+  <blockquote> 
+    <blockquote> 
+      <h4>/*將 base class 的指標轉成衍生類別的指標*/</h4>          
+      <pre><font face="Arial, Helvetica, sans-serif" size="3"><b>class <font color="#CCCCFF">Base		</font>
+ {
+  public:
+         	virtual ~Base(){};
+ };
+ class <font color="#CCCCFF">Derived</font>: public Base
+ {
+  public:
+              char const *toString()
+        	 {
+        		 return (&quot;Derived object&quot;);
+         	 }
+  };
+
+  int main()
+  {
+         	Base *bp,b;
+         	Derived *dp, d;</b></font></pre>
+      <pre><b><font face="Arial, Helvetica, sans-serif" size="3">	<font color="#CCCCFF">bp = &amp;d;</font>	</font></b></pre>
+      <div align="right">
+      <pre><b><font face="Arial, Helvetica, sans-serif" size="3">           <font color="#999966">   //bp=&amp;b;  // </font></font><font color="#999966"><font size="3">無法轉換的</font><font face="Arial, Helvetica, sans-serif" size="3">ex</font></font></b></pre>
+      </div>
+      <pre><b><font face="Arial, Helvetica, sans-serif" size="3">	<font color="#99FF99">if ((dp = </font><font color="#FF0000">dynamic_cast</font><font color="#99FF99">&lt;Derived *&gt;(bp))) </font></font></b></pre>
+      <pre><b><font color="#99FF99" face="Arial, Helvetica, sans-serif" size="3">                       </font><font color="#CCCCFF"><i><font face="Arial, Helvetica, sans-serif" size="3">// </font><font size="3">安全的向下轉型的動作 </font><font face="Arial, Helvetica, sans-serif" size="3">( Safe downcasting)</font></i></font><font face="Arial, Helvetica, sans-serif" size="3">
+                       cout &lt;&lt; dp-&gt;toString() &lt;&lt; endl;          // </font><font size="3">若轉換成功
+      </font><font face="Arial, Helvetica, sans-serif" size="3">else
+                       cout &lt;&lt; &quot;dynamic cast conversion failed\n&quot;;</font></b></pre>
+      <pre><b><font face="Arial, Helvetica, sans-serif" size="3"> 	return (0);
+    }</font></b></pre>
+    </blockquote>
+  </blockquote>
+  <h4><font color="#CCFFCC" face="Arial, Helvetica, sans-serif"><img src="button2.gif" width="32" height="32"></font>若<font face="Arial, Helvetica, sans-serif">dynamic_cast 
+  </font> 
+    能正確的將 <font face="Arial, Helvetica, sans-serif"> bp</font>轉成 <font face="Arial, Helvetica, sans-serif"> Derived</font>型態時<font face="Arial, Helvetica, sans-serif">,</font>則          
+  <font face="Arial, Helvetica, sans-serif"> dp </font> 將是一個<font face="Arial, Helvetica, sans-serif">Derived Type</font>的指標<font face="Arial, Helvetica, sans-serif">.</font></h4> 
+  <h4> 若無法轉換<font face="Arial, Helvetica, sans-serif">,</font>則<font face="Arial, Helvetica, sans-serif">dp=0.</font></h4>
+  <h4><font color="#FFFFFF">完整範例:</font><font color="#CCCCFF"> dynamic_castDemo.cpp </font></h4>
+  <h4><img src="line4.gif" width="335" height="20"></h4>
+  <h4><font color="#00FFFF">考慮另一個 dynamic_cast 範例 (連續轉換的例子)</font></h4>         
+  <blockquote> 
+    <blockquote> 
+      <pre><font face="Arial, Helvetica, sans-serif" size="4"><b><font size="3">class <font color="#CCCCFF">Base</font>
+{
+         public: virtual ~Base();
+};
+class <font color="#CCCCFF">Derived</font>: public Base
+{
+         public:
+         char const *toString()
+         {
+                    return (&quot;Derived object&quot;);
+         }
+};
+class <font color="#CCCCFF">SecondDerived</font>: public Base
+{
+         public:
+         char const *hello()
+         {
+                 return (&quot;hello from a SecondDerived object&quot;);
+         }
+ };
+int main()
+{
+          Base     *bp;
+          Derived    *dp,     d;
+          SecondDerived     *sdp;</font></b></font></pre>
+      <pre><font size="3"><b><font face="Arial, Helvetica, sans-serif">           bp = &amp;d;</font></b></font></pre>
+      <pre><font face="Arial, Helvetica, sans-serif" size="3"><b>          </b></font><font size="3" color="#FFFF00"><b><font face="Arial, Helvetica, sans-serif">// </font>先嘗試轉成 <font face="Arial, Helvetica, sans-serif">Derived</font></b></font></pre>
+      <pre><font size="3"><b><font face="Arial, Helvetica, sans-serif">           <font color="#CCFFCC">if ((dp = <font color="#FF00FF">dynamic_cast&lt;Derived *&gt;</font>(bp)))                         </font></font><font face="Arial, Helvetica, sans-serif">
+ 	    cout &lt;&lt; dp-&gt;toString() &lt;&lt; endl;</font></b></font></pre>
+      <pre><b><font face="Arial, Helvetica, sans-serif" color="#CCFFCC" size="3">          </font><font face="Arial, Helvetica, sans-serif" size="3" color="#FFFF00"> </font></b><font size="3"><b><font color="#FFFF00"><font face="Arial, Helvetica, sans-serif">// </font>若失敗<font face="Arial, Helvetica, sans-serif">,</font>則嘗試轉成 <font face="Arial, Helvetica, sans-serif">SecondDerived</font></font><font color="#CCFFCC">
+     else if ((sdp = </font><font color="#FF00FF">dynamic_cast&lt;SecondDerived *&gt;</font><font color="#CCFFCC">(bp))) </font><font face="Arial, Helvetica, sans-serif"><font color="#CCFFCC">
+         	    cout &lt;&lt; sdp-&gt;hello() &lt;&lt; endl;</font>
+}</font></b></font></pre>
+    </blockquote>
+  </blockquote>
+  <h4><img src="line3.gif" width="255" height="20"></h4>
+  <h4><img src="button3.gif" width="20" height="27"> <font color="#FF6666">typeid</font>           
+    我們可以利用 typeid來判斷目前的 object 到底是那一個class</h4>          
+  <h4>考慮下面的code</h4>
+  <blockquote> 
+    <blockquote> 
+      <h4> cout &lt;&lt; typeid(12).name() &lt;&lt; endl; // 會印出 int</h4>          
+      <h4>cout &lt;&lt; typeid(3.14).name() &lt;&lt; endl; // 會印出 double</h4>          
+    </blockquote>
+    <h4><font color="#CCFFCC" face="Arial, Helvetica, sans-serif"><img src="button2.gif" width="32" height="32"></font>若要使用           
+      typeid 的功能時,必須先<font color="#00FF00" size="5"> #include &lt;typeinfo&gt;</font> </h4>          
+  </blockquote>
+  <h4>比較複雜的例子</h4>
+  <blockquote> 
+    <blockquote> 
+      <blockquote> 
+        <blockquote> 
+          <pre><b><font face="Arial, Helvetica, sans-serif">class <font color="#CCCCFF">Base</font>
+ {
+             public:</font></b></pre>
+          <pre><b><font face="Arial, Helvetica, sans-serif">            <font size="5">// </font></font><font size="5">一定要加入 <font color="#00FF00">virtual</font> 解構子<font face="Arial, Helvetica, sans-serif">, typeid</font>才會正常</font><font size="5" face="Arial, Helvetica, sans-serif">working</font><font face="Arial, Helvetica, sans-serif">
+             		virtual ~Base(){};			
+ };</font></b></pre>
+          <pre><b><font face="Arial, Helvetica, sans-serif">
+ class <font color="#CCCCFF">Derived</font>: public <font color="#00FF00">Base</font>
+ {
+             public:
+                  char const *toString()
+             	    {
+		 return (&quot;Derived object&quot;);
+ 	    }
+  };</font></b></pre>
+          <pre style="margin-top: 1"><b><font face="Arial, Helvetica, sans-serif">int main(int argc, char* argv[])
+{
+             <font color="#99FF99">Derived d;</font></font></b></pre>
+          <pre style="margin-top: 1"><b><font color="#99FF99"> // </font><font color="#99FF99">用 </font><font face="Arial, Helvetica, sans-serif" color="#FF00FF">Base</font><font face="Arial, Helvetica, sans-serif"> </font><font color="#FFFF00" size="5">reference</font><font color="#99FF99"> 指向 </font><font face="Arial, Helvetica, sans-serif">Derived </font><font color="#99FF99">型態的物件</font><font color="#99FF99">
+           </font><font face="Arial, Helvetica, sans-serif">  Base &amp;br=d; </font><font color="#99FF99">                                              </font><font color="#99FF99">
+       </font></b></pre>
+          <pre style="margin-top: 1"><b><font color="#99FF99">// 用 Base </font><font size="5" color="#FFFF00">Pointer</font><font color="#99FF99"> 指向 </font>Derived<font color="#99FF99"> 型態物件</font></b></pre>
+          <pre style="margin-top: 1"><b><font color="#99FF99">      </font> Base *p=&amp;d;	<font color="#99FF99">		     </font></b></pre>
+          <pre style="margin-top: 1">　</pre>
+          <pre style="margin-top: 1"><b>// 會印出 class <font color="#00FFFF">Derived</font></b></pre>
+          <pre style="margin-top: 1"><b><font color="#99FF99">       </font>cout &lt;&lt;<font color="#99FF99"> </font><font color="#FFFF00" size="5">typeid(d).name()</font><font color="#99FF99"> </font> &lt;&lt; endl;     <font color="#99FF99">     </font></b></pre>
+          <pre style="margin-top: 1"><b>// </b><b>會</b><b>印出 class <font color="#00FFFF">Base*</font> </b></pre>
+          <pre style="margin-top: 1"><b><font color="#00FFFF" size="4">	</font>cout &lt;&lt; typeid(<font color="#00FFFF" size="5">br</font>).name() &lt;&lt; endl;		     </b></pre>
+          <pre style="margin-top: 1"><b>// </b><b>會</b><b>印出 class <font color="#00FFFF">Derived</font></b></pre>
+          <pre style="margin-top: 1"><b>	cout &lt;&lt; typeid(<font color="#00FFFF" size="5">*br</font>).name() &lt;&lt; endl;		   <font face="Arial, Helvetica, sans-serif">
+            
+             return 0;
+ }
+</font>範例<font face="Arial, Helvetica, sans-serif">: TypeidDemo.dsw
+</font></b></pre>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+  <h4>練習:</h4>
+  <blockquote> 
+    <blockquote> 
+      <blockquote> 
+        <h4> 為何無法show 出class name? 00DebugTypeidDemo.pwd</h4>          
+      </blockquote>
+    </blockquote>
+  </blockquote>
+<p align="right">井民全 debut.cis.nctu.edu.tw/~ching</p>        
+</blockquote>
+</body>
+
+</html>
+

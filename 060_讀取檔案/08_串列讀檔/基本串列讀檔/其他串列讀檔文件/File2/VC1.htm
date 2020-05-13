@@ -1,0 +1,1599 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0038)http://www.yesky.com/298/1834298.shtml -->
+<HTML lang=zh-CN xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>VC中对象的序列化与文件I/O研究</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META http-equiv=Content-Language content=zh-CN>
+<META content=all name=robots>
+<META content="index, follow" name=googlebot>
+<META content="MSHTML 6.00.2800.1491" name=GENERATOR>
+<META content="天极Yesky | 全球中文IT第一门户" name=author>
+<META content="天极Yesky | 全球中文IT第一门户" name=Copyright>
+<META content=硬件,软件,数码,游戏,e时代,下载,社区,评测,笔记本; name=keywords><LINK media=all 
+href="VC1.files/yesky-content-cs.css" type=text/css rel=stylesheet></HEAD>
+<BODY>
+<SCRIPT language=JavaScript>
+function sendemail(){ 
+OpenWindow = window.open('http://other.chinabyte.com/chinabyte/qin/sendemail-new.shtm?url=http://www.yesky.com/298/1834298.shtml&title=VC中对象的序列化与文件I/O研究&channel=324','emailwin','toolbar=no,location=no,scrollbars=no,menubar=no,width=462,height=450')
+}</SCRIPT>
+<!--头部-->
+<DIV class=hidden>yesky内容</DIV>
+<STYLE type=text/css>BODY {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FONT-SIZE: 12px; BACKGROUND: #fff; PADDING-BOTTOM: 0px; MARGIN: 0px; COLOR: #000000; LINE-HEIGHT: 150%; PADDING-TOP: 0px; TEXT-ALIGN: center
+}
+.hidden {
+	DISPLAY: none
+}
+DIV {
+	MARGIN: 0px auto
+}
+.img {
+	BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+.left {
+	FLOAT: left
+}
+.right {
+	FLOAT: right
+}
+FORM {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+INPUT {
+	FONT-SIZE: 12px
+}
+IMG {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+UL {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+OL {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+LI {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+DL {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+DT {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+DD {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+.clear {
+	CLEAR: both; FONT-SIZE: 1px; VISIBILITY: hidden; WIDTH: 1px; LINE-HEIGHT: 1px! important
+}
+.clear1 {
+	CLEAR: both; FONT-SIZE: 1px; VISIBILITY: hidden; WIDTH: 1px; LINE-HEIGHT: 2px! important
+}
+.clear2 {
+	CLEAR: both; FONT-SIZE: 1px; VISIBILITY: hidden; WIDTH: 1px; LINE-HEIGHT: 4px! important
+}
+.color1 {
+	COLOR: #ffff00
+}
+.color2 {
+	COLOR: #ff0000
+}
+.color3 {
+	FONT-WEIGHT: bold; COLOR: #ffffff
+}
+.font1 {
+	FONT-WEIGHT: bold
+}
+.hr1 {
+	CLEAR: both; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BACKGROUND: url(../../../Documents%20and%20Settings/Admin/yeskyimages/notepad/notepad12.gif) repeat-x; PADDING-BOTTOM: 0px; WIDTH: 99%; LINE-HEIGHT: 1px; PADDING-TOP: 0px
+}
+.box {
+	BACKGROUND: #fff; WIDTH: 100%; TEXT-ALIGN: left
+}
+.box-left {
+	MARGIN-TOP: 2px; FLOAT: left; WIDTH: 282px; TEXT-ALIGN: left
+}
+.box-middle {
+	PADDING-RIGHT: 6px; MARGIN-TOP: 2px; PADDING-LEFT: 6px; FLOAT: left; WIDTH: 324px; TEXT-ALIGN: center
+}
+.box-right {
+	MARGIN-TOP: 2px; BACKGROUND: #ffffff; FLOAT: right; WIDTH: 158px; TEXT-ALIGN: left
+}
+.box-left1 {
+	BORDER-RIGHT: #fe6601 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #fe6601 1px solid; PADDING-LEFT: 6px; BACKGROUND: #f5f3f3; FLOAT: left; PADDING-BOTTOM: 0px; BORDER-LEFT: #fe6601 1px solid; WIDTH: 271px; PADDING-TOP: 3px; BORDER-BOTTOM: #fe6601 1px solid; TEXT-ALIGN: left
+}
+.box-left2 {
+	BORDER-RIGHT: #fe6601 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #fe6601 1px solid; PADDING-LEFT: 6px; BACKGROUND: #ffffff; FLOAT: left; PADDING-BOTTOM: 0px; BORDER-LEFT: #fe6601 1px solid; WIDTH: 271px; COLOR: #949494; PADDING-TOP: 3px; BORDER-BOTTOM: #fe6601 1px solid; TEXT-ALIGN: left
+}
+.box-left3 {
+	WIDTH: 268px
+}
+.box-middle1 {
+	BORDER-RIGHT: #fe6601 1px solid; BORDER-TOP: #fe6601 1px solid; FLOAT: left; BORDER-LEFT: #fe6601 1px solid; WIDTH: 322px; BORDER-BOTTOM: #fe6601 1px solid; TEXT-ALIGN: center
+}
+.box-middle2 {
+	BORDER-RIGHT: #52b518 1px solid; FLOAT: left; BORDER-LEFT: #52b518 1px solid; WIDTH: 322px; BORDER-BOTTOM: #52b518 1px solid; TEXT-ALIGN: center
+}
+.box-right1 {
+	BORDER-RIGHT: #fe6601 1px solid; BORDER-TOP: #fe6601 1px solid; BACKGROUND: #fff9f3; FLOAT: right; BORDER-LEFT: #fe6601 1px solid; WIDTH: 156px; BORDER-BOTTOM: #fe6601 1px solid; TEXT-ALIGN: center
+}
+.box-right2 {
+	BORDER-RIGHT: #fe6601 1px solid; BACKGROUND: #fff9f3; FLOAT: right; BORDER-LEFT: #fe6601 1px solid; WIDTH: 156px; BORDER-BOTTOM: #fe6601 1px solid; TEXT-ALIGN: center
+}
+.box-right3 {
+	BORDER-RIGHT: #fe6601 1px solid; PADDING-RIGHT: 4px; BORDER-TOP: #fe6601 1px solid; PADDING-LEFT: 4px; BACKGROUND: #fff9f3; FLOAT: right; PADDING-BOTTOM: 0px; BORDER-LEFT: #fe6601 1px solid; WIDTH: 148px; PADDING-TOP: 6px; BORDER-BOTTOM: #fe6601 1px solid; TEXT-ALIGN: center
+}
+.box-middle1-se {
+	BORDER-RIGHT: #606060 1px solid; BORDER-TOP: #606060 1px solid; FLOAT: left; BORDER-LEFT: #606060 1px solid; WIDTH: 322px; BORDER-BOTTOM: #606060 1px solid; TEXT-ALIGN: center
+}
+.topad {
+	MARGIN-TOP: 3px; BACKGROUND: #f0f0f0; MARGIN-BOTTOM: 3px; PADDING-BOTTOM: 6px; WIDTH: 776px; PADDING-TOP: 6px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-ALIGN: center
+}
+.advertisement {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BACKGROUND: #f0f0f0; PADDING-BOTTOM: 6px; WIDTH: 776px; PADDING-TOP: 6px; TEXT-ALIGN: center
+}
+.xmlbg {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BACKGROUND: #f0f0f0; PADDING-BOTTOM: 2px; WIDTH: 776px; PADDING-TOP: 2px; TEXT-ALIGN: center
+}
+.area1middle {
+	BACKGROUND-IMAGE: url(../../../Documents%20and%20Settings/Admin/yeskyimages/index/index-title03.gif); WIDTH: 100%; HEIGHT: 13px; TEXT-ALIGN: center
+}
+A:link {
+	FONT-SIZE: 12px; COLOR: #5c5c5c; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A:visited {
+	FONT-SIZE: 12px; COLOR: #5c5c5c; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A:active {
+	FONT-SIZE: 12px; COLOR: #5c5c5c; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A:hover {
+	FONT-SIZE: 12px; COLOR: #5c5c5c; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.red:link {
+	FONT-SIZE: 12px; COLOR: #ff7f00; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.red:visited {
+	FONT-SIZE: 12px; COLOR: #ff7f00; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.red:active {
+	FONT-SIZE: 12px; COLOR: #ff7f00; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.red:hover {
+	FONT-SIZE: 12px; COLOR: #ff7f00; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.black:link {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.black:visited {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.black:active {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.black:hover {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.white:link {
+	FONT-SIZE: 12px; COLOR: #ffffff; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.white:visited {
+	FONT-SIZE: 12px; COLOR: #ffffff; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.white:active {
+	FONT-SIZE: 12px; COLOR: #ffffff; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.white:hover {
+	FONT-SIZE: 12px; COLOR: #ffffff; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.grey:link {
+	FONT-SIZE: 12px; COLOR: #5c5c5c; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.grey:visited {
+	FONT-SIZE: 12px; COLOR: #5c5c5c; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.grey:active {
+	FONT-SIZE: 12px; COLOR: #5c5c5c; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.grey:hover {
+	FONT-SIZE: 12px; COLOR: #5c5c5c; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.red-1:link {
+	FONT-SIZE: 12px; COLOR: #ff4400; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.red-1:visited {
+	FONT-SIZE: 12px; COLOR: #ff4400; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.red-1:active {
+	FONT-SIZE: 12px; COLOR: #ff4400; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.red-1:hover {
+	FONT-SIZE: 12px; COLOR: #ff4400; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.green:link {
+	FONT-SIZE: 12px; COLOR: #0a8281; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.green:visited {
+	FONT-SIZE: 12px; COLOR: #0a8281; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.green:active {
+	FONT-SIZE: 12px; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"
+}
+A.green:hover {
+	FONT-SIZE: 12px; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"
+}
+A.blue:link {
+	FONT-SIZE: 12px; COLOR: #036de3; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.blue:visited {
+	FONT-SIZE: 12px; COLOR: #036de3; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.blue:active {
+	FONT-SIZE: 12px; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"
+}
+A.blue:hover {
+	FONT-SIZE: 12px; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"
+}
+A.blue1:link {
+	FONT-SIZE: 12px; COLOR: #2d353c; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.blue1:visited {
+	FONT-SIZE: 12px; COLOR: #2d353c; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.blue1:active {
+	FONT-SIZE: 12px; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"
+}
+A.blue1:hover {
+	FONT-SIZE: 12px; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"
+}
+A.red-b:link {
+	FONT-WEIGHT: bold; FONT-SIZE: 14px; COLOR: #ff0000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.red-b:visited {
+	FONT-WEIGHT: bold; FONT-SIZE: 14px; COLOR: #ff0000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.red-b:active {
+	FONT-WEIGHT: bold; FONT-SIZE: 14px; COLOR: #ff0000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.red-b:hover {
+	FONT-WEIGHT: bold; FONT-SIZE: 14px; COLOR: #ff0000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.yellow-b:link {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #ffb100; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.yellow-b:visited {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #ffb100; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.yellow-b:active {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.yellow-b:hover {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.yellow:link {
+	FONT-SIZE: 12px; COLOR: #ffb100; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.yellow:visited {
+	FONT-SIZE: 12px; COLOR: #ffb100; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.yellow:active {
+	FONT-SIZE: 12px; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.yellow:hover {
+	FONT-SIZE: 12px; LINE-HEIGHT: 20px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.black1:link {
+	FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.black1:visited {
+	FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.black1:active {
+	FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.black1:hover {
+	FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.white1:link {
+	FONT-SIZE: 12px; COLOR: #ffffff; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.white1:visited {
+	FONT-SIZE: 12px; COLOR: #ffffff; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.white1:active {
+	FONT-SIZE: 12px; COLOR: #ffffff; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.white1:hover {
+	FONT-SIZE: 12px; COLOR: #ffffff; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+.headclear {
+	CLEAR: both; FONT-SIZE: 1px; VISIBILITY: hidden; WIDTH: 1px; LINE-HEIGHT: 1px! important
+}
+.fontsize {
+	FONT-SIZE: 9px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"
+}
+#header {
+	BACKGROUND: #fff; WIDTH: 98%; TEXT-ALIGN: center
+}
+#logo {
+	FLOAT: left; WIDTH: 116px
+}
+#middlead {
+	FLOAT: left; MARGIN: 6px; WIDTH: 500px; TEXT-ALIGN: center
+}
+#rightmenu {
+	MARGIN-TOP: 8px; FLOAT: right; WIDTH: 148px; TEXT-ALIGN: center
+}
+.rightmenucontent {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 138px; COLOR: #065b06; PADDING-TOP: 2px; HEIGHT: 18px; TEXT-ALIGN: center
+}
+.rightarea {
+	BORDER-RIGHT: #cc4509 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #cc4509 1px solid; PADDING-LEFT: 3px; BACKGROUND: #fcffe8; PADDING-BOTTOM: 3px; BORDER-LEFT: #cc4509 1px solid; PADDING-TOP: 3px; BORDER-BOTTOM: #cc4509 1px solid
+}
+A.headblack-s:link {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 17px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headblack-s:visited {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 17px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headblack-s:active {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 17px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.headblack-s:hover {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 17px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.headred:link {
+	FONT-SIZE: 12px; COLOR: #ff7f00; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headred:visited {
+	FONT-SIZE: 12px; COLOR: #ff7f00; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headred:active {
+	FONT-SIZE: 12px; COLOR: #ff7f00; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.headred:hover {
+	FONT-SIZE: 12px; COLOR: #ff7f00; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.headgreen:link {
+	FONT-SIZE: 9px; COLOR: #065b06; LINE-HEIGHT: 18px; TEXT-DECORATION: none
+}
+A.headgreen:visited {
+	FONT-SIZE: 9px; COLOR: #065b06; LINE-HEIGHT: 18px; TEXT-DECORATION: none
+}
+A.headgreen:active {
+	FONT-SIZE: 9px; COLOR: #065b06; LINE-HEIGHT: 18px; TEXT-DECORATION: underline
+}
+A.headgreen:hover {
+	FONT-SIZE: 9px; COLOR: #065b06; LINE-HEIGHT: 18px; TEXT-DECORATION: underline
+}
+A.headblue:link {
+	FONT-SIZE: 9px; COLOR: #0b114c; LINE-HEIGHT: 18px; TEXT-DECORATION: none
+}
+A.headblue:visited {
+	FONT-SIZE: 9px; COLOR: #0b114c; LINE-HEIGHT: 18px; TEXT-DECORATION: none
+}
+A.headblue:active {
+	FONT-SIZE: 9px; COLOR: #0b114c; LINE-HEIGHT: 18px; TEXT-DECORATION: underline
+}
+A.headblue:hover {
+	FONT-SIZE: 9px; COLOR: #0b114c; LINE-HEIGHT: 18px; TEXT-DECORATION: underline
+}
+A.headblack:link {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headblack:visited {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headblack:active {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.headblack:hover {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.headenglish:link {
+	FONT-SIZE: 9px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headenglish:visited {
+	FONT-SIZE: 9px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headenglish:active {
+	FONT-SIZE: 9px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.headenglish:hover {
+	FONT-SIZE: 9px; COLOR: #000000; LINE-HEIGHT: 18px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+DIV#ityj {
+	BORDER-RIGHT: #497ab4 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 2px; FONT-WEIGHT: bold; BACKGROUND: #e8f3fd; FLOAT: left; PADDING-BOTTOM: 0px; COLOR: #07346e; PADDING-TOP: 1px; HEIGHT: 19px
+}
+DIV#eqy {
+	BORDER-RIGHT: #309045 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 2px; FONT-WEIGHT: bold; BACKGROUND: #e8fdef; FLOAT: left; PADDING-BOTTOM: 0px; COLOR: #309045; PADDING-TOP: 1px; HEIGHT: 19px
+}
+DIV#eqy1 {
+	PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 2px; FONT-WEIGHT: bold; BACKGROUND: #e8fdef; FLOAT: left; PADDING-BOTTOM: 0px; COLOR: #309045; PADDING-TOP: 1px; HEIGHT: 19px
+}
+DIV#itzj {
+	BORDER-RIGHT: #0b697a 1px solid; PADDING-RIGHT: 4px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 0px; FONT-WEIGHT: bold; BACKGROUND: #ebfafd; FLOAT: left; PADDING-BOTTOM: 0px; COLOR: #0b697a; PADDING-TOP: 1px; HEIGHT: 19px
+}
+DIV#xfdh {
+	BORDER-RIGHT: #f04400 1px solid; PADDING-RIGHT: 4px; FONT-WEIGHT: bold; BACKGROUND: #ffeee1; FLOAT: left; COLOR: #f04400; PADDING-TOP: 2px; BORDER-BOTTOM: #a9abab 1px solid; HEIGHT: 18px
+}
+DIV#itjs {
+	BORDER-RIGHT: #0051c0 1px solid; PADDING-RIGHT: 4px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 3px; FONT-WEIGHT: bold; BACKGROUND: #e8f3fd; FLOAT: left; PADDING-BOTTOM: 0px; COLOR: #0051c0; PADDING-TOP: 1px; BORDER-BOTTOM: #a9abab 1px solid; HEIGHT: 18px
+}
+DIV#szsh {
+	BORDER-RIGHT: #d70418 1px solid; PADDING-RIGHT: 6px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 1px; FONT-WEIGHT: bold; BACKGROUND: #ffeee1; FLOAT: left; PADDING-BOTTOM: 0px; COLOR: #d70418; PADDING-TOP: 2px; BORDER-BOTTOM: #a9abab 1px solid; HEIGHT: 17px
+}
+.headbg1_1_1 {
+	PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 5px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 23%; PADDING-TOP: 1px
+}
+.headbg1_1_2 {
+	PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 5px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 19%; PADDING-TOP: 1px
+}
+.headbg1_1_3 {
+	PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 5px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 16%; PADDING-TOP: 1px
+}
+.headbg2_1 {
+	PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 5px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 54%; PADDING-TOP: 1px; BORDER-BOTTOM: #a9abab 1px solid; HEIGHT: 18px; TEXT-ALIGN: center
+}
+.headbg2_2 {
+	PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 5px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 25%; PADDING-TOP: 1px; BORDER-BOTTOM: #a9abab 1px solid; HEIGHT: 18px
+}
+.headbg1 {
+	PADDING-RIGHT: 3px; BORDER-TOP: #a9abab 1px solid; PADDING-LEFT: 5px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 20%; PADDING-TOP: 1px
+}
+.headbg3 {
+	PADDING-RIGHT: 1px; PADDING-LEFT: 5px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 89%; PADDING-TOP: 1px; BORDER-BOTTOM: #a9abab 1px solid; HEIGHT: 19px
+}
+.headbg2 {
+	PADDING-RIGHT: 1px; PADDING-LEFT: 3px; FLOAT: left; PADDING-BOTTOM: 0px; PADDING-TOP: 1px; BORDER-BOTTOM: #a9abab 1px solid
+}
+.navmenu {
+	BACKGROUND-IMAGE: url(http://www.yesky.com/TLimages/yeskyimages/index/index-nav04.gif); WIDTH: 776px; COLOR: #2e2e2e; PADDING-TOP: 1px; hekmight: 21px
+}
+.pinlunbox {
+	BORDER-RIGHT: #ffcc00 1px solid; PADDING-RIGHT: 6px; BORDER-TOP: #ffcc00 1px solid; PADDING-LEFT: 6px; FLOAT: left; PADDING-BOTTOM: 6px; BORDER-LEFT: #ffcc00 1px solid; WIDTH: 99%; PADDING-TOP: 6px; BORDER-BOTTOM: #ffcc00 1px solid; TEXT-ALIGN: left
+}
+.pinlunguan1 {
+	FLOAT: left; WIDTH: 47%; TEXT-ALIGN: left
+}
+.pinlunguan2 {
+	FLOAT: right; WIDTH: 100%; TEXT-ALIGN: left
+}
+#menu {
+	PADDING-RIGHT: 2px; PADDING-LEFT: 2px; Z-INDEX: 5; LEFT: 90%; PADDING-BOTTOM: 2px; FONT: 12px verdana,arial,helvetica; COLOR: #ffffff; BORDER-TOP-STYLE: none; PADDING-TOP: 2px; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; POSITION: absolute; BORDER-BOTTOM-STYLE: none
+}
+#menu_left {
+	PADDING-RIGHT: 2px; PADDING-LEFT: 2px; Z-INDEX: 5; LEFT: 1%; PADDING-BOTTOM: 2px; FONT: 12px verdana,arial,helvetica; COLOR: #ffffff; BORDER-TOP-STYLE: none; PADDING-TOP: 2px; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; POSITION: absolute; BORDER-BOTTOM-STYLE: none
+}
+INPUT#search {
+	FONT-SIZE: 12px; WIDTH: 76px; FONT-FAMILY: "宋体"
+}
+INPUT#search_btn {
+	FONT-SIZE: 12px; WIDTH: 60px; FONT-FAMILY: "宋体"
+}
+A.headblack-s-l:link {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 19px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headblack-s-l:visited {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 19px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: none
+}
+A.headblack-s-l:active {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 19px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+A.headblack-s-l:hover {
+	FONT-SIZE: 12px; COLOR: #000000; LINE-HEIGHT: 19px; FONT-FAMILY: "Arial", "Helvetica", "sans-serif"; TEXT-DECORATION: underline
+}
+.rightmenucontent_top {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FLOAT: left; MARGIN-BOTTOM: 5px; PADDING-BOTTOM: 0px; WIDTH: 148px; COLOR: #065b06; PADDING-TOP: 2px; HEIGHT: 18px; TEXT-ALIGN: center
+}
+.rightmenucontent {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FLOAT: left; PADDING-BOTTOM: 0px; WIDTH: 148px; COLOR: #065b06; PADDING-TOP: 2px; HEIGHT: 18px; TEXT-ALIGN: center
+}
+.rightarea {
+	BORDER-RIGHT: #cc4509 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #cc4509 1px solid; PADDING-LEFT: 3px; BACKGROUND: #fcffe8; FLOAT: left; PADDING-BOTTOM: 3px; BORDER-LEFT: #cc4509 1px solid; WIDTH: 95px; PADDING-TOP: 3px; BORDER-BOTTOM: #cc4509 1px solid
+}
+.rightarea_right {
+	BORDER-RIGHT: #cc4509 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #cc4509 1px solid; PADDING-LEFT: 3px; BACKGROUND: #fcffe8; FLOAT: right; PADDING-BOTTOM: 3px; BORDER-LEFT: #cc4509 1px solid; WIDTH: 30px; PADDING-TOP: 3px; BORDER-BOTTOM: #cc4509 1px solid
+}
+DIV#span_per_1 {
+	FLOAT: left; WIDTH: 17%; TEXT-ALIGN: center
+}
+DIV#span_per_2 {
+	FLOAT: left; WIDTH: 24%; TEXT-ALIGN: center
+}
+DIV#span_m1per2_1 {
+	FLOAT: left; WIDTH: 35%; TEXT-ALIGN: center
+}
+DIV#span_m1per2_2 {
+	FLOAT: left; WIDTH: 30%; TEXT-ALIGN: center
+}
+DIV#span_m1per3_1 {
+	FLOAT: left; WIDTH: 35%; TEXT-ALIGN: center
+}
+DIV#span_m1per3_2 {
+	FLOAT: left; WIDTH: 38%; TEXT-ALIGN: center
+}
+DIV#span_m1per3_3 {
+	FLOAT: left; WIDTH: 25%; TEXT-ALIGN: center
+}
+DIV#fullwidth {
+	WIDTH: 100%
+}
+DIV#span1 {
+	FLOAT: left; WIDTH: 10%; TEXT-ALIGN: center
+}
+DIV#span_m2per1_w1 {
+	FLOAT: left; WIDTH: 7%; TEXT-ALIGN: center
+}
+DIV#span_m2per1_w2 {
+	FLOAT: left; WIDTH: 7%; TEXT-ALIGN: center
+}
+DIV#span_m2per2_w1 {
+	FLOAT: left; WIDTH: 17%; TEXT-ALIGN: center
+}
+DIV#span_m2per2_w2 {
+	FLOAT: left; WIDTH: 15%; TEXT-ALIGN: center
+}
+DIV#span_m3per1_w1 {
+	FLOAT: left; WIDTH: 4%; TEXT-ALIGN: center
+}
+DIV#span_m3per1_w2 {
+	FLOAT: left; WIDTH: 6%; TEXT-ALIGN: center
+}
+DIV#span_m3per1_w3 {
+	FLOAT: left; WIDTH: 8%; TEXT-ALIGN: center
+}
+</STYLE>
+
+<DIV id=header><!--logo-->
+<DIV id=logo><A href="http://www.yesky.com/" target=_blank><IMG title=天极Yesky 
+alt=天极Yesky src="VC1.files/yeskylogo.gif" width=116 border=0></A></DIV><!--中间广告-->
+<DIV id=middlead><SPAN id=ad1></SPAN></DIV><!--中间广告结束--><!--右部菜单-->
+<DIV id=rightmenu>
+<DIV class=rightmenucontent_top>
+<FORM name=searchform action=http://search.chinabyte.com/search 
+method=get><INPUT id=search onmouseover=this.focus() onfocus=this.select() 
+size=11 name=q><INPUT type=hidden value=GB2312 name=encoding><INPUT type=hidden 
+value=connect name=dir> <INPUT type=hidden value=20001 name=cid><INPUT id=search_btn type=submit value=天极搜索> </FORM></DIV>
+<DIV class=headclear></DIV>
+<DIV class=rightarea><A class=headblack-s href="http://bj.yesky.com/">北京</A> <A 
+class=headblack-s href="http://sh.yesky.com/">上海</A> <A class=headblack-s 
+href="http://gd.yesky.com/">广东</A><BR><A class=headblack-s 
+href="http://cq.yesky.com/">重庆</A> <A class=headblack-s 
+href="http://cd.yesky.com/">成都</A> <A class=headblack-s 
+href="http://sy.yesky.com/">沈阳</A> </DIV>
+<DIV class=rightarea_right><A class=headblack-s-l 
+href="http://my.yesky.com/">用户<BR>登录</A></DIV>
+<DIV class=rightmenucontent><A class=headgreen 
+href="http://www.chinabyte.com/">Chinabyte.com</A><SPAN 
+style="FONT-SIZE: 9px">|</SPAN><A class=headblue 
+href="http://www.techtarget.com.cn/">Techtarget.com.cn</A></DIV>
+<DIV class=clear></DIV></DIV></DIV><!--头部结束-->
+<DIV class=headclear></DIV><!--第一栏导航-->
+<DIV class=box>
+<DIV class=left><IMG src="VC1.files/index-nav06.gif" border=0></DIV>
+<DIV id=ityj><A class=headblack-s href="http://www.chinabyte.com/"><SPAN 
+style="COLOR: #07346e">IT业界</SPAN></A></DIV>
+<DIV class=headbg1_1_1>
+<DIV id=span_per_1><A class=headblack-s 
+href="http://news.chinabyte.com/">新闻</A></DIV>
+<DIV id=span_per_1><A class=headblack-s 
+href="http://column.chinabyte.com/">评论</A></DIV>
+<DIV id=span_per_1><A class=headblack-s 
+href="http://telecom.chinabyte.com/">通信</A></DIV>
+<DIV id=span_per_2><A class=headblack-s 
+href="http://net.chinabyte.com/">互联网</A></DIV>
+<DIV id=span_per_2><A class=headblack-s 
+href="http://blog.chinabyte.com/">CB博客</A></DIV></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav07.gif" border=0></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav08.gif" border=0></DIV>
+<DIV id=eqy><A class=headblack-s href="http://e.chinabyte.com/"><SPAN 
+style="COLOR: #309045">E企业</SPAN></A></DIV>
+<DIV class=headbg1_1_2>
+<DIV id=span_m1per2_1><A class=headblack-s 
+href="http://solution.chinabyte.com/">解决方案</A></DIV>
+<DIV id=span_m1per2_1><A class=headblack-s 
+href="http://biz.chinabyte.com/">商用系统</A></DIV>
+<DIV id=span_m1per2_2><A class=headblack-s 
+href="http://biz.chinabyte.com/cbfwq">服务器</A></DIV></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav07.gif" border=0></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav09.gif" border=0></DIV>
+<DIV id=itzj><A class=headblack-s href="http://www.techtarget.com.cn/"><SPAN 
+style="COLOR: #478e9a">IT专家</SPAN></A></DIV>
+<DIV class=headbg1_1_3>
+<DIV id=span_m1per3_1><A class=headblack-s 
+href="http://searchdatabase.techtarget.com.cn/">数据库</A></DIV>
+<DIV id=span_m1per3_2><A class=headblack-s 
+href="http://searchmobilecomputing.techtarget.com.cn/">移动计算</A></DIV></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav07.gif" border=0></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav08.gif" border=0></DIV>
+<DIV id=eqy1><A class=headblack-s href="http://edu.yesky.com/"><SPAN 
+style="COLOR: #309045">教育</SPAN></A></DIV>
+<DIV class=left><IMG src="VC1.files/zhy0728.gif" border=0></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav08.gif" border=0></DIV>
+<DIV id=eqy1><A class=headblack-s href="http://com.chinabyte.com/"><SPAN 
+style="COLOR: #309045">企业专区</SPAN></A></DIV>
+<DIV class=left><IMG src="VC1.files/zhy0728.gif" border=0></DIV></DIV><!--第二栏导航-->
+<DIV class=box>
+<DIV class=left><IMG src="VC1.files/index-nav15.gif" border=0></DIV>
+<DIV id=itjs><A class=headblack-s href="http://t.yesky.com/"><SPAN 
+style="COLOR: #0051c0">IT技术</SPAN></A></DIV>
+<DIV class=headbg2_1>
+<DIV id=span_m2per1_w1><A class=headblack 
+href="http://soft.yesky.com/">软件</A></DIV>
+<DIV id=span_m2per1_w1><A class=headenglish 
+href="http://soft.yesky.com/os/win/">Windows</A></DIV>
+<DIV id=span_m2per1_w1><A class=headenglish 
+href="http://myhard.yesky.com/diy">DIY</A></DIV>
+<DIV id=span_m2per1_w1><A class=headblack-s 
+href="http://myhard.yesky.com/net">网管</A></DIV>
+<DIV id=span_m2per1_w1><A class=headenglish 
+href="http://soft.yesky.com/os/lin/">Linux</A></DIV>
+<DIV id=span_m2per1_w1><A class=headblack-s 
+href="http://design.yesky.com/">设计</A></DIV>
+<DIV id=span_m2per1_w1><A class=headenglish 
+href="http://design.yesky.com/photoshop/">Photoshop</A></DIV>
+<DIV id=span_m2per1_w1><A class=headblack-s 
+href="http://telecom.chinabyte.com/NetCom/218449874989875200/index.shtml">交换</A></DIV>
+<DIV id=span_m2per1_w1><A class=headblack-s 
+href="http://dev.yesky.com/">开发</A></DIV>
+<DIV id=span_m2per1_w1><A class=headenglish 
+href="http://dev.yesky.com/msdn/">MSDN</A></DIV>
+<DIV id=span_m2per1_w1><A class=headblack-s 
+href="http://soft.yesky.com/security/">安全</A></DIV>
+<DIV id=span_m2per1_w1><A class=headblack-s 
+href="http://edu.yesky.com/edupxpt">认证</A></DIV>
+<DIV id=span_m2per1_w1><A class=headblack-s 
+href="http://bbs.yesky.com/">论坛</A></DIV></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav16.gif" border=0></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav17.gif" border=0></DIV>
+<DIV id=szsh><A class=headblack-s href="http://i.yesky.com/"><SPAN 
+style="COLOR: #d70418">数字生活</SPAN></A></DIV>
+<DIV class=headbg2_2>
+<DIV id=span_m2per2_w1><A class=headblack 
+href="http://e.yesky.com/">e时代</A></DIV>
+<DIV id=span_m2per2_w1><A class=headblack 
+href="http://game.yesky.com/">游戏</A></DIV>
+<DIV id=span_m2per2_w1><A class=headblack 
+href="http://pic.yesky.com/">图片</A></DIV>
+<DIV id=span_m2per2_w2><A class=headblack-s 
+href="http://hot.yesky.com/">网摘</A></DIV>
+<DIV id=span_m2per2_w2><A class=headblack-s 
+href="http://blog.yesky.com/">博客</A></DIV>
+<DIV id=span_m2per2_w1><A class=headblack 
+href="http://www.mydown.com/">下载</A></DIV></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav16.gif" border=0></DIV></DIV><!--第三栏导航-->
+<DIV class=box>
+<DIV class=left><IMG src="VC1.files/index-nav19.gif" border=0></DIV>
+<DIV id=xfdh><A class=headblack-s href="http://cseek.yesky.com/"><SPAN 
+style="COLOR: #f04400">消费导购</SPAN></A></DIV>
+<DIV class=headbg3>
+<DIV id=span_m3per1_w1><A class=headblack 
+href="http://cseek.yesky.com/">商情</A></DIV>
+<DIV id=span_m3per1_w2><A class=headblack 
+href="http://mobile.yesky.com/">手机</A></DIV>
+<DIV id=span_m3per1_w2><A class=headblack 
+href="http://digital.yesky.com/">数码:</A></DIV>
+<DIV id=span_m3per1_w3><A class=headblack-s href="http://mp3.yesky.com/"><SPAN 
+class=fontsize>MP3</SPAN>随身听</A></DIV>
+<DIV id=span_m3per1_w3><A class=headblack-s 
+href="http://dc.yesky.com/">数码相机</A></DIV>
+<DIV id=span_m3per1_w2><A class=headblack-s 
+href="http://dv.yesky.com/">摄像机</A></DIV>
+<DIV id=span_m3per1_w2><A class=headblack 
+href="http://notebook.yesky.com/">笔记本</A></DIV>
+<DIV id=span_m3per1_w2><A class=headblack 
+href="http://myhard.yesky.com/">硬件:</A></DIV>
+<DIV id=span_m3per1_w2><A class=headblack-s 
+href="http://myhard.yesky.com/pc/">品牌机</A></DIV>
+<DIV id=span_m3per1_w1><A class=headblack-s 
+href="http://myhard.yesky.com/acceessory/">配件</A></DIV>
+<DIV id=span_m3per1_w1><A class=headblack-s 
+href="http://myhard.yesky.com/oa">外设</A></DIV>
+<DIV id=span_m3per1_w1><A class=headblack-s 
+href="http://myhard.yesky.com/net/">网络</A></DIV>
+<DIV id=span_m3per1_w1><A class=headblack-s 
+href="http://myhard.yesky.com/vga/">显卡</A></DIV>
+<DIV id=span_m3per1_w1><A class=headblack-s 
+href="http://myhard.yesky.com/projector/">投影</A></DIV>
+<DIV id=span_m3per1_w2><A class=headblack-s 
+href="http://myhard.yesky.com/scanner/">扫描仪</A></DIV>
+<DIV id=span_m3per1_w1><A class=headblack-s 
+href="http://myhard.yesky.com/laserjet/">激打</A></DIV>
+<DIV id=span_m3per1_w1><A class=headblack-s 
+href="http://myhard.yesky.com/inkjet/">喷打</A></DIV>
+<DIV id=span_m3per1_w3><A class=headblack 
+href="http://dh.yesky.com/">数字家庭</A></DIV></DIV>
+<DIV class=left><IMG src="VC1.files/index-nav12.gif" border=0></DIV></DIV><!--菜单导航结束-->
+<DIV class=clear1></DIV><!--笔记本导航条-->
+<DIV class=newbox>
+<DIV class=newbgpic>
+<DIV class=left>您现在的位置：<A href="http://www.yesky.com/"> Yesky</A>&gt;<A 
+href="http://soft.yesky.com/"> 软件</A>&gt;<A href="http://dev.yesky.com/"> 
+开发者网络</A> </DIV>
+<DIV class=right>
+<DIV class=space1><SPAN id=ad3></SPAN></DIV></DIV></DIV></DIV>
+<DIV class=clear1></DIV><!--结束-->
+<DIV class=clear1></DIV><!--文章内容区-->
+<DIV class=newbox>
+<DIV class=newleft>
+<DIV class=newleft1>
+<DIV class=newsmallbox>VC中对象的序列化与文件I/O研究 </DIV>
+<DIV class=clear1></DIV>
+<DIV class=newsmall1box>
+<DIV class=newtitle1>作者： 中国电波传播研究所青岛分所郎锐 </DIV>
+<DIV class=newtitle2>出处： 天极网 </DIV>
+<DIV class=newtitle3>责任编辑： 方舟 </DIV>
+<DIV class=newtitle4>[ 2004-07-23 19:41 ]</DIV></DIV>
+<DIV class=clear1></DIV>
+<DIV class=space2><SPAN id=ad5></SPAN></DIV><BR>
+<DIV class=newmiddlebox style="OVERFLOW: hidden">
+<DIV class=guanggao><SPAN id=ad4></SPAN></DIV>　　<STRONG>持久性和序列化</STRONG> 
+<BR><BR>　　持久性是对象所有的保存和加载其状态数据的能力。具有这种能力的对象能够在应用程序结束之前以某种方式将当前的对象状态数据记录下来，当程序再次运行时，通过对这些数据的读取而恢复到上一次任务结束时的状态。由于绝大多数的MFC类是直接或间接由MFC的CObject类派生出来的，因此这些MFC类都具有保存和加载对象状态的能力，是具有持久性的。<IFRAME 
+align=right marginWidth=0 marginHeight=0 src="VC1.files/dell-etime-scolumn.htm" 
+frameBorder=0 width=360 scrolling=no 
+height=300></IFRAME>在使用应用程序向导生成文档/视结构的程序框架时，就已经为应用程序提供了用于对象状态数据保存和加载的基本代码。<BR><BR>　　为实现对象的持久性，通常多以字节流的形式将记录对象状态的数据存放到磁盘上，这种将状态数据保存到磁盘和从磁盘恢复到内存的过程称为序列化。序列化是MFC的一个重要概念，是MFC文档/视图结构应用程序能进行文档打开、保存等操作的基础。当在MFC框架程序中装载或保存一个文件时，除了打开文件以供程序读写外，还传递给应用程序一个相关的CArchive对象，并以此实现对持久性数据的序列化。<BR><BR>　　大多数MFC应用程序在实现对象的持久性时并非直接用MFC的CFile类对磁盘文件进行读写（有关CFile类的详细介绍将在下一节进行），而是通过使用CArchive对象并由其对CFile成员函数进行调用来执行文件I/O操作。CArchive类支持复合对象的连续二进制形式的输入输出。在构造一个CArchive对象或将其连接到一个表示打开的文件的CFile对象后，可以指定一个档案是被装载还是被保存。MFC允许使用操作符“&lt;&lt;”和“&gt;&gt;”来对多种原始数据类型进行序列化。这些原始数据类型包括BYTE，WORD，LONG，DWORD，float，double，int，unsigned 
+int，short和char等。<BR><BR>　　对于其他由MFC类来表示的非原始数据类型如CString对象等的序列化则可以通过对“&lt;&lt;”和“&gt;&gt;”运算符的重载来解决，可以用此方式进行序列化的MFC类和结构有CString，CTime，CTimeSpan，COleVariant，COleCurreny，COleDateTime，COleDateTimeSpan，CSize，CPoint，CRect，SIZE，POINT和RECT等。除了操作符“&lt;&lt;”和“&gt;&gt;”之外还可以调用CArchive类成员函数Read（）和Write（）来完成序列化。下面这段代码展示了通过操作符对int型变量VarA、VarB的序列化过程：<BR><BR>
+<TABLE borderColor=#ffcc66 width="90%" align=center bgColor=#e6e4dd border=1>
+  <TBODY>
+  <TR>
+    <TD>// 将VarA、VarB存储到档案中<BR>CArchive ar (&amp;file, CArchive::store);<BR>ar 
+      &lt;&lt; VarA &lt;&lt; VarB;<BR>……<BR>// 从档案装载VarA、VarB<BR>CArchive ar 
+      (&amp;file, CArchive::load)<BR>ar &gt;&gt; VarA &gt;&gt; 
+  VarB;</TD></TR></TBODY></TABLE><BR>　　CArchive类仅包含有一个数据成员m__pDocument。在执行菜单上的打开或保存命令时，程序框架将会把该数据成员设置为要被序列化的文档。另外需要特别注意的是：在使用CArchive类时，要保证对CArchive对象的操作与文件访问权限的统一。<BR><BR>　　在本文下面将要给出的示例程序中，将对绘制连线所需要的关键点坐标和坐标个数等持久性对象进行序列化。其中文档类的成员变量m_nCount和m_ptPosition[100]分别记录了当前点的个数和坐标，初始值为0。当鼠标点击客户区时将对点的个数进行累加，并保存当前点的坐标位置。随后通过Invalidate（）函数发出WM_PAINT消息通知窗口对客户区进行重绘，在重绘代码中对这些点击过的点进行绘图连线：<BR><BR>
+<TABLE borderColor=#ffcc66 width="90%" align=center bgColor=#e6e4dd border=1>
+  <TBODY>
+  <TR>
+    <TD>void CSample04View::OnLButtonDown(UINT nFlags, CPoint point) 
+      <BR>{<BR>　// 获取指向文档类的指针<BR>　CSample04Doc* pDoc = GetDocument();<BR>　// 
+      保存当前鼠标点击位置<BR>　pDoc-&gt;m_ptPosition[pDoc-&gt;m_nCount] = point;<BR>　if 
+      (pDoc-&gt;m_nCount &lt; 100)<BR>　　pDoc-&gt;m_nCount++;<BR>　// 
+      刷新屏幕<BR>　Invalidate();<BR>　CView::OnLButtonDown(nFlags, 
+      point);<BR>}<BR>……<BR>void CSample04View::OnDraw(CDC* 
+      pDC)<BR>{<BR>　CSample04Doc* pDoc = 
+      GetDocument();<BR>　ASSERT_VALID(pDoc);<BR>　// 
+      对点击的点进行连线绘图<BR>　pDC-&gt;MoveTo(pDoc-&gt;m_ptPosition[0]);<BR>　for (int i = 
+      1; i &lt; pDoc-&gt;m_nCount; 
+      i++)<BR>　　pDC-&gt;LineTo(pDoc-&gt;m_ptPosition[i]);<BR>}</TD></TR></TBODY></TABLE><BR><BR>　　从上述程序代码不难看出，为了能保存绘制结果需要对文档类的成员变量m_nCount和m_ptPosition[100]进行序列化处理。而文档类成员函数Serialize（）则通过Archive类为这些持久性对象的序列化提供了功能上的支持。下面的代码完成了对持久性对象的保存和加载：<BR><BR>
+<TABLE borderColor=#ffcc66 width="90%" align=center bgColor=#e6e4dd border=1>
+  <TBODY>
+  <TR>
+    <TD>if (ar.IsStoring())<BR>{<BR>　// 存储持久性对象到档案<BR>　ar &lt;&lt; 
+      m_nCount;<BR>　for (int i = 0; i &lt; m_nCount; i++)<BR>　　ar &lt;&lt; 
+      m_ptPosition[i];<BR>}<BR>else<BR>{<BR>　// 从档案装载持久性对象<BR>　ar &gt;&gt; 
+      m_nCount;<BR>　for (int i = 0; i &lt; m_nCount; i++)<BR>　　ar &gt;&gt; 
+      m_ptPosition[i];<BR>}</TD></TR></TBODY></TABLE><BR>
+<SCRIPT>zmbbs=1;</SCRIPT>
+
+<DIV class=right>共3页。 <A href="http://www.yesky.com/298/1834298.shtml" 
+target=_self><FONT color=#ff0000><B>1</B></FONT></A> <A 
+href="http://www.yesky.com/298/1834298_1.shtml" target=_self>2</A> <A 
+href="http://www.yesky.com/298/1834298_2.shtml" target=_self>3</A> <A 
+href="http://www.yesky.com/298/1834298_1.shtml" target=_self><FONT 
+face=Webdings>8</FONT></A> <A href="http://www.yesky.com/298/1834298_2.shtml" 
+target=_self><FONT face=Webdings>:</FONT></A></DIV></DIV>
+<DIV class=clear1></DIV></DIV><!--结束-->
+<DIV class=clear1></DIV>
+<DIV class=newleft1>
+<DIV class=space2><SPAN id=ad7></SPAN></DIV></DIV><!--文章评论区-->
+<SCRIPT language=JavaScript>
+<!--
+var aid = 1834298;
+var channelid = 324;
+var tagname = "VC";
+
+//-->
+</SCRIPT>
+
+<DIV class=newxiangguan>
+<DIV class=newxiangguanmenu><A href="http://my.yesky.com/" 
+target=_blank>天极社区</A>邀请您：<A class=red-s href="http://blog.yesky.com/" 
+target=_blank>写博客</A>&nbsp;<A class=red-s href="http://photo.yesky.com/" 
+target=_blank>上传相片</A>&nbsp;<A class=red-s href="http://bbs.yesky.com/" 
+target=_blank>论坛聊天</A>&nbsp;<A class=red-s href="http://bbs.yesky.com/" 
+target=_blank>订阅电子杂志</A>&nbsp;<A class=red-s 
+href="http://www.yeecai.com/mobileant/tjadd/tjload.html" 
+target=_blank>彩信蚂蚁</A>&nbsp;<A class=red-s 
+href="http://hot.yesky.com/">推荐网摘</A>&nbsp;<A class=red-s 
+href="http://training.yesky.com/">IT培训</A>&nbsp;<A class=red-s 
+href="javascript:sendemail()" target=_self>对此感兴趣</A>&nbsp;<A 
+title="推荐到天极网摘 http://hot.yesky.com [鼠标划选本文摘要，然后点击本图片]" 
+href="javascript:d=document;t=d.selection?(d.selection.type!='None'?d.selection.createRange().text:''):(d.getSelection?d.getSelection():'');void(yesky=window.open('http://hot.yesky.com/dp.aspx?t='+escape(d.title)+'&amp;u='+escape(d.location.href)+'&amp;c='+escape(t)+'&amp;st=2','yesky','scrollbars=no,width=400,height=480,left=75,top=20,status=no,resizable=yes'));yesky.focus();" 
+target=_self><IMG src="VC1.files/souchang1.gif" border=0></A> </DIV></DIV>
+<DIV class=pinlunbox>
+<DIV class=pinlunguan3><SPAN id=commentsSpanText>
+<SCRIPT language=JavaScript>
+<!--
+function getTagId(tName) {
+	tName = tName.replace(/(^[\s　]*)|([\s　]*$)/g, "");
+	var tagid = 0;
+	for(var ti = 0; ti < tName.length; ti++) {
+		tagid += tName.charCodeAt(ti);
+	}
+	return tagid;
+}
+function UrlEncode(str){
+   var i,temp,p,q;
+   var result="";
+   str = str.replace(/(^[\s　]*)|([\s　]*$)/g, "");
+   for(i=0;i<str.length;i++){
+      temp = str.charCodeAt(i);
+      if(temp>=0x4e00){
+         execScript("ascCode=hex(asc(\""+str.charAt(i)+"\"))", "vbscript");
+         result+=ascCode.replace(/(.{2})/g, "%$1");
+      }else{
+         result+=escape(str.charAt(i));
+      }
+   }
+   return result;
+}
+if(typeof(channelid) == "undefined") channelid = 0;
+
+if(typeof(aid) != "undefined") {
+	if(typeof(tagname) == "string" && tagname.length > 0) {
+		document.write(" <a href=\"http://comments.yesky.com/t/"+UrlEncode(tagname)+"/6," + channelid + "/" + aid + ".shtml\" class=\"red-s\"  target=\"_blank\">查看主题：<font color=\"#FF0000\">" + tagname + "</font>的内容</a>");
+	} else {
+		document.write(" <a href=\"http://comments.yesky.com/a/6," + channelid + "/" + aid + ".shtml\" class=\"red-s\"  target=\"_blank\">查看所有内容</a>");
+	}
+}
+//-->
+</SCRIPT>
+</SPAN>
+<SCRIPT language=JavaScript>
+function showCommentsSpan() {
+	if(typeof(latest_comments_poster) == "object" && latest_comments_poster.length && latest_comments_poster.length > 0) {
+		var re = /(\[s(\d{1,2})\])/ig;
+		var str = "<div class=\"wzplcontent\">";
+		str += "本文最新主题 共(<span class=\"fontcolor\">"+ latest_comments_num +"</span>)条";
+		if(typeof(tagname) == "string" && tagname.length > 0) {
+			str += " &gt;&gt; &gt;&gt; &gt;&gt;  <a href=\"http://comments.yesky.com/t/" + UrlEncode(tagname) + "/6," + channelid + "/" + aid + ".shtml\" target=\"_blank\" class=\"red-s\"><b>查看主题：</b><font color=\"#FF0000\">" + tagname + "</font>所有主题</a> &lt;&lt; &lt;&lt; &lt;&lt; ";
+		} else {
+			str += " &gt;&gt; &gt;&gt; &gt;&gt; <a href=\"http://comments.yesky.com/a/6," + channelid + "/" + aid + ".shtml\" target=\"_blank\" class=\"red-s\">查看该文章所有相关主题</a> &lt;&lt; &lt;&lt; &lt;&lt; ";
+		}
+		str += "</div>";
+
+		var hasVisits = typeof(latest_comments_visits) == "object" && latest_comments_visits.length > 0;
+		 var hasTag = typeof(latest_comments_tagid) == "number" && latest_comments_tagid > 0;
+		if(hasVisits) {
+			str += "<table width=\"99%\" border=\"1\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\" style=\"line-height: 120%\" bordercolor=\"#FFFFFF\" bordercolorlight=\"#D0CCD0\">"	+"\n"+
+			" <tr bgcolor=\"#FFFFFF\">"	+"\n"+
+			"    <td width=\"7%\">点击</td>"	+"\n"+
+			"    <td width=\"7%\">回贴</td>"	+"\n"+
+			"    <td width=\"50%\">标题</td>"	+"\n"+
+			"    <td width=\"15%\">发表时间</td>"	+"\n"+
+			"    <td width=\"21%\">发表人</td>"	+"\n"+
+			"</tr>"	;
+			for (i = 0; i < latest_comments_poster.length && i < 10; i++) {
+				str += "<tr bgcolor=\"#F6F6F6\">"	+"\n"+
+				"	<td>" + latest_comments_visits[i] + "</td>"	+"\n"+
+				"	<td>" + latest_comments_replies[i] + "</td>";
+				var url;
+				if (hasTag) {
+					url = "http://comments.yesky.com/l/" + latest_comments_id[i] + "/" + latest_comments_tagid + "/" + latest_comments_type[i] + "," + channelid + "/" + latest_comments_rfid[i] + ".shtml"
+				} else {
+					url = "http://comments.yesky.com/l/" + latest_comments_id[i] + "/" + 0 + "/" + latest_comments_type[i] + "," + channelid + "/" + latest_comments_rfid[i] + ".shtml"
+				}
+				str += "	<td><a href=\"" + url + "\" target=\"_blank\">" + latest_comments_contents[i].replace(re,"<img src=/TLimages/smile/face$2.gif border=0 align=middle> ") + "</a></td>"	+"\n"+
+				"	<td><font color=\"#CC6600\">" + latest_comments_postdate[i] + "</font></td>"	+"\n"+
+				"	<td nowrap=\"\" ><font color=\"#FF3300\">" + latest_comments_poster[i] + "</font></td>"	+"\n"+
+				"</tr> ";
+			}
+			str += "</table>";
+		} else {
+			var hasLevel = typeof(latest_comments_level) == "object";
+			str += "<div class=\"wzplcontent\">";
+			str += "<ul class=\"spaceListul\">";
+			for (i = 0; i < latest_comments_poster.length && i < 10; i++) {
+				if(hasLevel) {
+					str += "[" + latest_comments_level[i] + "楼：<span class=\"fontcolor\">";
+				} else {
+					str += "[ <span class=\"fontcolor\">";
+				}
+				str += latest_comments_poster[i];
+				str += "</span>]  ";
+				str += latest_comments_contents[i].replace(re,"<img src=/TLimages/smile/face$2.gif border=0 align=middle> ");
+				str += "  (";
+				str += latest_comments_postdate[i];
+				str += "  )<br/>";
+			}
+			str += "</ul></div>";
+		}
+
+		commentsSpanText.innerHTML = str;
+	} else {
+		var str = "<div>";
+		str += "目前本文还没有相关主题。立即发表主题，马上成为本文的第一个发表者！";
+		str += "</div>";
+		commentsSpanText.innerHTML = str;
+	}
+}
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+<!--
+if(typeof(aid) != "undefined") {
+	if(typeof(tagname) == "string" && tagname.length > 0) {
+		document.write("<script language=\"JavaScript\" charset=\"gb2312\"  src=\"http://comments.yesky.com/tagview/"+(getTagId(tagname)%5000)+"/"+getTagId(tagname)+".js\"><\/script>");
+	} else {
+		document.write("<script language=\"JavaScript\" charset=\"gb2312\"  src=\"http://comments.yesky.com/articlereview/6/"+(aid%5000)+"/"+aid+".js\"><\/script>");
+	}
+ }
+//-->
+</SCRIPT>
+</DIV>
+<DIV class=pinlunguan3>
+<DIV class=pinlunguan1>
+<SCRIPT src="VC1.files/uc.js" type=""></SCRIPT>
+发表主题：(Html：禁止，UBB：允许) 
+<FORM name=frmReviewPost action=http://comments.yesky.com/review.post.do 
+method=post target=_blank><INPUT type=hidden name=tagName> <INPUT type=hidden 
+name=rfid> <INPUT type=hidden value=6 name=type> <INPUT type=hidden name=cid> 
+笔名：<INPUT size=17 name=userName><INPUT onclick=JavaScript:submitReviewForm(this.form) type=button value=发表主题 name=but><BR>标题：<INPUT 
+size=30 name=title><BR><IMG onclick=Cbold() height=22 alt=粗体 
+src="VC1.files/bold.gif" width=23 border=0> <IMG onclick=Cimage() height=22 
+alt=图片 src="VC1.files/image.gif" width=23 border=0> <IMG onclick=Cswf() 
+height=22 alt=Flash图片 src="VC1.files/swf.gif" width=23 border=0> <IMG 
+onclick=Cwmv() height=22 alt="Media Player视频文件" src="VC1.files/mp.gif" width=23 
+border=0> <IMG onclick=Crm() height=22 alt=realplay视频文件 src="VC1.files/rm.gif" 
+width=23 border=0> <IMG onclick=Curl() height=22 alt=超级连接 
+src="VC1.files/url1.gif" width=23 border=0> <IMG onclick=Cemail() height=22 
+alt=Email连接 src="VC1.files/email1.gif" width=23 border=0> <IMG onclick=Cdir() 
+height=22 alt=Shockwave文件 src="VC1.files/Shockwave.gif" width=23 border=0> <TEXTAREA name=contents rows=4 cols=30></TEXTAREA> <BR><A 
+href="javascript:addSmile('01')" target=_self><IMG src="VC1.files/face01.gif" 
+border=0></A> <A href="javascript:addSmile('02')" target=_self><IMG 
+src="VC1.files/face02.gif" border=0></A> <A href="javascript:addSmile('03')" 
+target=_self><IMG src="VC1.files/face03.gif" border=0></A> <A 
+href="javascript:addSmile('04')" target=_self><IMG src="VC1.files/face04.gif" 
+border=0></A> <A href="javascript:addSmile('05')" target=_self><IMG 
+src="VC1.files/face05.gif" border=0></A> <A href="javascript:addSmile('06')" 
+target=_self><IMG src="VC1.files/face06.gif" border=0></A> <A 
+href="javascript:addSmile('07')" target=_self><IMG src="VC1.files/face07.gif" 
+border=0></A> <A href="javascript:addSmile('08')" target=_self><IMG 
+src="VC1.files/face08.gif" border=0></A> <A href="javascript:addSmile('09')" 
+target=_self><IMG src="VC1.files/face09.gif" border=0></A> <A 
+href="javascript:addSmile('10')" target=_self><IMG src="VC1.files/face10.gif" 
+border=0></A> <BR><A href="javascript:addSmile('11')" target=_self><IMG 
+src="VC1.files/face11.gif" border=0></A> <A href="javascript:addSmile('12')" 
+target=_self><IMG src="VC1.files/face12.gif" border=0></A> <A 
+href="javascript:addSmile('13')" target=_self><IMG src="VC1.files/face13.gif" 
+border=0></A> <A href="javascript:addSmile('14')" target=_self><IMG 
+src="VC1.files/face14.gif" border=0></A> <A href="javascript:addSmile('15')" 
+target=_self><IMG src="VC1.files/face15.gif" border=0></A> <A 
+href="javascript:addSmile('16')" target=_self><IMG src="VC1.files/face16.gif" 
+border=0></A> <A href="javascript:addSmile('17')" target=_self><IMG 
+src="VC1.files/face17.gif" border=0></A> <A href="javascript:addSmile('18')" 
+target=_self><IMG src="VC1.files/face18.gif" border=0></A> <A 
+href="javascript:addSmile('19')" target=_self><IMG src="VC1.files/face19.gif" 
+border=0></A> <A href="javascript:addSmile('20')" target=_self><IMG 
+src="VC1.files/face20.gif" border=0></A> 
+</FORM><BR>请您注意：遵守国家有关法律、法规，尊重网上道德，承担一切因您的行为而直接或间接引起的法律责任。<BR>天极网拥有管理笔名和留言的一切权利。
+<SCRIPT language=JavaScript>
+<!--
+function addSmile(val) {
+	with (document.frmReviewPost) {
+		contents.value += "[s" + val + "]";
+	}
+}
+
+with(document.frmReviewPost) {
+    if(typeof(comments_nickname) == "string" && comments_nickname.length > 0) {
+        userName.value = comments_nickname;
+    } else {
+        userName.value = "天极网友";
+    }
+	if(typeof(aid) != "undefined") rfid.value = aid;
+	if(typeof(channelid) != "undefined") cid.value = channelid;
+	if(typeof(tagname) == "string" && tagname.length > 0) {
+		tagName.value = tagname;
+	}
+}
+function submitReviewForm(f) {
+    with(f) {
+        if(rfid.value.length > 0) {
+			if(userName.value.length ==  0) {
+				alert("请输入您的笔名！");
+				userName.focus();
+				return;
+			}
+			if(userName.value.length > 20) {
+				alert("笔名太长，字数不成超过20！");
+				userName.focus();
+				return;
+			}
+
+			if (title.value.length == 0) {
+				alert("请输入主题标题");
+				title.focus();
+				return false;
+			}
+			if (title.value.length  > 100) {
+				alert("标题太长，字数不成超过100");
+				title.focus();
+				return false;
+			}
+
+			if(contents.value.length ==  0) {
+				alert("请输入主题内容");
+				contents.focus();
+				return;
+			}
+			if(contents.value.length > 2000) {
+				alert("内容太长，字数不成超过2000");
+				contents.focus();
+				return;
+			}
+            submit();
+			contents.value = "";
+        }
+    }
+}
+//-->
+</SCRIPT>
+ </DIV>
+<DIV class=right>
+<DIV class=pinlunguan2>最新热评<BR><SPAN id=commentsHotestSpanText></SPAN>
+<SCRIPT language=JavaScript>
+  function showCommentsHotestSpan() {
+ if(typeof(hot_comments_rfid) == "object" && hot_comments_rfid.length > 0) {
+	var hot_max_length = 17;
+	var str = "";
+	
+	str += "<ul class=\"titleListul\">";		
+		for (i = 0; i < hot_comments_rfid.length; i+=1) {
+			if(i <  hot_comments_rfid.length && i < 13) {
+				var host_comment_title = hot_comments_title[i];
+				if(host_comment_title.length > hot_max_length) {
+					host_comment_title = host_comment_title.substring(0, hot_max_length);
+				}
+				//str += "<li class=\"titleListli\">";
+				str += "";
+				str += "<a href=\"" + hot_comments_url[i] + "\" title=\""+hot_comments_title[i]+"\">"+ host_comment_title +"</a> ";
+				str += " ("+hot_comments_num[i]+")";
+				str += "<br/>";
+				//str += "</li>";
+			}
+		}
+	str += "</ul>";
+
+
+   
+
+	commentsHotestSpanText.innerHTML = str;
+ }
+}
+
+//-->
+</SCRIPT>
+<!--document.write("<script language=\"JavaScript\" charset=\"gb2312\" defer src=\"http://comments.yesky.com/review.hotest.do?type=6&cid="+channelid+"&num=10\"><\/script>");-->
+<SCRIPT language=JavaScript>
+if(typeof(channelid) != "undefined") {
+	document.write("<script language=\"JavaScript\" charset=\"gb2312\"  src=\"http://comments.yesky.com/channlereview/6/"+(channelid%5000)+"/"+channelid+".js\"><\/script>");
+}
+</SCRIPT>
+</DIV></DIV></DIV></DIV><!--结束-->
+<DIV class=clear1></DIV><!--相关文章-->
+<DIV class=newxiangguan>
+<DIV class=newxiangguanmenu><IMG height=11 src="VC1.files/inverse1-dht.gif" 
+width=22>最新热图 </DIV>
+<DIV class=newxiangguancontent>
+<DIV class=contentpicleft>
+<SCRIPT language=JavaScript src="VC1.files/wenpic1.js"></SCRIPT>
+</DIV>
+<DIV class=contentpicright>
+<SCRIPT language=JavaScript src="VC1.files/wpic.js"></SCRIPT>
+</DIV></DIV></DIV>
+<DIV class=clear1></DIV>
+<DIV class=newxiangguan>
+<DIV class=newxiangguanmenu><IMG height=11 src="VC1.files/inverse1-dht.gif" 
+width=22>天极无线 </DIV>
+<DIV class=newxiangguancontent><SPAN id=ad6></SPAN></DIV></DIV><!--结束-->
+<DIV class=clear1></DIV></DIV>
+<DIV class=newright>
+<DIV class=newrightad style="HEIGHT: 800px"><SPAN id=ad2></SPAN>
+<DIV class=newrightbox>相关厂商 </DIV>
+<DIV class=space3><SPAN id=catalogspan></SPAN></DIV><!--writen by michael.joe 2005.06.03 start-->
+<STYLE type=text/css>#container2 {
+	WIDTH: 100%; TEXT-ALIGN: left
+}
+#catalog_container1 {
+	WIDTH: 100%
+}
+#catalog_container1 UL {
+	LIST-STYLE-TYPE: none
+}
+#catalog_container1 UL LI {
+	FLOAT: left; MARGIN: 0px 3px; TEXT-ALIGN: center
+}
+</STYLE>
+
+<SCRIPT language=JavaScript>
+function showCatalogSpan(){
+          
+     if(catalog_num!=0){
+	    var i=0 
+		
+		var str="<div id=\"container2\">"			 
+		str+="<div id=\"catalog_container1\">"
+		str+="<ul>"
+		var j=catalog_num 
+		for(i=0;i<j;i++){
+		    if(typeof(catalog_name[i])!='undefined')
+			 str+="<li><a href=\"http://product1.yesky.com"+catalog_url[i]+"\" title=\""+catalog_name[i]+"\">"+catalog_name[i]+"</a></li>"
+		}
+		str+="</ul>"
+		str+="</div>"			   
+                str+="</div>"
+	
+	}else{
+		var str=""
+	}
+    catalogspan.innerHTML = str     
+}            
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+<!--
+	var catalogid=0;
+	var pbcid=0 ;
+	var pscid=0;
+	var brandid=0;
+	var pid=0;
+	var regionid=0;
+	
+	if (brandid>0)
+	{
+		catalogid = brandid;
+	}else if (pscid > 0)
+	{	
+		catalogid = pscid;
+	}else if (pbcid > 0)
+	{
+		catalogid = pbcid;
+	}
+	//else if(pid > 0){catalogid=pid;}
+	//else if(regionid>0){catalogid=regionid;}
+ 
+if(typeof(catalogid) != "undefined" &&catalogid!=0) {
+   
+	document.write("<script language=\"JavaScript\" charset=\"gb2312\" defer src=\"http://www.cseek.com/product2article/"+catalogid+"c.js\"><\/script>");
+	
+ }
+//-->
+</SCRIPT>
+<!--writen by michael.joe 2005.06.03 end--><!--结束-->
+<DIV class=newrightbox>相关产品 </DIV>
+<DIV class=space3><SPAN id=productspan></SPAN></DIV><!--writen by michael.joe 2005.06.03 start-->
+<STYLE type=text/css>#container1 {
+	WIDTH: 100%; TEXT-ALIGN: center
+}
+#line1 {
+	WIDTH: 99%
+}
+#line1 UL {
+	LIST-STYLE-TYPE: none
+}
+#line1 UL LI {
+	BACKGROUND: url(http://product1.yesky.com/cseekimages/new/br.gif) repeat-x center 50%; FLOAT: left; WIDTH: 100%; TEXT-ALIGN: center
+}
+#product_container1 {
+	FLOAT: left; WIDTH: 99%
+}
+#product_container1 UL {
+	LIST-STYLE-TYPE: none
+}
+#product_container1 UL LI {
+	FLOAT: left; MARGIN: 0px 2px; WIDTH: 40%
+}
+#pro_name {
+	WIDTH: 100%; CURSOR: hand
+}
+</STYLE>
+
+<SCRIPT language=JavaScript>
+function showProductSpan(){
+        
+     if(product_num!=0){
+	    var i=0
+            var m=0
+            var j=product_num > 4 ? 4:product_num
+		    var z=j > 2 ? 2:j
+		    
+		
+		
+		var str="<div id=\"container1\">"	
+		str+="<div id=\"product_container1\">"
+		str+="<ul>"
+		
+		
+		for(i=0;i<z;i++){
+			str+="<li>"
+			if(product_smallimage[i]!=null&&product_smallimage[i]!='null'){
+				str+="<a href=\"http://product1.yesky.com"+product_url[i]+"\" title=\""+product_name[i]+"\"><img src=\"http://product1.yesky.com"+product_smallimage[i]+"\" /></a>"
+			}else{ 
+				str+="<img src=\"http://product1.yesky.com/cseekimages/blank.jpg\"/>"
+			}
+			str+="<br/><div id=\"pro_name\"><a href=\"http://product1.yesky.com"+product_url[i]+"\" title=\""+product_name[i]+"\">"+product_name[i]+"</a></div>"
+                        
+            str+="</li>"
+                        
+			
+
+		}
+                str+="</ul>"
+		        str+="</div>"
+                
+                str+="<div id=\"product_container1\">"
+		        str+="<ul>"
+                for(m=0;m<z;m++){
+                         str+="<li>"
+                if (product_minprice[m]>0){
+                                
+				str+="<div id=\"pro_name\"><img src=\"http://www.yesky.com/TLimages/cseekimages/hangqing/i2.gif\" width=\"15\" height=\"15\" border=\"0\"><a href=\"http://product1.yesky.com"+product_url[m]+"\">"+product_minprice[m]+ "</a></div>"
+			}else{
+                                str+="" 
+                       }
+			    str+="</li>"
+                }
+		        str+="</ul>"
+		        str+="</div>"
+                str+="<div id=\"line1\"><ul><li></li></ul></div>"
+	    if(j>2){
+                str+="<div id=\"product_container1\">"
+		        str+="<ul>"
+		for(;i<j;i++){
+		   str+="<li>"
+		   	if(product_smallimage[i]!=null&&product_smallimage[i]!='null'){
+				str+="<a href=\"http://product1.yesky.com"+product_url[i]+"\" title=\""+product_name[i]+"\"><img src=\"http://product1.yesky.com"+product_smallimage[i]+"\" /></a>"
+			}else{ 
+				str+="<img src=\"http://product1.yesky.com/cseekimages/blank.jpg\"/>"
+			}
+			str+="<br/><div id=\"pro_name\"><a href=\"http://product1.yesky.com"+product_url[i]+"\" title=\""+product_name[i]+"\">"+product_name[i]+"</a></div>"
+                        
+			
+		   str+="</li>"
+		}
+                str+="</ul>"
+		str+="</div>"
+                
+                str+="<div id=\"product_container1\">"
+		str+="<ul>"
+                for(;m<j;m++){
+                       str+="<li>"
+                if (product_minprice[m]>0){
+				str+="<div id=\"pro_name\"><img src=\"http://www.yesky.com/TLimages/cseekimages/hangqing/i2.gif\" width=\"15\" height=\"15\" border=\"0\"><a href=\"http://product1.yesky.com"+product_url[m]+"\">"+product_minprice[m]+ "</a></div>"
+			}else{
+                                str+=""
+                        }
+                       str+="</li>"
+                } 
+		str+="</ul>"
+		str+="</div>"
+                str+="</div>"
+         }       
+
+	}else{
+		var str=""
+	}
+    productspan.innerHTML = str     
+}            
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+<!--
+	var catalogid=0;
+	var pbcid=0 ;
+	var pscid=0;
+	var brandid=0;
+	var pid=0;
+	var regionid=0;
+	
+	if (brandid>0)
+	{
+		catalogid = brandid;
+	}else if (pscid > 0)
+	{	
+		catalogid = pscid;
+	}else if (pbcid > 0)
+	{
+		catalogid = pbcid;
+	}
+	//else if(pid > 0){catalogid=pid;}
+	//else if(regionid>0){catalogid=regionid;}
+ 
+if(typeof(catalogid) != "undefined" &&catalogid!=0) {
+   
+	document.write("<script language=\"JavaScript\" charset=\"gb2312\" defer src=\"http://www.cseek.com/product2article/"+catalogid+"p.js\"><\/script>");
+	
+ }
+//-->
+</SCRIPT>
+<!--writen by michael.joe 2005.06.03 end--><!--结束-->
+<DIV class=newrightbox>关键字 </DIV>
+<DIV class=space3></DIV>
+<DIV class=clear1></DIV>
+<DIV class=newrightbox>最新更新 </DIV>
+<DIV class=space3>
+<LI><A href="http://edu.yesky.com/edunews/145/2094145.shtml">研究:IT企业削减成本 
+将继续提升外包比重</A> 
+<LI><A 
+href="http://mobile.yesky.com/mobileskill/136/2094136.shtml">索爱K750c下载文件该放MS卡哪个位置</A> 
+
+<LI><A 
+href="http://notebook.yesky.com/124/2094124.shtml">1.75公斤富士通笔记本电脑S2020降至8600元</A> 
+
+<LI><A href="http://sh.yesky.com/123/2094123.shtml">机卡分离 OKWAP小灵通市场潜力巨大</A> 
+<LI><A href="http://digital.yesky.com/122/2094122.shtml">三星预计06年全球手机总销量将达8亿</A> 
+<LI style="DISPLAY: none"><A 
+href="http://www.chinabyte.com/his/his_1248.shtml">历史文章-1248</A> 
+<LI style="DISPLAY: none"><A 
+href="http://www.yesky.com/his/his_604.shtml">历史文章-604</A> 
+<LI style="DISPLAY: none"><A 
+href="http://qa.yesky.com/his/his_5309.shtml">历史文章-604</A> 
+<LI style="DISPLAY: none"><A 
+href="http://topic.yesky.com/forum/105_53.html">历史文章-6045309</A> </LI></DIV>
+<DIV class=space4><A href="http://www.yesky.com/news.shtml">更多</A></DIV>
+<DIV class=newrightbox>阅读此文章的读者还看了以下文章 </DIV>
+<DIV class=space3><!-- Error --></DIV>
+<DIV class=space4><A href="http://www.yesky.com/ysdevvc_.shtml">更多</A></DIV>
+<DIV class=newrightbox>本文编辑方舟的其他文章</DIV>
+<DIV class=space3></DIV>
+<DIV class=space4><A href="http://www.yesky.com/298/">更多</A></DIV>
+<DIV class=newrightbox>热点文章</DIV>
+<DIV class=space3>
+<LI><A href="http://e.yesky.com/489/2057489.shtml">组图：中国褪色十大经典女脱星至尊榜</A> 
+<LI><A href="http://www.yesky.com/494/2053994.shtml">组图：八位激情裸露的华人女星</A> 
+<LI><A href="http://dh.yesky.com/311/2083811.shtml">全看完就是英雄！10部史上最变态电影</A> 
+<LI><A href="http://myhard.yesky.com/zjdiy/344/2055344.shtml">预算五千元 
+怎么选择适合自己的电脑</A> 
+<LI><A href="http://e.yesky.com/186/2071686.shtml">组图：适合做老婆的超级女生TOP10</A> 
+<LI style="DISPLAY: none"><A 
+href="http://www.chinabyte.com/his/his_1097.shtml">历史文章-1097</A> 
+<LI style="DISPLAY: none"><A 
+href="http://www.yesky.com/his/his_1398.shtml">历史文章-1398</A> 
+<LI style="DISPLAY: none"><A 
+href="http://qa.yesky.com/his/his_2193.shtml">历史文章-1398</A> 
+<LI style="DISPLAY: none"><A 
+href="http://topic.yesky.com/forum/184_1.html">历史文章-13982193</A> </LI></DIV>
+<DIV class=space4><A href="http://www.yesky.com/top.shtml">更多</A></DIV>
+<DIV class=clear1></DIV></DIV></DIV></DIV>
+<DIV class=clear></DIV><!--页面尾部-->
+<DIV class=line-green><IMG height=2 alt=pic src="VC1.files/kong.gif" 
+width=1></DIV>
+<DIV class=floorbox-01><A href="http://www.yesky.com/web/tougao.htm" 
+target=_blank>欢迎投稿</A> | <A href="http://www.chinabyte.com/service/index.shtm" 
+target=_blank>天极服务</A>| <A href="http://www.yesky.com/web/about.htm" 
+target=_blank>关于我们</A>| <A href="http://maillist.yesky.com/" 
+target=_blank>电子杂志</A>| <A href="http://rss.yesky.com/" target=_blank>RSS订阅</A>| 
+<!--－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－//-->
+<SCRIPT language=JavaScript>
+<!--
+function IsInstallSupMiniQQ(QQVersion){     	
+try{//支持			
+var xmlhttp=new ActiveXObject("TimwpDll.TimwpCheck");
+var  n = xmlhttp.GetVersion();	
+if (n < QQVersion)
+{
+location.href='http://www.yesky.com/mini_portal/up_alarm.htm';			
+return false;
+}
+return true;			
+}catch(e){//不支持
+location.href='http://www.yesky.com/mini_portal/up_alarm.htm';			
+return false;
+}
+return false;
+}
+function RealAddPortal (FpanelID,QQVersion)
+{
+var boolFals=IsInstallSupMiniQQ(QQVersion); 
+if(boolFals==true)
+{	
+if(FpanelID==17002)
+{
+var exe ="Tencent://AddPortal/?Menu=Yes&Exe=QQ&PanelID="+FpanelID; 
+}		
+else
+{
+var exe ="Tencent://AddPortal/?Menu=Yes&PanelID="+FpanelID; 
+}
+location.href=exe;				
+}
+}
+//-->
+</SCRIPT>
+<A onclick="RealAddPortal('22773','2.1')" 
+href="http://www.yesky.com/298/1834298.shtml#">在QQ上看天极</A> <!--－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－//-->| <A 
+href="http://www.yesky.com/web/zhaoping.htm" target=_blank>加入我们</A>| <A 
+href="http://www.yesky.com/web/website.htm" target=_blank>网站地图</A>| <A class=a09 
+onclick="this.style.behavior='url(#default#homepage)';this.setHomePage('http://www.yesky.com/');" 
+href="http://www.yesky.com/298/1834298.shtml#">设定天极为首页</A> </DIV>
+<DIV class=floorbox-02>
+<DIV class=floorbox-02-right>Copyright (C) 2005 Chinabyte.com, All Rights 
+Reserved 版权所有 天极网络<BR><A class=grey-s 
+href="http://www.yesky.com/cpcwd/74590868828323840/20030805/1719074.shtml">渝ICP证B2-20030003号</A> 
+<A class=grey-s href="mailto:chief-editor@chinabyte.com">如有意见请与我们联系</A> <A 
+class=grey-s href="http://www.chinabyte.net/">Powered by 天极内容管理平台CMS4i</A> 
+</DIV>
+<DIV class=floorbox-02-left><A 
+href="http://www.hd315.gov.cn/beian/view.asp?bianhao=0402000103000001"><IMG 
+src="VC1.files/biaoshi.gif" border=0></A></DIV></DIV>
+<DIV class=floorbox-02>
+<DIV class=floorbox-02-left></DIV></DIV>
+<SCRIPT language=javascript>
+window.onload = getMsg;
+var huangdong_name = 123;
+window.onresize = resizeDiv;
+window.onerror = function(){}
+//短信提示使用(asilas添加)
+var divTop,divLeft,divWidth,divHeight,docHeight,docWidth,objTimer,i = 0;
+function getMsg()
+{
+try{
+divTop = parseInt(document.getElementById("eMeng").style.top,10)
+divLeft = parseInt(document.getElementById("eMeng").style.left,10)
+divHeight = parseInt(document.getElementById("eMeng").offsetHeight,10)
+divWidth = parseInt(document.getElementById("eMeng").offsetWidth,10)
+docWidth = document.body.clientWidth;
+docHeight = document.body.clientHeight-(document.body.clientHeight-596);
+document.getElementById("eMeng").style.top = parseInt(document.body.scrollTop,10) + docHeight + 10;// divHeight
+document.getElementById("eMeng").style.left = parseInt(document.body.scrollLeft,10) + docWidth - divWidth
+document.getElementById("eMeng").style.visibility="visible"
+objTimer = window.setInterval("moveDiv()",10)
+}
+catch(e){}
+} 
+　
+
+function resizeDiv()
+{
+i+=1
+if(i>500) closeDiv()
+try{
+divHeight = parseInt(document.getElementById("eMeng").offsetHeight,10)
+divWidth = parseInt(document.getElementById("eMeng").offsetWidth,10)
+docWidth = document.body.clientWidth;
+docHeight = document.body.clientHeight-(document.body.clientHeight-596);
+document.getElementById("eMeng").style.top = docHeight - divHeight + parseInt(document.body.scrollTop,10)
+document.getElementById("eMeng").style.left = docWidth - divWidth + parseInt(document.body.scrollLeft,10)
+}
+catch(e){}
+}
+
+function moveDiv()
+{
+try
+{
+if(parseInt(document.getElementById("eMeng").style.top,10) <= (docHeight - divHeight + parseInt(document.body.scrollTop,10)))
+{
+window.clearInterval(objTimer)
+objTimer = window.setInterval("resizeDiv()",1)
+}
+divTop = parseInt(document.getElementById("eMeng").style.top,10)
+document.getElementById("eMeng").style.top = divTop - 1
+}
+catch(e){}
+}
+function closeDiv()
+{
+document.getElementById('eMeng').style.visibility='hidden';
+if(objTimer) window.clearInterval(objTimer)
+}
+</SCRIPT>
+
+<DIV id=eMeng 
+style="BORDER-RIGHT: #455690 1px solid; BORDER-TOP: #a6b4cf 1px solid; Z-INDEX: 99999; LEFT: 0px; VISIBILITY: hidden; BORDER-LEFT: #a6b4cf 1px solid; WIDTH: 241px; BORDER-BOTTOM: #455690 1px solid; POSITION: absolute; TOP: 0px; HEIGHT: 172px; BACKGROUND-COLOR: #c9d3f3">
+<TABLE height=25 cellSpacing=0 cellPadding=0 width=241 
+background=VC1.files/open.gif border=0>
+  <TBODY>
+  <TR>
+    <TD align=left><A href="http://www.yesky.com/" target=_blank><IMG 
+      height=25 src="VC1.files/tc-001.gif" width=190 border=0></A></TD>
+    <TD width=20><A onclick=closeDiv() 
+      href="http://www.yesky.com/298/1834298.shtml#"><IMG height=13 
+      src="VC1.files/tc-002.gif" width=13 border=0></A></TD></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cellPadding=0 width=241 background=VC1.files/tc-003.gif 
+border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top align=middle>
+      <TABLE style="MARGIN-TOP: 8px" cellSpacing=0 cellPadding=0 width=230 
+      align=center border=0>
+        <TBODY>
+        <TR>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" vAlign=top 
+          width=82 rowSpan=8>
+            <DIV align=center><A href="http://www.yesky.com/"></A><A 
+            href="http://gd.yesky.com/253/2089753.shtml"><IMG height=60 
+            src="VC1.files/163857main.jpg" width=69 border=0></A><BR><A 
+            href="http://gd.yesky.com/253/2089753.shtml">天极杯泳装摄影外拍活动之精彩花絮</A></DIV></TD>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" align=left 
+          width=148 height=21><FONT color=#ff0000>1</FONT> <A 
+            href="http://e.yesky.com/181/2089681.shtml">组图：“超女”明星脸</A></TD></TR>
+        <TR>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" align=left 
+          height=19><FONT color=#ff0000>2</FONT> <A 
+            href="http://myhard.yesky.com/news_hard/160/2089660.shtml">Xbox 
+            360开发机拆机图</A></TD></TR>
+        <TR>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" align=left 
+          height=19><FONT color=#ff0000>3</FONT><A 
+            href="http://e.yesky.com/143/2089643.shtml"> 十大超女未来走红分析</A></TD></TR>
+        <TR>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" align=left 
+          height=19><FONT color=#ff0000>4</FONT> <A 
+            href="http://myhard.yesky.com/specialtop/47/2089547.shtml">当电脑爱上客厅</A></TD></TR>
+        <TR>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" align=left 
+          height=19><FONT color=#ff0000>5</FONT> <A 
+            href="http://myhard.yesky.com/soundcard/31/2089531.shtml">浅谈为HTPC选购声卡</A></TD></TR>
+        <TR>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" align=left 
+          height=19><FONT color=#ff0000>6</FONT><A 
+            href="http://pcgame.yesky.com/24/2089524.shtml">《模拟人生2:夜生活》</A></TD></TR>
+        <TR>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" align=left 
+          height=19><FONT color=#ff0000>7</FONT><A 
+            href="http://pcgame.yesky.com/23/2089523.shtml">《魔法门之英雄无敌5》内部测试已开始注册</A></TD></TR>
+        <TR>
+          <TD style="FONT-SIZE: 12px; COLOR: black; face: Tahoma" height=19>
+            <DIV align=right><A href="http://www.yesky.com/"><FONT 
+            color=#ff0000>更多精彩排行文章</FONT></A></DIV></TD></TR></TBODY></TABLE></TD></TR>
+  <TR>
+    <TD><IMG height=3 src="VC1.files/tc-004.gif" 
+width=241></TD></TR></TBODY></TABLE></DIV>
+<SCRIPT language=JavaScript src="VC1.files/f.js" type=""></SCRIPT>
+
+<SCRIPT language=JavaScript type="">
+    var curr_yg_jsessionId = getCookie("curr_yg_jsessionId");
+    if(typeof(curr_yg_jsessionId) == "string" && curr_yg_jsessionId.length > 0) {
+        document.write("<script src=\"http://yg.yesky.com/yg.stone.generate.do;jsessionid=" + curr_yg_jsessionId + "\"></" + "script>");
+    } else {
+        document.write("<script src=\"http://yg.yesky.com/yg.stone.generate.do\"></" + "script>");
+    }
+    function setYG_Cookie(yg_jsessionId) {
+        if(typeof(yg_jsessionId) == "string" && yg_jsessionId.length > 0) {
+            setCookie("curr_yg_jsessionId", yg_jsessionId, null, "/");
+        }
+    }
+</SCRIPT>
+<!--记数器-->
+<SCRIPT language=Javascript>
+document.write("<img src='http://counter.yesky.com/counter.shtml?CID=412&amp;AID=1834298&amp;refer="+escape(document.referrer)+"&amp;cur="+escape(document.URL)+"' border='0' alt='' width='0' height='0'>");
+</SCRIPT>
+<NOSCRIPT><IMG height=0 src="VC1.files/counter.shtml" width=0 border=0> 
+</NOSCRIPT><!--广告--><SPAN id=span_ad1>
+<SCRIPT src="VC1.files/412_content-column-s.js"></SCRIPT>
+</SPAN>
+<SCRIPT>ad1.innerHTML=span_ad1.innerHTML;span_ad1.innerHTML="";</SCRIPT>
+<SPAN id=span_ad2>
+<SCRIPT src="VC1.files/412_content-button-1.js"></SCRIPT>
+</SPAN>
+<SCRIPT>ad2.innerHTML=span_ad2.innerHTML;span_ad2.innerHTML="";</SCRIPT>
+<SPAN id=span_ad3>
+<SCRIPT src="VC1.files/412_content-banner-2.js"></SCRIPT>
+</SPAN>
+<SCRIPT>ad3.innerHTML=span_ad3.innerHTML;span_ad3.innerHTML="";</SCRIPT>
+<SPAN id=span_ad4>
+<SCRIPT src="VC1.files/412_content-pip.js">
+</SCRIPT>
+</SPAN>
+<SCRIPT>
+if(typeof(contentAdv) =="object") {
+contentAdv.innerHTML=span_ad4.innerHTML;span_ad4.innerHTML="";
+} else {
+ad4.innerHTML=span_ad4.innerHTML;span_ad4.innerHTML="";
+}</SCRIPT>
+<SPAN id=span_ad5>
+<SCRIPT src="">
+</SCRIPT>
+</SPAN>
+<SCRIPT>ad5.innerHTML=span_ad5.innerHTML;span_ad5.innerHTML="";</SCRIPT>
+<SPAN id=span_ad7>
+<SCRIPT src="VC1.files/412_content-banner-1.js">
+</SCRIPT>
+</SPAN>
+<SCRIPT>ad7.innerHTML=span_ad7.innerHTML;span_ad7.innerHTML="";</SCRIPT>
+<SPAN id=span_ad6>
+<SCRIPT src="VC1.files/cbab.js"></SCRIPT>
+</SPAN>
+<SCRIPT>ad6.innerHTML=span_ad6.innerHTML;span_ad6.innerHTML="";</SCRIPT>
+</BODY></HTML>

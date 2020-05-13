@@ -1,0 +1,116 @@
+如題
+本範例是建立在Dialag上，希望藉此拋磚引玉讓想學Serialize機制讀取檔案的人能有所幫助
+第一步
+建立Serialize類別
+如下
+class CData : public CObject//2-step  
+{
+public:
+	CString strData;//3-step
+	CData();
+	virtual ~CData();
+	virtual void Serialize(CArchive& ar);
+
+DECLARE_SERIAL(CData)
+};
+IMPLEMENT_SERIAL(CData,CObject,1)
+CData::CData()
+{
+
+}
+
+CData::~CData()
+{
+
+}
+void CData::Serialize(CArchive& ar)
+{
+	CObject::Serialize(ar); 
+	if (ar.IsStoring())
+	{	// storing code
+		ar<<strData;
+	}
+	else
+	{	// loading code
+		ar>>strData;
+	}
+}
+第二步 加入相關的宣告檔
+                #include <afxtempl.h>//1-step
+             #include <afxcoll.h>
+第三步 增加Dialag的成員變數與成員函數
+	CObArray ListOfCars;	//4-step//被取代CArray <CData,CData> gArray;
+	CData *pData;//5-step
+	void AddObject(CData *g);
+第四步 在Dialag上增加一個文字方塊，三個按鈕與一個下拉選單，並建立關的ddx/ddv
+            文字方塊為 m_v1型態為cstring
+            下拉選單為相對應的物件
+第五步 增加相對應Dialag的函數
+void CFileWorkDlg::OnButton1() 
+{
+	pData=new CData;
+	UpdateData(true);
+		pData->strData=m_v1; 
+	UpdateData(false);
+	AddObject(pData);
+}
+void CFileWorkDlg::AddObject(CData *g)
+{
+	ListOfCars.Add(g); 
+}
+
+void CFileWorkDlg::OnButton2() 
+{
+	// TODO: Add your control notification handler code here
+    CFile file;
+    CFileException fe;
+    char* pFileName = "test.jas";
+    if(!file.Open(pFileName,CFile::modeCreate | CFile::modeWrite,&fe))
+    {
+		fe.ReportError();
+        return;
+    }
+	CArchive arc(&file, CArchive::store);
+	Serialize(arc);
+    arc.Flush();
+    arc.Close();
+    file.Close();
+	ListOfCars.RemoveAll(); 
+}
+
+void CFileWorkDlg::OnButton3() 
+{
+	// TODO: Add your control notification handler code here
+	int i=0;
+	CFile file;
+    CFileException fe;
+	char* pFileName = "test.jas";
+    if(!file.Open(pFileName,CFile::modeRead,&fe))
+    {
+		fe.ReportError();
+        return;
+    }
+	CArchive arc(&file, CArchive::load);
+	Serialize(arc);
+	int num=ListOfCars.GetSize(); 
+	for(i=0;i<num;i++)
+	{
+		CData *d=(CData *)(ListOfCars[i]);
+		m_Comb1.AddString(d->strData);   
+	}
+	arc.Flush();
+    arc.Close();
+    file.Close();
+}
+
+void CFileWorkDlg::Serialize(CArchive& ar) 
+{
+
+	//gArray.Serialize(ar);
+	ListOfCars.Serialize(ar);
+
+}
+其中
+OnButton1() 是把文字方塊的文字紀錄到CData物件中，並把CData物件加入CObArray的物件
+OnButton2()是把相關資料透過CObArray呼叫CData物件把資料存入CFile物件所開啟的檔案
+OnButton2()是把資料從檔案透過CObArray讀出來在顯示在下拉式選單中

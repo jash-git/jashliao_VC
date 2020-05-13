@@ -1,0 +1,603 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-tw">
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>新網頁1</title>
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" link="#99FFFF" vlink="#CCCCCC">
+<h1 align="center">Class template 類別範本</h1>      
+<h1 align="center">　</h1>
+<h1 align="left" style="line-height: 150%; margin: 0"><font size="4" face="Arial Narrow"> 
+  Class Template </font><font size="4">      
+ 定義式</font></h1>
+<table width="75%" border="1" height="320">
+  <tr> 
+    <td width="48%"> 
+      <pre><font face="Arial, Helvetica, sans-serif" size="4">class Queue {
+public:
+		Queue();
+		~Queue();
+
+		<font color="#FF3333">Type</font> &amp; remove();
+		void add(const <font color="#FF3333">Type</font> &amp; );
+		bool is_empty();
+		bool is_full();
+private:
+	// ...
+};</font></pre>
+    </td>
+    <td width="52%">
+      <p>int , double , user define 版本怎麼辦 ?</p>      
+      <p>我們希望能夠產生各種型態的class</p>
+      <p><font color="#00FF00">&nbsp;</font></p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><font size="5" color="#FFFF00" face="標楷體"><b>缺點:   
+只能處理單一種資料型態!</b></font><font color="#00FF00">=&gt; </font><font color="#00FF00">我們要</font><font color="#FFFF00" size="5">指定編譯器</font><font color="#00FF00">產生想要的型態</font></p>
+<table width="75%" border="1">
+  <tr> 
+    <td width="77%"> 
+      <pre><font size="4" face="Arial">/* </font><font size="4">若只有實作 </font><font size="4" face="Arial">double </font><font size="4">的版本  </font><font size="4" face="Arial">*/
+
+Queue qObj;
+string str(&quot;vivisection&quot;);
+
+qObj.add(3.14159);	// ok item added to the queue
+<font color="#FF00FF">qObj.add(str);	</font>	// e<font color="#00FFFF">rror: </font></font><font color="#00FFFF" size="4">沒有</font><font color="#00FFFF"><font size="4" face="Arial">string </font><font size="4">的版本</font></font></pre>
+    </td>
+  </tr>
+</table>
+<p></p>
+<p><b><font face="標楷體" size="5" color="#FFFF00">利用</font><font face="標楷體" color="#00FF00" size="6">類別模板</font><font face="標楷體" size="5" color="#FFFF00">,要求編譯器自動</font><font face="標楷體" size="5" color="#00FF00">產生指定版本</font><font face="標楷體" size="5" color="#FFFF00">的程式碼</font></b></p>
+<table width="75%" border="1">
+  <tr> 
+    <td width="40%"> 
+      <pre><font size="4">
+<font face="Arial, Helvetica, sans-serif">* </font>加入了<font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif" color="#FF3333">template <class Type>&lt;class <font color="#99FF99">Type</font>&gt;
+</font>  </font>則可以使用產生<font color="#00FF00"><b>指定</b></font>版本的<font face="Arial, Helvetica, sans-serif">code. 
+
+
+Queue<font color="#00FFFF"><b>&lt;int&gt;</b></font> qi;
+Queue<font color="#00FFFF"><b>&lt;complex&lt;double&gt;&gt;</b></font> qc;
+Queue<font color="#00FFFF"><b>&lt;string&gt;</b></font> qs;</font></font></pre>
+    </td>
+    <td width="60%"> 
+      <blockquote>
+        <pre><font face="Arial, Helvetica, sans-serif" color="#FF3333">
+</font><font face="Arial, Helvetica, sans-serif" size="4"><font color="#FF3333">template <class Type>&lt;class <font color="#99FF99">Type</font>&gt;</font>
+class Queue {
+public</font><b><font face="Arial, Helvetica, sans-serif" size="5">:</font></b><font face="Arial, Helvetica, sans-serif" size="4">
+		Queue();
+		~Queue();
+
+		<font color="#99FF99">Type</font> &amp; remove();
+		void add(const <font color="#99FF99">Type</font> &amp; );
+		bool is_empty();
+		bool is_full();
+private:
+	// ...
+}</font><b><font face="Arial, Helvetica, sans-serif" size="5">;</font></b><font face="Arial, Helvetica, sans-serif" size="4">
+</font></pre>
+      </blockquote>
+    </td>
+  </tr>
+</table>
+<h3>　</h3>
+<h3><font face="Arial, Helvetica, sans-serif"> Template </font> 宣告的各種形式</h3>   
+<table width="75%" border="1">
+  <tr> 
+    <td width="58%"> 
+      <p><font size="4">&nbsp;template &lt;<b><font color="#00FF00">typename</font></b>   
+      T&gt;</font></p>  
+      <p><font size="4">&nbsp;&nbsp;&nbsp; class QueueItem;</font></p>  
+      <p>　</p>
+      <pre><font size="4"><font face="Arial, Helvetica, sans-serif">template &lt;class <font color="#99FF99">T</font>&gt;
+   class QueueItem;
+
+
+<font color="#FFFF00">//</font></font><font color="#FFFF00">若<font face="Arial, Helvetica, sans-serif">class</font>中需要許多不同的 </font><font face="Arial, Helvetica, sans-serif"><font color="#FFFF00">type</font>
+template &lt;class<b> <font color="#99FF99">T1</font></b>, class<b> <font color="#99FF99">T2</font></b>, class <font color="#99FF99"><b>T3</b></font>&gt;
+   class Container;
+</font></font>
+</pre>
+    </td>
+    <td width="42%"> 
+      <pre><font face="Arial, Helvetica, sans-serif">/* Template </font>宣告 <font face="Arial, Helvetica, sans-serif">*/</font></pre>
+    </td>
+  </tr>
+  <tr>
+    <td width="58%"> 
+      <pre>
+
+<font face="Arial, Helvetica, sans-serif" size="4">template &lt;class Type, <font color="#FF3333">int size</font>&gt;
+   class Buffer;
+</font>
+</pre>
+    </td>
+    <td width="42%"> /* 類似 function template */</td>      
+  </tr>
+</table>
+<p><font color="#FFFF00" size="5" face="標楷體"><b>&nbsp;看一下範例吧!   
+(指定型態的陣列物件)</b></font></p>
+<table width="91%" border="1">
+  <tr> 
+    <td width="100%"> 
+      <font color="#00FF00" size="5"><b>// 使用 typename 關鍵字的範例</b></font>  
+      <blockquote>
+        <p><font face="Comic Sans MS"><font size="4" color="#FFFFFF">template &lt;</font><font size="4" color="#00FF00">typename</font><font size="4" color="#FFFFFF"> Type>&nbsp;<br>  
+        class </font><font size="4" color="#FF00FF"> Matrix</font><font size="4" color="#FFFFFF"> {<br>   
+	private:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Row,Col;<br>  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </font><font size="4" color="#00FFFF">Type</font><font size="4" color="#FFFFFF"> **Buffer;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        // &lt;&lt;&lt;---- </font></font><font size="4" color="#FFFFFF">原來是   
+        </font><font face="Comic Sans MS" size="4" color="#FFFFFF">int **Buffer<br>  
+	public:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Matrix(int Row,int Col){</font></p>  
+        <p><font size="4" color="#FFFFFF" face="Comic Sans MS">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        Buffer=new </font><font size="4" face="Comic Sans MS" color="#00FFFF">Type</font><font size="4" color="#FFFFFF" face="Comic Sans MS">*[Row];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        // &lt;&lt;&lt;----- </font><font size="4" color="#FFFFFF">原來是 </font><font size="4" color="#FFFFFF" face="Comic Sans MS">new   
+        int*[Row]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        for(int y=0;y&lt;Row;y++)<br>   
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        Buffer[y]=new </font><font size="4" face="Comic Sans MS" color="#00FFFF">Type</font><font size="4" color="#FFFFFF" face="Comic Sans MS">[Col];&nbsp;   
+        // &lt;&lt;&lt;---- </font><font size="4" color="#FFFFFF">原來是 </font><font size="4" color="#FFFFFF" face="Comic Sans MS">new   
+        int[Col]</font></p>
+        <p><font size="4" color="#FFFFFF" face="Comic Sans MS">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        }<br>
+        };</font></p>
+        <p>　</p>
+        <p>　</p>
+        <hr>
+        <p><font color="#FFFF00" size="5" face="標楷體"><b>若要把 method   
+        寫在外面,怎麼辦 ?</b></font></p>  
+        <p><font face="Comic Sans MS" size="4">// Matrix.h </font><font size="4">檔案</font></p>
+        <p><font face="Comic Sans MS"><font size="4" color="#FFFFFF">template &lt;</font><font size="4" color="#00FF00">typename</font><font size="4" color="#FFFFFF"> Type>&nbsp;<br>  
+        class Matrix {<br>   
+	private:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		int Row,Col;<br>  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </font><font size="4" color="#00FFFF">Type</font><font size="4" color="#FFFFFF"> **Buffer;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        // &lt;&lt;&lt;---- </font></font><font size="4" color="#FFFFFF">原來是   
+        </font><font face="Comic Sans MS" size="4" color="#FFFFFF">int **Buffer<br>  
+	public:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#FF00FF"><font face="Comic Sans MS" size="4"> 
+        Matrix(int Row,int   
+        Col);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        // &lt;&lt;&lt;---- </font><font size="4">注意</font><font face="Comic Sans MS" size="4">:   
+        </font><font size="4">現在宣告於 </font><font face="Comic Sans MS" size="4">.h</font><font size="4">中</font></font><font size="4" color="#FFFFFF"><br>  
+        </font><font face="Comic Sans MS" size="4" color="#FFFFFF">}</font><b><font face="Comic Sans MS" color="#FFFFFF" size="5">;</font></b></p>
+        <p><font size="4" face="Comic Sans MS">// Matrix.cpp </font><font size="4">檔案</font></p>
+        <p><font size="4" face="Comic Sans MS">#include &quot;Matrix.h&quot;</font></p> 
+        <p><font size="4" face="Comic Sans MS">template &lt;<font color="#00FF00">typename</font> Type>&nbsp;<br>  
+        Matrix<font color="#FF00FF">&lt;Type&gt;</font>::Matrix(int Row,int Col)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        // &lt;&lt;&lt;---- </font><font size="4">注意</font><font size="4" face="Comic Sans MS">:   
+        </font><font size="4">要求編譯器產生</font><font size="4" face="Comic Sans MS">Type</font><font size="4">版本建構子<br>
+        </font><font size="4" face="Comic Sans MS">
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Buffer=new <font color="#00FFFF">Type</font>*[Row];<br>  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(int y=0;y&lt;Row;y++)<br>   
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        Buffer[y]=new <font color="#00FFFF">Type</font>[Col];<br> 
+        }</font></p>
+        <blockquote>
+          <blockquote>
+            <p align="right"><font size="4">完整程式範例</font><font size="4" face="Comic Sans MS">:   
+            TemplateMatrixClass.dsw</font></p>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </td>
+  </tr>
+</table>
+<p>　</p>
+<table width="97%" border="1">
+  <tr> 
+    <td width="100%"> 
+      <b><font size="5">//</font><font color="#00FF00" size="5"> </font><font size="5">若要指定的<font color="#00FF00">不只一個資料型態</font></font><font size="5">,則使用&nbsp;</font></b>
+      <p><b><font size="5">// template &lt;class <font color="#00FFFF">Type1</font>,   
+      class <font color="#FFFF00">Type2&gt;</font> MyClass {};</font></b></p>  
+      <p><b><font size="5">// 範例:</font></b></p>  
+      <blockquote>
+        <p>若我們的陣列物件,有三種資料實體.</p>
+        <p><font face="Comic Sans MS" size="4">// Matrix.h&nbsp;</font></p>  
+        <p><font size="4" face="Comic Sans MS">template &lt;class <font color="#00FFFF">Type1</font>, class   
+        <font color="#FFFF00">Type2</font>&gt;&nbsp;<br>
+        class Matrix {<br>   
+        private:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Row,Col;<br>  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF00FF"> Type1 **Buffer;&nbsp;&nbsp;&nbsp;   
+        // </font></font><font color="#FF00FF"><font size="4"> 第一種資料實體<br>  
+        </font><font size="4" face="Comic Sans MS">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        Type2 **Buffer2;				     // </font></font><font size="4"><font color="#FF00FF"> 第二種資料實體</font><br>  
+        </font><font size="4" face="Comic Sans MS">public:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Matrix(int Row,int Col);<br>   
+        };</font></p>
+        <p><font size="4" face="Comic Sans MS">// Matrix.cpp</font></p>
+        <p><font size="4" face="Comic Sans MS">#include &quot;Matrix.h&quot;</font></p>
+        <p><font face="Comic Sans MS" size="4">template &lt;class <font color="#00FFFF">Type1</font></font><b><font face="Comic Sans MS" size="5">,</font></b><font face="Comic Sans MS" size="4">class   
+        <font color="#FFFF00">Type2</font>&gt;&nbsp;<br>
+        Matrix&lt;<font color="#00FFFF">Type1</font>,<font color="#FFFF00">Type2</font>&gt;::Matrix(int Row,int Col)   
+        </font><font face="Comic Sans MS" size="2">      // &lt;&lt;&lt;---- </font><font size="2"> 注意</font><font face="Comic Sans MS" size="2">:   
+        </font><font size="2"> 要求編譯器產生</font><font face="Comic Sans MS" size="2">(<font color="#00FFFF">Type1</font>,<font color="#FFFF00">Type2</font>)</font><font size="2">版本</font><font size="4">建構子<br>
+        </font><font face="Comic Sans MS" size="4">{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int y;<br>   
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //<font color="#FF00FF"> </font></font><font color="#FF00FF"></font><font size="4"><font color="#FF00FF"> 配置第一資料實體&nbsp;</font><br>  
+        </font><font face="Comic Sans MS" size="4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        Buffer=new <font color="#00FFFF">Type1</font>*[Row];<br>  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        for(y=0;y&lt;Row;y++)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        Buffer[y]=new <font color="#00FFFF">Type1</font>[Col];<br>  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // </font><font size="4"><font color="#FF00FF"> 配置第二資料實體&nbsp;</font><br>  
+        </font><font face="Comic Sans MS" size="4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        Buffer2=new <font color="#FFFF00">Type2</font>*[Row];<br>  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        for(y=0;y&lt;Row;y++)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        Buffer2[y]=new <font color="#FFFF00">Type2</font>[Col];<br>  
+        }<br>
+        </font></p>
+        <p><font face="Comic Sans MS" size="4">// Main.cpp</font></p>
+        <p>#include &quot;Matrix.h&quot;</p>
+        <p><font size="4" face="Comic Sans MS">int main(int argc, char* argv[])<br>   
+        {<br>
+	Matrix &lt;<font color="#FFFF00">int</font>,<font color="#00FFFF">char</font>&gt; MyMatrix(2,3);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+        // </font><font size="4">指定建立 </font><font size="4" face="Comic Sans MS">Type1   
+        = int&nbsp;&nbsp; Type2 = char </font><font size="4">的陣列物件</font><font size="4" face="Comic Sans MS">&nbsp;<br>  
+	return 0;<br>   
+        }</font></p>
+        <p align="right"><font size="4">完整程式範例</font><font size="4" face="Comic Sans MS">:MultiTypeDemo.dsw</font></p>
+      </blockquote>
+    </td>
+  </tr>
+</table>
+<p><font color="#FFFF00" size="5" face="標楷體">其他的處理情況</font></p>
+<table width="75%" border="1">
+  <tr> 
+    <td width="43%"> 
+      <p>&nbsp;</p>
+      <blockquote>
+        <pre><font size="4"><font face="Arial, Helvetica, sans-serif">typedef double <font color="#FF3333">Type</font>;
+<b><font color="#FF00FF">// </font></b></font><b><font color="#FF00FF">若先前已經定義 </font><font face="Arial, Helvetica, sans-serif" color="#FF00FF">Type</font><font color="#FF00FF">為</font><font face="Arial, Helvetica, sans-serif" color="#FF00FF">double </font><font color="#FF00FF">的情況, ok</font></b><font face="Arial, Helvetica, sans-serif">
+template <class Type>&lt;class <font color="#99FF99">Type</font>&gt;
+class QueueItem{
+	public:
+		// ...
+	private:
+		</font><font face="Arial, Helvetica, sans-serif">
+		<font color="#99FF99">Type</font> item;                   </font></font><font color="#FFFF00" size="5"><b><font face="Arial, Helvetica, sans-serif">// &lt;-----------------   item </font>不是<font face="Arial, Helvetica, sans-serif">double</font></b></font><font face="Arial, Helvetica, sans-serif"><font size="4">
+		QueueItem *next;
+}</font></font><b><font face="Arial, Helvetica, sans-serif" size="5">;</font></b><font size="4"><font face="Arial, Helvetica, sans-serif">
+
+// ok 
+template &lt;class <font color="#99FF99">Type</font>&gt; class QueueItem;
+template &lt;class <font color="#99FF99">Type</font>&gt; class Queue;
+
+<b><font color="#FF00FF">// </font></b></font><b><font color="#FF00FF">雖然前面用 </font><font face="Arial, Helvetica, sans-serif" color="#FF00FF">Type </font><font color="#FF00FF">定義 </font><font face="Arial, Helvetica, sans-serif" color="#FF00FF">QueueItem,</font><font color="#FF00FF">宣告時不一定要用 Typ</font></b><font face="Arial, Helvetica, sans-serif"><font color="#FF00FF"><b>e</b></font>
+template &lt;class <font color="#99FF99">T</font>&gt; class QueueItem;
+template &lt;class <font color="#99FF99">U</font>&gt; class QueueItem;
+
+template &lt;class <font color="#99FF99">Type</font>&gt;
+ class QueueItem { ... }
+</font></font></pre>
+      </blockquote>
+    </td>
+  </tr>
+</table>
+<h4>一些<font color="#FFFF00" size="4">宣告時要注意的事項</font></h4>
+<table width="75%" border="1">
+  <tr> 
+    <td width="43%"> 
+      <blockquote> 
+        <blockquote>
+          <pre>
+<font size="4" face="Comic Sans MS" color="#FFFF00">// </font><font color="#FFFF00" size="4">重複宣告 </font><font size="4" face="Comic Sans MS"><font color="#FFFF00">error </font>
+template <class Type>&lt;class <font color="#99FF99">Type</font>&gt;
+class QueueItem{
+	public:
+		// ...
+	private:
+   <b><font color="#FF00FF"> // </font></font><font color="#FF00FF" size="4">若在 </font><font size="4" face="Comic Sans MS" color="#FF00FF">class</font><font color="#FF00FF" size="4">內重新定義</font><font size="4" face="Comic Sans MS" color="#FF00FF">Type</font><font color="#FF00FF" size="4">則會產生</font><font color="#FF00FF">error</font></b><font size="4" face="Comic Sans MS">
+		typedef double <font color="#FF3333">Type</font>;
+        Type item;
+		QueueItem *next;
+};
+
+<font color="#FFFF00">// </font></font><font color="#FFFF00" size="4">指定的</font><font size="4" face="Comic Sans MS" color="#FFFF00">type </font><font color="#FFFF00" size="4">重複 </font><font size="4" face="Comic Sans MS"><font color="#FFFF00">: error </font>
+template &lt;class <font color="#99FF99">Type</font>,class <font color="#99FF99">Type</font>&gt;
+ class container;
+</font><font face="Arial, Helvetica, sans-serif">
+
+</font></pre>
+        </blockquote>
+      </blockquote>
+    </td>
+  </tr>
+</table>
+<h3></h3>
+<h3><font color="#00FF00" size="5">預設值</font><font color="#FFFF00">方面的設定</font></h3>
+<table width="928" border="1" height="783">
+  <tr> 
+    <td height="112" width="348"> 
+      <pre><font size="4">
+<font face="Arial, Helvetica, sans-serif"><font color="#00FF00">template</font> &lt;class Type, <font color="#FFFF00">int size=1024</font>&gt;
+    class Buffer;
+
+template &lt;<font color="#FFFF00">class Type=int</font>, int size=1024&gt;
+   class Buffer;</font></font></pre>
+    </td>
+    <td height="112" width="564"> 
+      <pre><font size="4"><font face="Arial, Helvetica, sans-serif">*size</font>的<font face="Arial, Helvetica, sans-serif">value</font>設定為<font face="Arial, Helvetica, sans-serif">1024
+</font>使用的方式<font face="Arial, Helvetica, sans-serif">:
+        Buffer&lt;int&gt; buffer;
+</font></font></pre>
+    </td>
+  </tr>
+  <tr> 
+    <td height="659" colspan="2" width="918"> 
+      <blockquote> 
+        <pre><font face="Arial, Helvetica, sans-serif">/*example */</font></pre>
+        <blockquote> 
+          <pre><font face="Arial, Helvetica, sans-serif" size="5">template &lt;class Type, <font color="#00FF00">int size=1024</font>&gt; </font><font face="標楷體" size="4">// size的預設值</font><font size="5">
+	</font><font face="Arial, Helvetica, sans-serif" size="5">class Buffer;
+template &lt;<font color="#00FF00">class Type=int</font>, int size&gt;    </font><font size="4" face="標楷體"> // type 的預設值</font><font size="5">
+	</font><font face="Arial, Helvetica, sans-serif" size="5">class Buffer;</font></pre>
+          <pre><font face="Arial, Helvetica, sans-serif">
+<font size="3">// Buffer template </font></font><font size="3">宣告 
+<font face="Arial, Helvetica, sans-serif">template &lt;class Type,int size&gt;
+class Buffer
+{ 
+   public:
+         Type kk;
+         int _size;
+         Buffer()
+         {
+                      kk=5;
+                      _size=size;
+         }
+}<b>;</b></font></font></pre>
+        </blockquote>
+      </blockquote>
+      <blockquote> 
+        <blockquote> 
+          <p><font size="3"><b><font color="#00FF00"><font face="Arial, Helvetica, sans-serif">// </font> 使用範例</font> </b> <br>  
+          <font face="Arial, Helvetica, sans-serif">
+            int main(int argc, char* argv[])<br>      
+            {</font></font></p>
+          <blockquote> 
+            <p><font size="3"><font color="#99FF99" face="Arial, Helvetica, sans-serif">Buffer&lt;</font><font face="Arial, Helvetica, sans-serif" color="#FFFF00">float</font><font color="#99FF99"><font face="Arial, Helvetica, sans-serif">&gt;    
+              buf;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+            // </font>指定 <font face="Arial, Helvetica, sans-serif">type = </font></font><font face="Arial, Helvetica, sans-serif" color="#FFFF00">float</font><font color="#99FF99" face="Arial, Helvetica, sans-serif"><br>  
+ </font></font><font color="#FF00FF" size="5"><font face="Arial, Helvetica, sans-serif"> 
+              Buffer&lt;&gt; buf2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+            // </font>使用預設值 <font face="Arial, Helvetica, sans-serif">type=   
+            int, size=1024</font></font><font size="3"><br>  
+              printf(&quot;Hello World!\n&quot;);<br>   
+              return 0;</font></p>   
+          </blockquote>
+          <p><font face="Arial, Helvetica, sans-serif" size="3">}</font></p>
+        </blockquote>
+      </blockquote>
+      <p align="right">範例程式 initial.dsw</p>  
+    </td>    
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h3><font size="5" color="#00FFFF">template function</font><font color="#FFFF00" size="5"> 合併使用</font><font size="5" color="#00FFFF"> template class</font><font color="#FFFF00" size="5"> 範例</font></h3>      
+<table width="98%" border="1">
+  <tr>
+    <td width="58%"> 
+      <pre><font color="#00FF00"><font size="4">template &lt;class Type&gt; </font></font></pre>
+      <pre><font color="#00FF00"><font size="4">void display</font></font><font size="4"> (<font color="#FF6666">QueueItem&lt;</font><font color="#00FF00">Type</font><font color="#FF6666">&gt;</font> &amp;qi)
+{
+      <font color="#FF6666">QueueItem&lt;</font><font color="#00FF00">Type</font><font color="#FF6666">&gt;</font> *pqi=&amp;qi;
+
+}</font>
+</pre>
+    </td>
+    <td width="42%">* 在template function中使用Type版本的Queue 物件當參數</td>     
+  </tr>
+</table>
+<h4>&nbsp;</h4>
+<h2> Class Template 的具現體 (Instantiation)</h2>      
+<p>*具現: 從 general 的class 產生出特別的class</p>      
+<table width="75%" border="1">
+  <tr> 
+    <td><font size="5">Queue&lt;<font color="#FF00FF"><b>int</b></font>&gt; qi;</font> </td> 
+    <td> <font color="#FF00FF" size="5"><b> int</b></font> 版本的queue object</td>      
+  </tr>
+  <tr>
+    <td><font size="5">Queue&lt;<font color="#00FF00"><b>string</b></font>&gt; qs;</font></td> 
+    <td><font color="#00FF00" size="5"><b>string</b></font> 版本</td>      
+  </tr>
+</table>
+<h4><font color="#FFFF00"><b>具現錯誤</b></font> (必須指定要產生的型態為何?)</h4>
+<table width="75%" border="1">
+  <tr> 
+    <td><font size="5">Queue qs; <font color="#FF00FF">// error: 沒有指定要具現的型別</font></font></td>      
+  </tr>
+</table>
+<h3>　</h3>    
+<h3>使用template class 的方式</h3>     
+<h4>(與一般class object一樣)</h4>     
+<table width="75%" border="1">
+  <tr> 
+    <td> 
+      <pre><font face="Arial, Helvetica, sans-serif">extern <font color="#66FFFF">Queue&lt;double&gt;<double> eqd;</font>
+</font><font face="Comic Sans MS"><b><font color="#FF00FF" size="5">Queue<int>&lt;int&gt; </font></b><font size="5"> *pqi=new Queue<int><b><font color="#FF00FF">&lt;int&gt;</font> ;     // </b></font></font><font size="5">指標方式建立物件
+<font face="Comic Sans MS"><b><font color="#FF00FF">Queue&lt;int&gt;</font></b> <int> aqi[1024] <b>;                   // </b></font>自動變數方式建立物件
+</font>
+<font face="Arial, Helvetica, sans-serif">int main()
+{
+	int ix;
+	if(!<font size="5" color="#00FF00">pqi-&gt;is_empty()</font>)                <font color="#FFFF00" size="5"><b> // </b></font></font><b><font size="5" color="#FFFF00">指標變數存取用 </font></b><font face="Arial, Helvetica, sans-serif"><font color="#FFFF00" size="5"><b>-&gt;</b></font>
+		ix=pqi-&gt;remove();
+	// ...
+	for(ix=0;ix&lt;1024;++ix)
+		<font color="#00FF00" size="5" face="Arial, Helvetica, sans-serif">aqi[ix].add(ix);        // </font></font><font color="#00FF00" size="5">自動變數存取用  </font><font face="Arial, Helvetica, sans-serif"><font size="7"><b><font color="#00FF00" size="5" face="Arial, Helvetica, sans-serif">.</font></b></font>
+	// ...
+}</font></pre>
+    </td>
+  </tr>
+</table>
+<h2>　</h2>     
+<h4>分開檔案定義template</h4>
+<table width="75%" border="1" height="179">
+  <tr> 
+    <td height="200" width="69%"> 
+      <pre><font size="5"><font face="Arial, Helvetica, sans-serif">/*  </font>在<font face="Arial, Helvetica, sans-serif">class </font>內定義建構子範例 <font face="Arial, Helvetica, sans-serif">*/
+
+template &lt;class Type&gt;
+class Queue{
+       // ...
+public:
+    <font color="#00FFFF">Queue(): front(0),back(0) {           </font>// </font>注意<font face="Arial, Helvetica, sans-serif">: </font>在<font color="#FF0000">初值列</font>中呼叫<font face="Arial, Helvetica, sans-serif">front</font>與<font face="Arial, Helvetica, sans-serif">back</font>的建構子</font></pre>
+      <pre><font color="#00FFFF" face="Arial, Helvetica, sans-serif" size="5">     </font><font face="Arial, Helvetica, sans-serif"><font color="#00FFFF">}</font>
+};
+</font></pre>
+    </td>
+  </tr>
+</table>
+<p></p>
+<table width="75%" border="1">
+  <tr> 
+    <td width="50%"> 
+      <pre><font size="5"><font face="Arial, Helvetica, sans-serif">/* </font><b><font color="#FF3333">在外面</font></b>定義建構子範例 <font face="Arial, Helvetica, sans-serif">*/
+template &lt;class Type&gt;
+class Queue{
+      
+public:
+    <font color="#00FFFF">Queue();
+</font>private:
+    
+}<b>;</b>
+
+<font color="#00FF00">template</font><font color="#33FFFF"> &lt;class </font><font color="#FF00FF">Type</font><font color="#33FFFF">&gt; </font><font color="#FFFF00">inline</font><font color="#33FFFF"> Queue&lt;</font><font color="#FF00FF">Type</font><font color="#33FFFF">&gt;<b>:: </b>  Queue()</font></font></font></pre>
+      <pre><font size="5"><font color="#33FFFF" face="Arial, Helvetica, sans-serif">    {front=back=0;}</font>
+</font></pre>
+    </td>
+  </tr>
+</table>
+<h4></h4>   
+<h4><font color="#FFFF00" size="5">如何繼承一個 template 基礎類別</font></h4>     
+<h4>&nbsp;(Derived 繼承 Based)</h4>      
+<table width="75%" border="1">
+    <tr>
+        <td>
+            <pre><font size="4"><font color="#00FF00">template &lt;class Type&gt;</font>
+class Base{
+    public:
+        Type BaseData;
+        Base()
+        {
+            BaseData=1234;
+        }
+        ~Base()
+        {
+            BaseData=5678;
+        }
+};</font></pre>
+            <pre><font size="4"><font color="#00FF00">template &lt;class Type&gt;</font>
+class Derived: public <font color="#00FF00">Base&lt;Type&gt; ;</font>// 繼承的基礎類別使用<font color="#FF0000">Type資訊</font>
+{
+public:
+   int DerData;</font></pre>
+            <pre><font size="4">};
+
+
+void main()
+{
+    Derived&lt;double&gt; d;
+
+}
+             </font></pre>
+        </td>
+    </tr>
+</table>
+<h4>&nbsp;</h4>  
+<hr>
+<h2>進階補充</h2>  
+<h4>討論一下效率的問題</h4>
+<table width="75%" border="1">
+  <tr> 
+    <td width="51%"> 
+      <pre><font face="Arial, Helvetica, sans-serif"><font size="4">template &lt;class Type&gt;
+class QueueItem{
+public:
+    <font color="#33FFFF"> QueueItem(Type); </font><font color="#FFFF00">// </font></font></font><font size="4"><font color="#FFFF00">宣告<font face="Arial, Helvetica, sans-serif">QueneItem</font>傳入的參數型態</font>
+     <font face="Arial, Helvetica, sans-serif">// ...
+};</font></font></pre>
+    </td>
+    <td width="49%"> 
+      <p>* 看一下左式有何問題? </p>      
+      <p>hint: Call by value</p>
+      <p>Type <font color="#FF00FF">可能是一個巨大的物件</font></p>      
+    </td>
+  </tr>
+  <tr>
+    <td width="51%">
+      <pre><font face="Arial, Helvetica, sans-serif" size="4">/* Modified Version */</font></pre>
+      <pre><font size="4"><font face="Arial, Helvetica, sans-serif">template &lt;class Type&gt;
+class QueueItem{
+public:
+     <font color="#33FFFF">QueueItem(const Type &amp; ); </font><font color="#FFFF00">// </font></font><font color="#FFFF00">利用 <font face="Arial, Helvetica, sans-serif">reference </font>處理</font>
+     <font face="Arial, Helvetica, sans-serif">// ...
+};</font></font></pre>
+    </td>
+    <td width="49%">&nbsp;</td>
+  </tr>
+</table>
+<h4>效率的問題2-- constructor</h4>      
+<table width="547" border="1">
+  <tr> 
+    <td width="327"> 
+      <pre><font face="Arial, Helvetica, sans-serif" size="4">template &lt;class Type&gt;
+class QueueItem{
+     // ... 
+public:
+     QueueItem(const Type &amp;t)
+     {
+          <font color="#66FFFF">  item=t; </font>next=0;
+     }
+     
+};</font></pre>
+    </td>
+    <td width="204"> 
+      <p>*&nbsp;左式的 item 物件</p>    
+      <p>1. item 物件 初始化 自己</p>    
+      <p>2. 把 t 指派給item</p>    
+    </td>
+  </tr>
+  <tr>
+    <td width="327">
+      <p><font size="4">/* Modified Version (修正版) */</font></p>
+      <pre><font face="Arial, Helvetica, sans-serif" size="4">template &lt;class Type&gt;
+class QueueItem{
+     // ... 
+public:
+     QueueItem(const Type &amp;t)
+       <font color="#33FFFF"> : item(t) </font>
+      { 
+          next=0;
+      }
+};</font></pre>
+    </td>
+    <td width="204">
+      <p><font color="#00FF00" size="5">記得初值列嗎?</font></p>
+      <p>我們在 item物件 initial時,就指定</p>      
+      <p> initial 為 t</p>      
+    </td>
+  </tr>
+</table>
+<p>　</p>  
+<h4>井民全 debut.cis.nctu.edu.tw/~ching</h4>   
+</body>
+
+</html>
+

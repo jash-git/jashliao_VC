@@ -1,0 +1,425 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-tw">
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Overloading Operators</title>
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" link="#99FFFF" vlink="#CCCCCC">
+<h1 align="center">運算子覆載 (Overloading Operators)</h1>    
+<table width="75%" border="1" height="320">
+  <tr> 
+    <td width="58%" height="220"> 
+            <pre><font face="Arial, Helvetica, sans-serif">
+class Complex{
+    private :
+         double re,im;
+    public:
+         Complex(double re,double im);
+          ...
+         Complex <font color="#00FF66" size="5" face="Arial, Helvetica, sans-serif">add</font>(const Complex&amp; c)
+
+};
+
+ex1.cpp</font></pre>
+    </td>
+    <td width="42%" height="220"> 
+      <pre>兩個物件相加<font face="Arial, Helvetica, sans-serif">:</font></pre>
+      <pre><font face="Arial, Helvetica, sans-serif">Comlex a(1,2); // 1+2i
+Complex b(3,2); // 3+2i
+
+Complex c=<font color="#00FF66" size="5" face="Arial, Helvetica, sans-serif">a.add(b);
+</font>
+</font>能不能使用  
+         <font face="Arial, Helvetica, sans-serif">c= a+b ???</font></pre>
+      <p>&nbsp;</p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p><table width="75%" border="1" height="141">
+  <tr> 
+    <td> 
+      <pre>我們希望能這樣操作
+  <font face="Arial, Helvetica, sans-serif">Complex a(3,2);
+    Complex b(1,3);
+       ...
+    Complex c=a+b</font>
+
+
+</pre>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h2> 使用運算子覆載就可以完成</h2>
+<table width="75%" border="1">
+  <tr>
+    <td width="58%" height="239"> 
+      <p>答案:</p>
+      <pre> <font face="Arial, Helvetica, sans-serif"> <font color="#FF00FF" size="5" face="Arial, Helvetica, sans-serif">operator</font> op (argument-list)
+   
+
+ Complex <font color="#00FF00"><font size="5">operator</font>+</font>(const Complex &amp;b)
+{
+         return Complex(re+b.re,im+b.im);
+}
+</font>定義 <font face="Arial, Helvetica, sans-serif">Compler operator</font> 加的動作
+</pre>
+    </td>
+    <td width="42%" height="239"> 
+      <p>* op 必須為 C++所定義的運算子</p>    
+      <p> 如 (+,-,*,/ ...etc )</p>    
+      <p></p>
+      <pre><font face="Arial, Helvetica, sans-serif">*  Complex a(3,2);
+    Complex b(1,3);
+    Complex <font color="#00FF00">c=a+b
+
+</font><font color="#00FF00" size="5">c=a+b </font></font><font color="#00FF00" size="5">其實就是呼叫
+</font><font color="#00FF00">
+</font><font face="Arial, Helvetica, sans-serif" color="#00FF00" size="5">c=a.operator+(b);</font></pre>
+      <pre>完整程式範例<font face="Arial, Helvetica, sans-serif">: OperatorAdd.dsw</font></pre>
+    </td>
+  </tr>
+</table>
+<p>下標的例子 (類似陣列的方式操作物件)</p>    
+<table width="75%" border="1">
+  <tr>
+        <td> 
+            <pre><font face="Arial, Helvetica, sans-serif"> Complex a(2,3),b(3,4);
+ Complex c=a+b;</font></pre>
+            <pre><font face="Arial, Helvetica, sans-serif"> double <font color="#00FF33">cRE=c[0]</font>; // cRE=5
+ double <font color="#00FF33">cIM=c[1]</font>;  // cIM=7</font></pre>
+            <pre><font face="Arial, Helvetica, sans-serif">
+</font>
+</pre>
+    </td>
+        <td> 
+            <pre><font face="Arial, Helvetica, sans-serif">// </font>下標的範例
+<font face="Arial, Helvetica, sans-serif">class <font color="#CC99FF">Complex</font> {
+
+   	double<font color="#00FF00"> <font size="5">operator[]</font></font>(int i)
+ 	{
+		
+	    	if(i==0)
+		    	return re;
+	    	else
+	      	if(i==1)
+		    	return im;
+	    	else
+	    	{
+		    	cout&lt;&lt;&quot;error\n&quot;;
+		    	exit(1);
+	    	}</font></pre>
+            <pre><font face="Arial, Helvetica, sans-serif">     }
+}</font></pre>
+            <pre>完整程式範例<font face="Arial, Helvetica, sans-serif">: </font>OperatorSubscript.dsw
+</pre>
+        </td>
+  </tr>
+</table>
+<p>// 邏輯等於 (==) 的例子</p>    
+<table width="706" border="1">
+  <tr>
+        <td width="279"> 
+            <p>Complex a(2,3),b(3,4);</p>    
+            <pre><font face="Arial, Helvetica, sans-serif">// </font>邏輯等於  <font face="Arial, Helvetica, sans-serif">(==) </font>範例
+<font color="#00FF33">	</font><font face="Arial, Helvetica, sans-serif"><font color="#00FF33">if(a==b)</font>
+		cout&lt;&lt;&quot;a</font>等於<font face="Arial, Helvetica, sans-serif">b&quot;&lt;&lt;endl;
+	else
+		cout&lt;&lt;&quot;a</font>不等於<font face="Arial, Helvetica, sans-serif">b&quot;&lt;&lt;endl;</font></pre>
+            <pre><font face="Arial, Helvetica, sans-serif">
+</font></pre>
+    </td>
+        <td width="411">
+            <pre><font face="Arial, Helvetica, sans-serif"> 	// </font>邏輯等於  <font face="Arial, Helvetica, sans-serif">(==) </font>範例
+                <font face="Arial, Helvetica, sans-serif">bool <font color="#00FF33">operator==(Complex &amp;b)</font>
+                 	{
+                 		if(re==b.re &amp;&amp; im==b.im)
+                 			return true;
+                 		else
+                 			return false;
+                 		
+                 	}</font></pre>
+            <pre>完整程式範例<font face="Arial, Helvetica, sans-serif">: </font>OperatorEqu.dsw</pre>
+        </td>
+  </tr>
+</table>
+<p>// +=的範例</p>    
+<table width="75%" border="1">
+  <tr>
+        <td width="51%"> 
+            <pre><font face="Arial, Helvetica, sans-serif">Complex a(2,3),b(3,4);
+a+=b;
+</font></pre>
+    </td>
+        <td width="49%"> 
+            <pre><font face="Arial, Helvetica, sans-serif">void <font color="#00FF00">operator+=(Complex &amp;b)</font>
+	{
+		re=re+b.re;
+		im+=b.im;
+	}</font></pre>
+    </td>
+  </tr>
+</table>
+<p>* 你能為Complex寫一個 乘法的範例嗎?</p>    
+<p>&nbsp;</p>
+<h2>2.&nbsp; friend 函式也可以完成</h2>   
+<table width="75%" border="1">
+  <tr>
+    <td width="69%"> 
+      <pre><font face="Arial, Helvetica, sans-serif">* </font>一個 <font face="Arial, Helvetica, sans-serif">class</font>的好朋友 可以自由的取用私
+人物品
+
+<font face="Arial, Helvetica, sans-serif">*</font><font size="5" color="#FFFF00"><b>利用 <font face="Arial, Helvetica, sans-serif">friend</font> 函式 覆載運算子</b></font>
+
+<font face="Arial, Helvetica, sans-serif">class Complex
+{
+     double re,im;
+     public:
+             ...
+     <font color="#00FF66">//</font></font><font color="#00FF66">宣告 </font><font face="Arial, Helvetica, sans-serif" color="#00FF66">operator+ </font><font color="#00FF66">是 </font><font face="Arial, Helvetica, sans-serif" color="#00FF66">Complex</font><font color="#00FF66">的好朋友</font>
+    <font face="Arial, Helvetica, sans-serif"><font color="#FF00FF" size="5" face="Arial, Helvetica, sans-serif">friend</font> Complex operator+(Complex &amp;a,Complex &amp;b);
+}
+<font color="#00FF33">//</font></font><font color="#00FF33">定義 </font><font face="Arial, Helvetica, sans-serif" color="#00FF33">operator+</font><font color="#00FF33">的內容</font>
+<font face="Arial, Helvetica, sans-serif">Complex operator+(Complex &amp;a,Complex &amp;b)
+{
+	return Complex(a.re+b.re,a.im+b.im);
+}
+
+</font>完整程式範例<font face="Arial, Helvetica, sans-serif">: ex3friend.dsw</font></pre>
+    </td>
+    <td width="31%"> 
+      <pre><font face="Arial, Helvetica, sans-serif">  Complex a(2,3),b(3,4);        </font></pre>
+      <pre><font face="Arial, Helvetica, sans-serif">  Complex c=a+b;</font></pre>
+      <pre>　</pre>
+    </td>
+  </tr>
+</table>
+<h3>那些情況下非得用到friend?</h3>
+<table width="75%" border="1">
+  <tr> 
+    <td width="65%"> 
+      <pre><font face="Arial, Helvetica, sans-serif">c3 = c1 + 3.14 //</font>呼叫 <font face="Arial, Helvetica, sans-serif">c1.operator+(const double d)
+
+</font>但是
+      <font face="Arial, Helvetica, sans-serif">c3= 3.14 + c1    // </font><font color="#FF00FF" size="5">有問題<font face="Arial, Helvetica, sans-serif">. </font>因為<font face="Arial, Helvetica, sans-serif">3.14</font>不是物件</font>
+
+利用 
+            <font face="Arial, Helvetica, sans-serif">friend Complex operator+(const double d,Complex &amp;b); </font></pre>
+    </td>
+  </tr>
+</table>
+<p>易錯的情況</p>
+<table width="89%" border="1">
+  <tr> 
+    <td width="69%"> 
+      <pre><font face="Arial, Helvetica, sans-serif">1. </font>若使用 <font face="Arial, Helvetica, sans-serif">friend oveloading operator,</font>則</pre>
+      <pre> <font face="Arial, Helvetica, sans-serif">int operator+(int a,int b)  // error 
+  {</font>
+      return (a+b);
+ }
+
+Ex4ErrorDemo.cpp
+
+</pre>
+    </td>
+    <td width="31%"> 
+      <p>* 參數列<font color="#FF00FF">一定要有一個物件</font></p>   
+    </td>
+  </tr>
+  <tr> 
+    <td width="69%"> 
+      <pre><font face="Arial, Helvetica, sans-serif">2. </font>不允許覆載<font color="#FFFF00">不存在</font>的運算子</pre>
+      <pre> <font face="Arial, Helvetica, sans-serif">// error 
+  int operator<font color="#FF00FF" size="5" face="Arial, Helvetica, sans-serif">$</font>( ... );</font></pre>
+    </td>
+    <td width="31%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="69%"> 
+      <pre><font face="Arial, Helvetica, sans-serif"><font color="#FFFF00" size="5">3. </font></font><font size="5" color="#FFFF00">下列運算子只能放在<font face="Arial, Helvetica, sans-serif">class</font>內</font><font face="Arial, Helvetica, sans-serif"><font color="#FFFF00" size="5">,</font>
+    </font>不能用<font face="Arial, Helvetica, sans-serif">friend</font>實作
+
+    <font face="Arial, Helvetica, sans-serif">(1) =    </font>指定運算子
+    <font face="Arial, Helvetica, sans-serif">(2) ()    </font>函式呼叫
+    <font face="Arial, Helvetica, sans-serif">(3) [ ]    </font>下標
+    <font face="Arial, Helvetica, sans-serif">(4) -&gt;    member access arrow operator</font></pre>
+      </td>
+    <td width="31%"> 見 Ex5Note</td>    
+  </tr>
+</table>
+<p>請你用 friend的方式,為 Complex寫一個 除法 運算子</p>    
+<pre><b><font face="Arial, Helvetica, sans-serif">ex:</font></b></pre>
+<h4><font face="Arial, Helvetica, sans-serif"><b>   &nbsp;&nbsp; a= 3 + 4i<br>   
+<br>
+&nbsp;&nbsp; b= 5 + 6i<br>   
+<br>
+&nbsp;&nbsp; a/b= (3+4i)/(5+6i)&nbsp;&nbsp; = (3+4i)(5-6i) /(5+6i)(5-6i)&nbsp;    
+=&nbsp; (39+2i) / 61</b></font></h4>   
+<p>　</p>
+<p>　</p>
+<h2 align="center">3. 物件的資料型態轉換</h2>  
+<hr>
+<p align="left">　</p>
+<table width="75%" border="1">
+  <tr> 
+    <td> 
+      <pre><font face="Arial, Helvetica, sans-serif">C++ </font>自動轉換<font face="Arial, Helvetica, sans-serif">Type</font>的情況
+
+      <font face="Arial, Helvetica, sans-serif">int Integer=3.14        // Integer =3    &lt;</font>浮點數型態 <font face="Arial, Helvetica, sans-serif">3.14 </font>自動轉換成 整數 <font face="Arial, Helvetica, sans-serif">3&gt; (</font>無條件捨去法<font face="Arial, Helvetica, sans-serif">)</font></pre>
+      <pre><font face="Arial, Helvetica, sans-serif">
+          double Var= 4;          // Var =4.0     &lt; </font>整數 <font face="Arial, Helvetica, sans-serif">4 </font>自動轉換成 浮點數型態<font face="Arial, Helvetica, sans-serif">&gt;
+          </font></pre>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<hr>
+<h4 align="left">我們要解決的問題是:</h4>
+<h4 align="left">1. <font face="Arial, Helvetica, sans-serif">Complex a=3    
+;&nbsp;&nbsp; //  
+</font>怎麼辦 <font face="Arial, Helvetica, sans-serif"> ??   
+</font></h4>
+<h4 align="left"><font face="Arial, Helvetica, sans-serif">2. Complex    
+a(3,4);&nbsp;&nbsp;&nbsp; </font></h4>
+<h4 align="left"><font face="Arial, Helvetica, sans-serif">&nbsp;&nbsp;&nbsp;&nbsp; 
+double value=a;&nbsp;&nbsp;&nbsp;&nbsp; // </font><font color="#FFFF00" size="4">能轉換嗎<font face="Arial, Helvetica, sans-serif">?   
+(</font>只能傳回一個值放到value的記憶體<font face="Arial, Helvetica, sans-serif">)</font></font></h4>
+<h4 align="left"><font face="Arial, Helvetica, sans-serif" size="4">3 </font><font color="#00FFFF">Class 之間的互轉</font></h4>    
+<hr>
+<p>　</p>
+<table width="78%" border="1">
+  <tr> 
+    <td height="294" width="50%"> 
+      <pre><font face="Arial, Helvetica, sans-serif"> Complex a=3 ;   // </font>怎麼辦 <font face="Arial, Helvetica, sans-serif">??
+</font></pre>
+    </td>
+    <td height="294" width="50%"> 
+      <p>&lt;解答&gt;</p>
+      <pre>利用 <font face="Arial, Helvetica, sans-serif">class </font>的建構子</pre>
+      <pre><font face="Arial, Helvetica, sans-serif">class Complex
+{
+             .... </font></pre>
+      <pre><font face="Arial, Helvetica, sans-serif">  public:
+         <font color="#00FF33">Complex(int i)</font>
+          {
+                re=i;
+                im=0;
+          }
+}</font></pre>
+      <pre>完整程式範例<font face="Arial, Helvetica, sans-serif">:IntToComplex.dsw
+</font></pre>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%" colspan="2"> 
+      <p>看看那些指令會呼叫 <font color="#00FF33">Complex(int i)</font> 建構子</p>   
+      <p><font face="Arial, Helvetica, sans-serif">(1) Complex a(1234);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+      // </font>一般建構物件的方式會呼叫  
+      物件的建構子初始化物件<font face="Arial, Helvetica, sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></p>  
+      <p>(2) Complex a=Complex(1234);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p> 
+      <p>(3)<font color="#FF00FF"> Complex a= 1234;</font></p> 
+      &nbsp; 
+    </td>
+  </tr>
+</table>
+<h4><font color="#00FFFF">另一種情況: Complex轉換為 double</font></h4>    
+<table width="75%" border="1">
+  <tr> 
+    <td> 
+      <h4><font face="Arial, Helvetica, sans-serif"> &nbsp;Complex a(3,4);<br>   
+      <br>
+      &nbsp;double value=a;&nbsp;&nbsp;&nbsp;&nbsp; // </font><font color="#FFFF00" size="4">能轉換嗎<font face="Arial, Helvetica, sans-serif">?    
+      (</font>只能傳回一個值<font face="Arial, Helvetica, sans-serif">)</font></font></h4>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="91%" border="1">
+  <tr> 
+    <td width="64%"> 
+      <p>&lt;解答&gt;<font color="#FFFF00" size="5"><b> 
+      我們自己定義要傳回哪一個值!!</b></font></p> 
+      <pre>利用轉形函數<font face="Arial, Helvetica, sans-serif">:
+            <font color="#00FF00"> operator </font></font><font color="#00FF00">型態</font><font face="Arial, Helvetica, sans-serif"><font color="#00FF00">();</font>
+
+</font>如<font face="Arial, Helvetica, sans-serif">:
+        // Complex</font>轉換為 <font face="Arial, Helvetica, sans-serif">double </font>的範例
+	<font face="Arial, Helvetica, sans-serif">operator <font color="#FF0000">double</font>()                      &lt;<font color="#00FFFF"> </font></font><font color="#00FFFF">注意</font><font face="Arial, Helvetica, sans-serif">: </font>這裡沒有宣告<font color="#FF00FF">傳回值型態</font><font face="Arial, Helvetica, sans-serif">&gt;
+	{
+		return re;                   // </font>我們定義傳回的一個值是<font color="#00FF66">實數成員</font>
+	<font face="Arial, Helvetica, sans-serif">}</font></pre>
+    </td>
+    <td width="57%"> 
+      <pre><font face="Arial, Helvetica, sans-serif">double dValue=a;  // Complex</font>轉換為 <font face="Arial, Helvetica, sans-serif">double </font>的範例
+
+
+<font face="Arial, Helvetica, sans-serif">Ex6Transfer.cpp</font></pre>
+    </td>
+  </tr>
+  <tr>
+    <td width="64%">
+      <p>幾個限制:</p>
+      <p>(1) 轉換函數必須定義在 <font face="Arial, Helvetica, sans-serif"> class</font>中</p>    
+      <p><font face="Arial, Helvetica, sans-serif">(2) </font> <font color="#FF00FF"> 不可有傳回值</font><font face="Arial, Helvetica, sans-serif">, </font></p>   
+      <pre><font face="Arial, Helvetica, sans-serif">       void operator double(); // error
+
+(3) </font>不可有參數列
+  </pre>
+      </td>
+    <td width="57%">&nbsp;</td>
+  </tr>
+</table>
+<p>*請你幫 Complex class 建立一個能使</p>    
+<h4> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font face="Arial, Helvetica, sans-serif">        Complex</font>轉換為 <font face="Arial, Helvetica, sans-serif">        int&nbsp;    
+</font>的 轉換函數<font face="Arial, Helvetica, sans-serif">!</font></h4>   
+<p>&nbsp;</p>
+<h4><font color="#00FFFF">Class 之間的互轉</font></h4>    
+<table width="75%" border="1">
+  <tr>
+    <td width="60%"> 
+      <h4><font face="Arial, Helvetica, sans-serif">class B<br>   
+      {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...&nbsp;<br>   
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public:<br>   
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+      B(double i);&nbsp;<br>   
+      };<br>
+      class Complex<br>   
+      {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br>   
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pulbic:<br>   
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+      ....<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#00FF00">&nbsp; 
+      operator B()</font><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>   
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+      return B(re);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //</font>轉換為<font face="Arial, Helvetica, sans-serif">B</font></h4>   
+      <pre>     }
+}   </pre>
+    </td>
+    <td width="40%"> 
+      <pre><font face="Arial, Helvetica, sans-serif">Complex a=3; 
+B b=a;
+
+
+</font>範例<font face="Arial, Helvetica, sans-serif">: Ex6Transfer.cpp</font></pre>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p align="right">井民全 debut.cis.nctu.edu.tw/~ching</p>  
+<p>&nbsp;</p>
+<h2>&nbsp;</h2>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+
+</html>
+

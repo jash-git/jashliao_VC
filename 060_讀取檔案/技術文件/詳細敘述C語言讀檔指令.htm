@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0051)http://java.csie.nctu.edu.tw/~deryann/paper/CIO.htm -->
+<HTML><HEAD><TITLE></TITLE>
+<META http-equiv=Content-Type content="text/html; charset=big5">
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY background=詳細敘述C語言讀檔指令.files/bg-sora2f.gif>
+<P><FONT color=#ffffff><BR>作者: thinking (風) 看板: C<BR>標題: Re: 關於開檔讀檔......<BR>時間: 
+Mon Feb 4 23:29:03 2002</FONT></P>
+<P><FONT color=#ffffff>我有一些以前找到的資料,po上來;有需要的話就看一下!<BR>第七章 檔案輸出輸入</FONT></P>
+<P><FONT color=#ffffff>7 - 1 兩種檔案模式</FONT></P>
+<P><FONT color=#ffffff>C++ 語言本身並沒有提供輸出輸入的敘述，所有輸出輸入的工作均依賴函數庫所提供的輸出輸入函數，要使用 C++ 
+輸出輸入函數必需了解輸出入檔案的特性、輸出入的方法(I/O Method) 與輸出入函數的層次(Level of I/O)。</FONT></P>
+<P><FONT color=#ffffff>檔案可分為兩種模式：</FONT></P>
+<P><FONT color=#ffffff>(1)文字模式檔(Text Mode)</FONT></P>
+<P><FONT color=#ffffff>(2)二進位模式檔(Binary Mode)</FONT></P>
+<P><FONT color=#ffffff>(a)對新行(New Line)即 "\n" 的轉換不同</FONT></P>
+<P><FONT color=#ffffff>Text："\n"---&gt; ASCII 10---&gt;輸出---&gt; 
+CR/LF(13/10)</FONT></P>
+<P><FONT color=#ffffff>"\n"---&gt; ASCII 10&lt;---輸入&lt;---- 
+CR/LF(13/10)</FONT></P>
+<P><FONT color=#ffffff>Binary："\n"---&gt; LF(10) &lt;-----&gt; LF(10) 
+輸出輸入</FONT></P>
+<P><FONT color=#ffffff>(b)對檔案結束(EOF End-Of-File) 的偵測不同</FONT></P>
+<P><FONT color=#ffffff>文字模式檔---&gt;檔案長度達到或讀到 ctrl-z</FONT></P>
+<P><FONT color=#ffffff>二進位模式檔---&gt;檔案長度達到</FONT></P>
+<P><FONT color=#ffffff>7 - 2 兩種輸出輸入的方法</FONT></P>
+<P><FONT color=#ffffff>檔案輸出輸入的方法：</FONT></P>
+<P><FONT color=#ffffff>(1)文字格式(Text Format)輸出入</FONT></P>
+<P><FONT color=#ffffff>(2)二進位格式(Binary Format)輸出入</FONT></P>
+<P><FONT color=#ffffff>文字資料： ASCII 碼儲存</FONT></P>
+<P><FONT color=#ffffff>數字資料：以二進位碼儲存。</FONT></P>
+<P><FONT color=#ffffff>當文字資料輸出時不管其輸出的方法是文字格式或二進位格式都一樣，為文字碼，不用轉換。</FONT></P>
+<P><FONT 
+color=#ffffff>數字資料一般為二進位儲存，若用二進位的輸出入方法最為直接但是資料則不易看懂，若用文字方法輸出入則必需先將二進位的儲存資料轉為十進位再轉為ASCII 
+的文字碼再輸出。</FONT></P>
+<P><FONT color=#ffffff>例：一整數在記憶體中佔有兩個位元組</FONT></P>
+<P><FONT color=#ffffff>7----&gt;0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 ----&gt; 0X 00 
+07</FONT></P>
+<P><FONT color=#ffffff>127----&gt;0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 ----&gt; 0X 
+00 7F</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>二進位方法輸出： 7 --&gt; 00 07</FONT></P>
+<P><FONT color=#ffffff>127 --&gt;00 7F</FONT></P>
+<P><FONT color=#ffffff>文字方法輸出： 7 --&gt; 37(ASCII)</FONT></P>
+<P><FONT color=#ffffff>127 --&gt;31 32 37(ASCII)</FONT></P>
+<P><FONT color=#ffffff>程式處理過程的過渡資料則一般採用二進位的輸出入方法，可節省磁碟空間與執行時間。</FONT></P>
+<P><FONT color=#ffffff>若輸出入資料是供人閱讀則採用文字格式的輸出入方法。</FONT></P>
+<P><FONT 
+color=#ffffff>文字輸出入格式或是二進位輸出入格式的採用，則決定於所使用的輸出入函數是文字格式或是二進位格式。</FONT></P>
+<P><FONT color=#ffffff>基本上兩種檔案模式與兩種輸出入方法，此二者可以形成四種搭配即：</FONT></P>
+<P><FONT color=#ffffff>Text Formart --&gt; Text Mode File</FONT></P>
+<P><FONT color=#ffffff>Text Format --&gt; Binary Mode File</FONT></P>
+<P><FONT color=#ffffff>Binary Format --&gt; Text Mode File</FONT></P>
+<P><FONT color=#ffffff>Binary Format --&gt; Binary Mode File</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>在 C++ 語言中此四種搭配都是合法的，但是在某些情況下檔案的資料可能會出問題。</FONT></P>
+<P><FONT color=#ffffff>例：</FONT></P>
+<P><FONT color=#ffffff>Binary Format --&gt; Text Mode File</FONT></P>
+<P><FONT color=#ffffff>0X10 --&gt; 0X13 + 0X10</FONT></P>
+<P><FONT color=#ffffff>數字 --&gt; 控制碼</FONT></P>
+<P><FONT color=#ffffff>0X26 --&gt; EOF</FONT></P>
+<P><FONT color=#ffffff>Text Format --&gt; Binary Mode File</FONT></P>
+<P><FONT color=#ffffff>0X10 --&gt; 0X10</FONT></P>
+<P><FONT color=#ffffff>Not 0X13+0X10</FONT></P>
+<P><FONT color=#ffffff>建議使用：</FONT></P>
+<P><FONT color=#ffffff>文字格式 --&gt;文字模式檔</FONT></P>
+<P><FONT color=#ffffff>二進位格式 --&gt;二進位模式檔</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>7 - 3 兩種輸出輸入的層次</FONT></P>
+<P><FONT color=#ffffff>兩種層次的輸出入函數：</FONT></P>
+<P><FONT color=#ffffff>(1)標準輸出入(Standard I/O)或</FONT></P>
+<P><FONT color=#ffffff>資料流輸出入(Stream I/O)</FONT></P>
+<P><FONT color=#ffffff>(2)低層次的輸出入函數</FONT></P>
+<P><FONT color=#ffffff>稱之為系統輸出入(Syatem I/O)。</FONT></P>
+<P><FONT 
+color=#ffffff>高層次的輸出入是所提供的輸出入函數提供較多的服務，所有有關輸出入檔案的處理、資料的轉換、緩衝區(Buffer)</FONT></P>
+<P><FONT 
+color=#ffffff>的管理等工作均是輸出入函數處理，對使用者而言若是輸出入資料是文字只要由輸出入函數和輸出入設備建立管道後，去讀寫即可。</FONT></P>
+<P><FONT color=#ffffff>系統輸出入則是屬於較低階的使用法，使用者必需自己作緩衝區的管理、資料的轉換等工作。</FONT></P>
+<P><FONT color=#ffffff>此兩種輸出入層次仍是決定於使用者使用那個函數。</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>7 - 4 開檔函數--檔案模式與檔案輸出入屬性的決定</FONT></P>
+<P><FONT color=#ffffff>所有的標準輸出入函數均再 stdio.h的表頭檔中作函數原型宣告, 
+因此要使用這些函數必需先引入此表頭檔。</FONT></P>
+<P><FONT color=#ffffff>開檔函數的格式為:</FONT></P>
+<P><FONT color=#ffffff>FILE *fopen("file_name","attribute");</FONT></P>
+<P><FONT color=#ffffff>fopen 函數為標準輸出入的開檔函數，其需要兩個字串參數：</FONT></P>
+<P><FONT color=#ffffff>(1)第一個是檔案名稱字串</FONT></P>
+<P><FONT color=#ffffff>(2)第二個是檔案屬性字串。</FONT></P>
+<P><FONT color=#ffffff>當開檔成功後 fopen 會傳回指向 FILE 結構的指標變數，FILE 結構是在 stdio.h 
+中宣告的資料結構，此資料結構包含檔案的編號、緩衝區、檔案指標、與檔案屬性等資料。傳入的檔案參數可以給全路徑的檔名。</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>檔案讀寫選擇及其屬性：</FONT></P>
+<P><FONT color=#ffffff>字 串 意 義</FONT></P>
+<P><FONT color=#ffffff>"r" 開一已存在的文字模式檔只供輸入用</FONT></P>
+<P><FONT color=#ffffff>"w" 開一新的文字模式檔只供輸出用</FONT></P>
+<P><FONT color=#ffffff>"a" 開一文字模式檔供由檔末附加資料</FONT></P>
+<P><FONT color=#ffffff>"rb" 開一已存在二進位模式檔只供輸入用</FONT></P>
+<P><FONT color=#ffffff>"wb" 開一二進位模式檔只供輸出用</FONT></P>
+<P><FONT color=#ffffff>"ab" 開一二進位模式檔供由檔末附加資料</FONT></P>
+<P><FONT color=#ffffff>"r+" 開一已存在文字模式檔供讀寫</FONT></P>
+<P><FONT color=#ffffff>"w+" 開一新文字模式檔供讀寫</FONT></P>
+<P><FONT color=#ffffff>"a+" 開一文字模式檔案供由檔末讀寫起</FONT></P>
+<P><FONT color=#ffffff>"rb+" 開一已存在二進位模式檔供讀寫</FONT></P>
+<P><FONT color=#ffffff>"wb+" 開一新二進位模式檔供讀寫</FONT></P>
+<P><FONT color=#ffffff>"ab+" 開一二進位模式檔案供由檔末讀寫起</FONT></P>
+<P><FONT color=#ffffff>上面的屬性中 b 表二進位模式檔案、 + 表示可讀寫檔案、w 是開新檔若檔案已存在則舊的資料會被蓋過、a 
+則由檔末附加資料。</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>#include &lt;iostream.h&gt;</FONT></P>
+<P><FONT color=#ffffff>#include &lt;stdio.h&gt;</FONT></P>
+<P><FONT color=#ffffff>#include &lt;process.h&gt;</FONT></P>
+<P><FONT color=#ffffff>int main()</FONT></P>
+<P><FONT color=#ffffff>{</FONT></P>
+<P><FONT color=#ffffff>FILE *fp;</FONT></P>
+<P><FONT color=#ffffff>int i;</FONT></P>
+<P><FONT color=#ffffff>if( (fp=fopen("inter.dat","w"))==NULL) {</FONT></P>
+<P><FONT color=#ffffff>cout&lt;&lt;"Can't open file";</FONT></P>
+<P><FONT color=#ffffff>exit(1);</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>for(i=0; i &lt;=127; ++i)</FONT></P>
+<P><FONT color=#ffffff>fprintf(fp,"%3d\n",i);</FONT></P>
+<P><FONT color=#ffffff>fclose(fp);</FONT></P>
+<P><FONT color=#ffffff>return 0;</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>程式 7-1 : 開檔函數 fopen() 的使用</FONT></P>
+<P><FONT color=#ffffff>當開檔不成功時 fopen 會送回 NULL 
+的指標，因此使用者幾乎在開檔的同時便要測試開檔是否成功，開檔成功時將所送回的 指向 FILE 的指標指定給一指向 FILE 
+的指標變數，而後的輸出入便直接作用於此指標變數即是作用</FONT></P>
+<P><FONT color=#ffffff>關檔函數 fclose, 其使用格式為:</FONT></P>
+<P><FONT color=#ffffff>int fclose(FILE *stream);</FONT></P>
+<P><FONT color=#ffffff>fclose 用來關閉一用 fopen 
+開起的檔案，將緩衝區的資料寫到磁碟或清除，將記憶體歸還給系統，並將原檔案編號還給系統。任何已開起的檔案在程式結束前均必需使用 fclose 
+予於關閉，否則有可能漏失資料與佔用記憶體?<BR>滷〞p。</FONT></P>
+<P><FONT color=#ffffff>當 fclose() 關檔成功時會傳回 0 的值，若失敗會傳回 EOF 即是 -1 
+的值。使用者可由傳回值判斷關檔是否成功。</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>7 - 5 檔案讀寫函數--輸出輸入方法的決定</FONT></P>
+<P><FONT color=#ffffff>二進位格式 文字格式</FONT></P>
+<P><FONT color=#ffffff>(數字) (文字)</FONT></P>
+<P><FONT color=#ffffff>標準輸出入 fread fscanf fgetc fgets</FONT></P>
+<P><FONT color=#ffffff>fwrite fprintf fputc fputs</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>7-5-1:字元輸出入--以文字格式對文字模式檔案的標準層次輸出入</FONT></P>
+<P><FONT color=#ffffff>其使用函數為:</FONT></P>
+<P><FONT color=#ffffff>int fgetc(FILE *stream);</FONT></P>
+<P><FONT color=#ffffff>int fputc(char c, FILE *stream);</FONT></P>
+<P><FONT color=#ffffff>fgetc 是由檔案讀入一字元，其傳回值為讀到的字元，若碰到檔案結束，則傳回 EOF。 putc 
+是將字元寫到檔案中，若成功的將字元寫到檔案中，則傳回寫入的字元，若失敗則傳回 EOF。</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>以下為一模擬 DOS 指令 type 的程式：</FONT></P>
+<P><FONT color=#ffffff>#include &lt;iostream.h&gt;</FONT></P>
+<P><FONT color=#ffffff>#include &lt;process.h&gt;</FONT></P>
+<P><FONT color=#ffffff>#include &lt;stdio.h&gt;</FONT></P>
+<P><FONT color=#ffffff>int main(int argc, char *argv[])</FONT></P>
+<P><FONT color=#ffffff>{</FONT></P>
+<P><FONT color=#ffffff>FILE *read;</FONT></P>
+<P><FONT color=#ffffff>char ch;</FONT></P>
+<P><FONT color=#ffffff>if( argc != 2) {</FONT></P>
+<P><FONT color=#ffffff>cout&lt;&lt;"Usage : utype file_name\n";</FONT></P>
+<P><FONT color=#ffffff>exit(1);</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>if( (read=fopen(argv[1],"r"))==NULL) {</FONT></P>
+<P><FONT color=#ffffff>cout&lt;&lt;"Can't open file 
+:"&lt;&lt;argv[1]&lt;&lt;"\n";</FONT></P>
+<P><FONT color=#ffffff>exit(1);</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>while( (ch = fgetc(read)) != EOF)</FONT></P>
+<P><FONT color=#ffffff>putchar(ch);</FONT></P>
+<P><FONT color=#ffffff>fclose(read);</FONT></P>
+<P><FONT color=#ffffff>return 0;</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>程式 7-2 : 字元輸出入函數</FONT></P>
+<P><FONT color=#ffffff>7-5-2 : 字串輸出入--以文字格式對文字模式檔案的標準層次輸出入</FONT></P>
+<P><FONT color=#ffffff>其使用函數為:</FONT></P>
+<P><FONT color=#ffffff>char *fgets(char *s, int n, FILE *stream);</FONT></P>
+<P><FONT color=#ffffff>int fputs(char *s, FILE *stream);</FONT></P>
+<P><FONT color=#ffffff>fgets() 由指定的檔案讀入 n-1 個字元(字串), 儲存到 s 的位址,當讀到正確資料時, 傳回值為 s 
+的指標變數值, 若碰到錯誤或檔案結束則傳回 NULL 的值。</FONT></P>
+<P><FONT color=#ffffff>fputs() 將字串輸出至指定的檔案, 若成功的輸出則傳回最後一個輸出的字元, 否則傳回 
+EOF。</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>#include &lt;iostream.h&gt;</FONT></P>
+<P><FONT color=#ffffff>#include &lt;process.h&gt;</FONT></P>
+<P><FONT color=#ffffff>#include &lt;stdio.h&gt;</FONT></P>
+<P><FONT color=#ffffff>int main(int argc, char *argv[])</FONT></P>
+<P><FONT color=#ffffff>{</FONT></P>
+<P><FONT color=#ffffff>FILE *read;</FONT></P>
+<P><FONT color=#ffffff>char buffer[80];</FONT></P>
+<P><FONT color=#ffffff>if( argc != 2) {</FONT></P>
+<P><FONT color=#ffffff>cout&lt;&lt;"Usage : utype file_name\n";</FONT></P>
+<P><FONT color=#ffffff>exit(1);</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>if( (read=fopen(argv[1],"r"))==NULL) {</FONT></P>
+<P><FONT color=#ffffff>cout&lt;&lt;"Can't open file 
+"&lt;&lt;argv[1]&lt;&lt;"\n";</FONT></P>
+<P><FONT color=#ffffff>exit(2);</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>while( fgets(buffer,80,read) != NULL)</FONT></P>
+<P><FONT color=#ffffff>fputs(buffer,stdout);</FONT></P>
+<P><FONT color=#ffffff>fclose(read);</FONT></P>
+<P><FONT color=#ffffff>return 0;</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>程式 7-3 : 字串輸出入函數</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>7-5-3 : 數值輸出入--以文字格式對文字模式檔案的標準層次輸出入</FONT></P>
+<P><FONT color=#ffffff>其使用函數為:</FONT></P>
+<P><FONT color=#ffffff>int fscanf(FILE *stream, const char 
+*format,address...);</FONT></P>
+<P><FONT color=#ffffff>int fprintf(FILE *stream, const char 
+*format,arg,...);</FONT></P>
+<P><FONT color=#ffffff>此二函數的功用和 printf() 與 scanf() 
+一樣，只是現在作用的對像是所開啟的檔案而不是標準輸出入檔案。使用者也可以使用此二檔案作用於標準輸出入檔案上而寫為：</FONT></P>
+<P><FONT color=#ffffff>fscanf(stdin, char *format,address,...);</FONT></P>
+<P><FONT color=#ffffff>fprintf(stdout, char *format,arg,...);</FONT></P>
+<P><FONT color=#ffffff>fscanf() 在成功的讀取資料後，會傳回其所讀到、轉換、與儲存的欄位數目，若檔案結束則傳回 
+EOF。</FONT></P>
+<P><FONT color=#ffffff>fprintf() 在輸出資料成功後會傳回其輸出的位元組數，若失敗則傳回 EOF。</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>#include &lt;iostream.h&gt;</FONT></P>
+<P><FONT color=#ffffff>#include &lt;process.h&gt;</FONT></P>
+<P><FONT color=#ffffff>#include &lt;stdio.h&gt;</FONT></P>
+<P><FONT color=#ffffff>int main()</FONT></P>
+<P><FONT color=#ffffff>{</FONT></P>
+<P><FONT color=#ffffff>FILE *output;</FONT></P>
+<P><FONT color=#ffffff>int i=0;</FONT></P>
+<P><FONT color=#ffffff>char ch='a';</FONT></P>
+<P><FONT color=#ffffff>float x=2.0;</FONT></P>
+<P><FONT color=#ffffff>if( (output=fopen("out.dat","w"))==NULL) {</FONT></P>
+<P><FONT color=#ffffff>cout&lt;&lt;"Can't open file out.dat\n";</FONT></P>
+<P><FONT color=#ffffff>exit(1);</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>fprintf(output,"%c",ch);</FONT></P>
+<P><FONT color=#ffffff>fprintf(output,"%d",i);</FONT></P>
+<P><FONT color=#ffffff>fprintf(output,"%f",x);</FONT></P>
+<P><FONT color=#ffffff>return 0;</FONT></P>
+<P><FONT color=#ffffff>}</FONT></P>
+<P><FONT color=#ffffff>程式 7-4 : 檔案數值輸出入函數</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>　</FONT></P>
+<P><FONT color=#ffffff>7-5-4 : 二進位輸出入--以二進位格式對二進位模式檔案輸出入</FONT></P>
+<P><FONT color=#ffffff>在標準函數輸出入層次的函數中亦提供二進位資料的輸出入函數，其使用函數為：</FONT></P>
+<P><FONT color=#ffffff>size_t fread(void *ptr, size_t size, size_t n, FILE 
+*stream);</FONT></P>
+<P><FONT color=#ffffff>size_t fwrite(const void *ptr, size_t size, size_t 
+n,</FONT></P>
+<P><FONT color=#ffffff>FILE *stream);</FONT></P>
+<P><FONT color=#ffffff>void *ptr 是資料讀入時存放的位置或是欲擖X資料存放的位址。</FONT></P>
+<P><FONT color=#ffffff>size_t 是定義為 unsigned int，size 是一筆輸出入資料的長度， n 
+是有幾筆資料要輸出入，stream 是輸出入的檔案。</FONT></P>
+<P><FONT color=#ffffff>fread()會傳回所讀資料的筆數，若失敗傳回值為 0； fwrite() 亦相同。</FONT></P>
+<P><FONT color=#ffffff>--<BR>I think,therefore I am 
+here.<BR>我思故我在&lt;笛卡兒&gt;<BR>--<BR>[1;31mO[1;32mr[1;33mi[1;34mg[1;35mi[1;36mn[1;31m:[1;36m&lt;不良牛牧場&gt; 
+[1;33mzoo.ee.ntu.edu.tw [1;32m(140.112.18.36)[m<BR>[1;32mWelcome to SimFarm 
+BBS [1;36m--[m [1;31mFrom : 
+[[mIP114.dialup.ntu.edu.tw[1;31m][m<BR></FONT></P>
+<P>&nbsp;</P></BODY></HTML>

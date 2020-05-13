@@ -1,0 +1,73 @@
+題目:
+1. 
+   把你陣列中的加法 減法function 用operator + 與 operator - 代替. 
+   如:   Matrix a(3,4),b(3,4); 
+         Matrix c=a+b;
+
+
+
+<解答>
+	為你的物件加入 + - * / 的功能,第一件事就是想到 operator
+所以你應該在你的 Matrix class 宣告式中加入下列的程式碼.
+
+	// Matrix.h 檔案
+	class Matrix
+	{
+	// .. 其他程式碼省略
+
+		Matrix* operator+(Matrix& BObject);		// <<-- 定義 + 
+		Matrix* operator-(Matrix& BObject);		// <<-- 定義 -
+		Matrix* operator*(Matrix& BObject);		// <<-- 定義 *
+		Matrix* operator/(Matrix& BObject);		// <<-- 定義 /
+	};
+
+接著,加入實作的部分.(這裡只實作 + 的部分,其他operator使用方式都一樣)
+
+	// Matrix.cpp 檔案
+	// 加法運算子
+	/*
+	   因為我們要實作的是 c=a+b, 所以operator+ method 是有傳回值
+	   這裡的傳回值設定為: Matrix* 型態
+	*/
+	Matrix* Matrix::operator+(Matrix& BObject)		
+	{
+	// Algorithm:
+	//	1. 建立一個結果陣列 C,用來存放加法的結果
+	//	2. 執行加法運算
+	//	3. 加法結果陣列C 的位址傳回去.
+
+		Matrix *C=new Matrix(Row,Col);		//	1.
+		for(int y=0;y<Row;y++)			//	2.
+			for(int x=0;x<Col;x++)
+				C->Buffer[y][x]=BObject.Buffer[y][x]+this->Buffer[y][x];
+		return C;				//	3.
+	}
+
+// 現在則是使用這個 operator的方法
+	// Main.cpp 
+ 
+	// operator + 的使用範例
+		// 範例一:
+		{
+		Matrix *A=new Matrix(2,3); 
+		Matrix *B=new Matrix(2,3);
+		Matrix *AddResult;
+
+		A->setData(1);
+		B->setData(2);
+		
+		AddResult=A->operator+(*B);		// AddResult=MyMatrix+MyMatrix2
+		AddResult->ShowData();			// 印出結果
+			
+		}
+		// 範例二:
+		{
+		Matrix A(2,3),B(2,3);
+		Matrix *C;
+		A.setData(567); B.setData(789);
+
+		C=A+B;					// 執行加法運算
+
+		C->ShowData();				// 印出結果
+		}
+

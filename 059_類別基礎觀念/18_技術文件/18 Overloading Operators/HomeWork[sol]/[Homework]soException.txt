@@ -1,0 +1,50 @@
+題目:
+2.
+   另外, 把例外處理加到你陣列物件中. 
+   如: 加入 索引範圍檢驗的功能. 等
+
+<解答>
+	首先,我們先定義一個錯誤物件, MatrixError,也就是被丟出來的錯誤物件!
+ 
+	// 自訂陣列錯誤物件
+	class MatrixError{
+	public:
+		char* ErrMessage;		// 錯誤字串; 
+		MatrixError(char *ErrMessage);	// 建構子
+	};
+
+	若發生錯誤時,就丟出這個錯誤物件!
+	如:
+		if(錯誤)
+		{
+			throw new MatrixError(" 有錯誤喔!! ");
+		}
+	
+	// 好了! 為我們的陣列加入索引範圍檢驗的功能
+		void  Matrix::setData(int y,int x,int Data)
+		{
+
+			// 檢查是否操出存取範圍
+			if(y<Row && x<Col)
+				Buffer[y][x]=Data;
+	
+			else
+				throw new MatrixError("陣列操出索引範圍");
+		}
+
+	// 現在,測試一下這個功能
+	// Main.cpp
+
+		// 例外處理範例
+		cout << " 例外處理範例 " << endl;
+
+	
+		Matrix A1(2,3);
+		try{
+			A1.setData(3,3,123);
+		}
+		catch(MatrixError *e)
+		{
+			cout<< e->ErrMessage <<endl;
+		}
+

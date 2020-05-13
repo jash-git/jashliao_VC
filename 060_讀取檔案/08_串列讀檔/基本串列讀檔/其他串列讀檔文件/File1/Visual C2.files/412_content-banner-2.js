@@ -1,0 +1,1 @@
+document.write("<SCRIPT LANGUAGE=JavaScript1.1 SRC=http://vd.yesky.com/html/js/173.js><\/SCRIPT>"); 

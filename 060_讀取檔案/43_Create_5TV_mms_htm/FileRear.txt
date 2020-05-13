@@ -1,0 +1,165 @@
+			objPlayer.PlayMovie(vFileName);	
+		}
+		var vCurrentTime;
+		var vTotalTime;	
+		var vRepeat;
+		var vState;
+		var i=0;
+		function CheckPlayState()
+		{
+			vCurrentTime = objPlayer.GetCurrentTime();
+			vTotalTime = objPlayer.GetTotalTime();			
+			vState = objPlayer.PlayState;
+			vRepeat = i;		
+			divInfo.innerHTML = "Keycode = " + vKeyCode + "<br>" + 
+								"Repeat = " + vRepeat + " // State = " + vState + "<br>" + 
+			                    "Time = " + vCurrentTime + " // " + vTotalTime + "  (sec)" + "<br>" +
+			                    "Volume = " + objPlayer.InitVolume + "<br>" +
+			                    "FileName = " + vFileName;
+			                    
+			if (vCurrentTime == vTotalTime)                    
+			{
+				i++;
+			}
+		}
+		
+		var vKeyCode;		
+		var vTime;
+		var vSeekTime = 600;
+		
+		function onRemoteEvent()
+		{
+			vKeyCode = event.keyCode;
+			switch (vKeyCode)
+			{	
+				case 48:
+					objPlayer.SetRate(0.5);
+					break;
+					
+				case 49:				
+					objPlayer.SetRate(2);					
+					break;
+					
+				case 50:
+					objPlayer.SetRate(4);
+					break;
+					
+				case 51:
+					objPlayer.SetRate(8);
+					break;		
+					
+				case 52:
+					objPlayer.SetRate(-2);
+					break;
+					
+				case 53:
+					objPlayer.SetRate(-4);
+					break;
+					
+				case 54:
+					objPlayer.SetRate(-8);
+					break;
+					
+				case 125: // Fullscreen
+					objPlayer.FullScreen();
+					ImgLogo.style.visibility = "hidden";
+					break;	
+				
+				case 130: //// Player Controls Previous
+					objPlayer.OsdShow = false;
+					objPlayer.SetRate(1);
+					vTime = vCurrentTime-vSeekTime;
+					if(vTime < 0)
+					{
+						vTime = vCurrentTime;
+					}	
+					objPlayer.SeekTime(vTime);
+					break;
+					
+				case 131: //// Player Controls Next
+					objPlayer.OsdShow = false;
+					objPlayer.SetRate(1);
+					
+					vTime = vCurrentTime+vSeekTime;
+					if(vTime > vTotalTime)
+					{
+						vTime = 0;
+					}
+					objPlayer.SeekTime(vTime);
+					break;
+						
+				case 173: //// Mute
+					objPlayer.OsdShow = true;
+					objPlayer.SoundMute();
+					break;
+					
+				case 174: //// Volume Down
+					objPlayer.OsdShow = true;
+					objPlayer.SoundDown();
+					break;	
+					
+				case 175: //// Volume Up
+					objPlayer.OsdShow = true;	
+					objPlayer.SoundUp();
+					break;
+							
+				case 176: //// Player Controls FastForward §ÖÂà
+					if(vCurrentTime>10)
+					{
+						//divTest.innerHTML = ">10";
+						//objPlayer.PlayPause();
+						objPlayer.SetRate(4);
+						//objPlayer.PlayPause();
+						objPlayer.OsdShow = true;	
+					}
+					break;	
+						
+				case 177: //// Player Controls FastReverse ºCÂà
+					if(vCurrentTime>10)
+					{
+						//objPlayer.PlayPause();
+						objPlayer.SetRate(-4);
+						//objPlayer.PlayPause();
+						objPlayer.OsdShow = true;
+					}
+					break;
+					
+				case 178: //// Player Controls Stop
+					objPlayer.OsdShow = true;
+					objPlayer.Stop();													
+					break ;	
+					
+				case 179: //// Player Controls Play / Pause
+					objPlayer.OsdShow = true;
+					objPlayer.PlayPause();
+					break;
+			}
+		}
+		
+		function LoadInit()	
+		{
+			PlayConfig();
+			setInterval("CheckPlayState()",1000);
+		}
+	
+		window.onload =  LoadInit;	
+		document.onkeydown = onRemoteEvent;
+		
+		</script>
+	</head>
+	<body ms_positioning="GridLayout">
+		<OBJECT id="objPlayer" style="Z-INDEX: 102; LEFT: 0px; VISIBILITY: hidden; POSITION: absolute; TOP: 0px"
+			classid="CLSID:745C9B74-1A0E-4309-BFF6-F16984B029BA" VIEWASTEXT>
+		</OBJECT>
+		<DIV id="divInfo" style="DISPLAY: inline; FONT-SIZE: 12pt; Z-INDEX: 101; LEFT: 24px; WIDTH: 500px; COLOR: black; POSITION: absolute; TOP: 360px; HEIGHT: 24px"
+			ms_positioning="FlowLayout"></DIV>
+		<!--
+		<DIV id="divTest" style="DISPLAY: inline; FONT-SIZE: 12pt; Z-INDEX: 103; LEFT: 296px; WIDTH: 232px; POSITION: absolute; TOP: 16px; HEIGHT: 29px"
+			ms_positioning="FlowLayout"></DIV>
+		-->
+		<!--
+		<IMG id="imgState" style="Z-INDEX: 102; LEFT: 208px; WIDTH: 200px; POSITION: absolute; TOP: 184px; HEIGHT: 160px"
+			height="160" alt="" src="http://192.168.0.11/STB810/State.gif" width="200">
+		-->
+	</body>
+</html>

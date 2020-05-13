@@ -1,0 +1,122 @@
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=big5">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content="text/html; charset=big5" http-equiv=Content-Type>
+<META content="MSHTML 5.00.3315.2870" name=GENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY bgColor=#ffffff>
+<DIV><FONT face=MingLiu size=2>Well, as we can see ...</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>You defined a matrix1 class ...</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>class matrix1:public 
+matrix&lt;T&gt;<BR>{</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>protected:<BR>&nbsp;int row,col;</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>public:<BR>&nbsp;matrix1(int row,int 
+col);<BR>&nbsp;~matrix1();<BR>&nbsp;matrix1 *operator +(matrix1 <FONT 
+color=#ff0000 size=5><STRONG>*matrixB</STRONG></FONT>);<BR>&nbsp;matrix1 
+*operator -(matrix1 *matrixB);<BR>&nbsp;matrix1 *operator *(matrix1 
+*matrixB);<BR>&nbsp;<BR>};</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 
+size=2>--------------------------------------------------</FONT></DIV>
+<DIV><FONT face=MingLiu size=2>Based on your design, you can use following 
+instructions to do operation + for this kind of objects.</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; matrix1 
+A(1,2),B(1,2);</FONT></DIV>
+<DIV><FONT face=細明體 size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; matrix1 
+*C=A+<FONT color=#ff0000 
+size=5><STRONG>&amp;</STRONG></FONT>B;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+&lt;===&gt; matrix *c= <FONT color=#ff0000 face=標楷體 
+size=5><STRONG>A.</STRONG></FONT>operator+(<FONT color=#ff0000 
+size=4><STRONG>&amp;</STRONG></FONT>B)</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>It's ok!&nbsp;&nbsp; ( Why &amp; ??: Since you define 
+the operator+&nbsp;method which needs a pointer type paramenter,<FONT 
+color=#ff0000 size=5><STRONG>*matrixB)</STRONG></FONT></FONT></DIV>
+<DIV><FONT face=細明體 size=2>Note:</FONT></DIV>
+<DIV><FONT face=細明體 
+size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+A <FONT color=#ff0000 size=6><STRONG>+ </STRONG><FONT color=#000000 
+size=2>&amp;</FONT></FONT>B&nbsp;&nbsp; &lt;===&gt;&nbsp; A <FONT color=#ff0000 
+size=5><STRONG>.operator+ </STRONG></FONT>(&amp;B)</FONT></DIV>
+<DIV><FONT face=細明體 
+size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+^^^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+^^^^^^^^^^^^^^^^^^^^</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=MingLiu size=2>Back to your problem.</FONT></DIV>
+<DIV><FONT face=細明體 size=2>You decalare two Matrix objects.</FONT></DIV>
+<DIV><FONT face=細明體 
+size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+matrix1&lt;int&gt; *A=new matrix1&lt;int&gt;(row,col);</FONT></DIV>
+<DIV><FONT face=細明體 size=2>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; matrix1&lt;int&gt; *B=new 
+matrix1&lt;int&gt;(row,col);</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>and use following instruct to do + 
+operation.</FONT></DIV>
+<DIV><FONT face=細明體 size=2><FONT face=MingLiu>&nbsp;&nbsp;&nbsp; 
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; matrix1&lt;int&gt; *C=A + B; // 
+&lt;&lt;---&nbsp;&nbsp; Error</FONT></FONT></DIV>
+<DIV><FONT face=細明體 size=2>There is a error on the instruction!</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>Did you remember the note:</FONT></DIV>
+<DIV><FONT face=細明體 size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A + B &lt;===&gt; 
+</FONT>&nbsp;<FONT face=細明體 size=2>A.operator+(B)</FONT></DIV>
+<DIV><FONT face=細明體 size=2>But you defined the variable A as a <FONT 
+color=#ff0000 size=5><STRONG>pointer </STRONG></FONT>type of matrix1&lt;int&gt;, 
+that is </FONT></DIV>
+<DIV><FONT face=細明體 
+size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; matrix1&lt;int&gt; 
+*A=new matrix1&lt;int&gt;(row,col);</FONT></DIV>
+<DIV><FONT face=細明體 size=2>You cannot use "<FONT color=#ff0000 
+size=5><STRONG>.</STRONG></FONT>" to reference a class member function but use 
+"<FONT color=#ff0000 size=5><STRONG>-&gt;</STRONG></FONT>" to reference 
+it.</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>That is why the "matrix1&lt;int&gt; 
+*C=A-&gt;operator+(B)" is work and "matrix1&lt;int&gt; *C=A+B " 
+don't.</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=MingLiu size=2>So the solution is that</FONT></DIV>
+<DIV><FONT face=細明體 
+size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+matrix1&lt;int&gt; *C=(*A)+B;</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>I had written a solutoin that was attached in this 
+message.</FONT></DIV>
+<DIV><FONT face=細明體 size=2>You can try it and find out the problem!</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=細明體 size=2>Good luck &amp; enjoy.</FONT></DIV>
+<DIV><FONT face=細明體 size=2>Jing. (井民全)</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV>----- Original Message ----- </DIV>
+<BLOCKQUOTE 
+style="BORDER-LEFT: #000000 2px solid; MARGIN-LEFT: 5px; MARGIN-RIGHT: 0px; PADDING-LEFT: 5px; PADDING-RIGHT: 0px">
+  <DIV 
+  style="BACKGROUND: #e4e4e4; FONT: 10pt 新細明體; font-color: black"><B>From:</B> 
+  <A href="mailto:lee_ct@myson.com.tw" title=lee_ct@myson.com.tw>LEE_CT</A> 
+  </DIV>
+  <DIV style="FONT: 10pt 新細明體"><B>To:</B> <A 
+  href="mailto:ching@debut.cis.nctu.edu.tw" 
+  title=ching@debut.cis.nctu.edu.tw>Jing</A> </DIV>
+  <DIV style="FONT: 10pt 新細明體"><B>Sent:</B> Sunday, February 24, 2002 3:29 
+  PM</DIV>
+  <DIV style="FONT: 10pt 新細明體"><B>Subject:</B> ask question</DIV>
+  <DIV><BR></DIV>
+  <DIV><FONT size=2>dear teacher</FONT></DIV>
+  <DIV><FONT size=2>I am 李金聰.</FONT></DIV>
+  <DIV><FONT size=2>Please check my homework.</FONT></DIV>
+  <DIV><FONT size=2>Why can't I use operator overloading?</FONT></DIV>
+  <DIV><FONT size=2>If I use: C=A-&gt;operator+(B):is O.K.</FONT></DIV>
+  <DIV><FONT size=2>If I use:C=A+B;it shows :can't add two 
+pointers,</FONT></DIV>
+  <DIV><FONT size=2>Thank you;</FONT></DIV>
+  <DIV><FONT size=2></FONT>&nbsp;</DIV>
+  <DIV><FONT size=2>Best 
+regards.&nbsp;&nbsp;</FONT></DIV></BLOCKQUOTE></BODY></HTML>
