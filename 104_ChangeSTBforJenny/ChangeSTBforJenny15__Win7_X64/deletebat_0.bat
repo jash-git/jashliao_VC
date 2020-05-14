@@ -1,0 +1,1 @@
+net use \\127.0.0.1\D$\NabroClient /delete >Delete_Ans0.txt

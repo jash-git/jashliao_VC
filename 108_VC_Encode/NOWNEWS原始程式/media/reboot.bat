@@ -1,0 +1,1 @@
+c:\WINDOWS\system32\shutdown.exe -r -t 10

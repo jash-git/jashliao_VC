@@ -1,0 +1,1 @@
+ffmpeg-new.exe -i z:\movies\%1 2>> length.txt
