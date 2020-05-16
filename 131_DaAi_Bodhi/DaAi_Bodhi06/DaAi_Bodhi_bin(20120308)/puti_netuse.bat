@@ -1,0 +1,1 @@
+net use \\192.168.0.66\puti "chwbnnoc123456"  /user:ad\puti
