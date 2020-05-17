@@ -1,0 +1,77 @@
+NFC UI元件自動縮放
+
+文件01:
+	資料來源:http://stackoverflow.com/questions/127514/resizing-controls-in-mfc
+
+	void CMyPane::OnSize(UINT nType, int cx, int cy)
+	{
+		m_wndEdit.SetWindowPos(NULL, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
+	}
+
+
+文件02:
+	資料來源:http://stackoverflow.com/questions/31053441/how-to-auto-resize-the-text-control-in-mfc
+	
+	void ChangeSize()//If font size is the same, and only text is different, then you should be able to reuse the old font:
+	{
+		CWnd* dlgItem = GetDlgItem(IDC_STATIC1);
+
+		if (!dlgItem)
+			return;
+
+		CString s;
+		dlgItem->GetWindowText(s);
+
+		CDC dc;
+		dc.CreateCompatibleDC(NULL);
+		dc.SelectObject(dlgItem->GetFont());
+
+		CRect r;
+		dlgItem->GetClientRect(&r);
+
+		if (s.Find('\n') < 0)
+			dc.DrawText(s, &r, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE | DT_EDITCONTROL);
+		else
+			dc.DrawText(s, &r, DT_CALCRECT | DT_NOPREFIX | DT_EDITCONTROL);
+
+		dlgItem->SetWindowPos(0, 0, 0, r.Width(), r.Height(), SWP_NOMOVE);
+	}
+	
+	
+	void ChangeSize()
+	/*
+	m_Font1 should be declared as member data and setup setup once, and created and cleaned up elsewhere. It think that's what you are doing.
+	Then you can draw text functions to find text size, and resize the control as follows
+	*/
+	{
+		CWnd* dlgItem = GetDlgItem(IDC_STATIC1);
+
+		if (!dlgItem)
+			return;
+
+		CString s;
+		dlgItem->GetWindowText(s);
+
+		CDC dc;
+		dc.CreateCompatibleDC(NULL);
+		//or just use CClientDC dc(this) if device context is available
+
+		dc.SelectObject(m_font);
+
+		CRect r;
+		dlgItem->GetClientRect(&r);
+
+		if (s.Find('\n') < 0)
+		{
+			//change width/height for single line text
+			dc.DrawText(s, &r, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE | DT_EDITCONTROL);
+		}
+		else
+		{
+			//change height for multiple-line text
+			dc.DrawText(s, &r, DT_CALCRECT | DT_NOPREFIX | DT_EDITCONTROL);
+		}
+
+		dlgItem->SetWindowPos(0, 0, 0, r.Width(), r.Height(), SWP_NOMOVE);
+		dlgItem->SetFont(m_font, 1);
+	}

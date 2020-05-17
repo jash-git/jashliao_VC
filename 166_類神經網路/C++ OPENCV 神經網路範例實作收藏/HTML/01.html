@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!-- saved from url=(0053)http://thomazmaia.com/pages/tutorials/mlpopencv3.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Thomaz Maia :: Tutorials</title>
+        
+        <link rel="stylesheet" href="./01_files/theme.css" type="text/css">
+	<style>
+	table {
+	font-family:Monospace;
+	    border-collapse: collapse;
+	    width: 50;
+	}
+	
+	td, th {
+	    border: 1px dashed #dddddd;
+	    text-align: center;
+	    padding: 2px;
+	}
+	
+	tr:nth-child(even) {
+	    background-color: #dddddd;
+	}
+	</style>        
+</head>
+
+<body>
+	<script src="./01_files/prism.js.下載"></script>		
+	<div id="wrap" style="width:850px">
+	    <div id="containerpage" style="width:850px">
+            <div class="entry">
+            	<header>
+            		<h1><a href="http://thomazmaia.com/pages/tutorials/mlpopencv3.html#" id="site-title"></a>  <a href="javascript:history.back()" id="page-title">MLP With OpenCV 3</a></h1>
+				</header>
+		        <article>
+				<!-- <img src="../../img/ann_training.png" align="middle" > -->
+				<h2>The problem</h2>
+				<p>This ANN works with 3-input XOR case. This is a classic non-linear problem that can't be solved with linear cassifiers. We have 3 input (A, B, C) and 2 output (0 or 1). Opencv uses <a href="http://docs.opencv.org/3.1.0/dc/dd6/ml_intro.html#ml_intro_ann" target="_blank">symmetrical sigmoid</a> (between -1 and 1) so we have "+1" for our true response and "-1" for false response.</p>
+				<p>XOR3 truth table:</p>
+				<table>
+				  <tbody><tr>
+				    <th>A</th>
+				    <th>B</th>
+				    <th>C</th>
+				    <th>OUT</th>
+				    <th>Target</th>
+				  </tr>
+				  <tr>
+				    <td>0</td>
+				    <td>0</td>
+				    <td>0</td>
+				    <td>0</td>
+				    <td>+1 -1</td>
+				  </tr>
+				  <tr>
+				    <td>0</td>
+				    <td>0</td>
+				    <td>1</td>
+				    <td>1</td>
+				    <td>-1 +1</td>
+				  </tr>
+				  <tr>
+				    <td>0</td>
+				    <td>1</td>
+				    <td>0</td>
+				    <td>1</td>
+				    <td>-1 +1</td>
+				  </tr>
+				  <tr>
+				    <td>0</td>
+				    <td>1</td>
+				    <td>1</td>
+				    <td>0</td>
+				    <td>+1 -1</td>
+				  </tr>
+				  <tr>
+				    <td>1</td>
+				    <td>0</td>
+				    <td>0</td>
+				    <td>1</td>
+				    <td>-1 +1</td>
+				  </tr>
+				  <tr>
+				    <td>1</td>
+				    <td>0</td>
+				    <td>1</td>
+				    <td>0</td>
+				    <td>+1 -1</td>
+				  </tr>
+				  <tr>
+				    <td>1</td>
+				    <td>1</td>
+				    <td>0</td>
+				    <td>0</td>
+				    <td>+1 -1</td>
+				  </tr>
+				  <tr>
+				    <td>1</td>
+				    <td>1</td>
+				    <td>1</td>
+				    <td>1</td>
+				    <td>-1 +1</td>
+				  </tr>
+				</tbody></table>
+				<h2>Topology</h2>
+				<ul>
+				<li> Input layer size: 3</li>
+				<li> Hidden layer size: 10</li>				
+				<li> outnput layer size: 2</li>				
+				</ul>				
+				<img src="./01_files/ann_topology.png" align="center">					
+				<h2>Show me the code!!</h2>
+				<pre class=" language-cpp"><code class=" language-cpp">
+<span class="token comment" spellcheck="true">//</span>
+<span class="token comment" spellcheck="true">//  main.cpp</span>
+<span class="token comment" spellcheck="true">//  MLPCV</span>
+<span class="token comment" spellcheck="true">//</span>
+<span class="token comment" spellcheck="true">//  Created by Thomaz Maia on 12/08/16.</span>
+<span class="token comment" spellcheck="true">//  Copyright © 2016 Thomaz Maia . All rights reserved.</span>
+<span class="token comment" spellcheck="true">//</span>
+
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;iostream&gt;</span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;opencv2/opencv.hpp&gt;</span></span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span> argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// Database config</span>
+    <span class="token keyword">const</span> <span class="token keyword">int</span> numInstances <span class="token operator">=</span> <span class="token number">8</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">int</span> numAttributes <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">int</span> numHiddenNeurons <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">int</span> numClasses <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// input XOR</span>
+    <span class="token keyword">float</span> data<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>  <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>  <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>  <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>  <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    cv<span class="token operator">::</span>Mat input <span class="token operator">=</span> cv<span class="token operator">::</span><span class="token function">Mat</span><span class="token punctuation">(</span>numInstances<span class="token punctuation">,</span> numAttributes<span class="token punctuation">,</span> CV_32FC1<span class="token punctuation">,</span> data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token operator">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">"Input layer:"</span> <span class="token operator">&lt;&lt;</span> std<span class="token operator">::</span>endl <span class="token operator">&lt;&lt;</span> input <span class="token operator">&lt;&lt;</span> std<span class="token operator">::</span>endl<span class="token punctuation">;</span>
+    
+    <span class="token comment" spellcheck="true">// output XOR</span>
+    <span class="token keyword">float</span> labels<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token number">1</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token number">1</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token number">1</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>  <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    cv<span class="token operator">::</span>Mat output <span class="token operator">=</span> cv<span class="token operator">::</span><span class="token function">Mat</span><span class="token punctuation">(</span>numInstances<span class="token punctuation">,</span> numClasses<span class="token punctuation">,</span> CV_32FC1<span class="token punctuation">,</span> labels<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token operator">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">"Output layer:"</span> <span class="token operator">&lt;&lt;</span> std<span class="token operator">::</span>endl <span class="token operator">&lt;&lt;</span> output <span class="token operator">&lt;&lt;</span> std<span class="token operator">::</span>endl<span class="token punctuation">;</span>
+    
+    <span class="token comment" spellcheck="true">// Configurate topology</span>
+    <span class="token keyword">float</span> layer<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>numAttributes<span class="token punctuation">,</span> numHiddenNeurons<span class="token punctuation">,</span> numClasses<span class="token punctuation">}</span><span class="token punctuation">;</span>
+    cv<span class="token operator">::</span>Mat layerSizes <span class="token operator">=</span> cv<span class="token operator">::</span><span class="token function">Mat</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> CV_32FC1<span class="token punctuation">,</span> layer<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token operator">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">"MLP topology: "</span> <span class="token operator">&lt;&lt;</span> layerSizes <span class="token operator">&lt;&lt;</span> std<span class="token operator">::</span>endl<span class="token punctuation">;</span>
+    
+    <span class="token comment" spellcheck="true">// Create ANN</span>
+    cv<span class="token operator">::</span>Ptr mlp <span class="token operator">=</span> cv<span class="token operator">::</span>ml<span class="token operator">::</span>ANN_MLP<span class="token operator">::</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mlp<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">setLayerSizes</span><span class="token punctuation">(</span>layerSizes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mlp<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">setActivationFunction</span><span class="token punctuation">(</span>cv<span class="token operator">::</span>ml<span class="token operator">::</span>ANN_MLP<span class="token operator">::</span>SIGMOID_SYM<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mlp<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">setTrainMethod</span><span class="token punctuation">(</span>cv<span class="token operator">::</span>ml<span class="token operator">::</span>ANN_MLP<span class="token operator">::</span>RPROP<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mlp<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">setTermCriteria</span><span class="token punctuation">(</span>cv<span class="token operator">::</span><span class="token function">TermCriteria</span><span class="token punctuation">(</span>cv<span class="token operator">::</span>TermCriteria<span class="token operator">::</span>MAX_ITER <span class="token operator">+</span> cv<span class="token operator">::</span>TermCriteria<span class="token operator">::</span>EPS<span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">,</span> <span class="token number">0.0001</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment" spellcheck="true">// Training...</span>
+    mlp<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">train</span><span class="token punctuation">(</span>input<span class="token punctuation">,</span> cv<span class="token operator">::</span>ml<span class="token operator">::</span>ROW_SAMPLE<span class="token punctuation">,</span> output<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment" spellcheck="true">// Prediction</span>
+    cv<span class="token operator">::</span>Mat p_output<span class="token punctuation">;</span>
+    mlp<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">predict</span><span class="token punctuation">(</span>input<span class="token punctuation">,</span> p_output<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token operator">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">"Predicted output:"</span> <span class="token operator">&lt;&lt;</span> std<span class="token operator">::</span>endl <span class="token operator">&lt;&lt;</span> p_output <span class="token operator">&lt;&lt;</span> std<span class="token operator">::</span>endl<span class="token punctuation">;</span>
+    
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+				</code></pre>
+            	</article>
+            </div>
+        </div>
+
+        <div id="footer">
+            <div id="credits">
+                <span>
+                Go <a href="javascript:history.back()">BACK</a>!
+                </span>
+            </div>
+                
+        </div>
+    </div>
+
+
+
+</body></html>

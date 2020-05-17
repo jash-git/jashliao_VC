@@ -1,0 +1,139 @@
+; USBDrv.inf
+;For win98/2k/xp/2003/vista /Win 7
+
+;--------- Version Section ---------------------------------------------------
+
+[Version]
+DriverPackageType=PlugAndPlay
+DriverPackageDisplayName=%SvcDesc%
+LayoutFile= Layout.inf, Layout1.inf, Layout2.inf
+Signature="$CHICAGO$"
+Provider=%ProviderName%
+Class=加密设备
+ClassGUID={ff646f81-8def-11d2-9449-00105a075f6b}
+DriverVer=12/29/2009,3.0
+CatalogFile=SDT_S_DRV_X64.cat
+
+;--------- SourceDiskNames and SourceDiskFiles Section -----------------------
+
+; These sections identify source disks and files for installation.  They are
+; shown here as an example, but commented out.
+
+[SourceDisksNames]
+1 = "SDT Driver Disk","",,
+
+[SourceDisksFiles]
+USBDrv.sys = 1,,
+samcoins.dll=1,,
+
+[SourceDiskFiles.NT]
+USBDrv.sys = 1,,
+samcoins.dll=1,,
+
+[SourceDiskFiles.NTamd64]
+USBDrv.sys = 1,,
+samcoins.dll=1,,
+;--------- ClassInstall/ClassInstall32 Section -------------------------------
+
+; Not necessary if using a standard class
+
+; 9X Style
+[ClassInstall]
+Addreg=Class_AddReg
+
+; NT Style
+[ClassInstall32.NT]
+Addreg=Class_AddReg
+
+;NTamd64 Style
+[ClassInstall32.NTamd64]
+Addreg=Class_AddReg
+
+[Class_AddReg]
+HKR,,,,%DeviceClassName%
+HKR,,Icon,,"0"
+
+;--------- DestinationDirs Section -------------------------------------------
+
+[DestinationDirs]
+USBDrv_Files_Driver = 10,System32\Drivers
+Files_CoInstaller=11 ; 11 ; system dir (system32 for NT)
+
+;--------- Manufacturer and Models Sections ----------------------------------
+
+[Manufacturer]
+%MfgName%=Mfg0,NTamd64
+
+[Mfg0]
+%DeviceDesc%=USBDrv_DDI, USB\VID_0400&PID_c35a
+
+[Mfg0.NTamd64]
+%DeviceDesc%=USBDrv_DDI, USB\VID_0400&PID_c35a
+
+;---------- DDInstall Sections -----------------------------------------------
+; --------- Windows 9X -----------------
+
+; Experimentation has shown that DDInstall root names greater than 19 characters
+; cause problems in Windows 98
+
+[USBDrv_DDI]
+CopyFiles=USBDrv_Files_Driver
+AddReg=USBDrv_9X_AddReg
+;Reboot
+
+[USBDrv_9X_AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,USBDrv.sys
+
+; --------- Windows NT -----------------
+
+[USBDrv_DDI.NT]
+CopyFiles=USBDrv_Files_Driver,Files_CoInstaller
+AddReg = CoInstaller_AddReg
+;Reboot
+
+[USBDrv_DDI.ntamd64]
+CopyFiles=USBDrv_Files_Driver,Files_CoInstaller
+AddReg = CoInstaller_AddReg
+;Reboot
+
+[CoInstaller_AddReg]
+HKLM,System\CurrentControlSet\Control\CoDeviceInstallers, {ff646f81-8def-11d2-9449-00105a075f6b},0x00010008, "samcoins.dll,SDTSamUsbCoInstaller"
+; above line uses the line continuation character (\)
+
+[USBDrv_DDI.NT.Services]
+Addservice = USBDrv, 0x00000002, USBDrv_AddService
+
+
+[USBDrv_DDI.NTamd64.Services]
+Addservice = USBDrv, 0x00000002, USBDrv_AddService
+
+
+[USBDrv_AddService]
+DisplayName    = %SvcDesc%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %10%\System32\Drivers\USBDrv.sys
+LoadOrderGroup = Base
+
+; --------- Files (common) -------------
+
+[USBDrv_Files_Driver]
+USBDrv.sys,,,2
+
+;=====================================================================
+; Copy files specific to NT platform (2000 / XP)
+;=====================================================================
+[Files_CoInstaller]
+samcoins.dll,,,2
+
+
+;--------- Strings Section ---------------------------------------------------
+
+[Strings]
+ProviderName="SDT"
+MfgName="SDT Telecom"
+DeviceDesc="SDT USB设备"
+DeviceClassName="密码设备"
+SvcDesc="USBDrv.Sys WDM USB client"

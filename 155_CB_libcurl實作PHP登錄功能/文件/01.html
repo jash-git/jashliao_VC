@@ -1,0 +1,1075 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0062)http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>C++ 用libcurl库进行http通讯网络编程 - 绿色冰点 - 博客园</title>
+<link type="text/css" rel="stylesheet" href="./01_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./01_files/bundle-En_summerGarden.css">
+<link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/moodlxs/rss">
+<link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/moodlxs/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/moodlxs/wlwmanifest.xml">
+<script type="text/javascript" src="./01_files/encoder.js"></script><script src="./01_files/jquery.js" type="text/javascript"></script>  
+<script type="text/javascript">var currentBlogApp = 'moodlxs', cb_enable_mathjax=false;var isLogined=false;</script>
+<script src="./01_files/blog-common.js" type="text/javascript"></script>
+</head>
+<body>
+<a name="top"></a>
+<!--PageBeginHtml Block Begin-->
+<!-- 重定义时,最后定义的才是有效的 -->
+<style>
+.code
+{
+    background: #fbedbb;
+    border: #c0c0c0 1px solid;
+    padding: 5px;
+    margin: 0 40px 0 20px;
+    font-family: Verdana,Helvetica, "微软雅黑" , Arial, "宋体" , sans-serif;
+}
+
+.code{
+  background: #F8F8EE;
+  border-left:solid 3px #6CE26C;
+  border-top:dashed 1px #BBBBBB;
+  border-right:dashed 1px #BBBBBB;
+  border-bottom:dashed 1px #BBBBBB;    
+  padding: 5px;
+  margin: 0 5px 0 5px;
+  font-family: "宋体", Courier New,Verdana, Helvetica, "微软雅黑" , Arial;
+}
+
+div.post div.entry
+{
+    font-family: Georgia,"Times New Roman",Times,sans-serif
+}
+div.post div.entry h1, div.post div.entry h2, div.post div.entry h3 {
+	margin-top: 24px;
+	margin-bottom: 12px;
+}
+div.post div.entry h1 {
+	padding: 5px;
+	color:white;
+	background-color: gray;
+}
+div.post h2 {
+	font-size: 22px;
+	line-height: 100%;
+}
+div.post div.entry pre.code {
+    font-family: Consolas
+    border-style: dashed;
+    border-left: solid 5px #6ce26c
+}
+div#information
+{
+    background-color: #f8f8ee;
+    border: solid 1px #e8e7d0;
+    padding: 5px 10px 0px 10px;
+    min-height: 10px;
+    margin-top: -15px;
+    margin-bottom: 30px;
+    color: #666666
+}
+.postBody h1
+{
+    margin: 15px 0;
+    padding: 0;
+    font-size: 135%;
+}
+.postBody h2
+{
+    margin: 15px 0;
+    padding: 0;
+    font-size: 125%;
+}
+.postBody h3
+{
+    margin: 15px 0;
+    padding: 0;
+    font-size: 110%;
+}
+</style>
+<!--PageBeginHtml Block End-->
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="http://www.cnblogs.com/moodlxs/"><img id="blogLogo" src="./01_files/logo.gif" alt="Return Home"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cnblogs.com/moodlxs/">绿色冰点</a></h1>
+<h2>仅仅为了从混杂的C/C++到纯粹的C++的蜕变</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<!--done-->
+			<ul id="navList">
+				<li><a id="MyLinks1_HomeLink" class="menu" href="http://www.cnblogs.com/">CnBlogs</a></li>
+				<li><a id="MyLinks1_MyHomeLink" class="menu" href="http://www.cnblogs.com/moodlxs/">Home</a></li>
+				<li><a id="MyLinks1_NewPostLink" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">New Post</a></li>
+				<li><a id="MyLinks1_ContactLink" accesskey="9" class="menu" rel="nofollow" href="http://msg.cnblogs.com/send/%E7%BB%BF%E8%89%B2%E5%86%B0%E7%82%B9">Contact</a></li>
+				<li><a id="MyLinks1_Admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">Admin</a></li>
+				<li><a id="MyLinks1_Syndication" class="menu" href="http://www.cnblogs.com/moodlxs/rss">Rss</a>
+				<a id="MyLinks1_XMLLink" class="aHeaderXML" href="http://www.cnblogs.com/moodlxs/rss"><img src="./01_files/xml.gif" alt="Rss"></a></li>
+			</ul>
+
+
+		<div class="blogStats">
+			
+			
+<!--done-->
+Posts - 144&nbsp;
+Articles - 5&nbsp;
+Comments - 76&nbsp;
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+<div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html">C++ 用libcurl库进行http通讯网络编程</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body"><div class="news_nr_tit"><span style="font-size: 16px;"><strong>目录索引：</strong></span></div>
+<div class="news_nr_tit">
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #000000;">一、LibCurl基本编程框架
+二、一些基本的函数
+三、curl_easy_setopt函数部分选项介绍
+四、curl_easy_perform 函数说明（error 状态码）
+五、libcurl使用的HTTP消息头<br>六、获取http应答头信息
+七、多线程问题
+八、什么时候libcurl无法正常工作
+九、关于密码
+十、HTTP验证
+十一、代码示例
+     </span><span style="color: #800080;">1</span>.基本的http GET/<span style="color: #000000;">POST操作
+     </span><span style="color: #800080;">2</span><span style="color: #000000;"> 获取html网页
+     </span><span style="color: #800080;">3</span><span style="color: #000000;"> 网页下载保存实例
+     </span><span style="color: #800080;">4</span><span style="color: #000000;"> 进度条实例显示文件下载进度
+     </span><span style="color: #800080;">5</span> 断点续传实例</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div></div>
+</div>
+<div class="news_nr">
+<div class="article_content">
+<div><span style="font-size: 16px;"><strong>&nbsp;</strong></span></div>
+<div id="MyContent"><span style="font-size: 16px;"><span style="font-size: 16px;"><strong>一、LibCurl基本编程框架</strong></span></span><br><span style="color: #0000ff;"><a href="http://curl.haxx.se/" target="_blank"><span style="color: #0000ff;">libcurl</span></a></span>是一个跨平台的网络协议库，支持http, https, ftp, gopher, telnet, dict, file, 和ldap 协议。libcurl同样支持HTTPS证书授权，HTTP POST, HTTP PUT, FTP 上传, HTTP基本表单上传，代理，cookies,和用户认证。想要知道更多关于libcurl的介绍，可以到官网 <span style="color: #0000ff;"><a href="http://curl.haxx.se/"><span style="color: #0000ff;">http://curl.haxx.se/</span></a></span>上去了解，在这里不再详述。</div>
+<div><span style="color: #ff0000;"><strong>win32版的libcurl下载地址:</strong><a href="http://curl.freeby.pctools.cl/download/libcurl-7.18.0-win32-msvc.zip"><span style="color: #ff0000;">http://curl.freeby.pctools.cl/download/libcurl-7.18.0-win32-msvc.zip</span></a></span></div>
+<div>在基于LibCurl的程序里，主要采用callback function （回调函数）的形式完成传输任务，用户在启动传输前设置好各类参数和回调函数，当满足条件时libcurl将调用用户的回调函数实现特定功能。下面是利用libcurl完成传输任务的流程：</div>
+<div>1.&nbsp; &nbsp;&nbsp; &nbsp; 调用<span style="color: #0000ff;"><strong>curl_global_init()</strong></span>初始化libcurl<br>2.&nbsp; &nbsp;&nbsp; &nbsp; 调用<span style="color: #0000ff;"><strong>curl_easy_init()</strong></span>函数得到 easy interface型指针<br>3.&nbsp; &nbsp;&nbsp; &nbsp; 调用<span style="color: #0000ff;"><strong>curl_easy_setopt()</strong></span>设置传输选项<br>4.&nbsp; &nbsp;&nbsp; &nbsp; 根据<span style="color: #0000ff;"><strong>curl_easy_setopt()</strong></span>设置的传输选项，实现回调函数以完成用户特定任务<br>5.&nbsp; &nbsp;&nbsp; &nbsp; 调用<span style="color: #0000ff;"><strong>curl_easy_perform()</strong></span>函数完成传输任务<br>6.&nbsp; &nbsp;&nbsp; &nbsp; 调用<span style="color: #0000ff;"><strong>curl_easy_cleanup()</strong></span>释放内存<br>在整过过程中设置<span style="color: #0000ff;"><strong>curl_easy_setopt(</strong>)</span>参数是最关键的，几乎所有的libcurl程序都要使用它。</div>
+<div><br><strong><span style="font-size: 16px;"><span style="font-size: 16px;">二、一些基本的函数</span></span></strong><br><span style="color: #0000ff;"><strong>1.CURLcode curl_global_init(long flags);</strong></span><br>描述：<br>这个函数只能用一次。(其实在调用curl_global_cleanup 函数后仍然可再用)<br>如果这个函数在curl_easy_init函数调用时还没调用，它讲由libcurl库自动调用，<strong><span style="color: #ff0000;">所以多线程下最好主动调用该函数以防止在线程中curl_easy_init时多次调用。</span></strong></div>
+<div><span style="color: #ff0000;"><strong>注意：虽然libcurl是线程安全的，但curl_global_init是不能保证线程安全的，所以不要在每个线程中都调用curl_global_init，应该将该函数的调用放在主线程中。</strong></span><br>参数：flags<br><span style="color: #ff6600;">CURL_GLOBAL_ALL</span>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; //初始化所有的可能的调用。<br><span style="color: #ff6600;">CURL_GLOBAL_SSL</span>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; //初始化支持 安全套接字层。<br><span style="color: #ff6600;">CURL_GLOBAL_WIN32</span>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;//初始化win32套接字库。<br><span style="color: #0000ff;"><span style="color: #ff6600;">CURL_GLOBAL_NOTHING</span>&nbsp;</span> &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;//没有额外的初始化。</div>
+<div><br><span style="color: #0000ff;"><strong>2 void curl_global_cleanup(void);</strong></span><br>描述：在结束libcurl使用的时候，用来对curl_global_init做的工作清理。类似于close的函数。</div>
+<div><strong><span style="color: #ff0000;">注意：虽然libcurl是线程安全的，但curl_global_cleanup是不能保证线程安全的，所以不要在每个线程中都调用curl_global_init，应该将该函数的调用放在主线程中。</span></strong></div>
+<div><br><span style="color: #0000ff;"><strong>3 char *curl_version( );</strong></span><br>描述: 打印当前libcurl库的版本。</div>
+<div><br><span style="color: #0000ff;"><strong>4 CURL *curl_easy_init( );</strong></span><br>描述:<br>curl_easy_init用来初始化一个CURL的指针(有些像返回FILE类型的指针一样). 相应的在调用结束时要用curl_easy_cleanup函数清理.<br>一般curl_easy_init意味着一个会话的开始. 它会返回一个easy_handle(CURL*对象), 一般都用在easy系列的函数中.</div>
+<div><br><span style="color: #0000ff;"><strong>5 void curl_easy_cleanup(CURL *handle);</strong></span><br>描述:<br>这个调用用来结束一个会话.与curl_easy_init配合着用.&nbsp;<br>参数:<br>CURL类型的指针.</div>
+<div><br><span style="color: #0000ff;"><strong>6 CURLcode curl_easy_setopt(CURL *handle, CURLoption option, parameter);</strong></span><br>描述: 这个函数最重要了.几乎所有的curl 程序都要频繁的使用它.它告诉curl库.程序将有如何的行为. 比如要查看一个网页的html代码等.(这个函数有些像ioctl函数)参数:<br>1 CURL类型的指针<br>2 各种CURLoption类型的选项.(都在curl.h库里有定义,man 也可以查看到)<br>3 parameter 这个参数 既可以是个函数的指针,也可以是某个对象的指针,也可以是个long型的变量.它用什么这取决于第二个参数.<br>CURLoption 这个参数的取值很多.具体的可以查看man手册.</div>
+<div><br><span style="color: #0000ff;"><strong>7 CURLcode curl_easy_perform(CURL *handle);</strong></span></div>
+<div>描述:这个函数在初始化CURL类型的指针 以及curl_easy_setopt完成后调用. 就像字面的意思所说perform就像是个舞台.让我们设置的<br>option 运作起来.参数:<br>CURL类型的指针.</div>
+<div><br><strong><span style="font-size: 16px;"><span style="font-size: 16px;">三、&nbsp;<span style="color: #0000ff;">curl_easy_setopt</span>函数部分选项介绍</span></span></strong><br>本节主要介绍curl_easy_setopt中跟http相关的参数。该函数是curl中非常重要的函数，curl所有设置都是在该函数中完成的，该函数的设置选项众多，注意本节的阐述的只是部分常见选项。</div>
+<div>1.&nbsp; &nbsp;&nbsp;&nbsp;<span style="color: #ff6600;">CURLOPT_URL&nbsp;</span><br>设置访问URL</div>
+<div><br>2.&nbsp; &nbsp;&nbsp; &nbsp;<span style="color: #ff6600;"> CURLOPT_WRITEFUNCTION，CURLOPT_WRITEDATA</span><br>回调函数原型为：<strong><span style="color: #0000ff;">size_t function( void *ptr, size_t size, size_t nmemb, void *stream);</span>&nbsp;</strong>函数将在libcurl接收到数据后被调用，因此函数多做数据保存的功能，如处理下载文件。CURLOPT_WRITEDATA 用于表明CURLOPT_WRITEFUNCTION函数中的stream指针的来源。</div>
+<div>如果你没有通过CURLOPT_WRITEFUNCTION属性给easy handle设置回调函数，libcurl会提供一个默认的回调函数，它只是简单的将接收到的数据打印到标准输出。你也可以通过 CURLOPT_WRITEDATA属性给默认回调函数传递一个已经打开的文件指针，用于将数据输出到文件里。</div>
+<div><br>3.&nbsp; &nbsp;&nbsp; &nbsp;<span style="color: #ff6600;">CURLOPT_HEADERFUNCTION，CURLOPT_HEADERDATA</span><br>回调函数原型为 size_t function( void *ptr, size_t size,size_t nmemb, void *stream); libcurl一旦接收到http 头部数据后将调用该函数。CURLOPT_WRITEDATA 传递指针给libcurl，该指针表明CURLOPT_HEADERFUNCTION 函数的stream指针的来源。</div>
+<div><br>4.&nbsp; &nbsp;&nbsp; &nbsp;<span style="color: #ff6600;"> CURLOPT_READFUNCTION CURLOPT_READDATA</span><br>libCurl需要读取数据传递给远程主机时将调用CURLOPT_READFUNCTION指定的函数，函数原型是：size_t function(void *ptr, size_t size, size_t nmemb,void *stream). CURLOPT_READDATA 表明CURLOPT_READFUNCTION函数原型中的stream指针来源。</div>
+<div><br>5.&nbsp; &nbsp;&nbsp; &nbsp;<span style="color: #ff6600;"> CURLOPT_NOPROGRESS，CURLOPT_PROGRESSFUNCTION，CURLOPT_PROGRESSDATA</span><br>跟数据传输进度相关的参数。CURLOPT_PROGRESSFUNCTION 指定的函数正常情况下每秒被libcurl调用一次，为了使CURLOPT_PROGRESSFUNCTION被调用，CURLOPT_NOPROGRESS必须被设置为false，CURLOPT_PROGRESSDATA指定的参数将作为CURLOPT_PROGRESSFUNCTION指定函数的第一个参数</div>
+<div><br>6.&nbsp; &nbsp;&nbsp; &nbsp;<span style="color: #ff6600;"> CURLOPT_TIMEOUT，CURLOPT_CONNECTIONTIMEOUT:</span><br>CURLOPT_TIMEOUT 由于设置传输时间，CURLOPT_CONNECTIONTIMEOUT 设置连接等待时间</div>
+<div><br>7. &nbsp; &nbsp; &nbsp;&nbsp;<span style="color: #ff6600;">CURLOPT_FOLLOWLOCATION</span><br>设置重定位URL</div>
+<div><br><span style="color: #ff6600;"><span style="color: #000000;">8.</span> &nbsp; &nbsp; &nbsp; CURLOPT_RANGE: CURLOPT_RESUME_FROM:</span><br>断点续传相关设置。CURLOPT_RANGE 指定char *参数传递给libcurl，用于指明http域的RANGE头域，例如：<br>表示头500个字节：bytes=0-499<br>表示第二个500字节：bytes=500-999<br>表示最后500个字节：bytes=-500<br>表示500字节以后的范围：bytes=500-<br>第一个和最后一个字节：bytes=0-0,-1<br>同时指定几个范围：bytes=500-600,601-999<br>CURLOPT_RESUME_FROM 传递一个long参数给libcurl，指定你希望开始传递的&nbsp;偏移量。</div>
+<div><br><span style="font-size: 16px;"><strong>四、</strong>&nbsp;<strong><span style="color: #0000ff;">curl_easy_perform</span> 函数说明（error 状态码）</strong></span><br>该函数是完成curl_easy_setopt指定的所有选项，本节重点介绍curl_easy_perform的返回值。返回0意味一切ok，非0代表错误发生。主要错误码说明：<br>1.&nbsp; &nbsp; <span style="color: #ff6600;">CURLE_OK&nbsp;</span><br>&nbsp; &nbsp; 任务完成一切都好<br>2&nbsp; &nbsp;&nbsp;&nbsp;<span style="color: #ff6600;">CURLE_UNSUPPORTED_PROTOCOL</span><br>&nbsp; &nbsp; 不支持的协议，由URL的头部指定<br>3&nbsp; &nbsp;&nbsp;<span style="color: #ff6600;">&nbsp;CURLE_COULDNT_CONNECT</span><br>&nbsp; &nbsp; 不能连接到remote 主机或者代理<br>4&nbsp; &nbsp;&nbsp;&nbsp;<span style="color: #ff6600;">CURLE_REMOTE_ACCESS_DENIED</span><br>&nbsp; &nbsp; 访问被拒绝<br>5&nbsp; &nbsp;&nbsp;&nbsp;<span style="color: #ff6600;">CURLE_HTTP_RETURNED_ERROR</span><br>&nbsp; &nbsp; Http返回错误<br>6 &nbsp; &nbsp; <span style="color: #ff6600;">CURLE_READ_ERROR</span><br>读本地文件错误</div>
+<div>要获取详细的错误描述字符串，可以通过<strong><span style="color: #0000ff;">const char *curl_easy_strerror(CURLcode errornum )</span></strong> 这个函数取得.</div>
+<div>&nbsp;</div>
+<div>
+<p><strong><span style="font-size: 16px;">五、libcurl使用的HTTP消息头</span></strong><br>&nbsp; &nbsp; 当使用libcurl发送http请求时，它会自动添加一些http头。我们可以通过CURLOPT_HTTPHEADER属性手动替换、添加或删除相应 的HTTP消息头。<br>&nbsp; &nbsp; <span style="color: #ff6600;">Host</span><br>&nbsp; &nbsp; http1.1（大部分http1.0)版本都要求客户端请求提供这个信息头。<br>&nbsp; &nbsp; <span style="color: #ff6600;">Pragma</span><br>&nbsp; &nbsp; "no-cache"。表示不要缓冲数据。<br>&nbsp; &nbsp; <span style="color: #ff6600;">Accept</span><br>&nbsp; &nbsp; "*/*"。表示允许接收任何类型的数据。<br>&nbsp; &nbsp; <span style="color: #ff6600;">Expect</span><br>&nbsp; &nbsp; 以POST的方式向HTTP服务器提交请求时，libcurl会设置该消息头为"100-continue"，它要求服务器在正式处理该请求之前，返回一 个"OK"消息。如果POST的数据很小，libcurl可能不会设置该消息头。<br><strong>自定义选项</strong><br>&nbsp; &nbsp; 当前越来越多的协议都构建在HTTP协议之上（如：soap），这主要归功于HTTP的可靠性，以及被广泛使用的代理支持（可以穿透大部分防火墙）。 这些协议的使用方式与传统HTTP可能有很大的不同。对此，libcurl作了很好的支持。<br>&nbsp; &nbsp; 自定义请求方式(CustomRequest)<br>&nbsp; &nbsp; HTTP支持GET, HEAD或者POST提交请求。可以设置CURLOPT_CUSTOMREQUEST来设置自定义的请求方式，libcurl默认以GET方式提交请求：<br>&nbsp; &nbsp; <strong><span style="color: #0000ff;">curl_easy_setopt(easy_handle, CURLOPT_CUSTOMREQUEST, "MYOWNREQUEST");</span> </strong><br> <br><strong>修改消息头</strong><br>&nbsp; &nbsp; HTTP协议提供了消息头，请求消息头用于告诉服务器如何处理请求；响应消息头则告诉浏览器如何处理接收到的数据。在libcurl中，你可以自由的添加 这些消息头：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">struct</span> curl_slist *headers=NULL; <span style="color: #008000;">/*</span><span style="color: #008000;"> init to NULL is important </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+headers </span>= curl_slist_append(headers, <span style="color: #800000;">"</span><span style="color: #800000;">Hey-server-hey: how are you?</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+headers </span>= curl_slist_append(headers, <span style="color: #800000;">"</span><span style="color: #800000;">X-silly-content: yes</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+</span><span style="color: #008000;">/*</span><span style="color: #008000;"> pass our list of custom made headers </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+curl_easy_setopt(easyhandle, CURLOPT_HTTPHEADER, headers);
+curl_easy_perform(easyhandle); </span><span style="color: #008000;">/*</span><span style="color: #008000;"> transfer http </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+curl_slist_free_all(headers); </span><span style="color: #008000;">/*</span><span style="color: #008000;"> free the header list </span><span style="color: #008000;">*/</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>对于已经存在的消息头，可以重新设置它的值：</p>
+<div class="cnblogs_code">
+<pre>headers = curl_slist_append(headers, <span style="color: #800000;">"</span><span style="color: #800000;">Accept: Agent-007</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+headers </span>= curl_slist_append(headers, <span style="color: #800000;">"</span><span style="color: #800000;">Host: munged.host.line</span><span style="color: #800000;">"</span>); </pre>
+</div>
+<p><strong>删除消息头</strong><br>    对于一个已经存在的消息头，设置它的内容为空，libcurl在发送请求时就不会同时提交该消息头：</p>
+<div class="cnblogs_code">
+<pre>headers = curl_slist_append(headers, <span style="color: #800000;">"</span><span style="color: #800000;">Accept:</span><span style="color: #800000;">"</span>);</pre>
+</div>
+<p><strong><span style="font-size: 16px;">&nbsp;</span></strong></p>
+<p><strong><span style="font-size: 16px;">六、获取http应答头信息</span></strong></p>
+<p>&nbsp; &nbsp; 发出http请求后，服务器会返回应答头信息和应答数据，如果仅仅是打印应答头的所有内容，则直接可以通过curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, 打印函数)的方式来完成，这里需要获取的是应答头中特定的信息，比如应答码、cookies列表等，则需要通过下面这个函数：<br><strong><span style="color: #0000ff;">&nbsp; &nbsp; CURLcode curl_easy_getinfo(CURL *curl, CURLINFO info, ... );</span> </strong><br>&nbsp; &nbsp; info参数就是我们需要获取的内容，下面是一些参数值:<br>&nbsp; &nbsp; 1.<span style="color: #ff6600;">CURLINFO_RESPONSE_CODE</span><br>&nbsp; &nbsp; 获取应答码<br>&nbsp; &nbsp; 2.<span style="color: #ff6600;">CURLINFO_HEADER_SIZE</span><br>&nbsp; &nbsp; 头大小<br>&nbsp; &nbsp; 3.<span style="color: #ff6600;">CURLINFO_COOKIELIST</span><br>&nbsp; &nbsp; cookies列表</p>
+<p>&nbsp; &nbsp; 除了获取应答信息外，这个函数还能获取curl的一些内部信息，如请求时间、连接时间等等。</p>
+<p>&nbsp; &nbsp; 更多的参数可以参考API文档。</p>
+<p>&nbsp;</p>
+
+</div>
+<div>
+<p><span style="font-size: 16px;"><strong>七、多线程问题</strong></span><br>&nbsp; &nbsp; 首先一个基本原则就是：绝对不应该在线程之间共享同一个libcurl handle(CURL *对象)，不管是easy handle还是multi handle（本文只介绍easy_handle）。一个线程每次只能使用一个handle。<br>&nbsp; &nbsp; libcurl是线程安全的，但有两点例外：信号(signals)和SSL/TLS handler。 信号用于超时失效名字解析(timing out name resolves)。libcurl依赖其他的库来支持SSL/STL，所以用多线程的方式访问HTTPS或FTPS的URL时，应该满足这些库对多线程 操作的一些要求。详细可以参考：<br>&nbsp; &nbsp; OpenSSL: <a href="http://www.openssl.org/docs/crypto/threads.html#DESCRIPTION">http://www.openssl.org/docs/crypto/threads.html#DESCRIPTION</a></p>
+<p>&nbsp; &nbsp; GnuTLS: <a href="http://www.gnu.org/software/gnutls/manual/html_node/Multi_002dthreaded-applications.html">http://www.gnu.org/software/gnutls/manual/html_node/Multi_002dthreaded-applications.html</a></p>
+<p>&nbsp; &nbsp; NSS: 宣称是多线程安全的。</p>
+<p><strong><span style="font-size: 16px;">八、什么时候libcurl无法正常工作</span></strong><br>&nbsp; &nbsp; 传输失败总是有原因的。你可能错误的设置了一些libcurl的属性或者没有正确的理解某些属性的含义，或者是远程主机返回一些无法被正确解析的内容。<br>&nbsp; &nbsp; 这里有一个黄金法则来处理这些问题：将<span style="color: #0000ff;">CURLOPT_VERBOSE</span>属性设置为1，libcurl会输出通信过程中的一些细节。如果使用的是http协 议，请求头/响应头也会被输出。将<span style="color: #0000ff;">CURLOPT_HEADER</span>设为1，这些头信息将出现在消息的内容中。<br>&nbsp; &nbsp; 当然不可否认的是，libcurl还存在bug。<br>&nbsp; &nbsp; 如果你对相关的协议了解越多，在使用libcurl时，就越不容易犯错。</p>
+<p><strong><span style="font-size: 16px;">九、关于密码</span></strong><br>&nbsp; &nbsp; 客户端向服务器发送请求时，许多协议都要求提供用户名与密码。libcurl提供了多种方式来设置它们。<br>&nbsp; &nbsp; 一些协议支持在URL中直接指定用户名和密码，类似于： protocol://user:password@example.com/path/。libcurl能正确的识别这种URL中的用户名与密码并执行 相应的操作。如果你提供的用户名和密码中有特殊字符，首先应该对其进行URL编码。<br>&nbsp; &nbsp; 也可以通过CURLOPT_USERPWD属性来设置用户名与密码。参数是格式如 “user:password ”的字符串：<br>&nbsp; &nbsp;<strong><span style="color: #0000ff;"> curl_easy_setopt(easy_handle, CURLOPT_USERPWD, "user_name:password")</span></strong>; <br>&nbsp; &nbsp; 有时候在访问代理服务器的时候，可能时时要求提供用户名和密码进行用户身份验证。这种情况下，libcurl提供了另 一个属性CURLOPT_PROXYUSERPWD：<br>&nbsp; &nbsp; <span style="color: #0000ff;"><strong>curl_easy_setopt(easy_handle, CURLOPT_PROXYUSERPWD, "user_name:password");</strong> </span><br>&nbsp; &nbsp; 在UNIX平台下，访问FTP的用户名和密码可能会被保存在$HOME/.netrc文件中。libcurl支持直接从这个文件中获取用户名与密码：<br>&nbsp; &nbsp; <strong><span style="color: #0000ff;">curl_easy_setopt(easy_handle, CURLOPT_NETRC, 1L);</span> </strong><br>&nbsp; &nbsp; 在使用SSL时，可能需要提供一个私钥用于数据安全传输，通过CURLOPT_KEYPASSWD来设置私钥：<br>&nbsp; &nbsp;<strong><span style="color: #0000ff;"> curl_easy_setopt(easy_handle, CURLOPT_KEYPASSWD, "keypassword");</span></strong></p>
+<p><strong><span style="font-size: 16px;">十、HTTP验证</span></strong><br>&nbsp; &nbsp; 在使用HTTP协议时，客户端有很多种方式向服务器提供验证信息。默认的 HTTP验证方法是"Basic”，它将用户名与密码以明文的方式、经Base64编码后保存在HTTP请求头中，发往服务器。当然这不太安全。<br>&nbsp; &nbsp; 当前版本的libcurl支持的验证方法有：basic, Digest, NTLM, Negotiate, GSS-Negotiate and SPNEGO。（译者感叹：搞Web这么多年，尽然不知道这些Http的验证方式，实在惭愧。）可以通过CURLOPT_HTTPAUTH属性来设置具体 的验证方式：<br>&nbsp; &nbsp; <span style="color: #0000ff;"><strong>curl_easy_setopt(easy_handle, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);</strong></span><br>&nbsp; &nbsp; 向代理服务器发送验证信息时，可以通过CURLOPT_PROXYAUTH设置验证方式：<br>&nbsp; &nbsp;<span style="color: #0000ff;"><strong> curl_easy_setopt(easy_handle, CURLOPT_PROXYAUTH, CURLAUTH_NTLM);</strong></span><br>&nbsp; &nbsp; 也可以同时设置多种验证方式（通过按位与）， 使用‘CURLAUTH_ANY‘将允许libcurl可以选择任何它所支持的验证方式。通过CURLOPT_HTTPAUTH或 CURLOPT_PROXYAUTH属性设置的多种验证方式，libcurl会在运行时选择一种它认为是最好的方式与服务器通信：<br>&nbsp; &nbsp;<span style="color: #0000ff;"><strong> curl_easy_setopt(easy_handle, CURLOPT_HTTPAUTH,  CURLAUTH_DIGEST|CURLAUTH_BASIC); </strong></span><br><span style="color: #0000ff;"><strong>&nbsp; &nbsp; // curl_easy_setopt(easy_handle, CURLOPT_HTTPAUTH,  CURLAUTH_ANY);</strong></span></p>
+<p><span style="color: #0000ff;"><strong>&nbsp;</strong></span></p>
+
+
+
+
+
+
+
+
+
+</div>
+<div><span style="font-size: 16px;"><strong>十一、代码示例</strong></span></div>
+<div><span style="font-size: 16px; color: #ff0000;"><strong>下载的libcurl中自带了很多示例代码，在docs\examples目录下，建议下载该库后好好阅读一下这些代码。</strong></span></div>
+<div><span style="font-size: 16px; color: #ff0000;"><strong>libcurl的API文档在docs\libcurl\index.html中。</strong></span></div>
+<div><strong>1.基本的http GET/POST操作</strong></div>
+<div>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>#include &lt;stdio.h&gt;<span style="color: #000000;">
+#include </span>&lt;curl/curl.h&gt;
+<span style="color: #0000ff;">bool</span> getUrl(<span style="color: #0000ff;">char</span> *<span style="color: #000000;">filename)
+{
+    CURL </span>*<span style="color: #000000;">curl;
+    CURLcode res;
+    FILE </span>*<span style="color: #000000;">fp;
+    </span><span style="color: #0000ff;">if</span> ((fp = fopen(filename, <span style="color: #800000;">"</span><span style="color: #800000;">w</span><span style="color: #800000;">"</span>)) == NULL)  <span style="color: #008000;">//</span><span style="color: #008000;"> 返回结果用文件存储</span>
+        <span style="color: #0000ff;">return</span> <span style="color: #0000ff;">false</span><span style="color: #000000;">;
+    </span><span style="color: #0000ff;">struct</span> curl_slist *headers =<span style="color: #000000;"> NULL;
+    headers </span>= curl_slist_append(headers, <span style="color: #800000;">"</span><span style="color: #800000;">Accept: Agent-007</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+    curl </span>= curl_easy_init();    <span style="color: #008000;">//</span><span style="color: #008000;"> 初始化</span>
+    <span style="color: #0000ff;">if</span><span style="color: #000000;"> (curl)
+    {
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">curl_easy_setopt(curl, CURLOPT_PROXY, "10.99.60.201:8080");</span><span style="color: #008000;">//</span><span style="color: #008000;"> 代理</span>
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);<span style="color: #008000;">//</span><span style="color: #008000;"> 改协议头</span>
+        curl_easy_setopt(curl, CURLOPT_URL,<span style="color: #800000;">"</span><span style="color: #800000;">http://www.baidu.com</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp); </span><span style="color: #008000;">//</span><span style="color: #008000;">将返回的http头输出到fp指向的文件</span>
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, fp); <span style="color: #008000;">//</span><span style="color: #008000;">将返回的html主体数据输出到fp指向的文件</span>
+        res = curl_easy_perform(curl);   <span style="color: #008000;">//</span><span style="color: #008000;"> 执行</span>
+        <span style="color: #0000ff;">if</span> (res != <span style="color: #800080;">0</span><span style="color: #000000;">) {
+
+            curl_slist_free_all(headers);
+            curl_easy_cleanup(curl);
+        }
+        fclose(fp);
+        </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">true</span><span style="color: #000000;">;
+    }
+}
+</span><span style="color: #0000ff;">bool</span> postUrl(<span style="color: #0000ff;">char</span> *<span style="color: #000000;">filename)
+{
+    CURL </span>*<span style="color: #000000;">curl;
+    CURLcode res;
+    FILE </span>*<span style="color: #000000;">fp;
+    </span><span style="color: #0000ff;">if</span> ((fp = fopen(filename, <span style="color: #800000;">"</span><span style="color: #800000;">w</span><span style="color: #800000;">"</span>)) ==<span style="color: #000000;"> NULL)
+        </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">false</span><span style="color: #000000;">;
+    curl </span>=<span style="color: #000000;"> curl_easy_init();
+    </span><span style="color: #0000ff;">if</span><span style="color: #000000;"> (curl)
+    {
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, </span><span style="color: #800000;">"</span><span style="color: #800000;">/tmp/cookie.txt</span><span style="color: #800000;">"</span>); <span style="color: #008000;">//</span><span style="color: #008000;"> 指定cookie文件</span>
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, <span style="color: #800000;">"</span><span style="color: #800000;">&amp;logintype=uid&amp;u=xieyan&amp;psw=xxx86</span><span style="color: #800000;">"</span>);    <span style="color: #008000;">//</span><span style="color: #008000;"> 指定post内容
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">curl_easy_setopt(curl, CURLOPT_PROXY, "10.99.60.201:8080");</span>
+        curl_easy_setopt(curl, CURLOPT_URL, <span style="color: #800000;">"</span><span style="color: #800000;"> http://mail.sina.com.cn/cgi-bin/login.cgi </span><span style="color: #800000;">"</span>);   <span style="color: #008000;">//</span><span style="color: #008000;"> 指定url</span>
+<span style="color: #000000;">        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res </span>=<span style="color: #000000;"> curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+    }
+    fclose(fp);
+    </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">true</span><span style="color: #000000;">;
+}
+</span><span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">void</span><span style="color: #000000;">)
+{
+    getUrl(</span><span style="color: #800000;">"</span><span style="color: #800000;">/tmp/get.html</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+    postUrl(</span><span style="color: #800000;">"</span><span style="color: #800000;">/tmp/post.html</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p align="left"><span style="font-size: 12px;">编译<strong>gcc&nbsp; get_post.c&nbsp; -o get_post&nbsp;</strong><strong>–</strong><strong>lcurl</strong></span></p>
+<p align="left"><span style="font-size: 12px;"><strong>./ get_post</strong></span></p>
+<br><strong>2</strong>&nbsp;<strong>获取html网页</strong></div>
+<div>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>#include &lt;stdio.h&gt;<span style="color: #000000;">
+#include </span>&lt;curl/curl.h&gt;<span style="color: #000000;">
+#include </span>&lt;stdlib.h&gt;
+<span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">int</span> argc, <span style="color: #0000ff;">char</span> *<span style="color: #000000;">argv[])
+{
+    CURL </span>*curl;             <span style="color: #008000;">//</span><span style="color: #008000;">定义CURL类型的指针</span>
+CURLcode res;           <span style="color: #008000;">//</span><span style="color: #008000;">定义CURLcode类型的变量，保存返回状态码</span>
+    <span style="color: #0000ff;">if</span>(argc!=<span style="color: #800080;">2</span><span style="color: #000000;">)
+    {
+        printf(</span><span style="color: #800000;">"</span><span style="color: #800000;">Usage : file &lt;url&gt;;\n</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+        exit(</span><span style="color: #800080;">1</span><span style="color: #000000;">);
+    }
+ 
+    curl </span>= curl_easy_init();        <span style="color: #008000;">//</span><span style="color: #008000;">初始化一个CURL类型的指针</span>
+    <span style="color: #0000ff;">if</span>(curl!=<span style="color: #000000;">NULL)
+    {
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">设置curl选项. 其中CURLOPT_URL是让用户指 定url. argv[1]中存放的命令行传进来的网址</span>
+        curl_easy_setopt(curl, CURLOPT_URL, argv[<span style="color: #800080;">1</span><span style="color: #000000;">]);        
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">调用curl_easy_perform 执行我们的设置.并进行相关的操作. 在这 里只在屏幕上显示出来.</span>
+        res =<span style="color: #000000;"> curl_easy_perform(curl);
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">清除curl操作.</span>
+<span style="color: #000000;">        curl_easy_cleanup(curl);
+    }
+    </span><span style="color: #0000ff;">return</span> <span style="color: #800080;">0</span><span style="color: #000000;">;
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p align="left"><span style="font-size: 12px; font-family: 宋体;">编译<strong>gcc&nbsp; get_http.c&nbsp; -o get_http </strong><strong>–</strong><strong>lcurl</strong></span></p>
+<p align="left"><span style="font-size: 12px; font-family: 宋体;"><strong>./ get_http <a href="http://www.baidu.com/">www.baidu.com</a></strong></span></p>
+<p align="left"><span style="font-size: 12px;"><strong>&nbsp;</strong></span></p>
+</div>
+<div><strong>3</strong>&nbsp;<strong>网页下载保存实例</strong><br>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;">//</span><span style="color: #008000;"> 采用CURLOPT_WRITEFUNCTION 实现网页下载保存功能</span>
+#include &lt;stdio.h&gt;<span style="color: #000000;">;
+#include </span>&lt;stdlib.h&gt;<span style="color: #000000;">;
+#include </span>&lt;unistd.h&gt;<span style="color: #000000;">;
+ 
+#include </span>&lt;curl/curl.h&gt;<span style="color: #000000;">;
+#include </span>&lt;curl/types.h&gt;<span style="color: #000000;">;
+#include </span>&lt;curl/easy.h&gt;<span style="color: #000000;">;
+ 
+FILE </span>*fp;  <span style="color: #008000;">//</span><span style="color: #008000;">定义FILE类型指针
+</span><span style="color: #008000;">//</span><span style="color: #008000;">这个函数是为了符合CURLOPT_WRITEFUNCTION而构造的
+</span><span style="color: #008000;">//</span><span style="color: #008000;">完成数据保存功能</span>
+size_t write_data(<span style="color: #0000ff;">void</span> *ptr, size_t size, size_t nmemb, <span style="color: #0000ff;">void</span> *<span style="color: #000000;">stream)  
+{
+    </span><span style="color: #0000ff;">int</span> written = fwrite(ptr, size, nmemb, (FILE *<span style="color: #000000;">)fp);
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> written;
+}
+ 
+</span><span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">int</span> argc, <span style="color: #0000ff;">char</span> *<span style="color: #000000;">argv[])
+{
+    CURL </span>*<span style="color: #000000;">curl;
+ 
+    curl_global_init(CURL_GLOBAL_ALL);  
+    curl</span>=<span style="color: #000000;">curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_URL, argv[</span><span style="color: #800080;">1</span><span style="color: #000000;">]);  
+ 
+    </span><span style="color: #0000ff;">if</span>((fp=fopen(argv[<span style="color: #800080;">2</span>],<span style="color: #800000;">"</span><span style="color: #800000;">w</span><span style="color: #800000;">"</span>))==<span style="color: #000000;">NULL)
+    {
+        curl_easy_cleanup(curl);
+        exit(</span><span style="color: #800080;">1</span><span style="color: #000000;">);
+    }
+</span><span style="color: #808080;">///</span><span style="color: #008000;">/CURLOPT_WRITEFUNCTION 将后继的动作交给write_data函数处理</span>
+<span style="color: #000000;">    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);  
+    curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+    exit(</span><span style="color: #800080;">0</span><span style="color: #000000;">);
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<span style="font-size: 12px;">编译gcc&nbsp;&nbsp;save_http.c&nbsp;&nbsp;-o save_http –lcurl</span><br><span style="font-size: 12px;">./ save_http&nbsp;<a href="http://www.baidu.com/" target="_blank"><span style="color: #800080;">www.baidu.com</span></a></span><br><span style="font-size: 12px;">&nbsp;&nbsp;/tmp/baidu</span></div>
+<div><br><strong>4</strong>&nbsp;<strong>进度条实例显示文件下载进度</strong><br>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;">//</span><span style="color: #008000;"> 采用CURLOPT_NOPROGRESS， CURLOPT_PROGRESSFUNCTION    CURLOPT_PROGRESSDATA 实现文件传输进度提示功能
+</span><span style="color: #008000;">//</span><span style="color: #008000;">函数采用了gtk库，故编译时需指定gtk库
+</span><span style="color: #008000;">//</span><span style="color: #008000;">函数启动专门的线程用于显示gtk 进度条bar</span>
+#include &lt;stdio.h&gt;<span style="color: #000000;">
+#include </span>&lt;gtk/gtk.h&gt;<span style="color: #000000;">
+#include </span>&lt;curl/curl.h&gt;<span style="color: #000000;">
+#include </span>&lt;curl/types.h&gt; <span style="color: #008000;">/*</span><span style="color: #008000;"> new for v7 </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+#include </span>&lt;curl/easy.h&gt; <span style="color: #008000;">/*</span><span style="color: #008000;"> new for v7 </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+ 
+GtkWidget </span>*<span style="color: #000000;">Bar;
+</span><span style="color: #808080;">///</span><span style="color: #008000;">/这个函数是为了符合CURLOPT_WRITEFUNCTION而构造的</span>
+<span style="color: #008000;">//</span><span style="color: #008000;">完成数据保存功能</span>
+size_t my_write_func(<span style="color: #0000ff;">void</span> *ptr, size_t size, size_t nmemb, FILE *<span style="color: #000000;">stream)
+{
+  </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> fwrite(ptr, size, nmemb, stream);
+}
+</span><span style="color: #008000;">//</span><span style="color: #008000;">这个函数是为了符合CURLOPT_READFUNCTION而构造的
+</span><span style="color: #008000;">//</span><span style="color: #008000;">数据上传时使用</span>
+size_t my_read_func(<span style="color: #0000ff;">void</span> *ptr, size_t size, size_t nmemb, FILE *<span style="color: #000000;">stream)
+{
+  </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> fread(ptr, size, nmemb, stream);
+}
+</span><span style="color: #008000;">//</span><span style="color: #008000;">这个函数是为了符合CURLOPT_PROGRESSFUNCTION而构造的
+</span><span style="color: #008000;">//</span><span style="color: #008000;">显示文件传输进度，t代表文件大小，d代表传 输已经完成部分</span>
+<span style="color: #0000ff;">int</span> my_progress_func(GtkWidget *<span style="color: #000000;">bar,
+                     </span><span style="color: #0000ff;">double</span> t, <span style="color: #008000;">/*</span><span style="color: #008000;"> dltotal </span><span style="color: #008000;">*/</span>
+                     <span style="color: #0000ff;">double</span> d, <span style="color: #008000;">/*</span><span style="color: #008000;"> dlnow </span><span style="color: #008000;">*/</span>
+                     <span style="color: #0000ff;">double</span><span style="color: #000000;"> ultotal,
+                     </span><span style="color: #0000ff;">double</span><span style="color: #000000;"> ulnow)
+{
+</span><span style="color: #008000;">/*</span><span style="color: #008000;">  printf("%d / %d (%g %%)\n", d, t, d*100.0/t);</span><span style="color: #008000;">*/</span><span style="color: #000000;">
+  gdk_threads_enter();
+  gtk_progress_set_value(GTK_PROGRESS(bar), d</span>*<span style="color: #800080;">100.0</span>/<span style="color: #000000;">t);
+  gdk_threads_leave();
+  </span><span style="color: #0000ff;">return</span> <span style="color: #800080;">0</span><span style="color: #000000;">;
+}
+ 
+</span><span style="color: #0000ff;">void</span> *my_thread(<span style="color: #0000ff;">void</span> *<span style="color: #000000;">ptr)
+{
+  CURL </span>*<span style="color: #000000;">curl;
+  CURLcode res;
+  FILE </span>*<span style="color: #000000;">outfile;
+  gchar </span>*url =<span style="color: #000000;"> ptr;
+ 
+  curl </span>=<span style="color: #000000;"> curl_easy_init();
+  </span><span style="color: #0000ff;">if</span><span style="color: #000000;">(curl)
+  {
+    outfile </span>= fopen(<span style="color: #800000;">"</span><span style="color: #800000;">test.curl</span><span style="color: #800000;">"</span>, <span style="color: #800000;">"</span><span style="color: #800000;">w</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+ 
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, outfile);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, my_write_func);
+    curl_easy_setopt(curl, CURLOPT_READFUNCTION, my_read_func);
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, </span><span style="color: #800080;">0L</span><span style="color: #000000;">);
+    curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, my_progress_func);
+    curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, Bar);
+ 
+    res </span>=<span style="color: #000000;"> curl_easy_perform(curl);
+ 
+    fclose(outfile);
+    </span><span style="color: #008000;">/*</span><span style="color: #008000;"> always cleanup </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+    curl_easy_cleanup(curl);
+  }
+ 
+  </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> NULL;
+}
+ 
+</span><span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">int</span> argc, <span style="color: #0000ff;">char</span> **<span style="color: #000000;">argv)
+{
+  GtkWidget </span>*Window, *Frame, *<span style="color: #000000;">Frame2;
+  GtkAdjustment </span>*<span style="color: #000000;">adj;
+ 
+  </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Must initialize libcurl before any threads are started </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+  curl_global_init(CURL_GLOBAL_ALL);
+ 
+  </span><span style="color: #008000;">/*</span><span style="color: #008000;"> Init thread </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+  g_thread_init(NULL);
+ 
+  gtk_init(</span>&amp;argc, &amp;<span style="color: #000000;">argv);
+  Window </span>=<span style="color: #000000;"> gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  Frame </span>=<span style="color: #000000;"> gtk_frame_new(NULL);
+  gtk_frame_set_shadow_type(GTK_FRAME(Frame), GTK_SHADOW_OUT);
+  gtk_container_add(GTK_CONTAINER(Window), Frame);
+  Frame2 </span>=<span style="color: #000000;"> gtk_frame_new(NULL);
+  gtk_frame_set_shadow_type(GTK_FRAME(Frame2), GTK_SHADOW_IN);
+  gtk_container_add(GTK_CONTAINER(Frame), Frame2);
+  gtk_container_set_border_width(GTK_CONTAINER(Frame2), </span><span style="color: #800080;">5</span><span style="color: #000000;">);
+  adj </span>= (GtkAdjustment*)gtk_adjustment_new(<span style="color: #800080;">0</span>, <span style="color: #800080;">0</span>, <span style="color: #800080;">100</span>, <span style="color: #800080;">0</span>, <span style="color: #800080;">0</span>, <span style="color: #800080;">0</span><span style="color: #000000;">);
+  Bar </span>=<span style="color: #000000;"> gtk_progress_bar_new_with_adjustment(adj);
+  gtk_container_add(GTK_CONTAINER(Frame2), Bar);
+  gtk_widget_show_all(Window);
+ 
+  </span><span style="color: #0000ff;">if</span> (!g_thread_create(&amp;my_thread, argv[<span style="color: #800080;">1</span>], FALSE, NULL) != <span style="color: #800080;">0</span><span style="color: #000000;">)
+    g_warning(</span><span style="color: #800000;">"</span><span style="color: #800000;">can't create the thread</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+ 
+ 
+  gdk_threads_enter();
+  gtk_main();
+  gdk_threads_leave();
+  </span><span style="color: #0000ff;">return</span> <span style="color: #800080;">0</span><span style="color: #000000;">;
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<span style="font-size: 12px;">编译export PKG_CONFIG_PATH=/usr/lib/pkgconfig/</span><br><span style="font-size: 12px;">gcc progress.c –o progress ` pkg-config --libs –cflags gtk+-2..0` -lcurl –lgthread-2.0</span><br><span style="font-size: 12px;">./ progress&nbsp;&nbsp;<a href="http://software.sky-union.cn/index.asp" target="_blank"><span style="color: #0000ff;">http://software.sky-union.cn/index.asp</span></a></span><br><br><br><strong>5</strong>&nbsp;<strong>断点续传实例</strong><br>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;">//</span><span style="color: #008000;">采用CURLOPT_RESUME_FROM_LARGE 实现文件断点续传功能</span>
+#include &lt;stdlib.h&gt;<span style="color: #000000;">
+#include </span>&lt;stdio.h&gt;<span style="color: #000000;">
+#include </span>&lt;sys/stat.h&gt;<span style="color: #000000;">
+ 
+#include </span>&lt;curl/curl.h&gt;
+<span style="color: #008000;">//</span><span style="color: #008000;">这个函数为CURLOPT_HEADERFUNCTION参数构造</span><span style="color: #008000;">
+/*</span><span style="color: #008000;"> 从http头部获取文件size</span><span style="color: #008000;">*/</span><span style="color: #000000;">
+size_t getcontentlengthfunc(</span><span style="color: #0000ff;">void</span> *ptr, size_t size, size_t nmemb, <span style="color: #0000ff;">void</span> *<span style="color: #000000;">stream) {
+       </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> r;
+       </span><span style="color: #0000ff;">long</span> len = <span style="color: #800080;">0</span><span style="color: #000000;">;
+ 
+       </span><span style="color: #008000;">/*</span><span style="color: #008000;"> _snscanf() is Win32 specific </span><span style="color: #008000;">*/</span>
+       <span style="color: #008000;">//</span><span style="color: #008000;"> r = _snscanf(ptr, size * nmemb, "Content-Length: %ld\n", &amp;len);</span>
+ r = sscanf(ptr, <span style="color: #800000;">"</span><span style="color: #800000;">Content-Length: %ld\n</span><span style="color: #800000;">"</span>, &amp;<span style="color: #000000;">len);
+       </span><span style="color: #0000ff;">if</span> (r) <span style="color: #008000;">/*</span><span style="color: #008000;"> Microsoft: we don't read the specs </span><span style="color: #008000;">*/</span>
+              *((<span style="color: #0000ff;">long</span> *) stream) =<span style="color: #000000;"> len;
+ 
+       </span><span style="color: #0000ff;">return</span> size *<span style="color: #000000;"> nmemb;
+}
+ 
+</span><span style="color: #008000;">/*</span><span style="color: #008000;"> 保存下载文件 </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+size_t wirtefunc(</span><span style="color: #0000ff;">void</span> *ptr, size_t size, size_t nmemb, <span style="color: #0000ff;">void</span> *<span style="color: #000000;">stream)
+{
+        </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> fwrite(ptr, size, nmemb, stream);
+}
+ 
+</span><span style="color: #008000;">/*</span><span style="color: #008000;">读取上传文件 </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+size_t readfunc(</span><span style="color: #0000ff;">void</span> *ptr, size_t size, size_t nmemb, <span style="color: #0000ff;">void</span> *<span style="color: #000000;">stream)
+{
+       FILE </span>*f =<span style="color: #000000;"> stream;
+       size_t n;
+ 
+       </span><span style="color: #0000ff;">if</span><span style="color: #000000;"> (ferror(f))
+              </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> CURL_READFUNC_ABORT;
+ 
+       n </span>= fread(ptr, size, nmemb, f) *<span style="color: #000000;"> size;
+ 
+       </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> n;
+}
+ 
+</span><span style="color: #008000;">//</span><span style="color: #008000;"> 下载 或者上传文件函数</span>
+<span style="color: #0000ff;">int</span> download(CURL *curlhandle, <span style="color: #0000ff;">const</span> <span style="color: #0000ff;">char</span> * remotepath, <span style="color: #0000ff;">const</span> <span style="color: #0000ff;">char</span> *<span style="color: #000000;"> localpath,
+           </span><span style="color: #0000ff;">long</span> timeout, <span style="color: #0000ff;">long</span><span style="color: #000000;"> tries)
+{
+       FILE </span>*<span style="color: #000000;">f;
+       curl_off_t local_file_len </span>= -<span style="color: #800080;">1</span><span style="color: #000000;"> ;
+       </span><span style="color: #0000ff;">long</span> filesize =<span style="color: #800080;">0</span><span style="color: #000000;"> ;
+       
+       CURLcode r </span>=<span style="color: #000000;"> CURLE_GOT_NOTHING;
+       </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> c;
+  </span><span style="color: #0000ff;">struct</span><span style="color: #000000;"> stat file_info;
+  </span><span style="color: #0000ff;">int</span> use_resume = <span style="color: #800080;">0</span><span style="color: #000000;">;
+  </span><span style="color: #008000;">/*</span><span style="color: #008000;"> 得到本地文件大小 </span><span style="color: #008000;">*/</span>
+  <span style="color: #008000;">//</span><span style="color: #008000;">if(access(localpath,F_OK) ==0)</span>
+  
+    <span style="color: #0000ff;">if</span>(stat(localpath, &amp;file_info) == <span style="color: #800080;">0</span><span style="color: #000000;">) 
+     {
+        local_file_len </span>=<span style="color: #000000;">  file_info.st_size;
+        use_resume  </span>= <span style="color: #800080;">1</span><span style="color: #000000;">;
+      }
+  </span><span style="color: #008000;">//</span><span style="color: #008000;">采用追加方式打开文件，便于实现文件断点续传工作</span>
+       f = fopen(localpath, <span style="color: #800000;">"</span><span style="color: #800000;">ab+</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+       </span><span style="color: #0000ff;">if</span> (f ==<span style="color: #000000;"> NULL) {
+              perror(NULL);
+              </span><span style="color: #0000ff;">return</span> <span style="color: #800080;">0</span><span style="color: #000000;">;
+       }
+ 
+       </span><span style="color: #008000;">//</span><span style="color: #008000;">curl_easy_setopt(curlhandle, CURLOPT_UPLOAD, 1L);</span>
+<span style="color: #000000;"> 
+       curl_easy_setopt(curlhandle, CURLOPT_URL, remotepath);
+ 
+              curl_easy_setopt(curlhandle, CURLOPT_CONNECTTIMEOUT, timeout);  </span><span style="color: #008000;">//</span><span style="color: #008000;"> 设置连接超时，单位秒
+       </span><span style="color: #008000;">//</span><span style="color: #008000;">设置http 头部处理函数</span>
+<span style="color: #000000;">       curl_easy_setopt(curlhandle, CURLOPT_HEADERFUNCTION, getcontentlengthfunc);
+       curl_easy_setopt(curlhandle, CURLOPT_HEADERDATA, </span>&amp;<span style="color: #000000;">filesize);
+ </span><span style="color: #008000;">//</span><span style="color: #008000;"> 设置文件续传的位置给libcurl</span>
+       curl_easy_setopt(curlhandle, CURLOPT_RESUME_FROM_LARGE, use_resume?local_file_len:<span style="color: #800080;">0</span><span style="color: #000000;">);
+ 
+       curl_easy_setopt(curlhandle, CURLOPT_WRITEDATA, f);
+       curl_easy_setopt(curlhandle, CURLOPT_WRITEFUNCTION, wirtefunc);
+ 
+       </span><span style="color: #008000;">//</span><span style="color: #008000;">curl_easy_setopt(curlhandle, CURLOPT_READFUNCTION, readfunc);
+       </span><span style="color: #008000;">//</span><span style="color: #008000;">curl_easy_setopt(curlhandle, CURLOPT_READDATA, f);</span>
+       curl_easy_setopt(curlhandle, CURLOPT_NOPROGRESS, <span style="color: #800080;">1L</span><span style="color: #000000;">);
+       curl_easy_setopt(curlhandle, CURLOPT_VERBOSE, </span><span style="color: #800080;">1L</span><span style="color: #000000;">);
+  
+  
+  r </span>=<span style="color: #000000;"> curl_easy_perform(curlhandle);
+       
+ 
+       fclose(f);
+ 
+       </span><span style="color: #0000ff;">if</span> (r ==<span style="color: #000000;"> CURLE_OK)
+              </span><span style="color: #0000ff;">return</span> <span style="color: #800080;">1</span><span style="color: #000000;">;
+       </span><span style="color: #0000ff;">else</span><span style="color: #000000;"> {
+              fprintf(stderr, </span><span style="color: #800000;">"</span><span style="color: #800000;">%s\n</span><span style="color: #800000;">"</span><span style="color: #000000;">, curl_easy_strerror(r));
+              </span><span style="color: #0000ff;">return</span> <span style="color: #800080;">0</span><span style="color: #000000;">;
+       }
+}
+ 
+</span><span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">int</span> c, <span style="color: #0000ff;">char</span> **<span style="color: #000000;">argv) {
+       CURL </span>*curlhandle =<span style="color: #000000;"> NULL;
+ 
+       curl_global_init(CURL_GLOBAL_ALL);
+       curlhandle </span>=<span style="color: #000000;"> curl_easy_init();
+ 
+       </span><span style="color: #008000;">//</span><span style="color: #008000;">download(curlhandle, "ftp:</span><span style="color: #008000;">//</span><span style="color: #008000;">user:pass@host/path/file", "C:\\file", 0, 3);</span>
+  download(curlhandle , <span style="color: #800000;">"</span><span style="color: #800000;">http://software.sky-union.cn/index.asp</span><span style="color: #800000;">"</span>,<span style="color: #800000;">"</span><span style="color: #800000;">/work/index.asp</span><span style="color: #800000;">"</span>,<span style="color: #800080;">1</span>,<span style="color: #800080;">3</span><span style="color: #000000;">);
+       curl_easy_cleanup(curlhandle);
+       curl_global_cleanup();
+ 
+       </span><span style="color: #0000ff;">return</span> <span style="color: #800080;">0</span><span style="color: #000000;">;
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./01_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<span style="font-size: 12px;">编译gcc&nbsp;&nbsp;resume.c&nbsp;&nbsp;-o resume –lcurl</span><br><span style="font-size: 12px;">./ resume&nbsp;&nbsp;</span><br><br></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(2724318,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;4ac2a311-ec26-e111-b422-842b2b196315&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./01_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./01_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/moodlxs/" target="_blank"><img src="./01_files/u361206.jpg" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/moodlxs/">绿色冰点</a><br>
+            <a href="http://home.cnblogs.com/u/moodlxs/followees">关注 - 5</a><br>
+            <a href="http://home.cnblogs.com/u/moodlxs/followers">粉丝 - 60</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;4ac2a311-ec26-e111-b422-842b2b196315&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(2724318,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">12</span>
+    </div>
+    <div class="buryit" onclick="votePost(2724318,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+</div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724277.html" class="p_n_p_prefix">« </a> 上一篇：<a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724277.html" title="发布于2012-10-15 14:43">HTTP协议详解</a><br><a href="http://www.cnblogs.com/moodlxs/archive/2012/10/16/2725329.html" class="p_n_p_prefix">» </a> 下一篇：<a href="http://www.cnblogs.com/moodlxs/archive/2012/10/16/2725329.html" title="发布于2012-10-16 00:52">在Window和Linux下使用Zthread库</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2012-10-15 15:03</span> <a href="http://www.cnblogs.com/moodlxs/">绿色冰点</a> Views(<span id="post_view_count">66625</span>) Comments(<span id="post_comment_count">8</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=2724318" rel="nofollow">Edit</a> <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#" onclick="AddToWz(2724318);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=104617,cb_entryId=2724318,cb_blogApp=currentBlogApp,cb_blogUserGuid='4ac2a311-ec26-e111-b422-842b2b196315',cb_entryCreatedDate='2012/10/15 15:03:00';loadViewCount(cb_entryId);</script>
+	
+</div>
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<!--done-->
+<br>
+<div class="feedback_area_title">
+    Post Comment</div>
+<div class="feedbackNoItems">
+    </div>
+
+        <div class="feedbackItem">
+            <div class="feedbackListSubtitle">
+                <div class="feedbackManage">
+                    &nbsp;&nbsp;<span class="comment_actions"></span>
+                </div>
+                <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#2493341" class="layer">#1楼</a><a name="2493341" id="comment_anchor_2493341"></a> <span class="comment_date">2012-10-15 17:32</span>
+                |
+                <a id="a_comment_author_2493341" href="http://www.cnblogs.com/BoyXiao/" target="_blank">小宝马的爸爸</a> <a href="http://msg.cnblogs.com/send/%E5%B0%8F%E5%AE%9D%E9%A9%AC%E7%9A%84%E7%88%B8%E7%88%B8" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+            </div>
+            <div class="feedbackCon">
+                <div id="comment_body_2493341" class="blog_comment_body">支持支持热烈支持</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2493341,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2493341,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_2493341_avatar" style="display:none;">http://pic.cnblogs.com/face/88876/20141029153323.png</span><br>
+            </div>
+        </div>
+    
+        <div class="feedbackItem">
+            <div class="feedbackListSubtitle">
+                <div class="feedbackManage">
+                    &nbsp;&nbsp;<span class="comment_actions"></span>
+                </div>
+                <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#2493449" class="layer">#2楼</a><a name="2493449" id="comment_anchor_2493449"></a> <span class="comment_date">2012-10-15 21:04</span>
+                |
+                <a id="a_comment_author_2493449" href="http://www.cnblogs.com/alephsoul-alephsoul/" target="_blank">邵贤军</a> <a href="http://msg.cnblogs.com/send/%E9%82%B5%E8%B4%A4%E5%86%9B" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+            </div>
+            <div class="feedbackCon">
+                <div id="comment_body_2493449" class="blog_comment_body">楼主辛苦了！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2493449,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2493449,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_2493449_avatar" style="display:none;">http://pic.cnblogs.com/face/u319777.jpg?id=25002735</span><br>
+            </div>
+        </div>
+    
+        <div class="feedbackItem">
+            <div class="feedbackListSubtitle">
+                <div class="feedbackManage">
+                    &nbsp;&nbsp;<span class="comment_actions"></span>
+                </div>
+                <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#2633220" class="layer">#3楼</a><a name="2633220" id="comment_anchor_2633220"></a> <span class="comment_date">2013-03-12 16:21</span>
+                |
+                <a id="a_comment_author_2633220" href="http://home.cnblogs.com/u/498833/" target="_blank">jessierzlz</a> <a href="http://msg.cnblogs.com/send/jessierzlz" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+            </div>
+            <div class="feedbackCon">
+                <div id="comment_body_2633220" class="blog_comment_body">good, another library, more info is needed.</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2633220,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2633220,&#39;Bury&#39;,this)">反对(0)</a></div><br>
+            </div>
+        </div>
+    
+        <div class="feedbackItem">
+            <div class="feedbackListSubtitle">
+                <div class="feedbackManage">
+                    &nbsp;&nbsp;<span class="comment_actions"></span>
+                </div>
+                <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#2642375" class="layer">#4楼</a><a name="2642375" id="comment_anchor_2642375"></a> <span class="comment_date">2013-03-25 20:17</span>
+                |
+                <a id="a_comment_author_2642375" href="http://www.cnblogs.com/csuftzzk/" target="_blank">24K纯开源</a> <a href="http://msg.cnblogs.com/send/24K%E7%BA%AF%E5%BC%80%E6%BA%90" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+            </div>
+            <div class="feedbackCon">
+                <div id="comment_body_2642375" class="blog_comment_body">Thanks a lot.</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2642375,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2642375,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_2642375_avatar" style="display:none;">http://pic.cnblogs.com/face/u214648.jpg?id=14094735</span><br>
+            </div>
+        </div>
+    
+        <div class="feedbackItem">
+            <div class="feedbackListSubtitle">
+                <div class="feedbackManage">
+                    &nbsp;&nbsp;<span class="comment_actions"></span>
+                </div>
+                <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#2718655" class="layer">#5楼</a><a name="2718655" id="comment_anchor_2718655"></a> <span class="comment_date">2013-07-03 00:45</span>
+                |
+                <a id="a_comment_author_2718655" href="http://home.cnblogs.com/u/99522/" target="_blank">禁区</a> <a href="http://msg.cnblogs.com/send/%E7%A6%81%E5%8C%BA" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+            </div>
+            <div class="feedbackCon">
+                <div id="comment_body_2718655" class="blog_comment_body">非常好的教程.多谢</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2718655,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2718655,&#39;Bury&#39;,this)">反对(0)</a></div><br>
+            </div>
+        </div>
+    
+        <div class="feedbackItem">
+            <div class="feedbackListSubtitle">
+                <div class="feedbackManage">
+                    &nbsp;&nbsp;<span class="comment_actions"></span>
+                </div>
+                <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#2752226" class="layer">#6楼</a><a name="2752226" id="comment_anchor_2752226"></a> <span class="comment_date">2013-08-15 17:49</span>
+                |
+                <a id="a_comment_author_2752226" href="http://home.cnblogs.com/u/482842/" target="_blank">叶落枫飘零</a> <a href="http://msg.cnblogs.com/send/%E5%8F%B6%E8%90%BD%E6%9E%AB%E9%A3%98%E9%9B%B6" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+            </div>
+            <div class="feedbackCon">
+                <div id="comment_body_2752226" class="blog_comment_body">谢谢楼主。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2752226,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2752226,&#39;Bury&#39;,this)">反对(0)</a></div><br>
+            </div>
+        </div>
+    
+        <div class="feedbackItem">
+            <div class="feedbackListSubtitle">
+                <div class="feedbackManage">
+                    &nbsp;&nbsp;<span class="comment_actions"></span>
+                </div>
+                <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#2898015" class="layer">#7楼</a><a name="2898015" id="comment_anchor_2898015"></a> <span class="comment_date">2014-03-18 15:31</span>
+                |
+                <a id="a_comment_author_2898015" href="http://home.cnblogs.com/u/326072/" target="_blank">oracle_1010</a> <a href="http://msg.cnblogs.com/send/oracle_1010" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+            </div>
+            <div class="feedbackCon">
+                <div id="comment_body_2898015" class="blog_comment_body">非常实用</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2898015,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2898015,&#39;Bury&#39;,this)">反对(0)</a></div><br>
+            </div>
+        </div>
+    
+        <div class="feedbackItem">
+            <div class="feedbackListSubtitle">
+                <div class="feedbackManage">
+                    &nbsp;&nbsp;<span class="comment_actions"></span>
+                </div>
+                <a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#3364784" class="layer">#8楼</a><a name="3364784" id="comment_anchor_3364784"></a><span id="comment-maxId" style="display:none;">3364784</span><span id="comment-maxDate" style="display:none;">2016/2/22 11:35:01</span> <span class="comment_date">2016-02-22 11:35</span>
+                |
+                <a id="a_comment_author_3364784" href="http://www.cnblogs.com/GyaoG/" target="_blank">姚勤劳</a> <a href="http://msg.cnblogs.com/send/%E5%A7%9A%E5%8B%A4%E5%8A%B3" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+            </div>
+            <div class="feedbackCon">
+                <div id="comment_body_3364784" class="blog_comment_body">博主，非常感谢写这么好的文章！那个win32版的libcurl下载链接无效了！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3364784,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3364784,&#39;Bury&#39;,this)">反对(0)</a></div><br>
+            </div>
+        </div>
+    
+<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#" onclick="return RefreshPage();">刷新页面</a><a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank">【推荐】50万行VC++源码: 大型组态工控、电力仿真CAD与GIS源码库</a><br><a href="http://www.rongcloud.cn/live" target="_blank">【推荐】移动直播百强八成都在用融云即时通讯云</a><br><a href="http://www.gcpowertools.com.cn/products/activereports_overview.htm?utm_source=cnblogs&amp;utm_medium=blogpage&amp;utm_term=bottom&amp;utm_content=AR&amp;utm_campaign=community" target="_blank">【推荐】报表开发有捷径：快速设计轻松集成，数据可视化和交互</a><br><a href="http://netease.im/?&amp;hmsr=bky8&amp;from=bky8" target="_blank">【推荐】网易云信-一天开发一个微信，独创1对1技术顾问让开发加速</a><br><a href="http://click.aliyun.com/m/5912/" target="_blank">【推荐】一个小型创业公司怎样低成本起步？</a><br></div>
+<div id="opt_under_post"></div>
+<div id="ad_c1" class="c_ad_block"><a href="http://gold.xitu.io/welcome/?utm_source=cnblogs&amp;utm_medium=banner&amp;utm_content=gaoshou&amp;utm_campaign=q3_website" target="_blank"><img width="300" height="250" src="./01_files/24442-20160805112458981-1554012564.jpg" alt=""></a></div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>最新IT新闻</b>:<br> ·  <a href="http://news.cnblogs.com/n/552152/" target="_blank">Testin云测宣布完成3000万美元C轮融资</a><br> ·  <a href="http://news.cnblogs.com/n/552148/" target="_blank">硬盘里放不下那么多女朋友？谷歌来帮你了</a><br> ·  <a href="http://news.cnblogs.com/n/552151/" target="_blank">花季少女之死谁之过？防止个人信息泄露提高防范意识是关键</a><br> ·  <a href="http://news.cnblogs.com/n/552150/" target="_blank">乐视成为酷派第一大股东当天 酷派副总裁周明毅离职</a><br> ·  <a href="http://news.cnblogs.com/n/552149/" target="_blank">索尼PS Now云服务宣布支持Windows电脑 兼容400多款PS3游戏</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="ad_c2" class="c_ad_block"><a href="https://www.jiguang.cn/devservice/?from=cnblogs01" target="_blank"><img width="468" height="60" src="./01_files/24442-20160803181056012-1919505484.jpg" alt=""></a></div>
+<div id="under_post_kb"><div class="itnews c_ad_block" id="kb_block"><b>最新知识库文章</b>:<br><div id="kb_recent"> ·  <a href="http://kb.cnblogs.com/page/550625/" target="_blank">程序猿媳妇儿注意事项</a><br> ·  <a href="http://kb.cnblogs.com/page/540529/" target="_blank">可是姑娘，你为什么要编程呢？</a><br> ·  <a href="http://kb.cnblogs.com/page/549631/" target="_blank">知其所以然（以算法学习为例）</a><br> ·  <a href="http://kb.cnblogs.com/page/548394/" target="_blank">如何给变量取个简短且无歧义的名字</a><br> ·  <a href="http://kb.cnblogs.com/page/549080/" target="_blank">编程的智慧</a><br></div>» <a href="http://kb.cnblogs.com/" target="_blank">更多知识库文章...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+$(function () {
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverAdT2();
+    deliverAdC1();
+    deliverAdC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);    
+});
+</script>
+</div>
+
+
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news">用着不错的svn空间：www.svn999.com<div id="profile_block">昵称：<a href="http://home.cnblogs.com/u/moodlxs/">绿色冰点</a><br>园龄：<a href="http://home.cnblogs.com/u/moodlxs/" title="入园时间：2011-12-15">4年8个月</a><br>粉丝：<a href="http://home.cnblogs.com/u/moodlxs/followers/">60</a><br>关注：<a href="http://home.cnblogs.com/u/moodlxs/followees/">5</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow(&#39;4ac2a311-ec26-e111-b422-842b2b196315&#39;)">+加关注</a></div></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="calendar"></div>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div class="mySearch">
+<h3 class="catListTitle">Search</h3>
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="ZZK" id="btnZzk" class="btn_my_zzk"></div>
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="Google" class="btn_my_zzk"></div>
+</div></div><div id="sidebar_shortcut" class="sidebar-block">
+<!--
+<div class="catListLink">
+<h3 class ="catListTitle">常用链接</h3>
+<ul>
+<li><a href="http://www.cnblogs.com/moodlxs/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="http://www.cnblogs.com/moodlxs/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="http://www.cnblogs.com/moodlxs/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="http://www.cnblogs.com/moodlxs/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="http://www.cnblogs.com/moodlxs/tag/" title="我的博客的标签列表">我的标签</a></li>
+<li><a id="itemListLink" onclick="this.blur();WarpClass('itemListLink', 'itemListLin_con');return false;" href="#">更多链接</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div>
+--></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">My Tags</h3>
+<ul>
+<li><a href="http://www.cnblogs.com/moodlxs/tag/lua%20bug%20os.date/">lua bug os.date</a>(1)</li><li><a href="http://www.cnblogs.com/moodlxs/tag/%E7%99%BE%E5%BA%A6%20%E5%8C%BB%E7%96%97%E5%B9%BF%E5%91%8A/">百度 医疗广告</a>(1)</li><li><a href="http://www.cnblogs.com/moodlxs/tag/%E5%85%AC%E5%8E%86%20%E5%86%9C%E5%8E%86%20%E8%BD%AC%E6%8D%A2/">公历 农历 转换</a>(1)</li><li><a href="http://www.cnblogs.com/moodlxs/tag/%E6%B8%B8%E6%88%8F/">游戏</a>(1)</li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div class="catListPostCategory">
+<h3 class="catListTitle">Post Categories</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="http://www.cnblogs.com/moodlxs/category/629325.html">Golang(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="http://www.cnblogs.com/moodlxs/category/343106.html">Linux(9)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="http://www.cnblogs.com/moodlxs/category/353626.html">php(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="http://www.cnblogs.com/moodlxs/category/353617.html">UNIX(16)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="http://www.cnblogs.com/moodlxs/category/353618.html">Windows编程(15)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="http://www.cnblogs.com/moodlxs/category/353623.html">编程基本功(11)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="http://www.cnblogs.com/moodlxs/category/353627.html">编辑器(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="http://www.cnblogs.com/moodlxs/category/353621.html">数据结构和算法(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="http://www.cnblogs.com/moodlxs/category/353622.html">硬件知识(4)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListPostArchive">
+<h3 class="catListTitle">Post Archives</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="http://www.cnblogs.com/moodlxs/archive/2016/05.html">2016/5 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="http://www.cnblogs.com/moodlxs/archive/2014/12.html">2014/12 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="http://www.cnblogs.com/moodlxs/archive/2014/11.html">2014/11 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="http://www.cnblogs.com/moodlxs/archive/2014/05.html">2014/5 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="http://www.cnblogs.com/moodlxs/archive/2014/01.html">2014/1 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="http://www.cnblogs.com/moodlxs/archive/2013/12.html">2013/12 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="http://www.cnblogs.com/moodlxs/archive/2013/11.html">2013/11 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="http://www.cnblogs.com/moodlxs/archive/2013/10.html">2013/10 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="http://www.cnblogs.com/moodlxs/archive/2013/08.html">2013/8 (14)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="http://www.cnblogs.com/moodlxs/archive/2013/07.html">2013/7 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="http://www.cnblogs.com/moodlxs/archive/2013/06.html">2013/6 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="http://www.cnblogs.com/moodlxs/archive/2013/03.html">2013/3 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="http://www.cnblogs.com/moodlxs/archive/2013/01.html">2013/1 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="http://www.cnblogs.com/moodlxs/archive/2012/12.html">2012/12 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="http://www.cnblogs.com/moodlxs/archive/2012/11.html">2012/11 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="http://www.cnblogs.com/moodlxs/archive/2012/10.html">2012/10 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_16" href="http://www.cnblogs.com/moodlxs/archive/2012/09.html">2012/9 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_17" href="http://www.cnblogs.com/moodlxs/archive/2012/05.html">2012/5 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_18" href="http://www.cnblogs.com/moodlxs/archive/2012/03.html">2012/3 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_19" href="http://www.cnblogs.com/moodlxs/archive/2012/02.html">2012/2 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_20" href="http://www.cnblogs.com/moodlxs/archive/2012/01.html">2012/1 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_21" href="http://www.cnblogs.com/moodlxs/archive/2011/12.html">2011/12 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_22" href="http://www.cnblogs.com/moodlxs/archive/2011/10.html">2011/10 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_23" href="http://www.cnblogs.com/moodlxs/archive/2011/09.html">2011/9 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_24" href="http://www.cnblogs.com/moodlxs/archive/2011/04.html">2011/4 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_25" href="http://www.cnblogs.com/moodlxs/archive/2010/12.html">2010/12 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_26" href="http://www.cnblogs.com/moodlxs/archive/2010/11.html">2010/11 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_27" href="http://www.cnblogs.com/moodlxs/archive/2010/10.html">2010/10 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_28" href="http://www.cnblogs.com/moodlxs/archive/2010/09.html">2010/9 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_29" href="http://www.cnblogs.com/moodlxs/archive/2010/08.html">2010/8 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_30" href="http://www.cnblogs.com/moodlxs/archive/2010/07.html">2010/7 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_31" href="http://www.cnblogs.com/moodlxs/archive/2010/03.html">2010/3 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_32" href="http://www.cnblogs.com/moodlxs/archive/2009/09.html">2009/9 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_33" href="http://www.cnblogs.com/moodlxs/archive/2009/05.html">2009/5 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_34" href="http://www.cnblogs.com/moodlxs/archive/2009/03.html">2009/3 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_35" href="http://www.cnblogs.com/moodlxs/archive/2009/02.html">2009/2 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_36" href="http://www.cnblogs.com/moodlxs/archive/2009/01.html">2009/1 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_37" href="http://www.cnblogs.com/moodlxs/archive/2008/12.html">2008/12 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_38" href="http://www.cnblogs.com/moodlxs/archive/2008/11.html">2008/11 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_39" href="http://www.cnblogs.com/moodlxs/archive/2008/10.html">2008/10 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_40" href="http://www.cnblogs.com/moodlxs/archive/2008/07.html">2008/7 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_41" href="http://www.cnblogs.com/moodlxs/archive/2008/05.html">2008/5 (1)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListArticleArchive">
+<h3 class="catListTitle">Article Archives</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_2_Link_0" href="http://www.cnblogs.com/moodlxs/archives/2012/02.html" rel="nofollow">2012年2月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_1" href="http://www.cnblogs.com/moodlxs/archives/2012/01.html" rel="nofollow">2012年1月 (3)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<!--
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	151726
+	<li class="liRank">
+		排名 -	1241
+	</li>
+</ul>
+</div>
+-->
+
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">Recent Comments</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/moodlxs/archive/2008/11/06/2345424.html#3459886">1. Re:PE文件格式分析及修改</a></li>
+        <li class="recent_comment_body">楼主 分析头侧！！！</li>
+        <li class="recent_comment_author">--ErnastoChen</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/moodlxs/p/5462755.html#3424350">2. Re:差点又被百度坑了一次，大家谨慎啊！</a></li>
+        <li class="recent_comment_body">@北原之风引用确实如此，第一个链接就是一个静态网页 这也能搜索排名第一 日了狗了写了推广俩字，说明是交钱，竞价排名的，肯定在前面的...</li>
+        <li class="recent_comment_author">--麦克刘.Mr</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/moodlxs/p/5462755.html#3424007">3. Re:差点又被百度坑了一次，大家谨慎啊！</a></li>
+        <li class="recent_comment_body">....额，梯子随身自带的飘过</li>
+        <li class="recent_comment_author">--Anonymous_lin</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/moodlxs/p/5462755.html#3423726">4. Re:差点又被百度坑了一次，大家谨慎啊！</a></li>
+        <li class="recent_comment_body">见怪不怪了，是不是免疫了呢？ 还有这极有可能是中毒了，因为我们公司官网就被放过奇怪的 博彩广告。大街上那些老中医，很多不都靠谱，还容易被整坏。靠谱的老中医，跟国宝一样，还是去大医院，多花些钱看看吧。......</li>
+        <li class="recent_comment_author">--笨蛋王</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/moodlxs/p/5462755.html#3423721">5. Re:差点又被百度坑了一次，大家谨慎啊！</a></li>
+        <li class="recent_comment_body">确实如此，第一个链接就是一个静态网页  这也能搜索排名第一   日了狗了</li>
+        <li class="recent_comment_author">--北原之风</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">Top Posts</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html">1. C++ 用libcurl库进行http通讯网络编程(66625)</a></li><li><a href="http://www.cnblogs.com/moodlxs/p/3370521.html">2. HIVE 时间操作函数(21315)</a></li><li><a href="http://www.cnblogs.com/moodlxs/archive/2012/10/16/2725329.html">3. 在Window和Linux下使用Zthread库(15971)</a></li><li><a href="http://www.cnblogs.com/moodlxs/archive/2011/12/16/2290288.html">4. 简述Linux Epoll ET模式EPOLLOUT和EPOLLIN触发时刻(13260)</a></li><li><a href="http://www.cnblogs.com/moodlxs/archive/2012/09/20/2694743.html">5. 公历转干支历--lua实现(13042)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap" style="display: none;">
+<!--
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"></div>
+</div>
+-->
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div class="RecentComment">
+	<div id="TopDiggPostsBlock"><ul><li><a href="http://www.cnblogs.com/moodlxs/archive/2012/10/15/2724318.html">1. C++ 用libcurl库进行http通讯网络编程(12)</a></li><li><a href="http://www.cnblogs.com/moodlxs/p/3501900.html">2. 高性能代码编写原则(7)</a></li><li><a href="http://www.cnblogs.com/moodlxs/archive/2008/11/06/2345424.html">3. PE文件格式分析及修改(6)</a></li><li><a href="http://www.cnblogs.com/moodlxs/archive/2012/09/20/2694743.html">4. 公历转干支历--lua实现(5)</a></li><li><a href="http://www.cnblogs.com/moodlxs/archive/2012/09/15/2686472.html">5. 寿星万年历---Lua实现(4)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2016 绿色冰点
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+</body></html>

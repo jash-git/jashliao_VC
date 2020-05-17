@@ -1,0 +1,1 @@
+lib /def:libCB_BaseLib.def /machine:ix86 /out:CB_BaseLib.lib

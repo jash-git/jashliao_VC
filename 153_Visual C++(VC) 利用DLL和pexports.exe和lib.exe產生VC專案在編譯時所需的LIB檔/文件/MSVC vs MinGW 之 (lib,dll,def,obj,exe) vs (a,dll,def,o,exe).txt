@@ -1,0 +1,237 @@
+MSVC vs MinGW 之 (lib,dll,def,obj,exe) vs (a,dll,def,o,exe)
+
+
+資料來源: http://blog.sina.com.cn/s/blog_5ea0192f010102ig.html
+
+MinGW:
+c -> o           gcc -c a.c
+c -> exe         gcc a.c libs.o -o a.exe (從主程序a.c,附加libs，生成a.exe)
+o -> exe         gcc a.o b.o ... -o main.exe
+c -> dll,def,a   gcc a.c -shared -o a.dll -Wl,--output-def,a.def,--out-implib,liba.a
+a -> dll           a2dll liba.a
+dll -> a:          dlltool --dllname a.dll --def a.def --output-lib liba.a (需要def檔)
+a -> def:        dumpbin /exports lib.a > lib.def (在windows上調用，def需要修改)
+dll -> def :      pexports a.dll -o > a.def (這裡的-o是指給函數標序號)
+lib -> def :      reimp -d a.lib
+lib -> a:          (for __cdecl functions in most case) reimp a.lib; (for __stdcall functions)
+
+MSVC:
+c -> lib     cl /LD a.c (注意已經定義了export列表)
+c -> dll     cl /LD a.c
+c -> obj     cl /c a.c
+c -> exe     cl a.c /out:a.exe
+dll ->lib   lib /machine:ix86 /def:a.def /out:a.lib (需要def檔)
+obj ->lib   lib a.obj b.obj... /out:mylib.lib
+dll ->def   DUMPBIN a.dll /EXPORTS /OUT:a.def (生成的def需要做修正)
+lib ->def   reimp -d a.lib (這個要在MSYS+MinGW下用)
+
+關於這些工具的適用範圍可以很容易的理解和記憶。
+dll和exe都是PE檔，所以可以使用pexports.
+lib和a是靜態程式庫檔，都是歸檔類型，不是PE格式。所以不能使用pexports.
+dll可以使用dlltool.
+lib可以使用lib, 和reimp(lib->a工具)
+所有的bin檔，包括dll,exe,lib,a都可以使用dumpbin.
+
+參考:
+http://hi.baidu.com/kaien_space/blog/item/5e77fafa2ba9ff16a8d3110a.html
+Mingw官網文檔:   http://www.mingw.org/wiki/MSVC_and_MinGW_DLLs
+http://oldwiki.mingw.org/index.php/CreateImportLibraries
+http://www.mingw.org/wiki/FAQ
+http://hi.baidu.com/opaquefog/blog/item/9b21b6deb324e25dccbf1ab7.html
+http://qzone.qq.com/blog/8330936-1238659272
+http://hi.baidu.com/jzinfo/blog/item/b0aa1d308de99f9da8018e00.html
+ 
+本篇測試用代碼:
+1. main.cpp
+#include <iostream>
+#include <stdlib.h>
+#include "mylib.h"
+using namespace std;
+int main()
+{
+char str[]="Hello world!";
+printhello(str);
+return 0;
+}
+
+2. mylib.cpp
+#include <iostream>
+#include <stdlib.h>
+#include "mylib.h"
+using namespace std;
+void EXPORT printhello(char *str)
+{
+cout << str << endl;
+}
+
+3. mylib.h
+
+#define EXPORT __declspec(dllexport)
+extern "C"
+{
+void EXPORT printhello(char *str);
+}
+
+關於DLL的定義和使用:
+1. 需要外部調用的函數，定義的時候要在函式宣告前加入
+__declspec(dllexport)
+方便起見，可以定義成宏
+#define EXPORT __declspec(dllexport)
+然後在定義函式宣告的時候使用，例如:
+void EXPORT printhello(char *str);
+只有注明EXPORT的函數才能出現在dll的輸出表中，外部函數才能調用。
+關於函式呼叫約定__cdecl 還是 __stdcall。我們可以在輸出函數名前添加，也可以用cl編譯的時候指明
+/Gd 使用 __cdecl 調用約定 (C declaration,是C和C++預設格式)，手動堆疊平衡(支援可變參數)
+/Gz 使用 __stdcall 調用約定 (是pascal, fortran等的調用約定)， 自動堆疊平衡
+此外還有其他的調用約定，如_fastcall，把前兩個參數通過寄存器傳遞，調用速度快。
+要使用dll,我們可以動態調用它，也可以轉換成lib庫靜態調用。
+動態調用就是說，先用LoadLibrary載入到記憶體中。再用GetProcAddress得到函數位址就可以使用了。比較麻煩。
+靜態調用就是說，先為需要調用的函數生成def檔，然後製作靜態程式庫lib文件。再用這個lib調用dll裡的函數。
+__cdecl 和 __stdcall
+VC上編譯C和C++程式時，預設使用__cdecl函式呼叫約定。如果想生成__stdcall的函數，我們可以使用/GZ編譯.例如:
+cl /Gz /LD mylib.cpp
+這樣生成的dll和lib就是使用的__stdcall約定
+通過下面的命令
+dumpbin /exports mylib.dll 或mylib.lib 我們可以看到
+    ordinal hint RVA      name
+          1    0 0000107E _printhello@4
+
+下面是__cdecl的函數名書寫規格
+    ordinal hint RVA      name
+          1    0 0000107E printhello
+可見__stdcall裡多了首碼和尾碼。
+ 
+ 
+
+DEF檔案格式:
+LIBRARY DLLNAME.DLL
+EXPORTS
+fonctionname1   @1
+fonctionname2    @2
+................
+(注意__cdecl和__stdcall調用約定的DEF檔書寫區別。)
+
+從DLL製作def文件:
+
+MinGW上的實現方法:
+pexports mydll.dll -o > mydll.def
+
+MSVC上的實現方法:
+1. 製作一份dll的匯出函數表,使用VC的dumpbin命令
+dumpbin mydll.dll /exports > mylib.def
+2. 打開def檔修改之
+i） 添加 LIBRARY mydll.dll
+    EXPORTS
+ii) 在EXPORTS後面加入改好的需要匯出到lib中函數名清單
+
+(注意: 因為函式呼叫約定的不同，所以匯出的函數名會有首碼或尾碼，這些都儘量不要修改。否則可能無法正常調用！具體操作，後面會舉例說明)
+(非常值得注意的是: 這個EXPORTS的函數名清單，有些情況下，你可能根本無法知道這些函數名的書寫規則。不要總認為dumpbin中得到的名字就可以通用了。也不要認為pexports得到的def檔就不用修改了。事實上，如果我們聲明函數的時候沒有用extern "C"{}. 那麼你在VC中調用一個MinGW的dll時你就會發現，問題變得很棘手。def的函數名書寫規則和你要調用dll的函數約定有關，和dll裡的前尾碼無關。切記！)
+另外， 在使用dll裡的函數的時候，需要一份.h檔，對調用的函數進行聲明。這裡的函數名裡沒有那些附加的前尾碼的，這點要注意。
+
+在VC中生成dll和lib(調用dll庫)
+cl /LD mylib.cpp    (得到mylib.dll和mylib.lib)
+
+在MinGW中生成dll, def和a(調用dll庫)
+g++ mylib.cpp -shared -o mylib_linux.dll -Wl,--output-def,mydll.def,--out-implib,mylib.a
+ 
+ 
+ 
+
+在VC中生成靜態程式庫lib(不使用dll)
+(注意: 靜態程式庫(lib和a)實際上就是一種歸檔檔)
+cl -c mylib.cpp    編譯cpp得到obj
+lib mylib.obj /out:mylib.lib (生成歸檔檔mylib.lib)
+在MinGW中生成靜態程式庫a(不使用dll)
+g++ -c mylib.cpp   得到o檔
+ar r mylib.a mylib.o 生成歸檔檔mylib.a
+ 
+ 
+VC中調用VC的dll (lib方式)
+
+分為有lib檔和無lib檔兩種情況。第二種情況需要先生成lib檔再調用。
+我們感興趣的是第二種情況。具體操作實戰如下:
+我們只有一個mylib.dll, 需要調用一個輸出函數printhello
+1. 製作def
+dumpbin mylib.dll /exports >mylib.def
+得到一份完整的輸出函數清單。
+在開頭添加 LIBRARY mylib.dll
+再把下面的輸出函數資訊
+    ordinal hint RVA      name
+          1    0 0000107E printhello
+    修改成
+    EXPORTS
+          printhello       @1
+其他的資訊都刪除。
+也可以在MinGW上直接調用 pexports mylib.dll > mylib.def (這就是MinGW的方便之處了)
+2. 生成lib
+需要mylib.dll和mylib.def
+lib /machine:ix86 /def:mylib.def
+這樣就會生成mylib.lib和mylib.exp兩個文件。(mylib.exp可以刪除)
+3. 通過lib調用dll
+在程式main.cpp中加入#include "mylib.h"
+這樣就可以調用這個函數了
+cl main.cpp mylib.lib   編譯生成main.exe文件。
+(注意:這個程式的運行需要dll的參與！編譯後lib檔可以刪除，但mylib.dll不能刪除，切記！）
+MinGW調用MinGW的dll (直接連接 和 a連接)
+MinGW的dll可以像靜態程式庫.a那樣直接連接使用。
+g++ main.cpp mylib.dll
+也可以使用
+g++ main.cpp -lmylib
+直接調用dll編譯生成main.exe文件。非常的簡單方面。
+當然，從研究的角度來說，我們討論一下如何通過庫檔a來實現連接。其方法和VC的情況雷同。
+考慮無a檔的情況。
+1. 製作def
+直接調用 pexports mylib.dll > mylib.def
+2. 生成a
+需要mylib.dll和mylib.def
+dlltool --dllname mylib.dll --def mylib.def --output-lib libmylib.a
+這樣就會生成庫檔libmylib.a文件。
+3. 通過a調用dll
+在程式main.cpp中加入#include "mydll.h"
+這樣就可以調用dll裡的函數了
+g++ main.cpp libmylib.a -o main.exe 編譯生成main.exe文件。
+ 
+
+VC中調用MinGW的dll
+現在如何在VC中調用MinGW生成的mylib_linux.dll呢？(注意:VC無法使用MinGW的a檔，也無法像MinGW那樣直接調用dll)
+我們可以使用def檔生成VC可用的lib，通過lib調用
+如果你沒有def檔，那就用前面說過的方法（dumpbin(手動)，或pexports(自動)) 生成一個。
+如果你已經有了def檔。內容如下:
+LIBRARY mylib_linux.dll
+EXPORTS
+printhello              @1
+
+下面的命令可以根據def生成lib
+lib /machine:ix86 /def:mydll.def      生成mydll.lib。
+通過lib調用dll
+cl main.cpp mydll.lib 生成main.exe調用dll
+
+MinGW中調用VC的dll
+
+如過dll是__cdecl約定，那麼可以像靜態程式庫那樣直接使用。如果
+如果使用的是__stdcall調用約定。這時，我們無法像__cdecl那樣直接使用了。我們有兩種思路，一種是生成VC上的lib，然後直接調用。另一種是製作def和a檔，通過他們調用dll。
+(注意，在這種情況下，不能用reimp從lib得到a。即使這個lib可以直接使用。生成的a也不能用。想得到可用的a檔需要按以下步驟操作)
+1. 製作def
+調用 pexports mylib.dll | sed "s/_//" > mylib.def （sed部分去除函數名前的_）
+未完待續。。。
+ 
+
+2. 生成a
+需要mylib.dll和mylib.def
+dlltool -U -D mylib.dll -d mylib.def -l libmylib.a （注意，這個-U絕對不能少）
+這樣就會生成庫檔libmylib.a文件。
+3. 通過a調用dll
+在程式main.cpp中加入#include "mydll.h"
+這樣就可以調用dll裡的函數了
+g++ main.cpp libmylib.a -o main.exe 編譯生成main.exe文件。
+
+注意，調用__stdcall的函數也必須聲明為__stdcall如下:
+extern "C"
+{
+void __stdcall printhello(char *str);
+}
+在VC中則不需要修改代碼，cl編譯的時候使用/Gz即可。
+ 
+寫到這裡，基本上已經討論的差不多了。至於靜態程式庫.lib和.a之間的轉換。據說這是同一種類型的歸檔檔，不同的只是歸檔裡包含的內容。lib裡包含的是.obj檔，a裡包含的是.o文件。然而，這兩種檔的格式據說也是相同的，然而我們發現lib和a無法通用！(請注意，這裡的靜態程式庫lib不是調用dll時的那種靜態程式庫lib。那種lib只是起到索引和連接dll的功能，而這裡所說的靜態程式庫是脫離dll工作的庫，函數過程都包含在庫裡了)。以前我曾經寫過一篇文章，討論過cygwin上的庫和mingw通用的方法。其實現在我們可以更清晰的明白，他們之所以通用是因為兩者都是用gcc編譯的。同一種編譯器出來的結果當然可以相容。那篇文章的價值在於。cygwin雖然工具包很多，但是要獨立運行還需要dll支援。而mingw則可以生成不依賴於dll獨立運行的程式。
+那麼lib和a不能通用的原因到底在哪裡呢？起初覺得有可能在編譯器上。因為vc的編譯器cl和gcc的編譯器編譯出來的obj和o檔雖然格式相同卻不能通用。實驗表明，拿o檔給cl用，或拿obj給gcc用都通不過。然而，我對這點還不表示懷疑！因為我覺得最可能的原因並不在這裡。行不通的原因很可能是兩個編譯器調用了不同的庫函數。cl調用了MSVC提供的庫函數，而gcc調用了他自己的庫函數。所以我們回發現，通用靜態程式庫失敗時顯示的都是庫函數沒定義之類的錯誤。其實是函數名的符號不能識別。如果知道所需的庫函數的具體檔，並加入到專案的編譯中，相信很可能就會解決問題。不論如何，目前靜態程式庫的通用方法還有待進一步的探討。
+
