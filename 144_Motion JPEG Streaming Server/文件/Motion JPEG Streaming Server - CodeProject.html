@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<!-- saved from url=(0071)http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server -->
+<html style="height: 100%;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Motion JPEG Streaming Server - CodeProject</title> 
+	<link type="text/css" rel="stylesheet" href="./Motion JPEG Streaming Server - CodeProject_files/Main.css">
+
+	
+
+<meta name="Description" content="Implementing a MJPEG (or Motion JPEG) streaming server that can be used to steam screenshots or any other source of images over the HTTP protocol to any web browser client (MJPEG stream writer is included in the library).; Author: Ragheed Al-Tayeb; Updated: 23 Apr 2012; Section: Internet / Network; Chapter: General Programming; Updated: 23 Apr 2012">
+<meta name="Keywords" content="C#, .NET, Dev, Intermediate,Internet / Network,General Programming,Free source code, tutorials">
+<meta name="Author" content="Ragheed Al-Tayeb">
+<meta name="Rating" content="General">
+<meta name="Robots" content="index, follow, NOODP">
+<meta name="Revisit-After" content="1 days">
+<meta name="application-name" content="CodeProject">
+<meta name="google-translate-customization" content="d908bb7ce7aff658-4c2f3a504525c916-g629383f736781a8a-13">
+
+<link rel="dns-prefetch" href="http://ajax.googleapis.com/"> 
+<link rel="canonical" href="./Motion JPEG Streaming Server - CodeProject_files/Motion JPEG Streaming Server - CodeProject.html">
+
+
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - All Topics" href="http://www.codeproject.com/WebServices/ArticleRSS.aspx?cat=1">
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - Android" href="http://www.codeproject.com/WebServices/ArticleRSS.aspx?cat=22">
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - iOS" href="http://www.codeproject.com/WebServices/ArticleRSS.aspx?cat=25">
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - C++" href="http://www.codeproject.com/WebServices/ArticleRSS.aspx?cat=2">
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - C#" href="http://www.codeproject.com/WebServices/ArticleRSS.aspx?cat=3">
+<link rel="alternate" type="application/rss+xml" title="CodeProject Latest articles - Web" href="http://www.codeproject.com/WebServices/ArticleRSS.aspx?cat=23">
+<link rel="alternate" type="application/rss+xml" title="CodeProject Lounge Postings" href="http://www.codeproject.com/webservices/LoungeRSS.aspx">
+<link rel="search" type="application/opensearchdescription+xml" title="CodeProject" href="http://www.codeproject.com/info/OpenSearch.xml">
+
+	<!--<base target="_top">--><base href="." target="_top">
+	<link rel="icon" href="http://www.codeproject.com/favicon.ico" type="image/ico">
+<link rel="shortcut icon" href="http://www.codeproject.com/favicon.ico" type="image/ico">
+<link rel="apple-touch-icon" href="http://www.codeproject.com/images/FavIcon-Apple.png" type="image/png">
+<script type="text/javascript" language="Javascript">//<![CDATA[
+function defrm () { /* thanks twitter */ document.write = ''; window.top.location = window.self.location;  setTimeout(function() { document.body.innerHTML = ''; }, 0);  window.self.onload = function(evt) { document.body.innerHTML = ''; }; }if (window.top !== window.self) {  try {  if (window.top.location.host) { /* will throw */ } else { defrm(); /* chrome */ }  } catch (ex) { defrm(); /* everyone else */ } }if (typeof(DemoUrl)!='undefined')   document.write(unescape('%3Cme')+'ta http'+'-equiv="re'+'fresh"                  con'+'tent="1;url='+DemoUrl+unescape('"%3CE'));
+function _dmBootstrap(file) { var _dma = document.createElement('script');  _dma.type = 'text/javascript'; _dma.async = true;  _dma.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + file; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(_dma);}
+function _dmFollowup(file) { if (typeof DMAds === 'undefined')  _dmBootstrap('cdn1.developermedia.com/a.min.js?dt=2.8.150113.1');}
+(function () { _dmBootstrap('cdn1.developermedia.com/a.min.js?dt=2.8.150113.1'); setTimeout(_dmFollowup, 2000);})();
+
+//]]>
+</script><script type="text/javascript" async="" src="./Motion JPEG Streaming Server - CodeProject_files/a.min.js"></script>
+
+	
+
+
+
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-1735123-1']);
+	_gaq.push(['_trackPageview']);
+	_gaq.push(['_setDomainName', 'www.codeproject.com']);
+	_gaq.push(['_setSessionTimeout', '1200']); 
+
+	(function () {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})(); 
+</script><script type="text/javascript" async="" src="./Motion JPEG Streaming Server - CodeProject_files/ga.js"></script>
+
+
+<link type="text/css" rel="stylesheet" charset="UTF-8" href="./Motion JPEG Streaming Server - CodeProject_files/translateelement.css"><script type="text/javascript" charset="UTF-8" src="./Motion JPEG Streaming Server - CodeProject_files/main_zh-TW.js"></script><script type="text/javascript" charset="UTF-8" src="./Motion JPEG Streaming Server - CodeProject_files/element_main.js"></script></head>	
+
+<body class="chrome chrome39" style="position: relative; min-height: 100%; top: 0px;">
+
+<a class="access-link" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#Main"><img alt="Click here to Skip to main content" src="./Motion JPEG Streaming Server - CodeProject_files/t.gif"></a>
+
+
+
+
+
+<div class="page-background">
+
+	
+	<div id="ctl00_Suggest" class="suggestions">
+		
+<div class="alert-bar ">
+	<a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" class="close-notify">×</a>
+	<div><b>Not quite what you are looking for? You may want to try:</b><ul class="see-also"><li><a href="http://www.codeproject.com/Articles/791991/Use-Android-Phone-as-Webcam-and-Surveillance-Camer?q=MJPEG">Use Android Phone as Webcam and Surveillance Camera</a></li><li><a href="http://www.codeproject.com/Articles/15537/Camera-Vision-video-surveillance-on-C?q=MJPEG">Camera Vision - video surveillance on C#</a></li></ul><div id="removeHilite" class="alert-bar-command">
+<a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" onclick="unmarkText(&#39;contentdiv&#39;,&#39;removeHilite&#39;)">highlights off</a>
+</div>
+</div>
+</div>
+	</div>
+
+	
+
+	<table id="ctl00_Bn" style="width:100%;height:135px" cellpadding="0" cellspacing="0" class="banner fixed">
+	<tbody><tr valign="bottom">
+		<td class="blank-background" style="height:31px">&nbsp;</td>
+		<td class="blank-background" rowspan="3" style="width:250px;height:135px"><a href="http://www.codeproject.com/"><img id="ctl00_Logo" tabindex="1" title="CodeProject" src="./Motion JPEG Streaming Server - CodeProject_files/logo250x135.gif" alt="Home" style="height:135px;width:250px;border-width:0px;"></a></td>
+		<td class="blank-background align-right" style="width:728px;height:31px">
+
+<div class="container memberbar clearfix">
+
+	<div id="ctl00_MemberMenu_GenInfo" class="float-left">11,159,245 members (67,161 online)</div>
+
+	<div class="float-left">
+		
+	</div>
+
+	<div class="float-right">
+
+		
+
+		
+
+		
+
+			<script type="text/javascript">//<!--
+			function doSubmit(secure)
+			{
+				if (secure)
+					document.subForm.action = "https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server"
+				else
+					document.subForm.action = "https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server"
+				document.subForm.submit();
+				return true;
+			}//-->
+			</script>
+
+			<a name="SignUp"></a>
+			<span class="member-signin tooltip">
+				<span><a href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign in</a></span>
+
+				<div class="tooltip-flyout">
+					<form name="subForm" id="subForm" action="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server" method="post" class="tight">
+
+						
+						<input id="FormName" name="FormName" value="MenuBarForm" type="hidden">
+
+						<div>Email</div>
+						<div><input class="small-text" type="email" name="Email" id="Email"></div>
+						<div>Password</div>
+						<div><input class="small-text" type="password" name="Password" id="Password"></div>
+						<div class="action">
+							
+<script type="text/javascript">
+function Join(){
+ var url = 'http://www.codeproject.com/script/Membership/Modify.aspx?meml=' + document.subForm.Email.value;
+ document.location.href=url;return false;
+}
+document.write('<input type="button" class="create"   onclick="return Join();" value="Join"');
+document.write('<input type="hidden" name="fld_quicksign"   value="true" />');
+</script><input type="button" class="create" onclick="return Join();" value="Join" <input="" name="fld_quicksign">
+							<input type="submit" value="Sign in" class="signin" onclick="return doSubmit(false);">
+						</div>
+
+						<div class="container">
+							
+							&nbsp;
+							<a id="ctl00_MemberMenu_SendPassword" class="forgot float-right" href="http://www.codeproject.com/script/Membership/SendPassword.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Forgot your password?</a>
+						</div>
+					</form>
+
+					<hr class="divider-dark">
+
+					Sign in using <a class="oauth" title="Sign in using Facebook" href="http://www.codeproject.com/script/Membership/OAuthLogOn.aspx?auth=Facebook"><img src="./Motion JPEG Streaming Server - CodeProject_files/facebook.png" style="vertical-align:middle;padding-right:3px;border:0;"></a>
+<a class="oauth" title="Sign in using Google" href="http://www.codeproject.com/script/Membership/OAuthLogOn.aspx?auth=Google"><img src="./Motion JPEG Streaming Server - CodeProject_files/google-plus.png" style="vertical-align:middle;padding-right:3px;border:0;"></a>
+<a class="oauth" title="Sign in using Linkedin" href="http://www.codeproject.com/script/Membership/OAuthLogOn.aspx?auth=LinkedIn"><img src="./Motion JPEG Streaming Server - CodeProject_files/linkedin.png" style="vertical-align:middle;padding-right:3px;border:0;"></a>
+<a class="oauth" title="Sign in using Microsoft" href="http://www.codeproject.com/script/Membership/OAuthLogOn.aspx?auth=Microsoft"><img src="./Motion JPEG Streaming Server - CodeProject_files/microsoft.png" style="vertical-align:middle;padding-right:3px;border:0;"></a>
+
+				</div>
+		
+	</span></div>
+</div></td>
+		<td class="blank-background" style="height:31px">&nbsp;</td>
+	</tr>
+	<tr valign="middle">
+		<td class="theme1-background" style="height:94px">&nbsp;</td>
+		<td class="theme1-background ad"><div class="msg-728x90" data-format="728x90" data-type="ad" data-publisher="lqm.codeproject.site" data-zone="General-Programming/Internet-Network/HTTP" data-tags="C#, .NET, Dev, Intermediate,rating4.5"><iframe id="dmad1" allowtransparency="false" style="z-index:10" width="728" height="90" marginwidth="0" marginheight="0" frameborder="0" scrolling="no"></iframe><div style="display: none; width: 728px; height: 90px; text-align: left; border-style: solid; border-width: 1px; position: relative; font-style: normal; font-variant: normal; font-weight: normal; font-stretch: normal; font-size: 14px; line-height: 18px; font-family: &#39;Segoe UI&#39;, Arial; background-color: white;"><div class="sendReportContainer" style="padding: 15px 20px;"><div style="padding-bottom:13px;"><b>Don't like this Ad?</b></div><div style="padding-bottom:10px;">	Please tell us why: <select class="reportReason" max-width="100px"><option>Offensive</option><option>Abusive</option><option>Off topic</option><option>Don't like the Ad</option></select>&nbsp;<a class="reportButton" padding="0px" href="javascript:void(0);">Report</a></div></div><div class="reportSentContainer" style="display:none; padding: 15px 20px;"><span style="color:#999">Thank you for the report!</span></div><a href="http://www.developermedia.com/" target="_blank"><img src="./Motion JPEG Streaming Server - CodeProject_files/dm-logo-150x23.png" style="max-width:100%;position:absolute; right:20px; bottom:20px;"></a><input type="image" src="./Motion JPEG Streaming Server - CodeProject_files/redo.png" title="Show Ad" style="z-index: 1000; position: absolute; left: 0px; top: 0px; width: 14px; height: 14px;"></div></div></td>
+		<td class="theme1-background" style="height:94px">&nbsp;</td>
+	</tr>
+	<tr valign="top">
+		<td style="height: 14px;"></td>
+		<td style="height: 14px;" class="blank-background"></td>
+		<td style="height: 14px;"></td>
+	</tr>
+</tbody></table>
+
+
+	<a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#Main"><img alt="Click here to Skip to main content" class="access-link" src="./Motion JPEG Streaming Server - CodeProject_files/t.gif"></a>
+
+	
+	<div id="ctl00_TPR" class="sub-headerbar fixed">
+	<table cellpadding="0" cellspacing="0" class="extended"><tbody><tr><td nowrap="nowrap">
+		
+
+<div class="navbar clearfix">
+<ul class="navmenu openable">
+
+<li><a id="ctl00_TopNavBar_Home" href="http://www.codeproject.com/">home</a>
+
+
+</li><li class=""><a id="ctl00_TopNavBar_Art" class="down selected" href="http://www.codeproject.com/script/Articles/Latest.aspx">articles</a>
+
+	<ul>
+		<li class=""><a id="ctl00_TopNavBar_ArtTopicList" class="fly" onmouseover="navBarMenu.ShowMap(this, &#39;ctl00_TopNavBar_MapFlyout&#39;);" href="http://www.codeproject.com/script/Content/SiteMap.aspx">Chapters and Sections<span class="has-submenu">&gt;</span></a><ul id="ctl00_TopNavBar_MapFlyout">
+			<li>
+				<div id="siteMap">
+					<img src="./Motion JPEG Streaming Server - CodeProject_files/animated.gif" alt="loading" style="margin:150px;width:100px;height:100px;">
+				</div>
+			</li>
+			</ul>
+		</li>
+		<li><a id="ctl00_TopNavBar_ArtSearch" class="fly break" href="http://www.codeproject.com/search.aspx?sbo=kw">Search</a></li>
+		<li><a id="ctl00_TopNavBar_ArtLatestArts" class="fly" href="http://www.codeproject.com/script/Articles/Latest.aspx?at=1,3,7">Latest Articles</a></li>
+		<li><a id="ctl00_TopNavBar_ArtLatestTips" class="fly" href="http://www.codeproject.com/script/Articles/Latest.aspx?at=6">Latest Tips/Tricks</a></li>
+		<li><a id="ctl00_TopNavBar_ArtTop" class="fly" href="http://www.codeproject.com/script/Articles/TopArticles.aspx?ta_so=5">Top Articles</a></li>
+		<li><a id="ctl00_TopNavBar_ArtBeginner" class="fly" href="http://www.codeproject.com/search.aspx?sbo=kw?aidlst=152&sa_us=True">Beginner Articles</a></li>
+		<li><a id="ctl00_TopNavBar_ArtBlogArticles" class="fly break" href="http://www.codeproject.com/script/Articles/BlogArticleList.aspx">Technical Blogs</a></li>
+		<li><a id="ctl00_TopNavBar_ArtGuide" class="fly" href="http://www.codeproject.com/info/Submit.aspx">Posting/Update Guidelines</a></li>
+		<li><a id="ctl00_TopNavBar_ArtHelpForum" class="fly" href="http://www.codeproject.com/Forums/1641/Article-Writing.aspx">Article Help Forum</a></li>
+		<li><a id="ctl00_TopNavBar_ArtCompetition" class="fly break" href="http://www.codeproject.com/script/Awards/CurrentCompetitions.aspx?cmpTpId=1">Article Competition</a></li>
+		<li><a id="ctl00_TopNavBar_ArtPostArticle" class="fly highlight1" href="http://www.codeproject.com/script/Articles/Submit.aspx">
+			<img src="./Motion JPEG Streaming Server - CodeProject_files/write13.png" width="13px" height="13px"> Submit an article or tip
+			</a></li>
+		<li><a id="ctl00_TopNavBar_ArtPostBlog" class="fly highlight2" href="http://www.codeproject.com/script/Articles/BlogFeed.aspx">
+			<img src="./Motion JPEG Streaming Server - CodeProject_files/write13.png" width="13px" height="13px"> Post your Blog
+			</a></li>		<li class="last"></li>
+	</ul>
+
+</li>
+
+
+
+<li class=""><a id="ctl00_TopNavBar_Answers" href="http://www.codeproject.com/script/Answers/List.aspx?tab=active">quick answers</a>
+	<ul>
+		<li id="ctl00_TopNavBar_AQL"><a id="ctl00_TopNavBar_ArticleQuestion" class="fly highlight1" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#_comments">
+			<img src="./Motion JPEG Streaming Server - CodeProject_files/write13.png" width="13px" height="13px"> Ask a Question about this 
+			article</a>
+		</li>
+
+		<li><a id="ctl00_TopNavBar_QAAsk" class="fly highlight2" href="http://www.codeproject.com/Questions/ask.aspx"><img src="./Motion JPEG Streaming Server - CodeProject_files/write13.png" width="13px" height="13px"> Ask a Question</a></li>
+
+		
+		<li><a id="ctl00_TopNavBar_QAUnanswered" class="fly" href="http://www.codeproject.com/script/Answers/List.aspx?tab=unanswered">View Unanswered Questions</a></li>
+		<li><a id="ctl00_TopNavBar_QALatest" class="fly" href="http://www.codeproject.com/script/Answers/List.aspx?tab=active">View All Questions...</a></li>
+		
+				<li><a id="ctl00_TopNavBar_QATR_ctl00_Tag" class="fly" href="http://www.codeproject.com/script/Answers/List.aspx?tab=active&alltags=true&tags=81" style="padding-left:30px">C# questions</a></li>
+			
+				<li><a id="ctl00_TopNavBar_QATR_ctl01_Tag" class="fly" href="http://www.codeproject.com/script/Answers/List.aspx?tab=active&alltags=true&tags=85" style="padding-left:30px">ASP.NET questions</a></li>
+			
+				<li><a id="ctl00_TopNavBar_QATR_ctl02_Tag" class="fly" href="http://www.codeproject.com/script/Answers/List.aspx?tab=active&alltags=true&tags=842" style="padding-left:30px">VB.NET questions</a></li>
+			
+				<li><a id="ctl00_TopNavBar_QATR_ctl03_Tag" class="fly" href="http://www.codeproject.com/script/Answers/List.aspx?tab=active&alltags=true&tags=93" style="padding-left:30px">SQL questions</a></li>
+			
+				<li><a id="ctl00_TopNavBar_QATR_ctl04_Tag" class="fly" href="http://www.codeproject.com/script/Answers/List.aspx?tab=active&alltags=true&tags=87" style="padding-left:30px">Javascript questions</a></li>
+			
+		<li class="last"></li>
+	</ul>
+
+</li>
+
+
+
+<li class=""><a id="ctl00_TopNavBar_Forums" href="http://www.codeproject.com/script/Forums/List.aspx">discussions</a>
+
+	<ul>
+		<li><a id="ctl00_TopNavBar_MessageBoardsAll" class="fly" href="http://www.codeproject.com/script/Forums/List.aspx">All Message Boards...</a></li>
+		<li class=""><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1580997/Application-Lifecycle.aspx">Application Lifecycle<span class="has-submenu">&gt;</span></a>
+<ul class="openable"><li><a class="fly" href="http://www.codeproject.com/Forums/1533717/Running-a-Business.aspx">Running a Business</a></li>
+<li><a class="fly" href="http://www.codeproject.com/Forums/1533716/Sales-Marketing.aspx">Sales / Marketing</a></li>
+<li><a class="fly" href="http://www.codeproject.com/Forums/1651/Collaboration-Beta-Testing.aspx">Collaboration / Beta Testing</a></li>
+<li><a class="fly" href="http://www.codeproject.com/Forums/3304/Work-Training-Issues.aspx">Work &amp; Training Issues</a></li>
+</ul></li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/369270/Design-and-Architecture.aspx">Design and Architecture</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/12076/ASP-NET.aspx">ASP.NET</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1580226/JavaScript.aspx">JavaScript</a>
+</li>
+<li class=""><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1647/C-Cplusplus-MFC.aspx">C / C++ / MFC<span class="has-submenu">&gt;</span></a>
+<ul class="openable"><li><a class="fly" href="http://www.codeproject.com/Forums/4486/ATL-WTL-STL.aspx">ATL /  WTL / STL</a></li>
+<li><a class="fly" href="http://www.codeproject.com/Forums/3785/Managed-Cplusplus-CLI.aspx">Managed C++/CLI</a></li>
+</ul></li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1827459/Adobe-Technologies.aspx">Adobe Technologies</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1649/Csharp.aspx">C#</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1627782/Free-Tools.aspx">Free Tools</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1827460/Objective-C.aspx">Objective-C</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1832431/Ruby-On-Rails.aspx">Ruby On Rails</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1725/Database.aspx">Database</a>
+</li>
+<li class=""><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/186301/Hardware-Devices.aspx">Hardware &amp; Devices<span class="has-submenu">&gt;</span></a>
+<ul class="openable"><li><a class="fly" href="http://www.codeproject.com/Forums/1644/System-Admin.aspx">System Admin</a></li>
+</ul></li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1606152/Hosting-and-Servers.aspx">Hosting and Servers</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1643/Java.aspx">Java</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1650/NET-Framework.aspx">.NET Framework</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1848626/Android.aspx">Android</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1876716/iOS.aspx">iOS</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/13695/Mobile.aspx">Mobile</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1540733/Sharepoint.aspx">Sharepoint</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1004257/Silverlight-WPF.aspx">Silverlight / WPF</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1646/Visual-Basic.aspx">Visual Basic</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/Forums/1640/Web-Development.aspx">Web Development</a>
+</li>
+<li><a class="fly" style="padding-left:30px" href="http://www.codeproject.com/suggestions.aspx">Site Bugs / Suggestions</a>
+</li>
+
+		<li class="last"></li>
+	</ul>
+
+</li>
+
+<li class=""><a id="ctl00_TopNavBar_Features" href="http://www.codeproject.com/Feature/">features</a>
+
+	<ul>
+		<li><a id="ctl00_TopNavBar_Comps" class="fly" href="http://www.codeproject.com/script/Awards/CurrentCompetitions.aspx?cmpTpId=1&awsac=true">Competitions</a></li>
+		<li><a id="ctl00_TopNavBar_News" class="fly" href="http://www.codeproject.com/script/News/List.aspx">News</a></li>
+		<li><a id="ctl00_TopNavBar_Insider" class="fly" href="http://www.codeproject.com/Feature/Insider/">The Insider Newsletter</a></li>
+    	<li><a id="ctl00_TopNavBar_DailyBuild" class="fly" href="http://www.codeproject.com/Feature/DailyBuild">The Daily Build Newsletter</a></li>
+		<li><a id="ctl00_TopNavBar_Newsletters" class="fly" href="http://www.codeproject.com/script/Mailouts/Archive.aspx?mtpid=1">Newsletter archive</a></li>
+		<li><a id="ctl00_TopNavBar_Surveys" class="fly" href="http://www.codeproject.com/script/Surveys/List.aspx">Surveys</a></li>
+		<li><a id="ctl00_TopNavBar_Showcase" class="fly" href="http://www.codeproject.com/KB/showcase/">Product Showcase</a></li>
+		<li><a id="ctl00_TopNavBar_Research" class="fly" href="http://www.codeproject.com/script/ResearchLibrary/Index.aspx">Research Library</a></li>
+
+		<li><a id="ctl00_TopNavBar_Stuff" class="fly" href="http://www.codeproject.com/Info/Stuff.aspx">CodeProject Stuff</a></li>
+		<li class="last"></li>
+	</ul>
+
+</li>
+
+
+<li class=""><a id="ctl00_TopNavBar_Lounge" href="http://www.codeproject.com/Lounge.aspx">community</a>
+
+	<ul>
+		<li><a id="ctl00_TopNavBar_WhosWho" class="fly" href="http://www.codeproject.com/script/Membership/Profiles.aspx">Who's Who</a></li>
+		<li><a id="ctl00_TopNavBar_MVPs" class="fly break" href="http://www.codeproject.com/script/Awards/MVPWinners.aspx">Most Valuable Professionals</a></li>
+		
+
+		<li><a id="ctl00_TopNavBar_LoungeLnk" class="fly highlight2" href="http://www.codeproject.com/Lounge.aspx">The Lounge &nbsp;</a></li>
+		<li><a id="ctl00_TopNavBar_InsiderLnk" class="fly" href="http://www.codeproject.com/Insider.aspx">The Insider News</a></li>
+		<li><a id="ctl00_TopNavBar_WeirdWonderful" class="fly" href="http://www.codeproject.com/Feature/WeirdAndWonderful.aspx">The Weird &amp; The Wonderful</a></li>
+		<li><a id="ctl00_TopNavBar_SoapBoxLnk" class="fly" href="http://www.codeproject.com/Forums/1536756/The-Soapbox.aspx">The Soapbox</a></li>
+		<li><a id="ctl00_TopNavBar_PRLnk" class="fly break" href="http://www.codeproject.com/Forums/1738007/Press-Releases.aspx">Press Releases</a></li>
+
+		
+		<li class=""><a class="fly" href="http://www.codeproject.com/Forums/1580229/Hindi.aspx">Non-English Language
+			<span class="has-submenu">&gt;</span></a>
+		<ul>
+		<li><a class="fly" href="http://www.codeproject.com/Forums/1580229/Hindi.aspx">General Indian Topics</a></li>
+		<li><a class="fly" href="http://www.codeproject.com/Forums/1580230/Chinese.aspx">General Chinese Topics</a></li>
+		</ul>
+		</li><li class="last"></li>
+		
+	</ul>
+
+</li>
+
+
+<li class="" style="margin-left:20px"><a id="ctl00_TopNavBar_Help" href="http://www.codeproject.com/KB/FAQs/">help</a>
+
+	<ul>
+		<li><a id="ctl00_TopNavBar_HelpWhatIs" class="fly" href="http://www.codeproject.com/info/guide.aspx">What is 'CodeProject'?</a></li>
+		<li><a id="ctl00_TopNavBar_HelpGeneral" class="fly break" href="http://www.codeproject.com/KB/FAQs/">General FAQ</a></li>
+		<li><a id="ctl00_TopNavBar_HelpPostQuestion" class="fly break highlight2" href="http://www.codeproject.com/Questions/ask.aspx">Ask a Question</a></li>
+		<li><a id="ctl00_TopNavBar_HelpBugs" class="fly" href="http://www.codeproject.com/suggestions.aspx">Bugs and Suggestions</a></li>
+		<li><a id="ctl00_TopNavBar_HelpArticles" class="fly" href="http://www.codeproject.com/Forums/1641/Article-Writing.aspx">Article Help Forum</a></li>
+		<li><a id="ctl00_TopNavBar_HelpSiteMap" class="fly" href="http://www.codeproject.com/script/Content/SiteMap.aspx">Site Map</a></li>
+		<li><a id="ctl00_TopNavBar_HelpAdvertise" class="fly" href="http://developermedia.com/">Advertise with us</a></li>
+		<li><a id="ctl00_TopNavBar_HelpJobs" class="fly" href="http://www.codeproject.com/info/Jobs/">Employment Opportunities</a></li>
+		<li><a id="ctl00_TopNavBar_HelpAboutUs" class="fly" href="http://www.codeproject.com/info/about.aspx">About Us</a></li>
+		<li class="last"></li>
+	</ul>
+
+</li>
+
+</ul>
+
+</div>
+	</td><td align="right">
+		
+
+<div class="searchbar">
+
+<form method="get" action="http://www.codeproject.com/search.aspx?sbo=kw" name="Search" class="tight">
+
+
+<table border="0" cellspacing="0" cellpadding="0" class="search"><tbody><tr><td><input tabindex="2" class="search highlight" id="sb_tb" value="MJPEG" name="q"></td><td><input type="image" src="./Motion JPEG Streaming Server - CodeProject_files/search.gif"></td></tr></tbody></table>
+
+<div class="hover-container">
+	<div id="SearchFilter" class="search-advanced small-text align-left" style="display: none;">
+	<b>Search within:<br></b>
+		
+		<input type="radio" id="sb_kw" name="sbo" value="kw" checked="true"><label for="sb_kw">Articles</label><br>
+<input type="radio" id="sb_qa" name="sbo" value="qa"><label for="sb_qa">Quick Answers</label><br>
+<input type="radio" id="sb_fm" name="sbo" value="fm"><label for="sb_fm">Messages</label><br>
+
+
+		
+		
+
+		
+		
+	</div>
+</div>
+</form>
+
+</div>
+	</td></tr></tbody></table>
+	<div class="sub-headerbar-divider"></div>
+	</div>
+	
+
+	<div id="A" class="container-content-wrap fixed"> 
+
+	<div itemscope="" itemtype="http://schema.org/Article" class="container-content"> 
+
+		<div class="clearfix">
+			<div class="float-left container-breadcrumb">
+				<div><a href="http://www.codeproject.com/script/Content/SiteMap.aspx">Articles</a> » <a href="http://www.codeproject.com/Chapters/6/General-Programming.aspx">General Programming</a> » <a href="http://www.codeproject.com/KB/IP/"><span itemprop="articleSection">Internet / Network</span></a> » <a href="http://www.codeproject.com/KB/IP/#HTTP">HTTP</a></div>
+			</div>
+
+			<div class="align-left float-right padded-top" style="width">
+				
+
+
+ 
+&nbsp;
+
+
+
+
+
+
+
+
+
+
+			</div>
+
+			<div class="float-right article-nav">
+				
+				
+
+<a id="ctl00_ActionLinks_BookmarkMd_ImgBt" title="Bookmark" alternatetext="Bookmark" name="bm_371955_2" onclick="return bookmarkMe(371955,2,&#39;/script/Bookmarks/Ajax/Add.aspx?obid=371955&amp;obtid=2&amp;action=AddBookmark&amp;bio=true&amp;bis=medium&#39;,&#39;medium&#39;);" href="http://www.codeproject.com/script/Bookmarks/Add.aspx?obid=371955&obtid=2&action=AddBookmark&bio=true&bis=medium" style="display:inline-block;height:24px;width:24px;"><img title="Bookmark" src="./Motion JPEG Streaming Server - CodeProject_files/bookmark24.png" alt="" style="border-width:0px;"></a>
+
+
+<span id="ctl00_ActionLinks_BookmarkMd_StatusMsg" class="tiny-text" style="display:none" name="bm_371955_2"></span>
+<a id="ctl00_ActionLinks_PrintMd" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?display=Print">
+	<img src="./Motion JPEG Streaming Server - CodeProject_files/print24.png" title="Print" width="24px" height="24px" style="border:0">
+</a>
+			</div>
+
+			<div class="align-right float-left">
+				
+			</div>
+		</div>
+
+		<table class="extended container-article-parts" cellpadding="0" cellspacing="0">
+        <tbody><tr valign="top">
+		<td width="117px">
+
+			<div id="ctl00_Nav" class="container-article-tabs" style="position: static; top: 325px; left: 155.5px;">
+				<div class="tabs">
+					
+
+<div class="">
+	<div class="selected">Article</div><div class="unselected"><a href="http://www.codeproject.com/script/Articles/ViewDownloads.aspx?aid=371955">Browse Code</a></div><div class="unselected"><a href="http://www.codeproject.com/script/Articles/Statistics.aspx?aid=371955">Stats</a></div><div class="unselected"><a href="http://www.codeproject.com/script/Articles/ListVersions.aspx?aid=371955">Revisions (2)</a></div><div class="unselected"><a href="http://www.codeproject.com/script/Articles/ListAlternatives.aspx?aid=371955">Alternatives</a></div>
+
+	<div class="unselected"><a href="http://www.codeproject.com/Articles/371955/WebControls/#_comments" id="ctl00_ArticleTabs_CommentLink" class="anchorLink">Comments 
+        <span id="ctl00_ArticleTabs_CmtCnt">(71)</span></a>
+	</div>
+</div>	
+
+				</div>
+
+				
+
+			    <div class="tags"> 
+                    <h4>Tagged as</h4>
+			        <span id="ctl00_TagsList_TagWrp" class="tags">
+	
+	
+	
+	<span id="ctl00_TagsList_VisibleTags"><div class="t"><a rel="tag" href="http://www.codeproject.com/Tags/C--hash--">C#</a></div><div class="t"><a rel="tag" href="http://www.codeproject.com/Tags/.NET">.NET</a></div><div class="t"><a rel="tag" href="http://www.codeproject.com/Tags/Dev">Dev</a></div><div class="t"><a rel="tag" href="http://www.codeproject.com/Tags/Intermediate">Intermediate</a></div></span> 
+
+	
+	
+</span>
+
+			    </div>
+
+				<div class="padded-top related">
+					
+	<h4 id="ctl00_RelatedArticles_RelatedResults_ctl00_header">Related Articles</h4>
+	<div class="content-list">	
+	
+	<div class="content-list-item">
+		<a id="ctl00_RelatedArticles_RelatedResults_ctl01_Link" href="http://www.codeproject.com/Articles/791991/Use-Android-Phone-as-Webcam-and-Surveillance-Camer">Use Android Phone as Webcam and Surveillance Camera</a>
+		
+	</div>
+	
+	<div class="content-list-item">
+		<a id="ctl00_RelatedArticles_RelatedResults_ctl03_Link" href="http://www.codeproject.com/Articles/15537/Camera-Vision-video-surveillance-on-C">Camera Vision - video surveillance on C#</a>
+		
+	</div>
+	
+	<div class="content-list-item">
+		<a id="ctl00_RelatedArticles_RelatedResults_ctl04_Link" href="http://www.codeproject.com/Articles/85763/C-NET-RTP-MJPEG-Player">C# .NET RTP MJPEG Player</a>
+		
+	</div>
+	
+	<div class="content-list-item">
+		<a id="ctl00_RelatedArticles_RelatedResults_ctl05_Link" href="http://www.codeproject.com/Tips/779556/Iterative-Fast-Forward-D-DCT-II-on-MSIL">Iterative Fast Forward 1D DCT-II on MSIL</a>
+		
+	</div>
+	
+	<div class="content-list-item">
+		<a id="ctl00_RelatedArticles_RelatedResults_ctl06_Link" href="http://www.codeproject.com/Articles/10248/Motion-Detection-Algorithms">Motion Detection Algorithms</a>
+		
+	</div>
+	
+	</div>
+	
+
+				</div>
+
+                <div class="anchorLink gototop" id="gototop">
+                    <a id="ctl00_GoToTop" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#_articleTop">Go to top</a>
+                </div>
+			</div>
+
+		</td>
+		<td>
+			
+			<div id="AT" class="container-article  fixed"> 
+				<div class="article">
+
+					<form name="aspnetForm" method="post" action="./Motion JPEG Streaming Server - CodeProject_files/Motion JPEG Streaming Server - CodeProject.html" id="aspnetForm" style="margin:0;padding:0"><div>
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="8gxYcmgWcGzsHVUz0AOKG8WoHdGYydg+m/Cg7t4Q3lTXp59b3mJrbwTo6Yk0crLWvMHYB0538EsK+7ON1HUHQ8KHrL63MG0WbR0fc0wjdP9NpotH8+7Npmjt5aZH7q5Oqb96amI/O5PHjc8Ub9F0lm+8EQBvub3HywvJtH8f9w9W+clOyp5LHB2VtzXqI65X7iFPu1KEqBIRkNfms57ZdAaYaFWNxWbdYnzggjHqvGDjm5A5A+qTnRkwKLeSSOhp6NYncDGN0kGRu/DwiqKp+HjeP3zacSPWrJeJgjGeF21QY1kUkbXbSpT+qI2CM5Kn9S/Cng+EtFET7sABGHwv16rcZodvGR1oJoqhg5qpJ1V/G0/2FaNHv1LoxgfM4gYsudx9K+NPn0bzCg9OazbHhLRhR0wF0xfi1Yn26gh+Dh4MRERMzyDBVcSEpn6tD5rG+hU+cAFfMNm9ccDi+g3pIgYIZBXOgtV91QGArbfyCpF2P0vT6nCtfBcgrZBBhSABTbSHv9RmYSe9x33meP7wIrkMhZfhBeETvMiYV8juMrrt0RaV4v4QE3crgoBxt6LHAcaEr4psYqPd+EnM9hBYbZ09EF+R1t8N+6zbAdhB5N+PcbqeyG9S7+tvcu48sJrei0c0e90xqSMch/k6RcnDQzC18NV7jMmCungNYKY7+KVl7q6nQ1Ga0xx0iwpBFLXeh0rsZw5pnUj4T66qH+PyprdXz+dOZyw97+iEk2PzpTbKhBluKan17HSM0c/3edDslwYL75Drh8OWOtcQxPjuPhwnPlhRYjr+HbGMMkpps1k6/HzmRo3pnkBofaeGpImh772nBE5rO1/++5q9uCk5QiCrRzn0VaJcYKCQOkZyCT+wDmF2JlhyVitKxwJDDQSYA2knWAzjbY/MWmPJHL5+Bdpkr4OjCpN8CMjFC2vNGfgSIMOBY9Wqs69FFvYwnChmDRIu6dDPiit4eJneh2NrgwZ6bBvVTeGDJI8imBPuPH7Movrx0107E2jHMqSoRvXgUl+5VozYGUjP+eLXuGHJeBAXXg8nSjJ6TeEijNKpF6f2OeEZO8+wyUL90KoyV/nTEIsnh2AoistuKiGjegA2yMNCISS6qon7z4wjrMaghhDc9B39pxVtawmrSAoFi4NTCMIgYIG/pS1aTFrl3tKM87NIzPadmYTQWZHjiSc14l3Rfoj20CtFWIsd4a1mNKd4+Z79QMdvBvsy9d1APtFZ4DqqEJWUn28NYnfbQ5ovXn6EeXzILkqvz/zj+7T5CqXzGfK4SeskNdR2TEqoMGSNSN2TR5nmT1Qvhwez4EJtcbiXprtec5FME5G2WQbAr/hE2Kget0zuXidu0gxM8gbba3fJXmBYMuw7TDpnHjh4W8LB6FSrhnI2cA+zrg4lwJkPtUt/PqdpViFwzsiXCT0QME/VtKo5NjroxuqPLkVlgfC4s9ctAXJYtUdYSqgbvOrKiz/V0fa0EIbtTGtXCfFtrh7M5gY/yMQeVXhlY36lC+HWkL3ld3xzWhMaOvpy1FchhKQJesKpSCYKyJMKEaq6iC2HlsCAnWq9++18X43FojL+OOwQrfM/EtR+EmMpmqC0WbQ+mtS4cAkeOby+57mVI7eZfkbq6fJlnZ9ZNNLoloK69EjvBCV/EbCbfw+Gf5R3kjGa7KgIprCoBfWF31Rv4rFFKbh7uRe33MYkFSym2TIN+tw3XvO/fZb+cUh8HC2WH71rI6SrmtsPyB1ZR2YGaDB4t1LfEMpZseBAXSx+FDcDF/EkujAeB2Pa/mUixUR+wCHB5VgYkDED3zg5BczORSp+6c+fkrhXpeuNhFe5i/zA9LH8MgdZ5FtBty7s3roOn5aN4yPtY+MCc1d4sULRkyoQ66jdgo9wZ9piguFHhVVKaRTO+IyJ3jBOhHJliOJnhXjirZDJD7m7skatEDvLSXaLtsMmgGISe+WppovarqB3fvmr7hdVNexl49Z8Z0U9I8KEUd4Ide+Vx+jg2VrAAizHZp1x2BRXvrkM9VYacwo6ot00o/XPeMAlEAgyQDWJrnONjm6PonPn1deAOwGNXjtRIGZexlB3rk/pzJJbS86ceh62F4IKeA5M+MwcHqVBgaqxa/gV14a5M2HC6N09E1bIVlcVrfMJQFCXlYZLWT9aqSTFFNa//nWH97xPRE5UWUKkX8JKD4On6MRs0IRdd5cm/EQ=">
+</div>
+
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="10C1FD69">
+</div>
+
+					
+					 
+					<div class="header">
+					    <a name="Main"></a>
+
+					    
+					    <a name="_articleTop" id="_articleTop"></a>
+					    <div class="title">
+					        
+					        <h1 id="ctl00_ArticleTitle" itemprop="name">Motion JPEG Streaming Server</h1> 
+					    </div>
+
+                        <div style="height:34px">
+					        
+					        <div class="entry float-left">
+                                <img src="./Motion JPEG Streaming Server - CodeProject_files/{c1bd7bea-86a6-4035-bbc8-87eeae5f383d}.jpg" id="ctl00_avatar" style="float:left;height:48px;margin-right:10px">
+                                <div class="float-left">
+
+						            <span class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=1350747" rel="author"><span itemprop="author" itemscope="" itemtype="http://schema.org/Person"><span itemprop="name">Ragheed Al-Tayeb</span></span></a></span>, 
+						            <span class="date" itemprop="dateModified" content="2012-04-23 17:56:00">
+							            23 Apr 2012</span>
+			
+                                    <a id="ctl00_LicenseLink" title="The Code Project Open License (CPOL)" class="license" href="http://www.codeproject.com/info/cpol10.aspx">CPOL</a><div id="ctl00_CurRat" class="tooltip anchorLink" style="cursor:pointer;margin-top: 5px" name="CurRat_371955">
+				
+							            
+
+<table cellpadding="0" cellspacing="0" class="small-text" itemprop="aggregateRating" itemscope="" itemtype="http://schema.org/AggregateRating"> 
+<tbody><tr>
+	
+	<td class="nowrap">
+
+		
+			<meta itemprop="bestRating" content="5"> 
+			<meta itemprop="worstRating" content="1">
+		
+
+		<span id="ctl00_ArticleRating_VI">
+		<div class="nowrap rating-stars-large" style="height:21px;width:119px;position:relative;">
+	<div class="clipped align-left float-left" style="height:19px;width:118px;">
+		<img src="./Motion JPEG Streaming Server - CodeProject_files/stars-fill-lg.png" style="border-width:0px;">
+	</div><div class="clipped" style="height:19px;width:1px;position:relative;">
+		<img src="./Motion JPEG Streaming Server - CodeProject_files/stars-empty-lg.png" style="border-width:0px;position:absolute;top:0;right:0;">
+	</div>
+</div>
+		</span>
+
+		
+	</td>
+	
+	<td id="ctl00_ArticleRating_VR" class="nowrap">
+		&nbsp;
+		<span id="ctl00_ArticleRating_VotesR">&nbsp;<span itemprop="ratingValue" class="rating">4.98</span> (<span itemprop="ratingCount" class="count">35</span> votes)</span>
+		
+	</td>
+
+</tr>
+
+</tbody></table>
+
+
+							            <div id="ctl00_RB" class="speech-bubble-container-up">
+								            <div class="speech-bubble-up" style="width:150px !important">
+									                        
+<div>
+<table class="feature" width="100%" height="50px" title="Voting Distribution. Recent data only" cellpadding="0" cellspacing="0"><tbody><tr class="chart-row"><td class="chart-column rating-ignore-vote" title="Outside deviation limits - not included in score."><img src="./Motion JPEG Streaming Server - CodeProject_files/t.gif" width="20pxpx" height="1px" border="0px" alt="" title=""><br><span title="0 votes">1</span></td>
+<td class="chart-column rating-ignore-vote" title="Outside deviation limits - not included in score."><img src="./Motion JPEG Streaming Server - CodeProject_files/t.gif" width="20pxpx" height="1px" border="0px" alt="" title=""><br><span title="0 votes">2</span></td>
+<td class="chart-column rating-ignore-vote" title="Outside deviation limits - not included in score."><img src="./Motion JPEG Streaming Server - CodeProject_files/pollcol.gif" width="20pxpx" height="1px" border="0px" alt="1 vote, 2.9%" title="1 vote, 2.9%"><br><span title="1 vote">3</span></td>
+<td class="chart-column"><img src="./Motion JPEG Streaming Server - CodeProject_files/pollcol.gif" width="20pxpx" height="1px" border="0px" alt="1 vote, 2.9%" title="1 vote, 2.9%"><br><span title="1 vote">4</span></td>
+<td class="chart-column"><img src="./Motion JPEG Streaming Server - CodeProject_files/pollcol.gif" width="20pxpx" height="50px" border="0px" alt="33 votes, 94.3%" title="33 votes, 94.3%"><br><span title="33 votes">5</span></td>
+</tr></tbody></table><div class="small-text align-center">4.98/5 - 35 votes</div><div class="small-text align-center subdue">1 removed</div><div class="small-text align-center subdue">μ 4.96, σ<sub>a</sub> 1.06 [<a href="http://www.codeproject.com/KB/FAQs/RatingReputationFAQ.aspx#noisefilter">?</a>]</div>
+</div>
+								            </div>
+								            <div class="speech-bubble-pointer-up">
+									            <div class="speech-bubble-pointer-up-inner"></div>
+								            </div>
+							            </div>
+						            </div>
+                                </div>
+					        </div>
+
+                            
+						    <div id="ctl00_RateArticleRow" class="float-right align-right voting-bar">
+						        <div id="ctl00_RateArticle_RateItemWrapper" class="small-text" name="RateItem_371955">
+
+	<table width="100%" cellpadding="0" cellspacing="0" class="small-text">
+	<tbody><tr>
+		<td id="ctl00_RateArticle_VoteResultDiv" class="rating-result align-right">
+			<span class="align-right"></span>
+			<img class="loaderImg" width="16px" alt="loading..." height="16px" src="./Motion JPEG Streaming Server - CodeProject_files/animated_loading_blue.gif" style="display:none;"> 
+		</td>
+
+	
+		<td class="voteTbl" style="white-space:nowrap" align="right">
+			<table class="small-text">
+			<tbody><tr>
+				<td id="ctl00_RateArticle_RateText" class="rating-prompt">
+					Rate this:
+				</td>
+
+				
+				<td id="ctl00_RateArticle_VoteFormDiv" class="nowrap rating-stars-voter-large">
+					
+
+					<span id="ctl00_RateArticle_RB" class="tooltip ajaxHist radio voting">
+						<span id="ctl00_RateArticle_VoteRBL"><input id="ctl00_RateArticle_VoteRBL_0" type="radio" name="ctl00$RateArticle$VoteRBL" value="1" style="display: none;"><input id="ctl00_RateArticle_VoteRBL_1" type="radio" name="ctl00$RateArticle$VoteRBL" value="2" style="display: none;"><input id="ctl00_RateArticle_VoteRBL_2" type="radio" name="ctl00$RateArticle$VoteRBL" value="3" style="display: none;"><input id="ctl00_RateArticle_VoteRBL_3" type="radio" name="ctl00$RateArticle$VoteRBL" value="4" style="display: none;"><input id="ctl00_RateArticle_VoteRBL_4" type="radio" name="ctl00$RateArticle$VoteRBL" value="5" style="display: none;"></span> 
+
+						
+					<div class="rating-star-block"><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" rating="1" class="star outline" title="vote 1">vote 1</a><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" rating="2" class="star outline" title="vote 2">vote 2</a><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" rating="3" class="star outline" title="vote 3">vote 3</a><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" rating="4" class="star outline" title="vote 4">vote 4</a><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" rating="5" class="star outline" title="vote 5">vote 5</a></div></span>
+
+				</td>
+
+				
+				<td style="padding-left:5px">	
+					<input type="submit" name="ctl00$RateArticle$SubmitRateBtn" value="Vote!" id="ctl00_RateArticle_SubmitRateBtn" class="button" style="display: none;">
+				</td>
+			</tr>
+			</tbody></table>
+			
+		</td>
+	</tr>
+	</tbody></table>
+	<div class="hover-container">
+		
+        <div id="ctl00_RateArticle_RSU" class="rating-comment align-left float-right">
+            <div class="padded">
+            Please <a id="ctl00_RateArticle_SignUp" href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign up or sign in</a> to vote.
+            </div>
+        </div>
+	</div>
+</div>
+						    </div>
+						    	
+
+						    	
+                            <div class="float-right" style="margin: 4px 20px 0 0">
+						        
+                            </div>                    
+						    	
+                        </div>
+
+   					    
+                        <div id="ctl00_description" class="summary">Implementing a <span class="search-highlight">MJPEG</span> (or Motion JPEG) streaming server that can be used to steam screenshots or any other source of images over the HTTP protocol to any web browser client (<span class="search-highlight">MJPEG</span> stream writer is included in the library).</div>			
+
+                    </div>
+                    
+					
+					
+
+					
+
+					
+					
+					
+
+						
+					
+
+					
+
+						
+						<div id="contentdiv" class="text" itemprop="articleBody">
+						
+
+
+
+<div class="row"><ul class="download float-left">
+<li><a href="http://www.codeproject.com/KB/IP/371955/rtaVideoStreamer-src.zip">Download source files - 44.3 KB</a></li>
+<li><a href="http://www.codeproject.com/KB/IP/371955/rtaVideoStreamer-demo.zip">Download demo project - 11.2 KB</a></li>
+</ul><div class="float-left" style="margin-top:25px;margin-left:30px"><div data-format="1x11" data-type="ad" data-publisher="lqm.codeproject.site" data-zone="downloadlink" data-tags="c%23%2c.net%2cdev%2cintermediate"></div></div></div>
+<p>For mobile clients:</p>
+<p><img width="600" height="450" alt="Samsung Galaxy SII" src="./Motion JPEG Streaming Server - CodeProject_files/android_mobile.png"></p>
+<p>Other clients (such as Firefox, Chrome and VLC player): </p>
+<p><img alt="Streaming the desktop images to different remote clients" src="./Motion JPEG Streaming Server - CodeProject_files/firefox-chrome-vlc-clients.png"></p>
+<h2>Introduction</h2>
+<p>Motion JPEG is a stream of JPG images over HTTP protocol and it is commonly used for many multimedia applications specially in digital cameras (IP 
+cameras). 
+Although there are many ways to send images as a video to any remote computer&nbsp; <span class="search-highlight">MJPEG</span> is the 
+preferred one since normally it does not need any client software to be installed in the remote computer!. that is because it is supported by most of the common web browsers like Firefox and Chrome but 
+unfortunately, it is not yet supported by Internet Explorer directly (but there 
+are some plug-ins that make it possible to work with IE).</p>
+
+<h2>Motivation&nbsp;</h2>
+<p>In many I needed to stream a video of my desktop, camera, or whatever to a remote computer which has no client software to see my stream... 
+In such a case, using Motion-JPEG streams is preferred because it needs no more than 
+an internet browser. In this article I'm not going to describe 
+the internal structure of an <span class="search-highlight">MJPEG</span> stream (for more information, please visit <a href="http://en.wikipedia.org/wiki/Motion_JPEG">Motion_JPEG</a>) instead of that
+I'm going to describe how to use this library for <span class="search-highlight">MJPEG</span> streaming.</p>
+
+<h2>How to use this library</h2>
+<p>The main class in our library is <code>ImageSreamingSever()</code> which contains 
+the following methods and properties:</p>
+<h4>Methods:</h4>
+<ul class="method">
+<li><code>void Start()</code>: Starts the server on a specified TCP port.</li>
+<li><code>void Stop()</code>: Stops the server and closes any open connections.</li>
+</ul>
+<h4>Properties:</h4>
+<ul class="property">
+<li><code>ImagesSource</code>: The images collection (<code>IEnumerable&lt;Image&gt;</code>) to be streamed to any connected client.</li>
+<li><code>Interval</code>: The delay time (in milliseconds) between each sending image from the <code>ImagesSource</code> collection.</li>
+<li><code>IsRunning</code>: Is a read-only <code>bool</code> property indicating the status of the 
+server.</li>
+<li><code>Clients</code>: Returns a read-only collection of the currently connected socket of each client.</li>
+</ul>
+<h4>Example:</h4>
+<p>In order to implement a streaming server that can send a video of your desktop screen to any connected client, <strong>you'll need only two lines of code</strong> using our 
+<code>ImageStreamingServer</code>, as follow:</p>
+<div class="pre-action-link" id="premain0" width="100%" style="display:block"><img id="preimg0" src="./Motion JPEG Streaming Server - CodeProject_files/minus.gif" height="9" width="9" preid="0" style="cursor: pointer;"><span id="precollapse0" preid="0" style="cursor: pointer; margin-bottom: 0px;"> Collapse</span><span> | </span><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" preid="0">Copy Code</a></div><pre lang="cs" id="pre0" style="margin-top: 0px;">ImageStreamingServer server = <span class="code-keyword">new</span> ImageStreamingServer(); 
+server.Start(<span class="code-digit">8080</span>);</pre>
+<p>That's it !!!..&nbsp; </p><p>Now if you open (for example) the chrome internet explorer and write the IP of the server followed by colon and then the port number, in our example it is something like this :</p><p>
+
+</p><div class="pre-action-link" id="premain1" width="100%" style="display:block"><img id="preimg1" src="./Motion JPEG Streaming Server - CodeProject_files/minus.gif" height="9" width="9" preid="1" style="cursor: pointer;"><span id="precollapse1" preid="1" style="cursor: pointer; margin-bottom: 0px;"> Collapse</span><span> | </span><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" preid="1">Copy Code</a></div><pre id="pre1" style="margin-top: 0px;">http:<span class="code-comment">//</span><span class="code-comment">127.0.0.1:8080
+</span></pre>
+
+<p> you will properly see a video of your computer screen in the explorer .. and same if you do this from another computer (with the correct IP of your server), you should see something like this :
+
+</p><p><img width="570" height="358" alt="Google Chrome" src="./Motion JPEG Streaming Server - CodeProject_files/google-chrome.png"></p>
+
+<h2>Implementing your own ImagesSource&nbsp;</h2>
+<p>Actually I've chosen <code>IEnumerable&lt;Image&gt;</code> as a source of images because of the 
+flexibility that this interface is providing, for example the default 
+<code>ImagesSource</code> property of the class <code>ImageStreamingServer</code> is an <code>IEnumerable&lt;Image&gt;</code> of the desktop screen, but at the same time you 
+are free to implement any other type of image source you like by changing the value of that property.</p>
+<p>Suppose you want to make the images source from the camera or from the images file of any folder in your computer, then your code should be something like this:</p>
+<div class="pre-action-link" id="premain2" width="100%" style="display:block"><img id="preimg2" src="./Motion JPEG Streaming Server - CodeProject_files/minus.gif" height="9" width="9" preid="2" style="cursor: pointer;"><span id="precollapse2" preid="2" style="cursor: pointer; margin-bottom: 0px;"> Collapse</span><span> | </span><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" preid="2">Copy Code</a></div><pre lang="cs" id="pre2" style="margin-top: 0px;">IEnumerable&lt;Image&gt; CameraImagesSource() 
+{ 
+    <span class="code-comment">//</span><span class="code-comment"> Your code must be here 
+</span>} 
+
+IEnumerable&lt;Image&gt; FolderImagesSource(<span class="code-keyword">string</span> path) 
+{ 
+    <span class="code-comment">//</span><span class="code-comment"> Your code must be here 
+</span>}</pre>
+<p>As a real example, let's implement a source of images that streams all <em>"*.jpg"</em> photos from a specified folder path as follows:</p>
+<div class="pre-action-link" id="premain3" width="100%" style="display:block"><img id="preimg3" src="./Motion JPEG Streaming Server - CodeProject_files/minus.gif" height="9" width="9" preid="3" style="cursor: pointer;"><span id="precollapse3" preid="3" style="cursor: pointer; margin-bottom: 0px;"> Collapse</span><span> | </span><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" preid="3">Copy Code</a></div><pre lang="cs" id="pre3" style="margin-top: 0px;"><span class="code-keyword">private</span> IEnumerable&lt;Image&gt; FolderImagesSource(<span class="code-keyword">string</span> path)
+{
+    <span class="code-keyword">var</span> files = System.IO.Directory.GetFiles(path, <span class="code-string">"</span><span class="code-string">*.jpg"</span>);
+
+    <span class="code-keyword">foreach</span> (<span class="code-keyword">var</span> file <span class="code-keyword">in</span> files)
+        <span class="code-keyword">yield</span> <span class="code-keyword">return</span> Image.FromFile(file);
+
+    <span class="code-keyword">yield</span> <span class="code-keyword">break</span>;
+}
+
+<span class="code-keyword">private</span> <span class="code-keyword">void</span> Form1_Load(<span class="code-keyword">object</span> sender, EventArgs e)
+{
+    <span class="code-keyword">var</span> source = FolderImagesSource(<span class="code-string">@"</span><span class="code-string">C:\Pictures\"</span>);
+
+    _Server = <span class="code-keyword">new</span> ImageStreamingServer();
+    _Server.ImagesSource = source;
+    _Server.Start(<span class="code-digit">8080</span>);
+}</pre>
+<p>Note: the above code can be shortened as follows (thanks for IEnumerable extensions and LINQ):</p>
+<div class="pre-action-link" id="premain4" width="100%" style="display:block"><img id="preimg4" src="./Motion JPEG Streaming Server - CodeProject_files/minus.gif" height="9" width="9" preid="4" style="cursor: pointer;"><span id="precollapse4" preid="4" style="cursor: pointer; margin-bottom: 0px;"> Collapse</span><span> | </span><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server#" preid="4">Copy Code</a></div><pre lang="cs" id="pre4" style="margin-top: 0px;"><span class="code-keyword">var</span> source = System.IO.Directory.GetFiles(<span class="code-string">@"</span><span class="code-string">C:\Pictures\"</span>, <span class="code-string">"</span><span class="code-string">*.jpg"</span>).Select(s =&gt; Image.FromFile(s));
+
+_Server = <span class="code-keyword">new</span> ImageStreamingServer(source);
+_Server.Start(<span class="code-digit">8080</span>);</pre>
+<h2>Supported client software</h2>
+<p>To see the streaming video of our server, you will need to use any software that supports Motion-JPEG streaming such 
+as a <a href="http://www.mozilla.org/en-US/firefox/fx/">Mozilla Firefox</a>, <a href="https://www.google.com/chrome">Google's Chrome</a> or <a href="http://www.videolan.org/vlc/">VideoLAN Player</a> (VLC) :</p>
+<p><img width="599" height="363" alt="Free client software for Windows PC" src="./Motion JPEG Streaming Server - CodeProject_files/firefox-chrome-vlc-clients.png"> </p>
+
+<p>And finally for your mobile (android) use FireFox or any other free app that can be found on Google's market such as 
+<em>tinyCamMonitor</em> (that was used in the picture below):</p>
+<p>
+<img width="600" height="450" alt="Samsung Galaxy SII" src="./Motion JPEG Streaming Server - CodeProject_files/android_mobile.png"> </p>
+<h2>Future versions&nbsp;</h2>
+<p>In the future versions of the library I'm going to add a variety of images sources such as:</p>
+<ul>
+<li>Images from a specific region of the screen.</li>
+<li>Images from a specific window in the system.</li>
+<li>Streaming images from a camera.&nbsp;</li>
+<li>All photos from any folder in a disk.</li>
+<li>And any other suggested sources of images you may want !? ...</li>
+</ul>
+<p>And till that time, fill free to enjoy this version <img src="./Motion JPEG Streaming Server - CodeProject_files/smiley_wink.gif" align="top" alt="Wink | ;-)"> </p>
+
+
+						</div>
+						
+
+						<div class="float-right" style="margin:20px 0 0 10px;border:1px solid #ccc">
+						<div class="msg-300x250" data-format="300x250" data-type="ad" data-publisher="lqm.codeproject.site" data-zone="General-Programming/Internet-Network/HTTP" data-loadonview="true" data-tags="C#, .NET, Dev, Intermediate,rating4.5"><noscript>&amp;lt;a href="http://ad.doubleclick.net/N6839/jump/lqm.codeproject.site/General-Programming/Internet-Network/HTTP;sz=300x250;ord=635572106652468141?"&amp;gt;&amp;lt;img src="http://ad.doubleclick.net/N6839/ad/lqm.codeproject.site/General-Programming/Internet-Network/HTTP;sz=300x250;ord=635572106652468141?"  width="300px" height="250px" /&amp;gt;&amp;lt;/a&amp;gt;</noscript></div>
+						</div>
+                        
+                        
+						
+						<h2>License</h2>
+						<div id="LicenseTerms"><p>This article, along with any associated source code and files, is licensed under <a href="http://www.codeproject.com/info/cpol10.aspx" rel="license">The Code Project Open License (CPOL)</a></p></div>
+						
+
+                        
+						<h2>Share</h2>
+				        <div style="margin-bottom:40px;width:385px">
+					        
+
+
+
+<!-- Buttons start here. Copy this ul to your document. -->
+<ul class="rrssb-buttons clearfix rrssb-1">
+    <li class="email" data-initwidth="14.285714285714286" data-size="37" style="width: calc(100% - 252px);">
+
+        <!-- Replace subject with your message using URL Endocding: http://meyerweb.com/eric/tools/dencoder/ -->
+        <a href="mailto:?subject=Motion+JPEG+Streaming+Server+-+CodeProject&body=http%3a%2f%2fwww.codeproject.com%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">
+            <span class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="28px" height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve"><g><path d="M20.111 26.147c-2.336 1.051-4.361 1.401-7.125 1.401c-6.462 0-12.146-4.633-12.146-12.265 c0-7.94 5.762-14.833 14.561-14.833c6.853 0 11.8 4.7 11.8 11.252c0 5.684-3.194 9.265-7.399 9.3 c-1.829 0-3.153-0.934-3.347-2.997h-0.077c-1.208 1.986-2.96 2.997-5.023 2.997c-2.532 0-4.361-1.868-4.361-5.062 c0-4.749 3.504-9.071 9.111-9.071c1.713 0 3.7 0.4 4.6 0.973l-1.169 7.203c-0.388 2.298-0.116 3.3 1 3.4 c1.673 0 3.773-2.102 3.773-6.58c0-5.061-3.27-8.994-9.303-8.994c-5.957 0-11.175 4.673-11.175 12.1 c0 6.5 4.2 10.2 10 10.201c1.986 0 4.089-0.43 5.646-1.245L20.111 26.147z M16.646 10.1 c-0.311-0.078-0.701-0.155-1.207-0.155c-2.571 0-4.595 2.53-4.595 5.529c0 1.5 0.7 2.4 1.9 2.4 c1.441 0 2.959-1.828 3.311-4.087L16.646 10.068z"></path></g></svg>
+            </span>
+            <span class="text">email</span>
+        </a>
+    </li>
+    <li class="twitter small" data-initwidth="14.285714285714286" data-size="52" style="width: 42px;">
+        <!-- Replace href with your Meta and URL information  -->
+        <a href="http://twitter.com/home?status=Motion+JPEG+Streaming+Server+-+CodeProject%20http%3a%2f%2fwww.codeproject.com%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server" class="popup">
+            <span class="icon">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="28px" height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve">
+                <path d="M24.253,8.756C24.689,17.08,18.297,24.182,9.97,24.62c-3.122,0.162-6.219-0.646-8.861-2.32
+                    c2.703,0.179,5.376-0.648,7.508-2.321c-2.072-0.247-3.818-1.661-4.489-3.638c0.801,0.128,1.62,0.076,2.399-0.155
+                    C4.045,15.72,2.215,13.6,2.115,11.077c0.688,0.275,1.426,0.407,2.168,0.386c-2.135-1.65-2.729-4.621-1.394-6.965
+                    C5.575,7.816,9.54,9.84,13.803,10.071c-0.842-2.739,0.694-5.64,3.434-6.482c2.018-0.623,4.212,0.044,5.546,1.683
+                    c1.186-0.213,2.318-0.662,3.329-1.317c-0.385,1.256-1.247,2.312-2.399,2.942c1.048-0.106,2.069-0.394,3.019-0.851
+                    C26.275,7.229,25.39,8.196,24.253,8.756z"></path>
+                </svg>
+            </span>
+            <span class="text">twitter</span>
+        </a>
+    </li>
+
+    <li class="facebook small" data-initwidth="14.285714285714286" data-size="63" style="width: 42px;">
+        <!-- Replace with your URL. For best results, make sure you page has the proper FB Open Graph tags in header: 
+        https://developers.facebook.com/docs/opengraph/howtos/maximizing-distribution-media-content/ -->
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fwww.codeproject.com%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server" class="popup">
+            <span class="icon">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="28px" height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve">
+                    <path d="M27.825,4.783c0-2.427-2.182-4.608-4.608-4.608H4.783c-2.422,0-4.608,2.182-4.608,4.608v18.434
+                        c0,2.427,2.181,4.608,4.608,4.608H14V17.379h-3.379v-4.608H14v-1.795c0-3.089,2.335-5.885,5.192-5.885h3.718v4.608h-3.726
+                        c-0.408,0-0.884,0.492-0.884,1.236v1.836h4.609v4.608h-4.609v10.446h4.916c2.422,0,4.608-2.188,4.608-4.608V4.783z"></path>
+                </svg>
+            </span>
+            <span class="text">facebook</span>
+        </a>
+    </li>
+    
+    <li class="linkedin small" data-initwidth="14.285714285714286" data-size="56" style="width: 42px;">
+        <!-- Replace href with your meta and URL information -->
+        <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fwww.codeproject.com%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server&title=Motion+JPEG+Streaming+Server+-+CodeProject" class="popup">
+            <span class="icon">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="28px" height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve">
+                    <path d="M25.424,15.887v8.447h-4.896v-7.882c0-1.979-0.709-3.331-2.48-3.331c-1.354,0-2.158,0.911-2.514,1.803
+                        c-0.129,0.315-0.162,0.753-0.162,1.194v8.216h-4.899c0,0,0.066-13.349,0-14.731h4.899v2.088c-0.01,0.016-0.023,0.032-0.033,0.048
+                        h0.033V11.69c0.65-1.002,1.812-2.435,4.414-2.435C23.008,9.254,25.424,11.361,25.424,15.887z M5.348,2.501
+                        c-1.676,0-2.772,1.092-2.772,2.539c0,1.421,1.066,2.538,2.717,2.546h0.032c1.709,0,2.771-1.132,2.771-2.546
+                        C8.054,3.593,7.019,2.501,5.343,2.501H5.348z M2.867,24.334h4.897V9.603H2.867V24.334z"></path>
+                </svg>
+            </span>
+            <span class="text">linkedin</span>
+        </a>
+    </li>
+    <li class="reddit small" data-initwidth="14.285714285714286" data-size="43" style="width: 42px;">
+        <a href="http://www.reddit.com/submit?url=http%3a%2f%2fwww.codeproject.com%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">
+            <span class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="28px" height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve"><g>
+                <path d="M11.794 15.316c0-1.029-0.835-1.895-1.866-1.895c-1.03 0-1.893 0.865-1.893 1.895s0.863 1.9 1.9 1.9 C10.958 17.2 11.8 16.3 11.8 15.316z"></path>
+                <path d="M18.1 13.422c-1.029 0-1.895 0.864-1.895 1.895c0 1 0.9 1.9 1.9 1.865c1.031 0 1.869-0.836 1.869-1.865 C19.969 14.3 19.1 13.4 18.1 13.422z"></path>
+                <path d="M17.527 19.791c-0.678 0.678-1.826 1.006-3.514 1.006c-0.004 0-0.009 0-0.014 0c-0.004 0-0.01 0-0.015 0 
+                c-1.686 0-2.834-0.328-3.51-1.005c-0.264-0.265-0.693-0.265-0.958 0c-0.264 0.265-0.264 0.7 0 1 c0.943 0.9 2.4 1.4 
+                4.5 1.402c0.005 0 0 0 0 0c0.005 0 0 0 0 0c2.066 0 3.527-0.459 4.47-1.402 c0.265-0.264 0.265-0.693 0.002-0.958C18.221 
+                19.5 17.8 19.5 17.5 19.791z"></path><path d="M27.707 13.267c0-1.785-1.453-3.237-3.236-3.237c-0.793 0-1.518 0.287-2.082 
+                0.761c-2.039-1.295-4.646-2.069-7.438-2.219 l1.483-4.691l4.062 0.956c0.071 1.4 1.3 2.6 2.7 2.555c1.488 0 2.695-1.208 
+                2.695-2.695C25.881 3.2 24.7 2 23.2 2 c-1.059 0-1.979 0.616-2.42 1.508l-4.633-1.091c-0.344-0.081-0.693 0.118-0.803 
+                0.455l-1.793 5.7 C10.548 8.6 7.7 9.4 5.6 10.75C5.006 10.3 4.3 10 3.5 10.029c-1.785 0-3.237 1.452-3.237 3.2 c0 1.1 0.6 
+                2.1 1.4 2.69c-0.04 0.272-0.061 0.551-0.061 0.831c0 2.3 1.3 4.4 3.7 5.9 c2.299 1.5 5.3 2.3 8.6 2.325c3.228 0 6.271-0.825 
+                8.571-2.325c2.387-1.56 3.7-3.66 3.7-5.917 c0-0.26-0.016-0.514-0.051-0.768C27.088 15.5 27.7 14.4 27.7 13.267z M23.186 
+                3.355c0.74 0 1.3 0.6 1.3 1.3 c0 0.738-0.6 1.34-1.34 1.34s-1.342-0.602-1.342-1.34C21.844 4 22.4 3.4 23.2 3.355z M1.648 
+                13.3 c0-1.038 0.844-1.882 1.882-1.882c0.31 0 0.6 0.1 0.9 0.209c-1.049 0.868-1.813 1.861-2.26 2.9 C1.832 14.2 1.6 13.8 1.6 
+                13.267z M21.773 21.57c-2.082 1.357-4.863 2.105-7.831 2.105c-2.967 0-5.747-0.748-7.828-2.105 
+                c-1.991-1.301-3.088-3-3.088-4.782c0-1.784 1.097-3.484 3.088-4.784c2.081-1.358 4.861-2.106 7.828-2.106 c2.967 0 5.7 
+                0.7 7.8 2.106c1.99 1.3 3.1 3 3.1 4.784C24.859 18.6 23.8 20.3 21.8 21.57z M25.787 14.6 
+                c-0.432-1.084-1.191-2.095-2.244-2.977c0.273-0.156 0.59-0.245 0.928-0.245c1.035 0 1.9 0.8 1.9 1.9 
+                C26.354 13.8 26.1 14.3 25.8 14.605z"></path></g></svg>
+            </span>
+            <span class="text">reddit</span>
+        </a>
+    </li>
+    <li class="googleplus small" data-initwidth="14.285714285714286" data-size="57" style="width: 42px;">
+        <!-- Replace href with your meta and URL information.  -->
+        <a href="https://plus.google.com/share?url=Check%20out%20Motion+JPEG+Streaming+Server+-+CodeProject%20http%3a%2f%2fwww.codeproject.com%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server" class="popup">
+            <span class="icon">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="28px" height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve">
+                    <g>
+                        <g>
+                            <path d="M14.703,15.854l-1.219-0.948c-0.372-0.308-0.88-0.715-0.88-1.459c0-0.748,0.508-1.223,0.95-1.663
+                                c1.42-1.119,2.839-2.309,2.839-4.817c0-2.58-1.621-3.937-2.399-4.581h2.097l2.202-1.383h-6.67c-1.83,0-4.467,0.433-6.398,2.027
+                                C3.768,4.287,3.059,6.018,3.059,7.576c0,2.634,2.022,5.328,5.604,5.328c0.339,0,0.71-0.033,1.083-0.068
+                                c-0.167,0.408-0.336,0.748-0.336,1.324c0,1.04,0.551,1.685,1.011,2.297c-1.524,0.104-4.37,0.273-6.467,1.562
+                                c-1.998,1.188-2.605,2.916-2.605,4.137c0,2.512,2.358,4.84,7.289,4.84c5.822,0,8.904-3.223,8.904-6.41
+                                c0.008-2.327-1.359-3.489-2.829-4.731H14.703z M10.269,11.951c-2.912,0-4.231-3.765-4.231-6.037c0-0.884,0.168-1.797,0.744-2.511
+                                c0.543-0.679,1.489-1.12,2.372-1.12c2.807,0,4.256,3.798,4.256,6.242c0,0.612-0.067,1.694-0.845,2.478
+                                c-0.537,0.55-1.438,0.948-2.295,0.951V11.951z M10.302,25.609c-3.621,0-5.957-1.732-5.957-4.142c0-2.408,2.165-3.223,2.911-3.492
+                                c1.421-0.479,3.25-0.545,3.555-0.545c0.338,0,0.52,0,0.766,0.034c2.574,1.838,3.706,2.757,3.706,4.479
+                                c-0.002,2.073-1.736,3.665-4.982,3.649L10.302,25.609z"></path>
+                            <polygon points="23.254,11.89 23.254,8.521 21.569,8.521 21.569,11.89 18.202,11.89 18.202,13.604 21.569,13.604 21.569,17.004
+                                23.254,17.004 23.254,13.604 26.653,13.604 26.653,11.89      "></polygon>
+                        </g>
+                    </g>
+                </svg>
+            </span>
+            <span class="text">google+</span>
+        </a>
+    </li>
+    
+    <li class="pinterest small" data-initwidth="14.285714285714286" data-size="63" style="width: 42px;">
+        <!-- Replace href with your meta and URL information.  -->
+        <a href="http://pinterest.com/pin/create/button/?url=http%3a%2f%2fwww.codeproject.com%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server&media=http://kurtnoble.com/labs/rrssb/media/facebook-share.jpg&description=Motion+JPEG+Streaming+Server+-+CodeProject">
+            <span class="icon">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="28px" height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve">
+                <path d="M14.021,1.57C6.96,1.57,1.236,7.293,1.236,14.355c0,7.062,5.724,12.785,12.785,12.785c7.061,0,12.785-5.725,12.785-12.785
+                    C26.807,7.294,21.082,1.57,14.021,1.57z M15.261,18.655c-1.161-0.09-1.649-0.666-2.559-1.219c-0.501,2.626-1.113,5.145-2.925,6.458
+                    c-0.559-3.971,0.822-6.951,1.462-10.116c-1.093-1.84,0.132-5.545,2.438-4.632c2.837,1.123-2.458,6.842,1.099,7.557
+                    c3.711,0.744,5.227-6.439,2.925-8.775c-3.325-3.374-9.678-0.077-8.897,4.754c0.19,1.178,1.408,1.538,0.489,3.168
+                    C7.165,15.378,6.53,13.7,6.611,11.462c0.131-3.662,3.291-6.227,6.46-6.582c4.007-0.448,7.771,1.474,8.29,5.239
+                    c0.579,4.255-1.816,8.865-6.102,8.533L15.261,18.655z"></path>
+                </svg>
+            </span>
+            <span class="text">pinterest</span>
+        </a>
+    </li>
+</ul>
+<!-- Buttons end here -->
+
+				        </div> 
+    			        
+
+
+						
+						<h2 id="ctl00_AboutHeading">About the Author</h2>
+						
+
+<div class="container">
+<div style="width:210px;overflow:hidden;float:left;text-align:center">
+	<img id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberPhoto" class="profile-pic" src="./Motion JPEG Streaming Server - CodeProject_files/{c1bd7bea-86a6-4035-bbc8-87eeae5f383d}.jpg" style="border-width:0px;transform:rotate(-3deg);">
+</div>
+<div class="container-member float-left" style="margin:35px 15px 0 0;">
+	<b><a id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberProfileLink" class="author" href="http://www.codeproject.com/Members/Ragheed-Al-Tayeb">Ragheed Al-Tayeb</a></b>
+	<div class="company">
+		<span id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberJobTitle">Team Leader</span>
+		<span id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberCompany">Hawk International for Finance &amp; Construction Ltd.</span> 
+		<br><span id="ctl00_AboutAuthorRptr_ctl00_AboutAuthor_memberLocation">Yemen <img src="./Motion JPEG Streaming Server - CodeProject_files/YE.gif" alt="Yemen" width="16px" height="11px"></span>
+	</div>
+</div>
+	
+<div class="padded-top float-left clearfix">
+	Bachelor degree of Computer Sciences, Software developer using .NET (Visual Basic &amp; C#).<br>
+I like the development of an Artificial Intelligence Systems, GPS Applications, GDI+, APIs, N-Tier Applications, Distributed Systems and Network Monitoring Systems.<br>
+Mobile Development (Windows Mobile &amp; Android).
+
+	
+
+	
+</div>
+</div><br>
+						
+						
+
+						<div class="clearfix"></div>
+
+						<div style="padding-top:8px">
+							
+						</div>
+
+						
+						<div style="margin:auto;height:90px;margin-top:10px;Widt:730px"> 
+							<div class="msg-728x90" data-format="728x90" data-type="ad" data-publisher="lqm.codeproject.site" data-zone="General-Programming/Internet-Network/HTTP" data-loadonview="true" data-tags="C#, .NET, Dev, Intermediate,rating4.5,pos_bottom"><noscript>&amp;lt;a href="http://ad.doubleclick.net/N6839/jump/lqm.codeproject.site/General-Programming/Internet-Network/HTTP;sz=728x90;ord=635572106652468141?"&amp;gt;&amp;lt;img src="http://ad.doubleclick.net/N6839/ad/lqm.codeproject.site/General-Programming/Internet-Network/HTTP;sz=728x90;ord=635572106652468141?"  width="728px" height="90px" /&amp;gt;&amp;lt;/a&amp;gt;</noscript></div>
+						</div>
+						
+					
+
+				    
+					</form>
+
+				</div>
+
+				
+				
+
+					<h2>Comments and Discussions</h2>
+					<a class="float-left" name="_comments" id="_comments">&nbsp;</a><div id="_MessageBoardctl00_MessageBoard" onclick="return SwitchMessage(event, null)">
+<table id="ForumTable" class="forum relaxed" cellpadding="0" cellspacing="0">
+<tbody><tr>
+<td class="header1 callout"><b>You must <a href="https://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server%3ffid%3d1707192">Sign In</a> to use this message board.</b></td>
+</tr><tr>
+<td><table width="100%" border="0" cellpadding="3px" cellspacing="0">
+<tbody><tr class="header1">
+<td colspan="2" style="white-space:nowrap;"><div class="container">
+<div class="float-right">
+<form action="http://www.codeproject.com/Search.aspx?fid=0" method="get" class="searchbar">
+<input type="hidden" name="fid" value="1707192"><b>Search Comments </b><input type="search" class="search" name="qf">&nbsp;<input type="submit" value="Go" class="button">
+</form>
+</div>
+</div></td>
+</tr><tr class="header2">
+<td></td><td style="width:100%;"><div style="text-align:right;">
+<form action="http://www.codeproject.com/script/Forums/SetOptions.aspx?floc=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server&fid=1707192" method="get" style="margin:0;padding:0;">
+<input type="hidden" name="fid" value="1707192"><input type="hidden" name="currentQS" value="?floc=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server&amp;fid=1707192"><input type="hidden" name="floc" value="/Articles/371955/Motion-JPEG-Streaming-Server"><input type="checkbox" checked="checked" name="prof" id="prof" style="vertical-align:middle;"><label for="prof">Profile popups</label>&nbsp;&nbsp;&nbsp;&nbsp;Spacing<select size="1" class="dropdown" name="spc">
+<option selected="" value="Relaxed">Relaxed</option><option value="Compact">Compact</option><option value="Tight">Tight</option>
+</select>&nbsp;&nbsp;Noise<select size="1" class="dropdown" name="noise">
+<option value="1">Very High</option><option value="2">High</option><option selected="" value="3">Medium</option><option value="4">Low</option><option value="5">Very Low</option>
+</select>&nbsp;&nbsp;Layout<select size="1" class="dropdown" name="view">
+<option value="Normal">Normal</option><option value="Topic">Open Topics</option><option selected="" value="Expanded">Open All</option><option value="Thread">Thread View</option>
+</select>&nbsp;&nbsp;Per page<select size="1" class="dropdown" name="mpp">
+<option value="10">10</option><option selected="" value="25">25</option><option value="50">50</option>
+</select>&nbsp;&nbsp;&nbsp;<input type="submit" value="Update" name="SetOpt" class="button">
+</form>
+</div></td>
+</tr>
+</tbody></table></td>
+</tr><tr>
+<td><a name="xx0xx"></a><table border="0" cellpadding="2px" cellspacing="0" width="100%">
+<tbody><tr class="navbar">
+<td></td><td style="text-align:right;width:50%;"></td><td style="text-align:right;white-space:nowrap;"><span class="nav-link disabled">First</span> <span class="nav-link disabled">Prev</span><a class="nav-link" name="Frm_HoverNL" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&fr=26#xx0xx">Next</a></td>
+</tr>
+</tbody></table></td>
+</tr><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%" class="fixed-layout blank-background">
+<tbody><tr>
+<td><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" border="0" width="1px" height="5px" alt=""></td>
+</tr><tr id="F4926907_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4926907xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Connection refused</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=11169474">Member 11169474</a></td><td class="date">21-Oct-14  4:32&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="11169474" msgid="4926907" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Why I get this message when trying to access by Chrome?<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4926907" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4926907/Connection-refused.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4926907" data-ref="3_4926907" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4874007_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4874007xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Motion JPEG Streaming from Device to Desktop</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=9839779">abdulahadone</a></td><td class="date">1-Aug-14  2:14&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="9839779" msgid="4874007" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">hi,<br>&nbsp;<br>Your work is awesome incredible. I have seen many posts but was not accurate as yours. I would love to know if we can make this project vice versa i.e., From Mobile Device to Desktop??? . I think System.Drawing and Windows forms doesn't work in mobile devices. Please help. <br>Any help is appreciated. <br>&nbsp;<br>Thanks &amp; Regards,<br>Abdul Ahad<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4874007" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4874007/Motion-JPEG-Streaming-from-Device-to-Desktop.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4874007" data-ref="3_4874007" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4857529_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4857529xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">RTSP?</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=7731078">danpa</a></td><td class="date">8-Jul-14  18:47&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="7731078" msgid="4857529" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Is this a RTSP protocol??<br>
+Is there a RTSP version??<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4857529" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4857529/RTSP.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4857529" data-ref="3_4857529" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4859156_h0" class="header hover-row">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="38px" class="indent"><a name="xx4859156xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_answer.gif" alt="Answer"></td><td class="subject hover-container"><a class="message-link" name="4859156" parent="4857529" thread="4857529" href="http://www.codeproject.com/Messages/4859156/Re-RTSP.aspx">Re: RTSP?</a></td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=7731078">danpa</a></td><td class="date">10-Jul-14  20:38&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:38px;"><div class="voteform vertical" ownerid="7731078" msgid="4859156" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="38px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">One more question...<br>
+How to monitor and setup the output stream bitrate while I need 8Mb for testing?<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4857529" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4859156/Re-RTSP.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4859156" data-ref="3_4859156" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4962834_h0" class="header hover-row">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="56px" class="indent"><a name="xx4962834xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_general.gif" alt="General"></td><td class="subject hover-container"><a class="message-link" name="4962834" parent="4859156" thread="4857529" href="http://www.codeproject.com/Messages/4962834/Re-RTSP.aspx">Re: RTSP?</a></td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-pro-16.png" title="professional" alt="professional" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=4828135">jfriedman</a></td><td class="date">13-Dec-14  3:36&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:56px;"><div class="voteform vertical" ownerid="4828135" msgid="4962834" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="56px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2"><a href="http://www.codeproject.com/Articles/507218/Managed-Media-Aggregation-using-Rtsp-and-Rtp">Managed Media Aggregation using Rtsp and Rtp</a>[<a href="http://www.codeproject.com/Articles/507218/Managed-Media-Aggregation-using-Rtsp-and-Rtp" target="_blank" title="New Window">^</a>]<br>
+&nbsp;<br>
+Https://net7mma.codeplex.com<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4857529" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4962834/Re-RTSP.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4962834" data-ref="3_4962834" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4804018_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4804018xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Stream mjpeg from IP camera</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=10763118">lsamijn</a></td><td class="date">20-Apr-14  23:11&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="10763118" msgid="4804018" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Dear,<br>
+&nbsp;<br>
+i really thing this article is very good and is perfect what i'm looking for more than 2 months.<br>
+but i'm very new to programming (some VB experiance).<br>
+Can you help me on the way to change te code for steaming for a MJPEG stream of an IP camera and not the desktop?<br>
+&nbsp;<br>
+any help is very appriciated.<br>
+&nbsp;<br>
+Best regards.<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4804018" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4804018/Stream-mjpeg-from-IP-camera.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4804018" data-ref="3_4804018" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4800572_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4800572xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Regarding Stream mjpeg file over Internet</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=5737155">dipakdpatel</a></td><td class="date">15-Apr-14  0:37&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="5737155" msgid="4800572" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Hello,<br>
+&nbsp;<br>
+i want to broadcast video over internet. i tried with local machine and tried to access url over Internet but it is not working. in LAN its working fine.<br>
+&nbsp;<br>
+Can you Please reply for above issue.<br>
+&nbsp;<br>
+Regards &amp; Thanks.<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4800572" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4800572/Regarding-Stream-mjpeg-file-over-Internet.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4800572" data-ref="3_4800572" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4773905_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4773905xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Can others see my screen ?</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=10636035">Member 10636035</a></td><td class="date">6-Mar-14  14:56&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="10636035" msgid="4773905" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Hi , please tell me when i instal this program can others see my screen ..something like teamviewer but without remote control ??<br>
+&nbsp;<br>
+I tried it .. but it didnt work<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4773905" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4773905/Can-others-see-my-screen.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4773905" data-ref="3_4773905" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4759874_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4759874xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">How to run the ImageStreamingServer on a website</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=5931397">franva008</a></td><td class="date">15-Feb-14  5:03&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="5931397" msgid="4759874" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Hi Ragheed,<br>&nbsp;<br>I have a website and I want to integrate your fantastic work on it so that clients can see a live video streaming from an IP camera.<br>&nbsp;<br>My question is how to run the ImageStreamingServer on a website and get stream from an home IP Camera.<br>&nbsp;<br>Any help is welcome.<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4759874" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4759874/How-to-run-the-ImageStreamingServer-on-a-website.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4759874" data-ref="3_4759874" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4769007_h0" class="header hover-row">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="38px" class="indent"><a name="xx4769007xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_answer.gif" alt="Answer"></td><td class="subject hover-container"><a class="message-link" name="4769007" parent="4759874" thread="4759874" href="http://www.codeproject.com/Messages/4769007/Re-How-to-run-the-ImageStreamingServer-on-a-websit.aspx">Re: How to run the ImageStreamingServer on a website</a></td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=9423622">Андрей Корниенко</a></td><td class="date">27-Feb-14  19:33&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:38px;"><div class="voteform vertical" ownerid="9423622" msgid="4769007" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="38px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">You can just stream from your camera. How to do this has been described earlier. Also, you can find great article about work with camera on this site. But you will need a relay server and a player in the browser.<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4759874" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4769007/Re-How-to-run-the-ImageStreamingServer-on-a-websit.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4769007" data-ref="3_4769007" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4772786_h0" class="header hover-row">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="56px" class="indent"><a name="xx4772786xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_general.gif" alt="General"></td><td class="subject hover-container"><a class="message-link" name="4772786" parent="4769007" thread="4759874" href="http://www.codeproject.com/Messages/4772786/Re-How-to-run-the-ImageStreamingServer-on-a-websit.aspx">Re: How to run the ImageStreamingServer on a website</a></td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=5931397">franva008</a></td><td class="date">5-Mar-14  6:31&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:56px;"><div class="voteform vertical" ownerid="5931397" msgid="4772786" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="56px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Hi there,<br>thank you very much for your reply.<br>&nbsp;<br>Could you please explain the relay server and player?<br>How to configure them?<br>&nbsp;<br>I have an IP Camera and am trying to make it work but it seems that I have to do the Internet router seeting which is really confusing to me.<br>&nbsp;<br>I highly appreciate your help and time.<br>&nbsp;<br>Thank you again. <img src="./Motion JPEG Streaming Server - CodeProject_files/smiley_smile.gif" align="top" alt="Smile | :)"> <br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4759874" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4772786/Re-How-to-run-the-ImageStreamingServer-on-a-websit.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4772786" data-ref="3_4772786" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4740180_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4740180xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">"I Am Making Software To Remote Other Desktop And I Am Get Help Of Your Rtavideostreamer Code Of C# , I Implement It Successfully Without Error But I Get Client Count Is 0 Then What I Do....Please...":</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=10527105">Member 10527105</a></td><td class="date">17-Jan-14  19:14&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="10527105" msgid="4740180" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">"I Am Making Software To Remote Other Desktop And I Am Get Help Of Your Rtavideostreamer Code Of C# , I Implement It Successfully Without Error But I Get Client Count Is 0 Then What I Do....Please...":<br>
+&nbsp;<br>
+Code of Form 1<br>
+<pre lang="c#"><span class="code-keyword">using</span> System;
+<span class="code-keyword">using</span> System.Collections.Generic;
+<span class="code-keyword">using</span> System.ComponentModel;
+<span class="code-keyword">using</span> System.Data;
+<span class="code-keyword">using</span> System.Drawing;
+<span class="code-keyword">using</span> System.Linq;
+<span class="code-keyword">using</span> System.Text;
+<span class="code-keyword">using</span> System.Windows.Forms;
+<span class="code-keyword">using</span> rtaNetworking.Streaming;
+<span class="code-keyword">using</span> System.Net;
+<span class="code-keyword">using</span> System.IO;
+<span class="code-keyword">namespace</span> projectdemo
+{
+    <span class="code-keyword">public</span> <span class="code-keyword">partial</span> <span class="code-keyword">class</span> Form1 : Form
+    {
+&nbsp;
+        <span class="code-keyword">private</span> ImageStreamingServer _Server;
+&nbsp;
+        <span class="code-keyword">public</span> Form1()
+        {
+            InitializeComponent();
+          <span class="code-keyword">this</span>.linkLabel1.Text = <span class="code-keyword">string</span>.Format(<span class="code-string">"</span><span class="code-string">http://{0}:8080"</span>, Environment.MachineName );
+            <span class="code-comment">//</span><span class="code-comment">this.linkLabel1.Text = "http://114.143.29.182:8080";
+</span>        }
+&nbsp;
+        <span class="code-keyword">private</span> <span class="code-keyword">void</span> Form1_Load(<span class="code-keyword">object</span> sender, EventArgs e)
+        {
+            _Server = <span class="code-keyword">new</span> ImageStreamingServer();
+            _Server.Start(<span class="code-digit">8080</span>);
+        }
+&nbsp;
+        <span class="code-keyword">private</span> DateTime time = DateTime.MinValue;
+&nbsp;
+        <span class="code-keyword">private</span> <span class="code-keyword">void</span> timer1_Tick(<span class="code-keyword">object</span> sender, EventArgs e)
+        {
+            <span class="code-keyword">int</span> count = (_Server.Clients != <span class="code-keyword">null</span>) ? _Server.Clients.Count() : <span class="code-digit">0</span>;
+&nbsp;
+            <span class="code-keyword">this</span>.sts.Text = <span class="code-string">"</span><span class="code-string">Clients: "</span> + count.ToString();
+        }
+&nbsp;
+        <span class="code-keyword">private</span> <span class="code-keyword">void</span> linkLabel1_LinkClicked(<span class="code-keyword">object</span> sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(<span class="code-string">"</span><span class="code-string">chrome"</span>, <span class="code-keyword">this</span>.linkLabel1.Text);
+            MessageBox.Show(<span class="code-string">"</span><span class="code-string">Connected"</span>);
+        }
+&nbsp;
+    }
+}
+&nbsp;
+Coad of  ImageStreamingServer
+<span class="code-keyword">using</span> System;
+<span class="code-keyword">using</span> System.Collections.Generic;
+<span class="code-keyword">using</span> System.Linq;
+<span class="code-keyword">using</span> System.Text;
+<span class="code-keyword">using</span> System.Drawing;
+<span class="code-keyword">using</span> System.Net;
+<span class="code-keyword">using</span> System.Net.Sockets;
+<span class="code-keyword">using</span> System.Threading;
+<span class="code-keyword">using</span> System.Windows.Forms;
+<span class="code-keyword">using</span> System.IO;
+&nbsp;
+<span class="code-keyword">namespace</span> projectdemo
+{
+    <span class="code-keyword">public</span> <span class="code-keyword">class</span> ImageStreamingServer:IDisposable
+    {
+&nbsp;
+        <span class="code-keyword">private</span> List&lt;Socket&gt; _Clients;
+        <span class="code-keyword">private</span> Thread _Thread;
+&nbsp;
+        <span class="code-keyword">public</span> ImageStreamingServer():<span class="code-keyword">this</span>(Screen.Snapshots(<span class="code-digit">600</span>,<span class="code-digit">450</span>,<span class="code-keyword">true</span>))
+        {
+&nbsp;
+        }
+&nbsp;
+        <span class="code-keyword">public</span> ImageStreamingServer(IEnumerable&lt;Image&gt; imagesSource)
+        {
+&nbsp;
+            _Clients = <span class="code-keyword">new</span> List&lt;Socket&gt;();
+            _Thread = <span class="code-keyword">null</span>;
+&nbsp;
+            <span class="code-keyword">this</span>.ImagesSource = imagesSource;
+            <span class="code-keyword">this</span>.Interval = <span class="code-digit">50</span>;
+&nbsp;
+        }
+&nbsp;
+        <span class="code-keyword">public</span> IEnumerable&lt;Image&gt; ImagesSource { <span class="code-keyword">get</span>; <span class="code-keyword">set</span>; }
+&nbsp;
+        <span class="code-keyword">public</span> <span class="code-keyword">int</span> Interval { <span class="code-keyword">get</span>; <span class="code-keyword">set</span>; }
+&nbsp;
+        <span class="code-keyword">public</span> IEnumerable&lt;Socket&gt; Clients { <span class="code-keyword">get</span> { <span class="code-keyword">return</span> _Clients; } }
+        <span class="code-keyword">public</span> <span class="code-keyword">bool</span> IsRunning { <span class="code-keyword">get</span> { <span class="code-keyword">return</span> (_Thread != <span class="code-keyword">null</span> &amp;&amp; _Thread.IsAlive); } }
+&nbsp;
+        
+        <span class="code-keyword">public</span> <span class="code-keyword">void</span> Start(<span class="code-keyword">int</span> port)
+        {
+&nbsp;
+            <span class="code-keyword">lock</span> (<span class="code-keyword">this</span>)
+            {
+                _Thread = <span class="code-keyword">new</span> Thread(<span class="code-keyword">new</span> ParameterizedThreadStart(ServerThread));
+                _Thread.IsBackground = <span class="code-keyword">true</span>;
+                _Thread.Start(port);
+            }
+&nbsp;
+        }
+&nbsp;
+        <span class="code-keyword">public</span> <span class="code-keyword">void</span> Start()
+        {
+            <span class="code-keyword">this</span>.Start(<span class="code-digit">8080</span>);
+        }
+&nbsp;
+        <span class="code-keyword">public</span> <span class="code-keyword">void</span> Stop()
+        {
+&nbsp;
+            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.IsRunning)
+            {
+                <span class="code-keyword">try</span>
+                {
+                    _Thread.Join();
+                    _Thread.Abort();
+                }
+                <span class="code-keyword">finally</span>
+                {
+&nbsp;
+                    <span class="code-keyword">lock</span> (_Clients)
+                    {
+                        
+                        <span class="code-keyword">foreach</span> (<span class="code-keyword">var</span> s <span class="code-keyword">in</span> _Clients)
+                        {
+                            <span class="code-keyword">try</span>
+                            {
+                                s.Close();
+                            }
+                            <span class="code-keyword">catch</span> { }
+                        }
+                        _Clients.Clear();
+&nbsp;
+                    }
+&nbsp;
+                    _Thread = <span class="code-keyword">null</span>;
+                }
+            }
+        }
+&nbsp;
+        <span class="code-keyword">private</span> <span class="code-keyword">void</span> ServerThread(<span class="code-keyword">object</span> state)
+        {
+&nbsp;
+            <span class="code-keyword">try</span>
+            {
+                Socket Server = <span class="code-keyword">new</span> Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+&nbsp;
+                Server.Bind(<span class="code-keyword">new</span> IPEndPoint(IPAddress.Any,(<span class="code-keyword">int</span>)state));
+                Server.Listen(<span class="code-digit">10</span>);
+&nbsp;
+                System.Diagnostics.Debug.WriteLine(<span class="code-keyword">string</span>.Format(<span class="code-string">"</span><span class="code-string">Server started on port {0}."</span>, state));
+                
+                <span class="code-keyword">foreach</span> (Socket client <span class="code-keyword">in</span> Server.IncommingConnectoins())
+                    ThreadPool.QueueUserWorkItem(<span class="code-keyword">new</span> WaitCallback(ClientThread), client);
+            
+            }
+            <span class="code-keyword">catch</span> { }
+&nbsp;
+            <span class="code-keyword">this</span>.Stop();
+        }
+&nbsp;
+        <span class="code-keyword">private</span> <span class="code-keyword">void</span> ClientThread(<span class="code-keyword">object</span> client)
+        {
+&nbsp;
+            Socket socket = (Socket)client;
+&nbsp;
+            System.Diagnostics.Debug.WriteLine(<span class="code-keyword">string</span>.Format(<span class="code-string">"</span><span class="code-string">New client from {0}"</span>,socket.RemoteEndPoint.ToString()));
+&nbsp;
+            <span class="code-keyword">lock</span> (_Clients)
+                _Clients.Add(socket);
+&nbsp;
+            <span class="code-keyword">try</span>
+            {
+                <span class="code-keyword">using</span> (MjpegWriter wr = <span class="code-keyword">new</span> MjpegWriter(<span class="code-keyword">new</span> NetworkStream(socket, <span class="code-keyword">true</span>)))
+                {
+&nbsp;
+                    <span class="code-comment">//</span><span class="code-comment"> Writes the response header to the client.
+</span>                    wr.WriteHeader();
+&nbsp;
+                    <span class="code-comment">//</span><span class="code-comment"> Streams the images from the source to the client.
+</span>                    <span class="code-keyword">foreach</span> (<span class="code-keyword">var</span> imgStream <span class="code-keyword">in</span> Screen.Streams(<span class="code-keyword">this</span>.ImagesSource))
+                    {
+                        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.Interval &gt; <span class="code-digit">0</span>)
+                            Thread.Sleep(<span class="code-keyword">this</span>.Interval);
+&nbsp;
+                        wr.Write(imgStream);
+                    }
+&nbsp;
+                }
+            }
+            <span class="code-keyword">catch</span> { }
+            <span class="code-keyword">finally</span>
+            {
+                <span class="code-keyword">lock</span> (_Clients)
+                    _Clients.Remove(socket);
+            }
+        }
+&nbsp;
+
+        <span class="code-preprocessor">#region</span> IDisposable Members
+&nbsp;
+        <span class="code-keyword">public</span> <span class="code-keyword">void</span> Dispose()
+        {
+            <span class="code-keyword">this</span>.Stop();
+        }
+&nbsp;
+        <span class="code-preprocessor">#endregion</span>
+    }
+&nbsp;
+    <span class="code-keyword">static</span> <span class="code-keyword">class</span> SocketExtensions
+    {
+&nbsp;
+        <span class="code-keyword">public</span> <span class="code-keyword">static</span> IEnumerable&lt;Socket&gt; IncommingConnectoins(<span class="code-keyword">this</span> Socket server)
+        {
+            <span class="code-keyword">while</span>(<span class="code-keyword">true</span>)
+                <span class="code-keyword">yield</span> <span class="code-keyword">return</span> server.Accept();
+        }
+&nbsp;
+    }
+&nbsp;
+
+    <span class="code-keyword">static</span> <span class="code-keyword">class</span> Screen
+    {
+&nbsp;
+
+        <span class="code-keyword">public</span> <span class="code-keyword">static</span> IEnumerable&lt;Image&gt; Snapshots()
+        {
+            <span class="code-keyword">return</span> Screen.Snapshots(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width, System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height,<span class="code-keyword">true</span>);
+        }
+        <span class="code-keyword">public</span> <span class="code-keyword">static</span> IEnumerable&lt;Image&gt; Snapshots(<span class="code-keyword">int</span> width,<span class="code-keyword">int</span> height,<span class="code-keyword">bool</span> showCursor)
+        {
+            Size size = <span class="code-keyword">new</span> Size(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width, System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
+            
+            Bitmap srcImage = <span class="code-keyword">new</span> Bitmap(size.Width, size.Height);
+            Graphics srcGraphics = Graphics.FromImage(srcImage);
+&nbsp;
+            <span class="code-keyword">bool</span> scaled = (width != size.Width || height != size.Height);
+&nbsp;
+            Bitmap dstImage = srcImage;
+            Graphics dstGraphics = srcGraphics;
+&nbsp;
+            <span class="code-keyword">if</span>(scaled)
+            {
+                dstImage = <span class="code-keyword">new</span> Bitmap(width, height);
+                dstGraphics = Graphics.FromImage(dstImage);
+            }
+&nbsp;
+            Rectangle src = <span class="code-keyword">new</span> Rectangle(<span class="code-digit">0</span>, <span class="code-digit">0</span>, size.Width, size.Height);
+            Rectangle dst = <span class="code-keyword">new</span> Rectangle(<span class="code-digit">0</span>, <span class="code-digit">0</span>, width, height);
+            Size curSize = <span class="code-keyword">new</span> Size(<span class="code-digit">32</span>, <span class="code-digit">32</span>);
+&nbsp;
+            <span class="code-keyword">while</span> (<span class="code-keyword">true</span>)
+            {
+                srcGraphics.CopyFromScreen(<span class="code-digit">0</span>, <span class="code-digit">0</span>, <span class="code-digit">0</span>, <span class="code-digit">0</span>, size);
+&nbsp;
+                <span class="code-keyword">if</span> (showCursor)
+                    Cursors.Default.Draw(srcGraphics,<span class="code-keyword">new</span> Rectangle(Cursor.Position,curSize));
+&nbsp;
+                <span class="code-keyword">if</span> (scaled)
+                    dstGraphics.DrawImage(srcImage, dst, src, GraphicsUnit.Pixel);
+       
+                <span class="code-keyword">yield</span> <span class="code-keyword">return</span> dstImage;
+&nbsp;
+            }
+&nbsp;
+            srcGraphics.Dispose();
+            dstGraphics.Dispose();
+&nbsp;
+            srcImage.Dispose();
+            dstImage.Dispose();
+&nbsp;
+            <span class="code-keyword">yield</span> <span class="code-keyword">break</span>;
+        }
+&nbsp;
+        <span class="code-keyword">internal</span> <span class="code-keyword">static</span> IEnumerable&lt;MemoryStream&gt; Streams(<span class="code-keyword">this</span> IEnumerable&lt;Image&gt; source)
+        {
+            MemoryStream ms = <span class="code-keyword">new</span> MemoryStream();
+&nbsp;
+            <span class="code-keyword">foreach</span> (<span class="code-keyword">var</span> img <span class="code-keyword">in</span> source)
+            {
+                ms.SetLength(<span class="code-digit">0</span>);
+                img.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                <span class="code-keyword">yield</span> <span class="code-keyword">return</span> ms;
+            }
+&nbsp;
+            ms.Close();
+            ms = <span class="code-keyword">null</span>;
+&nbsp;
+            <span class="code-keyword">yield</span> <span class="code-keyword">break</span>;
+        }
+&nbsp;
+    }
+}
+&nbsp;
+</pre><br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4740180" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4740180/I-Am-Making-Software-To-Remote-Other-Desktop-And-I.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4740180" data-ref="3_4740180" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4733635_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4733635xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Do you know why it caused crash on Firefox (version  26) after 20 min?</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=1481424">xmans</a></td><td class="date">7-Jan-14  20:13&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="1481424" msgid="4733635" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Hi.<br>
+I'm very pleased with your neat coding. But it causes Firefox (version 26) to crash after 20-30 min. It says "The image http://xxxx:8080 cannot be displayed because it contains error".<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4733635" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4733635/Do-you-know-why-it-caused-crash-on-Firefox-version.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4733635" data-ref="3_4733635" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4722716_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4722716xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Huge memory leaks</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=2925052">Daddy_leo2001</a></td><td class="date">16-Dec-13  2:50&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="2925052" msgid="4722716" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">It's a really nice starter app, but it has huge memory leaks.<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4722716" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4722716/Huge-memory-leaks.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4722716" data-ref="3_4722716" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4733603_h0" class="header hover-row">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="38px" class="indent"><a name="xx4733603xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_answer.gif" alt="Answer"></td><td class="subject hover-container"><a class="message-link" name="4733603" parent="4722716" thread="4722716" href="http://www.codeproject.com/Messages/4733603/Re-Huge-memory-leaks.aspx">Re: Huge memory leaks</a></td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=1481424">xmans</a></td><td class="date">7-Jan-14  17:54&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:38px;"><div class="voteform vertical" ownerid="1481424" msgid="4733603" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="38px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Did you fix memory leaks?<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4722716" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4733603/Re-Huge-memory-leaks.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4733603" data-ref="3_4733603" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4722523_h0" class="header hover-row root">
+<td class="subject-line expanded  vote-lo" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4722523xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">NullReferenceExeption [modified]</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=9423622">Андрей Корниенко</a></td><td class="date">15-Dec-13  23:50&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="9423622" msgid="4722523" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Hi!<br>
+I have a little problem with your code. I'm confused. When I call your code, project starts normally, but after some time, when I trying tipe some text into any window, like IM, app will be crashed and IDE show me point into Main method.<br>
+<pre lang="c#">Application.EnableVisualStyles();
+Application.SetCompatibleTextRenderingDefault(<span class="code-keyword">false</span>);
+Program.MainForm = <span class="code-keyword">new</span> MainForm();
+Application.Run(Program.MainForm); <span class="code-comment">//</span><span class="code-comment"> here</span></pre>
+I tried change attribute [STAThread] for [MTAThread], but it doesn't work.<br>
+And your code I use just like copy and paste. I change just namespace.<br>
+I have no idea, what need to say you more about my problem.<br>
+That's output of my program:<br>
+<pre lang="text">Server started on port 8080.
+New client from 192.168.0.127:38396
+System.Transactions Critical: 0 : &lt;TraceRecord xmlns="http://schemas.microsoft.com/2004/10/E2ETraceEvent/TraceRecord" Severity="Critical"&gt;&lt;TraceIdentifier&gt;http://msdn.microsoft.com/TraceCodes/System/ActivityTracing/2004/07/Reliability/Exception/Unhandled&lt;/TraceIdentifier&gt;&lt;Description&gt;Необработанное исключение&lt;/Description&gt;&lt;AppDomain&gt;ScreenBlocker.exe&lt;/AppDomain&gt;&lt;Exception&gt;&lt;ExceptionType&gt;System.NullReferenceException, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089&lt;/ExceptionType&gt;&lt;Message&gt;В экземпляре объекта не задана ссылка на объект.&lt;/Message&gt;&lt;StackTrace&gt;   в System.Windows.Forms.UnsafeNativeMethods.PeekMessage(MSG&amp;amp; msg, HandleRef hwnd, Int32 msgMin, Int32 msgMax, Int32 remove)
+   в System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(Int32 dwComponentID, Int32 reason, Int32 pvLoopData)
+   в System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   в System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   в System.Windows.Forms.Application.Run(Form mainForm)
+   в ScreenBlocker.Program.Main(String[] args) в d:\SharpDevelop Projects\ScreenBlocker\ScreenBlocker\Program.cs:строка 30&lt;/StackTrace&gt;&lt;ExceptionString&gt;System.NullReferenceException: В экземпляре объекта не задана ссылка на объект.
+   в System.Windows.Forms.UnsafeNativeMethods.PeekMessage(MSG&amp;amp; msg, HandleRef hwnd, Int32 msgMin, Int32 msgMax, Int32 remove)
+   в System.Windows.Forms.Application.ComponentManager.System.Windows.Forms.UnsafeNativeMethods.IMsoComponentManager.FPushMessageLoop(Int32 dwComponentID, Int32 reason, Int32 pvLoopData)
+   в System.Windows.Forms.Application.ThreadContext.RunMessageLoopInner(Int32 reason, ApplicationContext context)
+   в System.Windows.Forms.Application.ThreadContext.RunMessageLoop(Int32 reason, ApplicationContext context)
+   в System.Windows.Forms.Application.Run(Form mainForm)
+   в ScreenBlocker.Program.Main(String[] args) в d:\SharpDevelop Projects\ScreenBlocker\ScreenBlocker\Program.cs:строка 30&lt;/ExceptionString&gt;&lt;/Exception&gt;&lt;/TraceRecord&gt;</pre>
+Have you any ideas, what's can be wrong with my code?<br>
+&nbsp;<br>
+P. s. Ok. I really tired now.<br>
+How I can use that code with any other?<br><br><div class="modified">modified  16-Dec-13 8:24am.</div><br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4722523" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4722523/NullReferenceExeption.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4722523" data-ref="3_4722523" class="rating-label" style="white-space:nowrap;"><span>1.00/5 (1 vote)</span></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4650526_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4650526xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_bug.gif" alt="Bug"></td><td class="subject hover-container">_Server.Stop();</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=9601389">ktkachenko</a></td><td class="date">2-Sep-13  3:54&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="9601389" msgid="4650526" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Works-Super-Grade, but have a problem.<br>
+_Server can't stop correctly <img src="./Motion JPEG Streaming Server - CodeProject_files/smiley_confused.gif" align="top" alt="Confused | :confused:"> <br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4650526" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4650526/Server-Stop.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4650526" data-ref="3_4650526" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4649859_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4649859xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Video files stream mp4</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=708885">Member 708885</a></td><td class="date">1-Sep-13  0:18&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="708885" msgid="4649859" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">this project is best for me. but i use vb.net. i don't understand real thinks c# code. please for me, add example mp4 file stream in this project. please.<br>
+Note : please all code include your example.i convert to vb.net. thanks.<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4649859" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4649859/Video-files-stream-mp.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4649859" data-ref="3_4649859" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4643474_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4643474xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Great and succinct article! Need one more feature to make it perfect</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=5931397">franva008</a></td><td class="date">22-Aug-13  17:06&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="5931397" msgid="4643474" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Hi Ragheed,<br>&nbsp;<br>I really love the simplicity of your project and it doesn't require extra client software in order to run it!!!<br>It is platform independent!!!<br>&nbsp;<br>Now, I just want to have one more feature.<br>&nbsp;<br>How can you allow people from outside your home network to watch the M-JPEG stream?<br>&nbsp;<br>This will be a killer feature if you could add it in.<br>&nbsp;<br>I am looking forward to your reply.<br>&nbsp;<br>Best regards,<br>&nbsp;<br>Franva<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4643474" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4643474/Great-and-succinct-article-Need-one-more-feature-t.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4643474" data-ref="3_4643474" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4635693_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4635693xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">Specific Window</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=10207337">Member 10207337</a></td><td class="date">13-Aug-13  7:41&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="10207337" msgid="4635693" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Hi, Do you have a working example of streaming a specific window? Very cool program btw<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4635693" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4635693/Specific-Window.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4635693" data-ref="3_4635693" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4632550_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4632550xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_general.gif" alt="General"></td><td class="subject hover-container">My vote of 5</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=9954613">drazen12</a></td><td class="date">9-Aug-13  2:41&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="9954613" msgid="4632550" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Excellent!<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4632550" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4632550/My-vote-of.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4632550" data-ref="3_4632550" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4632207_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4632207xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_general.gif" alt="General"></td><td class="subject hover-container">My vote of 3</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=4778206">Mic</a></td><td class="date">8-Aug-13  16:01&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="4778206" msgid="4632207" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Good<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4632207" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4632207/My-vote-of.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4632207" data-ref="3_4632207" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4620466_h0" class="header hover-row root">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4620466xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_bug.gif" alt="Bug"></td><td class="subject hover-container">Does not works in IE</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-pro-16.png" title="professional" alt="professional" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=7894614">vijayksingh</a></td><td class="date">24-Jul-13  19:56&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="7894614" msgid="4620466" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Does not works in IE<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4620466" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4620466/Does-not-works-in-IE.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4620466" data-ref="3_4620466" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4621429_h0" class="header hover-row">
+<td class="subject-line expanded " width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="38px" class="indent"><a name="xx4621429xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_general.gif" alt="General"></td><td class="subject hover-container"><a class="message-link" name="4621429" parent="4620466" thread="4620466" href="http://www.codeproject.com/Messages/4621429/Re-Does-not-works-in-IE.aspx">Re: Does not works in IE</a></td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=1350747">Ragheed Al-Tayeb</a></td><td class="date">25-Jul-13  21:03&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:38px;"><div class="voteform vertical" ownerid="1350747" msgid="4621429" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="38px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">This is because the Microsoft IE does not support MPEJ streams.<br>
+<div class="signature">Raghed Al-Tayeb<br>
+&nbsp;<br>
+Visual Basic .NET is the best programming language !</div><br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4620466" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4621429/Re-Does-not-works-in-IE.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4621429" data-ref="3_4621429" class="rating-label" style="white-space:nowrap;"></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr id="F4598673_h0" class="header hover-row root">
+<td class="subject-line expanded  vote-hi" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td width="20px" class="indent"><a name="xx4598673xx"></a><img height="16px" width="16px" align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" alt="Question"></td><td class="subject hover-container">hi</td><td class="icon"><img border="0" src="./Motion JPEG Streaming Server - CodeProject_files/icn-member-16.gif" title="member" alt="member" height="16px"></td><td class="author"><a href="http://www.codeproject.com/script/Membership/View.aspx?mid=7879254">Jtmaroor</a></td><td class="date">26-Jun-13  23:48&nbsp;</td>
+</tr>
+</tbody></table></td>
+</tr><tr class="content root">
+<td class="expanded" width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="indent align-right" style="width:20px;"><div class="voteform vertical" ownerid="7879254" msgid="4598673" votingtype="GoodOrBad">
+
+</div><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" height="1px" width="20px" alt=""></td><td class="text"><table border="0" cellpadding="0" cellspacing="5px" width="100%">
+<tbody><tr>
+<td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td colspan="2">Please help to show the desktop streaming in a windows form control like web browser instead of starting a process<br></td>
+</tr><tr class="footer" style="vertical-align:top;">
+<td><a href="http://www.codeproject.com/script/Membership/LogOn.aspx?rp=%2fArticles%2f371955%2fMotion-JPEG-Streaming-Server">Sign In</a>·<wbr><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&tid=4598673" title="View Thread">View&nbsp;Thread</a>·<wbr><a href="http://www.codeproject.com/Messages/4598673/hi.aspx" title="Get permanent link">Permalink</a></td><td style="text-align:right;"><span id="MVF4598673" data-ref="3_4598673" class="rating-label" style="white-space:nowrap;"><span>5.00/5 (1 vote)</span></span></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table></td>
+</tr><tr>
+<td><img src="./Motion JPEG Streaming Server - CodeProject_files/t(1).gif" border="0" width="1px" height="5px" alt=""></td>
+</tr><tr>
+<td><table width="100%" cellpadding="2px" cellspacing="0">
+<tbody><tr class="footer">
+<td>Last Visit: 31-Dec-99  19:00 &nbsp; &nbsp; Last Update: 18-Jan-15  10:44</td><td><a href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192">Refresh</a></td><td style="text-align:right;white-space:nowrap;"><input id="_mbnUrl" type="hidden" value="/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&amp;fr=26"><span class="nav-link selected">1</span><a class="nav-link" name="Frm_HoverNL" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&fr=26#xx0xx">2</a><a class="nav-link" name="Frm_HoverNL" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&fr=51#xx0xx">3</a> <a class="nav-link" name="Frm_HoverNL" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?fid=1707192&fr=26#xx0xx">Next »</a></td>
+</tr>
+</tbody></table></td>
+</tr>
+</tbody></table>
+</div><p class="small-text"><img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_general.gif" width="16px" height="16px" alt="General"> General &nbsp;&nbsp; <img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_news.gif" width="16px" height="16px" alt="News"> News &nbsp;&nbsp; <img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_idea.gif" width="16px" height="16px" alt="Suggestion"> Suggestion &nbsp;&nbsp; <img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_question.gif" width="16px" height="16px" alt="Question"> Question &nbsp;&nbsp; <img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_bug.gif" width="16px" height="16px" alt="Bug"> Bug &nbsp;&nbsp; <img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_answer.gif" width="16px" height="16px" alt="Answer"> Answer &nbsp;&nbsp; <img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_joke.gif" width="16px" height="16px" alt="Joke"> Joke &nbsp;&nbsp; <img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_rant.gif" width="16px" height="16px" alt="Rant"> Rant &nbsp;&nbsp; <img align="top" src="./Motion JPEG Streaming Server - CodeProject_files/msg_admin.gif" width="16px" height="16px" alt="Admin"> Admin &nbsp;&nbsp; </p>
+				
+
+			</div>
+			
+		</td>
+		<td width="170px">
+			<div id="ctl00_RightSideBar" class="container-article-info">
+
+    			
+
+<div class="header">Info</div>
+<div class="article-summary">
+
+<a id="ctl00_InfoBox_ParentLink"></a>
+
+<table cellpadding="0" cellspacing="0" class="article-info">
+
+    
+
+    
+	
+
+	
+	
+
+	
+
+	
+
+	
+
+	<tbody><tr><td>First Posted&nbsp;</td><td nowrap="nowrap" class="value"><span itemprop="datePublished" content="2012-04-23">23 Apr 2012</span></td></tr>
+
+	<tr><td>Views&nbsp;</td><td class="value">113,964</td></tr>
+
+	
+	<tr><td>Downloads&nbsp;</td><td class="value">17,143</td></tr>
+		
+
+	
+	<tr><td>Bookmarked&nbsp;</td><td class="value">94 times</td></tr>
+	
+
+	
+
+	
+
+    
+
+	<tr><td colspan="2"></td></tr>
+	
+	
+</tbody></table>
+</div>
+
+                <div id="RHSticky" class="container-article-info-sticky" style="position: static; top: 494px; left: 1023.5px;">
+				    
+
+                    
+                    <div class="padded-top">
+                        
+	<h4 id="ctl00_RelatedLibrary_RelatedResults_ctl00_header" class="header">Research</h4>
+	<div class="research content-list clearfix">	
+	
+	<div class="content-list-item clearfix">
+		<div class="thumbnail"><img id="ctl00_RelatedLibrary_RelatedResults_ctl01_Thumb" src="./Motion JPEG Streaming Server - CodeProject_files/LibraryItemThumbnail_88_100x130.jpg" style="border-width:0px;"></div>
+        <div class="text">
+            <a id="ctl00_RelatedLibrary_RelatedResults_ctl01_Link" class="title" href="http://www.codeproject.com/ResearchLibrary/88/How-to-Evaluate-Component-Vendors">How to Evaluate Component Vendors</a>
+		    
+        </div>
+	</div>
+	
+	<div class="content-list-item clearfix">
+		<div class="thumbnail"><img id="ctl00_RelatedLibrary_RelatedResults_ctl02_Thumb" src="./Motion JPEG Streaming Server - CodeProject_files/LibraryItemThumbnail_104_100x130.png" style="border-width:0px;"></div>
+        <div class="text">
+            <a id="ctl00_RelatedLibrary_RelatedResults_ctl02_Link" class="title" href="http://www.codeproject.com/ResearchLibrary/104/Why-Your-Developers-Need-More-Training">Why Your Developers Need More Training</a>
+		    
+        </div>
+	</div>
+	
+	</div>
+	
+
+                    </div>
+
+				    <div style="width:160px;margin: 10px auto;">
+					    <div class="msg-160x600" data-format="160x600" data-type="ad" data-publisher="lqm.codeproject.site" data-zone="General-Programming/Internet-Network/HTTP" data-tags="C#, .NET, Dev, Intermediate,rating4.5"><noscript>&lt;a href="http://ad.doubleclick.net/N6839/jump/lqm.codeproject.site/General-Programming/Internet-Network/HTTP;sz=160x600;ord=635572106654340144?"&gt;&lt;img src="http://ad.doubleclick.net/N6839/ad/lqm.codeproject.site/General-Programming/Internet-Network/HTTP;sz=160x600;ord=635572106654340144?"  width="160px" height="600px" /&gt;&lt;/a&gt;</noscript></div>
+				    </div>
+
+				    
+
+				    
+
+				    
+				</div>
+
+			</div>
+		</td>
+		</tr></tbody></table>
+
+		
+		<div class="theme1-background" style="height:2px" id="stickyStop"></div>
+
+		<div class="extended tiny-text">
+			<div class="row">
+				<div class="float-left">
+					<a id="ctl00_PermaLink" itemprop="url" href="./Motion JPEG Streaming Server - CodeProject_files/Motion JPEG Streaming Server - CodeProject.html">Permalink</a> | 
+					<a id="ctl00_AdvertiseLink" href="http://developermedia.com/">Advertise </a> |
+					<a id="ctl00_PrivacyLink" href="http://www.codeproject.com/info/privacy.aspx">Privacy</a> |
+                    <a id="ctl00_TermsOfUseLink" href="http://www.codeproject.com/info/TermsOfUse.aspx">Terms of Use</a> |
+					<a id="ctl00_Mobile" rel="nofollow" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?display=Mobile">Mobile</a>
+					<br>
+								
+					
+					Web02 |
+					2.8.150113.1 |
+					Last Updated 23 Apr 2012								
+				</div>
+
+                <div id="ctl00_GoogleTranslate" class="translate float-left"><div class="skiptranslate goog-te-gadget" dir="ltr"><div id=":0.targetLanguage" class="goog-te-gadget-simple" style="white-space: nowrap;"><img src="./Motion JPEG Streaming Server - CodeProject_files/cleardot.gif" class="goog-te-gadget-icon" style="background-image: url(https://translate.googleapis.com/translate_static/img/te_ctrl3.gif); background-position: -65px 0px;"><span style="vertical-align: middle;"><a class="goog-te-menu-value" href="javascript:void(0)"><span>請選取語言</span><img src="./Motion JPEG Streaming Server - CodeProject_files/cleardot.gif" width="1" height="1"><span style="border-left-width: 1px; border-left-style: solid; border-left-color: rgb(187, 187, 187);">​</span><img src="./Motion JPEG Streaming Server - CodeProject_files/cleardot.gif" width="1" height="1"><span style="color: rgb(155, 155, 155);">▼</span></a></span></div></div></div>      
+
+				<div class="float-right align-right">
+					Article Copyright 2012 by Ragheed Al-Tayeb<br>Everything else
+					Copyright © <a href="mailto:webmaster@codeproject.com">CodeProject</a>, 1999-2015 <br>
+				</div>
+
+				
+
+
+<div class="page-width">
+Layout: <a id="ctl00_PageWidth_FixedT" title="Fixed width layout" rel="nofollow" class=" active" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?PageFlow=FixedWidth">fixed</a>
+|
+<a id="ctl00_PageWidth_FluidT" title="Fluid layout" rel="nofollow" href="http://www.codeproject.com/Articles/371955/Motion-JPEG-Streaming-Server?PageFlow=Fluid">fluid</a>
+</div>
+
+
+
+			</div>
+		</div>
+		
+
+		<br clear="all">
+		
+			
+
+	</div> 
+	</div>
+</div>
+
+
+<div style="display:none;" id="dm_AdTable">
+	
+</div>
+<img id="ctl00_Audience" src="./Motion JPEG Streaming Server - CodeProject_files/DFPAudiencePixel;ord='635572106651688139'" style="border-width:0px;height:1px;width:1px;">
+
+
+
+<script type="text/javascript" language="Javascript" src="./Motion JPEG Streaming Server - CodeProject_files/jquery.min.js"></script><script type="text/javascript">//<![CDATA[
+if (typeof jQuery == 'undefined') {
+    document.write(unescape("%3Cscript src='/script/JS/jquery-1.6.2.min.js' type='text/javascript' %3E%3C/script%3E"));
+}//]]></script>
+<script type="text/javascript" language="Javascript" src="./Motion JPEG Streaming Server - CodeProject_files/article.js"></script>
+<script type="text/javascript" language="Javascript" src="./Motion JPEG Streaming Server - CodeProject_files/element.js"></script>
+<script type="text/javascript" language="Javascript" src="./Motion JPEG Streaming Server - CodeProject_files/navbar.js"></script>
+<script type="text/javascript" language="Javascript" src="./Motion JPEG Streaming Server - CodeProject_files/Notifications.js"></script>
+<script type="text/javascript" language="Javascript">//<![CDATA[
+function googleTranslateElementInit() {  new google.translate.TranslateElement({   pageLanguage: 'en',   layout: google.translate.TranslateElement.InlineLayout.SIMPLE,   autoDisplay: false,   gaTrack: true,   gaId: 'UA-1735123-1'},  'ctl00_GoogleTranslate');}
+$(document).ready(function() { anchorAnimate();
+$('#RHSticky').sticky($('#stickyStop'));
+$('#ctl00_Nav').sticky($('#stickyStop'));
+});
+function markAllText(){
+ markTextInElement('MJPEG','contentdiv');
+}
+$(function(){markAllText()});
+$(function() {
+                                            var $downloads =  $('ul.download');
+                                            $downloads.addClass('float-left')
+                                                        .wrap('<div class="row"></div>');
+                                            $downloads.after('<div class="float-left" style="margin-top:25px;margin-left:30px"><div data-format="1x11" data-type="ad" data-publisher="lqm.codeproject.site" data-zone="downloadlink" data-tags="c%23%2c.net%2cdev%2cintermediate"></div></div>');
+                                    });
+$(document).ready(function() {   $('.alert-bar').slideDown('fast');   $('.alert-bar a.close-notify').click(function() {      $('.alert-bar').slideUp('fast');        return false;    });});
+$(function ()
+                {
+                    $('.oauth').click(function () {
+                        $this = $(this);
+                        href = $this.attr('href');
+                        var myWindow = window.open(href, 'popup',
+                                    'width=800,height=600,location=0,menubar=0,resizeable=0,scrollbars=0,toolbar=0');
+                        myWindow.focus();
+                        var timer = setInterval(function () {
+                                        if (myWindow.closed) {
+                                            clearInterval(timer);
+                                            // window.location.reload(); // May do a POST reload, shows a warning
+                                            window.location = window.location; // force a GET reload
+                                        }
+                                    }, 200);
+                        return false;
+                    });
+                });
+var oSrchFlt = false, oSrchBox=false,srchBoxFoc=false;
+$(document).ready(function() {
+ if(InitWatermark)InitWatermark('sb_tb', 'Search for articles, questions, tips');
+ var sbar = $('#sb_tb'); 
+ var sfilter = $('#SearchFilter');
+ if (sbar && sfilter) {
+  sfilter.removeClass('popup'); sfilter.hide(); sfilter.removeClass('open');
+  sbar.blur(function() {
+ if (!oSrchFlt) {sfilter.hide(); sfilter.removeClass('open');}
+ srchBoxFoc=false;
+ });
+  sbar.focus(function() {
+ oSrchFlt=false; srchBoxFoc=true;
+ sfilter.show(); sfilter.addClass('open');
+ });
+  sbar.mouseleave(function() { oSrchBox=false; });
+  sbar.mouseover(function() { oSrchBox=true; });
+  sfilter.mouseleave(function() { oSrchFlt=false; if (!srchBoxFoc&&!oSrchBox) { sfilter.hide(); sfilter.removeClass('open'); }});
+  sfilter.mouseover(function() { oSrchFlt=true; });
+ }
+});
+$('#clear-rate_ctl00_RateArticle_RSU').click(function () {    $('#ctl00_RateArticle_RSU').hide(); return false;});$("#ctl00_RateArticle_RateItemWrapper")   .removeClass("container-rating")   .hover( function() { $('#ctl00_RateArticle_RSU').fadeIn('fast'); },            function() { $('#ctl00_RateArticle_RSU').fadeOut('fast'); } );
+function PostBack_ctl00_RateArticle_RateItemWrapper() {
+  return rateItem(371955,2,1,true,true,3,'LargeStars');
+}
+
+                        function getVotesHistogram(objectId, objectTypeId, containerId, loadingId) {
+                            if (!$('#' + containerId).attr('alreadyRequested')){
+                                $.ajax({
+                                    url: '/script/Ratings/Ajax/Histogram.aspx?obid=' + objectId + '&obtid='+objectTypeId,
+                                    success: function (data) {
+                                        $('#' + containerId).html(data);
+                                        $('#' + loadingId).hide();
+                                    }
+                                });
+                                $('#' + containerId).attr('alreadyRequested', 'true');
+                            }
+                        }
+$(document).ready(function() {   new starRating('#ctl00_RateArticle_VoteFormDiv', PostBack_ctl00_RateArticle_RateItemWrapper,'ctl00_RateArticle');
+  $('#ctl00_RateArticle_RB').mouseenter(function() {     getVotesHistogram(371955,2   ,'ctl00_RateArticle_Histogram','ctl00_RateArticle_Loading');  })})
+$(document).ready(function() { $('#ctl00_RateArticle_SubmitRateBtn').hide(); });
+$(document).ready(function() { $('#ctl00_RateArticle_SubmitRateBtn').hide(); });function ChkRtctl00_RateArticle(){}
+
+forumDir = '/script/Forums/';
+staticServer = '//dj9okeyxktdvd.cloudfront.net';
+allowReporting = false;
+allowRating = false;
+allowRatingDisplay = true;
+var smoothScroll = true;
+Selected        = -1;
+oldTitle        = document.title;
+minMessageScore = 1;
+minMessageScore = 5;
+abuseScore      = -2;
+spamScore       = -1;
+getRatingUrl    = '/script/Ratings/Ajax/GetRatings.aspx';
+noiseThreshold  = 3;
+getRatingRefKey = 'obrs';
+
+
+//]]>
+</script>
+
+
+
+<canvas id="cv1" width="1px" height="1px" style="position:absolute;left:0;top:0;pointer-events:none"></canvas><div id="goog-gt-tt" class="skiptranslate" dir="ltr"><div style="padding: 8px;"><div><div class="logo"><img src="./Motion JPEG Streaming Server - CodeProject_files/translate-32.png" width="20" height="20"></div><iframe style="width:348px;height:1.1em;float:right;" id="signin_status" border="0" frameborder="0" src="./Motion JPEG Streaming Server - CodeProject_files/tminfo.html"></iframe></div></div><div class="top" style="padding: 8px; float: left; width: 100%;"><h1 class="title gray">原文</h1></div><div class="middle" style="padding: 8px;"><div class="original-text"></div></div><div class="bottom" style="padding: 8px;"><div class="activity-links"><span class="activity-link">建議更好的譯法</span><span class="activity-link"></span></div><div class="started-activity-container"><hr style="color: #CCC; background-color: #CCC; height: 1px; border: none;"><div class="activity-root"></div></div></div><div class="status-message" style="display: none;"></div></div><canvas id="cv2" width="1px" height="1px" style="position:absolute;left:0;top:0;pointer-events:none"></canvas><iframe frameborder="0" class="goog-te-menu-frame skiptranslate" style="visibility: visible; box-sizing: content-box; width: 781px; height: 285px; display: none;"></iframe></body></html>

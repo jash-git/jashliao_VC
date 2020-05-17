@@ -1,0 +1,479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0093)http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US"><head profile="http://gmpg.org/xfn/11"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<title>Improving the Beginner’s PID – Derivative Kick «  Project  Blog</title>
+
+<link rel="stylesheet" href="./03_files/style.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Project  Blog RSS Feed" href="http://brettbeauregard.com/blog/feed/">
+<link rel="alternate" type="application/atom+xml" title="Project  Blog Atom Feed" href="http://brettbeauregard.com/blog/feed/atom/">
+<link rel="pingback" href="http://brettbeauregard.com/blog/xmlrpc.php">
+
+<style type="text/css" media="screen">
+
+	#page { background: url("http://brettbeauregard.com/blog/wp-content/themes/default/images/kubrickbgwide.jpg") repeat-y top; border: none; }
+
+</style>
+
+
+
+            <script type="text/javascript" async="" src="./03_files/ga.js"></script><script type="text/javascript">//<![CDATA[
+            // Google Analytics for WordPress by Yoast v4.3.3 | http://yoast.com/wordpress/google-analytics/
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-9013272-1']);
+				            _gaq.push(['_trackPageview']);
+            (function () {
+                var ga = document.createElement('script');
+                ga.type = 'text/javascript';
+                ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(ga, s);
+            })();
+            //]]></script>
+			<link rel="alternate" type="application/rss+xml" title="Project  Blog » Improving the Beginner’s PID – Derivative Kick Comments Feed" href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/feed/">
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/72x72\/","ext":".png","source":{"concatemoji":"http:\/\/brettbeauregard.com\/blog\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.5"}};
+			!function(a,b,c){function d(a){var c,d,e,f=b.createElement("canvas"),g=f.getContext&&f.getContext("2d"),h=String.fromCharCode;if(!g||!g.fillText)return!1;switch(g.textBaseline="top",g.font="600 32px Arial",a){case"flag":return g.fillText(h(55356,56806,55356,56826),0,0),f.toDataURL().length>3e3;case"diversity":return g.fillText(h(55356,57221),0,0),c=g.getImageData(16,16,1,1).data,g.fillText(h(55356,57221,55356,57343),0,0),c=g.getImageData(16,16,1,1).data,e=c[0]+","+c[1]+","+c[2]+","+c[3],d!==e;case"simple":return g.fillText(h(55357,56835),0,0),0!==g.getImageData(16,16,1,1).data[0];case"unicode8":return g.fillText(h(55356,57135),0,0),0!==g.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="./03_files/wp-emoji-release.min.js" type="text/javascript"></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="thingiverse_style-css" href="./03_files/style(1).css" type="text/css" media="all">
+<script type="text/javascript" src="./03_files/jquery.js"></script>
+<script type="text/javascript" src="./03_files/jquery-migrate.min.js"></script>
+<link rel="https://api.w.org/" href="http://brettbeauregard.com/blog/wp-json/">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://brettbeauregard.com/blog/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://brettbeauregard.com/blog/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="Improving the Beginner’s PID – Sample Time" href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-sample-time/">
+<link rel="next" title="Improving the Beginner’s PID: Tuning Changes" href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-tuning-changes/">
+<meta name="generator" content="WordPress 4.5">
+<link rel="canonical" href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/">
+<link rel="shortlink" href="http://brettbeauregard.com/blog/?p=765">
+<link rel="alternate" type="application/json+oembed" href="http://brettbeauregard.com/blog/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fbrettbeauregard.com%2Fblog%2F2011%2F04%2Fimproving-the-beginner%25e2%2580%2599s-pid-derivative-kick%2F">
+<link rel="alternate" type="text/xml+oembed" href="http://brettbeauregard.com/blog/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fbrettbeauregard.com%2Fblog%2F2011%2F04%2Fimproving-the-beginner%25e2%2580%2599s-pid-derivative-kick%2F&amp;format=xml">
+<link rel="payment" type="text/html" title="Flattr this!" href="https://flattr.com/submit/auto?user_id=br3ttb&amp;popout=1&amp;url=http%3A%2F%2Fbrettbeauregard.com%2Fblog%2F2011%2F04%2Fimproving-the-beginner%25e2%2580%2599s-pid-derivative-kick%2F&amp;language=en_GB&amp;category=text&amp;title=Improving+the+Beginner%E2%80%99s+PID+%26%238211%3B+Derivative+Kick&amp;description=Project+updates+and...+um...&amp;tags=Arduino%2CBeginner%27s+PID%2CPID%2Cblog">
+<link rel="stylesheet" type="text/css" href="./03_files/shCore.css"><link rel="stylesheet" type="text/css" href="./03_files/shThemeDefault.css"><style type="text/css" id="syntaxhighlighteranchor"></style>
+</head>
+<body>
+<div id="page">
+
+
+<div id="header">
+	<div id="headerimg">
+		<h1><a href="http://brettbeauregard.com/blog/">Project  Blog</a></h1>
+		<div class="description">Project updates and… um…</div>
+	</div>
+</div>
+<hr>
+
+	<div id="content" class="narrowcolumn">
+
+	
+		<div class="navigation">
+			<div class="alignleft">« <a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-sample-time/" rel="prev">Improving the Beginner’s PID – Sample Time</a></div>
+			<div class="alignright"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-tuning-changes/" rel="next">Improving the Beginner’s PID: Tuning Changes</a> »</div>
+		</div>
+
+		<div class="post-765 post type-post status-publish format-standard hentry category-coding category-pid tag-arduino tag-beginners-pid tag-pid author-admin" id="post-765">
+			<h2>Improving the Beginner’s PID – Derivative Kick</h2>
+
+			<div class="entry">
+				<p><small>(This is Modification #2 in a <a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/improving-the-beginners-pid-introduction">larger series</a> on writing a solid PID algorithm)</small></p>
+<h3>The Problem</h3>
+<p>This modification is going to tweak the derivative term a bit.  The goal is to eliminate a phenomenon known as “Derivative Kick”.</p>
+<p><a href="./03_files/DonE.png"><img class="aligncenter size-full wp-image-926" title="Derivative Kick" src="./03_files/DonE.png" alt="" width="336" height="466" srcset="http://brettbeauregard.com/blog/wp-content/uploads/2011/03/DonE.png 336w, http://brettbeauregard.com/blog/wp-content/uploads/2011/03/DonE-216x300.png 216w" sizes="(max-width: 336px) 100vw, 336px"></a></p>
+<p>The image above illustrates the problem.  Since error=Setpoint-Input, any change in Setpoint causes an instantaneous change in error.  The derivative of this change is infinity (in practice, since dt isn’t 0 it just winds up being a really big number.)  This number gets fed into the pid equation, which results in an undesirable spike in the output.  Luckily there is an easy way to get rid of this.</p>
+<h3>The Solution</h3>
+<p><a href="./03_files/DonMExplain.png"><img class="aligncenter size-full wp-image-952" title="DonMExplain" src="./03_files/DonMExplain.png" alt="" width="254" height="131"></a><br>
+It turns out that the derivative of the Error is equal to negative derivative of Input, EXCEPT when the Setpoint is changing.  This winds up being a perfect solution.  Instead of adding (Kd * derivative of Error), we subtract (Kd * derivative of Input).  This is known as using “Derivative on Measurement”</p>
+<h3>The Code</h3>
+<div><div id="highlighter_51238" class="syntaxhighlighter  css"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1 highlighted">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1 highlighted">16</div><div class="line number17 index16 alt2">17</div><div class="line number18 index17 alt1">18</div><div class="line number19 index18 alt2 highlighted">19</div><div class="line number20 index19 alt1">20</div><div class="line number21 index20 alt2">21</div><div class="line number22 index21 alt1 highlighted">22</div><div class="line number23 index22 alt2">23</div><div class="line number24 index23 alt1">24</div><div class="line number25 index24 alt2">25</div><div class="line number26 index25 alt1">26</div><div class="line number27 index26 alt2">27</div><div class="line number28 index27 alt1">28</div><div class="line number29 index28 alt2">29</div><div class="line number30 index29 alt1">30</div><div class="line number31 index30 alt2">31</div><div class="line number32 index31 alt1">32</div><div class="line number33 index32 alt2">33</div><div class="line number34 index33 alt1">34</div><div class="line number35 index34 alt2">35</div><div class="line number36 index35 alt1">36</div><div class="line number37 index36 alt2">37</div><div class="line number38 index37 alt1">38</div><div class="line number39 index38 alt2">39</div><div class="line number40 index39 alt1">40</div><div class="line number41 index40 alt2">41</div><div class="line number42 index41 alt1">42</div><div class="line number43 index42 alt2">43</div><div class="line number44 index43 alt1">44</div><div class="line number45 index44 alt2">45</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="css comments">/*working variables*/</code></div><div class="line number2 index1 alt1"><code class="css plain">unsigned long lastTime;</code></div><div class="line number3 index2 alt2"><code class="css value">double</code> <code class="css plain">Input, Output, Setpoint;</code></div><div class="line number4 index3 alt1 highlighted"><code class="css value">double</code> <code class="css plain">errSum, lastInput;</code></div><div class="line number5 index4 alt2"><code class="css value">double</code> <code class="css plain">kp, ki, kd;</code></div><div class="line number6 index5 alt1"><code class="css plain">int SampleTime = </code><code class="css value">1000</code><code class="css plain">; //</code><code class="css value">1</code> <code class="css plain">sec</code></div><div class="line number7 index6 alt2"><code class="css plain">void Compute()</code></div><div class="line number8 index7 alt1"><code class="css plain">{</code></div><div class="line number9 index8 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">unsigned long now = millis();</code></div><div class="line number10 index9 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">int timeChange = (now - lastTime);</code></div><div class="line number11 index10 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">if(timeChange&gt;=SampleTime)</code></div><div class="line number12 index11 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">{</code></div><div class="line number13 index12 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css comments">/*Compute all the working error variables*/</code></div><div class="line number14 index13 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css value">double</code> <code class="css plain">error = Setpoint - Input;</code></div><div class="line number15 index14 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css plain">errSum += error;</code></div><div class="line number16 index15 alt1 highlighted"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css value">double</code> <code class="css plain">dInput = (Input - lastInput);</code></div><div class="line number17 index16 alt2">&nbsp;</div><div class="line number18 index17 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css comments">/*Compute PID Output*/</code></div><div class="line number19 index18 alt2 highlighted"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css plain">Output = kp * error + ki * errSum - kd * dInput;</code></div><div class="line number20 index19 alt1">&nbsp;</div><div class="line number21 index20 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css comments">/*Remember some variables for next time*/</code></div><div class="line number22 index21 alt1 highlighted"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css plain">lastInput = Input;</code></div><div class="line number23 index22 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css plain">lastTime = now;</code></div><div class="line number24 index23 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">}</code></div><div class="line number25 index24 alt2"><code class="css plain">}</code></div><div class="line number26 index25 alt1">&nbsp;</div><div class="line number27 index26 alt2"><code class="css plain">void SetTunings(</code><code class="css value">double</code> <code class="css plain">Kp, </code><code class="css value">double</code> <code class="css plain">Ki, </code><code class="css value">double</code> <code class="css plain">Kd)</code></div><div class="line number28 index27 alt1"><code class="css plain">{</code></div><div class="line number29 index28 alt2"><code class="css spaces">&nbsp;&nbsp;</code><code class="css value">double</code> <code class="css plain">SampleTimeInSec = ((</code><code class="css value">double</code><code class="css plain">)SampleTime)/</code><code class="css value">1000</code><code class="css plain">;</code></div><div class="line number30 index29 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">kp = Kp;</code></div><div class="line number31 index30 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">ki = Ki * SampleTimeInSec;</code></div><div class="line number32 index31 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">kd = Kd / SampleTimeInSec;</code></div><div class="line number33 index32 alt2"><code class="css plain">}</code></div><div class="line number34 index33 alt1">&nbsp;</div><div class="line number35 index34 alt2"><code class="css plain">void SetSampleTime(int NewSampleTime)</code></div><div class="line number36 index35 alt1"><code class="css plain">{</code></div><div class="line number37 index36 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">if (NewSampleTime &gt; </code><code class="css value">0</code><code class="css plain">)</code></div><div class="line number38 index37 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">{</code></div><div class="line number39 index38 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css value">double</code> <code class="css plain">ratio&nbsp; = (</code><code class="css value">double</code><code class="css plain">)NewSampleTime</code></div><div class="line number40 index39 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css plain">/ (</code><code class="css value">double</code><code class="css plain">)SampleTime;</code></div><div class="line number41 index40 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css plain">ki *= ratio;</code></div><div class="line number42 index41 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css plain">kd /= ratio;</code></div><div class="line number43 index42 alt2"><code class="css spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="css plain">SampleTime = (unsigned long)NewSampleTime;</code></div><div class="line number44 index43 alt1"><code class="css spaces">&nbsp;&nbsp;&nbsp;</code><code class="css plain">}</code></div><div class="line number45 index44 alt2"><code class="css plain">}</code></div></div></td></tr></tbody></table></div></div>
+<p>The modifications here are pretty easy.  We’re replacing +dError with -dInput.  Instead of remembering the lastError, we now remember the lastInput</p>
+<h3>The Result</h3>
+<p><a href="./03_files/DonM.png"><img class="aligncenter size-full wp-image-927" title="DonM" src="./03_files/DonM.png" alt="" width="336" height="466" srcset="http://brettbeauregard.com/blog/wp-content/uploads/2011/03/DonM.png 336w, http://brettbeauregard.com/blog/wp-content/uploads/2011/03/DonM-216x300.png 216w" sizes="(max-width: 336px) 100vw, 336px"></a></p>
+<p>Here’s what those modifications get us.  Notice that the input still looks about the same.  So we get the same performance, but we don’t send out a huge Output spike every time the Setpoint changes.</p>
+<p>This may or may not be a big deal.  It all depends on how sensitive your application is to output spikes.  The way I see it though, it doesn’t take any more work to do it without kicking so why not do things right?<br>
+<a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/improving-the-beginner%E2%80%99s-pid-tuning-changes">Next &gt;&gt;</a><br>
+<br>
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./03_files/80x15.png"></a></p>
+<p class="wp-flattr-button"><a href="http://brettbeauregard.com/blog/?flattrss_redirect&amp;id=765&amp;md5=60afbb931f0038052433ba10a872d183" title="Flattr" target="_blank"><img src="./03_files/flattr-badge-large.png" alt="flattr this!"></a></p>
+								<p>Tags: <a href="http://brettbeauregard.com/blog/tag/arduino/" rel="tag">Arduino</a>, <a href="http://brettbeauregard.com/blog/tag/beginners-pid/" rel="tag">Beginner's PID</a>, <a href="http://brettbeauregard.com/blog/tag/pid/" rel="tag">PID</a></p>
+				<p class="postmetadata alt">
+					<small>
+						This entry was posted
+												on Friday, April 15th, 2011 at 3:02 pm						and is filed under <a href="http://brettbeauregard.com/blog/category/pid/coding/" rel="category tag">Coding</a>, <a href="http://brettbeauregard.com/blog/category/pid/" rel="category tag">PID</a>.
+						You can follow any responses to this entry through the <a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/feed/">RSS 2.0</a> feed.
+
+													You can <a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#respond">leave a response</a>, or <a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/trackback/" rel="trackback">trackback</a> from your own site.
+
+						
+					</small>
+				</p>
+
+			</div>
+		</div>
+
+	
+<!-- You can start editing here. -->
+
+	<h3 id="comments">9 Responses to “Improving the Beginner’s PID – Derivative Kick”</h3>
+
+	<div class="navigation">
+		<div class="alignleft"></div>
+		<div class="alignright"></div>
+	</div>
+
+	<ol class="commentlist">
+			<li class="comment even thread-even depth-1" id="comment-13475">
+				<div id="div-comment-13475" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/687f5af10e83dbe09fbef53df89bec7f" srcset="http://0.gravatar.com/avatar/687f5af10e83dbe09fbef53df89bec7f?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn">Coding Badly</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-13475">
+			April 16, 2011 at 3:35 am</a>		</div>
+
+		<p>&gt; This number gets fed into the pid equation, which results in an undesirable spike in the output.</p>
+<p>Obviously, this is true for some (most?) applications but it is not universally true.  I worked on a controller for an electric heater that required a rather “aggressive” derivative.  Dramatic changes in the output were not only acceptable, they were required.</p>
+<p>I’ve seen two methods for getting roughly the same effect: 1. Output rate of change clamping; 2. Output filtering.  The advantage is the user can eliminate all spikes, allow some “spikiness”, or allow all spikes.</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-13488">
+				<div id="div-comment-13488" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/a549e72ed66e1c1e512afcc0f8c14f51" srcset="http://1.gravatar.com/avatar/a549e72ed66e1c1e512afcc0f8c14f51?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn">Brett</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-13488">
+			April 16, 2011 at 7:35 am</a>		</div>
+
+		<p>That’s a fair point.  It explains why all manufacturers allow you to choose “derivative on error” even if they default to “derivative on measurement.”  I overstated when I said that looking at measurement is the right way to do things.</p>
+<p>I’ve seen those output massagers as well.  They’re a little out of the scope of this series, but highly effective in the right hands.  They’ve been added to the “things I’ll try to talk about later” list.</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-17880">
+				<div id="div-comment-17880" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/add477ff959bb7362d08e41e0aa1b29b" srcset="http://1.gravatar.com/avatar/add477ff959bb7362d08e41e0aa1b29b?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn">Mandar</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-17880">
+			July 5, 2011 at 2:29 am</a>		</div>
+
+		<p>Im working on a line follower……..<br>
+Can u help me with dat……….How to define a setpoint if  im using Digital Sensors(Five).Is it that the setpoint will always be that the middle sensor should be on the line.<br>
+And then how do i calculate the error and use it for my motors….</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-17890">
+				<div id="div-comment-17890" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/a549e72ed66e1c1e512afcc0f8c14f51" srcset="http://1.gravatar.com/avatar/a549e72ed66e1c1e512afcc0f8c14f51?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn">Brett</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-17890">
+			July 5, 2011 at 8:27 am</a>		</div>
+
+		<p>You would need to convert the 5 digital signals into 1 analog signal (-2 &lt; -&gt; 2)   I’m not sure if this would give you enough resolution to use a pid effectively, but that is how you would do it.</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-17932">
+				<div id="div-comment-17932" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/ebdde6ffbf6c5539711ded4b1b1233c1" srcset="http://2.gravatar.com/avatar/ebdde6ffbf6c5539711ded4b1b1233c1?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn"><a href="http://google/" rel="external nofollow" class="url">prashant</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-17932">
+			July 6, 2011 at 8:30 am</a>		</div>
+
+		<p>hey me and madar are working together </p>
+<p>how much is ur blog applicable for a line follower robot (with 5 digital sensors) as it is?<br>
+i mean wat changes we may hv to do ? apart from our own algorithm language n al?</p>
+<p>to be specific i hv 3 major questions<br>
+1) is SetTunings method required for us?i mean til now we thot kp,ki,kd are constants and we ll give them values?n they shouldnt change their values in between right?</p>
+<p>2)how exactly to call compute method after certain time (say 1ms) from main ?<br>
+u hvnt specified it on how to call it from main? n is millis() method used for it? </p>
+<p>n lastly</p>
+<p>3)how we relate output/correction with speed of motors (2)? we know that we ll hv to use PWM. we know how to do it. but we want ur word on this.</p>
+<p>we ll be grateful for ur help. ty</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-18755">
+				<div id="div-comment-18755" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/715fc41fd036346dbb581d58beab4469" srcset="http://1.gravatar.com/avatar/715fc41fd036346dbb581d58beab4469?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn">bjbsquared</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-18755">
+			July 22, 2011 at 4:22 pm</a>		</div>
+
+		<p>Another thing to consider is that the reference can be changed at a controlled rate. There is no advatantage of instantly changing the set point if the controller can’t keep up. It will tend to go “open loop”. You can gradually change the setpoint within the PID loop.</p>
+<p>For a positive change:<br>
+Linear approach : if (setPntnow&lt;setpoint) setPntnow + aLittleMore;</p>
+<p>asymptotic : if (setPntnow&lt;setpoint) setPntnow= setPntnow+(setpoint – setPntnow)/someDivisor;</p>
+<p>'aLittleMore' and  'someDivisor' could be any number depending on the wanted rate of change. Of course 2, 4, 8, ect would be a simple shift for 'someDivisor.</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1" id="comment-18756">
+				<div id="div-comment-18756" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/a549e72ed66e1c1e512afcc0f8c14f51" srcset="http://1.gravatar.com/avatar/a549e72ed66e1c1e512afcc0f8c14f51?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn">Brett</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-18756">
+			July 22, 2011 at 4:34 pm</a>		</div>
+
+		<p>@bjbsquared while the setpoint ramping you describe makes things more forgiving for difficult processes or less-than-perfect tuning parameters, I think it’s overstating a bit to say that there is “no advantage” to instantly changing the setpoint.  For many processes and with a properly tuned controller, you can achieve a new setpoint far more quickly by  just stepping the setpoint to the new value.</p>
+<p>that being said, setpoint ramping is a valuable technique used often and industry that can save you a lot of tuning work if you have a slow process</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-18937">
+				<div id="div-comment-18937" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/55f44fbf91303a563cf30333a6338b83" srcset="http://2.gravatar.com/avatar/55f44fbf91303a563cf30333a6338b83?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn"><a href="http://diydrones.com/" rel="external nofollow" class="url">Jason Short</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-18937">
+			July 25, 2011 at 11:53 pm</a>		</div>
+
+		<p>I’ve found that if the PID is running at a high rate (200 hz) and a sensor that measures the rate of change is running at a lower rate (say 10hz) you’ll end up with spikes if your D term is high. We have to run a moving average filter over the derivative to keep that under control or else you’ll have a quad copter engine that sounds terrible or other more negative effects.</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1" id="comment-18953">
+				<div id="div-comment-18953" class="comment-body">
+				<div class="comment-author vcard">
+			<img alt="" src="./03_files/a549e72ed66e1c1e512afcc0f8c14f51" srcset="http://1.gravatar.com/avatar/a549e72ed66e1c1e512afcc0f8c14f51?s=64&amp;d=mm&amp;r=g 2x" class="avatar avatar-32 photo" height="32" width="32">			<cite class="fn">Brett</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#comment-18953">
+			July 26, 2011 at 7:04 am</a>		</div>
+
+		<p>@Jason  First of all thanks for even being here.  I’m a huge fan of the diydrones project.  now on to pid.<br>
+In my experience (which is almost entirely large, industrial PID,)  you don’t gain anything by running the PID more quickly than the input signal changes.  you’re asking it to compute a new output without any new information.  and yes, you get weird derivative spikes.  since the PID is evaluated 20 times for every input change, and the derivative is looking at this point compared to the last…  you get 19 0’s then a blip.</p>
+<p>I rarely use filter in my professional life. generally I find that I’m better off removing D than trying to massage the signal to make it work.  This requires things to be tuned fairly well however,  and it takes some time to get a knack for that.</p>
+<p>but as I said, I have very little robotics / motor control pid experience, so there may be advantages I’m unaware of.  have you tried running your PID more slowly?</p>
+
+		
+				</div>
+		</li><!-- #comment-## -->
+	</ol>
+
+	<div class="navigation">
+		<div class="alignleft"></div>
+		<div class="alignright"></div>
+	</div>
+ 
+
+
+<div id="respond">
+
+<h3>Leave a Reply</h3>
+
+<div class="cancel-comment-reply">
+	<small><a rel="nofollow" id="cancel-comment-reply-link" href="http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/#respond" style="display:none;">Click here to cancel reply.</a></small>
+</div>
+
+
+<form action="http://brettbeauregard.com/blog/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" aria-required="true">
+<label for="author"><small>Name (required)</small></label></p>
+
+<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" aria-required="true">
+<label for="email"><small>Mail (will not be published) (required)</small></label></p>
+
+<p><input type="text" name="url" id="url" value="" size="22" tabindex="3">
+<label for="url"><small>Website</small></label></p>
+
+
+<!--<p><small><strong>XHTML:</strong> You can use these tags: <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;s&gt; &lt;strike&gt; &lt;strong&gt; </code></small></p>-->
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment">
+<input type="hidden" name="comment_post_ID" value="765" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+</p>
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="6c72a548e5"></p>
+</form>
+
+</div>
+
+
+	
+	</div>
+ 	<div id="sidebar">
+		<ul>
+						<li>
+				<form role="search" method="get" id="searchform" class="searchform" action="http://brettbeauregard.com/blog/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s">
+					<input type="submit" id="searchsubmit" value="Search">
+				</div>
+			</form>			</li>
+
+			<!-- Author information is disabled per default. Uncomment and fill in your details if you want to use it.
+			<li><h2>Author</h2>
+			<p>A little something about you, the author. Nothing lengthy, just an overview.</p>
+			</li>
+			-->
+
+			
+		
+
+			
+				<li id="linkcat-3" class="linkcat"><h2>Links</h2>
+	<ul class="xoxo blogroll">
+<li><a href="http://groups.google.com/group/diy-pid-control/" title="PID Control Google Group"><img src="./03_files/diy-pid-control-link.jpg" alt="DIY PID Control" title="PID Control Google Group"></a></li>
+<li><a href="http://www.ospid.com/blog/" title="osPID: The Open-Source PID controller"><img src="./03_files/osPID-Link.jpg" alt="osPID" title="osPID: The Open-Source PID controller"></a></li>
+<li><a href="http://www.thingiverse.com/br3ttb" title="My Thingiverse Profile"><img src="./03_files/printed_portrait-small.jpg" alt="Thingiverse Profile" title="My Thingiverse Profile"></a></li>
+
+	</ul>
+</li>
+<li id="linkcat-8" class="linkcat"><h2>This Site</h2>
+	<ul class="xoxo blogroll">
+<li><a href="http://brettbeauregard.com/about.html">About</a></li>
+<li><a href="http://brettbeauregard.com/projects/" rel="me">Project Index</a></li>
+
+	</ul>
+</li>
+
+	
+			
+
+			<li class="categories"><h2>Categories</h2><ul>	<li class="cat-item cat-item-7"><a href="http://brettbeauregard.com/blog/category/pid/">PID</a> (23)
+<ul class="children">
+	<li class="cat-item cat-item-31"><a href="http://brettbeauregard.com/blog/category/pid/coding/">Coding</a> (11)
+</li>
+	<li class="cat-item cat-item-33"><a href="http://brettbeauregard.com/blog/category/pid/front-end/">Front End</a> (2)
+</li>
+	<li class="cat-item cat-item-35"><a href="http://brettbeauregard.com/blog/category/pid/showcase/">Showcase</a> (4)
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://brettbeauregard.com/blog/category/projects/">Projects</a> (40)
+<ul class="children">
+	<li class="cat-item cat-item-19"><a href="http://brettbeauregard.com/blog/category/projects/craft/">Craft</a> (6)
+</li>
+	<li class="cat-item cat-item-16"><a href="http://brettbeauregard.com/blog/category/projects/electronic/">Electronic</a> (12)
+</li>
+	<li class="cat-item cat-item-17"><a href="http://brettbeauregard.com/blog/category/projects/mechanical/">Mechanical</a> (26)
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-1"><a href="http://brettbeauregard.com/blog/category/uncategorized/">Uncategorized</a> (5)
+</li>
+</ul></li><li><h2>Archives</h2>
+				<ul>
+					<li><a href="http://brettbeauregard.com/blog/2012/11/">November 2012</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2012/09/">September 2012</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2012/07/">July 2012</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2012/06/">June 2012</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2012/04/">April 2012</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2012/03/">March 2012</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2012/01/">January 2012</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2011/12/">December 2011</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2011/10/">October 2011</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2011/09/">September 2011</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2011/08/">August 2011</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2011/07/">July 2011</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2011/06/">June 2011</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2011/05/">May 2011</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2011/04/">April 2011</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2010/09/">September 2010</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2010/08/">August 2010</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2010/07/">July 2010</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2010/03/">March 2010</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2009/11/">November 2009</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2009/10/">October 2009</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2009/09/">September 2009</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2009/08/">August 2009</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2009/07/">July 2009</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2009/06/">June 2009</a></li>
+	<li><a href="http://brettbeauregard.com/blog/2009/05/">May 2009</a></li>
+				</ul>
+			</li>
+					</ul>
+	</div>
+<hr>
+<div id="footer">
+<!-- If you'd like to support WordPress, having the "powered by" link somewhere on your blog is the best way; it's our only promotion or advertising. -->
+	<p>
+		Project  Blog is proudly powered by
+		<a href="http://wordpress.org/">WordPress</a>
+		<br><a href="http://brettbeauregard.com/blog/feed/">Entries (RSS)</a>
+		and <a href="http://brettbeauregard.com/blog/comments/feed/">Comments (RSS)</a>.
+		<!-- 38 queries. 0.360 seconds. -->
+	</p>
+</div>
+</div>
+
+<!-- Gorgeous design by Michael Heilemann - http://binarybonsai.com/kubrick/ -->
+
+		<script type="text/javascript" src="./03_files/shCore.js"></script>
+<script type="text/javascript" src="./03_files/shBrushCss.js"></script>
+<script type="text/javascript">
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "http://brettbeauregard.com/blog/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.83c";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.getElementsByTagName("head")[0].insertBefore( corecss, document.getElementById("syntaxhighlighteranchor") );
+		var themecssurl = "http://brettbeauregard.com/blog/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.83c";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		//document.getElementById("syntaxhighlighteranchor").appendChild(themecss);
+		document.getElementsByTagName("head")[0].insertBefore( themecss, document.getElementById("syntaxhighlighteranchor") );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['gutter'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.defaults['wrap-lines'] = false;
+	SyntaxHighlighter.all();
+</script>
+<script type="text/javascript" src="./03_files/comment-reply.min.js"></script>
+<script type="text/javascript" src="./03_files/wp-embed.min.js"></script>
+
+
+</body><iframe allowtransparency="true" frameborder="0" id="abs-top-frame" src="./03_files/top.html" style="position: fixed !important; z-index: 2147483647 !important; overflow: hidden !important; top: 0px !important; left: 0px !important; right: 0px !important; width: 138px !important; height: 13px !important; max-height: none !important; min-height: 0px !important; margin: 0px auto !important; padding: 0px !important; border: 0px !important; display: block !important; background-color: transparent !important;"></iframe></html>

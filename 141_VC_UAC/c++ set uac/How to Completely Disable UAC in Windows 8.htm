@@ -1,0 +1,989 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0090)http://www.c-sharpcorner.com/UploadFile/7e39ca/how-to-completely-disable-uac-in-windows-8/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+How to Completely Disable UAC in Windows 8
+</title> <title>How to Completely Disable UAC in Windows 8</title> <meta name="Keywords" content="Disable User Account control,Security in windows 8,UAC setting in windows 8,User Account control setting in windows 8,Win RT,Windows 8 store"> <meta name="DESCRIPTION" content="In this article we are explaining how to disable the User Account Control (UAC) in Windows 8."> <meta name="Search.TopicType" content="kbArticle"> <meta name="Search.PublishDate" content="13 Dec 2012 12:00:00 GMT"> <meta name="Search.RevisedDate" content="14 Dec 2012 01:28:17 GMT"> <meta name="Search.UserRating" content="0%"> <meta name="CODE_LANGUAGE" content="C#"> <meta name="MS.LOCALE" content="en-US">  <meta name="Author" content="Prabhakar Maurya"> <link rel="stylesheet" type="text/css" href="./How to Completely Disable UAC in Windows 8_files/csharp_05102013.css"><link rel="Shortcut Icon" href="http://www.c-sharpcorner.com/Images/McnIcon.ico"><meta http-equiv="Page-Exit" content="progid:DXImageTransform.Microsoft.Fade(duration=.3)"><meta property="fb:app_id" content="440531902678919"> <script src="./How to Completely Disable UAC in Windows 8_files/cb=gapi.loaded_1" async=""></script><script src="./How to Completely Disable UAC in Windows 8_files/cb=gapi.loaded_0" async=""></script><script id="facebook-jssdk" src="./How to Completely Disable UAC in Windows 8_files/all.js"></script><script src="./How to Completely Disable UAC in Windows 8_files/jquery.min.js" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/jquery.divslideshow-1.2-min.js" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/jquery.TrendingNow.js" type="text/javascript"></script> <script type="text/javascript" src="./How to Completely Disable UAC in Windows 8_files/plusone.js" async="true" gapi_processed="true"></script> <script type="text/javascript" src="./How to Completely Disable UAC in Windows 8_files/in.js" async="true"></script> <script type="text/javascript" src="./How to Completely Disable UAC in Windows 8_files/widgets.js" async="true"></script> <script type="text/javascript">
+var $j = jQuery.noConflict();
+$j(document).ready(function() {
+$j('a.show-dropdown').mouseover(function() {
+//get the height position of the current object
+var elementHeight = $j(this).height();
+var offsetWidth = 10;
+var offsetHeight = 10;
+//Get the tool tip container width adn height
+var toolTipWidth = $j("#dropDown").width();
+var toolTipHeight = $j("#dropDown").height();
+//Get the HTML document width and height
+var documentWidth = $j(document).width();
+var documentHeight = $j(document).height();
+//Set top and bottom position of the tool tip
+var top = $j(this).offset().top;
+if (top + toolTipHeight > documentHeight) {
+top = documentHeight - toolTipHeight - offsetHeight - (2 * elementHeight);
+}
+var left = $j(this).offset().left + offsetWidth;
+if (left + toolTipWidth > documentWidth) {
+left = documentWidth - toolTipWidth - (2 * offsetWidth);
+}
+$j('#dropDown').show();
+});
+$j('a.show-dropdown').mouseout(function() {
+$j("#dropDown").hide();
+});
+$j('#dropDown').mouseover(function() {
+$j('#dropDown').show();
+});
+$j('#dropDown').mouseout(function() {
+$j('#dropDown').hide();
+});
+});
+</script> <link href="./How to Completely Disable UAC in Windows 8_files/WebResource.axd" type="text/css" rel="stylesheet"><script src="./How to Completely Disable UAC in Windows 8_files/nonSecureAnonymousFramework"></script><style type="text/css">.fb_hidden{position:absolute;top:-10000px;z-index:10001}
+.fb_invisible{display:none}
+.fb_reset{background:none;border:0;border-spacing:0;color:#000;cursor:auto;direction:ltr;font-family:"lucida grande", tahoma, verdana, arial, sans-serif;font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal}
+.fb_reset > div{overflow:hidden}
+.fb_link img{border:none}
+.fb_dialog{background:rgba(82, 82, 82, .7);position:absolute;top:-10000px;z-index:10001}
+.fb_dialog_advanced{padding:10px;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px}
+.fb_dialog_content{background:#fff;color:#333}
+.fb_dialog_close_icon{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif);cursor:pointer;display:block;height:15px;position:absolute;right:18px;top:17px;width:15px;top:8px\9;right:7px\9}
+.fb_dialog_mobile .fb_dialog_close_icon{top:5px;left:5px;right:auto}
+.fb_dialog_padding{background-color:transparent;position:absolute;width:1px;z-index:-1}
+.fb_dialog_close_icon:hover{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif)}
+.fb_dialog_close_icon:active{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif)}
+.fb_dialog_loader{background-color:#f2f2f2;border:1px solid #606060;font-size:24px;padding:20px}
+.fb_dialog_top_left,
+.fb_dialog_top_right,
+.fb_dialog_bottom_left,
+.fb_dialog_bottom_right{height:10px;width:10px;overflow:hidden;position:absolute}
+.fb_dialog_top_left{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 0;left:-10px;top:-10px}
+.fb_dialog_top_right{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -10px;right:-10px;top:-10px}
+.fb_dialog_bottom_left{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -20px;bottom:-10px;left:-10px}
+.fb_dialog_bottom_right{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -30px;right:-10px;bottom:-10px}
+.fb_dialog_vert_left,
+.fb_dialog_vert_right,
+.fb_dialog_horiz_top,
+.fb_dialog_horiz_bottom{position:absolute;background:#525252;filter:alpha(opacity=70);opacity:.7}
+.fb_dialog_vert_left,
+.fb_dialog_vert_right{width:10px;height:100%}
+.fb_dialog_vert_left{margin-left:-10px}
+.fb_dialog_vert_right{right:0;margin-right:-10px}
+.fb_dialog_horiz_top,
+.fb_dialog_horiz_bottom{width:100%;height:10px}
+.fb_dialog_horiz_top{margin-top:-10px}
+.fb_dialog_horiz_bottom{bottom:0;margin-bottom:-10px}
+.fb_dialog_iframe{line-height:0}
+.fb_dialog_content .dialog_title{background:#6d84b4;border:1px solid #3b5998;color:#fff;font-size:14px;font-weight:bold;margin:0}
+.fb_dialog_content .dialog_title > span{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yd/r/Cou7n-nqK52.gif)
+no-repeat 5px 50%;float:left;padding:5px 0 7px 26px}
+body.fb_hidden{-webkit-transform:none;height:100%;margin:0;overflow:visible;position:absolute;top:-10000px;left:0;width:100%}
+.fb_dialog.fb_dialog_mobile.loading{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ya/r/3rhSv5V8j3o.gif)
+white no-repeat 50% 50%;min-height:100%;min-width:100%;overflow:hidden;position:absolute;top:0;z-index:10001}
+.fb_dialog.fb_dialog_mobile.loading.centered{max-height:590px;min-height:590px;max-width:500px;min-width:500px}
+#fb-root #fb_dialog_ipad_overlay{background:rgba(0, 0, 0, .45);position:absolute;left:0;top:0;width:100%;min-height:100%;z-index:10000}
+#fb-root #fb_dialog_ipad_overlay.hidden{display:none}
+.fb_dialog.fb_dialog_mobile.loading iframe{visibility:hidden}
+.fb_dialog_content .dialog_header{-webkit-box-shadow:white 0 1px 1px -1px inset;background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#738ABA), to(#2C4987));border-bottom:1px solid;border-color:#1d4088;color:#fff;font:14px Helvetica, sans-serif;font-weight:bold;text-overflow:ellipsis;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0;vertical-align:middle;white-space:nowrap}
+.fb_dialog_content .dialog_header table{-webkit-font-smoothing:subpixel-antialiased;height:43px;width:100%
+}
+.fb_dialog_content .dialog_header td.header_left{font-size:12px;padding-left:5px;vertical-align:middle;width:60px
+}
+.fb_dialog_content .dialog_header td.header_right{font-size:12px;padding-right:5px;vertical-align:middle;width:60px
+}
+.fb_dialog_content .touchable_button{background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#4966A6),
+color-stop(0.5, #355492), to(#2A4887));border:1px solid #29447e;-webkit-background-clip:padding-box;-webkit-border-radius:3px;-webkit-box-shadow:rgba(0, 0, 0, .117188) 0 1px 1px inset,
+rgba(255, 255, 255, .167969) 0 1px 0;display:inline-block;margin-top:3px;max-width:85px;line-height:18px;padding:4px 12px;position:relative}
+.fb_dialog_content .dialog_header .touchable_button input{border:none;background:none;color:#fff;font:12px Helvetica, sans-serif;font-weight:bold;margin:2px -12px;padding:2px 6px 3px 6px;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}
+.fb_dialog_content .dialog_header .header_center{color:#fff;font-size:16px;font-weight:bold;line-height:18px;text-align:center;vertical-align:middle}
+.fb_dialog_content .dialog_content{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;border:1px solid #555;border-bottom:0;border-top:0;height:150px}
+.fb_dialog_content .dialog_footer{background:#f2f2f2;border:1px solid #555;border-top-color:#ccc;height:40px}
+#fb_dialog_loader_close{float:left}
+.fb_dialog.fb_dialog_mobile .fb_dialog_close_button{text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}
+.fb_dialog.fb_dialog_mobile .fb_dialog_close_icon{visibility:hidden}
+.fb_iframe_widget{display:inline-block;position:relative}
+.fb_iframe_widget span{display:inline-block;position:relative;text-align:justify}
+.fb_iframe_widget iframe{position:absolute}
+.fb_iframe_widget_lift{z-index:1}
+.fb_hide_iframes iframe{position:relative;left:-10000px}
+.fb_iframe_widget_loader{position:relative;display:inline-block}
+.fb_iframe_widget_fluid{display:inline}
+.fb_iframe_widget_fluid span{width:100%}
+.fb_iframe_widget_loader iframe{min-height:32px;z-index:2;zoom:1}
+.fb_iframe_widget_loader .FB_Loader{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/y9/r/jKEcVPZFk-2.gif) no-repeat;height:32px;width:32px;margin-left:-16px;position:absolute;left:50%;z-index:4}
+.fb_connect_bar_container div,
+.fb_connect_bar_container span,
+.fb_connect_bar_container a,
+.fb_connect_bar_container img,
+.fb_connect_bar_container strong{background:none;border-spacing:0;border:0;direction:ltr;font-style:normal;font-variant:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal;vertical-align:baseline}
+.fb_connect_bar_container{position:fixed;left:0 !important;right:0 !important;height:42px !important;padding:0 25px !important;margin:0 !important;vertical-align:middle !important;border-bottom:1px solid #333 !important;background:#3b5998 !important;z-index:99999999 !important;overflow:hidden !important}
+.fb_connect_bar_container_ie6{position:absolute;top:expression(document.compatMode=="CSS1Compat"? document.documentElement.scrollTop+"px":body.scrollTop+"px")}
+.fb_connect_bar{position:relative;margin:auto;height:100%;width:100%;padding:6px 0 0 0 !important;background:none;color:#fff !important;font-family:"lucida grande", tahoma, verdana, arial, sans-serif !important;font-size:13px !important;font-style:normal !important;font-variant:normal !important;font-weight:normal !important;letter-spacing:normal !important;line-height:1 !important;text-decoration:none !important;text-indent:0 !important;text-shadow:none !important;text-transform:none !important;white-space:normal !important;word-spacing:normal !important}
+.fb_connect_bar a:hover{color:#fff}
+.fb_connect_bar .fb_profile img{height:30px;width:30px;vertical-align:middle;margin:0 6px 5px 0}
+.fb_connect_bar div a,
+.fb_connect_bar span,
+.fb_connect_bar span a{color:#bac6da;font-size:11px;text-decoration:none}
+.fb_connect_bar .fb_buttons{float:right;margin-top:7px}
+.fb_edge_widget_with_comment{position:relative;*z-index:1000}
+.fb_edge_widget_with_comment span.fb_edge_comment_widget{position:absolute}
+.fb_edge_widget_with_comment span.fb_send_button_form_widget{z-index:1}
+.fb_edge_widget_with_comment span.fb_send_button_form_widget .FB_Loader{left:0;top:1px;margin-top:6px;margin-left:0;background-position:50% 50%;background-color:#fff;height:150px;width:394px;border:1px #666 solid;border-bottom:2px solid #283e6c;z-index:1}
+.fb_edge_widget_with_comment span.fb_send_button_form_widget.dark .FB_Loader{background-color:#000;border-bottom:2px solid #ccc}
+.fb_edge_widget_with_comment span.fb_send_button_form_widget.siderender
+.FB_Loader{margin-top:0}
+.fbpluginrecommendationsbarleft,
+.fbpluginrecommendationsbarright{position:fixed !important;bottom:0;z-index:999}
+.fbpluginrecommendationsbarleft{left:10px}
+.fbpluginrecommendationsbarright{right:10px}</style><style type="text/css">* html #li_ui_li_gen_1386767172520_0 a#li_ui_li_gen_1386767172520_0-link{height:1% !important;}#li_ui_li_gen_1386767172520_0{position:relative !important;overflow:visible !important;display:block !important;}#li_ui_li_gen_1386767172520_0 a#li_ui_li_gen_1386767172520_0-link{border:0 !important;height:20px !important;text-decoration:none !important;padding:0 !important;margin:0 !important;display:inline-block !important;}#li_ui_li_gen_1386767172520_0 a#li_ui_li_gen_1386767172520_0-link:link, #li_ui_li_gen_1386767172520_0 a#li_ui_li_gen_1386767172520_0-link:visited, #li_ui_li_gen_1386767172520_0 a#li_ui_li_gen_1386767172520_0-link:hover, #li_ui_li_gen_1386767172520_0 a#li_ui_li_gen_1386767172520_0-link:active{border:0 !important;text-decoration:none !important;}#li_ui_li_gen_1386767172520_0 a#li_ui_li_gen_1386767172520_0-link:after{content:"." !important;display:block !important;clear:both !important;visibility:hidden !important;line-height:0 !important;height:0 !important;}#li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-logo{background:url(http://s.c.lnkd.licdn.com/scds/common/u/img/sprite/sprite_connect_v13.png) 0px -276px no-repeat !important;cursor:pointer !important;border:0 !important;text-indent:-9999em !important;overflow:hidden !important;padding:0 !important;margin:0 !important;position:absolute !important;left:0px !important;top:0px !important;display:block !important;width:20px !important;height:20px !important;float:right !important;}#li_ui_li_gen_1386767172520_0.hovered #li_ui_li_gen_1386767172520_0-logo{background-position:-20px -276px !important;}#li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-logo, #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-logo{background-position:-40px -276px !important;}.IN-shadowed #li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-logo{}#li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title{color:#333 !important;cursor:pointer !important;display:block !important;white-space:nowrap !important;float:left !important;margin-left:1px !important;vertical-align:top !important;overflow:hidden !important;text-align:center !important;height:18px !important;padding:0 4px 0 23px !important;border:1px solid #000 !important;border-top-color:#E2E2E2 !important;border-right-color:#BFBFBF !important;border-bottom-color:#B9B9B9 !important;border-left-color:#E2E2E2 !important;border-left:0 !important;text-shadow:#FFFFFF -1px 1px 0 !important;line-height:20px !important;border-radius:0 !important;-webkit-border-radius:0 !important;border-top-right-radius:2px !important;border-bottom-right-radius:2px !important;-webkit-border-top-right-radius:2px !important;-webkit-border-bottom-right-radius:2px !important;background-color:#ECECEC !important;background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#FEFEFE), color-stop(100%,#ECECEC)) !important; background-image: -webkit-linear-gradient(top, #FEFEFE 0%, #ECECEC 100%) !important;}#li_ui_li_gen_1386767172520_0.hovered #li_ui_li_gen_1386767172520_0-title{border:1px solid #000 !important;border-top-color:#ABABAB !important;border-right-color:#9A9A9A !important;border-bottom-color:#787878 !important;border-left-color:#04568B !important;border-left:0 !important;background-color:#EDEDED !important;background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#EDEDED), color-stop(100%,#DEDEDE)) !important; background-image: -webkit-linear-gradient(top, #EDEDED 0%, #DEDEDE 100%) !important;}#li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-title, #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-title{color:#666 !important;border:1px solid #000 !important;border-top-color:#B6B6B6 !important;border-right-color:#B3B3B3 !important;border-bottom-color:#9D9D9D !important;border-left-color:#49627B !important;border-left:0 !important;background-color:#DEDEDE !important;background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#E3E3E3), color-stop(100%,#EDEDED)) !important; background-image: -webkit-linear-gradient(top, #E3E3E3 0%, #EDEDED 100%) !important;}.IN-shadowed #li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title{}.IN-shadowed #li_ui_li_gen_1386767172520_0.hovered #li_ui_li_gen_1386767172520_0-title{}.IN-shadowed #li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-title, .IN-shadowed #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-title{}#li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title-text, #li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title-text *{color:#333 !important;font-size:11px !important;font-family:Arial, sans-serif !important;font-weight:bold !important;font-style:normal !important;display:inline-block !important;background:transparent none !important;vertical-align:top !important;height:18px !important;line-height:20px !important;float:none !important;}#li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title-text strong{font-weight:bold !important;}#li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title-text em{font-style:italic !important;}#li_ui_li_gen_1386767172520_0.hovered #li_ui_li_gen_1386767172520_0-title-text, #li_ui_li_gen_1386767172520_0.hovered #li_ui_li_gen_1386767172520_0-title-text *{color:#000 !important;}#li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-title-text, #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-title-text, #li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-title-text *, #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-title-text *{color:#666 !important;}#li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title #li_ui_li_gen_1386767172520_0-mark{display:inline-block !important;width:0px !important;overflow:hidden !important;}.success #li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title{color:#333 !important;border-top-color:#E2E2E2 !important;border-right-color:#BFBFBF !important;border-bottom-color:#B9B9B9 !important;border-left-color:#E2E2E2 !important;background-color:#ECECEC !important;background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#FEFEFE), color-stop(100%,#ECECEC)) !important; background-image: -webkit-linear-gradient(top, #FEFEFE 0%, #ECECEC 100%) !important;}.success #li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title-text, .success #li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title-text *{color:#333 !important;}.IN-shadowed .success #li_ui_li_gen_1386767172520_0 #li_ui_li_gen_1386767172520_0-title{}.success #li_ui_li_gen_1386767172520_0.hovered #li_ui_li_gen_1386767172520_0-title{color:#000 !important;border-top-color:#ABABAB !important;border-right-color:#9A9A9A !important;border-bottom-color:#787878 !important;border-left-color:#04568B !important;background-color:#EDEDED !important;background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#EDEDED), color-stop(100%,#DEDEDE)) !important; background-image: -webkit-linear-gradient(top, #EDEDED 0%, #DEDEDE 100%) !important;}.success #li_ui_li_gen_1386767172520_0.hovered #li_ui_li_gen_1386767172520_0-title-text, .success #li_ui_li_gen_1386767172520_0.hovered #li_ui_li_gen_1386767172520_0-title-text *{color:#000 !important;}.success #li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-title, .success #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-title{color:#666 !important;border-top-color:#B6B6B6 !important;border-right-color:#B3B3B3 !important;border-bottom-color:#9D9D9D !important;border-left-color:#49627B !important;background-color:#DEDEDE !important;background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#E3E3E3), color-stop(100%,#EDEDED)) !important; background-image: -webkit-linear-gradient(top, #E3E3E3 0%, #EDEDED 100%) !important;}.success #li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-title-text, .success #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-title-text, .success #li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-title-text *, .success #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-title-text *{color:#666 !important;}.IN-shadowed .success #li_ui_li_gen_1386767172520_0.clicked #li_ui_li_gen_1386767172520_0-title, .IN-shadowed .success #li_ui_li_gen_1386767172520_0.down #li_ui_li_gen_1386767172520_0-title{}#li_ui_li_gen_1386767172537_1-container.IN-right {display:inline-block !important;float:left !important;overflow:visible !important;position:relative !important;height:18px !important;padding-left:2px !important;line-height:1px !important;cursor:pointer !important;}#li_ui_li_gen_1386767172537_1.IN-right {display:block !important;float:left !important;height:18px !important;margin-right:4px !important;padding-right:4px !important;background:url(http://s.c.lnkd.licdn.com/scds/common/u/img/sprite/sprite_connect_v13.png) right -100px no-repeat !important;}#li_ui_li_gen_1386767172537_1-inner.IN-right {display:block !important;float:left !important;padding-left:8px !important;text-align:center !important;background:url(http://s.c.lnkd.licdn.com/scds/common/u/img/sprite/sprite_connect_v13.png) 0px -60px no-repeat !important;}#li_ui_li_gen_1386767172537_1-content.IN-right {display:inline !important;font-size:11px !important;color:#04558B !important;font-weight:bold !important;font-family:Arial, sans-serif !important;line-height:18px !important;padding:0 5px 0 5px !important;}#li_ui_li_gen_1386767172537_1-container.IN-hovered #li_ui_li_gen_1386767172537_1.IN-right, #li_ui_li_gen_1386767172537_1-container.IN-clicked #li_ui_li_gen_1386767172537_1.IN-right, #li_ui_li_gen_1386767172537_1-container.IN-down #li_ui_li_gen_1386767172537_1.IN-right {background-position-y:-120px !important;}#li_ui_li_gen_1386767172537_1-container.IN-hovered #li_ui_li_gen_1386767172537_1-inner.IN-right, #li_ui_li_gen_1386767172537_1-container.IN-clicked #li_ui_li_gen_1386767172537_1-inner.IN-right, #li_ui_li_gen_1386767172537_1-container.IN-down #li_ui_li_gen_1386767172537_1-inner.IN-right {background-position-y:-80px !important;}#li_ui_li_gen_1386767172537_1-container.IN-empty {display:none !important;}#li_ui_li_gen_1386767172537_1-container.IN-hidden #li_ui_li_gen_1386767172537_1 {display:none !important;}</style></head> <body id="MasterBody" data-twttr-rendered="true"> <div id="fb-root" class=" fb_reset"> <div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div><iframe name="fb_xdm_frame_http" frameborder="0" allowtransparency="true" scrolling="no" id="fb_xdm_frame_http" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tab-index="-1" src="./How to Completely Disable UAC in Windows 8_files/xd_arbiter.htm" style="border: none;"></iframe><iframe name="fb_xdm_frame_https" frameborder="0" allowtransparency="true" scrolling="no" id="fb_xdm_frame_https" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tab-index="-1" src="./How to Completely Disable UAC in Windows 8_files/xd_arbiter(1).htm" style="border: none;"></iframe></div></div><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div></div></div></div> <script>
+(function(d, s, id) {
+var js, fjs = d.getElementsByTagName(s)[0];
+if (d.getElementById(id)) return;
+js = d.createElement(s); js.id = id;
+js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=440531902678919";
+fjs.parentNode.insertBefore(js, fjs);
+} (document, 'script', 'facebook-jssdk'));
+</script> <form name="aspnetForm" method="post" action="http://www.c-sharpcorner.com/UploadFile/7e39ca/how-to-completely-disable-uac-in-windows-8/Default.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm"> <div> <input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value=""> <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value=""> <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value=""> <input type="hidden" name="ctl00_PollForHome1_TabContainerSection_ClientState" id="ctl00_PollForHome1_TabContainerSection_ClientState" value="{&quot;ActiveTabIndex&quot;:0,&quot;TabState&quot;:[true,true,true]}"> <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTY1NDU2MTA1Mg9kFgJmDw8WDB4IQXV0aG9ySUQFBjdlMzljYR4NQ3VycmVudFJhdGluZwUBMB4GU3RhdHVzBQEyHgtIYXNGZWVkYmFja2geCUFydGljbGVJRAUkODBmYzkyZjMtZDQ1NS00NWQ5LTlhOTYtZWZmYjAwYWVlYzg1Hg9NaW5vckNhdGVnb3J5SWQFAzI3NWQWAgIBD2QWLAIBD2QWBgICD2QWAgIDDxYCHgtfIUl0ZW1Db3VudAICFgRmD2QWAmYPFQJwaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9VcGxvYWRGaWxlL3Bydm5fMTMxOTcxL2t1ZG9zLXRvLXNvdXJhdi1rYXlhbC1mb3ItZmFzdGVzdC1jZW50dXJ5LWluLUMtU2hhcnAtY29ybmVyLzZLdWRvcyBUbyBTb3VyYXYgS2F5YWwgRm9yIEZhc3Rlc3QgQ2VudHVyeSBJbiBDIyBDb3JuZXJkAgEPZBYCZg8VAkVodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL0V2ZW50cy82MC9DLVNoYXJwLWNvcm5lci1oYXBweS1ob3VyLmFzcHgUQyMgQ29ybmVyIEhhcHB5IEhvdXJkAgQPZBYKZg8WAh4HVmlzaWJsZWdkAgIPDxYEHgtOYXZpZ2F0ZVVybAVLaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9Vc2VyUmVnaXN0cmF0aW9uL1VzZXJSZWdpc3RyYXRpb24uYXNweD9jaGVjaz1yHwdnZGQCCA8PFgIfB2hkZAIJDxYCHgRocmVmBRxodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tZAIKD2QWAgIBDw8WAh4LXyFEYXRhQm91bmRnZGQCBg9kFgJmD2QWAgIBDzwrAAkBAA8WBB4IRGF0YUtleXMWAB8GAkdkFo4BZg9kFgJmDxUCL2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yMzcvbmV0LTQtNS5hc3B4CC5ORVQgNC41ZAIBD2QWAmYPFQI2aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzEvYWN0aXZlLWRpcmVjdG9yeS5hc3B4EEFjdGl2ZSBEaXJlY3RvcnlkAgIPZBYCZg8VAi9odHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMTMxL2Fkby1uZXQuYXNweAdBRE8uTkVUZAIDD2QWAmYPFQIsaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzE3Ni9hamF4LmFzcHgEQUpBWGQCBA9kFgJmDxUCO2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yNDcvYW5kcm9pZC1wcm9ncmFtbWluZy5hc3B4E0FuZHJvaWQgUHJvZ3JhbW1pbmdkAgUPZBYCZg8VAjFodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMzAyL2FuZ3VsYXJqcy5hc3B4CUFuZ3VsYXJKU2QCBg9kFgJmDxUCOGh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8xNzIvYXJ0aWNsZXMtQy1TaGFycC5hc3B4C0FydGljbGVzIEMjZAIHD2QWAmYPFQI3aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzc1L0FzcC1OZXQtY29udHJvbHMuYXNweBBBU1AuTkVUIENvbnRyb2xzZAIID2QWAmYPFQIzaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzIyNi9Bc3AtTmV0LW12Yy5hc3B4C0FTUC5ORVQgTVZDZAIJD2QWAmYPFQI7aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzIyNC9Bc3AtTmV0LXByb2dyYW1taW5nLmFzcHgTQVNQLk5FVCBQcm9ncmFtbWluZ2QCCg9kFgJmDxUCOGh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8xNDQvQy1TaGFycC1sYW5ndWFnZS5hc3B4C0MjIExhbmd1YWdlZAILD2QWAmYPFQI5aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzE2OC9DLVNoYXJwLXR1dG9yaWFscy5hc3B4DEMjIFR1dG9yaWFsc2QCDA9kFgJmDxUCNWh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yMzgvY2FyZWVyLWFkdmljZS5hc3B4DUNhcmVlciBBZHZpY2VkAg0PZBYCZg8VAjBodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjgwL2NoYXB0ZXJzLmFzcHgIQ2hhcHRlcnNkAg4PZBYCZg8VAjxodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvNjgvY29kaW5nLWJlc3QtcHJhY3RpY2VzLmFzcHgVQ29kaW5nIEJlc3QgUHJhY3RpY2VzZAIPD2QWAmYPFQI7aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzYwL2NyeXB0b2dyYXBoeS1DLVNoYXJwLmFzcHgPQ3J5cHRvZ3JhcGh5IEMjZAIQD2QWAmYPFQI+aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzYxL2NyeXN0YWwtcmVwb3J0cy1DLVNoYXJwLmFzcHgSQ3J5c3RhbCBSZXBvcnRzIEMjZAIRD2QWAmYPFQI3aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzE3MC9jdXJyZW50LWFmZmFpcnMuYXNweA9DdXJyZW50IEFmZmFpcnNkAhIPZBYCZg8VAjVodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjIwL2RhdGFiYXNlcy1kYmEuYXNweA9EYXRhYmFzZXMgJiBEQkFkAhMPZBYCZg8VAjJodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMTQ1L2RlcGxveW1lbnQuYXNweApEZXBsb3ltZW50ZAIUD2QWAmYPFQI6aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzYyL2Rlc2lnbi1hcmNoaXRlY3R1cmUuYXNweBVEZXNpZ24gJiBBcmNoaXRlY3R1cmVkAhUPZBYCZg8VAi5odHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjA2L2ZzaGFycC5hc3B4AkYjZAIWD2QWAmYPFQI+aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzIwNy9maW5hbmNpYWwtYXBwbGljYXRpb25zLmFzcHgWRmluYW5jaWFsIEFwcGxpY2F0aW9uc2QCFw9kFgJmDxUCMmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS80L2dkaS1ncmFwaGljcy5hc3B4D0dESSsgJiBHcmFwaGljc2QCGA9kFgJmDxUCMGh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8xNDMvaG93LWRvLWkuYXNweAlIb3cgZG8gSSBkAhkPZBYCZg8VAi5odHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjQ0L2h0bWwtNS5hc3B4BkhUTUwgNWQCGg9kFgJmDxUCM2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS82Ni9pbnRlcm5ldC13ZWIuYXNweA5JbnRlcm5ldCAmIFdlYmQCGw9kFgJmDxUCLGh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yNTgvamF2YS5hc3B4BEphdmFkAhwPZBYCZg8VAjJodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjMzL2phdmFzY3JpcHQuYXNweApKYXZhU2NyaXB0ZAIdD2QWAmYPFQIuaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzIzNi9qcXVlcnkuYXNweAZKUXVlcnlkAh4PZBYCZg8VAitodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjYwL2pzcC5hc3B4A0pTUGQCHw9kFgJmDxUCMGh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8zMDAva25vY2tvdXQuYXNweAhLbm9ja291dGQCIA9kFgJmDxUCMmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yNzgvbGVhZGVyc2hpcC5hc3B4CkxlYWRlcnNoaXBkAiEPZBYCZg8VAjFodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMTg2L2xlYXJuLW5ldC5hc3B4CkxlYXJuIC5ORVRkAiIPZBYCZg8VAjhodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjc0L2xpZ2h0c3dpdGNoLTIwMTIuYXNweBBMaWdodFN3aXRjaCAyMDEyZAIjD2QWAmYPFQIsaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzE4MC9saW5xLmFzcHgETElOUWQCJA9kFgJmDxUCNmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS82Ny9tb2JpbGUtZW1iZWRkZWQuYXNweBFNb2JpbGUgJiBFbWJlZGRlZGQCJQ9kFgJmDxUCMGh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yOTUvbmV0YmVhbnMuYXNweAhOZXRCZWFuc2QCJg9kFgJmDxUCMmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8xNjcvbmV0d29ya2luZy5hc3B4Ck5ldHdvcmtpbmdkAicPZBYCZg8VAi5odHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjA4L29vcG9vZC5hc3B4B09PUC9PT0RkAigPZBYCZg8VAi5odHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjk5L29yYWNsZS5hc3B4Bk9yYWNsZWQCKQ9kFgJmDxUCK2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yNzkvcGhwLmFzcHgDUEhQZAIqD2QWAmYPFQIwaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzI4My9wcm9kdWN0cy5hc3B4CFByb2R1Y3RzZAIrD2QWAmYPFQI3aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzE4My9zaGFyZXBvaW50LTIwMTAuYXNweA9TaGFyZVBvaW50IDIwMTBkAiwPZBYCZg8VAjdodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjg5L3NoYXJlcG9pbnQtMjAxMy5hc3B4D1NoYXJlUG9pbnQgMjAxM2QCLQ9kFgJmDxUCL2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8zMDEvc2lnbmFsci5hc3B4B1NpZ25hbFJkAi4PZBYCZg8VAkBodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjEwL3NpbHZlcmxpZ2h0LXdpdGgtQy1TaGFycC5hc3B4E1NpbHZlcmxpZ2h0IHdpdGggQyNkAi8PZBYCZg8VAjVodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMTU4L3NtYXJ0LWRldmljZXMuYXNweA1TbWFydCBEZXZpY2VzZAIwD2QWAmYPFQIraHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzIxNi9zcWwuYXNweANTUUxkAjEPZBYCZg8VAjJodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMTg3L3NxbC1zZXJ2ZXIuYXNweApTUUwgU2VydmVyZAIyD2QWAmYPFQIvaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzE3NC90ZXN0aW5nLmFzcHgHVGVzdGluZ2QCMw9kFgJmDxUCMmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yOTEvdHlwZXNjcmlwdC5hc3B4ClR5cGVTY3JpcHRkAjQPZBYCZg8VAjhodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjc3L3Zpc3VhbC1iYXNpYy1uZXQuYXNweBFWaXN1YWwgQmFzaWMgLk5FVGQCNQ9kFgJmDxUCOWh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8xMzkvdmlzdWFsLXN0dWRpby1uZXQuYXNweBJWaXN1YWwgU3R1ZGlvIC5ORVRkAjYPZBYCZg8VAjpodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjgxL3Zpc3VhbC1zdHVkaW8tMjAxMi5hc3B4ElZpc3VhbCBTdHVkaW8gMjAxMmQCNw9kFgJmDxUCOmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yOTYvdmlzdWFsLXN0dWRpby0yMDEzLmFzcHgSVmlzdWFsIFN0dWRpbyAyMDEzZAI4D2QWAmYPFQI4aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzE5Mi93Y2Ytd2l0aC1DLVNoYXJwLmFzcHgLV0NGIHdpdGggQyNkAjkPZBYCZg8VAjdodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMTU0L3dlYi1kZXZlbG9wbWVudC5hc3B4D1dlYiBEZXZlbG9wbWVudGQCOg9kFgJmDxUCP2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8xMzMvd2ViLXNlcnZpY2VzLWluLUMtU2hhcnAuYXNweBJXZWIgU2VydmljZXMgaW4gQyNkAjsPZBYCZg8VAjFodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjc1L3dpbmRvd3MtOC5hc3B4CVdpbmRvd3MgOGQCPA9kFgJmDxUCNWh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yMzIvd2luZG93cy1henVyZS5hc3B4DVdpbmRvd3MgQXp1cmVkAj0PZBYCZg8VAj9odHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvNzcvd2luZG93cy1jb250cm9scy1DLVNoYXJwLmFzcHgTV2luZG93cyBDb250cm9scyBDI2QCPg9kFgJmDxUCPGh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS83Ni93aW5kb3dzLWZvcm1zLUMtU2hhcnAuYXNweBFXaW5kb3dzIEZvcm1zIEMjIGQCPw9kFgJmDxUCNWh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8yNDUvd2luZG93cy1waG9uZS5hc3B4DVdpbmRvd3MgUGhvbmVkAkAPZBYCZg8VAjtodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjkyL3dpbmRvd3Mtc2VydmVyLTIwMTIuYXNweBNXaW5kb3dzIFNlcnZlciAyMDEyZAJBD2QWAmYPFQJCaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzc4L3dpbmRvd3Mtc2VydmljZXMtaW4tQy1TaGFycC5hc3B4FldpbmRvd3MgU2VydmljZXMgaW4gQyNkAkIPZBYCZg8VAjpodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMTM4L3dpbmRvd3Mtc3RvcmUtYXBwcy5hc3B4EldpbmRvd3MgU3RvcmUgQXBwc2QCQw9kFgJmDxUCRmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8xOTMvd29ya2Zsb3ctZm91bmRhdGlvbi1pbi1DLVNoYXJwLmFzcHgZV29ya2Zsb3cgRm91bmRhdGlvbiBpbiBDI2QCRA9kFgJmDxUCK2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS8xOTEvd3BmLmFzcHgDV1BGZAJFD2QWAmYPFQIsaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS8xLzE5MC94YW1sLmFzcHgEWEFNTGQCRg9kFgJmDxUCKmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vMS83OS94bWwuYXNweANYTUxkAgIPZBYCAgEPFgIfBgIKFhRmD2QWAmYPFQJSaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9VcGxvYWRGaWxlLzg0Yzg1Yi91c2luZy1hZG8tbmV0LWVudGl0eS1mcmFtZXdvcmstNS0wLyNVc2luZyBBRE8gLk5FVCBFbnRpdHkgRnJhbWV3b3JrIDUuMGQCAQ9kFgJmDxUCU2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vVXBsb2FkRmlsZS83OTAzN2IvYmV0dGVyLXdlYmFwcC1wcmVzZW50YXRpb24td2l0aC1jc3MvKEJldHRlciBXZWImIzQ3O0FwcCBQcmVzZW50YXRpb24gV2l0aCBDU1NkAgIPZBYCZg8VAnZodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL1VwbG9hZEZpbGUvcHJ2bl8xMzE5NzEvQy1TaGFycC1jb3JuZXItY29uZ3JhdHVsYXRlcy1kaGFuYW5qYXkta3VtYXItb24tY29tcGxldGluZy01MDAtYXIvMEMjIENvcm5lciBDb25ncmF0dWxhdGVzIERoYW5hbmpheSBLdW1hciBvbiBDIC4uLmQCAw9kFgJmDxUCWWh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vVXBsb2FkRmlsZS9iOWUwMTEvd2ViaW5hci1nZXR0aW5nLXN0YXJ0ZWQtd2l0aC1qcXVlcnktcmVjYXAvLFdlYmluYXI6IEdldHRpbmcgU3RhcnRlZCBXaXRoIGpRdWVyeSAtIFJlY2FwZAIED2QWAmYPFQJaaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9VcGxvYWRGaWxlL2RhY2NhMi9hZHZhbmNlLWphdmFzY3JpcHQtbmFtZXNwYWNlLWluLWphdmFzY3JpcHQvF05hbWVzcGFjZSBpbiBKYXZhU2NyaXB0ZAIFD2QWAmYPFQJnaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9VcGxvYWRGaWxlL2NoaW5uYXNyaWhhcmkvaHRtbDUtYW5kLUFzcC1OZXQtY2xpZW50LXNpZGUtY2FjaGluZy10ZWNobmlxdWVzLzBIVE1MNSBhbmQgQVNQLk5ldCBDbGllbnQtU2lkZSBDYWNoaW5nIFRlY2huaXF1ZXNkAgYPZBYCZg8VAlJodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL1VwbG9hZEZpbGUvc291cmFiaF9taXNocmExL2ZpbGV1cGxvYWQtaW4tQXNwLU5ldC1tdmMvGUZpbGVVcGxvYWQgaW4gQVNQLk5ldCBNVkNkAgcPZBYCZg8VAlNodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL1VwbG9hZEZpbGUvYjFkZjQ1L2JyaWRnZS1kZXNpZ24tcGF0dGVybi11c2luZy1DLVNoYXJwLx5CcmlkZ2UgRGVzaWduIFBhdHRlcm4gVXNpbmcgQyNkAggPZBYCZg8VAklodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL1VwbG9hZEZpbGUvMGMxYmIyL3Byb2dyYW1taW5nLW1ldGhvZG9sb2dpZXMvGVByb2dyYW1taW5nIE1ldGhvZG9sb2dpZXNkAgkPZBYCZg8VAk9odHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL1VwbG9hZEZpbGUvYW5rdXJtYWxpazEyMy9DLVNoYXJwLWNvZGluZy1zdGFuZGFyZHMvE0MjIENvZGluZyBTdGFuZGFyZHNkAgQPFgIfCQVBaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9hdXRob3JzLzdlMzljYS9wcmFiaGFrYXItbWF1cnlhLmFzcHgWAgIBDw8WBB4ISW1hZ2VVcmwFPmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vVXBsb2FkRmlsZS9BdXRob3JJbWFnZS83ZTM5Y2EuanBnHgdUb29sVGlwBRBQcmFiaGFrYXIgTWF1cnlhZGQCBQ8WAh8HZxYEAgEPZBYCAgEPDxYCHgRUZXh0BQIzOWRkAgMPFgIeCWlubmVyaHRtbAV5PGEgY2xhc3M9IkxpbmtOb3JtYWxTdHlsZU9yYW5nZSIgaHJlZj1odHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL0F1dGhvcnMvQXV0aG9yUmFua2luZy5hc3B4P0F1dGhvcklkPTdlMzljYSA+IDMsMzYwPC9hPmQCBg8WAh8PBSpIb3cgdG8gQ29tcGxldGVseSBEaXNhYmxlIFVBQyBpbiBXaW5kb3dzIDhkAgcPFgQfCQVBaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9hdXRob3JzLzdlMzljYS9wcmFiaGFrYXItbWF1cnlhLmFzcHgfDwUQUHJhYmhha2FyIE1hdXJ5YWQCCQ8WBB8JBTFodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tLzEvMjc1L3dpbmRvd3MtOC5hc3B4Hw8FCVdpbmRvd3MgOGQCCg8PFgIfDgURRGVjZW1iZXIgMTMsIDIwMTJkZAILDxYCHw8F5gU8YSBjbGFzcz0nTGlua05vcm1hbEdyYXlMaWdodCcgaHJlZj0naHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS90YWdzL0Rpc2FibGUtVXNlci1BY2NvdW50LWNvbnRyb2wnPkRpc2FibGUgVXNlciBBY2NvdW50IGNvbnRyb2w8L2E+LCA8YSBjbGFzcz0nTGlua05vcm1hbEdyYXlMaWdodCcgaHJlZj0naHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS90YWdzL1NlY3VyaXR5LWluLXdpbmRvd3MtOCc+U2VjdXJpdHkgaW4gd2luZG93cyA4PC9hPiwgPGEgY2xhc3M9J0xpbmtOb3JtYWxHcmF5TGlnaHQnIGhyZWY9J2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vdGFncy9VQUMtc2V0dGluZy1pbi13aW5kb3dzLTgnPlVBQyBzZXR0aW5nIGluIHdpbmRvd3MgODwvYT4sIDxhIGNsYXNzPSdMaW5rTm9ybWFsR3JheUxpZ2h0JyBocmVmPSdodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL3RhZ3MvVXNlci1BY2NvdW50LWNvbnRyb2wtc2V0dGluZy1pbi13aW5kb3dzLTgnPlVzZXIgQWNjb3VudCBjb250cm9sIHNldHRpbmcgaW4gd2luZG93cyA4PC9hPiwgPGEgY2xhc3M9J0xpbmtOb3JtYWxHcmF5TGlnaHQnIGhyZWY9J2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vdGFncy9XaW4tUlQnPldpbiBSVDwvYT4sIDxhIGNsYXNzPSdMaW5rTm9ybWFsR3JheUxpZ2h0JyBocmVmPSdodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL3RhZ3MvV2luZG93cy04LXN0b3JlJz5XaW5kb3dzIDggc3RvcmU8L2E+ZAIMDxYCHw8FXUluIHRoaXMgYXJ0aWNsZSB3ZSBhcmUgZXhwbGFpbmluZyBob3cgdG8gZGlzYWJsZSB0aGUgVXNlciBBY2NvdW50IENvbnRyb2wgKFVBQykgaW4gV2luZG93cyA4LmQCDQ8WAh8PBQQ4NjUwZAIOD2QWAmYPZBYCAgMPDxYCHw4FATBkZAIaDw8WAh8NBQlTYW0gSG9iYnNkZAIcD2QWAgIBDw8WBB8MBRovaW1hZ2VzL2NzaGFycC9zaWduYWwxLnBuZx8NBQhCZWdpbm5lcmRkAh0PFgIeBXN0eWxlBS9tYXJnaW4tdG9wOjEwcHg7bWFyZ2luLWJvdHRvbTowcHg7ZGlzcGxheTpub25lOxYCAgEPFgIfB2hkAh8PZBYCAgMPFgIfB2hkAiAPZBYCAgEPFgQfCQViaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9BZFJlZGlyZWN0b3IuYXNweD9BZElkPTg0JnRhcmdldD1odHRwOi8vd3d3LlByb2R1Y3Rpb25SZWFkeS5jb20vP2E9bWMfDwW9AUVMRUZMRVggaXMgYW4gb3Blbi1zb3VyY2UsIC5ORVQgQyMgZW50ZXJwcmlzZSBhcHBsaWNhdGlvbiBmcmFtZXdvcmsgZm9yIGJ1aWxkaW5nIGVuZC10by1lbmQsIGhpZ2ggcGVyZm9ybWFuY2UsIHNlcnZpY2Ugb3JpZW50ZWQgYXJjaGl0ZWN0dXJlIChTT0EpIGFwcGxpY2F0aW9ucyB3aXRoIGNvZGUgZ2VuZXJhdGlvbiBpbiBtaW5kLmQCIQ9kFgJmD2QWBAIBD2QWBgIBDxYCHwkFQWh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vYXV0aG9ycy83ZTM5Y2EvcHJhYmhha2FyLW1hdXJ5YS5hc3B4FgICAQ8PFgQfDAU+aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9VcGxvYWRGaWxlL0F1dGhvckltYWdlLzdlMzljYS5qcGcfDQUQUHJhYmhha2FyIE1hdXJ5YWRkAgUPDxYEHwgFUmh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vVXBsb2FkRmlsZS83ZTM5Y2EvaG93LXRvLWJsb2NrLXdlYnNpdGVzLWluLXdpbmRvd3MtOC8fDgUiSG93IHRvIEJsb2NrIFdlYnNpdGVzIGluIFdpbmRvd3MgOGRkAgcPFgIfDwWMBjxzcGFuIHN0eWxlPWNvbG9yOkJsYWNrOyBmb250LXdlaWdodDpib2xkOz5UYWdzOiA8L3NwYW4+PGEgY2xhc3M9J0xpbmtOb3JtYWxHcmF5TGlnaHQnIGhyZWY9J2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vdGFncy9CbG9jay13ZWJzaXRlLWluLXdpbmRvd3MnPkJsb2NrIHdlYnNpdGUgaW4gd2luZG93czwvYT4sIDxhIGNsYXNzPSdMaW5rTm9ybWFsR3JheUxpZ2h0JyBocmVmPSdodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL3RhZ3MvSG93LXRvLWJsb2NrLWZhY2Vib29rJz5Ib3cgdG8gYmxvY2sgZmFjZWJvb2s8L2E+LCA8YSBjbGFzcz0nTGlua05vcm1hbEdyYXlMaWdodCcgaHJlZj0naHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS90YWdzL01vZGlmeS1IT1NUUy1maWxlLWluLXdpbmRvd3MtOCc+TW9kaWZ5IEhPU1RTIGZpbGUgaW4gd2luZG93cyA4PC9hPiwgPGEgY2xhc3M9J0xpbmtOb3JtYWxHcmF5TGlnaHQnIGhyZWY9J2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vdGFncy9yZXN0cmljdC13ZWJzaXRlcy1pbi13aW5kb3dzLTgnPnJlc3RyaWN0IHdlYnNpdGVzIGluIHdpbmRvd3MgODwvYT4sIDxhIGNsYXNzPSdMaW5rTm9ybWFsR3JheUxpZ2h0JyBocmVmPSdodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL3RhZ3MvV2luLVJUJz5XaW4gUlQ8L2E+LCA8YSBjbGFzcz0nTGlua05vcm1hbEdyYXlMaWdodCcgaHJlZj0naHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS90YWdzL1dpbmRvd3MtOC1zdG9yZSc+V2luZG93cyA4IHN0b3JlPC9hPmQCAw9kFgYCAQ8PFgQfCAVzaHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9VcGxvYWRGaWxlL2tyaXNobmFzYXJhbGEvY29uZmlndXJlLXlvdXItd2luZG93cy1zdG9yZS1hcHBsaWNhdGlvbi11c2luZy1tYW5pZmVzdC1kZXNpLx8OBUBDb25maWd1cmUgWW91ciBXaW5kb3dzIFN0b3JlIEFwcGxpY2F0aW9uIFVzaW5nIE1hbmlmZXN0IERlc2lnbmVyZGQCAw8WAh8PBdgEPHNwYW4gc3R5bGU9Y29sb3I6QmxhY2s7IGZvbnQtd2VpZ2h0OmJvbGQ7PlRhZ3M6IDwvc3Bhbj48YSBjbGFzcz0nTGlua05vcm1hbEdyYXlMaWdodCcgaHJlZj0naHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS90YWdzL0FwcGxpY2F0aW9uLWNvbmZpZ3VyYXRpb24tZm9yLXdpbmRvd3Mtc3RvcmUtYXBwcyc+QXBwbGljYXRpb24gY29uZmlndXJhdGlvbiBmb3Igd2luZG93cyBzdG9yZSBhcHBzPC9hPiwgPGEgY2xhc3M9J0xpbmtOb3JtYWxHcmF5TGlnaHQnIGhyZWY9J2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vdGFncy9NYW5pZmVzdC1EZXNpZ25lcic+TWFuaWZlc3QgRGVzaWduZXI8L2E+LCA8YSBjbGFzcz0nTGlua05vcm1hbEdyYXlMaWdodCcgaHJlZj0naHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS90YWdzL01hbmlmZXN0LWVkaXRvci13aW5kb3dzLXN0b3JlLWFwcCc+TWFuaWZlc3QgZWRpdG9yIHdpbmRvd3Mgc3RvcmUgYXBwPC9hPiwgPGEgY2xhc3M9J0xpbmtOb3JtYWxHcmF5TGlnaHQnIGhyZWY9J2h0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vdGFncy93aW5kb3dzLXN0b3JlLWFwcCc+d2luZG93cyBzdG9yZSBhcHA8L2E+ZAIFDxYCHwkFRWh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vYXV0aG9ycy9rcmlzaG5hc2FyYWxhL2tyaXNobmEtZ2FyYWQuYXNweBYCAgEPDxYEHwwFRWh0dHA6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vVXBsb2FkRmlsZS9BdXRob3JJbWFnZS9rcmlzaG5hc2FyYWxhLmpwZx8NBQ1LcmlzaG5hIEdhcmFkZGQCIw8PFgYeCUNvbnRlbnRJZAUkODBmYzkyZjMtZDQ1NS00NWQ5LTlhOTYtZWZmYjAwYWVlYzg1Hg1Db250ZW50VXNlcklkBQY3ZTM5Y2EeDENvbnRlbnRUaXRsZQUqSG93IHRvIENvbXBsZXRlbHkgRGlzYWJsZSBVQUMgaW4gV2luZG93cyA4ZBYCZg9kFgRmD2QWAgIBDw9kFgIeB29uY2xpY2sFLkNvbW1lbnRzX2FydGljbGUuUG9zdENvbW1lbnQoMCk7IHJldHVybiBmYWxzZTtkAgEPFgIfB2hkAiQPZBYGAgEPDxYCHwgFW2h0dHA6Ly93d3cubmV2cm9uLmNvbS9DYW1wYWlnbj9rZXk9Q1NoYXJwQ29ybmVyXzEzXzZfQ2hhcnRfNzV4OTAmdXJsPWh0dHA6Ly93d3cubmV2cm9uLmNvbS9kFgJmDw8WAh8MBUNodHRwOi8vd3d3LmMtc2hhcnBjb3JuZXIuY29tL1VwbG9hZEZpbGUvU3BvbnNlcnNJbWFnZXMvMDcyMTUwQU0uanBnZGQCAw8PFgQfDgUGTmV2cm9uHwgFW2h0dHA6Ly93d3cubmV2cm9uLmNvbS9DYW1wYWlnbj9rZXk9Q1NoYXJwQ29ybmVyXzEzXzZfQ2hhcnRfNzV4OTAmdXJsPWh0dHA6Ly93d3cubmV2cm9uLmNvbS9kZAIFDxYCHw8FgwJOZXZyb24gU29mdHdhcmUgaXMgYSBnbG9iYWwgbGVhZGVyIGluIGNvbXBvbmVudCBiYXNlZCBkYXRhIHZpc3VhbGl6YXRpb24gdGVjaG5vbG9neSBmb3IgYSBkaXZlcnNlIHJhbmdlIG9mIE1pY3Jvc29mdCBjZW50cmljIHBsYXRmb3Jtcy4gTmV2cm9uIERhdGEgVmlzdWFsaXphdGlvbiBjb21wb25lbnRzIGFyZSB1c2VkIGJ5IG1hbnkgY29tcGFuaWVzLCBlZHVjYXRpb25hbCBhbmQgZ292ZXJubWVudCBvcmdhbml6YXRpb25zIGFyb3VuZCB0aGUgd29ybGQuZAIlD2QWAgIBD2QWBmYPZBYCAgEPDxYCHwpnZGQCCA9kFgICAQ8WAh8OBccQPGEgaHJlZj0iL3RhZ3MvRGVidWdnaW5nLU1vZGUiIGNsYXNzPSJIZWFkZXJUYWdDbG91ZCI+RGVidWdnaW5nIE1vZGU8L2E+IDxhIGhyZWY9Ii90YWdzL0RlZmF1bHQtUHJvZ3JhbXMiIGNsYXNzPSJIZWFkZXJUYWdDbG91ZCI+RGVmYXVsdCBQcm9ncmFtczwvYT4gPGEgaHJlZj0iL3RhZ3MvRWRpdC1Vc2VyLUFjY291bnRzIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPkVkaXQgVXNlciBBY2NvdW50czwvYT4gPGEgaHJlZj0iL3RhZ3MvRXhwb3J0LVNTTC1DZXJ0aWZpY2F0ZXMiIGNsYXNzPSJIZWFkZXJUYWdDbG91ZCI+RXhwb3J0IFNTTCBDZXJ0aWZpY2F0ZXM8L2E+IDxhIGhyZWY9Ii90YWdzL0ltcG9ydC1TU0wtQ2VydGlmaWNhdGVzIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPkltcG9ydCBTU0wgQ2VydGlmaWNhdGVzPC9hPiA8YSBocmVmPSIvdGFncy9JbnN0YWxsLVdpbmRvd3MtOC1vbi1WTXdhcmUtUGxheWVyIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPkluc3RhbGwgV2luZG93cyA4IG9uIFZNd2FyZSBQbGF5ZXI8L2E+IDxhIGhyZWY9Ii90YWdzL01lZGlhLVN0cmVhbWluZyIgY2xhc3M9IkhlYWRlclRhZ0Nsb3VkIj5NZWRpYSBTdHJlYW1pbmc8L2E+IDxhIGhyZWY9Ii90YWdzL01ldHJvLVVJIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPk1ldHJvIFVJPC9hPiA8YSBocmVmPSIvdGFncy9Qcm90ZWN0LURyaXZlLWluLVdpbmRvd3MtOCIgY2xhc3M9IkhlYWRlclRhZ0Nsb3VkIj5Qcm90ZWN0IERyaXZlIGluIFdpbmRvd3MgODwvYT4gPGEgaHJlZj0iL3RhZ3MvUmVtb3ZlLVJlY3ljbGUtQmluIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPlJlbW92ZSBSZWN5Y2xlIEJpbjwvYT4gPGEgaHJlZj0iL3RhZ3MvUmVtb3ZlLVZvbHVtZS1Db250cm9sLUljb24tVXNpbmctV2luZG93cy04IiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPlJlbW92ZSBWb2x1bWUgQ29udHJvbCBJY29uIFVzaW5nIFdpbmRvd3MgODwvYT4gPGEgaHJlZj0iL3RhZ3MvU2VjdXJpdHktTWVzc2FnZXMiIGNsYXNzPSJIZWFkZXJUYWdDbG91ZCI+U2VjdXJpdHkgTWVzc2FnZXM8L2E+IDxhIGhyZWY9Ii90YWdzL1Rhc2stTWFuYWdlciIgY2xhc3M9IkhlYWRlclRhZ0Nsb3VkIj5UYXNrIE1hbmFnZXI8L2E+IDxhIGhyZWY9Ii90YWdzL1dpbi1SVCIgY2xhc3M9IkhlYWRlclRhZ0Nsb3VkT3JhbmdlIj5XaW4gUlQ8L2E+IDxhIGhyZWY9Ii90YWdzL1dpbmRvd3MtOC1BcnRpY2xlIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPldpbmRvd3MgOCBBcnRpY2xlPC9hPiA8YSBocmVmPSIvdGFncy9XaW5kb3dzLTgtYXJ0aWNsZXMiIGNsYXNzPSJIZWFkZXJUYWdDbG91ZCI+V2luZG93cyA4IGFydGljbGVzPC9hPiA8YSBocmVmPSIvdGFncy9XaW5kb3dzLTgtRGlzYWJsZS1Db21wdXRlci1zaGFyaW5nIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPldpbmRvd3MgOCBEaXNhYmxlIENvbXB1dGVyIHNoYXJpbmc8L2E+IDxhIGhyZWY9Ii90YWdzL1dpbmRvd3MtOC1JbnN0YWxsYXRpb24iIGNsYXNzPSJIZWFkZXJUYWdDbG91ZCI+V2luZG93cyA4IEluc3RhbGxhdGlvbjwvYT4gPGEgaHJlZj0iL3RhZ3Mvd2luZG93cy04LW9wZXJhdGluZy1zeXN0ZW0iIGNsYXNzPSJIZWFkZXJUYWdDbG91ZEJsdWUiPndpbmRvd3MgOCBvcGVyYXRpbmcgc3lzdGVtPC9hPiA8YSBocmVmPSIvdGFncy9XaW5kb3dzLTgtVHJvdWJsZXNob290IiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPldpbmRvd3MgOCBUcm91Ymxlc2hvb3Q8L2E+IDxhIGhyZWY9Ii90YWdzL1dpbmRvd3MtOC1UdXRvcmlhbCIgY2xhc3M9IkhlYWRlclRhZ0Nsb3VkIj5XaW5kb3dzIDggVHV0b3JpYWw8L2E+IDxhIGhyZWY9Ii90YWdzL1dpbmRvd3MtOC1UdXRvcmlhbHMiIGNsYXNzPSJIZWFkZXJUYWdDbG91ZE9yYW5nZSI+V2luZG93cyA4IFR1dG9yaWFsczwvYT4gPGEgaHJlZj0iL3RhZ3MvV2luZG93cy04LVVJIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWRCbHVlIj5XaW5kb3dzIDggVUk8L2E+IDxhIGhyZWY9Ii90YWdzL3dpbmRvd3Mtc2VydmVyIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPndpbmRvd3Mgc2VydmVyPC9hPiA8YSBocmVmPSIvdGFncy9XaW5kb3dzLVN0b3JlIiBjbGFzcz0iSGVhZGVyVGFnQ2xvdWQiPldpbmRvd3MgU3RvcmU8L2E+IGQCDA9kFgICAQ8PFgIfCmdkZAImDw8WBB4GUG9sbElkBQMzNjkeBGRTZXQy+BcAAQAAAP////8BAAAAAAAAAAwCAAAATlN5c3RlbS5EYXRhLCBWZXJzaW9uPTIuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OQUBAAAAE1N5c3RlbS5EYXRhLkRhdGFTZXQDAAAAF0RhdGFTZXQuUmVtb3RpbmdWZXJzaW9uCVhtbFNjaGVtYQtYbWxEaWZmR3JhbQMBAQ5TeXN0ZW0uVmVyc2lvbgIAAAAJAwAAAAYEAAAAmgw8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJ1dGYtMTYiPz4NCjx4czpzY2hlbWEgaWQ9Ik5ld0RhdGFTZXQiIHhtbG5zPSIiIHhtbG5zOnhzPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIgeG1sbnM6bXNkYXRhPSJ1cm46c2NoZW1hcy1taWNyb3NvZnQtY29tOnhtbC1tc2RhdGEiPg0KICA8eHM6ZWxlbWVudCBuYW1lPSJOZXdEYXRhU2V0IiBtc2RhdGE6SXNEYXRhU2V0PSJ0cnVlIiBtc2RhdGE6VXNlQ3VycmVudExvY2FsZT0idHJ1ZSI+DQogICAgPHhzOmNvbXBsZXhUeXBlPg0KICAgICAgPHhzOmNob2ljZSBtaW5PY2N1cnM9IjAiIG1heE9jY3Vycz0idW5ib3VuZGVkIj4NCiAgICAgICAgPHhzOmVsZW1lbnQgbmFtZT0iVGFibGUiPg0KICAgICAgICAgIDx4czpjb21wbGV4VHlwZT4NCiAgICAgICAgICAgIDx4czpzZXF1ZW5jZT4NCiAgICAgICAgICAgICAgPHhzOmVsZW1lbnQgbmFtZT0iUG9sbFF1ZXN0aW9uIiB0eXBlPSJ4czpzdHJpbmciIG1zZGF0YTp0YXJnZXROYW1lc3BhY2U9IiIgbWluT2NjdXJzPSIwIiAvPg0KICAgICAgICAgICAgPC94czpzZXF1ZW5jZT4NCiAgICAgICAgICA8L3hzOmNvbXBsZXhUeXBlPg0KICAgICAgICA8L3hzOmVsZW1lbnQ+DQogICAgICAgIDx4czplbGVtZW50IG5hbWU9IlRhYmxlMSI+DQogICAgICAgICAgPHhzOmNvbXBsZXhUeXBlPg0KICAgICAgICAgICAgPHhzOnNlcXVlbmNlPg0KICAgICAgICAgICAgICA8eHM6ZWxlbWVudCBuYW1lPSJQb2xsT3B0aW9uSWQiIHR5cGU9InhzOmludCIgbXNkYXRhOnRhcmdldE5hbWVzcGFjZT0iIiBtaW5PY2N1cnM9IjAiIC8+DQogICAgICAgICAgICAgIDx4czplbGVtZW50IG5hbWU9Im9wdGlvbnRleHQiIHR5cGU9InhzOnN0cmluZyIgbXNkYXRhOnRhcmdldE5hbWVzcGFjZT0iIiBtaW5PY2N1cnM9IjAiIC8+DQogICAgICAgICAgICAgIDx4czplbGVtZW50IG5hbWU9InRvdGFsb3B0aW9udm90ZXMiIHR5cGU9InhzOmxvbmciIG1zZGF0YTp0YXJnZXROYW1lc3BhY2U9IiIgbWluT2NjdXJzPSIwIiAvPg0KICAgICAgICAgICAgICA8eHM6ZWxlbWVudCBuYW1lPSJwZXJjZW50b3B0aW9uIiB0eXBlPSJ4czpkZWNpbWFsIiBtc2RhdGE6dGFyZ2V0TmFtZXNwYWNlPSIiIG1pbk9jY3Vycz0iMCIgLz4NCiAgICAgICAgICAgIDwveHM6c2VxdWVuY2U+DQogICAgICAgICAgPC94czpjb21wbGV4VHlwZT4NCiAgICAgICAgPC94czplbGVtZW50Pg0KICAgICAgICA8eHM6ZWxlbWVudCBuYW1lPSJUYWJsZTIiPg0KICAgICAgICAgIDx4czpjb21wbGV4VHlwZT4NCiAgICAgICAgICAgIDx4czpzZXF1ZW5jZT4NCiAgICAgICAgICAgICAgPHhzOmVsZW1lbnQgbmFtZT0idG90YWx2b3RlcyIgdHlwZT0ieHM6bG9uZyIgbXNkYXRhOnRhcmdldE5hbWVzcGFjZT0iIiBtaW5PY2N1cnM9IjAiIC8+DQogICAgICAgICAgICA8L3hzOnNlcXVlbmNlPg0KICAgICAgICAgIDwveHM6Y29tcGxleFR5cGU+DQogICAgICAgIDwveHM6ZWxlbWVudD4NCiAgICAgIDwveHM6Y2hvaWNlPg0KICAgIDwveHM6Y29tcGxleFR5cGU+DQogIDwveHM6ZWxlbWVudD4NCjwveHM6c2NoZW1hPgYFAAAAtQk8ZGlmZmdyOmRpZmZncmFtIHhtbG5zOm1zZGF0YT0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp4bWwtbXNkYXRhIiB4bWxuczpkaWZmZ3I9InVybjpzY2hlbWFzLW1pY3Jvc29mdC1jb206eG1sLWRpZmZncmFtLXYxIj48TmV3RGF0YVNldD48VGFibGUgZGlmZmdyOmlkPSJUYWJsZTEiIG1zZGF0YTpyb3dPcmRlcj0iMCI+PFBvbGxRdWVzdGlvbj5XaGF0IGlzIHlvdXIgc3RhdHVzIHdpdGggV2luZG93cyA4PzwvUG9sbFF1ZXN0aW9uPjwvVGFibGU+PFRhYmxlMSBkaWZmZ3I6aWQ9IlRhYmxlMTEiIG1zZGF0YTpyb3dPcmRlcj0iMCI+PFBvbGxPcHRpb25JZD4xNTU2PC9Qb2xsT3B0aW9uSWQ+PG9wdGlvbnRleHQ+SSBhbSB1c2luZyBpdCBhdCB3b3JrPC9vcHRpb250ZXh0Pjx0b3RhbG9wdGlvbnZvdGVzPjE1NzwvdG90YWxvcHRpb252b3Rlcz48cGVyY2VudG9wdGlvbj4zNy45MjwvcGVyY2VudG9wdGlvbj48L1RhYmxlMT48VGFibGUxIGRpZmZncjppZD0iVGFibGUxMiIgbXNkYXRhOnJvd09yZGVyPSIxIj48UG9sbE9wdGlvbklkPjE1NTc8L1BvbGxPcHRpb25JZD48b3B0aW9udGV4dD5Pbmx5IGF0IGhvbWU8L29wdGlvbnRleHQ+PHRvdGFsb3B0aW9udm90ZXM+NjM8L3RvdGFsb3B0aW9udm90ZXM+PHBlcmNlbnRvcHRpb24+MTUuMjI8L3BlcmNlbnRvcHRpb24+PC9UYWJsZTE+PFRhYmxlMSBkaWZmZ3I6aWQ9IlRhYmxlMTMiIG1zZGF0YTpyb3dPcmRlcj0iMiI+PFBvbGxPcHRpb25JZD4xNTU4PC9Qb2xsT3B0aW9uSWQ+PG9wdGlvbnRleHQ+UGxhbm5pbmcgdG8gaW5zdGFsbCBpdDwvb3B0aW9udGV4dD48dG90YWxvcHRpb252b3Rlcz4zNTwvdG90YWxvcHRpb252b3Rlcz48cGVyY2VudG9wdGlvbj44LjQ1PC9wZXJjZW50b3B0aW9uPjwvVGFibGUxPjxUYWJsZTEgZGlmZmdyOmlkPSJUYWJsZTE0IiBtc2RhdGE6cm93T3JkZXI9IjMiPjxQb2xsT3B0aW9uSWQ+MTU1OTwvUG9sbE9wdGlvbklkPjxvcHRpb250ZXh0Pk5vIHBsYW4gdG8gdXNlIGl0PC9vcHRpb250ZXh0Pjx0b3RhbG9wdGlvbnZvdGVzPjE1OTwvdG90YWxvcHRpb252b3Rlcz48cGVyY2VudG9wdGlvbj4zOC40MTwvcGVyY2VudG9wdGlvbj48L1RhYmxlMT48VGFibGUyIGRpZmZncjppZD0iVGFibGUyMSIgbXNkYXRhOnJvd09yZGVyPSIwIj48dG90YWx2b3Rlcz40MTQ8L3RvdGFsdm90ZXM+PC9UYWJsZTI+PC9OZXdEYXRhU2V0PjwvZGlmZmdyOmRpZmZncmFtPgQDAAAADlN5c3RlbS5WZXJzaW9uBAAAAAZfTWFqb3IGX01pbm9yBl9CdWlsZAlfUmV2aXNpb24AAAAACAgICAIAAAAAAAAA//////////8LZBYCZg9kFgJmD2QWAgIBD2QWBGYPZBYCZg9kFgICAQ9kFgoCAQ9kFgJmD2QWAgIBDw8WBB8OBQlXaW5kb3dzIDgfCAU6aHR0cDovL3d3dy5jLXNoYXJwY29ybmVyLmNvbS9Qb2xscy9EZWZhdWx0LmFzcHg/cG9sbGlkPTM2OWRkAgMPZBYCZg9kFgICAQ8PFgIfDgUjV2hhdCBpcyB5b3VyIHN0YXR1cyB3aXRoIFdpbmRvd3MgOD9kZAIFD2QWAmYPZBYCAgEPEA8WBh4NRGF0YVRleHRGaWVsZAUKT3B0aW9uVGV4dB4ORGF0YVZhbHVlRmllbGQFDFBvbGxPcHRpb25JZB8KZ2QQFQQVSSBhbSB1c2luZyBpdCBhdCB3b3JrDE9ubHkgYXQgaG9tZRZQbGFubmluZyB0byBpbnN0YWxsIGl0EU5vIHBsYW4gdG8gdXNlIGl0FQQEMTU1NgQxNTU3BDE1NTgEMTU1ORQrAwRnZ2dnZGQCBg9kFgICAQ9kFgICAQ8PFgIeD0NvbW1hbmRBcmd1bWVudAUDMzY5ZGQCCA9kFgJmD2QWAgIBDw8WAh4HRW5hYmxlZGhkZAIBD2QWAmYPZBYCZg8PFgIfDgUjV2hhdCBpcyB5b3VyIHN0YXR1cyB3aXRoIFdpbmRvd3MgOD9kZBgCBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WCgUkY3RsMDAkVHJlbmRpbmdOb3cxJHNlYXJjaEltYWdlQnV0dG9uBRVjdGwwMCRJbWFnZUJ1dHRvbkxpa2UFFmN0bDAwJEltYWdlQnV0dG9uRW1haWwFIWN0bDAwJEltYWdlQnV0dG9uQWRkVG9NeUJvb2ttYXJrcwUaY3RsMDAkSW1hZ2VCdXR0b25Nb2RlcmF0b3IFGWN0bDAwJEltYWdlQnV0dG9uUHJldmlvdXMFFWN0bDAwJEltYWdlQnV0dG9uTmV4dAUmY3RsMDAkUG9sbEZvckhvbWUxJFRhYkNvbnRhaW5lclNlY3Rpb24FTWN0bDAwJFBvbGxGb3JIb21lMSRUYWJDb250YWluZXJTZWN0aW9uJFRhYlBhbmVsSW5Qcm9ncmVzcyRpbWFnZUJ1dHRvblByZXZpb3VzBUljdGwwMCRQb2xsRm9ySG9tZTEkVGFiQ29udGFpbmVyU2VjdGlvbiRUYWJQYW5lbEluUHJvZ3Jlc3MkaW1hZ2VCdXR0b25OZXh0BSZjdGwwMCRQb2xsRm9ySG9tZTEkVGFiQ29udGFpbmVyU2VjdGlvbg8PZGZkXMIi6h5K+hCbtTt8Prg7KHAUXkQ="> </div> <script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+theForm.__EVENTTARGET.value = eventTarget;
+theForm.__EVENTARGUMENT.value = eventArgument;
+theForm.submit();
+}
+}
+//]]> </script> <script src="./How to Completely Disable UAC in Windows 8_files/WebResource(1).axd" type="text/javascript"></script> <script>
+$j(function() {
+$j('#js-news').ticker();
+});
+</script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource.axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(1).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(2).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/MindcrackerJScript.js" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(3).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(4).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(5).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(6).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(7).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(8).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(9).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/ScriptResource(10).axd" type="text/javascript"></script> <script src="./How to Completely Disable UAC in Windows 8_files/WebResource(2).axd" type="text/javascript"></script> <script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+null;if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]> </script> <div class="master"> <div id="floatdiv" style="position: absolute; right: 0px; top: 165px;"> </div> <a name="Top"></a> <div class="header"> <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$HeaderNewDesign1$ScriptManager1', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tctl00$UpdatePanelLike','tctl00$UpdatePanelMessage','tctl00$updatePanelArticleSlider','tctl00$Comments1$UpdatePanelEmail','tctl00$RightBar$ArticleDetailRightBar1$PremiumSponsorsTextAd1$UpdatePanelSponsorWithImage','tctl00$PollForHome1$Updatepanel1'], ['ctl00$ImageButtonAddToMyBookmarks'], [], 90);
+//]]> </script> <script type="text/javascript" language="javascript">
+//This script is used to hide error(s) when a postback occurs during partial postback.
+Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
+function EndRequestHandler(sender, args) {
+if (args.get_error() != undefined) {
+args.set_errorHandled(true);
+}
+}
+</script> <script src="./How to Completely Disable UAC in Windows 8_files/ticker.js" type="text/javascript"></script> <style>
+.ticker
+{
+width: 710px;
+height: 30px;
+display: block;
+position: relative;
+overflow: hidden;
+}
+.ticker-title
+{
+padding-top: 9px;
+color: #900;
+font-weight: bold;
+text-transform: uppercase;
+}
+.ticker-content
+{
+margin: 0;
+padding-top: 9px;
+position: absolute;
+color: #1f527b;
+overflow: hidden;
+white-space: nowrap;
+line-height: 1.2em;
+}
+.ticker-content a:hover
+{
+text-decoration: none;
+color: #0d3059;
+}
+.ticker-swipe
+{
+padding-top: 9px;
+position: absolute;
+top: 0;
+background-color: #f60;
+display: block;
+width: 800px;
+height: 23px;
+}
+.ticker-swipe span
+{
+margin-left: 1px;
+border-bottom: 1px solid #fff;
+height: 14px;
+width: 7px;
+display: block;
+}
+.js-hidden
+{
+display: none;
+}
+.ticker-controls
+{
+padding: 8px 0 0 0;
+list-style-type: none;
+float: left;
+}
+.left .ticker-controls, .left .ticker-content, .left .ticker-title, .left .ticker
+{
+float: left;
+}
+</style> <div class="InFocusNews" id="InFocus"> <div class="page" style="position: relative;"> <h2>
+In Focus</h2> <div class="rightNew" style="display: inline;"> <div id="ticker-wrapper-1386767172311" class="ticker-wrapper has-js left"><div id="ticker-1386767172311" class="ticker"><div id="ticker-title-1386767172311" class="ticker-title" style=""><span></span></div><p id="ticker-content-1386767172311" class="ticker-content" style="display: block; opacity: 0.8064535268264883; left: 20px;"><a href="http://www.c-sharpcorner.com/Events/60/C-Sharp-corner-happy-hour.aspx" style="color: White;">
+C# Corner Happy Hour</a></p><div id="ticker-swipe-1386767172311" class="ticker-swipe" style="left: 20px; margin-left: 144px; display: none;"><span style="display: block;"><!-- --></span></div></div><ul id="ticker-controls-1386767172311" class="ticker-controls"><li id="play-pause-1386767172311" class="jnt-play-pause controls"><a href=""><!-- --></a></li><li id="prev-1386767172311" class="jnt-prev controls"><a href=""><!-- --></a></li><li id="next-1386767172311" class="jnt-next controls"><a href=""><!-- --></a></li></ul></div> </div> </div> </div> <script src="./How to Completely Disable UAC in Windows 8_files/urchin.js" type="text/javascript"> </script> <script type="text/javascript">
+_uacct = "UA-535360-1";
+urchinTracker();
+$j(document).ready(function() {
+var flag;
+var textBoxClientId = '#ctl00_HeaderNewDesign1_Login1_TextBoxUserId';
+var value = $j(textBoxClientId).val();
+$j(textBoxClientId).click(function() {
+if (value == "Invalid ID / Password")
+$j(textBoxClientId).val('');
+});
+//login popup js start here//
+$j('#ctl00_HeaderNewDesign1_Login1_loginBtn').click(function() {
+flag = 1;
+$j('#ctl00_HeaderNewDesign1_Login1_LoginSpan').slideToggle("slow");
+$j('#ctl00_HeaderNewDesign1_Login1_TextBoxUserId').focus();
+$j('.loginPopup').css('position', 'absolute');
+});
+$j('#ctl00_HeaderNewDesign1_Login1_settingBtn').mouseover(function() {
+$j('.loginPopup').css('position', 'relative');
+$j('#ctl00_HeaderNewDesign1_Login1_LogoutSpan').show();
+});
+$j('#loginPopupContainer').mouseover(function() {
+$j('#ctl00_HeaderNewDesign1_Login1_LogoutSpan').show();
+});
+$j('#ctl00_HeaderNewDesign1_Login1_settingBtn').mouseout(function() {
+$j('#ctl00_HeaderNewDesign1_Login1_LogoutSpan').hide();
+});
+$j('#loginPopupContainer').mouseout(function() {
+$j('#ctl00_HeaderNewDesign1_Login1_LogoutSpan').hide();
+});
+$j('.loginPopup').click(function() {
+flag = 1;
+});
+$j(document).click(function() {
+if (flag != 1) {
+$j('#ctl00_HeaderNewDesign1_Login1_LoginSpan').hide();
+$j('#ctl00_HeaderNewDesign1_Login1_LogoutSpan').hide();
+}
+flag = 0;
+});
+//login popup js end here//
+});
+</script> <div class="page" style="position: relative; z-index: 9999999;"> <div class="loginControl"> <a href="http://www.c-sharpcorner.com/Controls/#" id="ctl00_HeaderNewDesign1_Login1_loginBtn" class="icons login" onclick="return false;" title="Login">&nbsp;</a> <a id="ctl00_HeaderNewDesign1_Login1_HyperLinkRegister" title="Sign Up" class="icons signUp" href="http://www.c-sharpcorner.com/UserRegistration/UserRegistration.aspx?check=r"></a> <div style="margin: 8px 15px 0px 0px; float: right; color: white; font-size: 14px;"> <div class="image"> </div> <a id="ctl00_HeaderNewDesign1_Login1_LinkButtonUserName" class="loginWhiteLink" href="javascript:__doPostBack('ctl00$HeaderNewDesign1$Login1$LinkButtonUserName','')"></a> </div> </div> <div id="ctl00_HeaderNewDesign1_Login1_LoginSpan" class="loginPopup" onkeypress="javascript:return WebForm_FireDefaultButton(event, &#39;ctl00_HeaderNewDesign1_Login1_ImageButtonLogin&#39;)" style="display: none;"> <center> <span id="ctl00_HeaderNewDesign1_Login1_LabelErrorMessage" style="color:Red;padding-bottom: 5px;"></span></center> <span class="arrow">&nbsp;</span> <div class="row"> <label class="lableText">
+Email :</label> <input name="ctl00$HeaderNewDesign1$Login1$TextBoxUserId" type="text" id="ctl00_HeaderNewDesign1_Login1_TextBoxUserId" class="inputBox" style="width: 150px;"> <span id="ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId" style="color:Red;display:none;">*</span> <input type="hidden" name="ctl00$HeaderNewDesign1$Login1$TBWEUserID_ClientState" id="ctl00_HeaderNewDesign1_Login1_TBWEUserID_ClientState"> </div> <div class="row"> <label class="lableText">
+Password :
+</label> <input name="ctl00$HeaderNewDesign1$Login1$TextBoxPassword" type="password" id="ctl00_HeaderNewDesign1_Login1_TextBoxPassword" class="inputBox" autocomplete="off" style="width: 150px;"> <span id="ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword" style="color:Red;display:none;">*</span> <input type="hidden" name="ctl00$HeaderNewDesign1$Login1$TBWEPassword_ClientState" id="ctl00_HeaderNewDesign1_Login1_TBWEPassword_ClientState"> </div> <div class="row"> <label class="lableText">
+&nbsp;</label> <label class="lableText" style="width: auto"> <input type="checkbox" checked="checked" name="a">Remember me?</label> </div> <div class="row"> <label class="lableText">
+&nbsp;</label> <input type="submit" name="ctl00$HeaderNewDesign1$Login1$ImageButtonLogin" value="Login" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$HeaderNewDesign1$Login1$ImageButtonLogin&quot;, &quot;&quot;, true, &quot;LeftLogin&quot;, &quot;&quot;, false, false))" id="ctl00_HeaderNewDesign1_Login1_ImageButtonLogin" title="Login"> <a href="http://www.c-sharpcorner.com/UserRegistration/UserRegistration.aspx?check=f" class="LinkRed">Forgot password</a> </div> </div> <div style="position: absolute; right: 0px; padding-top: 16px; top: -16px;" id="loginPopupContainer"> </div> </div> <div class="logoHeader"> <div class="page"> <a href="http://www.c-sharpcorner.com/" id="ctl00_HeaderNewDesign1_Login1_LogoLink"> <span id="ctl00_HeaderNewDesign1_Login1_LogoImage" class="logo"></span> </a> <div style="width: 450px; height: 60px; margin: 7px 0px 0px 40px; float: left;"> <a id="ctl00_HeaderNewDesign1_Login1_AdHeader1_AdRotatorHeader" href="http://www.c-sharpcorner.com/AdRedirector.aspx?BannerId=707&target=http://www.nevron.com/Campaign?key=CSharpCorner_13_6_Diagram_450x60&url=http://www.nevron.com/" target="_blank"><img src="./How to Completely Disable UAC in Windows 8_files/Diagram_450x60.png" alt="Nevron Diagram" style="border-width:0px;"></a> </div> <div id="ctl00_HeaderNewDesign1_Login1_ContributionLinks"> <div class="contributeList"> <a href="http://www.c-sharpcorner.com/UploadFile/7e39ca/how-to-completely-disable-uac-in-windows-8/#" class="contributeOnHeader">Contribute</a> <ul> <li> <a id="ctl00_HeaderNewDesign1_Login1_PostArticle" href="javascript:__doPostBack('ctl00$HeaderNewDesign1$Login1$PostArticle','')">An Article</a></li> <li> <a id="ctl00_HeaderNewDesign1_Login1_PostBlog" href="javascript:__doPostBack('ctl00$HeaderNewDesign1$Login1$PostBlog','')">A Blog</a></li> <li> <a id="ctl00_HeaderNewDesign1_Login1_PostNews" href="javascript:__doPostBack('ctl00$HeaderNewDesign1$Login1$PostNews','')">A News</a></li> <li> <a id="ctl00_HeaderNewDesign1_Login1_PostVideo" href="javascript:__doPostBack('ctl00$HeaderNewDesign1$Login1$PostVideo','')">A Video</a></li> <li> <a id="ctl00_HeaderNewDesign1_Login1_PostResource" href="javascript:__doPostBack('ctl00$HeaderNewDesign1$Login1$PostResource','')">A Link</a></li> <li> <a id="ctl00_HeaderNewDesign1_Login1_PostInterview" href="javascript:__doPostBack('ctl00$HeaderNewDesign1$Login1$PostInterview','')">An Interview Question</a></li> </ul> </div> <a id="ctl00_HeaderNewDesign1_Login1_PostForum" class="askQuestionOnHeader" href="javascript:__doPostBack('ctl00$HeaderNewDesign1$Login1$PostForum','')">Ask a Question</a> </div> </div> </div> <div id="ctl00_HeaderNewDesign1_HeaderMenu" class="menuStripBlue"> <div class="page" style="position: relative;"> <div class="menu"> <ul> <li style="background: none;"><a href="http://www.c-sharpcorner.com/" class="csharpHome" title="C# Corner Home">&nbsp;</a></li> <li><a href="javascript:void(0);" class="show-dropdown menuLinkBlue">TECHNOLOGIES </a> <div class="dropDownMenu" id="dropDown"> <div id="ctl00_HeaderNewDesign1_divTechnology" style="overflow:hidden; margin-bottom:10px;"> <span id="ctl00_HeaderNewDesign1_DataListTechnologyTop"><span> <a href="http://www.c-sharpcorner.com/1/237/net-4-5.aspx">
+.NET 4.5
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/60/cryptography-C-Sharp.aspx">
+Cryptography C#
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/236/jquery.aspx">
+JQuery
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/183/sharepoint-2010.aspx">
+SharePoint 2010
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/154/web-development.aspx">
+Web Development
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/1/active-directory.aspx">
+Active Directory
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/61/crystal-reports-C-Sharp.aspx">
+Crystal Reports C#
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/260/jsp.aspx">
+JSP
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/289/sharepoint-2013.aspx">
+SharePoint 2013
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/133/web-services-in-C-Sharp.aspx">
+Web Services in C#
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/131/ado-net.aspx">
+ADO.NET
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/170/current-affairs.aspx">
+Current Affairs
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/300/knockout.aspx">
+Knockout
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/301/signalr.aspx">
+SignalR
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/275/windows-8.aspx">
+Windows 8
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/176/ajax.aspx">
+AJAX
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/220/databases-dba.aspx">
+Databases &amp; DBA
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/278/leadership.aspx">
+Leadership
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/210/silverlight-with-C-Sharp.aspx">
+Silverlight with C#
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/232/windows-azure.aspx">
+Windows Azure
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/247/android-programming.aspx">
+Android Programming
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/145/deployment.aspx">
+Deployment
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/186/learn-net.aspx">
+Learn .NET
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/158/smart-devices.aspx">
+Smart Devices
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/77/windows-controls-C-Sharp.aspx">
+Windows Controls C#
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/302/angularjs.aspx">
+AngularJS
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/62/design-architecture.aspx">
+Design &amp; Architecture
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/274/lightswitch-2012.aspx">
+LightSwitch 2012
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/216/sql.aspx">
+SQL
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/76/windows-forms-C-Sharp.aspx">
+Windows Forms C# 
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/172/articles-C-Sharp.aspx">
+Articles C#
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/206/fsharp.aspx">
+F#
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/180/linq.aspx">
+LINQ
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/187/sql-server.aspx">
+SQL Server
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/245/windows-phone.aspx">
+Windows Phone
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/75/Asp-Net-controls.aspx">
+ASP.NET Controls
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/207/financial-applications.aspx">
+Financial Applications
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/67/mobile-embedded.aspx">
+Mobile &amp; Embedded
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/174/testing.aspx">
+Testing
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/292/windows-server-2012.aspx">
+Windows Server 2012
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/226/Asp-Net-mvc.aspx">
+ASP.NET MVC
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/4/gdi-graphics.aspx">
+GDI+ &amp; Graphics
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/295/netbeans.aspx">
+NetBeans
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/291/typescript.aspx">
+TypeScript
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/78/windows-services-in-C-Sharp.aspx">
+Windows Services in C#
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/224/Asp-Net-programming.aspx">
+ASP.NET Programming
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/143/how-do-i.aspx">
+How do I 
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/167/networking.aspx">
+Networking
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/277/visual-basic-net.aspx">
+Visual Basic .NET
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/138/windows-store-apps.aspx">
+Windows Store Apps
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/144/C-Sharp-language.aspx">
+C# Language
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/244/html-5.aspx">
+HTML 5
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/208/oopood.aspx">
+OOP/OOD
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/139/visual-studio-net.aspx">
+Visual Studio .NET
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/193/workflow-foundation-in-C-Sharp.aspx">
+Workflow Foundation in C#
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/168/C-Sharp-tutorials.aspx">
+C# Tutorials
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/66/internet-web.aspx">
+Internet &amp; Web
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/299/oracle.aspx">
+Oracle
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/281/visual-studio-2012.aspx">
+Visual Studio 2012
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/191/wpf.aspx">
+WPF
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/238/career-advice.aspx">
+Career Advice
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/258/java.aspx">
+Java
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/279/php.aspx">
+PHP
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/296/visual-studio-2013.aspx">
+Visual Studio 2013
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/190/xaml.aspx">
+XAML
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/280/chapters.aspx">
+Chapters
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/233/javascript.aspx">
+JavaScript
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/283/products.aspx">
+Products
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/192/wcf-with-C-Sharp.aspx">
+WCF with C#
+</a> </span><span> <a href="http://www.c-sharpcorner.com/1/79/xml.aspx">
+XML
+</a> </span><br><span> <a href="http://www.c-sharpcorner.com/1/68/coding-best-practices.aspx">
+Coding Best Practices
+</a> </span></span> </div> <div style="position: absolute; bottom: 0px; left: 0px;"> <a href="http://www.c-sharpcorner.com/ContactUs.aspx?type=7" class="LinkNormalBlue" style="color: #ff6600; background: none; text-transform: none; float: left;">Request
+a new Category</a><span style="float: left; padding-top: 8px;">|</span><a href="http://www.c-sharpcorner.com/Category/" class="LinkNormalBlue viewAll" style="color: #36c; background: none; text-transform: none;
+float: left;">View All</a> </div> </div> </li> <li><a href="http://www.c-sharpcorner.com/Forums/" class="menuLinkBlue" title="Ask a Question">ANSWERS</a></li> <li><a href="http://www.c-sharpcorner.com/Blogs/" class="menuLinkBlue" title="Share a Blog">
+BLOGS</a></li> <li><a href="http://www.c-sharpcorner.com/Videos/" title="Share a Video" class="menuLinkBlue">VIDEOS</a></li><li><a href="http://www.c-sharpcorner.com/interviews/" class="menuLinkBlue" title="Ask an Interview Question">INTERVIEWS</a></li><li><a href="http://www.c-sharpcorner.com/ebooks/" class="menuLinkBlue" title="Share a Book">
+BOOKS</a></li> <li><a href="http://www.c-sharpcorner.com/resources/" class="menuLinkBlue" title="Share a Link">LINKS</a></li> <li><a href="http://www.c-sharpcorner.com/news/" class="menuLinkBlue" title="Submit a News">
+NEWS</a></li> <li><a href="http://www.c-sharpcorner.com/Chapters/" class="menuLinkBlue" title="Attend an Event">CHAPTERS</a></li> <li><a href="http://www.c-sharpcorner.com/CareerAdvice/" class="menuLinkBlue" title="Get career advice">CAREER ADVICE</a></li> </ul> </div> </div> </div> <div id="ctl00_HeaderNewDesign1_UpdateProgress1" style="display: none; left: 964px; top: 0px; position: fixed;"> <img id="ctl00_HeaderNewDesign1_ImageLoading" src="./How to Completely Disable UAC in Windows 8_files/Loading.GIF" style="border-width:0px;"> </div> </div> <div class="page"> <div class="clear"> </div> <div class="main"> <div class="leftCntr"> <span style="position: relative; float: left; margin:0px; width: 450px;
+height: 30px; border: 1px solid #d5d5d5; display: inline-block;"><span style="background-image: url(/Images/csharp/TrendingNow.png);
+background-repeat: no-repeat; width: 138px; height: 30px; display: inline-block;"> <span> <div id="example1_wrap"> <div class="bx_wrap"><a href="" class="prev"><img src="./How to Completely Disable UAC in Windows 8_files/leftArrow.png"></a><a href="" class="next"><img src="./How to Completely Disable UAC in Windows 8_files/rightArrow.png"></a><div class="bx_container" style="position: relative; width: 275px; overflow: hidden;"><ul id="example1" style="width: 999999px; position: relative; left: -275px;"><li style="float: left; list-style: none; margin-right: 0px;"><a href="http://www.c-sharpcorner.com/UploadFile/ankurmalik123/C-Sharp-coding-standards/" class="LinkNormalStyle" style="color: Gray;">
+C# Coding Standards</a></li><li style="float: left; list-style: none; margin-right: 0px;"><a href="http://www.c-sharpcorner.com/UploadFile/84c85b/using-ado-net-entity-framework-5-0/" class="LinkNormalStyle" style="color: Gray;">
+Using ADO .NET Entity Framework 5.0</a></li><li style="float: left; list-style: none; margin-right: 0px;"><a href="http://www.c-sharpcorner.com/UploadFile/79037b/better-webapp-presentation-with-css/" class="LinkNormalStyle" style="color: Gray;">
+Better Web/App Presentation With CSS</a></li></ul></div></div> </div> </span></span></span> <div id="ctl00_TrendingNow1_Panal1" onkeypress="javascript:return WebForm_FireDefaultButton(event, &#39;ctl00_TrendingNow1_searchImageButton&#39;)"> <span style="width: 5px;"></span><span style="width: 215px;
+height: 30px; border: 1px solid #d5d5d5; display: inline-block; position: relative;
+float: right; margin:  0px;"> <span style="display: inline; position: relative;
+float: left;"> <input name="ctl00$TrendingNow1$searchTextBox" type="text" id="ctl00_TrendingNow1_searchTextBox" class="searchTextBox" style="font-family:Calibri;"></span> <span style="display: inline; position: relative; float: right;"> <input type="image" name="ctl00$TrendingNow1$searchImageButton" id="ctl00_TrendingNow1_searchImageButton" class="SearchButton" src="./How to Completely Disable UAC in Windows 8_files/SearchButton.png" style="border-width:0px;"></span> </span> <input type="hidden" name="ctl00$TrendingNow1$TBWESearch_ClientState" id="ctl00_TrendingNow1_TBWESearch_ClientState"> </div> <div class="article"> <div class="HeadingAr" id="div1"> <span id="ctl00_spanArticle">ARTICLE</span></div> <div class="clear"> </div> <div class="image"> <a href="http://www.c-sharpcorner.com/authors/7e39ca/prabhakar-maurya.aspx" id="ctl00_AnchorAuthorImage"> <img id="ctl00_imgAuthor" title="Prabhakar Maurya" class="image90" src="./How to Completely Disable UAC in Windows 8_files/7e39ca.jpg" style="border-width:0px;"></a> <div id="ctl00_divRankPoints" style="text-align: center;
+width: 91px;"> <span class="rankDotBlue"></span><span id="ctl00_spanRanks" title="Ranked"> <a id="ctl00_LabelRank" class="LinkNormalStyleOrange" href="http://www.c-sharpcorner.com/Members/rank/">39</a> </span><span class="rankDot"></span><span id="ctl00_AuthorPoints" title="Points"><a class="LinkNormalStyleOrange" href="http://www.c-sharpcorner.com/Authors/AuthorRanking.aspx?AuthorId=7e39ca"> 3,360</a></span> </div> </div> <div class="detail"> <div class="grayText"> <h1> <span id="ctl00_LabelArticleTitle" cssclass="BlogsWelcomeHeading">How to Completely Disable UAC in Windows 8</span> </h1> </div> <div class="LinkNormalGrayLight">
+Posted by <span><a href="http://www.c-sharpcorner.com/authors/7e39ca/prabhakar-maurya.aspx" id="ctl00_AuthorLink" class="LinkBlack">Prabhakar Maurya</a> </span> <label>
+in</label> <span class="LinkRed"><a href="http://www.c-sharpcorner.com/Articles/" id="ctl00_AnchorArticles" class="LinkRed">Articles</a> </span>| <span class="LinkNormalBlue"> <a href="http://www.c-sharpcorner.com/1/275/windows-8.aspx" id="ctl00_AnchorCategory" class="LinkNormalBlue">Windows 8</a> </span> <label>
+on</label> <span id="ctl00_LabelDate">December 13, 2012</span> </div> <div class="LinkNormalGrayLight" style="margin-bottom: 5px;"> <span style="color: Black;">Tags:</span> <span id="ctl00_spanTags"><a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Disable-User-Account-control">Disable User Account control</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Security-in-windows-8">Security in windows 8</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/UAC-setting-in-windows-8">UAC setting in windows 8</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/User-Account-control-setting-in-windows-8">User Account control setting in windows 8</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Win-RT">Win RT</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Windows-8-store">Windows 8 store</a></span> </div> <div style="position: relative; margin: 2px 0px 2px 0px; width: 100%; float: left;
+border-bottom: solid 1px #d7d7d7;"> </div> <div id="ctl00_DivDescription" class="normalGray" style="padding: 5px 0 0;">In this article we are explaining how to disable the User Account Control (UAC) in Windows 8.</div> </div> <div class="tweetIcon" style="padding-bottom: 10px;"> <ul> <li><iframe id="twitter-widget-0" scrolling="no" frameborder="0" allowtransparency="true" src="./How to Completely Disable UAC in Windows 8_files/tweet_button.1384994725.htm" class="twitter-share-button twitter-tweet-button twitter-count-horizontal" title="Twitter Tweet Button" data-twttr-rendered="true" style="width: 116px; height: 20px;"></iframe></li> <li> <span class="IN-widget" style="line-height: 1; vertical-align: baseline; display: inline-block; text-align: center;"><span style="padding: 0px !important; margin: 0px !important; text-indent: 0px !important; display: inline-block !important; vertical-align: baseline !important; font-size: 1px !important;"><span id="li_ui_li_gen_1386767172520_0"><a id="li_ui_li_gen_1386767172520_0-link" href="javascript:void(0);"><span id="li_ui_li_gen_1386767172520_0-logo">in</span><span id="li_ui_li_gen_1386767172520_0-title"><span id="li_ui_li_gen_1386767172520_0-mark"></span><span id="li_ui_li_gen_1386767172520_0-title-text">Share</span></span></a></span></span><span style="padding: 0px !important; margin: 0px !important; text-indent: 0px !important; display: inline-block !important; vertical-align: baseline !important; font-size: 1px !important;"><span id="li_ui_li_gen_1386767172537_1-container" class="IN-right IN-hidden"><span id="li_ui_li_gen_1386767172537_1" class="IN-right"><span id="li_ui_li_gen_1386767172537_1-inner" class="IN-right"><span id="li_ui_li_gen_1386767172537_1-content" class="IN-right">0</span></span></span></span></span></span><script type="in/share+init" data-counter="right"></script> </li> <li> <div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 90px; height: 20px; background-position: initial initial; background-repeat: initial initial;"><iframe frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 90px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1386767172560" name="I0_1386767172560" src="./How to Completely Disable UAC in Windows 8_files/fastbutton.htm" data-gapiattached="true" title="+1"></iframe></div> </li> <li> <div class="fb-like fb_edge_widget_with_comment fb_iframe_widget" data-send="false" data-layout="button_count" data-width="120" data-show-faces="false" data-font="tahoma" data-href="http://www.c-sharpcorner.com/UploadFile/7e39ca/how-to-completely-disable-uac-in-windows-8/Default.aspx" fb-xfbml-state="rendered"><span style="height: 20px; width: 74px;"><iframe id="f3f79dc008" name="fd4f7fbc4" scrolling="no" title="Like this content on Facebook." class="fb_ltr" src="./How to Completely Disable UAC in Windows 8_files/like.htm" style="border: none; overflow: hidden; height: 20px; width: 74px;"></iframe></span></div> </li> <li> <img src="./How to Completely Disable UAC in Windows 8_files/view.gif" alt="" title="views"><span class="ponit"><span id="ctl00_spanArticleViews">8650</span></span> </li> <li><a href="http://www.c-sharpcorner.com/UploadFile/7e39ca/how-to-completely-disable-uac-in-windows-8/#ReadAndPostComment"> <img src="./How to Completely Disable UAC in Windows 8_files/comment.gif" alt="" title="comments"><span class="ponit"> <span id="spanComments">0</span></span></a></li> <li> <span id="ctl00_UpdatePanelLike"> <input type="image" name="ctl00$ImageButtonLike" id="ctl00_ImageButtonLike" title="Like it" class="floatLeft" src="./How to Completely Disable UAC in Windows 8_files/likeBtn.png" style="border-width:0px;"> <span class="ponit" style="float: left;"> <span id="ctl00_LabelLikeCount">0</span> </span> </span> </li> </ul> </div> </div> <div class="clear"> </div> <div> <div id="ctl00_UpdatePanelMessage"> <span id="ctl00_LabelMessageBox" style="color:Red;"></span> </div> </div> <div class="contentHeaderArticle"> <ul style="width: 78%"> <li> <input type="image" name="ctl00$ImageButtonEmail" id="ctl00_ImageButtonEmail" title="Email this article to friend" src="./How to Completely Disable UAC in Windows 8_files/mailIcon.gif" style="border-width:0px;"> </li> <li> <input type="image" name="ctl00$ImageButtonAddToMyBookmarks" id="ctl00_ImageButtonAddToMyBookmarks" title="Bookmark this article" src="./How to Completely Disable UAC in Windows 8_files/bookmark.png" style="border-width:0px;"> </li> <li><a href="javascript:void(GetPrintVersion())"> <img src="./How to Completely Disable UAC in Windows 8_files/print.gif" alt="Printable Version" title="Printable Version"></a></li> <li><a href="http://www.c-sharpcorner.com/Articles/ArticleListing.aspx?AuthorID=7e39ca" id="ctl00_AuthorsOtherArticles"> <img src="./How to Completely Disable UAC in Windows 8_files/userIcon.gif" alt="Author&#39;s other article" title="Author&#39;s other article"></a></li> <li><a href="http://www.c-sharpcorner.com/Articles/Default.aspx?ArticleId=80fc92f3-d455-45d9-9a96-effb00aeec85" id="ctl00_AnchorSimilarArticles"> <img src="./How to Completely Disable UAC in Windows 8_files/copyIcon.gif" alt="View Similar Articles" title="View Similar Articles"></a> </li> <li> </li> <li> </li> <li> </li> <li> <input type="image" name="ctl00$ImageButtonModerator" id="ctl00_ImageButtonModerator" title="Article History" src="./How to Completely Disable UAC in Windows 8_files/article_History.png" style="border-width:0px;"></li> <li> </li> <li> </li> <li> </li> <li> </li> </ul> <div id="ctl00_AuthorRank" class="AuthorRank" style="width: 135px; text-align: left;">
+Reader Level:
+<img id="ctl00_ImageReaderLevel" title="Beginner" src="./How to Completely Disable UAC in Windows 8_files/signal1.png" style="border-width:0px;"> </div> </div> <div class="clear"> </div> <div id="ctl00_downloadFiles" class="ratingTilte" style="margin-top:10px;margin-bottom:0px;display:none;">
+&nbsp;
+</div> <div id="div2" class="PaddingLeft5"><p align="justify"></p><p><b><font size="2" face="Segoe UI">Introduction</font></b></p> <p><font size="2" face="Segoe UI">In this article we are explaining how to disable the&nbsp;User Account Control (UAC) in Windows 8. The User Account Control setting is a security component that enable users to execute tasks as a non-Administrator and as an Administrators with the ability to switch users, log off and run as. But sometimes it becomes a hassle to keep waiting for the prompt that elevates the user rights to be able to proceed.</font></p> <p><font size="2" face="Segoe UI">In previous version of Windows to disable the UAC we simply use the Control Panel. But in Windows 8 when use the Control Panel to disable the UAC it's not completely disabled. You can check that by launching a command prompt. To completely disable the UAC you have to use registry settings.</font></p> <p><font size="2" face="Segoe UI">If you want to change the User Account Control settings then simply go to the search box and type <b>"Change User Account Settings"</b> and click settings. Select Change User Account Settings from the result window.</font></p> <p><font size="2" face="Segoe UI"><img border="0" alt="Search-In-Windows8.jpg" src="./How to Completely Disable UAC in Windows 8_files/Search-In-Windows8.jpg" width="650" height="326"><br></font></p> <p><font size="2" face="Segoe UI">The User Account Control Setting window will be opened. If you want to change this setting then you can easily change it depending on your requirements. If you want to never be notified of this setting from any user then you can disable the UAC setting.</font></p> <p><font size="2" face="Segoe UI"><img border="0" alt="UAC-Setting-Windows8.jpg" src="./How to Completely Disable UAC in Windows 8_files/UAC-Setting-Windows8.jpg" width="650" height="482"><br></font></p> <p><b><font size="2" face="Segoe UI">How to disable UAC setting in Windows 8</font></b></p> <p><b><font size="2" face="Segoe UI">Step 1</font></b></p> <p><font size="2" face="Segoe UI">Open a run window and type <b>"regedit"</b> and click on <b>"OK"</b>.</font></p> <p><font size="2" face="Segoe UI"><img border="0" alt="Run-In-Windows8.jpg" src="./How to Completely Disable UAC in Windows 8_files/Run-In-Windows8.jpg" width="650" height="335"><br></font></p> <p><b><font size="2" face="Segoe UI">Step 2</font></b></p> <p><font size="2" face="Segoe UI">A Registry Editor window will be opened.</font></p> <p><font size="2" face="Segoe UI"><img border="0" alt="Registry-Editor-Windows8.jpg" src="./How to Completely Disable UAC in Windows 8_files/Registry-Editor-Windows8.jpg" width="650" height="294"><br></font></p> <p><b><font size="2" face="Segoe UI">Step 3</font></b></p> <p><font size="2" face="Segoe UI">In the registry window go to <b>"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"</b>.</font></p> <p><font size="2" face="Segoe UI"><img border="0" alt="System-Registry-Windows8.jpg" src="./How to Completely Disable UAC in Windows 8_files/System-Registry-Windows8.jpg" width="650" height="295"><br></font></p> <p><b><font size="2" face="Segoe UI">Step 4</font></b></p> <p><font size="2" face="Segoe UI">In this step double-click on <b>"EnableUA"</b> from the right tab.</font></p> <p><font size="2" face="Segoe UI"><img border="0" alt="EnableUA-Registry-Windows8.jpg" src="./How to Completely Disable UAC in Windows 8_files/EnableUA-Registry-Windows8.jpg" width="650" height="295"><br></font></p> <p><b><font size="2" face="Segoe UI">Step 5</font></b></p> <p><font size="2" face="Segoe UI">A new window will be opened. Type <b>"0"</b> in the value data and click on <b>"OK"</b>. Exit from the registry window.</font></p> <p><font size="2" face="Segoe UI"><img border="0" alt="Value-Data-Windows8.jpg" src="./How to Completely Disable UAC in Windows 8_files/Value-Data-Windows8.jpg" width="650" height="296"><br></font></p> <p><b><font size="2" face="Segoe UI">Step 6</font></b></p> <p><font size="2" face="Segoe UI">Now restart your system. After it restarts, open User Account Control and try to change its. It will not be changed. If we want to enable the UAC setting then simply type "1" in the value data in the Registry window.</font></p> <p></p></div> <div class="clear"> </div> <div class="clear"> </div> <div class="postHeader" style="height: 38px; background-color:#ffffff; border-color:#d3d3d3;"> <table width="100%" cellspacing="0" cellpadding="0" style="height: 33px;"> <tbody> <tr> <td style="vertical-align: top; width: 174px;"> <span class="post_CFooter">This Feature is Sponsored By</span> </td> <td style="vertical-align: middle; text-align: left;"> <a href="http://www.c-sharpcorner.com/AdRedirector.aspx?AdId=84&target=http://www.ProductionReady.com/?a=mc" id="ctl00_PremiumSponsorFooterAd1_anchorSponsor" rel="nofollow" class="LinkNormalGray" style="font-size:12px;">ELEFLEX is an open-source, .NET C# enterprise application framework for building end-to-end, high performance, service oriented architecture (SOA) applications with code generation in mind.</a> </td> </tr> </tbody> </table> </div> <div class="clear"> </div> <div id="ctl00_updatePanelArticleSlider"> <div class="slideBox"> <ul> <li id="ctl00_liPrevious" class="left"> <div class="userPic"> <a href="http://www.c-sharpcorner.com/authors/7e39ca/prabhakar-maurya.aspx" id="ctl00_AnchorPreviousAuthor"> <img id="ctl00_imgPreviousAuthor" title="Prabhakar Maurya" class="image50" src="./How to Completely Disable UAC in Windows 8_files/7e39ca.jpg" style="border-width:0px;"></a><br> <input type="image" name="ctl00$ImageButtonPrevious" id="ctl00_ImageButtonPrevious" class="prev" src="./How to Completely Disable UAC in Windows 8_files/prevBtn.gif" style="border-width:0px;"> </div> <div class="userDetail" contenteditable="inherit"> <p> <a id="ctl00_HyperlinkPrevious" class="LinkNormalGray" href="http://www.c-sharpcorner.com/UploadFile/7e39ca/how-to-block-websites-in-windows-8/">How to Block Websites in Windows 8</a><br> </p><div id="ctl00_divPreviousTagLink"><span style="color:Black;" font-weight:bold;="">Tags: </span><a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Block-website-in-windows">Block website in windows</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/How-to-block-facebook">How to block facebook</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Modify-HOSTS-file-in-windows-8">Modify HOSTS file in windows 8</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/restrict-websites-in-windows-8">restrict websites in windows 8</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Win-RT">Win RT</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Windows-8-store">Windows 8 store</a></div> </div> </li> <li id="ctl00_liNext" class="right"> <div class="userDetail" style="float: left"> <p> <a id="ctl00_HyperlinkNext" class="LinkNormalGray" href="http://www.c-sharpcorner.com/UploadFile/krishnasarala/configure-your-windows-store-application-using-manifest-desi/">Configure Your Windows Store Application Using Manifest Designer</a><br> </p><div id="ctl00_divNextTagLink"><span style="color:Black;" font-weight:bold;="">Tags: </span><a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Application-configuration-for-windows-store-apps">Application configuration for windows store apps</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Manifest-Designer">Manifest Designer</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/Manifest-editor-windows-store-app">Manifest editor windows store app</a>, <a class="LinkNormalGrayLight" href="http://www.c-sharpcorner.com/tags/windows-store-app">windows store app</a></div> </div> <div class="userPic" style="float: right"> <a href="http://www.c-sharpcorner.com/authors/krishnasarala/krishna-garad.aspx" id="ctl00_AnchorNextAuthor"> <img id="ctl00_imgNextAuthor" title="Krishna Garad" class="image50" src="./How to Completely Disable UAC in Windows 8_files/krishnasarala.jpg" style="border-width:0px;"> </a> <br> <input type="image" name="ctl00$ImageButtonNext" id="ctl00_ImageButtonNext" class="next" src="./How to Completely Disable UAC in Windows 8_files/nextBtn.gif" style="border-width:0px;"> </div> </li> </ul> </div> </div> <div id="ctl00_RelatedArticles" class="relatedArticle"> <h3>
+Related Articles</h3> <ul> <li> <a id="ctl00_RepeaterSimilarArticles_ctl00_HyperLinkTitle" href="http://www.c-sharpcorner.com/UploadFile/6cde20/disable-user-account-control-in-windows-8/">Disable User Account Control in Windows 8</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl01_HyperLinkTitle" href="http://www.c-sharpcorner.com/uploadfile/itsraj007/how-do-i-disable-the-close-x-button-in-a-windows-form-using-C-Sharp/default.aspx">How do I disable the Close 'X' button in a Windows Form using C#</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl02_HyperLinkTitle" href="http://www.c-sharpcorner.com/UploadFile/7e39ca/disable-start-screen-and-charms-bar-in-windows-8/">Disable Start Screen and Charms Bar in Windows 8</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl03_HyperLinkTitle" href="http://www.c-sharpcorner.com/UploadFile/6cde20/disable-webpage-sounds-in-internet-explorer-using-windows-8/">Disable Webpage Sounds in Internet Explorer Using Windows 8</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl04_HyperLinkTitle" href="http://www.c-sharpcorner.com/uploadfile/GemingLeader/requesting-admin-approval-at-application-start/default.aspx">Requesting Admin Approval at Application Start</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl05_HyperLinkTitle" href="http://www.c-sharpcorner.com/UploadFile/99bb20/how-to-disable-charms-hints-in-windows-8/">How to Disable Charms Hints in Windows 8</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl06_HyperLinkTitle" href="http://www.c-sharpcorner.com/uploadfile/bryianTan/disable-an-Asp-Net-button-during-postback-with-ajax-loading-background-image/default.aspx">Disable an ASP.NET button during PostBack with AJAX loading background image</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl07_HyperLinkTitle" href="http://www.c-sharpcorner.com/UploadFile/7e39ca/restrict-windows-store-from-other-user-in-windows-8/">Restrict Store Apps From Other User in Windows 8</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl08_HyperLinkTitle" href="http://www.c-sharpcorner.com/UploadFile/99bb20/disable-windows-store-in-windows-8/">Disable Windows Store In Windows 8</a> </li> <li> <a id="ctl00_RepeaterSimilarArticles_ctl09_HyperLinkTitle" href="http://www.c-sharpcorner.com/UploadFile/0524d6/disable-computer-sharing-in-windows-8/">Disable Computer Sharing in Windows 8</a> </li> </ul> </div> <script>
+var Comments_article = (function(){
+var pageSize = 10;
+var rootClass = '.article ';
+return {
+//Get Comments
+GetComments: function(parent_id) {
+var pageNumber = $j('#HiddenPageNumber_article').val();
+var rootComments = $j(rootClass + '#RootComments');
+var items = 0;
+$j.ajax({
+type: "POST",
+contentType: "application/json; charset=utf-8",
+url: "/WebServices/Comments.asmx/GetComments",
+data: "{'id':'80fc92f3-d455-45d9-9a96-effb00aeec85','type':'article','pageNumber':'" + pageNumber + "', 'pageSize':'" + pageSize + "', 'parentId':" + parent_id + "}",
+beforeSend: function() {
+$j(rootClass + '#mainLoader').show();
+},
+success: function(data) {
+$j.each(data, function(index) {
+data[index].CommentId;
+rootComments.prepend(BuildComment(data[index])); //Prepend root comments
+if (pageNumber == 1 && index == 0) {
+$j(rootClass + '#TotalComments').text(data[index].TotalComments); //set total comments only once.
+$j('#spanComments').text($j(rootClass + '#TotalComments').text()); //Manages Header Comment Count
+}
+items = parseFloat(items) + 1; //track for number of comments to show
+ManageAlternateColor();
+});
+//Manage paging
+{
+items = (parseFloat(pageNumber) - 1) * parseFloat(pageSize) + parseFloat(items);
+if (items != 0) {
+$j(rootClass + '#CommentCount').text(items);
+}
+else {
+$j( rootClass + '#Paging').hide();
+}
+if (parseFloat(items) >= parseFloat($j(rootClass + '#TotalComments').text()) || items == 0)
+$j(rootClass + '#ViewPreviousComments').hide();
+else
+$j(rootClass + '#ViewPreviousComments').show();
+}
+$j(rootClass + '#mainLoader').hide();
+}
+});
+},
+//Like Comment
+LikeComment: function(id) {
+VerifyUser();
+var status;
+$j.ajax({
+url: "/Handlers/CommentsHandler.ashx?method=like_comment&id=" + id + "&type=article",
+type: "POST",
+async: false,
+beforeSend: function() {
+$j(rootClass + '#ajaxLoader_' + id).show(); //Show Ajax Loader
+},
+success: function(response) {
+status = response;
+$j(rootClass + '#ajaxLoader_' + id).hide(); //Hide Ajax Loader
+},
+Error: ShowError
+});
+if (status == '1') {
+var likes = $j(rootClass + '#Likes_' + id).text();
+$j(rootClass + '#Likes_' + id).text(parseFloat(likes) + 1);
+}
+else if (status == '2') {
+}
+},
+//Delete Comment
+DeleteComment: function(id, parent_id) {
+VerifyUser();
+var status;
+$j.ajax({
+url: "/Handlers/CommentsHandler.ashx?method=delte_comment&id=" + id + "&type=article",
+type: "POST",
+async: false,
+success: function(response) {
+status = response;
+},
+Error: ShowError
+});
+if (status == '1') {
+$j(rootClass + '#comment_' + id).remove();
+if (parent_id == 0) {
+if (ManageAlternateColor() == 0) {
+$j('#HiddenPageNumber_article').val('1');
+Comments_article.GetComments(0);
+}
+ManagePaging('d');
+}
+else {
+var replies = $j(rootClass + '#Replies_' + parent_id).text();
+$j(rootClass + '#Replies_' + parent_id).text(parseFloat(replies) - 1);
+}
+}
+},
+//Post Comment
+PostComment: function(parent_id) {
+var rootComments = $j(rootClass + '#RootComments');
+var totalComments = $j(rootClass + '#TotalComments');
+var commentCount = $j(rootClass + '#CommentCount');
+var comment = FormatTextToInsert($j(rootClass + '#InputCommentText_' + parent_id).val());
+if (comment != '') {
+VerifyUser();
+$j.ajax({
+url: "/WebServices/Comments.asmx/InsertComment",
+data: "{'user_id':'','content_id':'80fc92f3-d455-45d9-9a96-effb00aeec85','type':'article','parent_id':'" + parent_id + "', 'description':'" + comment + "'}",
+type: "POST",
+contentType: "application/json; charset=utf-8",
+async: false,
+beforeSend: function() {
+$j(rootClass + '#PostLoader').show(); //Show Ajax Loader
+},
+success: function(response) {
+var data = response[0];
+rootComments.append(BuildComment(data));
+$j(rootClass + '#InputCommentText_' + parent_id).val('');
+if (!(parseFloat(totalComments.text()) == parseFloat(commentCount.text()) && parseFloat($j('#HiddenPageNumber_article').val()) > 1))
+if (parseFloat(ManageAlternateColor()) > parseFloat(pageSize))
+rootComments.find('div').first().remove();
+ManagePaging('i');
+SendMail(comment, '0', data.ParentUserId);
+$j(rootClass + '#PostLoader').hide(); //Hide Ajax Loader
+},
+Error: ShowError
+});
+}
+},
+//Show Replies
+ShowReplies: function(id) {
+var element = $j(rootClass + '#CommentReplies_' + id);
+element.toggle();
+if (element.is(":visible") && element.html() == '') {
+var pageSize = 50;
+if ($j(rootClass + '#Replies_' + id).text() != '0') {
+$j.ajax({
+type: "POST",
+contentType: "application/json; charset=utf-8",
+url: "/WebServices/Comments.asmx/GetComments",
+data: "{'id':'80fc92f3-d455-45d9-9a96-effb00aeec85','type':'article','pageNumber':'1', 'pageSize':'" + pageSize + "', 'parentId':" + id + "}",
+beforeSend: function() {
+$j(rootClass + '#ajaxLoader_' + id).show(); //Show Ajax Loader
+},
+success: function(data) {
+$j.each(data, function(index) {
+data[index].CommentId;
+element.prepend(BulildCommentReply(data[index])); //Prepend root comments
+});
+$j(rootClass + '#ajaxLoader_' + id).hide(); //Hide Ajax Loader
+}
+});
+}
+if ('True' == 'True') {
+var postReply = '<div id="ReplyContainer_' + id + '" class="ReplyComment borderNone" style="padding-bottom:0px; width:614px;">\
+<div class="image level1"><img src="http://www.c-sharpcorner.com/UploadFile/AuthorImage/DefaultAuthorImage.gif" alt=""></div>\
+<div class="commentcontent">\
+<input id="ReplyComment_' + id + '" onkeypress="Comments_article.PostCommentReply(' + id + ',event);" type="text" class="inputText" value=" Type your comment here and press Enter Key.... " onfocus="if(this.value==this.defaultValue)this.value=\'\';" onblur="if(this.value==\'\')this.value=this.defaultValue;" style="width:97%; padding:5px; font-size:12px;" spellcheck="true" autocomplete="off">\
+</div>\
+<img id="PostLoader_' + id + '" src="/Images/csharp/ajax-loader_12x9.gif"\
+style="margin: 5px 7px 0px 0px; clear:both; float:right; display:none;" />\
+</div>';
+element.append(postReply);
+}
+}
+if ('True' == 'True') {
+$j(rootClass + '#ReplyComment_' + id).focus();
+}
+},
+//Show Edit Panel
+ShowEditView:function(commentId) {
+var content = $j(rootClass + '#comment_' + commentId + ' .commentcontent div:eq(0)');
+var editButton = $j(rootClass + '#comment_' + commentId + ' div:eq(0) img:eq(0)');
+var editView = '<input id="CommentToEdit_' + commentId + '" onkeyup="Comments_article.EditComment(' + commentId + ',event);" type="text" class="inputText" style="width:95%; padding:5px; font-size:12px;" spellcheck="true">\
+<img id="ajaxLoaderEdit_' + commentId + '" src=\'/Images/csharp/ajax-loader_12x9.gif\' style="margin:4px 0px 0px 5px; display:none;" />';
+editButton.hide();
+content.after(editView);
+$j(rootClass + '#CommentToEdit_' + commentId).val(content.text());
+$j(rootClass + '#CommentToEdit_' + commentId).focus();
+content.hide();
+},
+//Edit Comment
+EditComment: function (commentId, e) {
+var content = $j(rootClass + '#comment_' + commentId + ' .commentcontent div:eq(0)');
+var textBox = $j(rootClass + '#CommentToEdit_' + commentId);
+if (e.keyCode == 13) {
+if (textBox.val() == content.text() || textBox.val() == '') {
+RemoveEditView(commentId);
+}
+else {
+VerifyUser();
+var status;
+$j.ajax({
+url: "/Handlers/CommentsHandler.ashx?method=edit_comment&id=" + commentId + "&type=article&description=" + FormatTextToInsert(textBox.val()),
+type: "POST",
+async: false,
+beforeSend: function() {
+$j(rootClass + '#ajaxLoaderEdit_' + commentId).show(); //Show Ajax Loader
+},
+success: function(response) {
+status = response;
+},
+Error: ShowError
+});
+if (status == '1') {
+content.text(textBox.val());
+RemoveEditView(commentId);
+}
+}
+}
+else if (e.keyCode == 27) {
+RemoveEditView(commentId);
+}
+},
+//Post Comment Reply
+PostCommentReply: function(parent_id, e) {
+if (e.keyCode == 13) {
+var replyContainer = $j(rootClass + '#ReplyContainer_' + parent_id);
+var comment = FormatTextToInsert($j(rootClass + '#ReplyComment_' + parent_id).val());
+if (comment != '') {
+VerifyUser();
+$j.ajax({
+url: "/WebServices/Comments.asmx/InsertComment",
+data: "{'user_id':'','content_id':'80fc92f3-d455-45d9-9a96-effb00aeec85','type':'article','parent_id':'" + parent_id + "', 'description':'" + comment + "'}",
+type: "POST",
+contentType: "application/json; charset=utf-8",
+async: false,
+beforeSend: function() {
+$j(rootClass + '#PostLoader_' + parent_id).show(); //Show Ajax Loader
+},
+success: function(response) {
+var data = response[0];
+replyContainer.before(BulildCommentReply(data));
+$j(rootClass + '#ReplyComment_' + parent_id).val('');
+var replies = $j(rootClass + '#Replies_' + parent_id).text();
+$j(rootClass + '#Replies_' + parent_id).text(parseFloat(replies) + 1);
+SendMail(comment, '1', data.ParentUserId); //SendMail(comment, is_child_comment, parent_user_id)
+$j(rootClass + '#PostLoader_' + parent_id).hide(); //Hide Ajax Loader
+},
+Error: ShowError
+});
+}
+}
+},
+//View Previous Comments
+ViewPreviousComments: function() {
+var pageNumber = $j('#HiddenPageNumber_article').val();
+var totalComment = $j(rootClass + '#TotalComments').text();
+if (parseFloat(totalComment) > (parseFloat(pageNumber) * pageSize)) {
+$j('#HiddenPageNumber_article').val(parseFloat(pageNumber) + 1);
+}
+else {
+$j(rootClass + '#RootComments').text('');
+$j('#HiddenPageNumber_article').val('1');
+}
+Comments_article.GetComments(0);
+}
+}// End of return
+function BuildComment(obj) {
+var authorUrl = obj.AuthorUrl;
+var commentHtml;
+commentHtml = '<div id="comment_' + obj.CommentId + '" class="pulsecomment">';
+if ('' == obj.UserId || '' == 'E' || '' == 'A') {
+commentHtml += '<div class="pulseDelete">';
+commentHtml += '<img onclick="Comments_article.ShowEditView(' + obj.CommentId + ')" alt="" src="/images/csharp/EditIcon.png" style="margin-right:10px;" title="Edit">';
+if ('' == obj.UserId || '' == 'A')
+commentHtml += '<img onclick="Comments_article.DeleteComment(' + obj.CommentId + ',' + obj.ParentId + ')" alt="" src="/images/csharp/pulseCommentDelete.png" title="Delete">';
+commentHtml += '</div>';
+}
+commentHtml += '<div class="image level0"><a href="' + authorUrl + '"><img alt="" src="' + obj.PhotoUrl + '" /></a></div>';
+commentHtml += '<div class="commentcontent">'; //Start of CommentContent div
+commentHtml += '<a class="LinkNormalBlue" href="' + authorUrl + '">' + obj.FullName + '</a>';
+commentHtml += '<div>' + unescape(obj.Description) + '</div>';
+commentHtml += '<div>';
+commentHtml += '<span class="floatRight"  style="font-size: 11px;"><span class="watchICon"></span>' + obj.CreatedDate + '</span>';
+commentHtml += '<a class="commnetLinkSecondStep" onclick="Comments_article.LikeComment(' + obj.CommentId + ')"><span id="Likes_' + obj.CommentId + '">' + obj.Likes + '</span> Like</a><a class="commnetLinkSecondStep" onclick="Comments_article.ShowReplies(' + obj.CommentId + ')"><span id="Replies_' + obj.CommentId + '">' + obj.Replies + '</span> Reply</a>';
+commentHtml += '<img id="ajaxLoader_' + obj.CommentId + '" src=\'/Images/csharp/ajax-loader_12x9.gif\' style="margin:4px 0px 0px 5px; display:none;" />';
+commentHtml += '</div>';
+commentHtml += '<div class="clear"></div>';
+commentHtml += '<div id="CommentReplies_' + obj.CommentId + '" style="display:none;"></div>'; //This div contains child comments
+commentHtml += '</div>'; //End of CommentContent div
+commentHtml += '</div>';
+return commentHtml;
+}
+function BulildCommentReply(obj) {
+var authorUrl = obj.AuthorUrl;
+var commentHtml = '<div id="comment_' + obj.CommentId + '" class="ReplyComment" style="width:612px;">';
+if ('' == obj.UserId || '' == 'E' || '' == 'A') {
+commentHtml += '<div class="pulseDeleteReply">';
+commentHtml += '<img onclick="Comments_article.ShowEditView(' + obj.CommentId + ')" src="/images/csharp/EditIcon.png" alt="" style="margin-right:10px;" title="Edit">';
+if ('' == obj.UserId || '' == 'A')
+commentHtml += '<img onclick="Comments_article.DeleteComment(' + obj.CommentId + ',' + obj.ParentId + ')" src="/images/csharp/pulseCommentDelete.png" alt="" title="Delete">';
+commentHtml += '</div>';
+}
+commentHtml += '<div class="image level1"><a href="' + authorUrl + '"><img src="' + obj.PhotoUrl + '" alt="" /></a></div>\
+<div class="commentcontent"><a href="' + authorUrl + '" class="LinkNormalBlue">' + obj.FullName + '</a>\
+<div>' + unescape(obj.Description) + '</div>\
+<div><span class="floatRight"  style="font-size: 11px;"><span class="watchICon"></span>' + obj.CreatedDate + '</span><a onclick="Comments_article.LikeComment(' + obj.CommentId + ')" class="commnetLinkSecondStep"> <span id="Likes_' + obj.CommentId + '">' + obj.Likes + '</span> Like</a>\
+<img id="ajaxLoader_' + obj.CommentId + '" src=\'/Images/csharp/ajax-loader_12x9.gif\' style="margin:4px 0px 0px 5px; display:none;" />\
+</div>\
+</div>\
+</div>';
+return commentHtml;
+}
+function ManageAlternateColor() {
+var count = 0;
+$j(rootClass + '#RootComments > div').each(function() {
+$j('#' + this.id).removeClass("BackgroundWhite");
+if (count % 2 != 0)
+$j('#' + this.id).addClass("BackgroundWhite");
+count = count + 1;
+});
+return count;
+}
+function FormatTextToInsert(text) {
+return escape(($j.trim(text)).replace('<', '&lt;').replace('>', '&gt;').replace('/', '&#47;').replace('"', '&quot;'));
+}
+function SendMail(comment, is_child_comment, parent_user_id) {
+$j('#ctl00_Comments1_HiddenFieldEmailComment').val(unescape(comment));
+$j('#ctl00_Comments1_HiddenFieldIsChildComment').val(is_child_comment);
+$j('#ctl00_Comments1_HiddenFieldParentUserId').val(parent_user_id);
+$j('#ctl00_Comments1_ButtonSendEmail').click();
+}
+function VerifyUser() {
+var data;
+$j.ajax({
+url: "/Handlers/CommentsHandler.ashx?method=current_user",
+type: "GET",
+async: false,
+success: function(response) {
+data = $j.parseJSON(response)[0].user_name;
+}
+});
+if (data == null || data == '') {
+var url = 'http://www.c-sharpcorner.com/UserRegistration/Logincheck.aspx?ReturnURL=/UploadFile/7e39ca/how-to-completely-disable-uac-in-windows-8/Default.aspx';
+window.location = url;
+}
+}
+function ManagePaging(action) {
+var totalComments = $j(rootClass + '#TotalComments');
+var commentCount = $j(rootClass + '#CommentCount');
+var previousComments = $j(rootClass + '#ViewPreviousComments');
+var total_comments = $j.trim(totalComments.text());
+switch (action) {
+case 'i': //increase
+if (total_comments == '') {
+totalComments.text('1');
+commentCount.text('1');
+}
+else {
+if (parseFloat(commentCount.text()) < pageSize || (parseFloat(totalComments.text()) == parseFloat(commentCount.text()) && parseFloat($j('#HiddenPageNumber_article').val()) > 1))
+commentCount.text(parseFloat(commentCount.text()) + 1);
+totalComments.text(parseFloat(total_comments) + 1);
+}
+$j(rootClass + '#Paging').show();
+if (parseFloat(totalComments.text()) > pageSize && parseFloat($j('#HiddenPageNumber_article').val()) == 1) {
+previousComments.show();
+}
+else if (parseFloat(totalComments.text()) == parseFloat(commentCount.text()))
+previousComments.hide();
+break;
+case 'd': //decrease
+if (parseFloat(total_comments) <= 0) {
+totalComments.text('');
+commentCount.text('');
+$j(rootClass + '#Paging').hide();
+}
+else {
+totalComments.text(parseFloat(total_comments) - 1);
+commentCount.text(parseFloat(commentCount.text()) - 1);
+}
+break;
+}
+$j('#spanComments').text($j(rootClass + '#TotalComments').text()); //Manages Header Comment Count
+}
+function RemoveEditView(commentId) {
+var content = $j(rootClass + '#comment_' + commentId + ' .commentcontent div:eq(0)');
+var editButton = $j(rootClass + '#comment_' + commentId + ' div:eq(0) img:eq(0)');
+var textBox = $j(rootClass + '#CommentToEdit_' + commentId);
+var ajaxLoader = $j(rootClass + '#ajaxLoaderEdit_' + commentId);
+editButton.show();
+textBox.val('');
+textBox.remove();
+ajaxLoader.remove();
+content.show();
+}
+function ShowError() {
+alert('There is some error processing your request');
+}
+}());
+$j(document).ready(function() {
+$j.ajaxSetup({ cache: false });
+if ('True' == 'False') {
+$j('#RootPostComment').remove();
+}
+Comments_article.GetComments(0);
+});
+</script> <div class="clear"> </div> <div style="position: relative;" class="article"> <a name="ReadAndPostComment"></a> <div class="postHeader"> <span class="post_C">comments</span> </div> <div class="clear"> </div> <img id="mainLoader" src="./How to Completely Disable UAC in Windows 8_files/ajax-loader_12x9.gif" style="position: absolute; left: 315px; top: 54px; display: none;"> <div class="clear"> </div> <div id="Paging" style="padding-top: 10px; display: none;"> <a id="ViewPreviousComments" class="previousComments" style="display: none;" onclick="Comments_article.ViewPreviousComments();return false;">
+View Previous Comments</a> <label id="TotalComments" class="floatRight" style="margin-right: 3px;"> </label> <label class="floatRight" style="margin-right: 3px;">
+of
+</label> <label id="CommentCount" class="floatRight" style="margin-right: 3px;"> </label> <input id="HiddenPageNumber_article" type="hidden" value="1"> </div> <div class="clear"> </div> <div id="ctl00_Comments1_Panel1" class="pulseMainComment" onkeypress="javascript:return WebForm_FireDefaultButton(event, &#39;ctl00_Comments1_Button1&#39;)"> <div class="pulseCommentSectionMain" style="padding: 0px;"> <div class="pulseCommentSection"> <div id="RootComments"> </div> <div class="pulsecomment borderNone" id="RootPostComment"> <div class="image level0"> <img src="./How to Completely Disable UAC in Windows 8_files/DefaultAuthorImage.gif" alt=""> </div> <div id="ctl00_Comments1_PanelPostComment" class="commentcontent" onkeypress="javascript:return WebForm_FireDefaultButton(event, &#39;ctl00_Comments1_ButtonPost&#39;)"> <input id="InputCommentText_0" type="text" class="inputText" value=" Type your comment here and press Enter Key.... " onfocus="if(this.value==this.defaultValue)this.value=&#39;&#39;;" onblur="if(this.value==&#39;&#39;)this.value=this.defaultValue;" style="width: 97%; font-size: 12px;" spellcheck="true" autocomplete="off"> <input type="submit" name="ctl00$Comments1$ButtonPost" value="" onclick="Comments_article.PostComment(0); return false;" id="ctl00_Comments1_ButtonPost" style="display: none;"> </div> <img id="PostLoader" src="./How to Completely Disable UAC in Windows 8_files/ajax-loader_12x9.gif" style="clear: both; margin: 10px 5px 0px 0px; float: right; display: none;"> </div> </div> </div> <input type="submit" name="ctl00$Comments1$Button1" value="" onclick="return false;" id="ctl00_Comments1_Button1" style="display: none;"> <div id="ctl00_Comments1_UpdatePanelEmail"> <input type="hidden" name="ctl00$Comments1$HiddenFieldEmailComment" id="ctl00_Comments1_HiddenFieldEmailComment"> <input type="hidden" name="ctl00$Comments1$HiddenFieldIsChildComment" id="ctl00_Comments1_HiddenFieldIsChildComment"> <input type="hidden" name="ctl00$Comments1$HiddenFieldParentUserId" id="ctl00_Comments1_HiddenFieldParentUserId"> <input type="submit" name="ctl00$Comments1$ButtonSendEmail" value="" id="ctl00_Comments1_ButtonSendEmail" style="display: none;"> </div> </div> <div class="clear"> </div> <div class="headerGray marginTop"> <span class="HeaderSpanFirstBlue"></span><span class="HeaderSpanSecond">COMMENT USING
+</span> <img style="margin: 3px 0px 0px 18px;" alt="" src="./How to Completely Disable UAC in Windows 8_files/facebook_Icon.png"> </div> <div class="fb-comments fb_iframe_widget" data-href="http://www.c-sharpcorner.com/UploadFile/7e39ca/how-to-completely-disable-uac-in-windows-8/Default.aspx" data-width="675" data-num-posts="5" fb-xfbml-state="rendered"><span style="height: 160px; width: 675px;"><iframe id="f18fd4ec8" name="f2e4b88578" scrolling="no" title="Facebook Social Plugin" class="fb_ltr" src="./How to Completely Disable UAC in Windows 8_files/comments.htm" style="border: none; overflow: hidden; height: 160px; width: 675px;"></iframe></span></div> </div> </div> <div class="rightCntr"> <div class="clear"> </div> <div class="outerBox"> <div class="headerGray"> <span class="HeaderSpanFirstBlue"></span><span class="HeaderSpanSecond">PREMIUM SPONSORS</span> <span style="margin-left: 71px; margin-top: 1px; margin-right: 0px;"></span><span style="float: right; margin-top: 3px; margin-right: 5px;"></span> </div> <div style="width: 336px; color: #e4e4e4; margin-bottom: 5px;"> <div style="width: 326px; height: auto; position: relative; float: left; margin-left: 10px;"> <div style="position: relative; float: left; top: 0px; left: 0px; width: 100px; height: 110px;
+margin-top: 8px;"> <a id="ctl00_PremiumSponsors1_LogoUrl" href="http://www.nevron.com/Campaign?key=CSharpCorner_13_6_Chart_75x90&url=http://www.nevron.com/" target="_blank"><img id="ctl00_PremiumSponsors1_Logo" class="image90" src="./How to Completely Disable UAC in Windows 8_files/072150AM.jpg" style="border-width:0px;padding: 5px; border-width: 1px;"></a> </div> <div style="position: relative; margin-left: 5px; float: left; top: 0px; right: 0px;
+width: 221px; height: auto;"> <div style="margin-top: 5px; margin-left: 5px;"> <a id="ctl00_PremiumSponsors1_Name" class="MemberoftheMonth" href="http://www.nevron.com/Campaign?key=CSharpCorner_13_6_Chart_75x90&url=http://www.nevron.com/" target="_blank">Nevron</a> </div> <div style="width: 215px; height: 1px; background-color: #d7d7d7; margin-top: 5px;
+margin-left: 5px; margin-bottom: 5px;"> </div> <div id="ctl00_PremiumSponsors1_Description" style="width: 215px; margin-top: 5px; margin-left: 5px;
+color: #787878;">Nevron Software is a global leader in component based data visualization technology for a diverse range of Microsoft centric platforms. Nevron Data Visualization components are used by many companies, educational and government organizations around the world.</div> </div> </div> </div> </div> <div class="clear"> </div> <div style="width: 336px; margin-bottom: 10px;"> <a id="ctl00_RightBar_ArticleDetailRightBar1_NewsArticleAd1_AdRotatorArticle" href="http://www.c-sharpcorner.com/AdRedirector.aspx?BannerId=706&target=http://www.nevron.com/Campaign?key=CSharpCorner_13_6_Diagram_336x280&url=http://www.nevron.com/" target="_blank"><img src="./How to Completely Disable UAC in Windows 8_files/Diagram_336x280.png" alt="Nevron Diagram" style="border-width:0px;"></a> </div> <div class="outerBox"> <div class="headerGray"> <span class="HeaderSpanFirstBlue"></span><span class="HeaderSpanSecond">TRENDING UP</span> <span id="ctl00_RightBar_ArticleDetailRightBar1_TrendingUp1_OnOffEnabledImageButton"></span><a href="http://www.c-sharpcorner.com/RSS/TopArticles.aspx" id="ctl00_RightBar_ArticleDetailRightBar1_TrendingUp1_RssEnabledImageButton" class="headerRss"></a> </div> <ul class="treading"> <li> <a href="http://www.c-sharpcorner.com/UploadFile/84c85b/using-ado-net-entity-framework-5-0/" class="LinkNormalStyle">
+Using ADO .NET Entity Framework 5.0</a>  <a href="http://www.c-sharpcorner.com/UploadFile/79037b/better-webapp-presentation-with-css/" class="LinkNormalStyle">
+Better Web/App Presentation With CSS</a>  <a href="http://www.c-sharpcorner.com/UploadFile/prvn_131971/C-Sharp-corner-congratulates-dhananjay-kumar-on-completing-500-ar/" class="LinkNormalStyle">
+C# Corner Congratulates Dhananjay Kumar on Completing 500 Articles</a>  <a href="http://www.c-sharpcorner.com/UploadFile/b9e011/webinar-getting-started-with-jquery-recap/" class="LinkNormalStyle">
+Webinar: Getting Started With jQuery - Recap</a>  <a href="http://www.c-sharpcorner.com/UploadFile/dacca2/advance-javascript-namespace-in-javascript/" class="LinkNormalStyle">
+Namespace in JavaScript</a>  <a href="http://www.c-sharpcorner.com/UploadFile/chinnasrihari/html5-and-Asp-Net-client-side-caching-techniques/" class="LinkNormalStyle">
+HTML5 and ASP.Net Client-Side Caching Techniques</a>  <a href="http://www.c-sharpcorner.com/UploadFile/sourabh_mishra1/fileupload-in-Asp-Net-mvc/" class="LinkNormalStyle">
+FileUpload in ASP.Net MVC</a>  <a href="http://www.c-sharpcorner.com/UploadFile/b1df45/bridge-design-pattern-using-C-Sharp/" class="LinkNormalStyle">
+Bridge Design Pattern Using C#</a>  <a href="http://www.c-sharpcorner.com/UploadFile/0c1bb2/programming-methodologies/" class="LinkNormalStyle">
+Programming Methodologies</a>  <a href="http://www.c-sharpcorner.com/UploadFile/ankurmalik123/C-Sharp-coding-standards/" class="LinkNormalStyle">
+C# Coding Standards</a>  </li> </ul> <div class="FooterLineForArticlesJobs"> <div style="padding-top: 10px;"> <span style="margin-left: 3px;"> <a id="ctl00_RightBar_ArticleDetailRightBar1_TrendingUp1_HyperLinkFooter" class="LinkNormalStyleOrange ViewAll" href="http://www.c-sharpcorner.com/Articles/TopArticles.aspx" style="float: right; margin-right: 10px;">View All</a></span></div> </div> </div> <div class="outerBox"> <div class="headerGray"> <span class="HeaderSpanFirst"></span><span class="HeaderSpanSecond">MOST LIKED ARTICLE</span> <span id="ctl00_RightBar_ArticleDetailRightBar1_ArticleMostLiked1_OnOffEnabledImageButton"></span> </div> <ul class="treading"> <li> <a href="http://www.c-sharpcorner.com/UploadFile/db2972/wcf-introduction-and-contracts-day-1/" class="LinkNormalStyle">
+WCF Introduction and Contracts - Day 1
+</a> <a href="http://www.c-sharpcorner.com/UploadFile/db2972/create-ssrs-report-using-report-wizard/" class="LinkNormalStyle">
+Create SSRS Report Using Report Wizard
+</a> <a href="http://www.c-sharpcorner.com/UploadFile/db2972/factory-design-pattern/" class="LinkNormalStyle">
+Factory Design Pattern
+</a> <a href="http://www.c-sharpcorner.com/UploadFile/db2972/create-read-update-and-delete-crud-operation-using-linq-to/" class="LinkNormalStyle">
+CREATE READ UPDATE and DELETE - CRUD Operation Using LINQ to SQL
+</a> <a href="http://www.c-sharpcorner.com/UploadFile/db2972/wcf-data-contract-day-4/" class="LinkNormalStyle">
+WCF - Data Contract - Day 4
+</a> </li> </ul> </div> <script type="text/javascript" src="./How to Completely Disable UAC in Windows 8_files/widgets.js" async="true"></script> <div style="padding-bottom: 10px;"> <iframe id="twitter-widget-1" scrolling="no" frameborder="0" allowtransparency="true" src="./How to Completely Disable UAC in Windows 8_files/follow_button.1384994725.htm" class="twitter-follow-button twitter-follow-button" title="Twitter Follow Button" data-twttr-rendered="true" style="width: 100%; height: 20px;"></iframe> </div> <div id="fb-root"> </div> <script type="text/javascript">    (function(d, s, id) {
+var js, fjs = d.getElementsByTagName(s)[0];
+if (d.getElementById(id)) return;
+js = d.createElement(s); js.id = id;
+js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+fjs.parentNode.insertBefore(js, fjs);
+} (document, 'script', 'facebook-jssdk'));</script> <div class="fb-like-box fb_iframe_widget" data-href="https://www.facebook.com/pages/C-Corner/194086953935286" data-width="336px" data-show-faces="true" data-stream="false" data-header="true" data-border-color="#c6c6c6" data-max-rows="2" style="padding-bottom: 10px;
+border: none 0px" async="false" fb-xfbml-state="rendered" fb-iframe-plugin-query="app_id=440531902678919&amp;header=true&amp;href=https%3A%2F%2Fwww.facebook.com%2Fpages%2FC-Corner%2F194086953935286&amp;locale=en_US&amp;sdk=joey&amp;show_faces=true&amp;stream=false&amp;width=336"><span style="vertical-align: bottom; width: 336px; height: 271px;"><iframe name="f206373d1c" width="336px" height="1000px" frameborder="0" allowtransparency="true" scrolling="no" title="fb:like_box Facebook Social Plugin" src="./How to Completely Disable UAC in Windows 8_files/like_box.htm" style="border: none; visibility: visible; width: 336px; height: 271px;" class=""></iframe></span></div> <div class="clear"> </div> <div class="TagHeaderStyle">
+Tags</div> <div style="margin: 0px 0px 15px 10px"> <a href="http://www.c-sharpcorner.com/tags/Debugging-Mode" class="HeaderTagCloud">Debugging Mode</a> <a href="http://www.c-sharpcorner.com/tags/Default-Programs" class="HeaderTagCloud">Default Programs</a> <a href="http://www.c-sharpcorner.com/tags/Edit-User-Accounts" class="HeaderTagCloud">Edit User Accounts</a> <a href="http://www.c-sharpcorner.com/tags/Export-SSL-Certificates" class="HeaderTagCloud">Export SSL Certificates</a> <a href="http://www.c-sharpcorner.com/tags/Import-SSL-Certificates" class="HeaderTagCloud">Import SSL Certificates</a> <a href="http://www.c-sharpcorner.com/tags/Install-Windows-8-on-VMware-Player" class="HeaderTagCloud">Install Windows 8 on VMware Player</a> <a href="http://www.c-sharpcorner.com/tags/Media-Streaming" class="HeaderTagCloud">Media Streaming</a> <a href="http://www.c-sharpcorner.com/tags/Metro-UI" class="HeaderTagCloud">Metro UI</a> <a href="http://www.c-sharpcorner.com/tags/Protect-Drive-in-Windows-8" class="HeaderTagCloud">Protect Drive in Windows 8</a> <a href="http://www.c-sharpcorner.com/tags/Remove-Recycle-Bin" class="HeaderTagCloud">Remove Recycle Bin</a> <a href="http://www.c-sharpcorner.com/tags/Remove-Volume-Control-Icon-Using-Windows-8" class="HeaderTagCloud">Remove Volume Control Icon Using Windows 8</a> <a href="http://www.c-sharpcorner.com/tags/Security-Messages" class="HeaderTagCloud">Security Messages</a> <a href="http://www.c-sharpcorner.com/tags/Task-Manager" class="HeaderTagCloud">Task Manager</a> <a href="http://www.c-sharpcorner.com/tags/Win-RT" class="HeaderTagCloudOrange">Win RT</a> <a href="http://www.c-sharpcorner.com/tags/Windows-8-Article" class="HeaderTagCloud">Windows 8 Article</a> <a href="http://www.c-sharpcorner.com/tags/Windows-8-articles" class="HeaderTagCloud">Windows 8 articles</a> <a href="http://www.c-sharpcorner.com/tags/Windows-8-Disable-Computer-sharing" class="HeaderTagCloud">Windows 8 Disable Computer sharing</a> <a href="http://www.c-sharpcorner.com/tags/Windows-8-Installation" class="HeaderTagCloud">Windows 8 Installation</a> <a href="http://www.c-sharpcorner.com/tags/windows-8-operating-system" class="HeaderTagCloudBlue">windows 8 operating system</a> <a href="http://www.c-sharpcorner.com/tags/Windows-8-Troubleshoot" class="HeaderTagCloud">Windows 8 Troubleshoot</a> <a href="http://www.c-sharpcorner.com/tags/Windows-8-Tutorial" class="HeaderTagCloud">Windows 8 Tutorial</a> <a href="http://www.c-sharpcorner.com/tags/Windows-8-Tutorials" class="HeaderTagCloudOrange">Windows 8 Tutorials</a> <a href="http://www.c-sharpcorner.com/tags/Windows-8-UI" class="HeaderTagCloudBlue">Windows 8 UI</a> <a href="http://www.c-sharpcorner.com/tags/windows-server" class="HeaderTagCloud">windows server</a> <a href="http://www.c-sharpcorner.com/tags/Windows-Store" class="HeaderTagCloud">Windows Store</a> </div> <div id="ctl00_RightBar_ArticleDetailRightBar1_PremiumSponsorsTextAd1_UpdatePanelSponsorWithImage"> <div id="ctl00_RightBar_ArticleDetailRightBar1_PremiumSponsorsTextAd1_SponsorAdWithImage" class="outerBox"> <div class="headerGray"> <span class="HeaderSpanFirst Blue"></span><span class="HeaderSpanSecond">SPONSORED BY</span> <span style="margin-left: 71px; margin-top: 1px; margin-right: 0px;"></span><span style="float: right; margin-top: 3px; margin-right: 5px;"></span> </div> <ul class="treadingnew" style="margin-left: 12px;"> <li class="marginTop"> <div style="float: left; margin: 0px 5px 5px 0px;"> <a href="http://www.c-sharpcorner.com/AdRedirector.aspx?AdId=83&target=http://www.nevron.com/Campaign?key=CSharpCorner_13_6_Diagram_75x90&url=http://www.nevron.com/" id="ctl00_RightBar_ArticleDetailRightBar1_PremiumSponsorsTextAd1_HrefSponsorLinkImage" rel="nofollow" target="_blank"> <img src="./How to Completely Disable UAC in Windows 8_files/011802AM.png" id="ctl00_RightBar_ArticleDetailRightBar1_PremiumSponsorsTextAd1_imgSponsor" width="75" height="90"> </a> </div> <div style="width: 238px; font-weight: bold; font-size: 14px; color: Black; margin-bottom: 0px;
+float: left;"> <a href="http://www.c-sharpcorner.com/AdRedirector.aspx?AdId=83&target=http://www.nevron.com/Campaign?key=CSharpCorner_13_6_Diagram_75x90&url=http://www.nevron.com/" id="ctl00_RightBar_ArticleDetailRightBar1_PremiumSponsorsTextAd1_HrefSponsorLink" target="_blank">Get the industry leading .NET Diagramming component</a> </div> <div id="ctl00_RightBar_ArticleDetailRightBar1_PremiumSponsorsTextAd1_divSponsorDetail" style="margin-top: 5;
+float: left; width: 238px; margin-bottom: 10">.NET Diagramming framework designed for creating advanced solutions</div> </li> </ul> </div> </div> <div id="FacebookFriendsControl" class="outerBox" style="display: none;"> <div class="headerGray"> <span class="HeaderSpanFirstBlue"></span><span class="HeaderSpanSecond">My Facebook
+Friends </span> </div> <div id="facebookFriends"> </div> </div> <div class="clear"> </div> <div style="width: 336px; margin-bottom: 10px;"> <a id="ctl00_RightBar_ArticleDetailRightBar1_NewsArticleAdMiddle1_AdRotatorArticle" href="http://www.c-sharpcorner.com/AdRedirector.aspx?BannerId=706&target=http://www.nevron.com/Campaign?key=CSharpCorner_13_6_Diagram_336x280&url=http://www.nevron.com/" target="_blank"><img src="./How to Completely Disable UAC in Windows 8_files/Diagram_336x280.png" alt="Nevron Diagram" style="border-width:0px;"></a> </div> <div class="outerBox"> <div class="headerGray"> <span class="HeaderSpanFirstBlue"></span><span class="HeaderSpanSecond">WHITEPAPERS
+AND BOOKS</span> <a id="RssEnabledImageButton" href="http://www.c-sharpcorner.com/RSS/FreeBook.aspx" class="headerRss"></a> </div> <ul class="treading"> <li> <a href="http://www.c-sharpcorner.com/ebooks/free/80/programming-Asp-Net-mvc-5.aspx" class="LinkNormalStyle">
+Programming ASP.NET MVC 5</a> <a href="http://www.c-sharpcorner.com/ebooks/free/79/sql-server-2012-functions-recipes.aspx" class="LinkNormalStyle">
+SQL Server 2012 Functions Recipes</a> <a href="http://www.c-sharpcorner.com/ebooks/free/78/linq-quick-reference-with-C-Sharp.aspx" class="LinkNormalStyle">
+LINQ Quick Reference with C#</a> <a href="http://www.c-sharpcorner.com/ebooks/free/77/hands-on-Asp-Net-gridview.aspx" class="LinkNormalStyle">
+Hands on ASP.NET GridView </a> <a href="http://www.c-sharpcorner.com/ebooks/free/76/essential-wcf-practical-implementation.aspx" class="LinkNormalStyle">
+Essential WCF Practical Implementation</a> <a href="http://www.c-sharpcorner.com/ebooks/free/75/exploring-design-pattern-for-dummies.aspx" class="LinkNormalStyle">
+Exploring Design Pattern for Dummies</a> <a href="http://www.c-sharpcorner.com/ebooks/free/74/object-oriented-programming-using-C-Sharp.aspx" class="LinkNormalStyle">
+Object Oriented Programming Using C#</a> <a href="http://www.c-sharpcorner.com/ebooks/free/73/learn-basics-of-xml.aspx" class="LinkNormalStyle">
+Learn Basics of XML</a> <a href="http://www.c-sharpcorner.com/ebooks/free/71/sharepoint-2013-administration-essentials.aspx" class="LinkNormalStyle">
+SharePoint 2013 Administration Essentials</a> <a href="http://www.c-sharpcorner.com/ebooks/free/70/sharepoint-2013-net-client-side-object-model-cookbook.aspx" class="LinkNormalStyle">
+SharePoint 2013 .Net Client Side Object Model Cookbook</a> </li> </ul> <div class="FooterLineForArticlesJobs"> <div style="padding-top: 10px;"> <span style="margin-left: 3px;"><a href="http://www.c-sharpcorner.com/FreeBook/Default.aspx" class="LinkNormalStyleOrange ViewAll" style="float: right; margin-right: 10px;">View All
+</a></span> </div> </div> </div> <div class="clear"> </div> <script type="text/javascript" language="Javascript">
+function show_confirm() {
+window.location = document.getElementById('ctl00_PollForHome1_HiddenField1').value;
+}
+</script> <div id="ctl00_PollForHome1_Updatepanel1"> <div id="ctl00_PollForHome1_TabContainerSection" class="PollTheme ajax__tab_container ajax__tab_default" style="width: 100%; visibility: visible;"> <div id="ctl00_PollForHome1_TabContainerSection_header" class="ajax__tab_header"> <span id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_tab" class="ajax__tab_active"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_ctl00_PollForHome1_TabContainerSection_TabPanelInProgress" class="ajax__tab_tab"> Poll </span></span></span></span><span id="ctl00_PollForHome1_TabContainerSection_TabPanelSection_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_ctl00_PollForHome1_TabContainerSection_TabPanelSection" class="ajax__tab_tab"> Result </span></span></span></span><span id="ctl00_PollForHome1_TabContainerSection_TabPanel1_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_ctl00_PollForHome1_TabContainerSection_TabPanel1" class="ajax__tab_tab">All Polls</span></span></span></span> </div><div id="ctl00_PollForHome1_TabContainerSection_body" class="ajax__tab_body"> <div id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress" class="ajax__tab_panel" style="visibility: visible;"> <table id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_TablePollContainer" cellspacing="0" cellpadding="0" width="318" border="0"> <tbody><tr> <td colspan="2"> </td> </tr> <tr> <td colspan="2"> <a id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_HyperlinkTItle" class="PollTitle" href="http://www.c-sharpcorner.com/Polls/Default.aspx?pollid=369" style="display:inline-block;text-decoration:none;width:100%;">Windows 8</a> </td> </tr> <tr> <td colspan="2"> </td> </tr> <tr> <td class="PollQuestion" colspan="2"> <span id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_LabelPollQuestion">What is your status with Windows 8?</span> </td> </tr> <tr> <td colspan="2"> </td> </tr> <tr> <td colspan="2" style="color: #7F8080;"> <table id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls" border="0"> <tbody><tr> <td><input id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls_0" type="radio" name="ctl00$PollForHome1$TabContainerSection$TabPanelInProgress$RadioButtonListPolls" value="1556"><label for="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls_0">I am using it at work</label></td> </tr><tr> <td><input id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls_1" type="radio" name="ctl00$PollForHome1$TabContainerSection$TabPanelInProgress$RadioButtonListPolls" value="1557"><label for="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls_1">Only at home</label></td> </tr><tr> <td><input id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls_2" type="radio" name="ctl00$PollForHome1$TabContainerSection$TabPanelInProgress$RadioButtonListPolls" value="1558"><label for="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls_2">Planning to install it</label></td> </tr><tr> <td><input id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls_3" type="radio" name="ctl00$PollForHome1$TabContainerSection$TabPanelInProgress$RadioButtonListPolls" value="1559"><label for="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_RadioButtonListPolls_3">No plan to use it</label></td> </tr> </tbody></table> </td> </tr> <tr> <td> </td> <td align="right"> <input type="submit" name="ctl00$PollForHome1$TabContainerSection$TabPanelInProgress$ButtonVote" value="Vote" id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_ButtonVote" class="CommonButtonStyle" style="width:90px;">&nbsp;
+</td> </tr> <tr class="Separator"> <td colspan="2"> </td> </tr> <tr> <td align="left"> <input type="image" name="ctl00$PollForHome1$TabContainerSection$TabPanelInProgress$imageButtonPrevious" id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_imageButtonPrevious" disabled="disabled" src="./How to Completely Disable UAC in Windows 8_files/prevBtn.gif" style="border-width:0px;height: 16px"> </td> <td align="right"> <input type="image" name="ctl00$PollForHome1$TabContainerSection$TabPanelInProgress$imageButtonNext" id="ctl00_PollForHome1_TabContainerSection_TabPanelInProgress_imageButtonNext" src="./How to Completely Disable UAC in Windows 8_files/nextBtn.gif" style="border-width:0px;"> </td> </tr> </tbody></table> </div><div id="ctl00_PollForHome1_TabContainerSection_TabPanelSection" style="display:none;visibility:hidden;" class="ajax__tab_panel"> <div id="Table2" class="PollQuestion" style="width: 100%; margin-top: 2px;"> <span id="ctl00_PollForHome1_TabContainerSection_TabPanelSection_LabelPollQuestion1">What is your status with Windows 8?</span> <table width="100%" cellspacing="0" cellpadding="3" border="0" class="TablePollResult" style="color:#7F8080;"><tbody><tr class="TablePollResultHead"><td width="50%">&nbsp;Options</td><td class="PollCenterAllignmentWithWidth"> Votes </td><td class="PollCenterAllignmentWithWidth"> % </td></tr><tr><td>&nbsp;I am using it at work</td><td class="PollRightAllignment">157</td><td class="PollRightAllignmentWithFont">37.92</td></tr><tr><td>&nbsp;Only at home</td><td class="PollRightAllignment">63</td><td class="PollRightAllignmentWithFont">15.22</td></tr><tr><td>&nbsp;Planning to install it</td><td class="PollRightAllignment">35</td><td class="PollRightAllignmentWithFont">8.45</td></tr><tr><td>&nbsp;No plan to use it</td><td class="PollRightAllignment">159</td><td class="PollRightAllignmentWithFont">38.41</td></tr><tr class="TablePollResultFoot"><td>&nbsp;Total</td><td class="PollRightAllignment">414</td><td class="PollRightAllignment">100%</td></tr></tbody></table> </div> </div><div id="ctl00_PollForHome1_TabContainerSection_TabPanel1" style="display:none;visibility:hidden;" class="ajax__tab_panel"> <img src="./How to Completely Disable UAC in Windows 8_files/Loading.GIF"> </div> </div> </div> </div> <input type="hidden" name="ctl00$PollForHome1$HiddenField1" id="ctl00_PollForHome1_HiddenField1" value="http://www.c-sharpcorner.com/Polls"> </div> </div> </div> <div class="footer"> <div class="menuStripGray"> <div class="page"> <span class="menuLinkGray" style="float: right;"><span class="menuLinkTextGray" style="font-size: 14px;">
+Hosted By <a href="http://www.cbeyond.net/" target="_blank"><span style="color: #982929">
+CBeyond Cloud Services</span></a></span></span> <a href="http://www.c-sharpcorner.com/Members/mvps/" class="menuLinkGray"><span class="menuFirstGray"><span class="menuLinkTextGray">MVPs
+</span></span></a><a href="http://www.c-sharpcorner.com/Articles/mostviewed.aspx" class="menuLinkGray"><span class="menuCommonGray"><span class="menuLinkTextGray">MOST
+VIEWED</span></span></a><a href="http://www.c-sharpcorner.com/Members/legend/" class="menuLinkGray"><span class="menuCommonGray"><span class="menuLinkTextGray">LEGENDS</span></span></a><a href="http://www.c-sharpcorner.com/articles/" class="menuLinkGray"><span class="menuCommonGray"><span class="menuLinkTextGray">NOW</span></span></a><a href="http://www.c-sharpcorner.com/prizes/" class="menuLinkGray"><span class="menuCommonGray"><span class="menuLinkTextGray"> PRIZES</span></span></a><a href="http://www.c-sharpcorner.com/prizes/" class="menuLinkGray"><span class="menuCommonGray"><span class="menuLinkTextGray">AWARDS</span></span></a><a href="http://www.c-sharpcorner.com/reviews/?type=book" class="menuLinkGray"><span class="menuCommonGray"><span class="menuLinkTextGray">REVIEWS</span></span></a><a href="http://www.c-sharpcorner.com/survey/" class="menuLinkGray"><span class="menuCommonGray"><span class="menuLinkTextGray">SURVEY</span></span></a><a href="http://www.c-sharpcorner.com/exam/" class="menuLinkGray"><span class="menuCommonGray"><span class="menuLinkTextGray">CERTIFICATIONS</span></span></a><a href="http://www.c-sharpcorner.com/downloads/" class="menuLinkGray"><span class="menuLastGray"><span class="menuLinkTextGray">DOWNLOADS</span></span></a> </div> </div> <div class="menuStripBlue" style="z-index: 0;"> <div class="page"> <div class="menu footerMenu"> <ul> <li class="first"><a href="http://www.c-sharpcorner.com/photos/">
+PHOTOS</a></li> <li><a href="http://www.c-sharpcorner.com/tips/">TIPS</a> </li> <li><a href="http://www.c-sharpcorner.com/consulting/">CONSULTING</a> </li> <li><a href="http://www.c-sharpcorner.com/training/">TRAINING</a> </li> <li><a href="http://www.c-sharpcorner.com/beginners/">STUDENTS</a> </li> <li><a href="http://www.c-sharpcorner.com/Members/">MEMBERS</a> </li> <li><a href="http://www.c-sharpcorner.com/media/ContactUs.aspx">MEDIA KIT</a> </li> <li><a href="http://www.c-sharpcorner.com/ideas/">SUGGEST AN IDEA</a> </li> </ul> </div> </div> </div> <div class="footerBottom"> <div class="page"> <div style="float: left; margin-left: 7px;"> <span style="float: left; margin-left: 2px; width: 510px; padding: 20px 0px 0px;"><a href="http://www.c-sharpcorner.com/privacypolicy.aspx"><span class="whiteLink">
+PRIVACY POLICY</span></a> <span style="color: #424242">|</span> <a href="http://www.c-sharpcorner.com/termsconditions.aspx"> <span class="whiteLink">TERMS &amp; CONDITIONS</span></a> <span style="color: #424242">|</span> <a href="http://www.c-sharpcorner.com/sitemap/"><span class="whiteLink">SITEMAP</span></a> <span style="color: #424242">|</span> <a href="http://www.c-sharpcorner.com/contactus.aspx"> <span class="whiteLink">CONTACT US</span></a> <span style="color: #424242">|</span> <a href="http://www.c-sharpcorner.com/resources/aboutus.aspx"><span class="whiteLink">
+ABOUT US</span></a> <span style="color: #424242">|</span> <a href="http://www.c-sharpcorner.com/contactus.aspx?Type=6"> <span class="whiteLink">REPORT ABUSE</span></a> </span> <div style="float: right; color: Gray; margin-top: 5px; width: 500px;"> <div class="socialBox"> <ul> <li><a target="_blank" href="http://www.facebook.com/pages/C-Corner/194086953935286"> <img src="./How to Completely Disable UAC in Windows 8_files/facebook.png" alt=""></a></li> <li><a target="_blank" href="http://twitter.com/csharpcorner"> <img src="./How to Completely Disable UAC in Windows 8_files/twitter.png"></a></li> <li><a target="_blank" href="https://plus.google.com/u/0/114221266846457741050/posts"> <img src="./How to Completely Disable UAC in Windows 8_files/google.png"> </a></li> <li><a target="_blank" href="http://www.youtube.com/user/CsharpCornerVideos/videos"> <img src="./How to Completely Disable UAC in Windows 8_files/youTubeChannel.png"></a> </li> </ul> </div> <div style="width: 100%; float: left; text-align: right;">
+©2013 C# Corner.&nbsp;All contents are copyright of their authors.&nbsp;&nbsp;</div> </div> </div> </div> </div> </div> </div> <input type="hidden" name="ctl00$hiddenFieldNext" id="ctl00_hiddenFieldNext" value="9de01dad-e9ff-418d-ac39-ff94a618344f"> <input type="hidden" name="ctl00$hiddenFieldPrevious" id="ctl00_hiddenFieldPrevious" value="3f8cea77-c808-4a1c-893b-006858ac0486"> <script type="text/javascript">
+//<![CDATA[
+var Page_Validators =  new Array(document.getElementById("ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId"), document.getElementById("ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword"));
+//]]> </script> <script type="text/javascript">
+//<![CDATA[
+var ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId = document.all ? document.all["ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId"] : document.getElementById("ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId");
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId.controltovalidate = "ctl00_HeaderNewDesign1_Login1_TextBoxUserId";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId.focusOnError = "t";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId.errormessage = "*";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId.display = "Dynamic";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId.validationGroup = "LeftLogin";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId.initialvalue = "";
+var ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword = document.all ? document.all["ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword"] : document.getElementById("ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword");
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword.controltovalidate = "ctl00_HeaderNewDesign1_Login1_TextBoxPassword";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword.focusOnError = "t";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword.errormessage = "*";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword.display = "Dynamic";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword.validationGroup = "LeftLogin";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword.initialvalue = "";
+//]]> </script> <div> <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWKAKHopryDQKr5b/RCAKu4/PIAgLH/pHNDAKLiqGwAgLq5a/JDwL8lbizDgLW9cryDQKl/JHhAwLh6vOqDwKLjb6QDwLa+pH8DQK7iZ6MDALP0rqtBAKTxvebBQL6mL6/DQLnjZPFDwKyvo/zAQK6mby0DQKM08bkCAK/zYnfBQKhlc2JCQLdz83JCgLpwuC/CwLrua7/DwKsyaD8BwLdoKjrDQKmldaNCQLei4GMDwLUgr/LCALUgqv2AwLUgofPDgLUgrPqCQLkvumFBgKB2rW1BwLP0qXTBwKKuJmPCgKNv/LRAwKc3rDeDAKayJrtBfA29+XKxEGvcY5aUI591oGHg+3C"> </div> <script type="text/javascript">
+//<![CDATA[
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+ValidatorOnLoad();
+}
+function ValidatorOnSubmit() {
+if (Page_ValidationActive) {
+return ValidatorCommonOnSubmit();
+}
+else {
+return true;
+}
+}
+WebForm_AutoFocus('ctl00_HeaderNewDesign1_Login1_TextBoxUserId');Sys.Application.initialize();
+document.getElementById('ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId').dispose = function() {
+Array.remove(Page_Validators, document.getElementById('ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorUserId'));
+}
+Sys.Application.add_init(function() {
+$create(AjaxControlToolkit.TextBoxWatermarkBehavior, {"ClientStateFieldID":"ctl00_HeaderNewDesign1_Login1_TBWEUserID_ClientState","WatermarkText":"Enter User ID or Email","id":"ctl00_HeaderNewDesign1_Login1_TBWEUserID"}, null, null, $get("ctl00_HeaderNewDesign1_Login1_TextBoxUserId"));
+});
+document.getElementById('ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword').dispose = function() {
+Array.remove(Page_Validators, document.getElementById('ctl00_HeaderNewDesign1_Login1_RequiredFieldValidatorPassword'));
+}
+Sys.Application.add_init(function() {
+$create(AjaxControlToolkit.TextBoxWatermarkBehavior, {"ClientStateFieldID":"ctl00_HeaderNewDesign1_Login1_TBWEPassword_ClientState","WatermarkText":"**************","id":"ctl00_HeaderNewDesign1_Login1_TBWEPassword"}, null, null, $get("ctl00_HeaderNewDesign1_Login1_TextBoxPassword"));
+});
+Sys.Application.add_init(function() {
+$create(Sys.UI._UpdateProgress, {"associatedUpdatePanelId":null,"displayAfter":10,"dynamicLayout":true}, null, null, $get("ctl00_HeaderNewDesign1_UpdateProgress1"));
+});
+Sys.Application.add_init(function() {
+$create(AjaxControlToolkit.AlwaysVisibleControlBehavior, {"HorizontalOffset":60,"HorizontalSide":2,"id":"ctl00_HeaderNewDesign1_AlwaysVisibleLoading"}, null, null, $get("ctl00_HeaderNewDesign1_UpdateProgress1"));
+});
+Sys.Application.add_init(function() {
+$create(AjaxControlToolkit.TextBoxWatermarkBehavior, {"ClientStateFieldID":"ctl00_TrendingNow1_TBWESearch_ClientState","WatermarkText":"C# Corner Search","id":"ctl00_TrendingNow1_TBWESearch"}, null, null, $get("ctl00_TrendingNow1_searchTextBox"));
+});
+Sys.Application.add_init(function() {
+$create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_ctl00_PollForHome1_TabContainerSection_TabPanelInProgress")}, null, {"owner":"ctl00_PollForHome1_TabContainerSection"}, $get("ctl00_PollForHome1_TabContainerSection_TabPanelInProgress"));
+});
+Sys.Application.add_init(function() {
+$create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_ctl00_PollForHome1_TabContainerSection_TabPanelSection")}, null, {"owner":"ctl00_PollForHome1_TabContainerSection"}, $get("ctl00_PollForHome1_TabContainerSection_TabPanelSection"));
+});
+Sys.Application.add_init(function() {
+$create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_ctl00_PollForHome1_TabContainerSection_TabPanel1")}, {"click":show_confirm}, {"owner":"ctl00_PollForHome1_TabContainerSection"}, $get("ctl00_PollForHome1_TabContainerSection_TabPanel1"));
+});
+Sys.Application.add_init(function() {
+$create(AjaxControlToolkit.TabContainer, {"activeTabIndex":0,"clientStateField":$get("ctl00_PollForHome1_TabContainerSection_ClientState")}, null, null, $get("ctl00_PollForHome1_TabContainerSection"));
+});
+//]]> </script> </form>  <iframe name="oauth2relay1127112137" id="oauth2relay1127112137" src="./How to Completely Disable UAC in Windows 8_files/postmessageRelay.htm" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe></body></html>
