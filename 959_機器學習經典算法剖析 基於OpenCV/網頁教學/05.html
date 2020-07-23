@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<!-- saved from url=(0044)https://my.oschina.net/abcijkxyz/blog/787678 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="Content-Language" content="zh-CN">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="referrer" content="always">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title> AdaBoost算法原理及OpenCV实例  - abcijkxyz - 开源中国</title>
+            <meta name="keywords" content="abcijkxyz,abcijkxyz, AdaBoost算法原理及OpenCV实例  - abcijkxyz,开源中国博客">
+                <meta name="description" content="在数据的挖掘和分析中，最基本和首要的任务是对数据进行分类，解决这个问题的常用方法是机器学习技术。通过使用已知实例集合中所有样本的属性值作为机器学习算法的训练集，导出一个分类机制后，再使用这个分类机制判别一个新实例的属性，并且可以通过不间断的学习，持续丰富和优化该分类机制，使机器具有像大脑一样的思考...">
+        <link rel="stylesheet" type="text/css" href="./05_files/semantic.min.css">
+                <link type="text/css" rel="stylesheet" href="./05_files/space.5433d28c.css">        <script src="./05_files/hm.js.下載"></script><script src="./05_files/push.js.下載"></script><script src="./05_files/jquery.min.js.下載"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="https://my.oschina.net/new-osc/img/favicon.ico">
+    <link rel="alternate" type="application/rss+xml" title="最新开源项目" href="https://www.oschina.net/project/rss">
+    <link rel="alternate" type="application/rss+xml" title="最新开源资讯" href="https://www.oschina.net/news/rss">
+    <link rel="alternate" type="application/rss+xml" title="最新问题列表" href="https://www.oschina.net/question/rss">
+    <link rel="alternate" type="application/rss+xml" title="最新翻译列表" href="https://www.oschina.net/translate/rss">
+    <link rel="alternate" type="application/rss+xml" title="最新博客列表" href="https://www.oschina.net/blog/rss">
+    <link rel="alternate" type="application/rss+xml" title="推荐博客列表" href="https://www.oschina.net/blog/rss?show=more">
+    <link rel="alternate" type="application/rss+xml" title="推荐软件列表" href="https://www.oschina.net/project/rss?show=recomms">
+    <link rel="alternate" type="application/rss+xml" title="最新代码分享列表" href="https://www.oschina.net/code/rss">
+    <link rel="alternate" type="application/rss+xml" title="开源中国 - 源码列表" href="https://www.oschina.net/code/source_rss">
+<script src="./05_files/share.js.下載"></script><script type="text/javascript" src="./05_files/jquery.serialize-object.min.js.下載"></script><script type="text/javascript" src="./05_files/jquery.serialize-object.min.js.下載"></script><script type="text/javascript" src="./05_files/radarChart.js.下載"></script><script type="text/javascript" src="./05_files/jquery.serialize-object.min.js.下載"></script><script type="text/javascript" src="./05_files/jquery.serialize-object.min.js.下載"></script><script type="text/javascript" src="./05_files/vue.min.js.下載"></script><script type="text/javascript" src="./05_files/vue.min.js.下載"></script><script type="text/javascript" src="./05_files/osc-message.js.下載"></script><script type="text/javascript" src="./05_files/osc-message.js.下載"></script><script type="text/javascript" src="./05_files/osc-message.js.下載"></script><script type="text/javascript" src="./05_files/osc-message.js.下載"></script><script type="text/javascript" src="./05_files/jquery.caret.min.js.下載"></script><script type="text/javascript" src="./05_files/jquery.atwho.min.js.下載"></script></head>
+<body class="pushable">
+        <val data-name="space_user_url" data-value="https://my.oschina.net/abcijkxyz"></val>      <val data-name="g_user_url" data-value=""></val>      <val data-name="api_prefix" data-value="/action"></val>      <val data-name="g_user_code" data-value=""></val>     <val data-name="g_user_id" data-value=""></val>     <val data-name="g_user" data-value=""></val>     <val data-name="login_page" data-value="https://www.oschina.net/home/login?goto_page=https%3A%2F%2Fmy.oschina.net%2Fabcijkxyz%2Fblog%2F787678"></val>     
+    
+                <val data-name="weixinAppId" data-value="wx880def15e694b905"></val>
+        <val data-name="weixinTimestamp" data-value="1541912542192"></val>
+        <val data-name="weixinNonceStr" data-value="58534233-7cb3-4189-b082-95ef482665b2"></val>
+        <val data-name="weixinSignature" data-value="ec7e4bcdacabf3c615c6024aebcb4a3122871b33"></val>
+        <val data-name="weixinShareUrl" data-value="https://my.oschina.net/abcijkxyz/blog/787678"></val>                             
+        
+        <div class="ui left inverted sidebar vertical menu" id="mobileNavSidebar">
+        <a href="https://www.oschina.net/project" class="item project">开源软件</a>
+        <a href="https://www.oschina.net/question" class="item question">问答</a>
+        <a href="https://www.oschina.net/tweets" class="item tweet">动弹</a>
+        <a href="https://www.oschina.net/blog" class="item blog">博客</a>
+        <a href="https://www.oschina.net/translate" class="item translate">翻译</a>
+        <a href="https://www.oschina.net/news" class="item news">资讯</a>
+        <a href="https://gitee.com/?from=osc-index" class="item gitee" target="_blank">码云</a>
+        <a href="https://zb.oschina.net/" class="item" target="_blank">众包</a>
+        <a href="https://www.oschina.net/event/ych" class="item meetup">源创会</a>
+        <a href="https://www.oschina.net/event" class="item">活动</a>
+        <a href="https://job.oschina.net/" class="item" target="_blank">求职/招聘</a>
+        <a href="https://www.oschina.net/question/topic/masteronline" class="item">高手问答</a>
+        <a href="https://www.oschina.net/question/topic/osc-interview" class="item">开源访谈</a>
+        <a href="https://my.oschina.net/editorial-story" class="item">周刊</a>
+        <a href="https://www.oschina.net/company" class="item">公司开源导航页</a>
+    </div>
+        <div class="ui right inverted sidebar vertical menu" id="mobileUserSidebar">
+                    <a class="item" href="https://www.oschina.net/home/login?goto_page=https%3A%2F%2Fmy.oschina.net%2Fabcijkxyz%2Fblog%2F787678">登录</a>
+            <a class="item" href="https://www.oschina.net/home/reg?goto_page=https%3A%2F%2Fmy.oschina.net%2Fabcijkxyz%2Fblog%2F787678">注册</a>
+            </div>
+
+        <div class="ui vertical inverted right sidebar menu" id="sideMenu">
+    <div class="header">
+        <b>文档章节</b>
+    </div>
+    <div class="ui basic segment" id="sideMenuBody"></div>
+</div>
+<div class="ui black big launch right attached fixed button" id="sideMenuLauncher">
+    <i class="list icon"></i>
+    <span class="text">文档章节</span>
+</div>
+
+
+                <div class="pusher  mobile-disabled-fixed-menu  ">
+                <div class="ui secondary inverted fixed menu" id="headerNavMenu">
+            <a class="item logo" href="https://www.oschina.net/" title="开源中国"><img src="./05_files/logo.svg" alt="开源中国"></a>
+            <form action="https://www.oschina.net/search" class="item search-item" target="_blank">
+                <div class="ui icon input">
+                    <input type="hidden" name="scope" value="all">
+                    <input placeholder="大家都在搜...." id="keyword" name="q" size="24" value="" type="text">
+                    <i class="search link icon"></i>
+                </div>
+                <div class="results"></div>
+            </form>
+            <div class="item download-item">
+                <a class="ui primary button" id="btnDownloadApp" href="https://www.oschina.net/app" target="_blank">下载APP</a>
+            </div>
+            <div class="ui popup top left transition hidden" id="btnDownloadAppContent">
+                <h3 class="header">开源中国 App —— <br>关注技术领域的头条文章</h3>
+                <p>聚合全网技术文章，根据你的阅读喜好进行个性推荐</p>
+                <img width="200" src="./05_files/osc_app_download_qrcode.png" alt="下载APP">
+            </div>
+            <div class="ui secondary text menu" id="menuList">
+                <a href="https://www.oschina.net/project" class="item project">开源软件</a>
+                <a href="https://www.oschina.net/question" class="item question">问答</a>
+                <a href="https://www.oschina.net/tweets" class="item tweet">动弹</a>
+                <a href="https://www.oschina.net/blog" class="item blog">博客</a>
+                <a href="https://www.oschina.net/translate" class="item translate">翻译</a>
+                <a href="https://www.oschina.net/news" class="item news">资讯</a>
+                <a href="https://gitee.com/?from=osc-index" class="item gitee" target="_blank">码云<span class="floating ui red label giteetip">代码托管</span></a>
+                <a href="https://zb.oschina.net/" class="item" target="_blank">众包</a>
+                <a href="https://www.oschina.net/event" class="item event">活动</a>
+            </div>
+            <div class="ui dropdown item" id="moreMenu" tabindex="0">
+                更多 <i class="dropdown icon" tabindex="0"><div class="menu" tabindex="-1"></div></i>
+                <div class="menu" tabindex="-1">
+                    <a href="https://www.oschina.net/event/ych" class="item meetup"><i class="world icon"></i>源创会</a>
+                    <a href="https://job.oschina.net/" class="item" target="_blank"><i class="address card outline icon"></i>求职/招聘</a>
+                    <a href="https://www.oschina.net/question/topic/masteronline" class="item"><i class="spy icon"></i>高手问答</a>
+                    <a href="https://www.oschina.net/question/topic/osc-interview" class="item"><i class="coffee icon"></i>开源访谈</a>
+                    <a href="https://my.oschina.net/editorial-story" class="item"><i class="calendar outline icon"></i>周刊</a>
+                    <a href="https://www.oschina.net/company" class="item"><i class="building outline icon"></i>公司开源导航页</a>
+                </div>
+            </div>
+            <div class="right menu">
+                                    <a class="item" href="https://www.oschina.net/home/login?goto_page=https%3A%2F%2Fmy.oschina.net%2Fabcijkxyz%2Fblog%2F787678">登录</a>
+                    <a class="item" href="https://www.oschina.net/home/reg?goto_page=https%3A%2F%2Fmy.oschina.net%2Fabcijkxyz%2Fblog%2F787678">注册</a>
+                            </div>
+        </div>
+                <div class="ui secondary inverted fixed menu" id="mobileHeaderNavMenu">
+            <a class="icon item toggle-mobile-nav-sidebar">
+                <i class="large content icon"></i>
+            </a>
+            <div class="logo back-to-top-toggle"><img src="./05_files/logo.svg" alt="开源中国"></div>
+            <a class="icon item toggle-mobile-user-sidebar">
+                                    <i class="large user outline icon"></i>
+                            </a>
+        </div>
+                <div class="ui basic segment" id="mainScreen">
+            <div class="ui container">
+                
+
+
+
+
+
+
+
+
+
+
+<x-foo-define data-define="space-blog-detail"></x-foo-define> 
+<val data-name="objId" data-value="787678"></val> <val data-name="author_id" data-value="157122"></val> <val data-name="space_user_id" data-value="157122"></val> 
+<val data-name="fetchCommentsUrl" data-value="?type=comments"></val>              <val data-name="publishCommentUrl" data-value="/space/blog/add_comment"></val>    <val data-name="replyCommentUrl" data-value="/space/blog/add_comment"></val>      <val data-name="deleteCommentUrl" data-value="/space/blog/delete_blog_comments"></val>  
+<val data-name="weixinShareTitle" data-value=" AdaBoost算法原理及OpenCV实例 "></val> <val data-name="weixinShareImgUrl" data-value="https://static.oschina.net/uploads/img/201611/14200902_0Ydw.jpg"></val> 
+<div class="ui internally grid blog-detail bg-wrap">
+    <div class="row">
+        <div class="two wide computer only column" style="height: 5044px; min-height: 342px;">
+            <div class="ui sticky float-menu fixed top" id="floatMenu" style="left: 388px; width: 116px !important; height: 342px !important; margin-top: 200px;">
+                <div class="ui vertical large compact menu">
+                                            <a class="item donate" donate="" data-id="787678" data-obj-type="16344358" data-subject=" AdaBoost算法原理及OpenCV实例 " data-donater="" data-author="157122" data-return-url="https://my.oschina.net/abcijkxyz/blog/787678" data-notify-url="https://my.oschina.net/action/donate/paySuccess">                             <i class="yen icon"></i>打赏</a>
+                                        <a class="item comment-btn" href="https://my.oschina.net/abcijkxyz/blog/787678#comments" title="共有 0 条评论"><i class="comment outline icon"></i>评论</a>
+                    <a class="item collect-btn " data-id="787678" data-user-id="157122" data-obj-type="3" data-max="99" data-tag-required="" data-current-user-id="" data-recommend-tags=""><i class="star outline icon"></i>收藏</a>
+                    <a class="item like article-like " data-id="787678"><i class="thumbs up outline icon"></i>点赞</a>
+                    <h5 class="ui item inverted brown header">分享文章</h5>
+                    <div class="bdsharebuttonbox reset left-menu bdshare-button-style0-16" data-tag="share-news" data-bd-bind="1541912483503">
+                        <a class="item" data-cmd="tsina" title="分享到新浪微博"><i class="weibo icon"></i>微博</a>
+                        <a class="item" data-cmd="sqq" title="分享到QQ好友"><i class="qq icon"></i>QQ</a>
+                        <a class="item" data-cmd="weixin" title="分享到微信"><i class="weixin icon"></i>微信</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="twelve wide computer sixteen wide tablet sixteen wide mobile column body-container">
+            <div class="float-menu-content">
+                <div class="ui large breadcrumb">
+                    <a class="section" href="https://my.oschina.net/abcijkxyz">abcijkxyz</a>
+                                                                <i class="right chevron icon divider"></i>
+                        <a class="section" href="https://my.oschina.net/abcijkxyz?tab=newest&amp;catalogId=112648">转贴的文章</a>
+                                        <i class="right chevron icon divider"></i>
+                    <div class="active section">正文</div>
+                </div>
+                <div class="article-detail">
+                                            <div class="ad-wrap">
+                                                        </div>
+                                        <h1 class="header">
+                         AdaBoost算法原理及OpenCV实例 
+                                                                            <div class="ui brown label horizontal" data-tooltip="转载">转</div>
+                                                                                            </h1>
+                    <div class="extra ui horizontal list meta-wrap">
+                        <div class="item">
+                            <a href="https://my.oschina.net/abcijkxyz" class="__user">                        <div class="osc-avatar small-portrait _35x35 avatar" title="abcijkxyz" data-user-id="157122">
+                <img src="./05_files/157122_50.jpeg" alt="abcijkxyz" title="abcijkxyz">
+            </div>
+            &nbsp;<span>abcijkxyz</span></a>
+                            发布于 2016/11/14 20:09</div>
+                        <div class="item">字数 1237</div>
+                        <div class="item">阅读 79</div>
+                        <div class="item collect-btn " data-id="787678" data-user-id="157122" data-obj-type="3" data-max="99" data-tag-required="" data-current-user-id="" data-recommend-tags="">收藏 <span data-collect-count="" data-id="787678" data-obj-type="3">0</span></div>
+                        <div class="item"><a class="normal like article-like " data-id="787678">点赞 <span data-article-like-count="">0</span></a></div>
+                        <div class="item comment-count"><a href="https://my.oschina.net/abcijkxyz/blog/787678#comments" class="normal"><i class="comment outline icon"></i> 评论 <span data-article-reply-count="">0</span></a></div>
+                                            </div>
+                                        <div class="content" id="articleContent">
+                                                    <div class="ad-wrap">
+                                                        <p style="margin:0 0 10px 0;"><a data-traceid="blog_detail_above_text_link_1" data-tracepid="blog_detail_above_text_link" style="color:#A00;font-weight:bold;" href="https://my.oschina.net/u/3779583/blog/1862418" target="_blank">开发十年，就只剩下这套Java开发体系了
+&gt;&gt;&gt; </a>&nbsp;&nbsp;<img src="./05_files/hot3.png" align="absmiddle" style="max-height: 32px; max-width: 32px;"></p>
+                                        </div>
+                                                <p><span style="font-size:18px">在数据的挖掘和分析中，最基本和首要的任务是对数据进行分类，解决这个问题的常用方法是机器学习技术。通过使用已知实例集合中所有样本的属性值作为机器学习算法的训练集，导出一个分类机制后，再使用这个分类机制判别一个新实例的属性，并且可以通过不间断的学习，持续丰富和优化该分类机制，使机器具有像大脑一样的思考能力。</span></p> 
+<p><span style="font-size:18px"><br> </span></p> 
+<p><span style="font-size:18px">常用的分类方法有决策树分类、贝叶斯分类等。然而这些方法存在的问题是当数据量巨大时，分类的准确率不高。对于这样的困难问题，Boosting及其衍生算法提供了一个理想的解决途径。</span></p> 
+<p><span style="font-size:18px"><br> </span></p> 
+<p><span style="font-size:18px">Boosting算法是一种把若干个分类器整合为一个分类器的方法，其基本思想是：把一个复杂的分类任务分配给多位专家进行判断。这些专家可能并不是真正的专家，而仅仅是比普通人专业一点，他们称为弱分类器，依据一定机制，综合各位专家的结论，形成强分类器，得到最终的判断。</span></p> 
+<p><span style="font-size:18px"><br> </span></p> 
+<p><span style="font-size:18px">Boosting算法中应用最为广泛也最为有效的是1995年提出的AdaBoost（Adaptive Boosting，自适应增强）方法，其自适应之处在于前一个基本分类器分错的样本会得到加强，加权后的全体样本再次被用来训练下一个分类器，每一轮训练都会产生一个弱分类器，直到达到某个预订的足够小的错误率或者达到预先定义的最大迭代次数。</span></p> 
+<p><span style="font-size:18px"><br> </span></p> 
+<p><span style="font-size:18px">具体来说，整个AdaBoost迭代算法分为3步：</span></p> 
+<p></p> 
+<ul> 
+ <li><span style="font-size:18px">初始化训练数据的权值分布。如果有N个样本，则每一个训练样本最开始时都被赋予相同的权值：1/N。</span></li> 
+ <li><span style="font-size:18px">训练弱分类器。具体训练过程中，如果某个样本点已经被准确地分类，那么在构造下一个训练集中，它的权值就被降低；相反，如果某个样本点没有被准确地分类，那么它的权值就得到提高。然后，权值更新过的样本集被用于训练下一个分类器，整个训练过程如此迭代地进行下去。</span></li> 
+ <li><span style="font-size:18px">将各个训练得到的弱分类器组合成强分类器。各个弱分类器的训练过程结束后，加大分类误差率小的弱分类器的权重，使其在最终的分类函数中起着较大的决定作用，而降低分类误差率大的弱分类器的权重，使其在最终的分类函数中起着较小的决定作用。换言之，误差率低的弱分类器在最终分类器中占的权重较大，否则较小。</span></li> 
+</ul> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px">以下是AdaBoost算法在线训练流程：</span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><img src="./05_files/14200902_0Ydw.jpg" alt=""><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px">离线检测流程图：</span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><img src="./05_files/14200902_yUbY.jpg" alt=""><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px">AdaBoost与以往Boosting算法不同的是，AdaBoost的各个弱分类器是通过改变数据分布来实现的，每次训练后，根据弱分类器的评价结果，更新样本权重，进而影响下一次训练。使用AdaBoost分类器可以排除一些次要的训练数据特征，将注意力放在关键的特征上面。</span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px">下边代码是参考赵春江博客里的一个AdaBoost算法的应用，假定有如下两类样本，一类是Red，一类是Blue，样本分布如下。AdaBoost根据提供的样品进行训练分类器，之后输入新的坐标点（55,25），用来判断输入是Red，还是Blue：</span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><img src="./05_files/14200903_JcVv.jpg" alt=""><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<div> 
+ <span style="font-size:18px"></span> 
+ <pre class="brush:cpp;toolbar:true"><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/core/core.hpp"</span>  </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/highgui/highgui.hpp"</span>  </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/imgproc/imgproc.hpp"</span>  </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/ml/ml.hpp"</span>  </span>
+  
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;  </span></span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> cv;  
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;  
+  
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">( <span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>** argv )</span>  
+</span>{     
+    <span class="hljs-comment">//训练样本  </span>
+    <span class="hljs-keyword">float</span> trainingData[<span class="hljs-number">42</span>][<span class="hljs-number">2</span>]={ {<span class="hljs-number">40</span>, <span class="hljs-number">55</span>},{<span class="hljs-number">35</span>, <span class="hljs-number">35</span>},{<span class="hljs-number">55</span>, <span class="hljs-number">15</span>},{<span class="hljs-number">45</span>, <span class="hljs-number">25</span>},{<span class="hljs-number">10</span>, <span class="hljs-number">10</span>},{<span class="hljs-number">15</span>, <span class="hljs-number">15</span>},{<span class="hljs-number">40</span>, <span class="hljs-number">10</span>},  
+                            {<span class="hljs-number">30</span>, <span class="hljs-number">15</span>},{<span class="hljs-number">30</span>, <span class="hljs-number">50</span>},{<span class="hljs-number">100</span>, <span class="hljs-number">20</span>},{<span class="hljs-number">45</span>, <span class="hljs-number">65</span>},{<span class="hljs-number">20</span>, <span class="hljs-number">35</span>},{<span class="hljs-number">80</span>, <span class="hljs-number">20</span>},{<span class="hljs-number">90</span>, <span class="hljs-number">5</span>},  
+                            {<span class="hljs-number">95</span>, <span class="hljs-number">35</span>},{<span class="hljs-number">80</span>, <span class="hljs-number">65</span>},{<span class="hljs-number">15</span>, <span class="hljs-number">55</span>},{<span class="hljs-number">25</span>, <span class="hljs-number">65</span>},{<span class="hljs-number">85</span>, <span class="hljs-number">35</span>},{<span class="hljs-number">85</span>, <span class="hljs-number">55</span>},{<span class="hljs-number">95</span>, <span class="hljs-number">70</span>},  
+                            {<span class="hljs-number">105</span>, <span class="hljs-number">50</span>},{<span class="hljs-number">115</span>, <span class="hljs-number">65</span>},{<span class="hljs-number">110</span>, <span class="hljs-number">25</span>},{<span class="hljs-number">120</span>, <span class="hljs-number">45</span>},{<span class="hljs-number">15</span>, <span class="hljs-number">45</span>},  
+                            {<span class="hljs-number">55</span>, <span class="hljs-number">30</span>},{<span class="hljs-number">60</span>, <span class="hljs-number">65</span>},{<span class="hljs-number">95</span>, <span class="hljs-number">60</span>},{<span class="hljs-number">25</span>, <span class="hljs-number">40</span>},{<span class="hljs-number">75</span>, <span class="hljs-number">45</span>},{<span class="hljs-number">105</span>, <span class="hljs-number">35</span>},{<span class="hljs-number">65</span>, <span class="hljs-number">10</span>},  
+                            {<span class="hljs-number">50</span>, <span class="hljs-number">50</span>},{<span class="hljs-number">40</span>, <span class="hljs-number">35</span>},{<span class="hljs-number">70</span>, <span class="hljs-number">55</span>},{<span class="hljs-number">80</span>, <span class="hljs-number">30</span>},{<span class="hljs-number">95</span>, <span class="hljs-number">45</span>},{<span class="hljs-number">60</span>, <span class="hljs-number">20</span>},{<span class="hljs-number">70</span>, <span class="hljs-number">30</span>},  
+                            {<span class="hljs-number">65</span>, <span class="hljs-number">45</span>},{<span class="hljs-number">85</span>, <span class="hljs-number">40</span>}   };  
+    <span class="hljs-function">Mat <span class="hljs-title">trainingDataMat</span><span class="hljs-params">(<span class="hljs-number">42</span>, <span class="hljs-number">2</span>, CV_32FC1, trainingData)</span></span>;   
+    <span class="hljs-comment">//训练样本的响应值  </span>
+    <span class="hljs-keyword">float</span> responses[<span class="hljs-number">42</span>] = {<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,  
+                            <span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,<span class="hljs-string">'R'</span>,  
+                        <span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span>,<span class="hljs-string">'B'</span> };  
+    <span class="hljs-function">Mat <span class="hljs-title">responsesMat</span><span class="hljs-params">(<span class="hljs-number">42</span>, <span class="hljs-number">1</span>, CV_32FC1, responses)</span></span>;  
+  
+    <span class="hljs-keyword">float</span> priors[<span class="hljs-number">2</span>] = {<span class="hljs-number">1</span>, <span class="hljs-number">1</span>};    <span class="hljs-comment">//先验概率  </span>
+  
+    <span class="hljs-function">CvBoostParams <span class="hljs-title">params</span><span class="hljs-params">( CvBoost::REAL, <span class="hljs-comment">// boost_type    </span>
+                          <span class="hljs-number">10</span>, <span class="hljs-comment">// weak_count    </span>
+                          <span class="hljs-number">0.95</span>, <span class="hljs-comment">// weight_trim_rate    </span>
+                          <span class="hljs-number">15</span>, <span class="hljs-comment">// max_depth    </span>
+                          <span class="hljs-literal">false</span>, <span class="hljs-comment">// use_surrogates    </span>
+                          priors <span class="hljs-comment">// priors   </span>
+                          )</span></span>;    
+  
+    CvBoost boost;  
+    boost.train (   trainingDataMat,   
+                    CV_ROW_SAMPLE,   
+                    responsesMat,  
+                    Mat(),    
+                    Mat(),  
+                    Mat(),  
+                    Mat(),    
+                    params  
+                    );    
+    <span class="hljs-comment">//预测样本  </span>
+    <span class="hljs-keyword">float</span> myData[<span class="hljs-number">2</span>] = {<span class="hljs-number">55</span>, <span class="hljs-number">25</span>};  
+    <span class="hljs-function">Mat <span class="hljs-title">myDataMat</span><span class="hljs-params">(<span class="hljs-number">2</span>, <span class="hljs-number">1</span>, CV_32FC1, myData)</span></span>;  
+    <span class="hljs-keyword">double</span> r = boost.predict( myDataMat );  
+  
+    <span class="hljs-built_in">cout</span>&lt;&lt;<span class="hljs-built_in">endl</span>&lt;&lt;<span class="hljs-string">"result:  "</span>&lt;&lt;(<span class="hljs-keyword">char</span>)r&lt;&lt;<span class="hljs-built_in">endl</span>;  
+  
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;  
+ }</code></pre> 
+ <div> 
+  <span style="font-size:18px"><br> </span> 
+ </div> 
+ <span style="font-size:18px">输出结果为R，即测试坐标点（5</span> 
+ <span style="font-size:18px">5,25）被分类为Red。</span> 
+ <br> 
+</div> 
+<div> 
+ <span style="font-size:18px"><br> </span> 
+</div> 
+<p></p> 
+<p><span style="font-size:18px"><br> </span></p>
+                                                    <div class="ad-wrap" style="margin-top: 12px;">
+                                                        <div id="blog-title-ad" data-traceid="blog_ali" data-tracepid="blogdown" style="">
+<a href="http://clickc.admaster.com.cn/c/a116493,b2949390,c3159,i0,m101,8a1,8b2,h" target="_blank" style="max-width:780px;"><img src="./05_files/223916_bL9y_2663968.jpg"></a>
+</div>
+
+<!--
+<script>
+    function success_jsonpCallback(data) {
+        var obj = eval(data);
+        if( obj.success ){
+            var contents = eval(obj.data[0].content);
+            if(contents.length > 0){
+                var content = contents[0];
+                $('#blog-title-ad').prepend("<a  href='"+ content.url +"' target='_blank' style='max-width:780px;'><img src='"+content.img+"'/></a>");
+                $('#blog-title-ad').show();
+            }
+            
+        }else {
+            $('#blog-title-ad').hide();
+        }
+    }
+    window.addEventListener("load", function() {
+         var url="  http://clickc.admaster.com.cn/c/a116493,b2949390,c3159,i0,m101,8a1,8b2,h";
+        $.ajax({
+            type: 'POST',
+            url: url,
+            jsonp: "callback",
+            dataType: 'jsonp',
+            jsonpCallback: 'success_jsonpCallback',
+            contentType: "application/json; charset=utf-8",
+            success: function( response ) {
+                // do in callback
+            },
+            error:function(){
+                $('#blog-title-ad').hide();
+            }
+        });
+    }, false);
+</script>
+-->
+                                        </div>
+                                            </div>
+                    <div class="ui hidden divider"></div>
+                    <p style="text-align:center;">
+                                                    本文转载自：http://blog.csdn.net/dcrmg/article/details/53038993
+                                            </p>
+                </div>
+
+                                <div class="ui basic center aligned segment action">
+                    <div class="ui huge buttons">
+                                                    <a class="ui green button donate" donate="" data-id="787678" data-obj-type="16344358" data-subject=" AdaBoost算法原理及OpenCV实例 " data-donater="" data-author="157122" data-return-url="https://my.oschina.net/abcijkxyz/blog/787678" data-notify-url="https://my.oschina.net/action/donate/paySuccess">                                 <i class="yen icon"></i>打赏</a>
+                                                <a class="ui basic button like article-like " data-id="787678">
+                            <i class="thumbs up outline icon"></i>点赞 (<span data-article-like-count="">0</span>)
+                        </a>
+                        <a class="ui basic button collect-btn hover" data-id="787678" data-user-id="157122" data-obj-type="3" data-max="99" data-tag-required="" data-current-user-id="" data-recommend-tags=""><i class="star outline icon"></i>收藏 (<span data-collect-count="" data-id="787678" data-obj-type="3">0</span>)</a>
+                        <div class="ui basic dropdown share button bdsharebuttonbox reset dropdown-share bdshare-button-style0-16" data-tag="share-blog" tabindex="0" data-bd-bind="1541912483503">
+                            <i class="share icon"></i> <span>分享</span>
+                            <div class="menu" tabindex="-1">
+                                <a class="item" data-cmd="tsina"><i class="weibo icon"></i>微博</a>
+                                <a class="item" data-cmd="sqq"><i class="qq icon"></i>QQ</a>
+                                <a class="item" data-cmd="weixin"><i class="weixin icon"></i>微信</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui basic segment">
+                        <a class="ban" style="cursor: pointer" ban-report="" data-id="787678" data-obj-type="3" data-url="https://my.oschina.net/abcijkxyz/blog/787678">
+                            <i class="flag red icon"></i>举报</a>
+                    </div>
+                </div>
+
+                                                    <div class="reward-list hide">
+                        <div class="reward-list-title">
+                            共有 <span id="reward-num"></span> 人打赏支持<span id="donate_money"></span>
+                        </div>
+                                                <div class="donate-user-list" id="donate_user_list"></div>
+                    </div>
+                
+                                <div class="around-articles-wrap">
+                                                            <div class="around-item around-left">
+                        <i class="angle left icon"></i>
+                        <span class="text">上一篇：</span>
+                        <a class="link" href="https://my.oschina.net/abcijkxyz/blog/787679"> Opencv中integral计算积分图 </a>
+                    </div>
+                    
+                                                            <div class="around-item around-right">
+                        <span class="text">下一篇：</span>
+                        <a class="link" href="https://my.oschina.net/abcijkxyz/blog/787677"> Opencv 张正友相机标定傻瓜教程 </a>
+                        <i class="angle right icon"></i>
+                    </div>
+                                    </div>
+
+                                <div class="ui info message author-card">
+                    <div class="ui items">
+                        <div class="item author-card-item">
+                            <a class="ui avatar tiny image" href="https://my.oschina.net/abcijkxyz">
+                                                        <div class="osc-avatar large-portrait _80x80" title="abcijkxyz" data-user-id="157122">
+                <img src="./05_files/157122_200.jpeg" alt="abcijkxyz" title="abcijkxyz">
+            </div>
+                                        </a>
+                            <div class="content author-card-info">
+                                <div class="author-header clearfix">
+                                                                        <h3 class="author-name"><a class="__user" href="https://my.oschina.net/abcijkxyz">abcijkxyz</a></h3>
+                                                                                                        </div>
+                                <div class="ui horizontal list">
+                                    <div class="item">粉丝 64</div>
+                                    <div class="item">博文 6196</div>
+                                    <div class="item">码字总数 1876</div>
+                                    <div class="item">作品 0</div>
+                                </div>
+                                <div class="ui hidden fitted clearing divider"></div>
+                                                                                                    <div class="ui horizontal list">
+                                                                                    <div class="item"><i class="map marker alternate icon"></i> 深圳</div>
+                                                                                                                            <div class="item"><i class="address card outline icon"></i> 项目经理</div>
+                                                                            </div>
+                                                                                                    <div class="ui hidden fitted clearing divider"></div>
+                                                                                                                    <a class="ui green compact button follow-btn" data-user-id="157122" data-follow-status="1"><i class="heart outline icon"></i><span class="text">关注</span></a>
+                                                                                                            <a class="ui green basic compact button send-message-btn" data-user-id="157122" data-user-name="abcijkxyz"><i class="envelope outline icon"></i>私信</a>
+                                                                        <a class="ui green basic compact button" href="https://www.oschina.net/question/ask?user=157122" target="_blank"><i class="comment outline icon"></i>提问</a>
+                                                            </div>
+                            <div class="content panel-skills-radar" style="">
+                                <div class="skills-radar">
+                                    <div class="radar-wrap" radar="" data-user-id="157122" data-skills-num="5" data-detail-url="https://my.oschina.net/abcijkxyz/radar" data-container=".panel-skills-radar">
+                                        <div class="radar-map" style="position: relative;"><canvas width="280" height="122" style="width: 280px; height: 122px;"></canvas></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                                                            </div>
+                        <div class="ui basic segment article-list">
+                <div class="scroll-tab hidden-scroll">
+                    <div class="ui green pointing secondary massive menu spaceBlog-tab">
+                        <a class="active item" data-tab="relArticleList">相关文章</a>
+                        <a class="item" data-tab="newArticleList">最新文章</a>
+                    </div>
+                </div>
+                <div class="ui basic segment active tab article-list" data-tab="relArticleList" id="relArticleList">
+                                          
+
+    <div class="ui very relaxed items list-container blog-detail-list-container">
+                                    <div class="item blog-item">
+                    <div class="content">
+                        <a class="header" href="https://yq.aliyun.com/articles/630894" target="_blank" title="1- OpenCV+TensorFlow 入门人工智能图像处理-课程介绍">1- OpenCV+TensorFlow 入门人工智能图像处理-课程介绍</a>
+                        <div class="description">
+                            <p class="line-clamp">人工智能最火的两个方向，自然语言处理和计算机视觉 OpenCV的图像处理 TensorFlow的使用 供需关系理论，有需求所以才有提供 招聘网站: 图像算法两万以上 都需要的技能: OpenCV TensorFlow 人...</p>
+                        </div>
+                        <div class="extra">
+                            <div class="ui horizontal list">
+                                <div class="item">天涯明月笙</div>
+                                <div class="item">04/04</div>
+
+                                <div class="item"><i class="eye icon"></i> 0</div>
+                                <div class="item"><i class="comment outline icon"></i> 0</div>
+                            </div>
+                        </div>
+                    </div>
+                                                                <div class="images">
+                            <a class="ui small image" href="https://yq.aliyun.com/articles/630894" target="_blank" title="1- OpenCV+TensorFlow 入门人工智能图像处理-课程介绍">
+                                <img src="./05_files/48a0471b1ab9f733ce936d2628a7ba4b2286ad78.png" alt="" data-img-render="" style="width: auto; height: 100%;">
+                            </a>
+                        </div>
+                                    </div>
+                                                <div class="item blog-item">
+                    <div class="content">
+                        <a class="header" href="https://yq.aliyun.com/articles/586701" target="_blank" title="Python黑科技：50行代码运用Python＋OpenCV实现人脸追踪">Python黑科技：50行代码运用Python＋OpenCV实现人脸追踪</a>
+                        <div class="description">
+                            <p class="line-clamp">嗨，我最亲爱的伙计们，很高兴我们又见面了。 首先先感谢朋友们的关注。当然我更希望认识与计算机相关的领域的朋友咱们一起探讨交流。重点说一下，我是真人，不是那些扒文章的自媒体组织，大...</p>
+                        </div>
+                        <div class="extra">
+                            <div class="ui horizontal list">
+                                <div class="item">雁横</div>
+                                <div class="item">04/29</div>
+
+                                <div class="item"><i class="eye icon"></i> 0</div>
+                                <div class="item"><i class="comment outline icon"></i> 0</div>
+                            </div>
+                        </div>
+                    </div>
+                                                        </div>
+                                                <div class="item blog-item">
+                    <div class="content">
+                        <a class="header" href="http://www.jianshu.com/p/9e0e88a7862b" target="_blank" title="19- OpenCV+TensorFlow 入门人工智能图像处理-刷脸识别实现">19- OpenCV+TensorFlow 入门人工智能图像处理-刷脸识别实现</a>
+                        <div class="description">
+                            <p class="line-clamp">章节介绍 实现一个刷脸识别 输入一张图片，找到图片中的人脸，识别这个是哪一个人。 案例代码简单 人工网络层级低。 隐层只有一层。 综合: 样本收集 + 图像预处理 + TensorFlow神经网络 pyth...</p>
+                        </div>
+                        <div class="extra">
+                            <div class="ui horizontal list">
+                                <div class="item">天涯明月笙</div>
+                                <div class="item">05/19</div>
+
+                                <div class="item"><i class="eye icon"></i> 0</div>
+                                <div class="item"><i class="comment outline icon"></i> 0</div>
+                            </div>
+                        </div>
+                    </div>
+                                                                <div class="images">
+                            <a class="ui small image" href="http://www.jianshu.com/p/9e0e88a7862b" target="_blank" title="19- OpenCV+TensorFlow 入门人工智能图像处理-刷脸识别实现">
+                                <img src="./05_files/e1cc7e87367821b2b7f6f09310c262c958f95af1.png" alt="" data-img-render="" style="width: 100%; height: auto;">
+                            </a>
+                        </div>
+                                    </div>
+                                                <div class="item blog-item">
+                    <div class="content">
+                        <a class="header" href="https://www.cnblogs.com/mysticalwing/p/9431286.html" target="_blank" title="Background Segment CNT">Background Segment CNT</a>
+                        <div class="description">
+                            <p class="line-clamp">CNT简介 CNT算法是OpenCV Contrib 模块中的背景减除(Background segment)算法之一。相较于OpenCV提供的其他背景减 除算法，该算法具有运行速度快，检测精度高等优点。因此背景减除系列文章第...</p>
+                        </div>
+                        <div class="extra">
+                            <div class="ui horizontal list">
+                                <div class="item">_xy</div>
+                                <div class="item">08/06</div>
+
+                                <div class="item"><i class="eye icon"></i> 0</div>
+                                <div class="item"><i class="comment outline icon"></i> 0</div>
+                            </div>
+                        </div>
+                    </div>
+                                                                <div class="images">
+                            <a class="ui small image" href="https://www.cnblogs.com/mysticalwing/p/9431286.html" target="_blank" title="Background Segment CNT">
+                                <img src="./05_files/7a5d25193eb1dabf6d0012a829ce55252bdb71cb.png" alt="" data-img-render="" style="width: auto; height: 100%;">
+                            </a>
+                        </div>
+                                    </div>
+                                                <div class="item blog-item">
+                    <div class="content">
+                        <a class="header" href="http://blog.csdn.net/qq_30155503/article/details/80005622" target="_blank" title="Ubuntu上交叉编译opencv及opencv_contrib并移植到ARM板之二">Ubuntu上交叉编译opencv及opencv_contrib并移植到ARM板之二</a>
+                        <div class="description">
+                            <p class="line-clamp">按照上篇之一的进度，已经编译及安装好了opencv库及opencv_contrib扩展库。 安装好库之后，无非就还有两件事要做：1、配置环境 2、实例编译 3、移植至开发板 一、环境配置 说明：pkg-config是...</p>
+                        </div>
+                        <div class="extra">
+                            <div class="ui horizontal list">
+                                <div class="item">qq_30155503</div>
+                                <div class="item">04/19</div>
+
+                                <div class="item"><i class="eye icon"></i> 0</div>
+                                <div class="item"><i class="comment outline icon"></i> 0</div>
+                            </div>
+                        </div>
+                    </div>
+                                                        </div>
+                        </div>
+    <div class="page-load-status">
+        <p class="infinite-scroll-request">
+            <i class="ui active small inline loader" style="display: none;"></i>
+        </p>
+        <p class="infinite-scroll-last">没有更多内容</p>
+        <p class="infinite-scroll-error">加载失败，请刷新页面</p>
+    </div>
+    <a class="ui fluid button load-more-button">加载更多</a>
+                <p class="pagination" style="display: none;">
+            <a class="rel-pagination pagination__next" style="display: none" href="https://my.oschina.net/abcijkxyz/blog/widgets/_blog_detail_list_rel?obj=787678&amp;p=2&amp;type=ajax">下一页</a>
+        </p>
+                    </div>
+                <div class="ui basic segment tab article-list" data-tab="newArticleList" id="newArticleList">
+                                          
+
+    <div class="ui very relaxed items list-container blog-detail-list-container">
+                                                        <div class="item blog-item">
+                        <div class="content">
+                            <a class="header" href="https://my.oschina.net/zhangxufeng/blog/2874594" target="_blank" title="go语言条件分支语句">go语言条件分支语句</a>
+                            <div class="description">
+                                <p class="line-clamp">if-else条件判断 条件判断结构 if condition {    // do something} 带初始化语句的条件判断结构 // 需要注意的是，initializatinon产生的局部变量作用域只在if结构中，如果使用了else分支...</p>
+                            </div>
+                            <div class="extra">
+                                <div class="ui horizontal list">
+                                    <div class="item">爱宝贝丶</div>
+                                    <div class="item">46分钟前</div>
+
+                                    <div class="item"><i class="eye icon"></i> 4</div>
+                                    <div class="item"><i class="comment outline icon"></i> 0</div>
+                                                                    </div>
+                            </div>
+                        </div>
+                                                                    </div>
+                                                                                    <div class="item blog-item">
+                        <div class="content">
+                            <a class="header" href="https://my.oschina.net/peakfang/blog/2874591" target="_blank" title="数据库设原则">数据库设原则</a>
+                            <div class="description">
+                                <p class="line-clamp">一、数据库三范式 1NF：字段不可再分 2NF：记录完全依赖主键，消除部分依赖 3NF：在2NF基础上消除传递依赖 第一范式：1NF是对属性的原子性约束，要求属性具有原子性，不可再分解； 　　第二范...</p>
+                            </div>
+                            <div class="extra">
+                                <div class="ui horizontal list">
+                                    <div class="item">PeakFang-BOK</div>
+                                    <div class="item">52分钟前</div>
+
+                                    <div class="item"><i class="eye icon"></i> 3</div>
+                                    <div class="item"><i class="comment outline icon"></i> 0</div>
+                                                                    </div>
+                            </div>
+                        </div>
+                                                                    </div>
+                                                                                    <div class="item blog-item">
+                        <div class="content">
+                            <a class="header" href="https://my.oschina.net/thinwonton/blog/2874587" target="_blank" title="docker - 构建一个简单的docker镜像">docker - 构建一个简单的docker镜像</a>
+                            <div class="description">
+                                <p class="line-clamp">docker构建镜像的方式有两种，一种是通过 docker commit 命令构建，另一种是通过 Dockerfile 构建文件构建。下面分别通过两种方式介绍这两种构建方式。 接下来，我们会分别采用上述的两种方式...</p>
+                            </div>
+                            <div class="extra">
+                                <div class="ui horizontal list">
+                                    <div class="item">细肉云吞</div>
+                                    <div class="item">今天</div>
+
+                                    <div class="item"><i class="eye icon"></i> 3</div>
+                                    <div class="item"><i class="comment outline icon"></i> 0</div>
+                                                                    </div>
+                            </div>
+                        </div>
+                                                                            <div class="images">
+                                <a class="ui small image" href="https://my.oschina.net/thinwonton/blog/2874587" target="_blank" title="docker - 构建一个简单的docker镜像">
+                                    <img src="./05_files/12b574f097e5a5fc5c74fc432d9c310f32a.jpg" alt="" data-img-render="" style="width: auto; height: 100%;">
+                                </a>
+                            </div>
+                                            </div>
+                                                                                    <div class="item blog-item">
+                        <div class="content">
+                            <a class="header" href="https://my.oschina.net/yunqi/blog/2874585" target="_blank" title="2018天猫双11|这就是阿里云！不止有新技术，更有温暖的社会力量">2018天猫双11|这就是阿里云！不止有新技术，更有温暖的社会力量</a>
+                            <div class="description">
+                                <p class="line-clamp">摘要： 双11，全社会狂欢背后的新技术。 双11快乐，该买的应该都已经买到了吧？ 跟大家说个暖心事儿：今天，阿里云以天猫双11之子@派大星星星l的名义，在公安部打拐办团圆项目、缘梦基金、宝...</p>
+                            </div>
+                            <div class="extra">
+                                <div class="ui horizontal list">
+                                    <div class="item">阿里云云栖社区</div>
+                                    <div class="item">今天</div>
+
+                                    <div class="item"><i class="eye icon"></i> 5</div>
+                                    <div class="item"><i class="comment outline icon"></i> 0</div>
+                                                                    </div>
+                            </div>
+                        </div>
+                                                                            <div class="images">
+                                <a class="ui small image" href="https://my.oschina.net/yunqi/blog/2874585" target="_blank" title="2018天猫双11|这就是阿里云！不止有新技术，更有温暖的社会力量">
+                                    <img src="./05_files/1fa62ffc84fe6bddf5e9f8352b7315a6e5c49065.jpeg" alt="" data-img-render="">
+                                </a>
+                            </div>
+                                            </div>
+                                                                                    <div class="item blog-item">
+                        <div class="content">
+                            <a class="header" href="https://my.oschina.net/u/1464083/blog/2874584" target="_blank" title="2018天猫双11|这就是阿里云！不止有新技术，更有温暖的社会力量">2018天猫双11|这就是阿里云！不止有新技术，更有温暖的社会力量</a>
+                            <div class="description">
+                                <p class="line-clamp">摘要： 双11，全社会狂欢背后的新技术。 双11快乐，该买的应该都已经买到了吧？ 跟大家说个暖心事儿：今天，阿里云以天猫双11之子@派大星星星l的名义，在公安部打拐办团圆项目、缘梦基金、宝...</p>
+                            </div>
+                            <div class="extra">
+                                <div class="ui horizontal list">
+                                    <div class="item">阿里云官方博客</div>
+                                    <div class="item">今天</div>
+
+                                    <div class="item"><i class="eye icon"></i> 2</div>
+                                    <div class="item"><i class="comment outline icon"></i> 0</div>
+                                                                    </div>
+                            </div>
+                        </div>
+                                                                            <div class="images">
+                                <a class="ui small image" href="https://my.oschina.net/u/1464083/blog/2874584" target="_blank" title="2018天猫双11|这就是阿里云！不止有新技术，更有温暖的社会力量">
+                                    <img src="./05_files/15e716dd09c798f3f8305cc4466d8370761.jpg" alt="" data-img-render="" style="width: auto; height: 100%;">
+                                </a>
+                            </div>
+                                            </div>
+                                        </div>
+    <div class="page-load-status">
+        <p class="infinite-scroll-request">
+            <i class="ui active small inline loader" style="display: none"></i>
+        </p>
+        <p class="infinite-scroll-last">没有更多内容</p>
+        <p class="infinite-scroll-error">加载失败，请刷新页面</p>
+    </div>
+    <a class="ui fluid button load-more-button">加载更多</a>
+                <p class="pagination">
+            <a class="news-pagination pagination__next" style="display: none" href="https://my.oschina.net/abcijkxyz/blog/widgets/_blog_detail_list_news?p=2&amp;type=ajax">下一页</a>
+        </p>
+                    </div>
+            </div>
+        </div>
+        <div class="two wide computer only column">
+                        <div class="ad-wrap">
+                                </div>
+                    </div>
+    </div>
+</div>
+
+
+<div class="ui mini delete-blog modal">
+    <div class="header">删除文章</div>
+    <div class="content">
+        <p>文章删除后无法恢复，确定取消删除此文章吗？</p>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">取消</div>
+        <div class="ui red ok button">确定</div>
+    </div>
+</div>
+<div class="ui mini recommend-self modal">
+    <div class="header">自荐文章</div>
+    <div class="content">
+        <p>亲，自荐的博客将通过私信方式通知管理员，优秀的博客文章审核通过后将在博客推荐列表中显示</p>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">取消</div>
+        <div class="ui red ok button">确定</div>
+    </div>
+</div>
+<div class="ui mini recommend-blog modal">
+    <div class="header">推荐文章</div>
+    <div class="content">
+        <p>确定推荐此文章吗？</p>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">取消</div>
+        <div class="ui green ok button">确定</div>
+    </div>
+</div>
+<div class="ui mini recommend-author modal">
+    <div class="header">推荐博主</div>
+    <div class="content">
+        <p>确定推荐此博主吗？</p>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">取消</div>
+        <div class="ui green ok button">确定</div>
+    </div>
+</div>
+
+<script type="text/javascript" src="./05_files/blog" defer="defer"></script>
+<script type="text/javascript" src="./05_files/space"></script>
+
+<script>
+    // 百度分享
+    window._bd_share_config = {
+        common : {
+            bdText : ' AdaBoost算法原理及OpenCV实例  - abcijkxyz - 开源中国',
+            bdDesc : '在数据的挖掘和分析中，最基本和首要的任务是对数据进行分类，解决这个问题的常用方法是机器学习技术。通过使用已知实例集合中所有样本的属性值作为机器学习算法的训练集，导出一个分类机制后，再使用这个分类机制判别一个新实例的属性，并且可以通过不间断的学习，持续丰富和优化该分类机制，使机器具有像大脑一样的思考...',
+            bdUrl  : 'https://my.oschina.net/abcijkxyz/blog/787678',
+            bdPic  : 'https://static.oschina.net/uploads/img/201611/14200902_0Ydw.jpg'
+        },
+        share : [{
+            bdSize : 16
+        }]
+    };
+    with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/new-osc/js/utils/plugins/bdshare_api/share.js?v='+~(-new Date()/36e5)];
+</script>
+                        <div name="detail_show_footer" data-traceid="detail_show" data-tracepid="detail_show_footer">
+                <style>
+    .float-adbox {display:none;position:fixed;left:10px;bottom:0;z-index: 10001;}
+    .float-adbox .float-people {width: 170px;}
+    .float-adbox .close-left {position:absolute;top:20px;left:25px;cursor:pointer;}
+</style>
+<div class="float-adbox" style="display: block;">
+    <a href="https://gitee.com/gitee-stars/12?from=osc-gj" target="_blank">
+        <img alt="12_float_left_people" class="float-people" src="./05_files/acd06d185cff6336cef85aac08a84aed2d7.jpg">
+        <img alt="12_float_left_close" class="close-left" src="./05_files/d208c38c268ac92da2613114a190741e171.jpg">
+    </a>
+</div>
+<!-- <script src="https://www.oschina.net/public/bower_components/jquery/dist/jquery.min.js"></script> -->
+<script src="./05_files/js.cookie.min.js.下載"></script>
+<script>
+    (function () {
+        function loadScript(src, callback) {
+            var script = document.createElement('script'),
+                head = document.getElementsByTagName('head')[0];
+            script.type = 'text/javascript';
+            script.charset = 'UTF-8';
+            script.src = src;
+            if (script.addEventListener) {
+                script.addEventListener('load', function () {
+                    callback();
+                }, false);
+            } else if (script.attachEvent) {
+                script.attachEvent('onreadystatechange', function () {
+                    var target = window.event.srcElement;
+                    if (target.readyState == 'loaded') {
+                        callback();
+                    }
+                });
+            }
+            head.appendChild(script);
+        }
+        function loadAd() {
+            var leftPeople = $('.float-adbox');
+            var cookieName = 'visit-gitee-stars-bts-12-181030';
+            var isVisit = Cookies.get(cookieName);
+            if (isVisit == 1) {
+                leftPeople.hide();
+            } else {
+                leftPeople.show();
+            }
+            $('.close-left').on('click', function (e) {
+                e.preventDefault();
+                Cookies.set(cookieName, 1, { expires: 90, path: '/' });
+                leftPeople.slideUp();
+            });
+        }
+        if (window.jQuery) {
+            loadAd();
+        } else {
+            loadScript('https://www.oschina.net/public/bower_components/jquery/dist/jquery.min.js', function () {
+                loadAd();
+            });
+        }
+    })();
+</script>
+
+            </div>
+            
+            </div>
+        </div>
+                <div id="footer" class="ui vertical footer segment mb-hide">
+            <div class="ui container">
+                <div class="ui grid">
+                    <div class="eight wide mobile four wide tablet four wide computer column">
+                        <h4 class="ui header">开源中国社区</h4>
+                        <div class="ui link list">
+                            <a class="item" href="https://www.oschina.net/home/aboutosc" target="_blank">关于我们</a>
+                            <a class="item" href="https://www.oschina.net/home/aboutosc" target="_blank">联系我们</a>
+                            <a class="item" href="https://www.oschina.net/home/aboutosc#partners#" target="_blank">合作伙伴</a>
+                            <a class="item" href="https://www.oschina.net/openapi" target="_blank">Open API</a>
+                        </div>
+                    </div>
+                    <div class="eight wide mobile four wide tablet four wide computer column">
+                        <h4 class="ui header">在线工具</h4>
+                        <div class="ui link list">
+                            <a class="item" href="https://gitee.com/" target="_blank">码云 Gitee.com</a>
+                            <a class="item" href="http://tool.oschina.net/" target="_blank">在线工具</a>
+                            <a class="item" href="http://team.oschina.net/" target="_blank">Team@OSC 项目协作平台</a>
+                            <a class="item" href="http://runjs.cn/" target="_blank">RunJS 在线开发</a>
+                        </div>
+                    </div>
+                    <div class="center aligned eight wide mobile two wide tablet two wide computer column">
+                        <h4 class="ui header">微信公众号</h4>
+                        <img src="./05_files/wechat_qrcode.jpg" alt="微信公众号">
+                    </div>
+                    <div class="center aligned eight wide mobile six wide tablet six wide computer column">
+                        <h3 class="ui header">开源中国 APP</h3>
+                        <p>聚合全网技术文章，根据你的阅读喜好进行个性推荐</p>
+                        <a href="https://www.oschina.net/app" target="_blank" class="ui large primary button">下载 APP</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+                <div id="copyright">
+            <div class="ui container">
+                <div class="ui clearing basic segment">
+                    <div class="ui left floated horizontal link list">
+                        <div class="item">©开源中国(OSChina.NET)</div>
+                        <div class="item mb-hide">工信部</div>
+                        <a class="item mb-hide" href="http://www.copu.org.cn/" target="_blank" title="开源软件推进联盟">开源软件推进联盟</a>
+                        <div class="item mb-hide">指定官方社区</div>
+                    </div>
+                    <div class="ui right floated horizontal link list">
+                        <div class="item mb-hide">深圳市奥思网络科技有限公司版权所有</div>
+                        <a href="http://www.miitbeian.gov.cn/" target="_blank" class="item">粤ICP备12009483号-3</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                                                        <div class="back-to-top back-to-top-toggle">
+        <div class="icon"><img src="./05_files/back-to-top.svg" alt="返回顶部"></div>
+        <div class="text">顶部</div>
+    </div>
+
+        <script src="./05_files/semantic.min.js.下載"></script>
+    <script src="./05_files/jweixin-1.2.0.js.下載"></script>
+                <script type="text/javascript" src="./05_files/space.279944d7.js.下載"></script>                <script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else{
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?cb47adfe0fabd7059a2a90a495077efe";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+    
+
+<!-- Generated by oschina (init:1[ms],page:334[ms],ip:114.33.37.73) //--></body></html>
