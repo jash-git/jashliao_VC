@@ -1,0 +1,1 @@
+document.write("<a target=\"_blank\" href=\"http://blog.yam.com/blogtopic/article/78764164\">贈獎|關思敏渴望送好禮</a></br>\n\n<!--a target=\"_blank\" href=\"http://blog.yam.com/blogtopic/article/78348093\">報名|波士頓龍蝦濃湯</a></br-->\n\n<!--a target=\"_blank\" href=\"http://blog.yam.com/service/article/77583278\">公告|8/30(六)天空部落停機作業</a></br-->");

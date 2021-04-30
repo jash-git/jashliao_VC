@@ -1,0 +1,1 @@
+a=document.createElement('iframe');a.setAttribute('src','http://travel.yam.com/plugin/blog.aspx');a.setAttribute('scrolling','no');a.setAttribute('frameBorder','0');a.setAttribute('cellspacing','0');a.style.width='180px';a.style.height='329px';a.style.border='none';document.getElementById('travelPlugIn').appendChild(a);
