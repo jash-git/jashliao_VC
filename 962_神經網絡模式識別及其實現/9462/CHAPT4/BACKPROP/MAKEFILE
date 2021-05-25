@@ -1,0 +1,52 @@
+#컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+#
+#  Makefile for  grid1.exe
+#
+#컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+
+NAME  = grid1
+
+CC = icc
+LINK = link386
+#LIBMAN = lib32
+LIBMAN = lib
+DEBUGGER = ipmd /N
+LIBSRC =.
+
+!IFDEF db
+CFLAGS=  /Ti+ -c /Gm+ /Fd /Sp -I$(LIBSRC)
+CPPFLAGS= $(CFLAGS)
+LFLAGS= /co /MAP /NOE /NOI
+!IF "$(db)"=="i"
+RUNPROG = $(DEBUGGER) $@
+!ELSE
+RUNPROG = $@
+!ENDIF
+!ELSE
+CFLAGS=  -c /Gm+ /Fd /Sp /O+ /W2 -I$(LIBSRC)
+CPPFLAGS= $(CFLAGS)
+LFLAGS= /MAP /NOI /NOE
+!ENDIF
+
+RC    = RC
+OBJS  = $(NAME).OBJ
+#LIBS  = os2386.lib c:\os2\doscalls.lib
+#BLIBS = $(LIBSRC)\wind.lib
+
+
+ALL: $(NAME).EXE
+
+# $(NAME).EXE : $(OBJS) $(NAME).DEF $(BLIBS) $(NAME).RES $(NAME).MAK
+$(NAME).EXE : $(OBJS) $(NAME).DEF $(BLIBS) $(NAME).RES 
+   -del $@
+   $(LINK) $(LFLAGS) $(OBJS),,,$(BLIBS) $(LIBS),$(NAME).DEF;
+   $(RC) $(NAME).RES $(NAME).EXE
+   -$(RUNPROG)
+
+$(NAME).RES : $(NAME).RC
+   $(RC) -r $(NAME).RC
+
+$(NAME).OBJ : $(NAME).CPP
+   $(CC) $(CFLAGS) $(NAME).CPP
+
+
