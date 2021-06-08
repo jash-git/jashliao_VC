@@ -1,0 +1,568 @@
+<HTML>
+<HEAD>
+<TITLE>
+    第 1 章  C 程式 簡介
+</TITLE>
+</HEAD>
+<BODY>
+  <CENTER>
+  <B>第 1 章   C 程式簡介</B>
+  </CENTER>
+<P>
+      本章的目的是在介紹一些簡單的 C 程式，並熟悉其架構及
+      一些指令。
+<P>
+      於此，注意一下，C 程式中 英文 的 大小寫 是 有區別的。
+<!---C programming is case sensitive --->
+
+<P>
+  <B>第 1.1 節  最短的 C 程式</B>
+<P>
+C 程式：
+<TT><PRE>
+         main(){}
+</PRE></TT>
+<P>
+   <B>第 1.2 節  最短且沒有提示 (warning) 的 C 程式</B>
+<P>
+C 程式： 其中 void 表示 main() 是不具有 函數值 的 procedure。
+<TT><PRE>
+         void main(){}
+</PRE></TT>
+
+          另一個 相當短 的 沒有 提示 (warning) 的 C 程式 :
+<P>
+C 程式：
+<TT><PRE>
+         main(){return;}  /* 或使用 return 0; */
+</PRE></TT>
+
+   <B>第 1.3 節   輸出 指令 printf( )</B>
+<P>
+C 程式：
+<TT><PRE>
+         #include &lt;stdio.h>
+         main()
+         {
+            printf("嗨! 我是小明, 您好!\n");
+            printf("請問大名?\n");
+         }
+</PRE></TT>
+          說明:
+<OL TYPE=a>
+          <LI> 執行此程式的結果將會在螢幕上顯示出<BR>
+<BLOCKQUOTE><TT>
+         嗨! 我是小明, 您好!<BR>
+         請問大名?
+</TT></BLOCKQUOTE>
+          <LI>指令 printf( );  會將括號內兩個引號 " " 中的字串列印在螢
+              幕上。 <!---[參閱附錄4]---><P>
+          <LI>指令 printf( );是定義在檔案 <TT>include\stdio.h</TT> 中，我們須加上
+              <TT>#include &lt;stdio.h></TT> 方能使用敘述 printf( );。<TT>#include</TT>
+              是前置處理指令，將於<A HREF="cpgch8.htm#second" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch8.htm#second">第8.2節</A>討論。
+          <LI> \n 是 一個 字元， 表示 跳行。    
+</OL>
+<P>
+     <B>第 1.4 節  辨識名稱 (identifiers)</B>
+<P>
+<DL>
+          <DT>辨識名稱宣告語法 : 
+              <DD>第一個 字元 必須是 字母 或 是 底線 (_)，
+                  其後 可 連續
+                        接上 幾個 字母、 底線 或 數字。<P>
+
+          <DT>注意事項 : 
+              <DD>字母 大小寫 是有 區別的， 不可有 空格， 名稱 不可 採用
+                  保留字 <!---[參閱 附錄 2 ]--->， 儘量 使用 與 上下文 有關 名稱。<P>
+
+          <DT>例 (正確名稱) :  
+              <DD>c、 ch、 i、 j、 count、 sum。<P>
+
+          <DT>例 (錯誤名稱) :  
+              <DD>this is、 char、 total-amount。<P>
+
+          <DT>使用範圍 :  
+              <DD>變數名、 函數名、 符號常數等。
+</DL>
+<P>
+    <B>第 1.5 節  資料型態 與 變數 (variables) <!---[參閱 第 2 章]---></B>
+<P>
+<DL>
+          <DT>變數宣告語法: 
+             <DD>資料型態  變數名稱[, 變數名稱];<P>
+
+          <DT>變數宣告處: 
+             <DD>(1) 在一個檔案任何函數(包括main)之前，<BR>
+                      (2) 在任一括號{ ... }內的起頭。<P>
+
+          <DT>例: 
+          <DD>int i, j, k, sum = 0;<BR>
+              char c ='0', C ='c', ch;<BR>
+              float x, y, z, area = 0.0, radius;<P>
+
+          <DT>說明：
+             <DD>
+               <OL>
+                 <LI>資料型態 int 佔有 2 bytes， 
+                     其 範圍 為 -32768 至 32767。<P>
+                 <LI>資料型態 char 佔有 1 byte，
+                     其 範圍 為 -128 至 127。
+                     其 字元 常數 以 兩個 單引號 ' ' 包含之。
+                     例 '0'、 '1'、'A'、
+                     'B'、 'Z'、 'a'、 'b'、 'z'、 ' '、 
+                     '\x41'、 '\141' 等。<P>
+                 <LI>資料型態 float 佔有 4 byte，
+                     其 範圍 為 3.4E-38 至 3.4E+38。<P>
+                 <LI>上例 中 c 與 C 是 不同 變數。<P>
+                 <LI>在同一 括號內， 即 {...}， 不可 重複宣告 變數。<P>
+                 <LI>宣告 int sum = 0; 即 宣告 變數 sum，
+                     其資料型態 為 int， 值為 0。<P>
+                 <LI>C = c; 與 C = 'c'; 是 不同 義意，
+                     C = c; 是 將 變數 c 的值 指派 給
+                    變數 C，C = 'c'; 是 將 字元 'c' 值 指派 給 變數 C。
+               </OL>
+</DL>
+<P>
+    <B>第 1.6 節  指派敘述</B>
+<P>
+<DL>    
+          <DT>指派敘述的語法:  
+              <DD>變數 = [ 變數 = ] 運算式子;<P>
+
+          <DT>指派敘述的語意:  
+              <DD>將變數的值改為運算式的值。<P>
+
+          <DT>例： 
+              <DD><TT>x = y = z = x + y * z;</TT><BR>
+              上式 與 下式 同義 :<BR>
+              <TT>z = x + y * z;<BR> y = z;<BR> x = y;</TT><P>
+
+          <DT>註: 
+              <DD>指派敘述可視為運算式，其值為最左邊變數的值。              
+</DL>
+<P>
+    <B>第 1.7 節  字元輸入指令 getchar( )， 字元變數及指派敘述</B>
+<P>
+      如果 我們 設計 一 編輯 應用軟体 如 PE2 或 其它， 當 使用者
+      修改 了 一文件 後  沒有 存檔， 且 鍵入 離開 指令，
+      我們 應給 使用者 一個 提示 如下 :
+<TT><PRE>
+         您想要存檔嗎?(y/n)
+</PRE></TT>
+      讓 使用者 去按 y 或 n 以作 決定。 以下 程式 就是 在 做 類似 工作。
+<P>
+      C 程式：
+<TT><PRE>
+         main()
+         {  char c;
+            printf("您想要存檔嗎?(y/n)");
+            c = getchar();  /* if (c=='y'){...}
+                               else {...}       */
+         }
+</PRE></TT>
+          說明：
+<OL TYPE=a>
+          <LI>char c; 即 宣告 (定義) 一變數， 其名 為 c， 其 屬性 為 一個
+              字元 (char)， 該 變數 可用來 存、 取 或 修改 一字元 等。<P>
+          <LI>執行 getchar( ); 時， 當 使用者 鍵入 y 或 n 後，
+              再 鍵入 &lt;enter&gt;
+              則 函數 getchar( ) 值 為 該 鍵入值。 執行 該函數時，
+              電腦 會 一直 等到 使用者 鍵入 &lt;enter&gt;。
+              使用者 至多 能 輸入 127 個字元。 如果 使用者 輸入 超過 
+              一個 字元， 則 電腦 僅取 第一個 字元 作為 getchar( ) 的 值，
+              其餘 的 留給 以後 的 輸入 指令。<P>
+          <LI>c = getchar(); 為 一 指派 敘述， 將 getchar( ) 的 值 定為 
+              變數 c 的值。<P>
+          <LI>/* ... */ 為 程式 註釋， 不屬於 程式的 一部份。<P>
+          <LI>getche( ) 可 代替 getchar( )， 輸入時 不需 鍵入 &lt;enter&gt;，
+             且 螢幕 有回應， 即 鍵入的 字 立即 顯示 在螢幕上。<P>
+          <LI>getch() 亦可 代替 getchar( )， 輸入 時 不需 鍵入 &lt;enter&gt;，
+             且 螢幕 沒有 回應。                                                
+</OL> 
+<P>          
+
+    <B>第 1.8 節   字元 輸出指令 putchar(char) 及 while 指令</B>
+<P>
+          下一個程式 是在 模擬 DOS 的 type 指令，
+          在 DOS 下 鍵入 type file， 則
+          檔案 file 將 被列印 在螢幕上，
+          <NOBR>type file &gt;out</NOBR> 如同 
+          <NOBR>copy file out</NOBR>，
+          <NOBR>type file &gt;&gt;out</NOBR> 即將 file 附加在 out 之後。
+<P>
+          將此程式 編譯 成 執行檔 如 list.exe，
+          則 <NOBR>list &lt;file</NOBR> 就如同
+          <NOBR>type file</NOBR> 一樣。
+<TT><PRE>
+         #include &lt;stdio.h>
+
+         main()
+         { char c;
+           c = getchar();
+           while ( c != EOF )
+           { putchar(c);
+             c = getchar();
+           } /* end of while loop */
+         } /* end of main */
+</PRE></TT>
+          整個程式 亦可 改成
+<TT><PRE>
+         #include &lt;stdio.h>
+
+         main()
+         { char c;
+           while( ( c = getchar() ) != EOF )
+              putchar(c);
+         }
+</PRE></TT>
+
+<DL><DT>說明：
+      <DD>
+        <OL>
+          <LI><B>EOF</B> 是定義在 檔案 <NOBR>\tc\include\stdio.h</NOBR> 中，
+               其值為 -1。<P>
+          <LI>while 指令 型式 為 while ( 條件 ) { 敘述; ...; 敘述; }
+              或
+              while ( 條件 ) 敘述;
+              其中， 條件 為 一運算式， 當 條件 成立時，即 條件值 不為 0，
+              則 執行 括號內 的 敘述 或 緊接 while 的敘述。<P>
+          <LI>雖然 c = getchar( ); c != EOF; 與 <BR>
+              ((c = getchar( )) != EOF) 同義意，
+              但 卻 不可 當做 while 的條件式子。<P>
+          <LI>若 執行 該程式 時 不設定 輸入檔， 則 輸入檔 為 stdin 
+              即 由 鍵盤輸入， 若 欲 產生 EOF 則 須 按鍵 ^z&lt;enter&gt;，
+              其 ASCII 碼為 26。
+         </OL>
+</DL>
+<P>
+    <B>第 1.9 節  ASCII 表格 <!---[參閱 附錄 1]---> 與 for 敘述</B>
+<P>
+          下一程式 是 在 列印出 255 個 ASCII 字元。
+<TT><PRE>
+         main()
+         {  char c;
+            for ( c = -128; c < 127 ; c++)
+              printf("字元 %c 的值為 %d\n", c, c);
+         }
+</PRE></TT>
+
+<DL><DT>說明：
+      <DD>
+        <OL>
+          <LI>一個 字元 是 一個 位元組 (byte)， 即 8 個位元 (bit)，
+              其值 是 介於 -128 與 127 之間， 因此 共有 256 個字元，
+              有可見 字元 如 、
+              0、 1、 2、 A、 B、 C、 a、 b、 c等，
+              及 不可見 字元 如 ' '、 '\n'、
+              '\t'、 '\007'等。 一個 字元 佔 8 個位元(bit)， 因此 每一 字元
+              都有 其 相對應 的 數值， 即 內碼， 如 'A' 的 內碼 為
+              65 或 x41 (x 表 16 進位)， '0' 的 內碼 為 48 或 x30。
+              一個 ASCII 文件 其檔尾值 為 -1，即 EOF。<P>
+          <LI>printf 為 一格式化 輸出 指令， 其 指令 型式 為<BR>
+              printf("..%x..%y..%..", ex1, ex2, ex3);<BR>
+              其中 %x、 %y 為 控制碼， ex1、 ex2 及 ex3 為 列印值，
+              ex1 將以 %x 方式 列印在 %x 的位置。 控制碼 個數 與 
+              列印值 個數 必須 相同， x 可為 c、 d、 f 等，
+              即 ex1 將 以 字元(char)、 整數(int)、或 浮點
+              (float)方式列印。<P>
+          <LI><TT>for ( c = -128; c < 127; c++)<BR>
+              printf("字元 %c 的值為 %d\n", c, c);</TT><BR>
+              與 下列 while 敘述 同意義<BR>
+<TT><PRE>
+              c = -128;
+              while (c < 127)
+                  {  printf("字元 %c 的值為 %d\n", c, c);
+                     c++;
+                  }
+</PRE></TT>
+          <LI>c++; 與 c = c + 1; 同意義。<P>
+          <LI>上一程式 只 列印 255 個字元， 
+              如要列印 所有 256 個字元 該如何做?<P>
+          <!---<LI>附錄 1 共 含 256 個字元。<P>--->
+          <LI>欲表示 中文字， 則 需 多少位元 (bit)?                          
+        </OL>
+</DL>
+<P>
+
+      <B>第 1.10 節  以 字元 輸入 指令 getchar( ) 輸入 一整數</B>
+<P>
+C 程式：
+<TT><PRE>
+         main()
+         {  int number = 0;
+            char c;
+
+            printf("請輸入一整數:");
+
+            /* 去掉空白 */
+            while ( (c = getchar()) == ' ');
+
+            /* do
+               while((c = getchar())== ' ');
+            */
+
+            while ( c >= '0' && c <= '9' )
+            {     number = 10 * number + ( c - '0' );
+                  c = getchar();
+            }
+            printf("輸入整數為: %d\n", number);
+         }
+</PRE></TT>
+
+<DL><DT>說明：
+      <DD>
+        <OL>
+          <LI>我們 可在 變數 宣告時 設定 起始值， 如<BR>
+                  <TT>int number = 0;</TT><BR>
+              此 宣告 方式 與 下列 方式 相同<BR>
+                  <TT>int number; number = 0;。</TT><P>
+          <LI>&& 即 邏輯 運算 "且"。<P>
+          <LI>0 為 一整數 常數， '0' 與 '9' 為 字元 常數。<P>
+          <LI>輸入 □□□123<enter>， 其 輸出 為<BR>
+                  輸入整數為: 123<P>
+          <LI>如果 每次 輸入 一整數 或 一浮點數 都必須 由此法 取得 
+              這 畢竟是 太麻煩， 我們 可用 函數 scanf 取得。                            
+        </OL>
+</DL>
+<P>
+     <B> 第 1.11 節  輸入 指令 scanf( ) 與 整數 變數</B>
+<P>
+C 程式：
+<TT><PRE>
+         main()
+         {
+           int x, y;   /* 鍵入整數並存入變數 x,
+                           x 的值即為該數        */
+
+           printf("請輸入一個 3 位數:")
+           scanf("%d", &x);
+           y = x + 1;
+           printf("%d + 1 = %d\n", x, y);
+         }
+</PRE></TT>
+
+<DL><DT>說明：
+      <DD>
+        <OL>
+          <LI>執行 此程式 的結果 是 會在螢幕上 顯示出<BR>
+                  <TT>請輸入一個 3 位數:</TT><BR>
+              如果 我們 輸入 123 後， 螢幕上 會 顯示出<BR>
+                   <TT>123 + 1 = 124</TT><P>
+          <LI>scanf("%d", &x); <!---[參閱 附錄 4]---> 這指令 含 控制碼 %d，
+              表示 以 整數 方式 輸入 整數 給 整數變數 x，
+              &x 乃是 變數 x 於 記憶體的地址
+              [參閱 第 4 章]。
+         </OL>
+</DL>
+<P>
+      <B>第 1.12 節  輸入 指令 scanf( ) 與 字元、 整數 和 浮點 變數</B>
+<P>
+<TT><PRE>
+         main()
+         {
+           char  c;
+           int   i;
+           float x;
+
+           printf("請輸入一個整數, 一個字元及一個浮點數:");
+           scanf("%d%c%f", &i, &c, &x);
+      /*   scanf("%d %c %f", &i, &c, &x);            */
+           printf("[%c] [%d] [%f]\n", c, i, x);
+         }
+</PRE></TT>
+<P>
+<DL><DT>說明：
+      <DD>
+        <OL>
+          <LI>如果 輸入 12.3， 其輸出為 : [.] [12] [3.000000]。<BR>
+              如果 輸入 12 .3， 其輸出為 : [ ] [12] [0.300000]。<BR>
+              如果 輸入 12 . 3， 其輸出為 : [ ] [12] [-0.000000]。<P>
+          <LI>如果 我們 使用 另一 scanf， 則 輸入中 的 空格 被忽略 不計。         
+        </OL>
+</DL>
+<P>
+      <B>第 1.13 節  if， if-else， 及 return 敘述。</B>
+<P>
+          輸入 一 正整數， 如果 該數 為 偶數 則 除2，
+          不然 就 乘 3 加 1， 再 依此方式 進行 直到 1 為止，
+          並 計算 進行 次數。
+<P>
+<TT><PRE>
+         main()
+         { int x;            /* x 用來存輸入值         */
+           int count = 0;    /* count 用來計算執行次數 */
+           printf("請輸入一正整數: ");
+           scanf("%d", &x);
+           if (x <= 0 )
+           {  printf("%d 不是正整數\n", x); return;
+           }
+           while ( x > 1 )
+           { if ( x % 2 == 0 ) x /= 2;
+             else x = 3 * x + 1;
+             count++;
+           }
+           printf("共重複計算 %d 次\n", count);
+         }
+</PRE></TT>
+<P>
+<DL><DT>說明：
+      <DD>
+        <OL>
+          <LI>執行到 return; 時， 立即 停止 執行 該函數 而 返回到 原 
+              呼叫函數處。<P>
+          <LI>x % 2 即 x 除以 2 的餘數。<P>
+          <LI>x /=2; 與 x = x / 2; 同義。 其 一般式 為<BR>
+              變數  運算子= 運算式;
+              這與<BR>
+              變數  = 變數 運算子 運算式;<BR>
+              同義。<P>
+
+              例: <TT>x *= y + 2;</TT> 與 <TT>x = x * ( y + 2 );</TT>
+              同義。
+        </OL>
+</DL>
+
+<P>
+      <B>第 1.14 節  有一 未知 正整數 x，
+                 僅知 x 除 3 餘 1，
+                 x 除 5 餘 2，
+                 x 除 7 餘 3，試問 該數 最小 是多少?</B>
+<P>
+<DL><DT>類比: (平行演算法 parallel algorithm)
+      <DD>將兵 105 人 排成 一排， 報數後， 每人將 自己號碼 計算 一下，
+          若 滿足 上述 條件者， 自行報出 自己號碼。
+</DL>
+<P>
+依此 方式 稍做修改 的 C 程式 (循序演算法 sequential algorithm)， 如下 :
+<P>
+<TT><PRE>
+         main() { int i;
+           for (i=1; i<=105; i++)
+               if ( i%3==1 && i%5==2 && i%7==3)
+               {  printf("此數為 %d\n", i); break;
+               }
+         }
+</PRE></TT>
+<P>
+<DL><DT>說明：
+      <DD>
+        <OL> 
+          <LI>&& 為 布林 運算子， 即 "且"。<P>
+          <LI>執行 break; 則 跳出 迴圈， 亦可 用 return 代替， 以 結束 執行。      
+        </OL>
+</DL>
+<P>
+      <B>第 1.15 節  設計一 程式 以 計算 學生 總成績</B>
+<P>
+          輸入檔 的 架構 如下:<P>
+              第一行 含 學生總數，其後 每一行 含 學生姓名 (佔 8 個 字元)
+              及 第一段考、 第二段考 和 期考成績。 例如:
+<TT><PRE>
+3
+張  三    85 92 88
+李  四    78 83 76
+江小魚    60 70 80
+</PRE></TT>
+
+          其 輸出 如下 :
+<TT><PRE>
+          姓  名      第一段考   第二段考    期末考    總成績
+
+          張  三          85         92         88       265
+          李  四          78         83         76       237
+          江小魚          60         70         80       210
+
+          學生總平均是 237.3
+</PRE></TT>
+          其程式如下:
+<TT><PRE>
+         #include &lt;stdio.h>
+         #define NAMELEN 8  /* 姓名佔有 8 位元 */
+         #define TESTNO  3  /* 3 次考試        */
+         void main() {
+            float sum;     /* 單一學生總成績 */
+            float total=0; /* 全班學生總成績 */
+            float score;   /* 一科科目成績   */
+            int no;        /* 學生總數       */
+            int i, j;      /* 索引           */
+            scanf("%d", &no); /* 輸入學生總數 */
+            printf("          ");
+            printf("姓  名      第一段考   第二段考    期末考");
+            printf("    總成績\n");
+            for (i = 1; i <= no; i++)
+            {  printf("          ");
+               for (j =1; j<=NAMELEN; j++)  /*讀取姓名，並列印出*/
+                    putchar( getchar() );
+            /* 以score讀取3次考試成績，並列印出，以sum累計總分 */
+                sum = 0.0;
+                for (j = 1; j<=TESTNO; j++)
+                {   scanf("%f", &score);
+                    printf("%11.0f", score);
+                    sum += score;
+                } /* nested for loop */
+                total += sum;             /* 累計所有學生總分 */
+                printf("%10.0f\n", sum);  /* 列印總成績       */
+            } /* outer loop */
+            printf("\n          ");
+            printf("學生總平均是 %5.1f\n",total/no);/*列印總平均*/
+         }/* end of main */                                           
+</PRE></TT>
+
+<P>
+      <B>第 1.16 節  本章重點</B>
+<P>
+<OL>
+          <LI>辨識 名稱， 變數 的 宣告， 變數 起始值 的 設定。<P>
+
+          <LI>程式的 註釋 /* .... */ 是 用來 說明 程式 的目的 或 其它。<P>
+
+          <LI>輸入/輸出 敘述 (或指令) 有 下列 幾種:
+<P>
+<TABLE>
+   <TR><TH>方式<TH>檔案<TH>字元<TH>格式化<TH>char<TH>int<TH>float
+   <TR><TD ROWSPAN=3 VALIGN=top>輸入<TD ROWSPAN=3 VALIGN=top>stdin
+                      <TD>getchar( )<TD>scanf( )<TD>%c<TD>%d<TD>%f
+   <TR><TD>getche( )<TD>&nbsp;<TD>&nbsp;<TD>&nbsp;<TD>&nbsp;
+   <TR><TD>getch( )<TD>&nbsp;<TD>&nbsp;<TD>&nbsp;<TD>&nbsp;
+   <TR><TD>輸出<TD>stdout<TD>putchar( )<TD>printf( )<TD>%c<TD>%d<TD>%f
+</TABLE><P>
+          <LI><TT>break</TT> 為 迴圈中斷， <TT>return</TT> 為函數中斷。<P>
+          <LI>選擇 敘述 有 <TT>if</TT> 及 <TT>if-else</TT>。<P>
+          <LI>迴圈 敘述 有 <TT>while</TT>， <TT>do while</TT> 及 
+                           <TT>for</TT>。<P>
+          <LI>算數 運算 有 <TT>+ - * / %</TT>。<P>
+          <LI>算數 比較 有 <TT>&lt; &gt; = &lt;= &gt;= !=</TT>。<P>
+          <LI>邏輯 運算 有 <TT>&&</TT>(且)、 <TT>||</TT>(或)、 
+                           <TT>!</TT>(非)。<P>
+          <LI>簡式 :<BR> 
+                    <TT>x *= 2;</TT> 與 <TT>x = x * 2;</TT> 相同。<BR>
+                    <TT>x = (x%2==1)? 3*x+1: x/2;</TT> 與<BR>
+                    <TT>if (x%2==1) x=3*x+1;<BR> 
+                    else x=x/2; </TT>相同。<P>
+          <LI>加/減 1 運算: <TT>x++  x--  ++x  --x</TT><BR>
+               如果 <TT>x=2; y=x++;</TT> 則 x 與 y 的值 分別 為 3 與 2;<BR>
+               如果 <TT>x=2; y=x--;</TT> 則 x 與 y 的值 分別 為 1 與 2;<BR>
+               如果 <TT>x=2; y=++x;</TT> 則 x 與 y 的值 分別 為 3 與 3;<BR>
+               如果 <TT>x=2; y=--x;</TT> 則 x 與 y 的值 分別 為 1 與 1;
+</OL>
+<P>
+      <B>第 1.17 節  作業 1</B>
+<P>
+      作業 1：
+<OL>
+      <LI>求 兩正整數 的 最大 公因數。
+      <LI>求 第 n 個 費氏數。
+      <LI>試 繪出 自 攝氏 0°C 至 100°C 與 華氏的 對 照表。
+      <LI>試 列出 1 至 30000 的 質數 並 計算 多少個 質數。
+      <LI>試 利用數學公式 修改 第 1.14 節 中的 程式， 
+          其輸入 為 3 個 互為 互質 的數， 
+          及其 相對應餘數， 求 滿足 該條件 的 最小 正整數。
+      <LI>輸入 50 個整數， 求其平均值。
+          
+</OL> 
+<P>
+<A HREF="cpgch0.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch0.htm">回第 0 章</A><BR>
+<A HREF="cpgch2.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch2.htm">至第 2 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</HTML>

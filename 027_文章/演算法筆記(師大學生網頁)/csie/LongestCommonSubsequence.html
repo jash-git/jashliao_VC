@@ -1,0 +1,441 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Longest Common Subsequence</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Longest Common Subsequence</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Longest Common Subsequence（LCS）</p>
+<p>在一堆sequence當中，每個sequence都有出現、最長的subsequence，就是「最長共同子序列」。</p>
+<pre>
+s1: 2 5 7 9 3 1 2
+s2: 3 5 3 2 8
+</pre>
+<p>以上例來看，s1和s2的LCS是5 3 2。這個例子恰恰好只有一個LCS，然而LCS可能同時有許多個，就像LIS一樣。</p>
+<pre>
+s1: a b c d b c e e a
+s2: c a b d e f g a
+s3: d c e a
+</pre>
+<p>以上例來看，s1和s2和s3的其中一個LCS是c e a，另一個LCS是d e a。</p>
+<p class="t">演算法</p>
+<p>求出一群序列的LCS，是NP-hard問題。一個簡單的演算法是窮舉s1當中所有的subsequence，每枚舉一個subsequence，就去檢查s2...sN是否都有這個subsequence。</p>
+<p>枚舉s1所有subsequence的時間複雜度為O(s1!)，每次檢查需時O(s2) + ... + O(sN) = O(s2 + ... + sN)，所以總時間複雜度是O(s1! * (s2 + ... + sN))。</p>
+<p>如果只是想求出兩個序列的LCS，就可以快速求得答案。接下來將詳細討論求出兩個序列的LCS的演算法。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Subsequence: Dynamic Programming</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">分割問題的方法</p>
+<p>要找出LCS，就得先體會到其分割問題的精妙之處。這裡開始介紹分割問題的方法。</p>
+<p>現在有兩個sequence分別為s1、s2，現在要找出s1和s2的LCS。先將s1的最後一個元素拆出來，這個元素稱做e1，而剩餘的部分稱做sub1好了。這裡以一道式子來簡單表示出剛剛的拆法，就是s1 = sub1 + e1。同樣的s2 = sub2 + e2。</p>
+<p>要找出s1和s2的LCS，就等於是找出sub1 + e1和sub2 + e2的LCS。現在來觀察sub1、e1、sub2、e2與LCS的關係吧！首先將所有情況粗略的分做四種：一、e1是LCS的一部份，而e2不是；二、e2才是LCS的一部份，而e1不是；三、e1和e2都不是LCS的一部份；四、e1和e2都是LCS的一部份。</p>
+<p>第一種情況。如果e1是LCS的一部份，而e2不是，那麼對e1來說，在sub2一定要能找到一個元素，和e1相同，才可能形成包含了e1的LCS。以另外一個方向去思考，則可以說e2是沒有用的元素，要找LCS只需要去找sub2就可以了。以上可以歸納一個結論：s1和s2的LCS，其實就是s1和sub2的LCS，可以把e2排擠掉。</p>
+<p>第二種情況。和第一種情況類似，s1和s2的LCS，其實就是sub1和s2的LCS。</p>
+<p>第三種情況。如果e1和e2都不是LCS的一部份，那麼直接找sub1和sub2的LCS就好啦！</p>
+<p>第四種情況。如果e1和e2都是LCS的一部份，再者e1和e2都在最尾端，所以這種情況下，e1和e2是一定會相等的！而且e1亦會是LCS的最後一個元素。既然e1、e2都肯定是LCS的最後一個元素了，那麼要找剩下的部份，只需要從sub1和sub2著手即可，如同第三種情況一般。可以歸納出一個結論：s1和s2的LCS，必定是sub1和sub2的LCS在尾端加上e1（也是e2）。</p>
+<p>總合以上分析，可以得到一個recurrence如下。</p>
+<pre>
+LCS(s1, s2) =
+ { LCS(sub1, s2) or LCS (s1, sub2) or LCS(sub1, sub2) , when e1 != e2
+ { LCS(sub1, sub2) + e1                               , when e1 == e2
+</pre>
+<p>經過焠鍊簡化之後，可以變成這樣。</p>
+<pre>
+LCS(s1, s2) =
+ { max( LCS(sub1, s2), LCS(s1, sub2) ) , when e1 != e2
+ { LCS(sub1, sub2) + e1                , when e1 == e2
+</pre>
+<p>然後再來考慮一下初始值要怎麼設定。一個簡單的想法是：當s1或s2是空的時候，必定找不到LCS。所以當s1或s2是空的時候，讓它們的LCS算出來是空集合就可以了。</p>
+<p>以上就是求得LCS的方法了。這個方法逐步削減了最尾端的元素，將原問題縮小以求得解。事實上，將最尾端的字給拆開來的方法，是相當常見的一種手法。要是遇到了類似的題目，不妨也試著將尾端的字拆開來，慢慢分析所有情況來求得解。</p>
+<p class="t">計算Longest Common Subsequence的長度</p>
+<p>下面這段程式碼可以算出LCS的長度。</p>
+<textarea>
+// 為了實作方便，從陣列的第1格開始存入序列。
+int s1[7+1] = {0, 2, 5, 7, 9, 3, 1, 2};
+int s2[5+1] = {0, 3, 5, 3, 2, 8};
+
+// DP 的表格
+int array[7+1][5+1];
+
+void LCS()
+{
+	將 array[x][0] 和 array[0][x] 都設為 0 ;
+
+	for (int i = 1; i <= s1_length; i++)
+		for (int j = 1; j <= s2_length; j++)
+			if (s1[i] == s2[j])
+				// 這裡加上的 1 是指 e1 的長度為 1
+				array[i][j] = array[i-1][j-1] + 1;
+			else
+				array[i][j] = max(array[i-1][j], array[i][j-1]);
+
+	cout << "LCS 的長度是" << array[seq1_length][seq2_length];
+}
+</textarea>
+<p>別忘了DP的精神！在這裡我們建立了一個二維陣列array，而array[i][j]代表著s1的第一個到第i個元素所形成的sequence，以及s2第一個到第j個元素所形成的sequence，這兩個sequence的LCS長度。而array[0][x]和array[x][0]則分別代表著第一個sequence為空的、第二個sequence為空的的情形，當然這些情形下LCS長度都是0，所以array[0][x]和array[x][0]的值也會是0。</p>
+<p class="t">找出一個Longest Common Subsequence</p>
+<p>可以從array陣列中找到LCS。觀察每一個e1 == e2的情況，因為e1 == e2的時候，也正是LCS增長的時候，故e1、e2是使LCS增長的元素。</p>
+<p>要找到LCS，可以使用一個二維陣列，來記錄每一格的結果，是由哪一格而來。從最後的結果開始往回追溯，要是發現了某個array[i][j]是由array[i-1][j-1] + 1而得到的，便知道這個時候的e1、e2是使LCS增長的元素，此時印出s1[i]或者s2[j]其中一個就可以了。</p>
+<textarea>
+// 為了實作方便，從陣列的第1格開始存入序列。
+int s1[7+1] = {0, 2, 5, 7, 9, 3, 1, 2};
+int s2[5+1] = {0, 3, 5, 3, 2, 8};
+
+// DP 的表格
+int array[7+1][5+1];
+
+// 記錄這一格的最大值是從哪一格求得的
+int prev[7+1][5+1];
+
+void LCS()
+{
+	將 array[x][0] 和 array[0][x] 都設為 0 ;
+
+	for (int i = 1; i <= s1_length; i++)
+		for (int j = 1; j <= s2_length; j++)
+			if (s1[i] == s2[j])
+			{
+				// 這裡加上的 1 是指 e1 的長度為 1
+				array[i][j] = array[i-1][j-1] + 1;
+				prev[i][j] = 左上方;
+			}
+			else
+			{
+				if (array[i-1][j] < array[i][j-1])
+				{
+					array[i][j] = array[i][j-1];
+					prev[i][j] = 左方;
+				}
+				else
+				{
+					array[i][j] = array[i-1][j];
+					prev[i][j] = 上方;
+				}
+			}
+
+	cout << "LCS 的長度是" << array[s1_length][s2_length];
+
+	cout << "LCS 為 ";
+	print_LCS(s1_length, s2_length);
+}
+
+void print_LCS(int i, int j)
+{
+	// 第一個或第二個 sequence 為空的的時候就可停止了
+	if (i==0 || j==0) return;
+
+	if (prev[i][j] == 左上方)
+	{
+		print_LCS(i-1, j-1);
+		cout << s1[i];	// 印出 LCS 的元素
+	}
+	else if (prev[i][j] == 上方)
+		print_LCS(i-1, j);
+	else if (prev[i][j] == 左方)
+		print_LCS(i, j-1);
+}
+</textarea><p class="t">找出所有的Longest Common Subsequence</p>
+<p>方才的程式碼可以找出一個LCS。但是若要找出所有的LCS呢？</p>
+<p>我想這是可能做得到的，不過得先讓紀錄的方法更詳細一點才行。若是有一格的答案，可以由上方、左方或者左上方同時求得，那麼就要將這些同時求得的情形全部記錄起來。往回追溯的時候，就要將所有的情形都追溯一遍，便可求出所有可能的LCS。目前就我所知，似乎無法在線性時間內找出所有的LCS，一知半解，不再多提。</p>
+<p class="t">節省記憶體空間</p>
+<p>如果只想求出LCS的長度，而不需要求出LCS的話，那麼便有個節省記憶體空間的方法。計算array裡的某個格子的值，只需要上方、左方、左上方的格子。如果計算的順序是橫的一行一行計算，那麼其實只需要兩行的記憶體空間交錯使用就足夠了。更節省的方法，是特別紀錄左上方的值，如此只需要一行的記憶體空間，再加上一個變數的空間。</p>
+<p>有不少題目可供練習。</p>
+<p class="e">UVa 111 531 10066 10192 10252 10405 10723</p>
+<p class="t">© 2010 <a href="javascript:if(confirm('http://tkcnandy.blogspot.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://tkcnandy.blogspot.com/'" tppabs="http://tkcnandy.blogspot.com/">tkcn</a>. All rights reserved.</p>
+<script type="text/javascript" src="LongestCommonSubsequence.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/demo/LongestCommonSubsequence/LongestCommonSubsequence.js"></script>
+<p class="d" id="LCS"></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Subsequence: Hirschberg's Algorithm</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>【待補文字】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Subsequence: Hunt-Szymanski Algorithm</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">LCS問題轉換成二維LIS問題</p>
+<p>從LCS問題的DP表格可以觀察到，LCS問題可以化作類似於LIS的問題：從兩序列中找出對應的相同元素，以位置數對表示；這些位置數對可以排出的最長嚴格遞增序列，即是兩序列的LCS。</p>
+<p>【註：這個類似於LIS的問題，就像是二維版的LIS。不過「二維LIS」目前沒有正式定義。】</p>
+<pre>
+(1) A LCS problem:
+
+  index: 0 1 2 3 4 5 6 7 8 9
+  --------------------------
+  s1:    a b a c d
+  s2:    d b a a b c a
+
+(2) All matched positions, with the matched character:
+
+    a     a     a     a     a     a     b     b     c     d
+  (0,2) (0,3) (0,6) (2,2) (2,3) (2,6) (1,1) (1,4) (3,5) (4,0)
+
+(3) Here is the corresponding 2D table:
+
+      d b a a b c a
+    +---------------
+  a |     * *     *
+  b |   *     *
+  a |     * *     *
+  c |           *
+  d | *
+
+(4-1) { LCS == 2D LIS } example:
+
+  LCS   :   a     b     a
+  2D LIS: (0,2) (1,4) (2,6)　數對呈嚴格遞增，在表格中則是往右下走。
+
+      d b a a b c a
+    +---------------
+  a |     x *     *
+  b |   *     x
+  a |     * *     x
+  c |           *
+  d | *
+
+(4-2) Another { LCS == 2D LIS } example:
+
+  LCS   :   b     a     c
+  2D LIS: (1,1) (2,2) (3,5)  數對呈嚴格遞增，在表格中則是往右下走。
+
+      d b a a b c a
+    +---------------
+  a |     * *     *
+  b |   x     *
+  a |     x *     *
+  c |           x
+  d | *
+</pre>
+<p class="t">二維LIS問題轉換成一維LIS問題</p>
+<p>首先將所有數對排序，規則是第一個維度由小到大排序，當第一個維度相等時，第二個維度由大到小排序。排序之後，第二個維度的1D LIS，就對應到原數對們的2D LIS。</p>
+<pre>
+(1) 先將所有數列排序。
+    第一維由小到大，當第一維相等時，第二維由大到小。
+　　（排序規則亦可改成以第二個維度為主，最後則是找第一個維度的1D LIS。）
+
+    a     a     a     b     b     a     a     a     c     d
+  (0,6) (0,3) (0,2) (1,4) (1,1) (2,6) (2,3) (2,2) (3,5) (4,0)
+
+(2) 依序取出第二個維度的數值。
+
+  6 3 2 4 1 6 3 2 5 0
+
+(3) 這個序列的1D LIS，對應到數對們的2D LIS。其實也就是一開始要求的LCS。
+
+  6 3 2 4 1 6 3 2 5 0
+      * *   *
+
+  1D LIS:   2     4     6
+  2D LIS: (0,2) (1,4) (2,6)   （註：第一個維度之前有排序）
+  LCS   :   a     b     a
+  
+(4) 簡潔的表達方式是：
+
+     a b a c d                                s1字串
+  -> { a(6,3,2) b(1,4) a(6,3,2) c(5) d(0) }   s1在s2當中出現的位置（由後往前）
+  -> { 6 3 2 1 4 6 3 2 5 0 }                  依序取出第二個維度的數值
+  -> 2 4 6                                    LIS
+</pre>
+<p class="t">演算法</p>
+<p>先把LCS問題看成二維LIS問題，再把二維LIS問題轉成一維LIS問題，然後用Robinson-Schensted-Knuth Algorithm來算LIS。</p>
+<p>這裡以s1 = cbaa、s2 = abcaa為例。大意為：依序看s1的每個元素，是不是能讓目前的common subsequece變得更長。</p>
+<pre>
+  | s2:   | 目前可生成的    | 截至目前最理想的
+  | abcaa | 最長共同子序列  | 最長共同子序列
+--+-------+-----------------+-------------
+c | ..c.. |  ..c..          | 3
+--+-------+-----------------+-------------
+b | .b... |  .b...          | 2
+--+-------+-----------------+-------------
+a | ....a |  .b..a          | 2 5
+  | ...a. |  .b.a.          | 2 4
+  | a.... |  a.... & .b.a.  | 1 4	// 同時紀錄到兩個
+--+-------+-----------------+-------------
+a | ....a |  a...a & .b.aa  | 1 4 5
+  | ...a. |  a..a.          | 1 4 5
+  | a.... |                 | 1 4 5	// 演算法結束
+</pre>
+<p class="t">時間複雜度</p>
+<p>先行判斷兩個序列的長度，將長度短的當作是s1，那麼時間複雜度就會是O(K * log(min(N,M)))，其中K為位置數對的總數目，N和M分別是兩序列長度。也有人省略了min函數，直接寫成O(KlogN)。K最大可到N * M，遇到了極端的例子時，會跑得比用DP還慢。</p>
+<p>實作的時候會利用counting sort的技巧，先掃描一遍s2，把s2每個字元的位置記下來，以符合時間複雜度。</p>
+<p class="t">計算Longest Common Subsequence的長度（兩序列自身皆無重複元素）</p>
+<textarea>
+int LCS(vector<int>& s1, vector<int>& s2)
+{
+//	if (s1.size() == 0 || s2.size() == 0) return 0;
+
+	/* Counting Sort */
+
+	int p[128];	// 假設字元範圍為 0 ~ 127
+	memset(p, -1, sizeof(p));	// 初始化為 -1
+	for (int i = 0; i < s2.size(); ++i)
+		p[s2[i]] = i;
+
+	/* LIS: Robinson-Schensted-Knuth Algorithm */
+
+	// 先放入一個數字，免得稍後 v.back() 出錯。
+	vector<int> v;
+	v.push_back(-1);
+
+	for (int i = 0; i < s1.size(); ++i)
+	{
+		int n = p[s1[i]];		// 找出 s1[i] 出現在 s2 中的哪個位置
+		if (n == -1) continue;	// s1[i] 在 s2 中沒出現
+
+		if (n > v.back())
+			v.push_back(n);
+		else
+			*lower_bound(v.begin(), v.end(), n) = n;
+	}
+
+	return v.size() - 1;
+}
+</textarea>
+<p class="t">計算Longest Common Subsequence的長度</p>
+<textarea>
+int LCS(vector<int>& s1, vector<int>& s2)
+{
+//	if (s1.size() == 0 || s2.size() == 0) return 0;
+
+	/* Counting Sort */
+
+	vector<int> p[128];	// 假設字元範圍為 0 ~ 127
+	for (int i = 0; i < s2.size(); ++i)
+		p[s2[i]].push_back(i);
+
+	/* LIS: modified version */
+
+	// 先放入一個數字，免得稍後 v.back() 出錯。
+	vector<int> v;
+	v.push_back(-1);
+
+	for (int i = 0; i < s1.size(); ++i)
+		for (int j = p[s1[i]].size() - 1; j >= 0; --j)
+		{
+			int n = p[s1[i]][j];
+
+			if (n > v.back())
+				v.push_back(n);
+			else
+				*lower_bound(v.begin(), v.end(), n) = n;
+		}
+
+	return v.size() - 1;
+}
+</textarea>
+<p>這裡再提供一個不使用binary search的程式碼，有時候會跑得比較快，各位可視情況採用之。</p>
+<textarea>
+int LCS(vector<int>& s1, vector<int>& s2)
+{
+//	if (s1.size() == 0 || s2.size() == 0) return 0;
+
+	/* Counting Sort */
+
+	vector<int> p[128];	// 假設字元範圍為 0 ~ 127
+	for (int i = 0; i < s2.size(); ++i)
+		p[s2[i]].push_back(i);
+
+	/* LIS: modified version */
+
+	int l = 0;	// LCS 的長度
+	vector<int> v;
+
+	for (int i = 0; i < s1.size(); ++i)
+	{
+		// 同名參照，讓程式碼易於閱讀
+		// s1[i] 於 s2 上的各種位置列表
+		vector<int>& n = p[s1[i]];
+		// s1[i] 在 s2 中沒出現
+		if (n.size() == 0) continue;
+
+		int j = n.size() - 1, k = l - 1;
+		// 最初的序列是空的
+		if (l == 0) {v.push_back(n[0]); continue;}
+		// 如果比尾端還大，須增長序列長度
+		if (n[j] > v.back()) v.push_back(n[j--]);
+
+		for ( ; j >= 0; --j)
+		{
+			// 不使用 binary search，而直接掃一遍 v 陣列。
+			while (k >= 0 && n[j] <= v[k]) k--;
+			v[k+1] = n[j];
+		}
+	}
+
+	return l;
+}
+</textarea>
+<p class="e">UVa 10635 10949</p>
+<p class="t">找出一個Longest Common Subsequence<br>找出所有的Longest Common Subsequence</p>
+<p>可以參考LIS章節中的Robinson-Schensted-Knuth Algorithm。大家自己看著辦吧！</p>
+<p class="t">LIS問題與LCS問題可以互相轉換</p>
+<p>LIS轉LCS：令原序列A排序後會變成B。A和B的LCS，就是A的LIS。</p>
+<p>LCS轉LIS：將序列A和B當中的相同字母配對都找出來，呈現成索引值數對，再以特殊規則排序，最後找LIS，就是A和B的LCS。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Subsequence: Four-Russians Speedup（Kronrod's Algorithm）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Four-Russians Speedup</p>
+<p><a href="javascript:if(confirm('http://par.cse.nsysu.edu.tw/paper/2004/041204/FourRussiansSpeedup.ppt  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://par.cse.nsysu.edu.tw/paper/2004/041204/FourRussiansSpeedup.ppt'" tppabs="http://par.cse.nsysu.edu.tw/paper/2004/041204/FourRussiansSpeedup.ppt" class="l">http://par.cse.nsysu.edu.tw/paper/2004/041204/FourRussiansSpeedup.ppt</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Increasing Subsequence</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Longest Common Increasing Subsequence（LCIS）</p>
+<p>嚴格遞增的LCS。LCS的DP演算法稍作修改，即得LCIS，時間複雜度仍是O(N*M)。</p>
+<textarea>
+vector<int> s1, s2;
+int array[10], prev[10];
+int lcis[10];
+
+int LCIS()
+{
+	for (int i=0; i<s1.size(); ++i)
+	{
+		int n = 0, p = -1;
+		for (int j=0; j<s2.size(); ++j)
+		{
+			if (s1[i] == s2[j] && n+1 > array[j])
+				array[j] = n+1, prev[j] = p;
+
+			if (s2[j] < s1[i] && n < array[j])
+				n = array[j], p = j;
+		}
+	}
+
+	int n = 0, index = -1;
+	for (int i=0; i<s2.size(); ++i)
+		if (array[i] > n)
+			n = array[index = i];
+
+	for (int i=n-1; i>=0; --i)
+	{
+		lcis[i] = s2[index];
+		index = prev[index];
+	}
+}
+</textarea>
+<p class="e">CF 10D</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Cyclic Longest Common Subsequence</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Cyclic Longest Common Subsequence（CLCS）</p>
+<p><a href="javascript:if(confirm('http://arxiv.org/pdf/1208.0396v3.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://arxiv.org/pdf/1208.0396v3.pdf'" tppabs="http://arxiv.org/pdf/1208.0396v3.pdf">http://arxiv.org/pdf/1208.0396v3.pdf</a></p>
+<p class="e">ICPC 5890</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Shortest Common Supersequence</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p>找到一個最短的字串，其子序列包含了所有給定字串。</p>
+<p>NP-hard。如果給定字串只有兩個，可以使用Dynamic Programming解決。</p>
+<p>SCS長度，等於所有字串長度總和、再減去LCS長度。</p>
+<p class="e">UVa 10723</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

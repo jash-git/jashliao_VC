@@ -1,0 +1,291 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Longest Common Substring</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Longest Common Extension</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Longest Common Extension</p>
+<p>兩個字串，第一個字串從第i個字元開始，第二個字串從第j個字元開始，可以匹配到的最長字串，就是Longest Common Extension。</p>
+<pre>
+    01234567
+s1: aabbccc
+s2: aabbbccc
+
+LCE(0, 0) = aabb
+LCE(2, 2) = bb
+LCE(3, 4) = bccc
+</pre>
+<p>Longest Common Extension其實就是第一個字串的第i個後綴、第二個字串的第j個後綴，它們的Longest Common Prefix。</p>
+<p class="t">演算法（Suffix Array）</p>
+<p>把兩個字串的全部後綴，一起排序。如果有大量的i與j需要計算，可以使用Range Minimum Query來查詢LCP Array的區間最小值。</p>
+<p>時間複雜度為O(S+T)，S與T分別是兩個字串的長度。</p>
+<p class="t">演算法（Suffix Trie、Suffix Tree）</p>
+<p>把兩個字串的全部後綴統統丟入Suffix Trie或Suffix Tree當中，從樹根往下逐字比對即可。如果有大量的i與j需要計算，可以改為求兩個後綴結尾節點的Lowest Common Ancestor。</p>
+<p>時間複雜度為O(S+T)，S與T分別是兩個字串的長度。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Substring</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Longest Common Substring</p>
+<p>「最長共同子字串」是指一群字串當中，每一個字串都有的子字串，其長度最長者。可能有許多個。</p>
+<pre>
+s1: aabbccc
+s2: aabbbccc
+s3: baabaccc
+
+s1 s2 s3 的 Longest Common Substring 就是 aab 與 ccc。
+</pre>
+<p class="t">演算法（Suffix Array）</p>
+<p>把全部字串的全部後綴，標記好是屬於哪一個字串，然後統統排序。排在一起的後綴們，如果涵蓋了每一種字串的後綴，那麼這些後綴的共同前綴，就是一個共同子字串。所有的共同子字串當中，找出最長者，即為最長共同子字串。</p>
+<p>實作時可以用兩個指標，一前一後輪流移動，讓兩個指標所夾住之區間，持有每一種字串的後綴，以找出共同子字串。</p>
+<p>實作時可以把字串銜接成一整串，並在字串之間插入從未出現過的字元，就能直接套用後綴陣列的演算法。然而重新銜接字串會花費不少時間和空間，因此也可以嘗試修改後綴陣列的演算法，避免重新銜接字串。</p>
+<p>時間複雜度是O(N)，N是所有字串長度的總和。</p>
+<p>【待補程式碼】</p>
+<p>以下暫且提供未使用LCP Array的程式碼。</p>
+<textarea>
+char s[10][1024];		// 10個字串，長度皆可達到1024-1。
+char* sa[10 * 1024];	// suffix array
+int c[10];				// 紀錄目前出現的後綴是位於哪幾個字串。
+
+int cmp(const void* a, const void* b)
+{
+	return strcmp(*(char**)a, *(char**)b);
+}
+
+// 找出一個後綴所附屬的字串
+inline int pos(int n)
+{
+//	return (sa[n] - s[0]) / 1024;
+	return (sa[n] - s[0]) >> 10;
+}
+
+// 求出兩個字串的Longest Common Prefix長度
+int lcp(char* s, char* t)
+{
+	int n = 0;
+	while (s[n] && t[n] && s[n] == t[n]) n++;
+	return n;
+}
+
+void longest_common_substring()
+{
+	// 建立後綴陣列
+	int N = 0;
+	for (int i=0; i<10; ++i)
+		for (int j=0; s[i][j]; ++j)
+			sa[N++] = s[i] + j;
+
+	qsort(sa, N, sizeof(char*), cmp);
+
+	// 尋找連續後綴
+	int ans = 0;
+	memset(c, 0, sizeof(c));
+	for (int i=0, j=0, n=0; j<N; )
+	{
+		// 往右移動j，直到涵蓋每一種字串的後綴。
+		// 並且隨時紀錄每一種字串的後綴的出現次數。
+		while (n < N && j < N) if (!c[pos(j++)]++) n++;
+
+		// 計算共同子字串，並且紀錄最長者。
+		ans = max(ans, lcp(sa[i], sa[j]));
+
+		// 往右移動i，直到無法涵蓋每一種字串的後綴。
+		while (n == N) if (!--c[pos(i++)]) n--;
+	}
+
+	cout << "最長共同子字串的長度是" << ans;
+}
+</textarea>
+<p class="e">UVa 11107 11512 11855</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Repeated Substring</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Longest Repeated Substring</p>
+<p>「最長重覆子字串」是重複出現兩次以上的子字串當中，其長度最長者。可能有許多個。</p>
+<p>子字串重複出現有兩種定義，一種是位置可以重疊，另一種是位置不能重疊。</p>
+<pre>
+s: ababababa
+
+可以重疊的 Longest Repeated Substring 就是 abababa。
+不可以重疊的 Longest Repeated Substring 就是 abab 與 baba。
+</pre>
+<p class="t">可以重疊的Longest Repeated Substring</p>
+<p>LCP Array的最大值就是答案。各位用力想吧！時間複雜度為O(N)。</p>
+<p class="e">ICPC 3901 4513</p>
+<p class="t">不可以重疊的Longest Repeated Substring</p>
+<p>試誤法，以Binary Search找出最長重複子字串的長度。</p>
+<p>看看後綴陣列是否有一段連續區間的LCP長度，恰好是最長重複子字串的長度，並且區間要足夠寬，讓子字串不重疊。</p>
+<p>時間複雜度為O(NlogN)。</p>
+<p class="e">UVa 10829</p>
+<p class="t">Longest Tandem Repeated Substring</p>
+<p>接連出現兩次以上的子字串，其長度最長者。可能有許多個。</p>
+<p>與前者一樣，時間複雜度為O(NlogN)。</p>
+<p class="t">延伸閱讀：Karp-Miller-Rosenberg Algrotihm</p>
+<p>KMR Algorithm可以用來統計每個子字串的出現次數、出現位置。</p>
+<p>KMR Algorithm其實就是Prefix-Doubling Algorithm。依序排序長度為一、二、四、八、……的子字串，把每次排序的名次統統紀錄下來。然後利用名次，統計長度為一、二、四、八、……的子字串的出現次數、出現位置。整體的時間複雜度仍是O(NlogN)。</p>
+<pre>
+length = 1                   length = 2
+       | 0 1 2 3 4 5 6 7            | 0 1 2 3 4 5 6 7
+s      | a b a a b b a a     s      | a b a a b b a a
+rank   | 0 1 0 0 1 1 0 0     rank   | 1 3 0 1 4 3 0 2
+repeat | 5 3 5 5 3 3 5 5     repeat | 2 2 2 2 2 2 2 1 
+
+a      | 0 2 3 6 7           aa     | 2 6
+b      | 1 4 5               ab     | 0 3
+                             ba     | 1 5
+                             bb     | 4
+                             a      | 7
+</pre>
+<p>要尋找長度不是一、二、四、八、……的子字串出現位置，一樣也是使用排序，找出名次，再統計出現位置。排序時，利用長度最接近、略短於目前長度的子字串排序結果，一樣也是先比前半段，再比後半段，前後兩段會重疊。時間複雜度也是O(N)。這個手法在Range Minimum Query也可以見到。</p>
+<p>至於找Longest Common Substring，方法同上個小節。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Shortest Unique Substring</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Shortest Unique Substring</p>
+<p>「最短唯一子字串」是只有出現一次的子字串當中，其長度最短者。可能有許多個。</p>
+<p class="t">Minimal Unique Substring與Maximal Repeated Substring</p>
+<p><a href="javascript:if(confirm('http://www.cas.mcmaster.ca/~bill/best/algorithms/11MinUnique.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cas.mcmaster.ca/~bill/best/algorithms/11MinUnique.pdf'" tppabs="http://www.cas.mcmaster.ca/~bill/best/algorithms/11MinUnique.pdf" class="l">http://www.cas.mcmaster.ca/~bill/best/algorithms/11MinUnique.pdf</a></p>
+<p>「極小唯一子字串」是區域極值，「最短唯一子字串」是全域極值，最短的「極小唯一子字串」就是「最短唯一子字串」。「極大重複子字串」與「最長重複子字串」也是類似的。</p>
+<p>Unique是出現一次，Repeat是出現兩次以上，兩者之間有著強烈的互補關係。</p>
+<img src="ShortestUniqueSubstring1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestUniqueSubstring1.png">
+<p>Minimal Unique Substring是只有出現一次、盡量縮短的子字串。它包含的子字串（自身除外），全部都是重複子字串；包含它的子字串，全部都是唯一子字串。</p>
+<p>Maximal Repeated Substring是出現兩次以上、盡量延長的子字串。它包含的子字串，全部都是重複子字串；包含它的子字串（自身除外），全部都是唯一子字串。</p>
+<img src="ShortestUniqueSubstring2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestUniqueSubstring2.png">
+<p>按照定義，任取兩個Minimal Unique Substring，絕不會互相包含。Maximal Repeated Substring也一樣。</p>
+<img src="ShortestUniqueSubstring3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestUniqueSubstring3.png">
+<p>每當出現一個Minimal Unique Substring，位置是[i, j]，便存在兩個Maximal Repeated Substring：一個結尾是j-1、開頭小於i；另一個開頭是i+1、結尾大於j。</p>
+<p>每當出現一個Maximal Repeated Substring，位置是[i, j]，便存在兩個Minimal Unique Substring：一個開頭是i-1、結尾小於j；另一個結尾是j+1、開頭大於i。</p>
+<img src="ShortestUniqueSubstring4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestUniqueSubstring4.png">
+<p>由此可知，Minimal Unique Substring和Maximal Repeated Substring是交錯出現的，兩者數量頂多差一。當原字串是De Bruijn Sequence，兩者數量達到極限。</p>
+<img src="ShortestUniqueSubstring5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestUniqueSubstring5.png">
+<p>注意到，當原字串包含連續的Unique Character，交錯出現、數量差一的結論就不成立了。此時刻意定義Maximal Repeated Substring可以是空字串，以迫使結論成立。</p>
+<p class="t">給定所有的已排序的Maximal Repeated Substring，<br>求出所有的Minimal Unique Substring。</p>
+<p>必須預先排序好。時間複雜度為O(N)，N是Maximal Repeated Substring暨Minimal Unique Substring的數量。</p>
+<textarea>
+const int R = 10;
+struct Interval {int a, b;} repeat[R], unique[R+1];
+
+void repeat2unique()
+{
+	int U = 0;
+	if (repeat[0].a > 0)
+		// 小心原字串開頭連續的unique character
+		unique[U++] = (Interval){
+			0,
+			repeat[0].b + 1
+		};
+
+	for (int i=0; i<R-1; i++)
+		// 小心連續的unique character
+		unique[U++] = (Interval){
+			repeat[i+1].a - 1,
+			repeat[i].b + 1
+		};
+
+	if (repeat[R-1].B < T-1)
+		// 小心原字串結尾連續的unique character
+		unique[U++] = (Interval){
+			repeat[R-1].a - 1,
+			T-1
+		};
+}
+</textarea>
+<p class="t">給定所有的Minimal Unique Substring，<br>求出所有的Maximal Repeated Substring。</p>
+<p>必須預先排序好。時間複雜度為O(N)，N是Maximal Repeated Substring暨Minimal Unique Substring的數量。</p>
+<textarea>
+const int U = 10;
+struct Interval {int a, b;} unique[U], repeat[U+1];
+
+void unique2repeat()
+{
+	int R = 0;
+	if (unique[0].a > 0)
+		repeat[R++] = (Interval){
+			0,
+			unique[i].b - 1
+		};
+
+	for (int i=0; i<U-1; i++)
+		// 小心空字串
+		repeat[R++] = (Interval){
+			unique[i].a + 1,
+			unique[i+1].b - 1
+		};
+
+	if (unique[U-1].b < T-1)
+		repeat[R++] = (Interval){
+			unique[N-1].a + 1,
+			T-1
+		};
+}
+</textarea>
+<p class="t">求出所有的Maximal Repeated Substring</p>
+<p>時間複雜度O(T)。</p>
+<textarea>
+int sa[10], lcpa[10];
+struct Interval {int a, b;} repeat[10];
+int left[10];	// 區間[a,b]紀錄為left[b] = a;
+
+void maximal_repeated_substring()
+{
+	for (int i=0; i<N; ++i) a[i] = 1e9;
+
+	for (int i=1; i<N; ++i)
+	{
+		int lcp = max(lcpa[i], lcpa[i+1]);
+		int b = sa[i] + lcp - 1;
+		left[b] = min(left[b], sa[i]);
+	}
+
+	int n = 0;
+	for (int b=0; b<N; ++b)
+		if (left[b] != 1e9)
+			repeat[n++] = (Interval){left[b], b};
+}
+</textarea>
+<p class="t">求出所有的Minimal Unique Substring</p>
+<p>時間複雜度O(T)。</p>
+<textarea>
+int sa[10], lcpa[10];
+struct Interval {int a, b;} unique[10];
+int left[10];	// 區間[a,b]紀錄為left[b] = a;
+
+void maximal_unique_substring()
+{
+	for (int i=0; i<N; ++i) a[i] = -1e9;
+
+	for (int i=1; i<N; ++i)
+	{
+		int lcp = max(lcpa[i], lcpa[i+1]);
+		int b = sa[i] + lcp;
+		left[b] = max(left[b], sa[i]);
+	}
+
+	int n = 0;
+	for (int b=0; b<N; ++b)
+		if (left[b] != -1e9)
+			unique[n++] = (Interval){left[b], b};
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Shortest Common Superstring</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p>找到一個最短的字串，其子字串包含了所有給定字串。</p>
+<p><a href="javascript:if(confirm('http://www.cs.sunysb.edu/~algorith/files/shortest-common-superstring.shtml  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cs.sunysb.edu/~algorith/files/shortest-common-superstring.shtml'" tppabs="http://www.cs.sunysb.edu/~algorith/files/shortest-common-superstring.shtml" class="l">http://www.cs.sunysb.edu/~algorith/files/shortest-common-superstring.shtml</a></p>
+<p>NP-hard。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum Substring Cover</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p>一個字串集合，從中挑選一些子字串，做為基礎，能夠拼出原本字串集合的每一個字串；子字串只能前後銜接、不能交疊。</p>
+<p>比喻來說就是：給定一堆圖樣，請設計出一套七巧板的形狀，讓這套七巧板可以拼出所有給定的圖樣。某種程度上也近似Basis的概念。</p>
+<p>NP-hard。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

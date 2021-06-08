@@ -1,0 +1,357 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Polygon</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Polygon</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Polygon</p>
+<p>多邊形是由許多條邊、端點對著端點串接成一圈的圖形。</p>
+<img src="Polygon1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon1.png">
+<p class="t">資料結構</p>
+<p>想要紀錄一個多邊形的資訊，有許多種方法，例如：一、按照連接順序把多邊形的邊放到一個陣列裡面；二、按照連接順序把多邊形的頂點放到一個陣列裡面；三、挑一個頂點作為起點，從起點開始按照連接順序把各條邊的長度、邊與邊之間的夾角放到一個陣列裡面。</p>
+<p>這幾種方法的空間複雜度都是O(N)，N為多邊形的頂點數目，也可以說是邊的數目。</p>
+<textarea>
+struct Point {float x, y;};
+struct Segment {Point p1, p2;};
+struct Walk {float length, angle;};
+
+Segment polygon[10];	// 一
+
+Point polygon[10];		// 二
+
+Point original;			// 三
+Walk polygon[10];
+</textarea>
+<p class="t">多邊形分類：數學的觀點</p>
+<img src="Polygon2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon2.png">
+<pre>
+多邊形（Polygon）：由許多條邊、端點對著端點串接成一圈的圖形。
+簡單多邊形（Simple Polygon）：所有的邊都不相交，只有相鄰的邊可以相交於一個頂點。
+凹多邊形（Convave Polygon）：多邊形內部必有兩點連線，穿過多邊形外部。
+凸多邊形（Convex Polygon）：多邊形內部所有兩點連線，都在多邊形內部。
+</pre>
+<img src="Polygon3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon3.png">
+<pre>
+正多邊形（Regular Polygon）：每條邊都一樣長、每個角都一樣大的多邊形。
+凸的正多邊形：就是我們熟悉的正三角形、正方形、正五邊形、……。
+凹的正多邊形：就是正五角星、正七角星、正八角星、……。
+　　　　　　　詳細資料請自行搜尋關鍵字Regular Star Polygon。
+</pre>
+<p class="t">多邊形分類：計算學的觀點</p>
+<img src="Polygon4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon4.png">
+<p>簡單多邊形（Simple Polygon）。所有的邊都不相交，只有相鄰的邊可以相交於一個頂點。</p>
+<p>簡單多邊形圍出一個明確的封閉區域。一般的多邊形無法分辨內外，而簡單多邊形可以明確分辨內外。</p>
+</p>
+<p>沿邊走一回，剛好自旋360°；所有外角相加是360°。我們習慣讓頂點順序是逆時針方向，以符合外積的方向。</p>
+<img src="Polygon5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon5.png">
+<p>單調多邊形（Monotone Polygon）。至少存在一條直線，這條直線的每一條垂直線，與單調多邊形的交點在兩點以下。</p>
+<p>換句話說，單調多邊形旋轉至某個角度之後，可以切割成上下兩條鏈，兩條鏈都符合函數定義。單調多邊形可以寫成兩個函數。</p>
+<p>換句話說，單調多邊形有兩條鏈，在某個方向上先單調遞增、再單調遞減，彷彿單峰函數。</p>
+<p>簡單一句話：單調多邊形是兩條已排序的鏈。</p>
+<img src="Polygon6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon6.png">
+<p>凸多邊形（Convex Polygon）。總是朝同一個方向轉彎。</p>
+<p>凸多邊形同時是簡單多邊形和單調多邊形，無論哪種方向都是單調多邊形。數學性質非常強！</p>
+<img src="Polygon7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon7.png">
+<p>正交多邊形（Orthogonal Polygon、Rectilinear Polygon）。每條邊都平行於座標軸，轉彎總是轉90°或270°。</p>
+<img src="Polygon8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon8.png">
+<p>有洞的多邊形（Polygon with Hole）。多邊形的內部有數個洞，洞的內部有數個多邊形。有洞的多邊形，其實不屬於多邊形，其實是數個多邊形。我們可以用順時針代表多邊形、逆時針代表洞。計算多邊形的聯集、交集、差集，結果常常是有洞的多邊形。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Polygon Area</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">多邊形面積（Surveyor's Formula）</p>
+<p>凸多邊形是特例中的特例，我們試著從凸多邊形開始觀察。</p>
+<img src="PolygonArea1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonArea1.png">
+<p>運用分治法的思想，把凸多邊形分割成三角形，就容易計算面積了。取凸多邊形內部一點作為基準點，連線至各個頂點，把凸多邊形切開成許多個三角形。現在我們可以利用外積，計算每個三角形的面積；然後通通加起來，得到凸多邊形面積。</p>
+<pre>
+詳細的步驟是：
+一、建立基準點往各個頂點的向量。
+二、依照頂點順序，計算相鄰向量的外積，得到平行四邊形面積。
+三、除以二，得到三角形面積。
+四、三角形面積通通加起來，得到凸多邊形面積。
+
+步驟三和步驟四可以顛倒，除以二的次數變成只有一次：
+三、平行四邊形面積通通加起來，得到凸多邊形面積的兩倍。
+四、除以二，得到凸多邊形面積。
+</pre>
+<img src="PolygonArea2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonArea2.png">
+<p>事實上，基準點也可以在凸多邊形邊界、甚至是外部。此時外積的結果有正值和負值，正值恰好對應到總面積，負值剛好對應到多餘面積。通通加起來，正負相消之後，恰好仍是凸多邊形面積。</p>
+<img src="PolygonArea3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonArea3.png">
+<p>基準點設定在原點是最方便的，如此一來就不必特地計算基準點往各個頂點的向量，可以直接拿相鄰兩點的座標計算外積。</p>
+<p>此演算法可以推廣到簡單多邊形，甚至是一般的多邊形。時間複雜度為O(N)，N為多邊形的頂點數目。</p>
+<p>我們可以把結果寫成數學式子，正是知名的行列式公式：</p>
+<pre>
+        1    | x1   x2   x3     xN-1   xN   x1 |
+area = --- * |    ×    ×    ...      ×    ×    |
+        2    | y1   y2   y3     yN-1   yN   y1 |
+
+右下斜線相乘取正號，左下斜線相乘取負號，然後通通加起來，除以二。
+如果是逆時針旋轉，求出來為正值。
+如果是順時針旋轉，求出來為負值，必須再取絕對值。
+
+一般來說我們會讓多邊形頂點順序為逆時針順序，以求得正值。
+</pre>
+<textarea>
+struct Point {float x, y;} p[10 + 1];	// 十個頂點的多邊形
+
+float cross(Point& a, Point& b)
+{
+	return a.x * b.y - b.x * a.y;
+}
+
+void polygon_area()
+{
+	p[10] = p[0];
+
+	float area = 0.0;
+	for (int i=0; i<10; ++i)
+		area += cross(p[i], p[i+1]);
+
+	cout << "多邊形面積為" << fabs(area) / 2.0;
+}
+</textarea>
+<textarea>
+struct Point {float x, y;} p[10];	// 十個頂點的多邊形
+
+void polygon_area()
+{
+	float area = 0.0;
+	for (int i=0; i<10; ++i)
+	{
+		area += p[i].x * p[(i+1)%N].y;
+		area -= p[i].y * p[(i+1)%N].x;
+	}
+	cout << "多邊形面積為" << fabs(area) / 2.0;
+}
+</textarea>
+<textarea>
+struct Point {float x, y;} p[10];	// 十個頂點的多邊形
+
+void polygon_area()
+{
+	// 避免了%運算、避免了重複的+1運算，執行時間較短。
+	float area = 0.0;
+	for (int i=10-1, j=0; j<10; i=j++)
+	{
+		area += p[i].x * p[j].y;
+		area -= p[i].y * p[j].x;
+	}
+	cout << "多邊形面積為" << fabs(area) / 2.0;
+}
+</textarea>
+<p class="e">UVa 10060 10652 922</p>
+<p class="t">多面體體積</p>
+<p>與多邊形面積的原理完全一樣。基本單元從三角形變成了四面體。</p>
+<textarea>
+struct Point {float x, y, z;};
+struct Facet {Point a, b, c;} f[10];
+
+float dot(Point a, Point b)
+{
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+Point cross(Point a, Point b)
+{
+	return (Point){
+		a.y * b.z - b.y * a.z,
+		a.z * b.x - b.z * a.x,
+		a.x * b.y - b.x * a.y
+	};
+}
+
+float triple(Point a, Point b, Point c)
+{
+	return dot(a, cross(b, c));
+}
+
+void polygon_volume()
+{
+	float volume = 0.0;
+	for (int i=0; i<10; i++)
+		volume += triple(f[i].a, f[i].b, f[i].c);
+	cout << "多面體體積為" << fabs(volume) / 6.0;
+}
+</textarea>
+<p class="t">多邊形形心 / 多邊形重心</p>
+<img src="PolygonCentroid1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonCentroid1.png">
+<p>重力場均勻的時候，重心退化成為形心。</p>
+<p>一群點的重心，是這些點的座標平均值，也就是X座標的平均值、Y座標的平均值。</p>
+<img src="PolygonCentroid2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonCentroid2.png">
+<p>多邊形的重心，則是多邊形內部暨邊界上所有點的座標平均值。但是不見得是所有頂點的座標平均值。</p>
+<p>只有一些特別的多邊形，重心恰好是所有頂點的座標平均值──例如三角形的重心，恰好是三個頂點的座標平均值。</p>
+<img src="PolygonCentroid3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonCentroid3.png">
+<p>使用分治法的概念，把多邊形切開成許多個三角形，分別計算各個三角形的重心。然後以三角形面積做為權重，計算三角形重心的加權平均值，就得到多邊形的重心。</p>
+<pre>
+      o + p0 + p1          o + p1 + p2  
+c0 = -------------   c1 = -------------   ...
+           3       ,            3       ,
+
+      cross(p0, p1)          cross(p1, p2)
+a0 = ---------------   a1 = ---------------   ...
+           2         ,            2         ,
+
+            c0 * a0 + ... + c9 * a9
+centroid = -------------------------
+                 a0 + ... + a9
+</pre>
+<textarea>
+struct Point {int x, y;} p[10];
+
+void polygon_centroid()
+{
+	float cx = 0, cy = 0, w = 0;
+	for (int i=10-1, j=0; j<10; i=j++)
+	{
+		float a = cross(p[i], p[j]);
+		cx += (p[i].x + p[j].x) * a;
+		cy += (p[i].y + p[j].y) * a;
+		w += a;
+	}
+
+	cout << "多邊形的重心座標為";
+	cout << '(' << cx/3/w << ',' << cy/3/w << ')';
+}
+</textarea>
+<p class="e">UVa 10002 132 ICPC 4838</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Point in Polygon</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">判斷一個點是否在凸多邊形內部</p>
+<p>很直覺但是不精準的方式，是沿著凸多邊形外圍繞一圈，看看點是不是在每一條邊的同側。若發現外積皆小於零，即表示點在多邊形內部：若發現外積等於零，即表示點在凸多邊形上、或在凸多邊形某條邊的延伸線上；若發現外積大於零，則表示點在凸多邊形外部。</p>
+<p>正確的方式，是將點到凸多邊形頂點的各條向量，利用外積運算判斷是否都往同一方向旋轉，如果都是往同一方向旋轉，則表示點在凸多邊形內部；如果中途出現反方向旋轉，則表示點在凸多邊形外部；如果中途出現外積為零的情況，表示點在凸多邊形上，而且就在對應的邊上。</p>
+<p>時間複雜度為O(N)，N為凸多邊形的頂點數目。</p>
+<img src="PointInPolygon1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointInPolygon1.png">
+<p class="e">UVa 109 361 476 477 478 10078 10291 10321</p>
+<p class="t">不斷查詢一個點是否在凸多邊形內部</p>
+<p>凸多邊形內任選一點作為原點（例如所有點的平均值），然後依角度大小排序凸多邊形的所有頂點。之後就可以用Binary Search找出給定的點在哪個夾角之內，最後判斷點是不是在此夾角構成的三角形裡面。</p>
+<p>O(NlogN)預處理，O(logN)求答案。</p>
+<p class="t">判斷一個點是否在簡單多邊形內部</p>
+<p>從給定點開始，往隨便一個方向（實作時習慣水平往右）射出一條無限長射線，看看穿過多少條邊。如果穿過偶數次，表示點在簡單多邊形外部；如果穿過奇數次，表示點在簡單多邊形內部。</p>
+<p>要小心處理射線穿過頂點、射線與邊重疊的情況。也要小心處理點在多邊形邊界上的情況。</p>
+<p>時間複雜度為O(N)，N為簡單多邊形的頂點數目。</p>
+<img src="PointInPolygon2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointInPolygon2.png">
+<textarea>
+struct Point {float x, y;} p[10];
+
+// 無法正確判斷點在多邊形上的情況
+bool point_in_polygon(Point& t)
+{
+	bool c = false;
+	for (int i = 0, j = 10-1; i < 10; j = i++)
+		if ((p[i].y > t.y) != (p[j].y > t.y) &&
+			t.x < (p[j].x-p[i].x)*(t.y-p[i].y)/(p[j].y-p[i].y)+p[i].x;)
+			c = !c;
+	return c;
+}
+</textarea>
+<p class="e">UVa 634 11030 10348</p>
+<p class="t">不斷查詢一個點是否在簡單多邊形內部</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Point_location  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Point_location'" tppabs="http://en.wikipedia.org/wiki/Point_location">http://en.wikipedia.org/wiki/Point_location</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Visibility of Polygon</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">一個點的可見區域，被一個凸多邊形遮擋</p>
+<img src="VisibilityOfPolygon1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VisibilityOfPolygon1.png">
+<p>點在凸多邊形內部。一定可以看見整個凸多邊形。回顧一下凸多邊形的定義：多邊形內部所有兩點連線，都在多邊形內部。令其中一點是給定的點，令另外一點是可見的點，兩點之間一定不會被凸多邊形遮擋。</p>
+<p>點在凸多邊形上面。如果歸類於內部，可見區域就是整個凸多邊形；如果歸類於外部，可見區域的邊界，就是該點碰觸的邊的延長線。</p>
+<p>點在凸多邊形外部。上下兩條切線圍住的區域受到影響，可見區域變成切線與凹面圍住的區域。找切線很簡單：建立點到凸多邊形各頂點的向量，運用外積找出轉至最右、轉至最左的向量。</p>
+<p>時間複雜度為O(N)。</p>
+<p class="e">UVa 746</p>
+<p class="t">一個點的可見區域，被一個簡單多邊形遮擋</p>
+<img src="VisibilityOfPolygon2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VisibilityOfPolygon2.png">
+<p></p>
+<p>點在多邊形內部。被一個簡單多邊形遮擋的可見區域，也是簡單多邊形。採用Incremental Method，從一個可見的頂點開始，依照逆時針順序，一次讀入一條邊，隨時更新當下的可見區域。一共分成六種情況：</p>
+<pre>
+一、可見區域直接增加一條邊。
+二、可見區域增加一條割線。
+　　割線會撞到多邊形以後的邊，屆時就能求得割點。
+三、可見區域切除看不見的部分，改為一條割線。
+　　割線會撞到可見區域以前的邊，必須倒退找割點。
+四、同三。
+五、同一。
+六、同二。
+</pre>
+<img src="VisibilityOfPolygon3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VisibilityOfPolygon3.png">
+<p><a href="javascript:if(confirm('http://arxiv.org/pdf/1111.3584v2.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://arxiv.org/pdf/1111.3584v2.pdf'" tppabs="http://arxiv.org/pdf/1111.3584v2.pdf">http://arxiv.org/pdf/1111.3584v2.pdf</a></p>
+<p>倒退找割點，頂多倒退N條邊。時間複雜度為O(N)。</p>
+<p>附帶一提，如果預先找到兩個以上可見的頂點，就可以切斷成鏈，實施Divide and Conquer。</p>
+<p>點在多邊形上面、外部。原理相同，不再贅述。</p>
+<p>【待補程式碼】</p>
+<p class="e">UVa 10907</p>
+<p class="t">一個點的可見區域，被數個凸多邊形遮擋</p>
+<p>點在凸多邊形外部、凸多邊形們都不相交，才有討論價值。</p>
+<p>處理大量幾何資料，最常見的手法就是掃描線和旋轉卡尺了。此處採用旋轉的掃描線，以給定點為基準，依照極角大小掃描所有頂點。當下掃中的點，如果被前一點的鄰邊遮擋，就馬上刪除此點。時間複雜度O(NlogN)。</p>
+<p>可以加速到O(N+HlogH)。牽涉到直線與凸多邊形交點的演算法。</p>
+<p class="t">一個點的可見區域，被數個簡單多邊形遮擋</p>
+<p><a href="javascript:if(confirm('http://www.visilibity.org/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.visilibity.org/'" tppabs="http://www.visilibity.org/">http://www.visilibity.org/</a></p>
+<p>採用旋轉的掃描線。先找到每個多邊形的兩條切線（以及到切點的距離）。所有切線按照角度排序之後，依序處理每個區間即可，用一棵二元樹動態維護每個多邊形的可見順序。時間複雜度O(NlogH)，N是所有頂點的數目，H是所有多邊形的數目。</p>
+<p>比較容易實作的方式。先找到視點到各頂點的射線（以及到頂點的距離）。所有射線按照角度排序之後，依序處理每個區間即可，用一棵二元樹動態維護每條邊的可見順序。時間複雜度O(NlogN)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Kernel of Polygon</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">凸多邊形的核</p>
+<img src="KernelOfPolygon1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/KernelOfPolygon1.png">
+<p>位於多邊形內部，可以看到整個多邊形內部的地方，稱做「核」。「核」是設置監視攝影機、地標、廣告看板的好地方。「核」可能是風水最旺的地方。</p>
+<p>一個多邊形的核，其實就是所有邊的「<a href="Half-planeIntersection.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Half-planeIntersection.html">半平面交集</a>」。一個多邊形的核，可能是一個凸多邊形、一條線段、一個點、空集合。</p>
+<p>凸多邊形的核，顯然就是原本的凸多邊形。</p>
+<p class="t">簡單多邊形的核</p>
+<img src="KernelOfPolygon2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/KernelOfPolygon2.png">
+<p>直接套用半平面交集演算法，時間複雜度為O(NlogN)。借用Visibility Polygon演算法的手法，時間複雜度得壓至O(N)。</p>
+<p class="e">ICPC 2512 UVa 588</p>
+<p class="t">Star-shaped Polygon</p>
+<p>「星狀多邊形」就是擁有核的多邊形。與旋轉的掃描線有一點點關聯。</p>
+<p>注意到「Star-shaped Polygon」與「Star Polygon」是完全不一樣的東西。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Line-Polygon Intersection（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">判斷直線與凸多邊形相交</p>
+<p>採用Incremental Method，拆解凸多邊形成為許多邊，變成判斷直線與大量線段相交。採用窮舉法，時間複雜度為O(N)。</p>
+<p>不適合採用「<a href="PointLinePlane2.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointLinePlane2.html">Segment Intersection</a>」，畢竟不必判斷凸多邊形自身的邊是否相交。</p>
+<p class="t">不斷查詢直線是否與一個凸多邊形相交</p>
+<img src="Line-PolygonIntersection1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Line-PolygonIntersection1.png">
+<pre>
+極大/極小頂點查詢 O(logN)
+直線是否相交查詢 O(logN)
+</pre>
+<p class="e">ICPC 4837</p>
+<p class="t">判斷直線與簡單多邊形相交</p>
+<p>一樣是窮舉法。沒什麼特別的。</p>
+<p class="e">UVa 10867 10974</p>
+<p class="t">不斷查詢直線是否與一個簡單多邊形相交</p>
+<p>說實在話，我也不會。也許是「<a href="PointInterval.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointInterval.html">Bounding Volume Hierarchy</a>」資料結構。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Polygon Intersection（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">兩個凸多邊形的交集</p>
+<pre>
+半平面交集 O(NlogN)
+平移掃描線 O(N)
+交互前進 O(N)
+</pre>
+<pre>
+外側向量超車擋在內側向量前面，車頭向內。
+任選兩向量開始
+先繞一圈找到交點
+接下來再繞一圈，內側有前進的話，就會漸漸圍出交集
+最後到達最初的交點時，結束
+要小心退化的情況。
+</pre>
+<p class="e">UVa 137 10321</p>
+<p class="t">兩個簡單多邊形的交集、聯集、差集</p>
+<p>求出所有線段交點的演算法，略作修改。O(NlogN + K)。</p>
+<p class="e">UVa 805</p>
+<p class="t">兩個簡單多邊形的交集、聯集、差集（Minkowski Sum）</p>
+<p>【待補文字】</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,1405 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Flow</title></head><body>
+<div class="a"><div class="h">
+<p class="b">s-t Flow</p>
+<p class="r">程度★★　難度★★★</p>
+<p class="w">所謂伊人，在水一方。溯洄從之，道阻且長；溯游從之，宛在水中央。《詩經．蒹葭》</p>
+</div><div class="c">
+<p class="t">Flow Network</p>
+<img src="s-tFlow1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow1.png">
+<p>把一張圖想成是水流管線圖。圖上的邊想成是水管：邊的權重想成是水管的容量上限（容量下限預設為零），有向邊僅允許單向流動，無向邊得同時雙向流動。圖上的點想成是水管的接合點，並附有控制水流流向與流量的機器：點的權重想成是接合處的容量上限（容量下限預設為零），但是大家一般都不考慮點的權重。</p>
+<p>每一條管線的流量數值與容量上限數值，以一斜線區隔，標記於圖上各條邊，方便觀看。水流流動時必須遵守各條管線的容量限制，不得有逾越容量限制之情事。流量數值與容量上限數值一定是正值或零，不得為負值。</p>
+<p>在這張水流管線圖當中，水流流速是穩定的、是源源不絕的，有變化的只有水流流向與流量。因此，水流流動時，只要關心各條管線的方向限制和容量限制就可以了。</p>
+<p>Flow Network中譯為「流網路」，當一張圖專門用於水流流動時，則可稱之為Flow Network。</p>
+<p>【註：「流網路」上面只有容量資訊，沒有流量資訊。】</p>
+<p class="t">s-t Flow</p>
+<p>在圖上選定一個源點（source，標記為s）和一個匯點（sink，標記為t），源點灌水，匯點泄水，並控制水流從源點流至匯點，中途不得滲漏、不得淤滯。</p>
+<p>s-t Flow以下簡稱為「流」。一個流便是由源點經管線至匯點的水流。一個流的權重（總流量），即是源點灌入的水流流量，同時也是匯點泄出的水流流量。</p>
+<p>【註：「流」上面只有流量資訊，沒有容量資訊。】</p>
+<img src="s-tFlow2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow2.png">
+<img src="s-tFlow3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow3.png">
+<p class="t">Maximum s-t Flow</p>
+<p>「最大流」。給定一張圖，以及給定一個源點與一個匯點，所有可能的Flow當中，權重（總流量）最大者便是Maximum Flow，可能會有許多個。</p>
+<img src="s-tFlow4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow4.png">
+<p>在源點一口氣灌入大量的水，藉由調整各條管線的流量與流向，讓匯點泄出的流量最多。</p>
+<p class="t">Minimum s-t Flow</p>
+<p>「最小流」。一滴水都不流，管線裡都沒水，就是Min-Flow，權重為零。大家應該都懂，所以就討論到這裡了。</p>
+<img src="s-tFlow5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow5.png">
+<p class="t">圖例：不屬於流的玩意</p>
+<p>水流流到無法流動的地方，水流淤滯而無法流至匯點，不能稱作流。</p>
+<img src="s-tFlow6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow6.png">
+<p class="t">圖例：合流、分流、交流</p>
+<p>水流可以在任何點上合流、分流、交流──簡單地來說，就是每個點之中，流入與流出的水量要相等，至於要怎麼分合都無所謂。</p>
+<img src="s-tFlow7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow7.png">
+<p class="t">圖例：產生迴圈的流</p>
+<p>產生迴圈的流會佔據管線容量，令流量難以再增加，是一種浪費。</p>
+<img src="s-tFlow8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow8.png">
+<p class="t">圖例：源點與匯點在一起的流</p>
+<p>感情很好的兩個點，一般視作內地裡波濤洶湧，表面上流量為零。</p>
+<img src="s-tFlow9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow9.png">
+<p class="t">多個源點和多個匯點變成一個源點和一個匯點</p>
+<p>先前都只討論一個源點和一個匯點的原因，其實是因為多個源點可以轉化成一個源點、多個匯點可以轉化成一個匯點。當圖上有多個源點時，就在圖上新增一個超級源點，連向這些源點，邊的容量都設定為無限大。如此一來，就可以只留下一個超級源點，並取消原本的源點了。匯點的道理亦同。</p>
+<img src="s-tFlow10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow10.png">
+<p>因此，在s-t Flow當中，多個源點和多個匯點可以改為一個源點和一個匯點，最後只討論一個源點和一個匯點就可以了。事情也變簡單多了。</p>
+<p class="t">點的權重變成邊的權重</p>
+<p>先前提到大家一般不考慮點的權重，其實是因為點的權重可以轉化為邊的權重。把原先有權重的P點改成兩個點Pin和Pout，原先連到P點的邊變成連到Pin，由P點連出的邊變成由Pout連出，P點的容量則由一條Pin到Pout的邊來取代之。</p>
+<img src="s-tFlow11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow11.png">
+<p>因此，在s-t Flow當中，點的權重可以改為邊的權重，最後只需要考慮邊的權重就行了。只考慮邊的權重，事情也變簡單多了。</p>
+<p class="t">多重的邊變成單獨的邊</p>
+<p>無向圖中，當兩點之間有多重的邊，就可以加總這些邊的容量限制，合併成單獨的邊；有向圖中，當一點到另一點有多重的邊，就可以加總這些邊的容量限制，合併成單獨的邊。</p>
+<img src="s-tFlow12.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow12.png">
+<p>因此，在s-t Flow當中，多重的邊可以改為單獨的邊，最後只討論「無向圖：兩點間僅有一條邊、有向圖：一點到另一點僅有一條邊」就可以了。事情也變簡單多了。</p>
+<p class="t">來回水流變成單向水流</p>
+<p>兩點之間，兩條方向相反的有向邊，等量減少來向與回向的水流，不會影響總流量，也不會違背規則。</p>
+<img src="s-tFlow13.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow13.png">
+<p>因此，在s-t Flow當中，來回水流可以變成單向水流，最後只要從中選擇一條邊來流動就可以了。事情也變簡單多了。</p>
+<p class="t">無向邊變成有向邊</p>
+<p>無向邊得同時雙向流動。一條無向邊可以改為兩條方向相反的有向邊，可是必須共用容量。</p>
+<p>由於來回水流可以變成單向水流，所以上述兩條方向相反的有向邊，其實不必共用容量，宛如普通的有向邊。</p>
+<img src="s-tFlow14.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/s-tFlow14.png">
+<p>因此，在s-t Flow當中，一條無向邊可以變成兩條方向相反的有向邊，最後只討論有向邊就可以了。事情也變簡單多了。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Max-Flow Min-Cut Theorem</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">一條涓流的流量與瓶頸</p>
+<p>水從源點流至匯點，中途不會滲漏、不會淤滯。一條由源點流至匯點的小小涓流，其流動路徑當中，每一條邊的流量，都會是小小涓流的流量。</p>
+<p>水流流動時要符合管線容量限制。一條由源點流至匯點的小小涓流，其流量的瓶頸，會是流動路徑當中，容量上限最低的一條邊。</p>
+<img src="MaxFlowMinCutTheorem1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem1.png">
+<p class="t">一個流的總流量與瓶頸（一）</p>
+<p>水從源點流至匯點，中途不會滲漏、不會淤滯。現在把圖上的點，依地理位置劃分作兩區，一區鄰近源點，另一區鄰近匯點──一個從源點流至匯點的流，「由源點區流入到匯點區的總流量」減去「由匯點區流回到源點區的總流量」會等於「由源點流至匯點的總流量」。無論是哪一種分區方式，都有這種性質。</p>
+<img src="MaxFlowMinCutTheorem2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem2.png">
+<p>水流流動時要符合管線容量限制。一個從源點流至匯點的流，「由源點區流入到匯點區的總流量」會小於等於「由源點區橫跨到匯點區的管線總容量」。反方向亦同。</p>
+<img src="MaxFlowMinCutTheorem3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem3.png">
+<img src="MaxFlowMinCutTheorem4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem4.png">
+<p>也就是說，一個從源點流至匯點的流，其總流量的瓶頸，會出現在「由源點區橫跨到匯點區的管線總容量」最低的一種分區方式。</p>
+<img src="MaxFlowMinCutTheorem5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem5.png">
+<p class="t">一個流的總流量與瓶頸（二）</p>
+<p>【讀者若不懂s-t Cut，請參考本站文件「<a href="Cut.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cut.html">Cut</a>」。】</p>
+<p>方才的分兩區方式有點籠統，很難定義誰鄰近源點，誰鄰近匯點，因此資訊學家嘗試以s-t Cut來取代方才的說法，希望藉由s-t Cut把事情說得更嚴謹一些。然而事情也稍微變得複雜了。</p>
+<p>水從源點流至匯點，中途不會滲漏、不會淤滯。現在把圖上的點，利用s-t Cut的概念劃分作兩側，一側包含源點，另一側包含匯點──一個從源點流至匯點的流，「由源點側流入到匯點側的總流量」減去「由匯點側流回到源點側的總流量」會等於「由源點流至匯點的總流量」。無論是哪一種劃分方式，都有這種性質。</p>
+<img src="MaxFlowMinCutTheorem6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem6.png">
+<p>水流流動時要符合管線容量限制。一個從源點流至匯點的流，「由源點側流入到匯點側的總流量」會小於等於「由源點側橫跨到匯點側的管線總容量」。反方向亦同。</p>
+<img src="MaxFlowMinCutTheorem7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem7.png">
+<img src="MaxFlowMinCutTheorem8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem8.png">
+<p>也就是說，一個從源點流至匯點的流，其總流量的瓶頸，會出現在「由源點側橫跨到匯點側的管線總容量」最低的一種分區方式。也就是容量的Minimum s-t Cut。</p>
+<img src="MaxFlowMinCutTheorem9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem9.png">
+<p class="t">Max-Flow Min-Cut Theorem</p>
+<p>「最大流最小割定理」其實就是談瓶頸。「網路流量的最大s-t流」等於「管線容量的最小s-t割」，管線若還有空間，就儘量增加流量，直到遇到瓶頸，瓶頸會出現在容量的最小s-t割。</p>
+<img src="MaxFlowMinCutTheorem10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaxFlowMinCutTheorem10.png">
+<p>打個比方來說，在一個裝水的塑膠袋底部戳洞，水就會流出來；戳越多洞，水就流出的越多。這表示水一旦有隙可乘，就一定會源源而來、滔滔而至，乃增加流量。水一旦無隙可乘，流量達到上限，此刻就是最大流了。</p>
+<p>要找最大流，可以運用「最大流最小割定理」的概念，讓水流不停地鑽空隙流至匯點，當無法再找到空隙時，就是極限了，就是最大流了。</p>
+<p>若只找最大流流量，則可以運用求最小s-t割的演算法，計算管線容量的最小s-t割的權重，此即等同於最大流流量。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum s-t Flow: Ford-Fulkerson Algorithm（Augmenting Path Algorithm）</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>給定一張圖，並給定源點、匯點，找出其中一個最大流。</p>
+<p class="t">Flow Decomposition</p>
+<p>一個流是由許多條小小涓流逐漸聚集而成的。我們可以用一條一條的小小涓流，累積出最大流。</p>
+<img src="Ford-Fulkerson1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson1.png">
+<p class="t">溯洄沖減<br>【註：此概念目前尚未有專有名詞】</p>
+<p>然而有些涓流的路徑不理想，浪費了管線空間。有鑒於此，演算法作者設計了一個手法：溯洄沖減。流出第一條涓流之後，第二條涓流可以溯洄上一條流的部份路段，然後到達匯點。正流與逆流相互沖減的結果，使得相互交織的兩條涓流，成為兩條獨立的涓流。如此一來，就算涓流的路徑不理想，之後仍可靠溯洄沖減來調整路徑。</p>
+<p>【註：涓流、溯洄、沖減這三個詞，是初次使用。我參考字典後，覺得意義相近，而選用的。而且它們都是水字旁！】</p>
+<img src="Ford-Fulkerson2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson2.png">
+<p>溯洄沖減的時候，可以選擇水量多寡和路線位置，藉以調整成不同的流。</p>
+<img src="Ford-Fulkerson3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson3.png">
+<img src="Ford-Fulkerson4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson4.png">
+<img src="Ford-Fulkerson5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson5.png">
+<p>溯洄沖減的概念可以用於許多地方。這裡列出一些相關問題，供各位練習。</p>
+<p class="e">UVa 10806 10380</p>
+<p class="t">Residual Network</p>
+<p>每次增加一條小小涓流，都要時時刻刻遵守各條管線的容量限制。管線要有剩餘空間，或者管線有溯洄沖減的機會，涓流才能流過管線。</p>
+<p>一個便捷的整合方式是：管線的剩餘空間再加上可供溯洄沖減的水量，稱作「剩餘容量（Residual Capacity）」；所有管線的剩餘容量，整體可視作一張圖，稱作「剩餘網路（Residual Network）」。</p>
+<p>如此一來，涓流要進行流動，其實只要參考剩餘網路，遵守各條管線的剩餘容量限制就可以了。</p>
+<img src="Ford-Fulkerson6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson6.png">
+<p>剩餘網路是一個高度抽象概念，為的是整合涓流流動的容量限制。實作程式碼時，可以直接建立一個剩餘網路的資料結構，隨時利用容量與剩餘容量來計算流量。</p>
+<p class="t">Augmenting Path</p>
+<p>「擴充路徑」，剩餘網路上面一條由源點到匯點的路徑。換個角度想，把握管線的剩餘空間，把握溯洄沖減，找出一條由源點至匯點的小小涓流路徑，就是一條擴充路徑。</p>
+<p>擴充路徑是一條可以擴充總流量的路徑，擴充的流量可多可少，一般來說流量越多越好，到達瓶頸最好，能較快達到最大流。</p>
+<img src="Ford-Fulkerson7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson7.png">
+<p>擴充路徑的長度範圍是1到V-1（長度為0表示源點與匯點重疊）。當一條擴充路徑超過V-1條邊，則會形成浪費管線容量的迴圈，此時應消除迴圈之後，再來作為擴充路徑。</p>
+<p class="t">演算法</p>
+<pre>
+不斷找擴充路徑，並擴充流量。直到沒有擴充路徑為止。
+
+所有擴充路徑總合起來，就是最大流。
+所有擴充路徑的流量總和，就是最大流流量。
+
+擴充路徑要怎麼找都可以，
+不一樣的擴充路徑有機會產生不一樣的最大流。
+</pre>
+<pre>
+還找得到擴充路徑：
+表示目前不是最大流，因為藉由擴充路徑，還可以再增加總流量。
+
+找不到擴充路徑：
+表示源點往匯點方向的一些關鍵管線已經沒有剩餘容量。沒有剩餘容量可推導出：
+甲、管線沒有剩下來的空間（或根本沒有管線），也就是遭遇瓶頸。
+乙、不能溯洄沖減。
+根據最大流最小割定理，遭遇瓶頸時即是最大流。
+【註：這部分的證明有漏洞。沒有考慮到形成迴圈的涓流。】
+</pre>
+<img src="Ford-Fulkerson8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson8.png">
+<p>這個演算法的絕妙之處，是導入了溯洄沖減的機制，藉以調整流動路徑；然後把溯洄沖減併入了容量限制的思維，創立剩餘網路、擴充路徑等抽象概念；最後返回到最大流最小割定理，間接證明了溯洄沖減無論在什麼情況下，都能調整好流動路徑，找出最大流──調校水流的本質，就是剩餘網路。</p>
+<p>另外可以發現，在整個過程當中，所有管線的剩餘容量的總和是固定不變的──只是源點往匯點方向的剩餘容量越來越少，匯點往源點方向的剩餘容量越來越多。整個過程可以看做是在調整剩餘網路的勢力走向──每次以擴充路徑擴充流量後，正方向會減少對應的剩餘容量，逆方向會增加對應的剩餘容量，源點與匯點之間的勢力差距越來越大。</p>
+<p class="t">時間複雜度</p>
+<p>找一條擴充路徑為一次Graph Traversal的時間。圖的資料結構使用adjacency matrix為O(V^2)；圖的資料結構使用adjacency lists為O(V+E)，這裡省略V寫成O(E)。</p>
+<p>最差情況是，不斷找到流量超級少的擴充路徑，共找到F條，F是最大流的權重。因此總時間複雜度，依據資料結構的不同，分別為O(V^2 * F)與O(EF)。</p>
+<img src="Ford-Fulkerson9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Ford-Fulkerson9.png">
+<p class="t">實作：紀錄容量、流量、剩餘容量</p>
+<p>為了實現溯洄沖減的概念，要是兩點之間只有單獨一條有向邊，就添配一條反向邊，讓雙向都有邊；要是兩點之間已經是兩條方向相反的有向邊，就不必更動；要是兩點之間是一條無向邊，則改成兩條方向相反的有向邊。</p>
+<p>每一條邊的容量是定值；至於流量與剩餘容量，則有三種不同的紀錄方式。第一種紀錄方式。先前提到，兩條方向相反的有向邊，可以只讓一條邊擁有水流，另一條邊則沒有水流。在此利用沒有水流的那條邊：兩點之間其中一個方向是正流量，是真正流動的方向；另一個方向則是虛設的負流量，用來增加剩餘容量以利溯洄沖減。</p>
+<pre>
+一開始還沒有水流的時候：
+flow(i, j) = 0;
+flow(j, i) = 0;
+
+有一條涓流經過邊ij之後：
+flow(i, j) += 流量;
+flow(j, i) -= 流量;
+
+有一條涓流經過邊ij，又有一條涓流溯洄沖減，經過邊ji之後：
+flow(i, j) = flow(i, j) + 流量1 - 流量2;
+flow(j, i) = flow(j, i) - 流量1 + 流量2;
+</pre>
+<pre>
+最後可歸納得出，當一條涓流經過邊ij的時候：
+flow(i, j) += 流量;
+flow(j, i) = -flow(i, j);
+
+真正的流量則是正流量：
+true_flow(i, j) = max(flow(i, j), 0);
+true_flow(j, i) = max(flow(j, i), 0);
+
+剩餘容量以管線的容量上限和流量相減而得：
+residue(i, j) = capacity(i, j) – flow(i, j);
+residue(j, i) = capacity(j, i) – flow(j, i);
+</pre>
+<textarea t="有一條涓流經過邊ij（adjacency matrix）">
+typedef int Graph[10][10];		// adjacency matrix
+Graph C, F, R;					// 分別是容量上限、流量、剩餘容量
+
+void one_stream_pass_ij()
+{
+	memcpy(R, C, sizeof(C));	// 最初每一條邊的剩餘容量等於容量上限
+	memset(F, 0, sizeof(F));	// 最初的流量為零
+
+	F[i][j] = F[i][j] + 流量;
+	F[j][i] = -F[i][j];
+	R[i][j] = C[i][j] - F[i][j];
+	R[j][i] = C[j][i] - F[j][i];
+}
+</textarea>
+<p>第二種紀錄方式。只要有涓流經過了管線，就把涓流流量直接累加在管線流量。雖然這種紀錄方式會讓流量違背容量限制，可是在剩餘容量正確的情況下，還是能找出最大流。</p>
+<pre>
+令邊ij是一條由i點到j點的邊。令邊ji是一條由j點到i的邊。
+
+一開始還沒有水流的時候：
+flow(i, j) = 0;
+flow(j, i) = 0;
+
+有一條涓流經過邊ij之後：
+flow(i, j) += 流量;
+flow(j, i) 保持不變;
+
+有一條涓流經過邊ij，又有一條涓流溯洄沖減，經過邊ji之後：
+flow(i, j) += 流量1;
+flow(j, i) += 流量2;
+</pre>
+<pre>
+最後可歸納得出，當一條涓流經過邊ij的時候：
+flow(i, j) += 流量;
+flow(j, i) 保持不變;
+
+真正的流量是把雙向流量等量減少後而得（去掉溯洄沖減的部分）：
+true_flow(i, j) = flow(i, j) - min(flow(i, j), flow(j, i));
+true_flow(j, i) = flow(j, i) - min(flow(i, j), flow(j, i));
+
+剩餘容量以管線的容量上限和雙向流量計算而得：
+residue(i, j) = capacity(i, j) – (flow(i, j) - flow(j, i));
+residue(j, i) = capacity(j, i) – (flow(j, i) - flow(i, j));
+</pre>
+<textarea t="有一條涓流經過邊ij（adjacency matrix）">
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F, R;				// 分別是容量上限、流量、剩餘容量
+
+void one_stream_pass_ij()
+{
+	memcpy(R, C, sizeof(C));	// 最初每一條邊的剩餘容量等於容量上限
+	memset(F, 0, sizeof(F));	// 最初的流量為零
+
+	F[i][j] = F[i][j] + 流量;
+	R[i][j] = C[i][j] - F[i][j] + F[j][i];
+	R[j][i] = C[j][i] - F[j][i] + F[i][j];
+}
+</textarea>
+<p>第三種紀錄方式。是第一種記錄方式的相反面向，主角改為剩餘容量，只要有涓流經過了管線，正方向剩餘容量會減少，反方向剩餘容量會增加。</p>
+<pre>
+令邊ij是一條由i點到j點的邊。令邊ji是一條由j點到i的邊。
+
+一開始還沒有水流的時候：
+residue(i, j) = capacity(i, j);
+residue(j, i) = capacity(j, i);
+
+有一條涓流經過邊ij之後：
+residue(i, j) -= 流量;
+residue(j, i) += 流量;
+
+有一條涓流經過邊ij，又有一條涓流溯洄沖減，經過邊ji之後：
+residue(i, j) = residue(i, j) - 流量1 + 流量2;
+residue(j, i) = residue(j, i) + 流量1 - 流量2;
+</pre>
+<pre>
+最後可歸納得出，當一條涓流經過邊ij的時候：
+residue(i, j) -= 流量;
+residue(j, i) += 流量;
+
+真正的流量以管線的容量上限和剩餘流量相減而得，而且是正流量：
+true_flow(i, j) = max(capacity(i, j) – residue(i, j), 0);
+true_flow(j, i) = max(capacity(j, i) – residue(j, i), 0);
+</pre>
+<textarea t="有一條涓流經過邊ij（adjacency matrix）">
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F, R;				// 分別是容量上限、流量、剩餘容量
+
+void one_stream_pass_ij()
+{
+	memset(F, 0, sizeof(F));	// 最初的流量為零
+	memcpy(R, C, sizeof(C));	// 最初每一條邊的剩餘容量等於容量上限
+
+	R[i][j] -= 流量;
+	R[j][i] += 流量;
+	F[i][j] = max(C[i][j] - R[i][j], 0);
+	F[j][i] = max(C[j][i] - R[j][i], 0);
+}
+</textarea>
+<p>第一種方式最直覺。第二種方式中庸。第三種方式最精簡，實作簡單，不過最後要計算最大流的時候會比較麻煩。</p>
+<p class="t">找出一個最大流＋計算最大流的權重</p>
+<textarea t="找出一個最大流＋計算最大流的權重（adjacency matrix）">
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F, R;				// 容量上限、流量、剩餘容量
+
+int Ford_Fulkerson(int s, int t)	// 分別是源點、匯點
+{
+	memset(F, 0, sizeof(F));	// 最初的流量為零
+
+	while (存在一條擴充路徑：C[i][j] - F[i][j] > 0)
+		for (這條擴充路徑的每一條邊ij)
+			F[i][j] += 擴充路徑流量, F[j][i] = -F[i][j];
+}
+
+void Ford_Fulkerson(int s, int t)
+{
+	memset(F, 0, sizeof(F));	// 最初的流量為零
+
+	while (存在一條擴充路徑：C[i][j] - F[i][j] + F[j][i] > 0)
+		for (這條擴充路徑的每一條邊ij)
+			F[i][j] += 擴充路徑流量;
+}
+
+void Ford_Fulkerson(int s, int t)
+{
+	memcpy(R, C, sizeof(C));	// 最初每一條邊的剩餘容量等於容量上限
+
+	while (存在一條擴充路徑：R[i][j] > 0)
+		for (這條擴充路徑的每一條邊ij)
+			R[i][j] -= 擴充路徑流量, R[j][i] += 擴充路徑流量;
+}
+</textarea>
+<p class="t">延伸閱讀：容量上限不是有理數的時候</p>
+<p>擴充路徑永遠找不完。</p>
+<p>【待補圖片】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum s-t Flow: Edmonds-Karp Algorithm（Shortest Augmenting Path Algorithm）</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>Ford-Fulkerson Algorithm的改良版。每次找擴充路徑的時候，以源點到匯點的最短路徑（想像管線長度皆為1）作為擴充路徑，並且讓擴充的流量到達瓶頸。這種方式可以避免浪費管線空間，避免反覆地溯洄沖減，而較快找到最大流。</p>
+<pre>
+不斷找最短擴充路徑，直到找不到為止，即得最大流。
+最多找VE次就可達到最大流。
+</pre>
+<p class="t">達到最大流，估計需要的最短擴充路徑數量。<br>（利用Edge Labeling with Shortest Distance）</p>
+<p>首先將剩餘網路上的每一條邊，都標記一個距離數值，數值大小是源點到達該邊的最短距離。相同兩點之間的正向邊與反向邊共用一個距離數值。</p>
+<p>每次以最短路徑擴充流量之後，剩餘網路上一定有某些邊的距離數值會增加，並且沒有任何一條邊的距離數值會減少。也就是說，整體來看，距離數值與日俱增。</p>
+<pre>
+在剩餘網路上，以源點到匯點之最短路徑，擴充流量至瓶頸之後：
+
+回、最短擴充路徑上的正向邊：
+　口、瓶頸之前的邊：
+　　距離數值不變。
+　口、瓶頸上的邊：
+　　距離數值會增加。（只剩下反向邊能通行，入口在遙遠的那端，所以距離數值至少增加一。）
+　口、瓶頸之後的邊：
+　　距離數值會增加。（受到瓶頸斷路影響，需繞遠路。）
+　　也可能不變。（同時有多條最短路徑到達該邊，只不過其中一條最短路徑斷了。）
+
+回、最短擴充路徑上的反向邊：
+　　不影響距離數值。
+
+回、最短擴充路徑以外的邊：
+　　距離數值會增加，也可能不變，但是不會減少。
+</pre>
+<p>甲
+、最差的情況下，每次擴充流量後，只有一條邊的距離數值有增加1。乙、圖上共有E條邊，每條邊的距離數值範圍為0到V-1。以甲乙粗估後，不出VE條最短擴充路徑，就能達到最大流。</p>
+<p class="t">達到最大流，估計需要的最短擴充路徑數量。<br>（利用Vertex Labeling with Shortest Distance估計不出結果）</p>
+<p>首先將剩餘網路上的每一個點，都標記一個距離數值，數值大小是源點到達該點的最短距離。就像最短路徑問題那樣子。</p>
+<p>每次以最短路徑擴充流量之後，最短路徑上的點的距離數值並不一定會增加，必須將所有到達該點的最短路徑都截斷之後，距離數值才會增加。因此這種方式是估計不出結果的。</p>
+<p class="t">時間複雜度</p>
+<p>以BFS尋找O(VE)條擴充路徑的時間。圖的資料結構為adjacency matrix的話，便是O(V^2 * VE) = O(V^3 * E)；圖的資料結構為adjacency lists的話，通常把BFS的時間複雜度O(V+E)，省略了V而寫成簡單的O(E)，所以總共是O(E * VE) = O(V * E^2)。</p>
+<p class="t">找出一個最大流＋計算最大流的權重</p>
+<textarea t="找出一個最大流＋計算最大流的權重（adjacency matrix）">
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F, R;	// 容量上限、流量、剩餘容量
+bool visit[10];	// 紀錄BFS經過的點
+int path[10];	// 紀錄BFS tree
+int flow[10];	// 紀錄源點到各個點的流量
+				// 用法類似於最短路徑演算法的dist陣列
+
+int BFS(int s, int t)	// 源點與匯點
+{
+	memset(visit, false, sizeof(visit));
+
+	queue<int> Q;
+	visit[s] = true;
+	path[s] = s;
+	flow[s] = 1e9;	// 一邊找最短路徑時，一邊計算流量。
+	Q.push(s);
+
+	while (!Q.empty())
+	{
+		int i = Q.front(); Q.pop();
+		for (int j=0; j<10; ++j)
+			// 在剩餘容量的圖上找augmenting path
+			if (!visit[j] && R[i][j] > 0)
+			{
+				visit[j] = true;
+				path[j] = i;
+				flow[j] = min(flow[i], R[i][j]);	// 容量小的是瓶頸
+				Q.push(j);
+
+				if (j == t) return flow[t];
+			}
+	}
+	return 0;	// 找不到augmenting path了，流量為零。
+}
+
+int Edmonds_Karp(int s, int t)
+{
+	memset(F, 0, sizeof(F));
+	memcpy(R, C, sizeof(C));
+
+	int f, df;	// 最大流的流量、擴充路徑的流量
+	for (f=0; df=BFS(s, t); f+=df)
+		// 更新擴充路徑上每一條邊的流量
+		for (int i=path[t], j=t; i!=j; i=path[j=i])
+		{
+			F[i][j] = F[i][j] + df;
+			F[j][i] = -F[i][j];
+			R[i][j] = C[i][j] - F[i][j];
+			R[j][i] = C[j][i] - F[j][i];
+		}
+	return f;
+}
+</textarea>
+<textarea t="計算最大流的權重（adjacency matrix）">
+int adj[10][10];		// adjacency matrix，
+int q[10], *qf, *qb;	// BFS所用的queue
+int p[10];				// BFS tree
+
+int Edmonds_Karp(int s, int t)
+{
+	int f = 0;		// 最大流的流量
+	while (true)	// 不斷找擴充路徑直到找不到為止
+	{
+		// BFS找擴充路徑
+		memset(p, -1, sizeof(p));
+		qf = qb = q;
+		p[*qb++ = s] = s;
+
+		while (qf < qb && p[t] == -1)
+			for (int i = *qf++, j = 0; j < 10; ++j)
+				if (p[j] == -1 && adj[i][j])
+					p[*qb++ = j] = i;
+
+		if (p[t] == -1) break;
+
+		// 更新擴充路徑上每一條邊的流量
+		int df = 1e9;
+		for (int i = p[t], j = t; i != j; i = p[j = i])
+			df = min(df, adj[i][j]);
+		for (int i = p[t], j = t; i != j; i = p[j = i])
+			adj[i][j] -= df, adj[j][i] += df;
+		f += df;
+	}
+	return f;
+}
+</textarea>
+<textarea t="計算最大流的權重（adjacency matrix）">
+int adj[10][10];		// adjacency matrix
+int p[10];				// BFS tree
+int q[10], *qf, *qb;	// BFS所用的queue
+
+int Edmonds_Karp(int s, int t)
+{
+	int f = 0;
+	while (true)
+	{
+		// BFS找擴充路徑
+		memset(p, -1, sizeof(p));
+		qf = qb = q;
+		p[*qb++ = s] = s;
+
+		while (qf < qb && p[t] == -1)
+			for (int i = *qf++, j = 0; j < 10; ++j)
+				if (p[j] == -1 && adj[i][j])
+					p[*qb++ = j] = i;
+
+		if (p[t] == -1) break;
+
+		// 每次都儘量多找幾條擴充路徑，可以少做幾次BFS。
+		for (int z = 0; z < 10; ++z)
+			if (adj[z][t] && p[z] != -1)
+			{
+				// 尋找一條擴充路徑
+				int df = adj[z][t];
+				for (int i = p[z], j = z; i != j; i = p[j = i])
+					df = min(df, adj[i][j]);
+				if (!df) continue;
+
+				// 擴充流量
+				adj[z][t] -= df, adj[t][z] += df;
+				for (int i = p[z], j = z; i != j; i = p[j = i])
+					adj[i][j] -= df, adj[j][i] += df;
+				f += df;
+			}
+	}
+	return f;
+}
+</textarea>
+<textarea t="計算最大流的權重（edge list + adjacency lists）">
+const int V = 100, E = 1000;
+
+// edge list的一個元素
+struct Edge
+{
+	int a, b;	// 這條邊為a->b
+	int c, r;	// 容量上限、剩餘容量
+	int next;	// adjacency lists的下一條邊
+//	int rev;	// 用來快速地得到反向邊b->a
+};
+
+// edge list
+int en = 0;
+Edge e[E*2];	// 考慮反向邊，所以需要兩倍空間。
+
+// adjacency lists
+// 利用陣列形式的edge list，就不用一直new和delete。
+// 直接儲存edge list索引值，初始化為-1。
+int adj[V];
+
+// Edmonds-Karp會用到的記憶體
+int q[V], *qf, *qb;	// BFS quque
+int p[V];			// BFS tree，紀錄邊，儲存edge list索引值。
+
+// 建立一條邊a->b時，必須同時建立反向邊b->a，以利溯洄沖減。
+void addedge(int a, int b, int c)
+{
+	// 設定正向邊a->b
+	// 加入到edge list，也插入到adjcency lists。
+	e[en].a = a; e[en].b = b; e[en].c = c; e[en].r = c;
+	e[en].next = adj[a]; adj[a] = en++;	// 插入到開頭
+
+	// 設定反向邊a->b
+	// 加入到edge list，也插入到adjcency lists。
+	e[en].a = b; e[en].b = a; e[en].c = c; e[en].r = c;
+	e[en].next = adj[b]; adj[b] = en++;	// 插入到開頭
+
+//	e[en-2].rev = en-1;  e[en-1].rev = en-2;
+}
+
+int Edmonds_Karp(int s, int t)
+{
+	int f = 0;
+	while (true)
+	{
+		// BFS找擴充路徑
+		memset(p, 0, sizeof(p));
+		qf = qb = q;
+		p[*qb++ = s] = -1;
+
+		while (qf < qb && !p[t])
+			for (int i = adj[*qf++]; i != -1; i = e[i].next)
+				if (i->r && !p[e[i].b])
+					p[*qb++ = e[i].b] = i;
+
+		if (!p[t]) break;
+
+		// 更新擴充路徑上每一條邊的流量
+		int df = 1e9;
+		for (int i = p[t]; i != -1; i = p[e[i].a])
+			df = min(df, e[i].r);
+		for (int i = p[t]; i != -1; i = p[e[i].a])
+			e[i].r -= df, e[i^1].r += df;
+		f += df;
+		// 因為加入順序的關係，可以用xor得到反向邊。
+	}
+	return f;
+}
+</textarea>
+<p class="e">UVa 820 10330 10779 563 10511 10983</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum s-t Flow: Dinic's Algorithm（Blocking Flow Algorithm）</p>
+<p class="r">程度★★　難度★★★</p>
+<p class="w">抽刀斷水水更流。《李白．宣州謝朓樓餞別校書叔雲》</p>
+</div><div class="c">
+<p class="t">想法</p>
+<p>Edmonds-Karp Algorithm的加強版，改為找到一樣長的最短擴充路徑們。</p>
+<p class="t">Admissible Network</p>
+<p>【註：容許網路就是剩餘網路的「最短路徑圖」。「最短路徑圖」尚未成為專有名詞，「<a href="Path3.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path3.html">Next-to-Shortest Path</a>」稍有提及。】</p>
+<p>剩餘網路上面，以源點（匯點）作為起點，計算源點（匯點）到每一點的最短距離。</p>
+<p>剩餘網路上面，一條由源點往匯點方向的邊、兩端點最短距離相差一，稱作「容許邊」。所有容許邊，整體視作一張圖，稱作「容許網路」。</p>
+<img src="Dinic'sAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Dinic'sAlgorithm1.png">
+<p>容許網路是有向無環圖（DAG）、分層圖（Layered Graph）。容許網路可以畫成一層一層的模樣，只有相鄰的層有邊。</p>
+<img src="Dinic'sAlgorithm2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Dinic'sAlgorithm2.png">
+<p>容許網路上面任意一條由源點到匯點的路徑，都是最短擴充路徑。藉由容許網路，可以很快找到一樣長的最短擴充路徑們。</p>
+<p class="t">Blocking Flow</p>
+<p>容許網路上面，一個由源點到匯點的流，無法再擴充流量，稱作「阻塞流」，通常有許多種，也不必是最大流。</p>
+<p>容許網路上面，逐次找到一樣長的最短擴充路徑們，並且每次都讓擴充的流量到達瓶頸，直到找不到為止；整體形成阻塞流。</p>
+<p>剩餘網路上面，以阻塞流擴充流量，就斷絕了所有一樣長的最短擴充路徑。前面章節提到，利用Vertex Labeling with Shortest Distance估計不出結果，此處卻是使用這個方式。</p>
+<img src="Dinic'sAlgorithm3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Dinic'sAlgorithm3.png">
+<p class="t">演算法：找出一個阻塞流</p>
+<p>容許網路上面尋找最短擴充路徑，不必溯洄沖減。溯洄沖減會增加路徑長度，最後得到的不是最短擴充路徑。</p>
+<p>由源點隨意往匯點走，若遇到死胡同，就重頭開始走，下次避免再走到死胡同。若順利走到匯點，就形成一條最短擴充路徑，並且擴充流量。</p>
+<p>改由匯點隨意往源點走，就不會遇到死胡同。</p>
+<p>一條最短擴充路徑，至少有一條邊是瓶頸。容許網路最多只有E條邊能作為瓶頸，所以一個阻塞流最多只有E條最短擴充路徑。</p>
+<p>從源點走到匯點並擴充流量需時O(V)，最多有O(E)條最短擴充路徑，所以找出一個阻塞流的時間複雜度為O(VE)。</p>
+<p class="t">演算法</p>
+<pre>
+重覆以下動作最多V-1次，直到無法擴充流量：
+1. 計算residual network上各點離源點（匯點）的最短距離。
+2. 建立admissible network。
+3. 尋找blocking flow，並擴充流量。
+</pre>
+<p class="t">時間複雜度</p>
+<p>每次找到一個阻塞流並擴充流量之後，容許網路上面，所有由源點到匯點的最短路徑都阻塞了；剩餘網路上面，源點到匯點的最短距離會增加（擴充流量而新增的反向邊，也不會減少源點到匯點的距離），下次的最短擴充路徑會更長。</p>
+<p>擴充路徑的長度範圍是1到V-1（長度為0表示源點與匯點重疊），因此最多找V-1次阻塞流，就一定沒有擴充路徑了。</p>
+<p>找一個阻塞流需時O(VE)，最多找O(V)次，故總時間複雜度為O(V^2 * E)。</p>
+<p class="t">找出一個最大流＋計算最大流的權重</p>
+<textarea>
+const int V = 100, E = 1000;
+
+int en = 0;
+struct Edge {int b, r, next;} e[E*2];	// edge list
+int adj[V];	// adjacency lists，初始化為-1。
+
+void addedge(int a, int b, int c)
+{
+	e[en].b = b; e[en].r = c;
+	e[en].next = adj[a]; adj[a] = en++;
+	e[en].b = a; e[en].r = 0;
+	e[en].next = adj[b]; adj[b] = en++;
+}
+
+int d[V];		// 最短距離
+bool visit[V];	// BFS/DFS visit record
+int q[V];		// queue
+
+// 計算最短路徑，求出容許網路。
+int BFS(int s, int t)
+{
+	memset(d, 0x7f, sizeof(d));
+	memset(visit, false, sizeof(visit));
+
+	int qn = 0;
+	d[s] = 0;
+	visit[s] = true;
+	q[qn++] = s;
+
+	for (int qf=0; qf<qn; ++qf)
+	{
+		int a = q[qf];
+		for (int i = adj[a]; i != -1; i = e[i].next)
+		{
+			int b = e[i].b;
+			if (e[i].r > 0 && !visit[b])
+			{
+				d[b] = d[a] + 1;
+				visit[b] = true;
+				q[qn++] = b;
+				if (b == t) return d[t];
+			}
+		}
+	}
+	return V;
+}
+
+// 求出一條最短擴充路徑，並擴充流量。
+int DFS(int a, int df, int s, int t)
+{
+	if (a == t) return df;
+
+	if (visit[a]) return 0;
+	visit[a] = true;
+
+	for (int i = adj[a]; i != -1; i = e[i].next)
+	{
+		int b = e[i].b;
+		if (e[i].r > 0 && d[a] + 1 == d[b])
+		{
+			int f = DFS(b, min(df, e[i].r), s, t);
+			if (f)
+			{
+				e[i].r -= f;
+				e[i^1].r += f;
+				return f;
+			}
+		}
+	}
+	return 0;
+}
+
+int dinic(int s, int t)
+{
+	int flow = 0;
+	while (BFS(s, t) < V)
+		while (true)
+		{
+			memset(visit, false, sizeof(visit));
+			int f = DFS(s, 1e9, s, t);
+			if (!f) break;
+			flow += f;
+		}
+	return flow;
+}
+</textarea>
+<p class="t">延伸閱讀：Dynamic Tree</p>
+<p>使用Link-Cut Tree紀錄容許網路，尋找阻塞流可以加速到O(ElogV)，整個演算法可以加速到O(VElogV)。</p>
+<p class="e">UVa 10546</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum s-t Flow: Capacity Scaling Algorithm</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>大意是：把容量的數值，由最高位bit到最低位bit，逐一添加到暫存容量的數值尾端。每添加一個bit，就以暫存容量找一次最大流。過程中持續累計計算的結果。</p>
+<pre>
+1. 令 C 為容量上限。C' 為依序添加bit的容量上限，一開始設為零。
+2. 由 C 的最高位bit開始，直到 C 的最低位bit為止，不斷重複下面動作：
+	甲、把 C 的該bit添加到 C' 的尾端。
+	乙、當前流量成為方才的兩倍。
+	丙、尋找擴充路徑（或擴充流），填滿 C' 多出的容量，達到當下的最大流。
+</pre>
+<p class="t">時間複雜度</p>
+<p>甲、找一條擴充路徑為一次Graph Traversal的時間。圖的資料結構使用adjacency matrix為O(V^2)；圖的資料結構使用adjacency lists為O(V+E)，這裡省略V寫成O(E)。</p>
+<p>乙、每個步驟開始之前，由源點到匯點的剩餘容量都已經填滿。在每個步驟當中，添加到圖上各條邊的容量只有0或1，由源點到匯點的剩餘容量頂多增加E。也就是說，每個步驟頂多出現E條流量為1的擴充路徑，頂多只能擴充E大小的流量，就會達到當下的最大流了。</p>
+<p>丙、令一張圖的管線容量最大者為C，一一拿出bit，所以這個演算法就會有O(logC)個步驟，以2為底的log。</p>
+<p>由甲乙丙乘積可知，總時間複雜度，依據資料結構的不同，分別為O(V^2 * E * logC)與O(E^2 * logC)。</p>
+<p>當C不大，會比Edmonds-Karp Algorithm快，尤其是Edmonds-Karp Algorithm每次所找到的擴充路徑的流量都很小的時候。</p>
+<p class="t">計算最大流的權重（adjacency matrix）</p>
+<textarea>
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F, Cp;	// 分別是容量上限、流量、逐步添加bit的容量上限
+
+int capacity_scaling(int s, int t)
+{
+	memset(F, 0, sizeof(F));	// 最初的流量為零
+	memset(Cp, 0, sizeof(Cp));	// 設為零，然後逐一添加bit到尾端。
+
+	int f = 0;	// 總流量
+
+	// int有32個bit。
+	// 最高位的第32bit用以區分正負值，第31bit才是正整數的最高位。
+	// 第1bit向左位移30位到第31bit，就是正整數的最高位。
+	for (int b=1<<30; b; b>>=1)
+	{
+		// 圖上每條邊都要添加bit或者是加倍
+		for (int i=0; i<10; ++i)
+			for (int j=0; j<10; ++j)
+			{
+				// 添加bit到容量上限數值的尾端
+				(Cp[i][j] <<= 1) += !!(C[i][j] & b);
+//				int d = ( (C[i][j] & b) > 0 ? 1 : 0 );
+//				tC[i][j] << 1; tC[i][j] += d;
+
+				// 將目前的流量加倍
+				F[i][j] <<= 1;
+			}
+
+		f <<= 1;
+		f += Ford_Fulkerson(s, t, F, Cp);	// 計算當前最大流
+	}
+	return f;
+}
+</textarea>
+<textarea>
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, R;					// 分別是容量上限、剩餘容量
+
+void capacity_scaling(int s, int t)
+{
+	memcpy(R, 0, sizeof(R));	// 設為零，然後逐一添加bit到尾端。
+
+	for (int b=1<<30; b; b>>=1)
+	{
+		for (int i=0; i<10; ++i)
+			for (int j=0; j<10; ++j)
+				(R[i][j] <<= 1) += !!(C[i][j] & b);
+
+		Ford_Fulkerson(s, t, R);	// 計算當前最大流，調整剩餘網路。
+	}
+}
+</textarea>
+<p class="t">延伸閱讀：Unit Capacity Network</p>
+<p>可以發現每個步驟中，增加的容量會形成一個Unit Capacity Network。Unit Capacity Network的最大流有極快速的演算法，時間複雜度為O(min{V^(2/3)*E, E^(3/2)})，以此可進行加速。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum s-t Flow: Preflow, Push, Relabel</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">壹、push</p>
+<p>想像一下：於源點放入足夠水量，然後用力推擠源點，就像針筒注射、發射水槍一樣，讓源點的水一股作氣鑽過整個流網路，最後從匯點噴出水流。</p>
+<p>受限於流網路的管線容量瓶頸，水流流量是有上限的。水鑽過流網路的路線，就是一個最大流。匯點噴出的水流流量，就是最大流的流量。</p>
+<p>然而電腦程式無法直接實現「一股作氣鑽過整個流網路」，電腦程式只能一個一個算、一步一步算，所以我們只好一個一個點慢慢推進：首先推進源點的水到其它中繼點，再繼續推進中繼點的水到其他中繼點，一個接著一個點慢慢地推進到匯點。</p>
+<img src="PushRelabel1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel1.png">
+<p class="t">貳、excess和overflowing</p>
+<p>為了實現「一個接著一個點慢慢地推進」的想法，便定義圖上每個點都可以儲存水，成了「含水點」，其儲存水量稱做「含水量」。水被推到點上，得以暫時儲存在點上，以後隨時可以繼續推進。</p>
+<p>建立含水點、含水量的系統之後，推進順序也無所謂了，因為水一直存在、不會消失，就算推歪方向，也可以往回推，回復原始狀態。</p>
+<pre>
+以「含水點」、「含水量」，設計一套找出最大流的方法：
+子、先將源點的含水量設定成無限大。
+丑、推進源點的水到圖上其他點，慢慢推向匯點，推進順序可隨意。
+寅、多餘的水量，會受限於管線容量瓶頸，而留在源點和中繼點上。
+卯、最後能夠推進到匯點的水量，就是最大流的流量。
+</pre>
+<img src="PushRelabel2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel2.png">
+<p class="t">參、residual capacity</p>
+<p>推進的同時也記錄管線流量，便可以知道水流流動的情形。管線流量與剩餘容量的概念請參考前面的Ford-Fulkerson Algorithm章節。</p>
+<p>推進一個點的水，甲、要注意點的含水量，乙、注意管線的剩餘容量，丙、盡量填滿管線，營造出針筒注射、發射水槍的效果。</p>
+<img src="PushRelabel3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel3.png">
+<textarea>
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F;					// 容量上限、流量
+int e[10];					// 各個點的含水量
+
+void push(int i, int j)		// 推進i點的水到j點
+{
+	// 點上要有足夠水量，且流量不得超過剩餘容量。
+	int f = min(e[i], C[i][j] - F[i][j]);
+	e[i] -= f; e[j] += f;
+	F[i][j] += f; F[j][i] -= f;
+}
+</textarea>
+<p class="t">肆、admissible edge</p>
+<p>「一個接著一個點慢慢地推進到匯點」，要確保各點的水是確實地推向匯點、聚集在匯點，避免漫無目的來回推進，避免環狀推進、不斷繞圈圈。因此導入了「水往低處流」的想法。</p>
+<pre>
+以「水往低處流」來設計方法、解決問題：
+子、推向匯點：源點高、匯點低、其他點排好適當的高低順序。
+丑、由源點漫溢：源點是最高點。
+寅、朝匯點聚集：匯點是最低點。
+卯、避免繞圈圈：不能推水到一樣高的點。只能推水到更低的鄰點。
+</pre>
+<img src="PushRelabel4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel4.png">
+<p class="t">伍、height label</p>
+<p>為了實現「水往低處流」的想法，便定義圖上每個點都有一個「高度值」，並排好高低順序，由高往低推進、由源點向匯點推進。</p>
+<p>高低順序有兩種安排方式：甲、反轉所有邊之後，以匯點為起點的最短路徑長度，作為高度值。乙、以源點為起點的最短路徑長度，取負值（可再加常數變成正值），作為高度值。</p>
+<p>採用甲有個好處，因為推進規則可以改成：推進一個點的水，只能到、也只需要到「比此點剛好低一層」的鄰點。如此可以讓推進規則變得單純、容易實作，也依舊保持著水往低處流的原則。</p>
+<p>排好高低次序，以及改變推進規則後，會出現新麻煩：甲、匯點不是最高點。乙、源點的水可能會推不出去。丙、現在要是推歪方向，就不能往回推了。丁、朝向匯點的管線容量不足時，一個點將會水洩不通。必須尋找其他管線，才能流向匯點。</p>
+<p>以下將一一解決這些問題。</p>
+<img src="PushRelabel5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel5.png">
+<p class="t">陸、source and target</p>
+<p>無論是哪一種高低順序安排方式，都不能保證源點最高、匯點最低。採用甲，可以把源點的高度另設為V-1，源點就一定比圖上其他點高；匯點的高度維持為零，匯點就一定比圖上其他點低。V是圖上的點數。</p>
+<img src="PushRelabel6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel6.png">
+<textarea>
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F;					// 容量上限、流量
+int d[10];					// 高度
+
+void set_height()
+{
+	shortest_path();
+	d[s] = V-1;
+}
+
+// Dijkstra's Algorithm
+void shortest_path()
+{
+	bool v[10];
+	memset(d, 1, sizeof(d));
+	memset(v, 0, sizeof(v));
+	d[t] = 0;
+	for (int k=0; k<10; ++k)
+	{
+		int j, min = 1e9;
+		for (int i=0; i<10; ++i)
+			if (!v[i] && d[i] < min)
+				min = d[j = i];
+
+		v[j] = true;
+		for (int i=0; i<10; ++i)
+			if (!v[i] && C[i][j])
+				d[i] = min(d[i], d[j] + 1);
+	}
+}
+</textarea>
+<p class="t">柒、preflow</p>
+<p>源點的高度設為V-1，推進又只能到「比此點剛好低一層」的鄰點，這造成一開始的時候，可能無法推進源點的水到所有鄰點，或說源點的水可能無法流到所有鄰點。</p>
+<p>為了解決這種狀況，一開始的時候，就預先推進源點的水到所有鄰點，稱做「預流」。</p>
+<img src="PushRelabel7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel7.png">
+<textarea>
+int e[10];	// 含水點的含水量
+
+void preflow(int s, int t)
+{
+	for (int j=0; j<10; ++j)
+		if (C[s][j] && j != s)
+		{
+			e[j] = C[s][j];
+			F[s][j] = e[j]; F[j][s] = -e[j];
+		}
+}
+</textarea>
+<p class="t">捌、relabel</p>
+<p>另外又追加了「抬高」的想法：當一個含水點水洩不通，就稍微抬高它，讓水可以流過其他管線，到達其他鄰點；甚至可以抬高到往回流，矯正水流流向。</p>
+<p>現在不必預先設定每個點的高低次序了，只需固定源點和匯點的高度，讓各個點抬高後總是比源點低、比匯點高即可。想要推動一個含水點的水，就抬高此點；抬高一個含水點，就可以推動此點的水。</p>
+<pre>
+以「水往低處流」和「抬高含水點」來設計方法、解決問題：
+子、推向匯點：抬高一個點到比匯點還高，但不能抬高匯點。
+丑、由源點漫溢：源點是最高點，高度設為V-1，並預流。
+寅、朝匯點聚集：匯點是最低點，高度設為0。
+卯、避免繞圈圈：不能推水到一樣高的點。只能推水到剛好低一層的鄰點。
+辰、避免水洩不通：抬高一個點比鄰近的點還高，以紓解積水。
+巳、矯正流向：抬高一個點比來源的點還高，以豆退嚕。
+</pre>
+<img src="PushRelabel8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel8.png">
+<p class="t">玖、saturating push</p>
+<p>如果一個含水點有許多鄰點，就先抬高含水點稍高於最低的鄰點，並推水到最低的鄰點，並盡量令管線滿溢；如果還有剩水，就再抬高含水點稍高於次低的鄰點，並推水到次高的鄰點，依此類推。以匯點的角度來看，朝向匯點的各條管線會陸陸續續流過水流並且滿溢，最後就會得到最大流。各位可以觀察看看。</p>
+<p>當一個含水點水洩不通，表示下游已經遭遇瓶頸、或說下游管線已經滿溢（甚至根本沒有管線）、或說沒有剩餘容量、或說無法再推更多水到匯點、或說有多餘的水流不到匯點。</p>
+<p>當一個含水點水洩不通，就抬高含水點，讓水往回流，矯正流向，替多餘的水，尋求其他出路，流到匯點。相反的，當一個含水點河涸海乾時，就沒有必要抬高此點，找自己麻煩。</p>
+<img src="PushRelabel9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel9.png">
+<textarea>
+void relabel(int i)	// 抬高i點，直到能夠推水。
+{
+	int mind = 1e9;
+	for (int j=0; j<10; ++j)
+		if (C[i][j] - F[i][j] > 0)
+			mind = min(mind, d[j]);
+	d[i] = mind + 1;
+}
+</textarea>
+<p class="t">拾、retreat（沒有專用術語，故自行命名）</p>
+<p>當水量過剩，又不斷抬高圖上每個點，最後圖上每個點都會比源點還高，所有剩水都會回歸源點。這剛好可以作為演算法的閉幕。此時圖上的水流流動情形就是最大流。</p>
+<pre>
+以「水往低處流」和「抬高含水點」來設計方法、解決問題：
+子、推向匯點：抬高一個點到比匯點還高，但不能抬高匯點。
+丑、回歸源點：抬高一個點到比源點還高，但不能抬高源點。
+寅、由源點漫溢：源點是最高點，高度設為V-1。
+卯、朝匯點聚集：匯點是最低點，高度設為0。
+辰、避免繞圈圈：不能推水到一樣高的點。只能推水到剛好低一層的鄰點。
+巳、避免水洩不通：抬高一個點比鄰近的點還高，以紓解積水。
+午、矯正流向：抬高一個點比來源的點還高，以豆退嚕。
+</pre>
+<img src="PushRelabel10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel10.png">
+<p class="t">小結</p>
+<p>欲讓水「一股作氣鑽過整個流網路」計算最大流，電腦卻只能「逐點推進」，只好製作一些中繼的「含水點」，加入「水往低處流」的概念，以匯點為起點的最短路徑長度設定「高低次序」，迫使水流向匯點。但是卻導致「源點不是最高點」、「源點無法推水」、「無法矯正流向」、「水洩不通」等諸多問題。於是又出現了「設定源點匯點高度」、「預流」、「抬高」的想法，解決了上述問題，從此亦不再需要安排「高低次序」。至於無法推到匯點的剩水，恰可藉由「抬高」而回歸源點，演算法完美結束。</p>
+<p>接下來開始詳細列出演算法內容。</p>
+<p class="t">Preflow</p>
+<pre>
+推動源點的水到所有鄰點。
+（源點可以不必設定水量，不影響結果。)
+</pre>
+<img src="PushRelabel11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel11.png">
+<textarea>
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F;					// 容量上限、流量
+int e[10];					// 含水點的含水量
+
+void preflow(int s)
+{
+	for (int j=0; j<10; ++j)
+		if (C[s][j] && j != s)
+		{
+			e[j] = C[s][j];
+			F[s][j] = e[j]; F[j][s] = -e[j];
+		}
+}
+</textarea>
+<textarea>
+int adj[10][10];	// adjacency matrix
+int e[10];			// 含水點的含水量
+
+void preflow(int s)
+{
+	for (int j=0; j<10; ++j)
+		if (C[s][j] && j != s)
+		{
+			adj[j][s] += (e[j] = adj[s][j]);
+			adj[s][j] = 0;
+		}
+}
+</textarea>
+<p class="t">Push</p>
+<pre>
+給定一個含水點和一個與其相鄰的點，推水過去。
+以下是允許進行Push的條件，確定符合後才得進行Push：
+壹、含水點不是源點和匯點。（源點已預流，匯點收集水。）
+貳、含水點仍有水。
+参、含水點到其鄰點的邊仍有剩餘容量。
+肆、鄰點是比含水點低一層的點。
+</pre>
+<img src="PushRelabel12.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel12.png">
+<textarea>
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F;					// 容量上限、流量
+int e[10];					// 高度、含水點的含水量
+
+void push(int i, int j)
+{
+	// 水量要足，且不得超過剩餘容量。
+	int f = min(e[i], C[i][j] - F[i][j]);
+	e[i] -= f; e[j] += f;
+	F[i][j] += f; F[j][i] -= f;
+}
+</textarea>
+<textarea>
+int adj[10][10];	// adjacency matrix
+int e[10];			// 高度、含水點的含水量
+
+void push(int i, int j)
+{
+	// 水量要足，且不得超過剩餘容量。
+	int f = min(e[i], adj[i][j]);
+	e[i] -= f; e[j] += f;
+	adj[i][j] -= f; adj[j][i] += f;
+}
+</textarea>
+<p class="t">Relabel</p>
+<pre>
+給定一個含水點，抬高此含水點。
+以下是允許進行Relabel的條件，確定符合後才得進行Relabel：
+壹、含水點不是源點和匯點。（請參考Push，沒必要推動就沒必要抬高。）
+貳、含水點仍有水。
+参、含水點水洩不通。
+　　含水點藉由有剩餘容量的邊，所連到的鄰點，這些鄰點的高度都小於等於含水點。
+　　（當含水點仍找得到低一層的鄰點可以推水過去，就不能抬高。）
+</pre>
+<img src="PushRelabel13.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel13.png">
+<textarea>
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F;					// 容量上限、流量
+int d[10];					// 高度
+
+void relabel(int i)
+{
+	int mind = 1e9;
+	for (int j=0; j<10; ++j)
+		if (C[i][j] - F[i][j] > 0)
+			mind = min(mind, d[j]);
+	d[i] = mind + 1;
+}
+</textarea>
+<textarea>
+int adj[10][10];	// adjacency matrix
+int d[10];			// 高度
+
+void relabel(int i)
+{
+	for (int j=0; j<10; ++j)
+		if (adj[i][j])
+			d[i] = min(d[i], d[j]);
+	d[i]++;
+}
+</textarea>
+<p class="t">演算法</p>
+<pre>
+1. 把圖上每個點的高度設為零。
+   （或者是以匯點作為起點的最短路徑長度作為高度，不影響結果。）
+2. 設定起點的高度是V-1（以上），V為圖上點數。
+3. preflow。
+4. 圖上各點不斷push或relabel，次序隨意，直到無法進行為止。
+   （或者說，直到圖上除源點匯點以外的所有點都沒水為止。）
+5. 匯點所收集的水量，即是最大流的流量。
+   多餘的水流回源點後，源點所流出的水量，即是最大流的流量。
+   圖上每條邊的水流，總合起來就是最大流。
+</pre>
+<p>經由複雜的推導，總算歸納出單純的演算法──僅以三種「點對鄰點之間」的動作preflow、push、relabel，即可求得最大流。十分精采！</p>
+<p class="t">時間複雜度</p>
+<p>我們針對preflow、push、relabel的次數下手。</p>
+<p>preflow：總共一次，是O(V)。</p>
+<p>relabel：設定匯點的高度為0，源點的高度為V-1。最差的情況下，除源點和匯點外，最高的點升到了2V-3、最低的點升到了V，流不到匯點的水都回歸匯點了，如下圖所示。利用等差級數梯形公式計算一下，可以知道relabel最多會有O(V^2)次。</p>
+<p>圖的資料結構為adjacency matrix，一次relabel的時間是O(V)，所以全部的relabel的時間是O(V^2 * V) = O(V^3)；圖的資料結構為adjacency lists，圖上各點進行relabel各一次的總時間是O(E)，所以全部的relabel的時間是O(E * V) = O(VE)。</p>
+<img src="PushRelabel14.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel14.png">
+<p>saturating push：對一條邊而言，兩個端點高度逐漸升高，高度範圍為0到2V-3，高度相差一時才能推動，高度不變時只能推動一次，故可知道一條邊的saturating push最多會有O(V)次。</p>
+<p>圖的資料結構為adjacency lists，一次push的時間是O(1)，一條邊最多有O(V)次saturating push，圖上共有E條邊，所以全部的saturating push的時間是O(VE)。</p>
+<p>nonsaturating push：使用均攤分析，可得全部的nonsaturating push的時間是O(V^2 * E)。【待補文字】</p>
+<img src="PushRelabel15.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PushRelabel15.png">
+<p>歸納上述四項，整個演算法需時O(V^2 * E)，受限於nonsaturating push的次數。</p>
+<p class="t">計算最大流的權重（adjacency matix）</p>
+<p>實作時我們建立一個queue來儲存含水點。</p>
+<textarea>
+int adj[10][10];		// adjacency matrix
+int d[10], e[10];		// 高度、含水點的含水量
+int q[150], *qf, *qb;	// 存放圖上所有除源點和匯點外的含水點
+
+void preflow(int s)
+{
+	for (int j=0; j<10; ++j)
+		if (adj[s][j] && j != s)
+		{
+			adj[j][s] += (e[j] = adj[s][j]);
+			adj[s][j] = 0;
+			if (j != s && j != t) *qb++ = j;
+		}
+}
+
+void push(int i, int j)
+{
+	// 水量要足，且不得超過剩餘容量。
+	int f = min(e[i], adj[i][j]);
+	e[i] -= f; e[j] += f;
+	adj[i][j] -= f; adj[j][i] += f;
+}
+
+void relabel(int i)
+{
+	for (int j=0; j<10; ++j)
+		if (adj[i][j])
+			d[i] = min(d[i], d[j]);
+	d[i]++;
+}
+
+int preflow_push_relabel(int s, int t)
+{
+	memset(d, 0, sizeof(d));
+	memset(e, 0, sizeof(e));
+	qf = qb = q;
+	d[s] = 10 - 1;	// 設定源點高度，避免水太早灌回源點。
+	preflow(s);
+
+	while (qf < qb)	// 除源點匯點外還有含水點就繼續
+	{
+		int i = *qf++;
+		relabel(i);	// 不一定能成功抬高此點，但無妨。
+
+		for (int j=0; j<10; ++j)
+			if (d[i] == d[j] + 1 && adj[i][j])
+			{
+				if (!e[j] && j!=s && j!=t) *qb++ = j;
+				push(i, j);
+				if (!e[i]) break;
+			}
+
+		if (e[i]) *qb++ = i;
+	}
+	return e[t];
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum s-t Flow: Discharge</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">想法</p>
+<p>順著高低順序推水是我們的初衷。累積足夠水量後，就慢慢往前推動，不要每次都一口氣推水到最低處，便可以減少push的次數。</p>
+<img src="Discharge1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Discharge1.png">
+<p class="t">Discharge</p>
+<pre>
+給定一個含水點，不斷使用Push和Relabel把水排掉，直到沒水。
+以下是允許進行Discharge的條件，確定符合後才得進行Discharge：
+壹、含水點不是源點和匯點。
+貳、含水點仍有水。
+</pre>
+<img src="Discharge2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Discharge2.png">
+<textarea>
+typedef int Graph[10][10];	// adjacency matrix
+Graph C, F;					// 容量上限、流量
+int d[10], e[10];			// 高度、含水點的含水量
+
+void discharge(int i)
+{
+	while (e[i])	// 還有水就繼續排水
+	{
+		for (int j=0; j<10; ++j)
+			if (d[i] == d[j] + 1 && C[i][j] - F[i][j])
+			{
+				push(i, j);
+				if (!e[i]) return;	// 沒有水就結束
+			}
+		relabel(i); // 肯定可以抬高
+	}
+}
+</textarea>
+<p class="t">演算法</p>
+<pre>
+1. preflow。
+2. 不斷找符合條件的含水點實施discharge，
+   直到所有含水點（除源點匯點）都沒水為止。
+
+   條件：其他含水點（除源點匯點）的水，
+   無法沿著目前的admissible network流入此含水點。
+</pre>
+<p>【待確認】</p>
+<p class="t">時間複雜度</p>
+<p>我們針對preflow、push、relabel的次數下手。preflow、relabel、saturating push的時間複雜度都與先前章節相同。以下為nonsaturating push的時間複雜度分析：</p>
+<p>【待補文字】</p>
+<p>由均攤分析可知nonsaturating push共有O(V^3)次。整個演算法的時間複雜度為O(V^3)。</p>
+<p class="t">演算法：一直找最高的含水點discharge<br>（Highest-Label Preflow-Push Algorithm）</p>
+<pre>
+1. preflow。
+2. 一直找最高的含水點進行discharge（不包括源點匯點），
+   直到圖上無含水點（不包括源點匯點），
+</pre>
+<p class="t">演算法：含水點discharge後，若有升高則挪動順序至首<br>（Relabel-to-front Algorithm）</p>
+<pre>
+1. 建立一個list，裡面包含所有點（但不包括源點匯點）。
+   註：此list從頭到尾一直都是當下admissible network的拓樸排序。
+2. preflow。
+3. 按照list順序讀取各點
+   甲、如果不是含水點，就繼續下一個點，
+   乙、如果是含水點，就discharge，並且於discharge完之後
+      a. 如果剛才的discharge有抬高此點（有relabel），
+         就把此點移到list開頭，並重新由list開頭讀取。
+      b. 如果剛才的discharge沒有抬高此點（沒有relabel），
+         就繼續下一個點。
+</pre>
+<p class="t">演算法：含水點以FIFO順序discharge<br>（FIFO Preflow-Push Algorithm）</p>
+<pre>
+1. 建立一個queue，裡面只放含水點（但不包括源點匯點），含水點不會重複。
+2. preflow，順便把含水點都放入queue。
+3. 不斷從queue中取出點進行discharge，直到queue中無點。
+   若discharge時產生了queue裡面沒有的含水點，就放入queue。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum s-t Flow: Improved Shortest Augmenting Path Algorithm</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">註記</p>
+<p>此演算法沒有廣為人知的正式名稱。</p>
+<p>此演算法為Ahuja與Orlin於1991年發表，論文名稱是Distance-directed augmenting path algorithms for maximum flow and parametric maximum flow problems。該篇論文中同時發表了兩個最大流演算法，因此若直接稱呼Distance-directed Augmenting Path Algorithm，會無法準確指出是哪一個演算法。</p>
+<p>Ahuja與Orlin後來出版一本網路流的書籍，書上描述此演算法為「Shortest Augmenting Path Algorithm的改良版」，但是仍未給予一個適切的名稱。</p>
+<p>此演算法在中文網路上俗稱為「SAP演算法」，不過這個名稱恰與Edmonds-Karp Algorithm撞名，應是誤植。</p>
+<p class="t">演算法</p>
+<p>Preflow-Push Algorithm的加強版。以DFS的順序沿著admissible edge行走，當遇到死胡同，就relabel，並且回溯，尋找其他可以到達匯點的路徑。</p>
+<p>與Preflow-Push Algorithm不同的地方，在於此演算法是找到匯點之後，才延著擴充路徑來擴充流量，而不是逐點推水。</p>
+<p>時間複雜度仍是O(VVE)。</p>
+<textarea>
+const int V = 100;
+int C[V][V], R[V][V];
+int h[V], gap[V+1];
+int p[V], pf[V];
+
+int ISAP(int s, int t)
+{
+	memcpy(R, C, sizeof(C));
+	memset(h, 0, sizeof(h));
+	memset(gap, 0, sizeof(gap));
+	pf[s] = 1e9;
+	p[s] = s;
+
+	int flow = 0, i = s, j = 0, f = 1e9;
+	while (h[s] < V)
+	{
+		// 尋找一條 admissible edge
+		for (j=0; j<V; ++j)
+			if (R[i][j] > 0 && h[i] == h[j] + 1)
+				break;
+
+		// 沿著 admissible 前進，到達匯點，擴充流量。
+		if (j == t)
+		{
+			f = min(f, R[i][j]);
+			flow += f;
+			for (; j != s; j = i, i = p[i])
+			{
+				R[i][j] -= f;
+				R[j][i] += f;
+			}
+			// 回到源點，繼續找擴充路徑。
+			f = 1e9;
+			i = s;
+		}
+		// 沿著 admissible edge 前進
+		else if (j < V)
+		{
+			pf[j] = f;
+			p[j] = i;
+			f = min(f, R[i][j]);
+			i = j;
+		}
+		// relabel，並且沿著先前的路徑撤退。
+		else
+		{
+			if (--gap[h[i]] == 0) h[s] = V;
+			++gap[++h[i]];
+			f = pf[i];
+			i = p[i];
+		}
+	}
+	return flow;
+}
+</textarea>
+<textarea>
+const int V = 100;
+int C[V][V], R[V][V];
+int h[V], gap[V+1];
+
+int DFS(int i, int df, int s, int t)
+{
+	// 到達匯點，得到擴充流量大小。
+	if (i == t) return df;
+
+	// 尋找 admissible edge
+	for (int j=0; j<V; ++j)
+		if (R[i][j] > 0 && h[i] == h[j] + 1)
+		{
+			// 沿著 admissible edge 前進
+			int f = DFS(j, min(df, R[i][j]), s, t);
+
+			// 到達匯點，擴充流量。
+			if (f)
+			{
+				R[i][j] -= f;
+				R[j][i] += f;
+				return f;
+			}
+		}
+
+	// relabel，並且沿著先前的路徑撤退。
+	if (--gap[h[i]] == 0) h[s] = V;
+	++gap[++h[i]];
+	return 0;
+}
+
+int ISAP(int s, int t)
+{
+	memcpy(R, C, sizeof(R));
+
+	int flow = 0;
+	while (h[s] < V) flow += DFS(s, 1e9, s, t);
+	return flow;
+}
+</textarea>
+<textarea>
+const int V = 100, E = 5000;
+
+int en = 0;
+int to[E*2], next[E*2], R[E*2];	// edge list
+int adj[V];	// adjacency lists，初始化為-1
+
+int h[V], gap[V+1];
+
+void addedge(int a, int b, int c)
+{
+	to[en] = b; R[en] = c;
+	next[en] = adj[a]; adj[a] = en++;
+	to[en] = a; R[en] = 0;
+	next[en] = adj[a]; adj[a] = en++;
+}
+
+int DFS(int a, int df, int s, int t)
+{
+	if (a == t) return df;
+
+	for (int i = adj[a]; i != -1; i = next[i])
+	{
+		int b = to[i];
+		if (R[i] > 0 && h[a] == h[b] + 1)
+		{
+			int f = DFS(b, min(df, R[i]), s, t);
+			if (f)
+			{
+				R[i] -= f;
+				R[i^1] += f;
+				return f;
+			}
+		}
+	}
+
+	if (--gap[h[a]] == 0) h[s] = V;
+	++gap[++h[a]];
+	return 0;
+}
+
+int ISAP(int s, int t)
+{
+	memset(h, 0, sizeof(h));
+	memset(gap, 0, sizeof(gap));
+
+	int flow = 0;
+	while (h[s] < V) flow += DFS(s, 1e9, s, t);
+	return flow;
+}
+</textarea>
+<p class="e">UVa 10983</p>
+<p class="t">延伸閱讀：height label</p>
+<p>有了height label的概念之後，我們可以重新審視之前的擴充路徑演算法，給予更簡潔的解釋。</p>
+<pre>
+Ford-Fulkerson Algorithm（Augmenting Path Algorithm）
+不使用height label。
+隨便找擴充路徑。
+
+Edmonds-Karp Algorithm（Shortest Augmenting Path Algorithm）
+每回合都用BFS重新建立height label，
+同時用BFS找一條擴充路徑。
+
+Dinic's Algorithm（Blocking Flow Algorithm）
+每回合都用BFS重新建立height label，
+每回合都用多次DFS找擴充路徑（最後形成阻塞流）。
+
+Improved Shortest Augmenting Path Algorithm
+一開始用BFS建立height label（也可以全部設定為零），
+每回合都用DFS找擴充路徑。
+</pre>
+<p class="t">摘要</p>
+<pre>
+最大流問題只有四個要素：
+　甲、容量（Flow Network），甲≥0。
+　乙、流量（Flow），甲≥乙≥0。
+　丙、剩餘容量（Residual Network），甲減乙、反向乙。
+　丁、遵行方向（Admissible Network），丁屬於丙：邊兩端高度差為一。
+
+最大流問題：
+　給定甲暨源點匯點，令乙趨近甲，求乙。
+
+最大流演算法：
+　以丙的視角看問題，有隙就流。（最大流最小割定理）
+　以丁的視角看問題，可以縮短流動路線，加速演算法。
+
+最大流演算法有兩大類：
+　一、擴充路徑法（率先流到匯點）
+　Ford-Fulkerson Algorithm           丙上隨便找一條擴充路徑，不斷找。
+　(Augmenting Path Algorithm)        O(E*F)
+
+　Edmonds-Karp Algorithm             丙上BFS找一條擴充路徑，最多VE次。
+　(Shortest Augmenting Path Algo.)   O(V*E*E)
+
+　Dinic's Algorithm                  丁上找擴充流，最多V次。
+　(Blocking Flow Algorithm)          O(V*V*E)
+
+　Improved Shortest Augmenting       丁上找擴充路徑，最多VE次。
+　Path Algorithm                     O(V*V*E)
+
+　Capacity Scaling Algorithm         限制甲尺度找擴充流，最多logC次。
+　                                   O(E*E*logC)
+
+　二、預流推進法（率先流離源點）
+　Preflow-Push Algorithm             隨性推  O(V*V*E)
+　Relabel-to-front Algorithm         插隊推  O(V*V*V)
+　FIFO Preflow-Push Algorithm        FIFO推  O(V*V*V)
+　Highest-Label Preflow-Push Algo.   最高推  O(V*V*V)
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum s-t Flow: Orlin's Algorithm</p>
+<p class="r">程度★★★　難度★★★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://jorlin.scripts.mit.edu/Max_flows_in_O(nm)_time.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://jorlin.scripts.mit.edu/Max_flows_in_O(nm)_time.html'" tppabs="http://jorlin.scripts.mit.edu/Max_flows_in_O(nm)_time.html">http://jorlin.scripts.mit.edu/Max_flows_in_O(nm)_time.html</a></p>
+<p>目前時間複雜度最低的演算法。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

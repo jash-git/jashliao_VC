@@ -1,0 +1,225 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Interpolation</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Interpolation</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Interpolation</p>
+<p>「內插」就是找一個函數，完全符合手邊的一堆數據。此函數稱作「內插函數」。</p>
+<img src="Interpolation1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Interpolation1.png">
+<p>換句話說，「內插」就是給定一堆函數值，然後找到一個函數，穿過所有給定的函數值。外觀就像是在相鄰的函數值之間，插滿函數值，因而得名「內插」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Linear Interpolation（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Linear Interpolation</p>
+<p>X座標相鄰的函數值，用直線連起來。</p>
+<img src="LinearInterpolation1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LinearInterpolation1.png">
+<p>想要求得內插函數值，運用相似三角形邊長等比例的性質就行了。首先求得X座標與端點的距離，再以等比例求得Y座標與端點的距離，答案就呼之欲出了。</p>
+<p>這個手法在計算幾何的「<a href="PointLinePlane.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointLinePlane.html">兩直線交點</a>」也有出現。</p>
+<img src="LinearInterpolation2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LinearInterpolation2.png">
+<pre>
+given x , get y
+
+     x  - x1
+y = --------- * (y2 - y1) + y1
+     x2 - x1
+</pre>
+<p>拓展到二元函數值，此時線性內插就有很多種選擇。從幾何學的觀點來看，線性內插的投影，就是「<a href="Triangulation.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Triangulation.html">Triangulation</a>」。</p>
+<p>【待補圖片】</p>
+<!--<img src="LinearInterpolation3.png">-->
+<p class="t">延伸閱讀：加權平均數</p>
+<p>加權平均數的概念無所不在，建議各位背得滾瓜爛熟，熟到連作夢也會出現。</p>
+<img src="LinearInterpolation4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LinearInterpolation4.png">
+<p>兩數乘上特定比例之後相加，得到的數值就是加權平均數，介於兩數之間。</p>
+<pre>
+x = x1 * w + x2 * (1-w)
+
+其中 0 <= w <= 1
+</pre>
+<p>我們可以拓展到二維、三維、四維。</p>
+<pre>
+(x,y,z) = (x1,y1,z1) * w + (x2,y2,z2) * (1-w)
+
+也就是
+x = x1 * w + x2 * (1-w)
+y = y1 * w + y2 * (1-w)
+z = z1 * w + z2 * (1-w)
+</pre>
+<p>另一方面，我們可以拓展成三個數、四個數、五個數。</p>
+<pre>
+x = x1 * w1 + x2 * w2 + ... + xn * wn
+
+其中 w1 + ... + wn = 1
+</pre>
+<p>從幾何學的角度來看，加權平均數總是落在「<a href="ConvexHull.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ConvexHull.html">Convex Hull</a>」之內。我們最常見到的二維凸包，就是拓展到二維、N個數。</p>
+<p>從機率學的角度來看，加權平均數就是期望值。</p>
+<p>從統計學的角度來看，加權平均數就是線性內插。</p>
+<p class="t">延伸閱讀：加權平均數</p>
+<p>權重總和不見得要剛好等於1。我們可以選定一組權重，每個權重除以權重總和，得到比例，讓這些比例加起來是1。</p>
+<pre>
+x = x1 *   w   + x2 * (1-w)
+
+           a            b  
+x = x1 * ----- + x2 * -----
+         a + b        a + b
+
+    x1 * a + x2 * b
+  = ---------------
+         a + b     
+</pre>
+<pre>
+x = x1 * w1 + x2 * w2 + ... + xn * wn
+
+               a1                          an
+x = x1 * ------------- +  ... + xn * -------------
+         a1 + ... + an               a1 + ... + an
+
+    x1 * a1 + ... + xn * an
+  = -----------------------
+         a1 + ... + an     
+</pre>
+<p>從物理的角度來看，加權平均數就是質心。</p>
+<p>從化學的角度來看，加權平均數就是混合濃度。</p>
+<p>加權平均數的概念無所不在，建議各位背得滾瓜爛熟，熟到連作夢也會出現。</p>
+<p class="t">Barycentric Interpolation</p>
+<img src="LinearInterpolation5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LinearInterpolation5.png">
+<p class="t">Bilinear Interpolation（Quadrilateral interpolation）</p>
+<img src="LinearInterpolation6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LinearInterpolation6.png">
+<p><a href="javascript:if(confirm('http://stackoverflow.com/questions/808441/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://stackoverflow.com/questions/808441/'" tppabs="http://stackoverflow.com/questions/808441/">http://stackoverflow.com/questions/808441/</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Polynomial Interpolation</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">多項式內插</p>
+<p>內插函數採用多項式函數。</p>
+<img src="PolynomialInterpolation1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolynomialInterpolation1.png">
+<p>N-1次以上的多項式，一定可以完全符合N個函數值。</p>
+<p>低於N-1次的多項式，有時候可以完全符合N個函數值。</p>
+<img src="PolynomialInterpolation2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolynomialInterpolation2.png">
+<p>我們習慣使用N-1次的多項式（有N項），符合N個函數值。事實上，也只有唯一一個N-1次多項式，能夠符合這N個函數值！</p>
+<p>多項式內插就變成了：給定N個函數值，找到N個多項式係數。</p>
+<pre>
+給定N個函數值
+(x<sub>0</sub> p(x<sub>0</sub>)), (x<sub>1</sub> p(x<sub>1</sub>)), ... , (x<sub>N-1</sub> p(x<sub>N-1</sub>))
+
+內插函數是N-1次的多項式函數
+p(x) = c<sub>0</sub> + c<sub>1</sub> x<sup>1</sup> + ... + c<sub>N-1</sub> x<sup>N-1</sup>
+
+目標是找到N個係數
+c<sub>0</sub>, c<sub>1</sub>, ... , c<sub>N-1</sub>
+</pre>
+<p class="t">演算法（Vandermonde Matrix）</p>
+<p><a href="javascript:if(confirm('http://ccjou.wordpress.com/2009/12/22/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://ccjou.wordpress.com/2009/12/22/'" tppabs="http://ccjou.wordpress.com/2009/12/22/">http://ccjou.wordpress.com/2009/12/22/</a></p>
+<pre>
+N個函數值
+(x<sub>1</sub> p(x<sub>0</sub>)), (x<sub>1</sub> p(x<sub>1</sub>)), ... , (x<sub>N-1</sub> p(x<sub>N-1</sub>))
+
+內插函數
+p(x) = c<sub>0</sub> + c<sub>1</sub> x<sup>1</sup> + ... + c<sub>N-1</sub> x<sup>N-1</sup>
+
+內插就是滿足
+p(x<sub>0  </sub>) = c<sub>0</sub> + c<sub>1</sub> x<sub>0</sub><sup>1  </sup> + ... + c<sub>N-1</sub> x<sub>0</sub><sup>N-1  </sup>
+p(x<sub>1  </sub>) = c<sub>0</sub> + c<sub>1</sub> x<sub>1</sub><sup>1  </sup> + ... + c<sub>N-1</sub> x<sub>1</sub><sup>N-1  </sup>
+  ⋮             ⋮
+p(x<sub>N-1</sub>) = c<sub>0</sub> + c<sub>1</sub> x<sub>N-1</sub><sup>1</sup> + ... + c<sub>N-1</sub> x<sub>N-1</sub><sup>N-1</sup>
+
+寫成線性變換的模樣
+[ 1 x<sub>0</sub><sup>1  </sup> ⋯ x<sub>0</sub><sup>N-1  </sup> ] [ c<sub>0  </sub> ]   [ p(x<sub>0  </sub>) ]
+[ 1 x<sub>1</sub><sup>1  </sup> ⋯ x<sub>1</sub><sup>N-1  </sup> ] [ c<sub>1  </sub> ]   [ p(x<sub>1  </sub>) ]
+[    <sub> </sub><sup>   </sup> ⋮  <sub> </sub><sup>     </sup> ] [ ⋮<sub>   </sub> ] = [   ⋮<sub>   </sub>  ]
+[    <sub> </sub><sup>   </sup> ⋮  <sub> </sub><sup>     </sup> ] [ ⋮<sub>   </sub> ]   [   ⋮<sub>   </sub>  ]
+[ 1 x<sub>N-1</sub><sup>1</sup> ⋯ x<sub>N-1</sub><sup>N-1</sup> ] [ c<sub>N-1</sub> ]   [ p(x<sub>N-1</sub>) ]
+
+         A             c      =   y
+
+當矩陣A有反矩陣，向量c就有唯一解。
+矩陣A有反矩陣的條件，就是x<sub>0</sub>到x<sub>N-1</sub>都不同；
+也就是一開始給定的N個函數值，X座標都不同。
+</pre>
+<pre>
+5個函數值
+p(0) = 12, p(2) = 32, p(3) = 43, p(5) = 55, p(9) = 66
+
+內插函數是4次多項式，一共5項
+p(x) = c<sub>0</sub> x<sup>0</sup> + c<sub>1</sub> x<sup>1</sup> + c<sub>2</sub> x<sup>2</sup> + c<sub>3</sub> x<sup>3</sup> + c<sub>4</sub> x<sup>4</sup>
+
+內插就是滿足
+p(0) = 0<sup>0</sup> c<sub>0</sub> + 0<sup>1</sup> c<sub>1</sub> + 0<sup>2</sup> c<sub>2</sub> + 0<sup>3</sup> c<sub>3</sub> + 0<sup>4</sup> c<sub>4</sub> = 12
+p(2) = 2<sup>0</sup> c<sub>0</sub> + 2<sup>1</sup> c<sub>1</sub> + 2<sup>2</sup> c<sub>2</sub> + 2<sup>3</sup> c<sub>3</sub> + 2<sup>4</sup> c<sub>4</sub> = 32
+p(3) = 3<sup>0</sup> c<sub>0</sub> + 3<sup>1</sup> c<sub>1</sub> + 3<sup>2</sup> c<sub>2</sub> + 3<sup>3</sup> c<sub>3</sub> + 3<sup>4</sup> c<sub>4</sub> = 43
+p(5) = 5<sup>0</sup> c<sub>0</sub> + 5<sup>1</sup> c<sub>1</sub> + 5<sup>2</sup> c<sub>2</sub> + 5<sup>3</sup> c<sub>3</sub> + 5<sup>4</sup> c<sub>4</sub> = 55
+p(9) = 9<sup>0</sup> c<sub>0</sub> + 9<sup>1</sup> c<sub>1</sub> + 9<sup>2</sup> c<sub>2</sub> + 9<sup>3</sup> c<sub>3</sub> + 9<sup>4</sup> c<sub>4</sub> = 66
+
+寫成線性變換的模樣
+[ 0<sup>0</sup> 0<sup>1</sup> 0<sup>2</sup> 0<sup>3</sup> 0<sup>4</sup> ] [ c<sub>0</sub> ]   [ 12 ]
+[ 2<sup>0</sup> 2<sup>1</sup> 2<sup>2</sup> 2<sup>3</sup> 2<sup>4</sup> ] [ c<sub>1</sub> ]   [ 32 ]
+[ 3<sup>0</sup> 3<sup>1</sup> 3<sup>2</sup> 3<sup>3</sup> 3<sup>4</sup> ] [ c<sub>2</sub> ] = [ 43 ]
+[ 5<sup>0</sup> 5<sup>1</sup> 5<sup>2</sup> 5<sup>3</sup> 5<sup>4</sup> ] [ c<sub>3</sub> ]   [ 55 ]
+[ 9<sup>0</sup> 9<sup>1</sup> 9<sup>2</sup> 9<sup>3</sup> 9<sup>4</sup> ] [ c<sub>4</sub> ]   [ 66 ]
+
+求得多項式係數             -1
+[ c<sub>0</sub> ]   [ 0<sup>0</sup> 0<sup>1</sup> 0<sup>2</sup> 0<sup>3</sup> 0<sup>4</sup> ]  [ 12 ]
+[ c<sub>1</sub> ]   [ 2<sup>0</sup> 2<sup>1</sup> 2<sup>2</sup> 2<sup>3</sup> 2<sup>4</sup> ]  [ 32 ]
+[ c<sub>2</sub> ] = [ 3<sup>0</sup> 3<sup>1</sup> 3<sup>2</sup> 3<sup>3</sup> 3<sup>4</sup> ]  [ 43 ]
+[ c<sub>3</sub> ]   [ 5<sup>0</sup> 5<sup>1</sup> 5<sup>2</sup> 5<sup>3</sup> 5<sup>4</sup> ]  [ 55 ]
+[ c<sub>4</sub> ]   [ 9<sup>0</sup> 9<sup>1</sup> 9<sup>2</sup> 9<sup>3</sup> 9<sup>4</sup> ]  [ 66 ]
+
+多項式係數有唯一解的條件，就是x=0,2,3,5,9是五個不同數字。
+</pre>
+<p>十分漂亮的公式解，時間複雜度等同高斯消去法O(N^3)。</p>
+<p>數值經過次方，一下子就溢位了；數值範圍很大，計算反矩陣極容易產生誤差。因此這個公式解並不實用。</p>
+<p class="t">演算法（Lagrange Interpolation）</p>
+<pre>
+       n          x  - rj
+p(x) = Σ  di  Π  ---------
+      i=0    j≠i  ri - rj
+</pre>
+<pre>
+n = 5
+p(0) = 12, p(2) = 32, p(3) = 43, p(5) = 55, p(9) = 66
+
+                  (x-2)(x-3)(x-5)(x-9)
+p0(x) = 12 * -------------------------   只有代入x=0會等於12，
+                  (0-2)(0-3)(0-5)(0-9)   代入x=2,3,5,9皆是0。
+
+
+             (x-0)     (x-3)(x-5)(x-9)
+p1(x) = 32 * -------------------------   只有代入x=2會等於32，
+             (2-0)     (2-3)(2-5)(2-9)   代入x=0,3,5,9皆是0。
+
+             (x-0)(x-2)     (x-5)(x-9)
+p2(x) = 43 * -------------------------
+             (3-0)(3-2)     (3-5)(3-9)
+
+             (x-0)(x-2)(x-3)     (x-9)
+p3(x) = 55 * -------------------------
+             (5-0)(5-2)(5-3)     (5-9)
+
+             (x-0)(x-2)(x-3)(x-5)
+p4(x) = 66 * -------------------------
+             (9-0)(9-2)(9-3)(9-5)
+
+p0(x) + p1(x) + p2(x) + p3(x) + p4(x) 即為所求
+</pre>
+<p>計算第一道式子需時O(N^2)；計算其餘N-1道式子，每一道式子僅需時O(N)。時間複雜度為O(N^2)。</p>
+<p class="t">演算法（Neville's Algorithm）</p>
+<pre>
+a(xi) = p(xi)   for i = 0 ... n-1
+b(xi) = p(xi)   for i = 1 ... n
+
+            (x - x0) b(x) - (x - xn) a(x)
+let c(x) = -------------------------------
+                       xn - x0
+
+thus c(xi) = p(xi)   for i = 0 ... n
+</pre>
+<p>Dynamic Programming，子問題是區間，每個子問題[i,j]源自兩個子問題[i-1,j]與[i,j-1]，子問題總共O(N^2)個。解決一個子問題，多項式乘法需時O(N)，故總時間複雜度為O(N^3)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Spline Interpolation（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

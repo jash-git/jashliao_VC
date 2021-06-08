@@ -1,0 +1,1292 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Graphics</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Graphics</p>
+</div><div class="c">
+<p>Graphics是繪畫、製圖的意思。左圖是2D製圖、右圖是3D製圖，相信大家一眼就能看出差異：</p>
+<div class="seq"><img src="SMB3-gameplay.gif" tppabs="http://upload.wikimedia.org/wikipedia/en/a/ac/SMB3-gameplay.gif">
+<img src="Mario64_-_Dire_Dire_Docks.png" tppabs="http://upload.wikimedia.org/wikipedia/en/4/41/Mario64_-_Dire_Dire_Docks.png"></div>
+<p>製圖演算法廣泛應用於電腦遊戲、電影特效、卡通動畫、建築設計、醫學影像等等。比如李安引進台灣的<a href="javascript:if(confirm('http://www.rhythm.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.rhythm.com/'" tppabs="http://www.rhythm.com/">Rhythm & Hues Studios</a>公司、比如<a href="javascript:if(confirm('http://hammerbchen.blogspot.tw/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://hammerbchen.blogspot.tw/'" tppabs="http://hammerbchen.blogspot.tw/">CG Taiwaner</a>網站。</p>
+<p>Image演算法著重於讓既有圖片產生變化，Graphics演算法專注於從無到有產生圖片。兩者相輔相成、密不可分。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">2D Rendering（Under Construction!）</p>
+</div><div class="c">
+<p class="t">前言</p>
+<p>2D Rendering的演算法都已經包裝成函式庫，甚至在顯示卡上面燒成電路了。前人種樹後人乘涼，我們已經不用再痛下苦功編寫程式碼，只要使用OpenGL、QT、java.awt.Graphics、HTML5 Canvas等等既有的函式庫，就能輕鬆地在視窗和網頁當中繪圖。</p>
+<p>然而本篇文章不打算教導大家如何應用函式庫，而是打算教導大家如何設計函式庫。</p>
+<p>繪製長方形、圓形、曲線等等圖形，管理鍵盤、滑鼠、視窗等等介面，我們需要撰寫各式各樣的程式碼。規劃編排大量程式碼的學問，屬於軟體工程的範疇。讀者可以修習「物件導向程式設計Object-oriented Programming」課程，學到這些知識。</p>
+<p>然而本篇文章不打算討論物件導向，只打算討論演算法。</p>
+<p>最有名氣的2D Rendering軟體，應該就是小畫家了。其他還有AutoCAD、Visio、Illustrator等等軟體。</p>
+<p>然而本篇文章不打算教大家如何使用這些軟體，也不打算教大家製作這些軟體──儘管這才是最重要、最值得學習的事情。</p>
+<iframe src="k0Qpc4UzP9g" tppabs="http://www.youtube.com/embed/k0Qpc4UzP9g"></iframe>
+<p class="t">Pixel</p>
+<p>先前已經介紹過「像素」。所謂的2D Rendering，其實就是逐步設定每個像素的RGB值，呈現我們想要的圖案。</p>
+<div class="seq"><img src="PixelArt1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PixelArt1.png"><img src="PixelArt2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PixelArt2.png"></div>
+<p>以人工方式，一點一點設定每個像素的RGB值，稱做「<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Pixel_art  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Pixel_art'" tppabs="http://en.wikipedia.org/wiki/Pixel_art">Pixel Art</a>」，常常出現在網頁佈景與電玩畫面裡面。不過筆者並不熟悉Pixel Art，也就沒辦法介紹給大家了。</p>
+<p>以演算法，一點一點設定每個像素的RGB值，則是接下來要介紹的內容。</p>
+<textarea>
+const int X = 1024, Y = 768;
+struct Color {unsigned char r, g, b;};
+Color image[Y][X];
+
+void drawPixel(int x, int y)
+{
+	image[y][x] = (Pixel){0,0,0};	// 黑色
+}
+
+bool onImage(int x, int y)
+{
+	return x >= 0 && x < X && y >= 0 && y < Y;
+}
+
+void initImage()
+{
+	memset(image, 0xff, sizeof(image));	// 白色
+}
+</textarea>
+<p class="t">鉤勒幾何圖形：線段</p>
+<img src="2DRendering1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DRendering1.png">
+<p>給定線段的兩個端點，如何找到線段對應的像素呢？</p>
+<p>腦筋靈活的讀者肯定馬上聯想到「<a href="Interpolation.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Interpolation.html">線性內插</a>」。不過像素看起來零零散散的，根本沒有連成一線。</p>
+<textarea>
+void drawSegment(Point p1, Point p2)
+{
+	int xmin = max(0,   (int)ceil (min(p1.x, p2.x)));
+	int xmax = min(X-1, (int)floor(max(p1.x, p2.x)));
+	for (int x = xmin; x <= xmax; ++x)
+	{
+		float y = (p2.x == p1.x ? p1.y : (x - p1.x) / (p2.x - p1.x) * (y - p1.y) + p1.y);
+		drawPixel(x, round(y));
+	}
+}
+</textarea>
+<p>「<a href="javascript:if(confirm('http://wiki.answers.com/Q/DDA_line_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://wiki.answers.com/Q/DDA_line_algorithm'" tppabs="http://wiki.answers.com/Q/DDA_line_algorithm">DDA Algorithm</a>」則是計算兩個端點在X軸、Y軸上的差距，取較大者做為像素數量，使得像素互相碰觸。另一方面，從逐點內插，改為預先計算斜率、逐步累加，大幅降低了運算量。</p>
+<textarea>
+void drawSegment(Point p1, Point p2)
+{
+	Point length = p2 - p1;
+	int step = ceil(max(
+		fabs(length.x),
+		fabs(length.y),
+		fabs(length.z)
+	));
+	Point gap = length / step;
+
+	for (int i=0; i<step+1; ++i)
+	{
+		int x = round(p1.x);	// 四捨五入
+		int y = round(p1.y);
+		if (!onImage(x, y)) continue;
+		drawPixel(x, y);
+		p1 = p1 + gap;
+	}
+}
+</textarea>
+<p>「<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Bresenham\'s_line_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Bresenham\'s_line_algorithm'" tppabs="http://en.wikipedia.org/wiki/Bresenham's_line_algorithm">Bresenham's Algorithm</a>」搞定了浮點數誤差。</p>
+<p>「<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Xiaolin_Wu\'s_line_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Xiaolin_Wu\'s_line_algorithm'" tppabs="http://en.wikipedia.org/wiki/Xiaolin_Wu's_line_algorithm">Wu's Algorithm</a>」加入了抗鋸齒效果。</p>
+<p class="t">鉤勒幾何圖形：圓</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Midpoint_circle_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Midpoint_circle_algorithm'" tppabs="http://en.wikipedia.org/wiki/Midpoint_circle_algorithm">Bresenham's Algorithm</a>。</p>
+<p class="t">鉤勒幾何圖形：曲線</p>
+<p>鉤勒「<a href="Curve.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Curve.html">Bézier Curve</a>」是用「<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/De_Casteljau\'s_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/De_Casteljau\'s_algorithm'" tppabs="http://en.wikipedia.org/wiki/De_Casteljau's_algorithm">de Casteljau's Algorithm</a>」。</p>
+<p>鉤勒「<a href="Curve.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Curve.html">B-spline Curve</a>」是用「<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/De_Boor\'s_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/De_Boor\'s_algorithm'" tppabs="http://en.wikipedia.org/wiki/De_Boor's_algorithm">de Boor's algorithm</a>」。</p>
+<pre>
+http://stackoverflow.com/questions/7884433
+</pre>
+<p class="t">廓填幾何圖形：簡單多邊形（Flood Fill Algorithm）</p>
+<p>廓填一個簡單多邊形裡面所有的像素，讓整塊多邊形擁有顏色。多邊形以頂點座標的形式儲存，頂點座標是浮點數。像素座標則是整數。</p>
+<p>最簡單的方式是試誤法：窮舉畫面上所有像素，運用「<a href="Polygon.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon.html">判斷點在多邊形內部</a>」的演算法，判斷各個像素是否在多邊形的內部；如果是，就填上顏色。時間複雜度是O(XYN)，其中X與Y是畫面的長與寬，N是簡單多邊形的頂點數目。</p>
+<p>還有沒有更好的方法呢？我們可以把問題分成兩個步驟：一、先鉤勒多邊形的邊界；二、再填充多邊形的內部。一旦有了邊界，就不必費心判斷像素是否在多邊形內。</p>
+<p>鉤勒的部分，運用方才介紹的鉤勒線段演算法即可。填墨的部分，讀者應該馬上就聯想到「<a href="Modeling.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Modeling.html">Flood Fill Algorithm</a>」。</p>
+<p>鉤勒需時O(N+B)，填墨需時O(B+4A)，總共的時間複雜度是O(N+B+A)。其中N是多邊形的頂點數目，B是多邊形邊界的像素數目，A是多邊形內部的像素數目。</p>
+<p class="t">廓填幾何圖形：凸多邊形（Scanline Fill Algorithm）</p>
+<img src="2DRendering2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DRendering2.png">
+<p>一、求出凸多邊形的最低像素和最高像素，把凸多邊形的邊，分為左邊界和右邊界。二、建立兩條陣列，陣列大小等同於凸多邊形的垂直高低差，用來儲存垂直方向各個像素的左邊界與右邊界。三、依序窮舉凸多邊形的邊，把每條邊碰到的像素位置算出來，作為邊界值，存到陣列。四、水平方向，一條一條填滿多邊形。</p>
+<p>鉤勒需時O(N+2B)，填墨需時O(2B+A)，總共的時間複雜度是O(N+B+A)。</p>
+<p>雖然表面上Flood Fill Algorithm與Scanline Fill Algorithm的時間複雜度一模一樣，但是實際上Scanline Fill Algorithm的廓填速度是比較快的。</p>
+<textarea>
+const int X = 1024, Y = 768;
+bool screen[X][Y];
+float xmin[Y], xmax[Y];
+
+void fillEdge(Point& p1, Point& p2)
+{
+	int ymini = max(0,   (int)ceil (min(p1.y, p2.y)));
+	int ymaxi = min(Y-1, (int)floor(max(p1.y, p2.y)));
+	for (int y = ymini; y <= ymaxi; ++y)
+	{
+		float x = (p2.y == p1.y ? p1.x : (y - p1.y) / (p2.y - p1.y) * (x - p1.x) + p1.x);
+		xmin[y] = min(xmin[y], x);	// 更新左邊界
+		xmax[y] = max(xmax[y], x);	// 更新右邊界
+	}
+}
+
+void fillPolygon(Polygon p)
+{
+	float ymin = +1e9, ymax = -1e9;
+	for (int i=0; i<p.size(); ++i)
+	{
+		ymin = min(ymin, p[i].y);
+		ymax = max(ymax, p[i].y);
+	}
+
+	int ymini = max(0,   (int)ceil (ymin));
+	int ymaxi = min(Y-1, (int)floor(ymax));
+	for (int y = ymini; y <= ymaxi; ++y)
+	{
+		xmin[y] = +1e9;
+		xmax[y] = -1e9;
+	}
+
+	for (int i=0; i<p.size(); ++i)
+		fillEdge(p[i], p[i+1]);
+	fillEdge(p.back(), p[0]);
+
+	initImage();
+	for (int y = ymini; y <= ymaxi; ++y)
+	{
+		int xmini = max(0,   (int)ceil (xmin[y]));
+		int xmaxi = min(X-1, (int)floor(xmax[y]));
+		for (int x = xmini; x <= xmaxi; ++x)
+			drawPixel(x, y);
+	}
+}
+</textarea>
+<p class="e">UVa 143 356</p>
+<p class="t">廓填幾何圖形：簡單多邊形（Scanline Fill Algorithm）</p>
+<p><a href="javascript:if(confirm('http://alienryderflex.com/polygon_fill/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://alienryderflex.com/polygon_fill/'" tppabs="http://alienryderflex.com/polygon_fill/">http://alienryderflex.com/polygon_fill/</a></p>
+<p class="t">廓填幾何圖形：簡單多邊形（Polygon Triangulation）</p>
+<p>將簡單多邊形進行「<a href="Triangulation2.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Triangulation2.html">三角剖分</a>」，分別廓填每個三角形。</p>
+<p>使用「<a href="Lattice.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Lattice.html">Pick's Theorem</a>」能事先算出像素數量。</p>
+<p class="t">Animation</p>
+<p>Double Buffering</p>
+<p>2D Transform</p>
+<p>變量漸增</p>
+<p>2.5D</p>
+<p class="t">貼圖</p>
+<p>圖片分為點陣圖與向量圖。點陣圖比較簡單，找到圖片左上角座標，將每一個圖片像素依照順序填入畫面像素即可。至於向量圖我就不清楚了。</p>
+<p>http://www.leptonica.com/rotation.html</p>
+<p class="t">貼字</p>
+<p>筆者對這方面沒有研究！</p>
+<p>http://en.wikipedia.org/wiki/Subpixel_rendering</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Mesh Rendering</p>
+</div><div class="c">
+<p class="t">Polygon Mesh</p>
+<img src="MeshRendering1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering1.png">
+<p>採用平坦的多邊形來組成物體表面，再運用「<a href="Triangulation2.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Triangulation2.html">多邊形三角剖分</a>」將表面切割成大量三角形。Mesh Rendering的目的是繪製所有三角形。</p>
+<p>替現實生活的物體建立Polygon Mesh，是一套複雜的學問。所幸我們已經有現成的Polygon Mesh可以使用，我們可以直接下載宅男大樓的Polygon Mesh，是純文字檔案：</p>
+<p><a href="javascript:if(confirm('http://graphics.csie.ntu.edu.tw/~ming/courses/icg/models.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://graphics.csie.ntu.edu.tw/~ming/courses/icg/models.html'" tppabs="http://graphics.csie.ntu.edu.tw/~ming/courses/icg/models.html">http://graphics.csie.ntu.edu.tw/~ming/courses/icg/models.html</a></p>
+<img src="MeshRendering2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering2.png">
+<p>檔案由許多三角形組成。一個三角形擁有正面顏色、背面顏色、三個頂點座標（另添加三個頂點法向量）。</p>
+<p>三角形的頂點順序，決定了三角形的正面。正視三角形的正面，我們讓三角形頂點呈逆時針排列；依照頂點順序計算「<a href="PointLinePlane.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointLinePlane.html">外積</a>」，就得到三角形的正面方向。</p>
+<p>另外我們也把三角形的法向量，定義為三角形的正面方向。</p>
+<p>逆時針排列、外積得正面、法向量即正面，計算過程完全不需要調整正負號，最後便成為我們約定俗成、心照不宣的規矩。</p>
+<textarea>
+struct Triangle {Point foreColor, backColor, vertex[3], vnormal[3], normal;};
+vector<Triangle> triangleList;
+
+bool LoadFile(const char* fileName)
+{
+	ifstream fin(fileName);
+	if (!fin) return false;
+
+	string s;
+	while (fin >> s)
+	{
+		/* 讀檔 */
+		Triangle t;
+		fin >> t.foreColor >> t.backColor;
+		for (int i = 0; i < 3; ++i)
+			fin >> t.vertex[i] >> t.vnormal[i];
+
+		/* 額外處理 */
+		// OpenGL的色彩值範圍是0~1，而不是0~255。
+		t.foreColor = t.foreColor / 256;
+		t.backColor = t.backColor / 256;
+		// 向量預先正規化，往後內積運算就不用除以向量長度。
+		for (int i = 0; i < 3; ++i)
+			t.vnormal[i] = normalize(t.vnormal[i]);
+		// 三角形法向量（有許多種求法，使用其中一種即可。）
+		t.normal = cross(t.vertex[1] - t.vertex[0], t.vertex[2] - t.vertex[0]);
+//		t.normal = cross(t.vertex[1] - t.vertex[0], t.vertex[2] - t.vertex[1]);
+		t.normal = normalize(t.normal);
+
+		if (fin) triangleList.push_back(t);
+	}
+	return true;
+}
+</textarea>
+<textarea>
+struct Point {float x, y, z;};
+
+Point operator+(Point p1, Point p2)
+{
+	return (Point){p1.x + p2.x, p1.y + p2.y, p1.z + p2.z};
+}
+
+Point operator-(Point p1, Point p2)
+{
+	return (Point){p1.x - p2.x, p1.y - p2.y, p1.z - p2.z};
+}
+
+Point operator*(Point p, float s)
+{
+	return (Point){p.x * s, p.y * s, p.z * s};
+}
+
+Point operator/(Point p, float s)
+{
+	return (Point){p.x / s, p.y / s, p.z / s};
+}
+
+istream& operator>>(istream& in, Point& p)
+{
+	return in >> p.x >> p.y >> p.z;
+}
+
+ostream& operator<<(ostream& out, Point& p)
+{
+	return out << '(' << p.x  << ',' << p.y << ',' << p.z << ')';
+}
+
+Point min(Point p1, Point p2)
+{
+	return (Point){min(p1.x, p2.x), min(p1.y, p2.y), min(p1.z, p2.z)};
+}
+
+Point max(Point p1, Point p2)
+{
+	return (Point){max(p1.x, p2.x), max(p1.y, p2.y), max(p1.z, p2.z)};
+}
+
+float dot(Point p1, Point p2)
+{
+	return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
+}
+
+//float length(Point p1)
+//{
+//	return sqrt(dot(p1, p1));
+//}
+
+Point cross(Point a, Point b)
+{
+	return (Point){a.y * b.z - b.y * a.z, a.z * b.x - b.z * a.x, a.x * b.y - b.x * a.y};
+}
+
+float crossvalue(Point& a, Point& b)
+{
+	return a.y * b.z - b.y * a.z + a.z * b.x - b.z * a.x + a.x * b.y - b.x * a.y;
+}
+
+float InvSqrt(float x)
+{
+	float xhalf = 0.5f * x;
+	int i = *(int*)&x;
+	i = 0x5f3759df - (i >> 1);
+	x = *(float*)&i;
+	x = x * (1.5f - xhalf * x * x);
+	return x;
+}
+
+Point normalize(Point a)
+{
+//	return a / length(a);
+	return a * InvSqrt(dot(a, a));
+}
+</textarea>
+<p class="e">UVa 10711</p>
+<p class="t">Orthogonal Projection / Perspective Projection</p>
+<img src="MeshRendering3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering3.png">
+<p>將三維物體投射到二維螢幕上面，有兩種方式：</p>
+<p>Orthogonal Projection是整個物體平行投射至螢幕上，投射角度是垂直90度。這個方式非常簡單，卻有一個嚴重的問題：物體不論遠近都一樣大，缺乏真實感。</p>
+<p>Perspective Projection則是聚焦於螢幕後方一點：遠的物體小、近的物體大，稍微符合人類視覺觀感。接下來我們只介紹Perspective Projection，它是主流的方式。</p>
+<img src="MeshRendering4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering4.png">
+<p>聰明的讀者肯定馬上聯想到物理課的「針孔成像」及「攝影機」。雖然Perspective Projection與「針孔成像」都有聚焦的概念，但是兩者不盡相同。</p>
+<img src="MeshRendering5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering5.png">
+<p>亦或聯想到美術課的「透視圖」。雖然Perspective Projection與「一點透視圖」的外觀相同、原理相似，但是兩者的製作方式截然不同。</p>
+<img src="MeshRendering6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering6.png">
+<p>回到正題。Perspective Projection又細分兩種實作方式：</p>
+<p>物體射向螢幕：窮舉每一個三角形，從三角形頂點射出射線至焦點，在螢幕上找到對應像素，然後在螢幕上廓填三角形。一般來說速度較快，用於即時3D遊戲、虛擬實境。</p>
+<p>螢幕射向物體：窮舉每一個螢幕像素，從焦點射出射線，在空間中找到對應三角形。速度極慢，用於繪製精美圖片、製作卡通電影動畫。</p>
+<p class="e">ICPC 5100</p>
+<p class="t">Perspective Projection: Object to Screen</p>
+<img src="MeshRendering7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering7.png">
+<p>我們替攝影機設計三個單位向量，分別是螢幕長的方向、寬的方向、面對的方向。</p>
+<p>求得Polygon Mesh的中心，倒退一萬步，做為焦點的位置。</p>
+<textarea>
+// 求得Polygon Mesh的中心點，方便設置焦點的位置。
+Point Center()
+{
+	Point a = {1e9, 1e9, 1e9}, b = {-1e9, -1e9, -1e9};
+	for (int i=0; i<(int)triangleList.size(); ++i)
+		for (int j=0; j<3; ++j)
+		{
+			a = min(a, triangleList[i].vertex[j]);
+			b = max(b, triangleList[i].vertex[j]);
+		}
+	return (a + b) / 2;
+}
+
+// 螢幕大小
+const int X = 400, Y = 300;
+
+struct Camera
+{
+	float radius, depth;
+	Point dirx, diry, dirz, center, eye;
+} camera;
+
+void Camera::init()
+{
+	// 倒退的距離不要太近也不要太遠，不然看不見整個物體。
+	radius = 1000;
+	// 螢幕與焦點的距離（必須比倒退距離少）
+	depth = 300;
+	// 螢幕的長的方向、寬的方向（單位向量）
+	dirx = (Point){1,0,0};
+	diry = (Point){0,0,1};
+	// 螢幕面對的方向（單位向量）
+	dirz = (Point){0,1,0};
+	// Polygon Mesh中心點
+	center = Center();
+	// 焦點的位置，從物體中心倒退一萬步。
+	eye = center - (dirz * radius);
+}
+</textarea>
+<img src="MeshRendering8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering8.png">
+<p>如何計算三維空間的一個點，在螢幕上對應的XY座標呢？</p>
+<p>先以「<a href="PointLinePlane.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointLinePlane.html">內積</a>」求得三個方向的投影量、即是真實距離x y z。</p>
+<p>再以「相似三角形邊長成比例」的原理，藉由z和depth的比例，求得投影距離x' y'。x z構成的三角形，縮小為depth/z倍，得到x'；y z構成的三角形，縮小為depth/z倍，得到y'。</p>
+<p>注意到，真實距離和投影距離都是以螢幕中心為基準，距離可以是負值。最後我們調整投影距離成為螢幕座標。</p>
+<textarea>
+Point Camera::project(Point& p)
+{
+	// 運用內積求得真實距離
+	Point v = p - eye;
+	Point d = {dot(v, dirx), dot(v, diry), dot(v, dirz)};
+	// 相似三角形邊長成比例：
+	// 縮小為 depth/z 倍，求得投影距離。
+	if (d.z == 0) return d;	// 避免除以0！
+	d = d / fabs(d.z) * depth;
+	// 求得螢幕座標
+	return (Point){X/2 + d.x, Y/2 + d.y, d.z};
+}
+</textarea>
+<p class="t">繪製空心三角形！</p>
+<img src="MeshRendering9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering9.png">
+<p>窮舉每個三角形，把三角形三個頂點投射到螢幕上，求得螢幕座標。運用OpenGL畫出每個三角形的外框，最後形成了「線框（wireframe）圖」。</p>
+<textarea>
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	for (int i=0; i<(int)triangleList.size(); ++i)
+	{
+		Triangle& t = triangleList[i];
+		Point p0 = camera.project(t.vertex[0]);
+		Point p1 = camera.project(t.vertex[1]);
+		Point p2 = camera.project(t.vertex[2]);
+
+		glColor3f(1., 1., 1.);	// 白色
+		glBegin(GL_LINES);
+		glVertex2f(p0.x, p0.y); glVertex2f(p1.x, p1.y);
+		glVertex2f(p1.x, p1.y); glVertex2f(p2.x, p2.y);
+		glVertex2f(p2.x, p2.y); glVertex2f(p0.x, p0.y);
+		glEnd();
+	}
+	glutSwapBuffers();
+}
+
+void reshape(int w, int h)
+{
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, w, 0, h);
+}
+
+int main(int argc, char **argv)
+{
+	const char fileName[] = "csie.tri";
+	bool load = LoadFile(fileName);
+	if (!load) cout << "Cannot open: " << fileName << endl;
+
+	camera.init();
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(400, 300);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Wireframe");
+
+	glClearColor(0., 0., 0., 0.);
+	glShadeModel(GL_SMOOTH);
+
+	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
+	glutMainLoop();
+	return 0;
+}
+</textarea>
+<p class="t">Polygon Filling</p>
+<p>大家應該會畫空心三角形了。現在來畫實心三角形吧！</p>
+<img src="MeshRendering10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering10.png">
+<p>把三角形三個頂點投射到螢幕上，求得螢幕座標。套用廓填多邊形演算法，把三角形畫到螢幕上。</p>
+<p>鉤勒線段的部分，採用了「<a href="Interpolation.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Interpolation.html">線性內插</a>」，求得準確的三角形邊界；然後運用ceil和floor函數，讓相鄰三角形的接縫密合。</p>
+<textarea>
+Triangle* triangle[X][Y];
+
+void FillEdge(Point& p1, Point& p2)
+{
+	int xmini = max(0,   (int)ceil (min(p1.x, p2.x)));
+	int xmaxi = min(X-1, (int)floor(max(p1.x, p2.x)));
+	for (int x = xmini; x <= xmaxi; ++x)
+	{
+		// 線性內插。用X座標求得Y座標。
+		float y = (p2.x == p1.x ? p1.y : (p2.y - p1.y) / (p2.x - p1.x) * (x - p1.x) + p1.y);
+		ymin[x] = min(ymin[x], y);
+		ymax[x] = max(ymax[x], y);
+	}
+}
+
+void FillTriangle(Triangle& t)
+{
+	// 三角形三個頂點，螢幕座標
+	Point p[3];
+	for (int i=0; i<3; ++i)
+		p[i] = camera.project(t.vertex[i]);
+
+	// 計算X座標的極小值、極大值
+	float xmin = +1e9, xmax = -1e9;
+	for (int i=0; i<3; ++i)
+	{
+		xmin = min(xmin, p[i].x);
+		xmax = max(xmax, p[i].x);
+	}
+
+	// 初始化Y座標的極小值、極大值
+	int xmini = max(0,   (int)ceil (xmin));
+	int xmaxi = min(X-1, (int)floor(xmax));
+	for (int x = xmini; x <= xmaxi; ++x)
+	{
+		ymin[x] = +1e9;
+		ymax[x] = -1e9;
+	}
+
+	// 計算Y座標的極小值、極大值
+	for (int i=0; i<3; ++i)
+		FillEdge(p[i], p[(i+1)%3]);
+
+	// 廓填
+	for (int x = xmini; x <= xmaxi; ++x)
+	{
+		int ymini = max(0,   (int)ceil (ymin[x]));
+		int ymaxi = min(Y-1, (int)floor(ymax[x]));
+		for (int y = ymini; y <= ymaxi; ++y)
+			triangle[x][y] = &t;
+	}
+}
+</textarea>
+<p class="t">Visible Surface Determination</p>
+<img src="MeshRendering11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering11.png">
+<p>此處介紹的演算法是z-buffer。</p>
+<p>近的三角形，必須擋住遠的三角形。求得三角形與焦點的距離，才能判斷誰近誰遠。</p>
+<p>從焦點往螢幕像素的射線，射向三角形，以「<a href="Shape.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Shape.html">三角形與直線交點</a>」求得距離。為了避免緩慢的sqrt運算，我們不求直線距離，而是求dirz方向的距離、也就是深度。</p>
+<textarea>
+float Camera::zvalue(int x, int y, Triangle& t)
+{
+	Point v = (dirx * (x - X/2))
+			+ (diry * (y - Y/2))
+			+ (dirz * depth);
+	float dv = dot(v, t.normal);
+	float dt = dot(t.vertex[0] - eye, t.normal);
+	if (dv == 0) return 1e9;	// 三角形與視線平行
+	return dot(v * dt / dv, dirz);
+}
+</textarea>
+<p>最後一行程式碼可以簡化。* dt / dv 可以提到dot外面。v是由dirx、diry、dirz組成，這三個向量互相垂直；v投影到dirz上，只需要看dirz方向有多少投影量，內積結果顯然是depth。</p>
+<textarea>
+	return dt / dv * depth;
+</textarea>
+<p>depth是定值。有些人為了加速，甚至不乘上depth，只求個縮放倍率。倍率1.0剛好位於螢幕上。</p>
+<textarea>
+	return dt / dv;
+</textarea>
+<p>一邊廓填三角形，一邊判斷深度。三角形的交接處，可以優先選擇靠近焦點的三角形，或者為了爭取速度而不做判斷。</p>
+<textarea>
+float zvalue[X][Y];			// 初始化為無限大
+Triangle* triangle[X][Y];	// 每個像素對應的三角形
+
+void FillTriangle(Triangle& t)
+{
+	......
+
+	for (int x = xmini; x <= xmaxi; ++x)
+	{
+		int ymini = max(0,   (int)ceil (ymin[x]));
+		int ymaxi = min(Y-1, (int)floor(ymax[x]));
+		for (int y = ymini; y <= ymaxi; ++y)
+		{
+			// 判斷深度，取深度最小者
+			float z = camera.zvalue(x, y, t);
+			if (z < zvalue[x][y])
+			{
+				zvalue[x][y] = z;
+				triangle[x][y] = &t;
+			}
+		}
+	}
+}
+</textarea>
+<p class="t">Shading</p>
+<img src="MeshRendering12.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering12.png">
+<p>此處介紹的著色演算法是Phong shading。</p>
+<p>設定一個平行光源，就像太陽一樣，來自無限遠處。</p>
+<p>光線與表面垂直，顏色最亮；光線與表面平行，顏色最暗。光線與表面的夾角大小決定了顏色亮暗。更精準來說，光線的垂直分量大小決定了顏色亮暗。</p>
+<p>我們可以計算光線向量與三角形法向量的內積，得到顏色亮暗程度。由於兩者都是單位向量，亮暗程度是0.0~1.0之間的數字。</p>
+<textarea>
+Point light = {1,0,0};	// 平行光源方向（單位向量）
+
+float Camera::shade(Triangle& t, Point normal, Point view)
+{
+	// 全域基本亮度（0.0 ~ 1.0）
+	float ambient  = 1.0;
+	// 垂直分量亮度（0.0 ~ 1.0）
+	float diffuse  = fabs(dot(normal, light));
+	// 亮者越亮，產生亮點（0.0 ~ 1.0）
+	float specular = pow(fabs(dot(view, light)), 5.0);
+	// 光源照射的、焦點看到的，如果是不同面，就無亮度。
+	if (dot(view, t.normal) * dot(light, t.normal) <= 0)
+		diffuse = specular = 0;
+	// 自行調配比重，揉合三種亮度。
+	return (ambient * 0.7)
+		 + (diffuse * 0.4)
+		 + (specular * 0.4);
+}
+</textarea>
+<img src="MeshRendering13.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering13.png">
+<p>想得到三角形上某一點的法向量：一、求得三角形頂點的法向量。二、線性內插，求得三角形上任意一點的法向量。</p>
+<p>一個頂點通常由許多個三角形共用。相鄰三角形的法向量相加之後，當作頂點的法向量。</p>
+<p>取得三角形的三個頂點法向量。三角形上面的每一個點，以線性內插求得法向量。想要求得內插比重，直覺的方式是：將線性內插重新表示成線性變換矩陣，然後求反矩陣──然而當三角形與原點共平面，反矩陣就不存在了。推薦的方式是：「<a href="Interpolation.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Interpolation.html">Barycentric Interpolation</a>」，三塊小三角形的面積，就是內插比重。</p>
+<p>線性內插得到的法向量們，方向漸層改變，使得三角形表面彷彿圓滑凸起。</p>
+<textarea>
+Point Interpolate(Triangle& t, Point p)
+{
+	Point v0 = t.vertex[0] - p;		// 點到頂點向量
+	Point v1 = t.vertex[1] - p;
+	Point v2 = t.vertex[2] - p;
+	float c2 = crossvalue(v0, v1);	// 外積計算面積
+	float c0 = crossvalue(v1, v2);
+	float c1 = crossvalue(v2, v0);
+	float c = c0 + c1 + c2;
+	return (Point){c0, c1, c2} / c;
+}
+</textarea>
+<img src="MeshRendering14.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering14.png">
+<p>替像素找到三角形上面對應的點，計算法向量，計算顏色亮暗程度。擷取焦點所見到的三角形表面顏色，乘上亮暗程度，就得到像素的顏色。</p>
+<textarea>
+Point Camera::color(int x, int y, Triangle& t, float zvalue)
+{
+	// 三角形上面對應的點
+	Point v = (dirx * (x - X/2))
+			+ (diry * (y - Y/2))
+			+ (dirz * depth);
+	Point hit = eye + (v * zvalue);
+
+	// 線性內插。以三角形三個頂點的法向量，得到交點的法向量。
+	// 由於檔案裡面已經提供頂點法向量，就直接拿來用了。
+	Point w = Interpolate(t, hit);
+	Point n = (t.vnormal[0] * w.x)
+			+ (t.vnormal[1] * w.y)
+			+ (t.vnormal[2] * w.z);
+
+	// 判斷焦點面對三角形的正面還是背面
+	Point color = (dot(v, t.normal) < 0)
+				? t.foreColor : t.backColor;
+
+	// 顏色乘上光線亮暗程度
+	return color * shade(t, n, normalize(v));
+}
+</textarea>
+<p class="t">繪製實心三角形！</p>
+<img src="MeshRendering15.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering15.png">
+<textarea>
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// 初始化z-buffer
+	for (int x = 0; x < X; ++x)
+		for (int y = 0; y < Y; ++y)
+			zvalue[x][y] = +1e9;
+
+	// 廓填每個三角形
+	for (int i=0; i<(int)triangleList.size(); ++i)
+		FillTriangle(triangleList[i]);
+
+	// 畫出所有像素
+	for (int x = 0; x < X; ++x)
+		for (int y = 0; y < Y; ++y)
+		{
+			if (zvalue[x][y] == +1e9) continue;
+			Point c = camera.color(x, y, *triangle[x][y], zvalue[x][y]);
+			glColor3f(c.x, c.y, c.z);
+			glBegin(GL_POINTS);
+			glVertex2f(x, y);
+			glEnd();
+		}
+
+	glutSwapBuffers();
+}
+</textarea>
+<p class="t">Culling</p>
+<img src="MeshRendering16.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering16.png">
+<pre>
+backface culling：預先剔除物體背後的三角形。
+occlusion culling：預先剔除被其他物體遮住的三角形。
+visibility culling：預先剔除視野範圍（field of view）之外的三角形。
+</pre>
+<p>culling有三種，這裡只介紹backface culling。</p>
+<p>如果物體有著密封外殼，背向焦點的三角形一定被遮住；如果物體有著破洞外殼、物體是一張薄紙，背向焦點的三角形才有機會露臉。</p>
+<p>如果物體有著密封外殼，我們可以剔除背向焦點的三角形，避免無謂的廓填，加快程式速度。</p>
+<textarea>
+bool Camera::toward(Triangle& t)
+{
+	return dot(t.vertex[0] - eye, t.normal) < 0;
+}
+
+void display()
+{
+	......
+
+	for (int i=0; i<(int)triangleList.size(); ++i)
+		if (camera.toward(triangleList[i]))
+			FillTriangle(triangleList[i]);
+
+	......
+}
+</textarea>
+<p class="e">UVa 12628</p>
+<p class="t">Clipping</p>
+<img src="MeshRendering17.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering17.png">
+<p>裁切有兩種。第一種是設定視野範圍（Field of View）。</p>
+<p>我們可以設定左、右、上、下、遠、近邊界，設定六個平面作為邊界、裁切物體。值得一提的是，以近平面裁切物體，讓我們可以瞧見物體內部（此時就不應該實施backface culling了）。我們習慣讓近平面等於螢幕位置。</p>
+<p>當然也可以設定不規則形狀的邊界。</p>
+<textarea>
+void FillEdge(Point& p1, Point& p2)
+{
+	// 左邊界和右邊界。太左、太右就不畫。
+	int xmini = max(20, (int)ceil (min(p1.x, p2.x)));
+	int xmaxi = min(80, (int)floor(max(p1.x, p2.x)));
+	......
+}
+
+void FillTriangle(Triangle& t)
+{
+	......
+
+	// 左邊界和右邊界。太左、太右就不畫。
+	int xmini = max(20, (int)ceil (xmin));
+	int xmaxi = min(80, (int)floor(xmax));
+	for (int x = xmini; x <= xmaxi; ++x)
+	{
+		ymin[x] = +1e9;
+		ymax[x] = -1e9;
+	}
+
+	......
+
+	for (int x = xmini; x <= xmaxi; ++x)
+	{
+		// 下邊界和上邊界。太低、太高就不畫。
+		int ymini = max(30, (int)ceil (ymin[x]));
+		int ymaxi = min(70, (int)floor(ymax[x]));
+		for (int y = ymini; y <= ymaxi; ++y)
+		{
+			float z = camera.zvalue(x, y, t);
+
+			// 近邊界和遠邊界。太近、太遠就不畫。
+//			if (z < camera.depth) continue;
+			if (z < 1.0) continue;
+			if (z > 5.0) continue;
+
+			if (z < zvalue[x][y])
+			{
+				zvalue[x][y] = z;
+				triangle[x][y] = &t;
+			}
+		}
+	}
+}
+</textarea>
+<img src="MeshRendering18.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering18.png">
+<p>裁切有兩種。第二種是阻止三角形伸展至焦點背後。</p>
+<p>三角形頂點位於焦點背後，投射到螢幕上就會歪斜！先前我們倒退一萬步，巧妙避開這個議題；現在我們想瞧瞧物體內部、讓螢幕與焦點靠近物體、裁切物體，就必須解決這個議題。</p>
+<p>解決方式是：運用「<a href="Half-planeIntersection.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Half-planeIntersection.html">半空間交集</a>」，以近平面裁切三角形，去除太近的部分，之後才投射、廓填。裁切之後剩下的多邊形，通常會再剖分成三角形，方便套用原本的投射、廓填程式碼。</p>
+<textarea>
+省略
+</textarea>
+<p>第一種裁切，對象是螢幕像素；第二種裁切，對象是三角形。</p>
+<p class="t">3D Transformation</p>
+<p>物體平移、縮放、旋轉；螢幕平移、縮放、旋轉。一共六種。</p>
+<img src="MeshRendering19.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering19.png">
+<p>物體旋轉。物體自轉，換個角度想，就是螢幕繞物體公轉。與其搬動大量三角形，不如只搬動一個螢幕。旋轉dirx、diry、dirz三個向量，重新倒退一萬步，就完成物體旋轉。</p>
+<textarea>
+struct Matrix {float a[3][3];};
+
+// 矩陣乘矩陣
+Matrix operator*(Matrix m1, Matrix m2)
+{
+	Matrix m = {{{0,0,0},{0,0,0},{0,0,0}}};
+	for (int i=0; i<3; ++i)
+		for (int j=0; j<3; ++j)
+			for (int k=0; k<3; ++k)
+				m.a[i][j] += m1.a[i][k] * m2.a[k][j];
+	return m;
+}
+
+// 矩陣乘向量
+Point operator*(Matrix m, Point p)
+{
+	return (Point){
+		m.a[0][0] * p.x + m.a[0][1] * p.y + m.a[0][2] * p.z,
+		m.a[1][0] * p.x + m.a[1][1] * p.y + m.a[1][2] * p.z,
+		m.a[2][0] * p.x + m.a[2][1] * p.y + m.a[2][2] * p.z
+	};
+}
+</textarea>
+<textarea>
+Point angle;
+
+void Camera::init()
+{
+	radius = 1000; depth = 300;
+	center = Center();
+
+	angle = (Point){0,0,0};	// 一開始沒有旋轉
+	rotate();
+}
+
+void Camera::rotate() 
+{
+	// 製作三維旋轉矩陣
+	float c, s;
+	c = cos(angle.x); s = sin(angle.x);
+	Matrix rx = {{{1,0,0},{0,c,s},{0,-s,c}}};
+	c = cos(angle.y); s = sin(angle.y);
+	Matrix ry = {{{c,0,-s},{0,1,0},{s,0,c}}};
+	c = cos(angle.z); s = sin(angle.z);
+	Matrix rz = {{{c,s,0},{-s,c,0},{0,0,1}}};
+
+	// 實施旋轉
+	Matrix r = rx * ry * rz;
+	dirx = r * (Point){1,0,0};
+	diry = r * (Point){0,0,1};
+	dirz = r * (Point){0,1,0};
+	light = r * (Point){1,0,0};	// 光源跟著轉
+
+	// 倒退一萬步
+	eye = center - (dirz * radius);
+}
+</textarea>
+<p>螢幕旋轉。螢幕自轉，換個角度想，就是物體繞螢幕公轉。其實不必想太多，直接旋轉螢幕就好了。</p>
+<p>物體旋轉通常用於3D繪圖軟體，螢幕旋轉通常用於第一人稱射擊遊戲，焦點旋轉則不常使用。由於clipping的關係，焦點旋轉時會看不見近身景色。第一人稱射擊遊戲的角色是站在螢幕中心、採用螢幕旋轉，而不是站在焦點、採用焦點旋轉。</p>
+<textarea>
+省略
+</textarea>
+<p>物體縮放。以物體中心為原點，縮放三角形頂點座標。</p>
+<p>螢幕縮放。以螢幕中心為原點，縮放三角形頂點投射之後的螢幕座標。</p>
+<p>物體縮放是先縮放再投影，螢幕縮放是先投影再縮放，兩者的視覺效果並不相同。物體縮放有鏡頭拉近拉遠的效果，螢幕縮放則是整張畫面等比例放大縮小。</p>
+<textarea>
+省略
+</textarea>
+<p>物體平移、螢幕平移。懶的講了，兩者視覺效果相同。</p>
+<p class="t">繪製動感三角形！</p>
+<img src="MeshRendering20.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering20.png">
+<textarea>
+// 用鍵盤的w與s控制遠近
+void keyboard(unsigned char key, int x, int y)
+{
+	if		(key == 'w') camera.radius -= 50;
+	else if (key == 's') camera.radius += 50;
+	camera.rotate();	// 記得更新焦點位置
+	glutPostRedisplay();
+}
+
+// 用滑鼠旋轉物體
+int press_x, press_y;
+Point press_angle;
+void mouse(int button, int state, int x, int y)
+{
+	if (state == GLUT_DOWN)
+	{
+		press_x = x; press_y = y;
+		press_angle = camera.angle;
+	}
+}
+
+// 用滑鼠旋轉物體
+void motion(int x, int y)
+{
+	camera.angle = press_angle + (Point){y - press_y, 0, x - press_x} / 40;
+	camera.rotate();	// 記得更新焦點位置
+	glutPostRedisplay();
+}
+
+int main(int argc, char **argv)
+{
+	const char fileName[] = "csie.tri";
+	bool load = LoadFile(fileName);
+	if (!load) cout << "Cannot open: " << fileName << endl;
+
+	camera.init();
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(400, 300);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Computer Graphics");
+
+	glClearColor(0., 0., 0., 0.);
+	glShadeModel(GL_SMOOTH);
+
+	// 每當需要重新繪圖，自動呼叫display函式。
+	glutDisplayFunc(display);
+	// 每當改變視窗大小，自動呼叫reshape函式。
+	glutReshapeFunc(reshape);
+	// 每當按下鍵盤按鍵，自動呼叫keyboard函式。
+	glutKeyboardFunc(keyboard);
+	// 每當按下滑鼠按鍵，自動呼叫mouse函式。
+	glutMouseFunc(mouse);
+	// 每當移動滑鼠游標，自動呼叫motion函式。
+	glutMotionFunc(motion);
+	// 開始繪圖
+	glutMainLoop();
+	return 0;
+}
+</textarea>
+<p class="t">後記</p>
+<p>本篇介紹的都是1970年代的古老技術，是基礎中的基礎。如果讀者想繼續精進、追上時代潮流，可以參考這些課程網站：</p>
+<pre>
+http://cg.csie.ntnu.edu.tw/CG/
+http://cg.csie.ntnu.edu.tw/AdvCG/
+http://graphics.csie.ntu.edu.tw/~ming/courses/icg/
+http://www.csie.ntu.edu.tw/~cyy/courses/rendering/12fall/news/
+http://graphics.csie.ntu.edu.tw/~robin/courses/gm13/
+http://cs.brown.edu/courses/cs123/lectures.html
+http://graphics.stanford.edu/courses/
+http://graphics.csail.mit.edu/courses
+</pre>
+<p>完整程式碼「<a href="MeshRendering.cpp.htm" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MeshRendering.cpp">MeshRendering.cpp</a>」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Mesh Rendering（Under Construction!）</p>
+</div><div class="c">
+<p class="t">Perspective Projection: Screen to Object</p>
+<p>窮舉每個像素，建立焦點往像素的射線，找出射中的三角形。三角形不需要廓填、也不需要裁切，是非常簡單的實作方式。</p>
+<p>程式碼結構簡單，很容易就能改寫成cuda程式碼，以顯示卡進行平行計算。本來效率極差，改為平行計算之後反而效率極佳，搖身一變成為主流的實作方式。</p>
+<textarea>
+Point Camera::color(int x, int y)
+{
+	Point color = {0,0,0};
+	float zvalue = 1e9;
+
+	Point v = (dirx * (x - X/2))
+			+ (diry * (y - Y/2))
+			+ (dirz * depth);
+//	Point normalizev = normalize(v);
+
+	for (int i=0; i<(int)triangleList.size(); ++i)
+	{
+		Triangle& t = triangleList[i];
+
+		// triangle-ray intersection
+		float dv = dot(v, t.normal);
+		float dt = dot(t.vertex[0] - eye, t.normal);
+//		if (dv >= 0) continue;	// backface culling
+		if (dv == 0) continue;
+		float z = dt / dv;
+		if (!(z >= 1.0 && z < zvalue)) continue;
+		Point hit = eye + (v * z);
+
+		// point in triangle test
+		Point v0 = t.vertex[0] - hit;
+		Point v1 = t.vertex[1] - hit;
+		Point v2 = t.vertex[2] - hit;
+		float c2 = crossvalue(v0, v1);
+		float c0 = crossvalue(v1, v2);
+		float c1 = crossvalue(v2, v0);
+		if (c0 < 0) c0 = -c0, c1 = -c1, c2 = -c2;
+		if (!(c0 > 0 && c1 > 0 && c2 > 0)) continue;
+
+		// vertex normal interpolation
+		Point w = (Point){c0, c1, c2}
+				/ (c0 + c1 + c2);
+		Point n = (t.vnormal[0] * w.x)
+				+ (t.vnormal[1] * w.y)
+				+ (t.vnormal[2] * w.z);
+
+		// shading
+		color = (dv < 0) ? t.foreColor : t.backColor;
+		color = color * shade(t, n/*, normalizev*/);
+		zvalue = z;
+	}
+	return color;
+}
+
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	for (int x = 0; x < X; ++x)
+		for (int y = 0; y < Y; ++y)
+		{
+			Point color = camera.color(x, y);
+			glColor3f(color.x, color.y, color.z);
+			glBegin(GL_POINTS);
+			glVertex2f(x, y);
+			glEnd();
+		}
+
+	glutSwapBuffers();
+}
+</textarea>
+<p class="t">Ray Casting</p>
+<p>「<a href="PointInterval.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointInterval.html">Bounding Volume Hierarchy</a>」資料結構。</p>
+<p class="e">UVa 12312</p>
+<p class="t">Ray Tracing</p>
+<p class="e">UVa 12313</p>
+<p class="t">Sampling</p>
+<p class="t">Depth of Field</p>
+<pre>
+http://http.developer.nvidia.com/GPUGems/gpugems_ch23.html
+http://http.developer.nvidia.com/GPUGems3/gpugems3_ch28.html
+</pre>
+<p class="t">Motion Blur</p>
+<p class="t">Shadow</p>
+<p class="t">Ambient Occlusion</p>
+<p class="t">Radiosity</p>
+<p class="t">Texture Mapping</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Volume Rendering</p>
+</div><div class="c">
+<p class="t">Voxel</p>
+<img src="VolumeRendering1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering1.png">
+<p>「像素Pixel」和「體素Voxel」兩者概念相仿，二維與三維的差別而已。</p>
+<p>替現實生活的物體建立體素，是一套複雜的學問。所幸網路上已經有電腦斷層掃描的資料。筆者下載的是8bit TIFF圖片檔案：</p>
+<p><a href="javascript:if(confirm('http://www-graphics.stanford.edu/data/voldata/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www-graphics.stanford.edu/data/voldata/'" tppabs="http://www-graphics.stanford.edu/data/voldata/">http://www-graphics.stanford.edu/data/voldata/</a></p>
+<p>圖片一張張疊起來，就形成了容積。像素就成了體素。</p>
+<p>物質密度越高，體素數值越高。皮肉密度低、數值低，骨骼密度高、數值高。筆者不清楚物質密度與體素數值是否恰好成正比。</p>
+<textarea>
+const int N = 99;
+const int VX = 256;
+const int VY = 256;
+const int VZ = N * 2 - 1;
+short img[VZ][VY][VX];
+
+void LoadFile()
+{
+	// 運用OpenCV依序讀取99張圖片。
+	for (int z=0; z<N; ++z)
+	{
+		char name[50];
+		sprintf(name, "cthead-8bit\\cthead-8bit%03d.tif", z+1);
+		cv::Mat image = cv::imread(name);
+		for (int x=0; x<VX; ++x)
+			for (int y=0; y<VY; ++y)
+			{
+				cv::Vec3b intensity = image.at<cv::Vec3b>(y, x);
+				img[z*2][y][x] = (intensity.val[0] + intensity.val[1] + intensity.val[2]) / 3;
+			}
+	}
+
+	// 所有相鄰圖片之間，線性內插一張圖片，
+	// 讓頭殼看起來不會太扁。
+	for (int z=0; z<N-1; ++z)
+		for (int x=0; x<VX; ++x)
+			for (int y=0; y<VY; ++y)
+				img[z*2+1][y][x] = (img[z*2][y][x] + img[z*2+2][y][x]) / 2;
+}
+</textarea>
+<img src="VolumeRendering2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering2.png">
+<p>我們可以用「梯度gradient」當作法向量。梯度的計算很簡單：右邊減左邊、背面減前面、上面減下面，分別得到XYZ三個方向的變化程度。</p>
+<textarea>
+bool involume(int x, int y, int z)
+{
+	return x >= 0 && x < VX
+		&& y >= 0 && y < VY
+		&& z >= 0 && z < VZ;
+}
+
+Point gradient(int x, int y, int z)
+{
+	if (involume(x+1, y+1, z+1) &&
+		involume(x-1, y-1, z-1))
+		return (Point){
+			img[z][y][x+1] - img[z][y][x-1],
+			img[z][y+1][x] - img[z][y-1][x],
+			img[z+1][y][x] - img[z-1][y][x]
+		};
+	else
+		return (Point){0, 0, 0};
+}
+</textarea>
+<p class="t">Ray Casting</p>
+<img src="VolumeRendering3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering3.png">
+<p><a href="javascript:if(confirm('http://web.eecs.utk.edu/~huangj/CS594S02/raycasting.ppt  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://web.eecs.utk.edu/~huangj/CS594S02/raycasting.ppt'" tppabs="http://web.eecs.utk.edu/~huangj/CS594S02/raycasting.ppt">http://web.eecs.utk.edu/~huangj/CS594S02/raycasting.ppt</a></p>
+<p>一、找到射線從容積的哪裡射入、哪裡射出。二、套用鉤勒直線演算法，求得射線碰到的體素們。三、設定臨界值，求得射線無法穿越的那個體素，即為所求。</p>
+<textarea>
+void Camera::hitvolume(Point view, float& zmin, float& zmax)
+{
+	// 容積的六個面（各面只取一個頂點）
+	static Point vertex[6] =
+	{
+		{0,0,0},{0,0,0},{0,0,0},
+		{VX,0,0},{0,VY,0},{0,0,VZ}
+	};
+
+	// 容積的六個面的法向量
+	static Point normal[6] =
+	{
+		{1,0,0},{0,1,0},{0,0,1},
+		{1,0,0},{0,1,0},{0,0,1}
+	};
+
+	// 求得射線打中容積的哪一個表面、求得z-value。
+	zmin = +1e9, zmax = -1e9;
+	for (int i=0; i<6; ++i)
+	{
+		// ray-plane intersection
+		float dv = dot(view, normal[i]);
+		float dt = dot(vertex[i] - eye, normal[i]);
+		if (dv == 0) continue;
+		float z = dt / dv;
+		if (!(z > 1.0 && z < +1e9)) continue;
+
+		// 由於浮點數誤差，
+		// 我們只能用複雜的方式，判斷射線是否打中表面。
+		Point hit = eye + (view * z);
+//		if (involume(hit.x, hit.y, hit.z))
+		if (( (hit.x >= 0 && hit.x < VX)
+			   || (normal[i].x == 1.0)	) &&
+			( (hit.y >= 0 && hit.y < VY)
+			   || (normal[i].y == 1.0)	) &&
+			( (hit.z >= 0 && hit.z < VZ)
+			   || (normal[i].z == 1.0)	))
+		{
+			// 如果射線打中表面，就更新z-value。
+			if (z < zmin) zmin = z;
+			if (z > zmax) zmax = z;
+		}
+	}
+}
+</textarea>
+<textarea>
+Point Camera::color(int x, int y)
+{
+	// 焦點往螢幕像素的射線
+	Point view = (dirx * (x - X/2))
+			   + (diry * (y - Y/2))
+			   + (dirz * depth);
+	Point normalizeview = normalize(view);
+
+	// 求得射線打中容積的哪一個表面、求得z-value。
+	float zmin = +1e9, zmax = -1e9;
+	hitvolume(view, zmin, zmax);
+	if (zmin == +1e9 || zmax == -1e9)
+		return (Point){0,0,0};
+
+	// DDA algorithm，求得射線碰到的體素們。
+	Point pmin = eye + (view * zmin);
+//	Point pmax = eye + (view * zmax);
+//	Point length = pmax - pmin;
+	Point length = view * (zmax - zmin);
+	int step = ceil(max(
+		fabs(length.x),
+		fabs(length.y),
+		fabs(length.z)
+	));
+	Point gap = length / step;
+
+	for (int i=0; i<step; ++i)
+	{
+		pmin = pmin + gap;
+		int x = round(pmin.x);
+		int y = round(pmin.y);
+		int z = round(pmin.z);
+		if (!involume(x, y, z)) continue;
+
+		// 體素小於60，射線就持續穿越體素。
+		if (img[z][y][x] < 60) continue;
+
+		// 體素大於等於60，即為所求。馬上著色。
+		Point normal = normalize(gradient(x,y,z));
+		float s = shade(normal, normalizeview);
+		return (Point){1,1,1} * s;
+	}
+
+	// 射線穿透整個容積，無色。
+	return (Point){0,0,0};
+}
+</textarea>
+<div class="seq"><img src="VolumeRendering4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering4.png"><img src="VolumeRendering5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering5.png"><img src="VolumeRendering6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering6.png"></div>
+<p>設定不同的臨界值，就得到不同器官。皮肉密度低、骨骼密度高，因此臨界值低就得到皮肉，臨界值高就穿越皮肉、得到骨骼。</p>
+<p>最困難的地方，就是如何讓電腦自動找到臨界值、讓電腦自動畫出最顯眼的圖片。這屬於影像辨識、人工智慧的領域，讀者可以自行尋找相關資料。</p>
+<p class="t">Blending</p>
+<img src="VolumeRendering7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering7.png">
+<p><a href="javascript:if(confirm('http://perso.telecom-paristech.fr/~tierny/stuff/teaching/tierny_intro_vol_rend09.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://perso.telecom-paristech.fr/~tierny/stuff/teaching/tierny_intro_vol_rend09.pdf'" tppabs="http://perso.telecom-paristech.fr/~tierny/stuff/teaching/tierny_intro_vol_rend09.pdf" class="l">http://perso.telecom-paristech.fr/~tierny/stuff/teaching/tierny_intro_vol_rend09.pdf</a></p>
+<p>著色採用半透明顏色，就可以同時畫出很多器官。</p>
+<p>一、體素共有256種數值，替每一種數值設定顏色、設定透明程度。二、由遠往近讀取體素，揉合顏色。</p>
+<textarea>
+void InitColor()
+{
+	// 初始化顏色
+	for (int i=0; i<255; ++i)
+		color_func[i] = (Point){0,0,0};
+	// 皮肉顏色
+	for (int i=60; i<85; ++i)
+		color_func[i] = (Point){1,0.7,0};
+	// 骨骼顏色
+	for (int i=100; i<130; ++i)
+		color_func[i] = (Point){1,1,1};
+
+	// 初始化為完全透明
+	for (int i=0; i<255; ++i)
+		alpha_func[i] = 0;
+	// 皮肉不透明程度（皮肉顏色密度）
+	for (int i=60; i<85; ++i)
+		alpha_func[i] = 0.2;
+	// 骨骼不透明程度（骨骼顏色密度）
+	for (int i=100; i<130; ++i)
+		alpha_func[i] = 0.9;
+}
+</textarea>
+<textarea>
+Point Camera::color(int x, int y)
+{
+	......
+
+	Point color = {0,0,0};
+	for (int i=0; i<step; ++i)
+	{
+		// 由遠往近讀取體素
+		pmax = pmax - gap;
+		int x = round(pmax.x);
+		int y = round(pmax.y);
+		int z = round(pmax.z);
+		if (!involume(x, y, z)) continue;
+
+		// 著色
+		Point normal = normalize(gradient(x,y,z));
+		float s = shade(normal, normalizeview);
+		Point c = color_func[img[z][y][x]] * s;
+		// 揉合顏色
+		float a = alpha_func[img[z][y][x]];
+		color = color * (1.0 - a) + c * a;
+	}
+	return color;
+}
+</textarea>
+<div class="seq"><img src="VolumeRendering8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering8.png"><img src="VolumeRendering9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering9.png"></div>
+<p>設定不同的顏色和透明程度，得到不同的視覺感受。</p>
+<p>完整程式碼「<a href="VolumeRendering.cpp.htm" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VolumeRendering.cpp">VolumeRendering.cpp</a>」。</p>
+<p class="t">Voxel ⇨ Mesh（Marching Cubes Algorithm）</p>
+<p><a href="javascript:if(confirm('http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html'" tppabs="http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html" class="l">http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html</a></p>
+<p>Voxel轉變成Mesh之後，就能實施Ray Tracing，製作更加逼真的圖片。</p>
+<p class="t">Noise</p>
+<p>雲霧特效。</p>
+<p>【待補文字】</p>
+<p class="t">Metaball</p>
+<div class="pre">
+<iframe src="K5mP4GWF608" tppabs="http://www.youtube.com/embed/K5mP4GWF608"></iframe>
+
+這是屬於 computer graphics 領域的東西，
+專業術語叫做 metaball，
+可以做出水滴聚合的效果。
+
+原理是用三維的常態分布 Guassian distribution，
+一個常態分布代表一個水滴，
+然後將所有常態分布相加後再平均，合成為一個分布。
+設定機率等於p時為水滴邊界，
+p通常是一個定值。
+
+如果想要每個水滴大小不一樣，
+在合成為一個分布時，
+每個常態分布設定不同的加權比重即可。
+常態分布的合成，
+也有個專業術語 Guassian mixture model ，
+不過這個術語通常不是用在電腦繪圖這個領域。
+
+確定水滴表面位置之後，
+要將水滴表面要上色，
+有許多種表面上色演算法可以使用，
+flat shading、smooth shading、Phong shading等等。
+把剛剛的合成分布式子微分一下，
+就得到表面的法向量了。
+
+常態分布的計算相當複雜，
+尤其又多了個微分方程求解，
+計算速度很慢的。
+有時候也會用其他形狀差不多的分布，
+來取代常態分布。
+
+最後，只要不斷改變每個常態分布的平均值（水滴中心），
+就可以做出水滴移動的效果了。
+
+<iframe src="8N2yNtJE3As" tppabs="http://www.youtube.com/embed/8N2yNtJE3As"></iframe>
+<iframe src="zOA9x8XebEs" tppabs="http://www.youtube.com/embed/zOA9x8XebEs"></iframe>
+
+網路上的相關影片非常多！應用也是千奇百怪的！
+
+<iframe src="LC0IbOZ0jkw" tppabs="http://www.youtube.com/embed/LC0IbOZ0jkw"></iframe>
+為了加快執行速度，也可以將Voxel改成Mesh。
+</div>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Geometric Modeling</p>
+</div><div class="c">
+<p class="t">建立3D模型</p>
+<div class="pre">
+<iframe src="55756043" tppabs="http://player.vimeo.com/video/55756043"></iframe>
+只需要拿著攝影機繞一圈，就能自動建立3D模型。
+是不是很方便呢？
+</div>
+<p class="t">設計3D模型</p>
+<div class="pre">
+<iframe src="AnfVrP6L89M" tppabs="http://www.youtube.com/embed/AnfVrP6L89M"></iframe>
+<iframe src="ac4qV2uIF3Q" tppabs="http://www.youtube.com/embed/ac4qV2uIF3Q"></iframe>
+立體悲劇
+<iframe src="FOOynE1F4P4" tppabs="http://www.youtube.com/embed/FOOynE1F4P4"></iframe>
+</div>
+<p class="t">組裝3D模型</p>
+<div class="pre">
+<iframe src="HgoJdG6-c68" tppabs="http://www.youtube.com/embed/HgoJdG6-c68"></iframe>
+</div>
+<p class="t">移動3D模型</p>
+<div class="pre">
+<iframe src="MfJ4pA8ngDo" tppabs="http://www.youtube.com/embed/MfJ4pA8ngDo"></iframe>
+</div>
+<p class="t">影印3D模型</p>
+<div class="pre">
+<iframe src="SxBlHEuhF2o" tppabs="http://www.youtube.com/embed/SxBlHEuhF2o"></iframe>
+
+掃描物體建立3D數據，
+然後一層一層製做，
+變成石膏像，
+最後用人工上色就會看起來跟真的一樣。
+
+<iframe src="e0rYO5YI7kA" tppabs="http://www.youtube.com/embed/e0rYO5YI7kA"></iframe>
+
+<iframe src="56139212" tppabs="http://player.vimeo.com/video/56139212"></iframe>
+</div>
+<p class="t">Sketching Interface</p>
+<div class="pre">
+https://www.youtube.com/watch?v=e2H35SlLmUA
+http://uiui.mmdays.com/2008/03/25/igarashi/
+http://www-ui.is.s.u-tokyo.ac.jp/~takeo/
+http://www.designinterface.jp/en/projects/
+</div>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

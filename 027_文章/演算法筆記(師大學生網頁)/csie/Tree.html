@@ -1,0 +1,650 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Tree</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Tree</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Tree</p>
+<p>「樹」。樹是一種很特別的圖。樹的定義是：任兩點之間都相通，並且沒有環的圖。</p>
+<img src="Tree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree1.png">
+<p>樹的定義對初學者來說或許太過抽象。換個說法吧：一棵樹可想做是由一個點開始，藉由許多條邊不斷地延伸拓展到其他點，而且點和邊都不會重複地被拓展到。</p>
+<img src="Tree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree2.png">
+<p class="t">Node</p>
+<p>「節點」。進行延伸拓展的點、被延伸拓展到的點，稱作「節點」，也就是說樹上的點都是「節點」。</p>
+<p>【註：為了方便，以下仍稱呼「點」。】</p>
+<img src="Tree3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree3.png">
+<p class="t">Branch</p>
+<p>「枝」。延伸拓展所用到的邊稱作「枝」，也就是說樹上的邊都是「枝」。一個點藉由邊往外延伸拓展，稱做「分枝（Branching）」。</p>
+<p>【註：為了方便，以下仍稱呼「邊」。】</p>
+<img src="Tree4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree4.png">
+<p class="t">Root</p>
+<p>「根」。方才提到，一棵樹可想做是由一個點開始分枝──這個點便是「根」。一棵樹上的每一個點都可以作為根。</p>
+<img src="Tree5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree5.png">
+<p class="t">Leaf</p>
+<p>「葉」。在一棵樹上選定根後，由根開始不斷分枝，途中所有無法繼續分枝的點皆是「葉」。</p>
+<img src="Tree6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree6.png">
+<p>另一種說法是：除了根以外，只連著一條邊的點就是葉。但這種說法有個例外：如果樹上總共只有一個點，那麼此點既是根、也是葉。</p>
+<p class="t">Level</p>
+<p>「層」。在一棵樹上選定根後，按照拓展的順序（也就是按照每個點離根的距離），可以將樹上的點分層次，使得樹上每一個點都擁有一個層數。如果改變根，那麼分層的結果就會不同。</p>
+<p>還有另一種比較少見的分層方式，是設定所有葉在同一層，並由葉開始計算層數。</p>
+<img src="Tree7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree7.png">
+<p class="t">Parent & Child</p>
+<p>「父親」與「小孩」。在一棵樹上選定根後，以邊相連的任兩點，靠近樹根者相對地稱作「父親」，靠近樹葉者相對地稱作「小孩」。</p>
+<img src="Tree8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree8.png">
+<p>一個點的父親，是指與其相鄰的點當中，較此點靠近樹根者，為其父親。父親只會有一個，特例是：樹根沒有父親。</p>
+<p>一個點的小孩，是指與其相鄰的點當中，較此點靠近樹葉者，為其小孩。小孩可以是任意多個，特例是：樹葉沒有小孩。</p>
+<img src="Tree9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree9.png">
+<p class="t">Ancestor & Descendant</p>
+<p>「祖先」與「子孫」。在一棵樹上選定根後，一個點的父親、父親的父親、……皆是此點的「祖先」。一個點的小孩、小孩的小孩、……皆是此點的「子孫」。</p>
+<img src="Tree10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree10.png">
+<p class="t">Directed Tree</p>
+<p>在一棵樹上選定樹根後，可以把邊的方向設定成分枝的方向、遠離樹根的方向；也可以把邊的方向設定成朝向樹根的方向，但是這種情況比較少。</p>
+<img src="Tree11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree11.png">
+<p class="t">Weight</p>
+<p>一棵樹可以有權重。當邊擁有權重時，一棵樹的權重等於樹上所有邊的權重總和。</p>
+<img src="Tree12.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree12.png">
+<p class="t">Forest</p>
+<p>「森林」。很多棵樹稱作一叢「森林」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Tree資料結構</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">圖的資料結構</p>
+<p>樹是圖，圖的資料結構就能儲存樹，例如adjacency matrix或adjacency lists。</p>
+<p>一棵樹剛好是V個點與V-1條邊，所以adjacency lists的空間複雜度是O(V)。</p>
+<p class="t">自行設計節點</p>
+<textarea>
+struct Node
+{
+	int index;		// 節點編號
+	int adj_n;		// 相鄰節點數量
+	Node* adj[10];	// 相鄰節點們（可以用linked list）
+	int adj_pos[10];// 此節點在每個相鄰節點的adj[]當中
+					// 的儲存位置，方便往回走。
+} nodes[10];		// 一棵樹
+</textarea>
+<p class="t">陣列（有向樹，邊朝向樹根）</p>
+<p>建立一條int陣列，每個格子對應圖上的各個點，格子裡儲存著該點的父親。</p>
+<p>查詢路徑時，只能往根的方向行走，無法往葉的方向行走。</p>
+<p>此手法經常用來紀錄DFS Forest和BFS Forest；又由於圖論演算法幾乎都是DFS和BFS的延伸，因此此手法既常用又實用。</p>
+<p class="t">Heavy-Light Decomposition</p>
+<p>一棵樹切成數條長鏈，是比較進階的資料結構。有興趣的讀者可參考「<a href="DynamicTree.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DynamicTree.html">Heavy-Light Decomposition</a>」。</p>
+<p>附帶一提，上述介紹的每一種資料結構，除了用來紀錄一棵樹，也能用來紀錄一叢森林。</p>
+<p class="t">Prüfer Code</p>
+<p>把一棵樹轉換成獨特的編號。</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Prüfer_sequence  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Prüfer_sequence'" tppabs="http://en.wikipedia.org/wiki/Prüfer_sequence">http://en.wikipedia.org/wiki/Prüfer_sequence</a></p>
+<p><a href="javascript:if(confirm('http://www.matrix67.com/blog/archives/682  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.matrix67.com/blog/archives/682'" tppabs="http://www.matrix67.com/blog/archives/682">http://www.matrix67.com/blog/archives/682</a></p>
+<p class="e">UVa 10843</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Tree</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">樹的特性</p>
+<pre>
+1. 樹沒有環。
+2. 樹上所有點之間都相連通。
+3. 沒有環的圖，就是樹或森林。
+   沒有環的圖、連通的圖，就是樹。
+4. 任意兩點之間只有唯一一條路徑。
+5. 在樹上任意添加一條邊，就會產生環。
+6. 在樹上任意刪除一條邊，一顆樹就裂成兩棵樹。
+7. 邊數等於點數減一。
+</pre>
+<p class="e">UVa 615 599</p>
+<p class="t">depth</p>
+<p>一棵有根樹、每個點的「深度」，就是根到每個點的距離。</p>
+<p>由根開始進行BFS或DFS即可。</p>
+<img src="TreeDepth.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TreeDepth.png">
+<textarea t="樹上每個點的深度（adjacency matrix）">
+bool adj[9][9];	// adjacency matrix，儲存一棵樹。
+int depth[9];	// 每個點的深度
+
+void DFS(int x, int px)	// px是x的父親
+{
+	for (int y=0; y<9; ++y)
+		if (adj[x][y] && y != px)
+		{
+			depth[y] = depth[x] + 1;
+			DFS(y, x);
+		}
+}
+
+void tree_depth(int root)
+{
+	depth[root] = 0;
+	DFS(root, root);
+	for (int i=0; i<9; ++i)
+		cout << "節點" << i << "的深度是" << depth[i];
+}
+</textarea>
+<p>遍歷一棵樹與遍歷一張圖，概念上完全相同，實作上則有些微差異：一棵樹，任意兩點之間只有一條路，只要避免走回頭路，就不必紀錄每一點是否已經拜訪過。</p>
+<p class="t">height</p>
+<p>一棵有根樹的「高度」，就是根到相離最遠的葉的距離。</p>
+<p>運用Divide and Conquer，移除一棵樹的樹根，形成許多子樹，並分頭處理子樹。</p>
+<img src="TreeHeight.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TreeHeight.png">
+<p>寫成程式碼之後，D&C的運作順序，剛好就是DFS的遍歷順序。因此，有人把這樣的程式碼，直接稱為DFS。這用詞並非精準，然而其過程恰是遍歷一張圖，讀取資訊算出答案，故稱之為DFS倒也無妨。</p>
+<textarea t="樹的高度（adjacency matrix）">
+bool adj[9][9];
+
+int DFS(int x, int px)	// px是x的父親
+{
+	int h = 0;
+	for (int y=0; y<9; ++y)
+		if (adj[x][y] && y != px)
+			h = max(h, DFS(y, x) + 1);
+	return h;
+}
+
+void tree_height(int root)
+{
+	cout << "樹的高度是" << DFS(root, root);
+}
+</textarea>
+<p class="t">diameter</p>
+<p>一棵無根樹的「直徑」，就是相離最遠的兩個點的距離。</p>
+<p>稍微修改一下計算高度的程式碼，就可以順便計算直徑。</p>
+<img src="TreeDiameter.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TreeDiameter.png">
+<textarea t="樹的直徑，邊無權重（adjacency matrix）">
+bool adj[9][9];
+int diameter = 0;
+
+int DFS(int x, int px)	// px是x的父親
+{
+	int h1 = 0, h2 = 0;	// 紀錄最高與次高的高度
+	for (int y=0; y<9; ++y)
+		if (adj[x][y] && y != px)
+		{
+			int h = DFS(y, x) + 1;
+			if (h > h1) h2 = h1, h1 = h;
+			else if (h > h2) h2 = h;
+		}
+	diameter = max(diameter, h1 + h2);
+	return h1;
+}
+
+void tree_diameter()
+{
+	diameter = 0;	// 初始化
+
+	int root = 0;	// 隨便選一個樹根
+	DFS(root, root);
+	cout << "樹的直徑是" << diameter;
+}
+</textarea>
+<p>一棵樹的各種直徑一定會相交在同一點（同一群點）。</p>
+<pre>
+1.
+反證法。
+現在有兩條分開的直徑，
+可是一棵樹上各點都得連通，
+所以這兩條分開的直徑，中間一定有某處互相連接，
+一旦連接起來，勢必變成更長的直徑，矛盾。
+故所有直徑必相交。
+
+2.
+反證法。
+現在已有兩條直徑相交在某一點，
+如果另外一條直徑與這兩條直徑相交在另一點，
+勢必變成更長的直徑，矛盾。
+故所有直徑必相交在同一點（同一群點）。
+</pre>
+<p class="e">UVa 10308 11695</p>
+<p class="t">balanced height</p>
+<p>想辦法選定一個樹根，讓樹的高度最小。演算法請自行參考程式碼，時間複雜度為兩次DFS的時間。</p>
+<textarea t="平衡樹高度＋平衡樹樹根（adjacency matrix）">
+bool adj[9][9];
+int p[9];			// DFS tree
+int h1[9], h2[9];	// 紀錄最高與次高的高度
+int c1[9], c2[9];	// 紀錄最高與次高的來源
+
+void record(int x, int height, int child)
+{
+	if (height > h1[x])
+	{
+		h2[x] = h1[x]; c2[x] = c1[x];
+		h1[x] = height; c1[x] = child;
+	}
+	else if (height > h2[x])
+	{
+		h2[x] = height; c2[x] = child;
+	}
+}
+
+void DFS1(int x)
+{
+	h1[x] = h2[x] = 0;
+	for (int y=0; y<9; ++y)
+		if (adj[x][y])
+			if (y != p[x])
+			{
+				p[y] = x;
+				DFS1(y);
+				record(x, h1[y] + 1, y);
+			}
+			else
+				;	// 由父親過來的高度，只能留待下一波解決。
+}
+
+void DFS2(int x)
+{
+	if (p[x] != x)	// 樹根沒有父親，不必算。
+	{
+		int y = p[x];	// 上一波沒解決的部分
+
+		// 之前紀錄次高的高度，用意在於這裡！
+		// 當y的最高高度來源是x，
+		// 此時y的次高高度，對x來說才是由y過來的高度。
+		if (c1[y] == x)
+			record(x, h2[y] + 1, y);
+		else
+			record(x, h1[y] + 1, y);
+	}
+
+	for (int y=0; y<9; ++y)
+		if (adj[x][y])
+			if (y != p[x])
+				DFS2(y);
+}
+
+void balanced_height()
+{
+	int root = 0;	// 隨便挑一點當作樹根皆可
+	p[root] = root;
+	DFS1(root);
+	DFS2(root);
+
+	int b_height = 1e9;
+	int diameter = 0;	// 順便算直徑
+	for (int x=0; x<9; ++x)
+	{
+		b_height = min(b_height, h1[x]);
+		diameter = max(diameter, h1[x]);
+	}
+	cout << "樹經過平衡之後的高度是" << b_height;
+	cout << "樹的直徑是" << diameter;
+
+	for (int x=0; x<9; ++x)
+		if (h1[x] == b_height)
+			cout << "可以作為樹根的點為" << x;
+
+	for (int x=0; x<9; ++x)
+		if (h1[x] == diameter)
+			cout << "可作為直徑的端點有" << x;
+}
+</textarea>
+<p class="e">UVa 10459 10939</p>
+<p class="t">parent-child relationship</p>
+<p>建立DFS tree或者BFS tree，就可以輕鬆判斷一點是不是另一點的父親。</p>
+<textarea t="判斷父子關係（adjacency matrix）">
+bool adj[9][9];
+int p[9];	// DFS tree
+
+void DFS(int x)
+{
+	for (int y=0; y<9; ++y)
+		if (adj[x][y] && y != p[x])
+		{
+			p[y] = x;
+			DFS(y);
+		}
+}
+
+bool x_is_parent_of_y(int x, int y)
+{
+	return x == p[y];
+}
+
+void parent_child(int root)
+{
+	p[root] = -1;	// 輸入相等的xy時，避免造成錯誤。
+	DFS(root, root);
+
+	int x, y;
+	while (cin >> x >> y)
+		if (x_is_parent_of_y(x, y))
+			cout << "x是y的父親";
+		else if (x_is_parent_of_y(y, x))
+			cout << "y是x的父親";
+		else
+			cout << "xy不是父子關係";
+}
+</textarea>
+<p class="t">ancestor-descendant relationship</p>
+<p>利用DFS的遍歷順序，就可以輕鬆判斷一點是不是另一點的祖先。</p>
+<textarea t="判斷祖孫關係（adjacency matrix）">
+bool adj[9][9];
+int tin[9], tout[9];	// DFS進入各點的時刻、離開各點的時刻
+int t = 0;				// 現在時刻
+
+void DFS(int x, int px)	// px是x的父親
+{
+	tin[x] = t++;
+
+	for (int y=0; y<9; ++y)
+		if (adj[x][y] && y != px)
+			DFS(y, x);
+
+	tout[x] = t++;
+}
+
+bool x_is_ancestor_of_y(int x, int y)
+{
+	return tin[x] < tin[y] && tout[x] > tout[y];
+}
+
+void ancestor_descendant(int root)
+{
+	t = 0;
+	for (int i=0; i<9; ++i) tin[i] = 0;
+	DFS(root, root);
+
+	int x, y;
+	while (cin >> x >> y)
+		if (x_is_ancestor_of_y(x, y))
+			cout << "x是y的祖先";
+		else if (x_is_ancestor_of_y(y, x))
+			cout << "x是y的祖先";
+		else
+			cout << "xy不是祖孫關係";
+}
+</textarea>
+<p class="t">distance between two nodes</p>
+<p>樹上任兩點之間只有一條路徑。由其中一點開始進行DFS或BFS，直到遇見另一點，就得到距離了。程式碼就不提供了。</p>
+<p>時間複雜度為一次Graph Traversal的時間。</p>
+<p class="t">distance from one node to any nodes</p>
+<p>由該點開始進行BFS或DFS即可。時間複雜度為一次Graph Traversal的時間。</p>
+<textarea t="一點到其他點的距離（adjacency matrix）">
+int w[9][9];
+int d[9];
+int p[9];
+
+void DFS(int x)
+{
+	for (int y=0; y<9; ++y)
+		if (y != p[x] && y != x)
+		{
+			d[y] = d[x] + w[x][y];
+			p[y] = x;
+			DFS(y, x);
+		}
+}
+
+void distance_to_any_nodes(int source)
+{
+	d[source] = 0;
+	p[source] = source;
+	DFS(source);
+}
+</textarea>
+<p class="t">distance between all arbitrary two nodes</p>
+<p>算出所有兩點之間的距離。可以對圖上各點使用Graph Traversal求得，時間複雜度為O(V^2)。</p>
+<p>這裡另外介紹稍微複雜一點的方法。先隨便選定一個樹根，然後利用Lowest Common Ancestor將路徑分割成兩條，分頭計算兩條路徑的長度。</p>
+<p>這裡提供一個實作方式，時間複雜度為O(V^2)。</p>
+<pre>
+1. 樹上隨便挑一點作為樹根。
+2. 求所有兩點之間的Lowest Common Ancestor。
+3. 求樹根到圖上各點之距離d(‧)。
+4. 樹上x點與y點的距離為 (d(x)-d(z)) + (d(y)-d(z))，
+   其中z點是x點與y點的Lowest Common Ancestor。
+</pre>
+<textarea t="所有兩點之間的距離（adjacency matrix）">
+int w[9][9];
+int d[9];
+
+int lca[9][9];	// 圖上所有兩點之間的LCA
+
+int dist(int x, int y)
+{
+	int z = lca[x][y];
+	return (d[x] - d[z]) + (d[y] - d[z]);
+}
+
+void all_distances()
+{
+	int root = 0;	// 隨便選一個樹根
+	all_pairs_lowest_common_ancestor(root, lca);
+	single_source_shortest_paths_in_tree(root, d);
+
+	int a, b;
+	while (cin >> a >> b)
+		cout << "a點到b點的距離是" << dist(a, b);
+}
+</textarea>
+<p>再提供另一個實作方式，時間複雜度也是O(V^2)。</p>
+<pre>
+1. 樹上隨便挑一點作為樹根。
+2. 求所有兩點之間的Lowest Common Ancestor。
+3. 以top-down recursive DP計算樹上x點與y點的距離：
+
+d(x,y) =
+{ 0                    , when x = y
+{ w(x, px), d(px, y)   , when y is the ancestor of x
+{ w(y, py), d(x, py)   , when x is the ancestor of y
+{ d(x,z) + d(y,z)      , otherwise (z is the lca of x and y)
+
+d(x,y)為x點與y點之間的距離
+w(x,y)為邊xy的權重。如果邊xy不存在，w(x,y)為無限大。
+px為x的父親，py為y的父親。
+</pre>
+<textarea t="所有兩點之間的距離（adjacency matrix）">
+int w[9][9];
+
+int dd[9][9];	// 任兩點之間的距離
+int lca[9][9];	// 任兩點之間的LCA
+int p[9];		// DFS tree
+
+// top-down recursive DP
+int dist(int i, int j)
+{
+	int& v = dd[i][j];
+	if (v is filled) return v;
+
+	if (i == j)
+		v = 0;
+	else if (i == lca[i][j])
+		v = w[j][p[j]] + dist(i, p[j]);
+	else if (j == lca[i][j])
+		v = w[i][p[i]] + dist(p[i], j);
+	else
+		v = dist(i, k) + dist(j, k);
+
+	return v;
+}
+
+void all_distances()
+{
+	int root = 0;	// 隨便選一個樹根
+	all_pairs_lowest_common_ancestor(root, lca, p);
+	set dd[][] not filled;
+
+	int a, b;
+	while (cin >> a >> b)
+		cout << "a點到b點的距離是" << dist(a, b);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Directed Acyclic Graph（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Directed Acyclic Graph</p>
+<p class="t">Source Vertex / Terminal Vertex</p>
+<p class="t">Depth</p>
+<p>如何決定深度呢？最長路徑。</p>
+<p class="t">DP</p>
+<p class="e">ICPC 5104</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Binary Tree</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Binary Tree</p>
+<p>「二元樹」是計算機科學最重要的概念，甚至可以說：二元樹開創了計算機科學。</p>
+<p>像是資料結構Binary Search Tree與Heap，交換式排序演算法的Decision Tree、資料壓縮的Huffman Tree、3D繪圖的BSP Tree、編譯器的Parse Tree……，這一大堆稀奇古怪的術語，通通都是二元樹。總之，二元樹的應用相當廣泛，是資工系學生必學的基礎概念。</p>
+<p>「二元樹」與「樹」，儘管名稱相近，但是概念不相近，至於用途更是天差地遠，兩者可以分別獨立學習。二元樹：資料結構課程的二元搜尋樹章節，會順便引出二元樹的概念；樹：演算法課程的圖論章節，一開始就會介紹樹的定義。</p>
+<img src="BinaryTree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryTree1.png">
+<p>言歸正傳。「二元樹」就是分兩岔的樹，每個節點可以有左小孩和右小孩，每個節點可以有零個、一個、兩個小孩。</p>
+<p>順便介紹幾個特殊的二元樹：</p>
+<p>full binary tree：除了樹葉以外，每個節點都有兩個小孩。</p>
+<p>complete binary tree：各層節點全滿。也是full binary tree。</p>
+<img src="BinaryTree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryTree2.png">
+<p class="t">Binary Tree資料結構</p>
+<p>第一種方法，是建立節點，運用指標串接各個節點。</p>
+<textarea>
+struct Node
+{
+	Node* parent;
+	Node* left;
+	Node* right;
+	int data;
+};
+
+Node* root = 0;
+</textarea>
+<img src="BinaryTree3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryTree3.png">
+<p>第二種方法，是讓二進位數字一一對應到二元樹的節點。</p>
+<p>建立一個陣列，運用陣列索引值就能得到各個節點：樹根的索引值固定是一，索引值乘上兩倍就得到左小孩，索引值乘上兩倍再加一就得到右小孩，索引值除以二就得到父親。</p>
+<p>優點是程式碼簡潔，效率高。</p>
+<p>缺點是浪費記憶體空間。如果不是complete binary tree，那麼陣列就有很多閒置空格。</p>
+<p>另一個缺點是樹的高度受限制。1024 = 2^10格的陣列，樹的高度只有10，不能更高了。</p>
+<textarea>
+int tree[5 + 1];	// tree[0]不使用，只有五個節點。
+int left_child(int index) {return index * 2;}
+int right_child(int index) {return index * 2 + 1;}
+
+void binary_tree()
+{
+	cout << "根為" << tree[1];
+	cout << "根的左邊小孩是" << tree[left_child(1)];
+	cout << "根的右邊小孩是" << tree[right_child(1)];
+}
+</textarea>
+<p class="e">UVa 112 122</p>
+<p class="t">Binary Tree Traversal</p>
+<p>二元樹的遍歷順序，理論上共有四種──但是事實上還是只有DFS與BFS兩種，只不過更動了節點的輸出順序。</p>
+<p>注意樹根的位置，就能輕鬆解讀這四種序。</p>
+<img src="BinaryTree4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryTree4.png">
+<pre>
+Preorder Traversal 前序遍歷
+理論上的遍歷順序是：根、左子樹、右子樹。根排在前面。
+即是Depth-first Search。
+
+Inorder Traversal 中序遍歷
+理論上的遍歷順序是：左子樹、根、右子樹。根排在中間。
+實際上是採用Depth-first Search，只不過更動了節點的輸出順序。
+
+Postorder Traversal 後序遍歷
+理論上的遍歷順序是：左子樹、右子樹、根。根排在後面。
+實際上是採用Depth-first Search，只不過更動了節點的輸出順序。
+
+Level-order Traversal 層序遍歷
+即是Breath-first Search。
+</pre>
+<textarea>
+struct Node
+{
+	Node* left;
+	Node* right;
+	int data;
+};
+
+Node* root = ...;	// 假設已經建立二元樹了
+
+// preorder traversal
+void traversal(Node* p)
+{
+	if (!p) return;
+	cout << p->data;	// 先輸出樹根
+	traversal(p->left);	// 次輸出左子樹
+	traversal(p->right);// 後輸出右子樹
+}
+
+// inorder traversal
+void traversal(Node* p)
+{
+	if (!p) return;
+	traversal(p->left);
+	cout << p->data;	// 挪到中間，改變輸出順序。
+	traversal(p->right);
+}
+
+// postorder traversal
+void traversal(Node* p)
+{
+	if (!p) return;
+	traversal(p->left);
+	traversal(p->right);
+	cout << p->data;	// 挪到後面，改變輸出順序。
+}
+
+// level-order traversal
+void traversal(Node* root)
+{
+	queue<Node*> q;
+	q.push(root);
+	while (!q.empty())
+	{
+		Node* p = q.front(); q.pop();
+		cout << p->data;	// 這行往下挪，結果仍相同。
+		if (p->left)  q.push(p->left);
+		if (p->right) q.push(p->right);
+	}
+}
+
+// preorder traversal
+void traversal(Node* root)
+{
+	stack<Node*> s;
+	s.push(root);
+	while (!s.empty())
+	{
+		Node* p = s.front(); s.pop();
+		cout << p->data;	// 這行往下挪，結果仍相同。
+		if (p->left)  s.push(p->left);
+		if (p->right) s.push(p->right);
+	}
+}
+</textarea>
+<p class="e">UVa 112 699</p>
+<p class="t">Tree Reconstruction</p>
+<p>以一棵二元樹能得到前序、中序、後序、層序，那麼以前序、中序、後序、層序能得到一棵二元樹嗎？</p>
+<p>只有一種序，是無法還原出一棵二元樹的，有很多可能性。</p>
+<img src="BinaryTree5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryTree5.png">
+<p>有兩種序，就有機會還原出唯一一棵二元樹。比方說，只知道preorder和inorder，求出原本的二元樹。</p>
+<p>運用Divide and Conquer可以巧妙解決。在inorder之中，root的兩邊分別為左子樹和右子樹；在preorder之中，最左邊的元素就是root──利用root，便可區分左子樹和右子樹。子樹也是樹，可以用相同手法繼續分割，最後便可求出整棵樹的架構。</p>
+<img src="BinaryTree6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryTree6.png">
+<p>但是只有preorder和postorder的話，是做不出答案的。因為無法確定樹根的位置。</p>
+<p>那麼levelorder呢？大家就自己想想吧。</p>
+<p class="e">UVa 10701 536 548 10410 12347</p>
+<p class="t">Polish Notation / Reverse Polish Notation</p>
+<p>凡是談到二元樹的前序、中序、後序，總是順便談到四則運算的前序、中序、後序表示法。</p>
+<img src="PolishNotation1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolishNotation1.png">
+<p>我們可以將一道四則運算式子，換成二元樹。</p>
+<p>然後列出此二元樹的前序、中序、後序。其中前序就是波蘭表示法，又稱做prefix；中序就是原來的四則運算式子、需要括號，又稱做infix；後序就是逆波蘭表示法，又稱做postfix。</p>
+<p>然而，建立二元樹是很麻煩的。能不能略過二元樹，直接把四則運算式子換成波蘭表示法（逆波蘭表示法）呢？當然能！只要運用stack，就可以做到這件事情。</p>
+<textarea>
+通常這是學校作業，所以就不提供程式碼了。
+</textarea>
+<p>一道四則運算式子，改成波蘭表示法（逆波蘭表示法）之後，計算過程變成由左往右計算，不必顧慮先乘除後加減、不必顧慮括號，只需要一個額外的stack做為輔助。</p>
+<p>程式語言的四則運算式子，事實上都會被編譯器轉換成波蘭表示法（逆波蘭表示法），以利電腦計算。</p>
+<textarea>
+通常這是學校作業，所以就不提供程式碼了。
+</textarea>
+<p class="e">UVa 372 727 11234 172 10700 10847</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">N-ary Tree</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">N-ary Tree（k-way Tree）</p>
+<p>「多元樹」就是分N岔的樹，每個節點可以有零個、一個、兩個、……、N個小孩。</p>
+<img src="N-aryTree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/N-aryTree1.png">
+<p>注意到：多元樹，節點只有一個小孩時，沒有左小孩、右小孩的差別；二元樹，節點只有一個小孩時，有左小孩、右小孩的差別。</p>
+<p class="t">Left Child/Right Sibling Representation</p>
+<p>一棵多元樹，可以改用二元樹表示：多元樹的左小孩，是二元樹的左小孩；多元樹的其餘小孩（左小孩的兄弟），是二元樹的右小孩、右右小孩、……。</p>
+<img src="N-aryTree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/N-aryTree2.png">
+<p>芸芸多元樹，皆得簡化成二元樹；區區二元樹，便可描述出多元樹。萬流歸宗、一以貫之。</p>
+<p>有興趣的讀者，可以觀察多元樹與轉化過的二元樹的前序、中序、後序、層序。也可以計算一下多元樹的節點數目、樹葉數目、高度。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

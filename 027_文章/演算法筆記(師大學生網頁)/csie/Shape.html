@@ -1,0 +1,190 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Shape</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Orthogonal Rectangle</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">擺得很正的矩形，四個邊都平行於座標軸</p>
+<img src="Rectangle1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Rectangle1.png">
+<p>經過數學課程洗禮，大家看到矩形都是直覺想到長與寬。然而在計算幾何當中，我們傾向紀錄左下角座標（X座標、Y座標的下界）與右上角座標（X座標、Y座標的上界）。</p>
+<textarea>
+struct Rectangle {int x1, y1, x2, y2;} rect[100];
+</textarea>
+<p>就算矩形退化成線段、點，這種紀錄方式也不會有問題。</p>
+<p class="e">UVa 460 191</p>
+<p class="t">矩形相交</p>
+<p>要判斷矩形相交相當麻煩，相交的情形有許多種。</p>
+<img src="Rectangle2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Rectangle2.png">
+<p>逆向思考，事情就變得容易多了：判斷矩形不相交！以第二個矩形做為基準，第一個矩形完全落在其左方、右方、下方、上方，就是不相交。</p>
+<img src="Rectangle3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Rectangle3.png">
+<textarea>
+bool intersect(Rectangle r1, Rectangle r2)
+{
+	return !(r1.x2 < r2.x1 || r1.x1 > r2.x2 ||
+			 r1.y2 < r2.y1 || r1.y1 > r2.y2);
+}
+</textarea>
+<p>如果是空心矩形，那麼還得偵測第一個矩形是不是被第二個矩形框住。</p>
+<textarea>
+bool intersect(Rectangle r1, Rectangle r2)
+{
+	return !(r1.x2 < r2.x1 || r1.x1 > r2.x2 ||
+			 r1.y2 < r2.y1 || r1.y1 > r2.y2)
+		&& !(r1.x1 > r2.x1 && r1.x2 < r2.x2 &&
+			 r1.y1 > r2.y1 && r1.y2 < r2.y2);
+}
+</textarea>
+<p class="t">大量矩形交集</p>
+<p>兩個矩形的交集還是矩形（可能退化成線段、點）。運用Incremental Method進行推理，大量矩形的交集當然還是矩形。</p>
+<p>採用Incremental Method，一次讀入一個矩形，不斷更新交集。時間複雜度O(N)，N是矩形數量。</p>
+<p>【徵練習題】</p>
+<p class="t">大量矩形聯集，之一</p>
+<img src="Rectangle4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Rectangle4.png">
+<p>將聯集區域切割為數個矩形。採用Incremental Method，一次讀入一個矩形，不斷更新聯集。</p>
+<img src="Rectangle5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Rectangle5.png">
+<p>下面這段程式碼僅計算聯集面積。至於聯集多邊形，就請讀者自行研究了。</p>
+<textarea>
+struct Rectangle {int x1, y1, x2, y2;} rect[100];
+
+// 計算a與b的差集，將差集區域切割為數個矩形
+Rect cut[4];	// 回傳值。切割後的差集。
+int divide(Rectangle a, Rectangle b)
+{
+	// no intersection
+	if (b.x2 <= a.x1 || b.x1 >= a.x2) return 0;
+	if (b.y2 <= a.y1 || b.y1 >= a.y2) return 0;
+
+	// b contains a
+	if (b.x1 <= a.x1 && b.x2 >= a.x2 &&
+		b.y1 <= a.y1 && b.y2 >= a.y2) return -1;
+
+	// a divides b
+	// cut a into pieces
+	int cuts = 0;
+	if (b.x1 >= a.x1)	// cut left-side
+	{
+		Rect t = a; t.x2 = a.x1 = b.x1;
+		if (t.x1 != t.x2) cut[cuts++] = t;
+	}
+	if (b.x2 <= a.x2)	// cut right-side
+	{
+		Rect t = a; t.x1 = a.x2 = b.x2;
+		if (t.x1 != t.x2) cut[cuts++] = t;
+	}
+	if (b.y1 >= a.y1)	// cut buttom-side
+	{
+		Rect t = a; t.y2 = a.y1 = b.y1;
+		if (t.y1 != t.y2) cut[cuts++] = t;
+	}
+	if (b.y2 <= a.y2)	// cut top-side
+	{
+		Rect t = a; t.y1 = a.y2 = b.y2;
+		if (t.y1 != t.y2) cut[cuts++] = t;
+	}
+	return cuts;
+}
+
+float rectangle_union()
+{
+	vector<Rectangle> cur;
+	for (int i=0; i<100; ++i)
+	{
+		vector<Rectangle> next;
+		for (int j=0; j<cur.size(); ++j)
+		{
+			// 先求出rect[i]以外的聯集區域
+			int cuts = divide(cur[j], rect[i]);
+			if (cuts == 0)
+				next.push_back(cur[j]);
+			else if (cuts == -1)
+				continue;
+			else if (cuts > 0)
+				next.insert(next.end(), cut, cut+cuts);
+		}
+		cur = next;
+		// 最後再加上rect[i]本身
+		cur.push_back(rect[i]);
+	}
+
+	float area = 0.0;
+	for (int i=0; i<cur.size(); ++i)
+		area += (rect[i].x2 - rect[i].x1) *
+				(rect[i].y2 - rect[i].y1);
+	return area;
+}
+</textarea>
+<img src="Rectangle6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Rectangle6.png">
+<p>時間複雜度的分析比較特別。每次更新聯集，都會增加一些矩形、減少一些矩形，所以很難估計矩形數量。</p>
+<p>我們用宏觀的角度來觀察矩形數量。考慮所有矩形頂點，X軸離散化、Y軸離散化，最多產生(2N-1) * (2N-1)個格子。聯集區域一定是由這些格子構成，聯集區域的格子數量一定小於等於(2N-1) * (2N-1)。更進一步，聯集區域切割出來的矩形數量，一定小於等於格子數量！</p>
+<p>更新聯集，也就是檢查聯集區域切割出來的每一個矩形，時間複雜度為O(N^2)。一共更新N次，總時間複雜度為O(N^3)。</p>
+<p class="t">大量矩形聯集，之二</p>
+<pre>
+一、X軸離散化、Y軸離散化。O(NlogN)
+　　最多產生(2N-1) * (2N-1)個小格。
+二、窮舉每個小格、窮舉矩形，判斷每個小格屬於哪個矩形。O(N^3)
+</pre>
+<p class="e">UVa 870 221 688</p>
+<p class="t">大量矩形聯集，之三</p>
+<pre>
+一、X軸離散化，附帶矩形左右邊界資訊。O(NlogN)
+二、Y軸離散化。O(NlogN)
+三、每一個橫條，由左往右掃描，判斷每個小格是否在矩形裡。O(NN)
+　　以矩形上下邊界，判斷其左右邊界是否穿過當前橫條。
+　　遇到矩形左邊界+1，遇到矩形右邊界-1。
+</pre>
+<p class="t">大量矩形聯集，之四</p>
+<p>觀察相鄰的橫條。相鄰的橫條的聯集區域變化，與矩形的消失、出現密切相關。我們可以運用動態的資料結構，儲存第一個橫條的聯集區域，然後逐步更新每一個橫條。</p>
+<pre>
+一、依序處理每個橫條。
+　　首先建立第一個橫條的線段樹，節點附帶sum資訊。
+　　（預先離散化X軸。O(NlogN)）
+二、一次做一個橫條。看看哪些矩形離開了/進來了，更新線段樹。
+　　（預先離散化Y軸，附帶矩形上下邊界資訊。O(NlogN)）
+三、從頭到尾總共N個矩形離開了/進來了，線段樹更新總共2N次。O(NlogN)
+　　每做完一個橫條，樹根的sum就是該橫條之內的聯集區域面積總和。
+　　每做完一個橫條，就將sum累加至聯集面積。
+</pre>
+<p class="e">ICPC 4758</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Circle（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">圓</p>
+<p>【待補文字】</p>
+<p class="e">ICPC 4120</p>
+<p class="t">圓形交集、聯集</p>
+<p class="t">大量圓形交集、聯集</p>
+<p><a href="javascript:if(confirm('http://www.shuizilong.com/house/archives/圆并/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.shuizilong.com/house/archives/圆并/'" tppabs="http://www.shuizilong.com/house/archives/圆并/">http://www.shuizilong.com/house/archives/圆并/</a></p>
+<p class="e">UVa 10969 ICPC 3532</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Triangle（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">三角形</p>
+<textarea>
+bool PointInTriangle(Point p, Triangle t)
+{
+	Point v0 = t.p0 - p;
+	Point v1 = t.p1 - p;
+	Point v2 = t.p2 - p;
+	float c0 = cross(v0, v1);
+	float c1 = cross(v1, v2);
+	float c2 = cross(v2, v0);
+	return (c0 > 0 && c1 > 0 && c2 > 0)
+		|| (c0 < 0 && c1 < 0 && c2 < 0);
+}
+</textarea>
+<p class="e">UVa 11122 11275 11836</p>
+<p class="t">三角形交集、聯集</p>
+<p class="t">大量三角形交集、聯集</p>
+<p class="e">ICPC 3809</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Helly's Theorem</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Helly\'s_theorem  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Helly\'s_theorem'" tppabs="http://en.wikipedia.org/wiki/Helly's_theorem">http://en.wikipedia.org/wiki/Helly's_theorem</a></p>
+<p>一堆凸的東西，交集也是凸的。兩兩之間都有交集，則全部合起來也有交集。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,915 @@
+<!--- file: cpgchpt13.htm
+      symbols: ，、。．‧；：？！·
+
+constant
+constructor
+initialization
+reference type
+functions--call by value, call by reference, 
+           static member functions, inline
+overloaded functions,
+scope rule
+variable defined everywhere
+friend
+operator
+static data member
+static member function
+template functions and classes
+file
+<TT>
+<PRE>
+</PRE>
+</TT>
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 13 章  一些異於 C 程式的 C++ 架構</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 13 章   一些異於 C 程式的 C++ 架構</B></CENTER>
+<P>
+C++ 程式 與 C 程式 除了 類型(class) 與 物件(object) 的差異外，
+尚有一些基本架構的 差異， 本章將 簡略說明幾項 基本差異。
+<P>
+<A NAME="start">
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 13.1 節 <A href="#first">變數 的定義</A>
+  <LI>第 13.2 節 <A href="#second">資料成員 與 變數 起始值的設定</A>
+  <LI>第 13.3 節 <A href="#third">參考型態(reference type)</A>
+    <UL>
+     <LI>第 13.3.1 節 <A href="#third1">參考型態的變數 -- 變數的別名 (alias)</A>
+     <LI>第 13.3.2 節 <A href="#third2">參考型態的引數 -- call by reference</A>
+    </UL>
+  <LI>第 13.4 節 <A href="#fourth">const 的宣告</A>
+    <UL>
+     <LI>第 13.4.1 節 <A href="#fourth1">於 block 中 const 的定義</A>
+     <LI>第 13.4.2 節 <A href="#fourth2">與 參考型態引數 的結合</A>
+     <LI>第 13.4.3 節 <A href="#fourth3">於 class 中 const 的定義</A>
+    </UL>
+  <LI>第 13.5 節 <A href="#fifth">overloaded 函數</A>
+  <LI>第 13.6 節 <A href="#sixth">函數模式 與 類別模式</A>
+  <LI>第 13.7 節 <A href="#seventh">inline 函數</A>
+  <LI>第 13.8 節 <A href="#eighth">檔案的輸入與輸出格式</A>
+</UL>
+<P>
+<A href="cpgch12.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch12.htm">回第 12 章</A><BR>
+<A href="cpgch14.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch14.htm">至第 14 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<P>
+<A NAME="first">
+<HR>
+<!--------------------第 13.1 節--------------------------------------->
+<P>
+  <B>第 13.1 節  變數 的定義</B>
+<P>
+於 C++ 程式中， 變數 可以 在 程式 任何地方 來定義。 一般而言， 變數
+宣告 的地方 與 該 變數 引用處 距離 太遠， 常會產生 程式碼的 不易 看懂 及
+維修的困難。 在 編寫 程式時， 如果 因程式 的 需要， 必須 再 定義 一個
+新的 變數， 同時， 其使用範圍亦小， 我們 可 就近 定義 一個 變數， 
+而不須 移至 block 的 起點， 通常 這些 變數 都是 迴圈 變數 較多。 
+如此一來， 程式碼 會變得 較易 編寫、 較易 看懂、 較易 維修 等。
+<P>
+<B>例 1：</B>
+<TT>
+<PRE>
+       class CA{ ... }; // class CA 的宣告
+
+       ...
+         {
+            ...
+            for( int i=0; i <= n; i++) // 定義變數 i
+            { ... }
+
+            CA a; // 定義 class CA 的 一物件 a 
+            ...
+         }
+</PRE>
+</TT>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="second">
+<HR>
+<!--------------------第 13.2 節--------------------------------------->
+<P>
+  <B>第 13.2 節  資料成員 與 變數 起始值的設定</B>
+<P>
+於 block 區 變數 起始值 的設定， 一般而言， 是在 變數 定義處 加上等號，
+如同 一般 的 指派敘述。<BR>
+於 C++ 中 變數 起始值 的設定 又多了一種 設定的方式， 其 設定的 方式 如下：
+<P>
+<TT><PRE>
+	main()
+	{
+	    <B>int x(10);</B>
+	    <B>int y = 20;</B>
+            ....
+	};
+</PRE></TT>
+說明：
+<OL>
+  <LI>對於 <TT><B>int x(10);</B></TT> 而言， 變數 <TT><B>x</B></TT> 的
+      起始值 為 10。 變數 <TT><B>x</B></TT> 如同一 物件， 變數 起始值 的
+      設定， 如同 呼叫 class 的 constructor。
+  <LI>對於 <TT><B>int y = 20;</B></TT> 而言， 變數 <TT><B>y</B></TT> 的
+      起始值 為 20。
+</OL>
+物件 起始值 的設定 則決定 於 該 class 的 constructor。 於 constructor 中
+資料成員 起始值的設定 不同 於 指派敘述， 其設定的方式如 例 2 所示：
+<P>
+<B>例 2：</B>
+<TT><PRE>
+	class className
+	{
+	    public:	// private 情況 亦同
+		dataType1 id1;
+		dataType2 id2;
+                ...
+	    public:
+	        <B>className():id1(value1), id2(value2)</B>
+                { ... }
+
+	        <B>className(dataType1 v1, dataType2 v2)
+                   :id1(v1), id2(v2)</B>
+                { ... }
+		...
+	};
+</PRE></TT>
+<P>
+說明：
+<OL>
+  <LI>對於 constructor <TT><B>className()</B></TT>， 緊接其後 id1 與 id2 起始值的 設定 分別為
+      value1 與 value2。
+  <LI>對於 constructor <TT><B>className(dataType1 v1, dataType2 v2)</B></TT>， 
+      id1 與 id2 起始值的 設定 分別為  v1 與 v2。
+</OL>
+註： 我們 亦可以 指派指令 來達到 相同 結果， 如例 3 所示。 但是， 對於 class 
+中 的 const 則無法 達到 相同的 結果。 我們 將於 第 4 節 討論 class 中
+const 起始值 設定的 方法。
+<P>
+<B>例 3：</B>
+<TT>
+<PRE>
+	class CA
+	{
+	    public:	// private 情況 亦同
+		int  id1;
+		char id2;
+                ...
+	    public:
+	        CA()
+                { id1 = 10; id2 = 'a'; }
+
+	        CA(int v1, char v2)
+                { id1 = v1; id2 = v2; }
+		...
+	};
+</PRE>
+</TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="third">
+<HR>
+<!--------------------第 13.3 節--------------------------------------->
+<P>
+  <B>第 13.3 節  參考型態(reference type)</B>
+<P>
+函數的呼叫， C++ 多了 call by reference， C 程式僅有 call by value。
+如此一來， C++ 也像 Pascal 程式語言 具有這兩種函數 呼叫的好處。 於 C
+程式語言中， 因沒有 class 與 object， 函數 呼叫中， 引數的 傳遞， 可
+經由指標 的 傳遞， 來達到 傳遞中 記憶体 的 精簡。<BR>
+C++ 多了 call by reference 及 const 的架構， 更可達到 傳遞中 記憶体 的 精簡，
+以及 call by value 的好處， 可 避免 實質引數 (actual parameter) 遭到 改變。<BR>
+<A NAME="third1">
+<P>
+<B>第 13.3.1 節  參考型態的變數 -- 變數的別名 (alias)</B>
+<P>
+一個 變數 都有一相隨 的 記憶体， 於 C++ 中 一 記憶体 亦可附有 多個
+辨識名稱， 如同 一個人 有姓名， 也有外號， 別名 等。 於 C 及 C++
+亦有 僅有記憶体 而名不存在 的變數， 如 例 4 所示。<P>
+<B>例 4：</B>僅有記憶体 而名不存在 的變數
+<TT>
+<PRE>
+	{
+             int *pi;
+
+             pi = new int(10);
+             *pi += 2;
+	};
+</PRE>
+</TT>
+<P>
+說明：
+<OL>
+  <LI>pi 為一指標， 指向一 可存放 int 的記憶体， 該 記憶体 並沒有 相關名稱。
+  <LI>如果 硬要說 該 記憶体 有 相關名稱， 其 名稱 應為 *pi。
+</OL>
+我們 以 指標運算子 * 來宣告 一個 指標 變數， 以 地址運算子 &amp; 來參考 一
+變數， 我們 亦以 地址運算子 &amp; 來 達到 一個 變數 有別名 的功能， 其用法
+如例 5 所示。
+<P>
+<B>例 5：</B> 不同變數名稱 但 參考 同一 記憶体。
+<TT>
+<PRE>
+	{
+             int i;
+             <B>int & referToi = i;  // 變數 referToi 與 變數 i 異名同体</B>
+
+             i = 10;
+             cout << "referToi = " << referToi << endl;
+
+             referToi = 20;
+             cout << "i = " << i << endl;
+
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>變數 referToi 與 變數 i 的相隨 記憶体 都一樣 並沒有 差別， 即 referToi 
+      是 變數 i 的別名。
+  <LI>改變 referToi 與 i 當中 任何 一個 變數， 另一個 變數 也隨著 改變。
+  <LI>referToi 本身所存的值是 變數 i 的地址， 但卻不是 變數 i 的 指標，
+      引用 變數 referToi 時， 是在 參考 變數 i。
+  <LI>該程式 執行 的 結果 為：
+<TT><PRE>
+referToi = 10
+i = 20
+</PRE>
+</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="third2">
+<P>
+<B>第 13.3.2 節  參考型態的引數 -- call by reference</B>
+<P>
+對於 函數 的 呼叫， 我們 亦以 地址運算子 &amp; 來 達到 call by reference
+的功能， 其用法 如例 6 所示。
+<P>
+<B>例 6：</B> call by reference。
+<TT>
+<PRE>
+        <B>void swap(int &x, int &y)   // call by reference</B>
+        {
+            int temp;
+
+            temp = x;  x = y;  y = temp;
+        }
+
+	main()
+        {
+             int i, j;
+
+             cout << "Input 2 numbers:" << endl;
+             cin >> i >>j;
+
+             if( i > j ) 
+                 <B>swap(i, j);</B>
+
+             cout << "The smaller number is " << i << endl;
+             cout << "The larger is " << j << endl;
+
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>函數呼叫 <TT>swap(i, j)</TT> 時， 引數的 傳遞 如同<BR>
+      <B><TT>int &x=i; int &y=j;</TT></B>。
+  <LI>引數 x 為 變數 i 的 別名， y 為 變數 j 的 別名。
+  <LI>於函數 swap 中， 改變 引數 x 與 y 的值， 變數 i 與 j 也隨著 改變。
+  <LI>該程式 執行 的 結果 為：
+<TT><PRE>
+Input 2 numbers:
+100  50
+The smaller number is 50
+The larger is 100
+</PRE>
+</TT>
+</OL>
+<P>
+參考型態 變數 可用來 作 class 的 member function 所 return 的值，
+private data member 亦可 變成 public， 如 例 7 所示。
+<P>
+<B>例 7：</B> member function 所 return 的值 為 參考型態 變數。
+<TT>
+<PRE>
+        class CA
+        {
+          private:
+            int y;
+          public:
+            int x;
+            CA():x(0){}     // x is initialized to 0
+            <B>int &f(int y)
+            { x = y+20; return x;}</B>
+            <B>int &g()
+            { return y;}</B>
+        };
+
+	main()
+        {
+             CA a;
+
+             a.x = 2;
+             <B>a.f(2) = a.x + 3; // 函數呼叫 位於 等式 左側</B>
+             <B>a.g() = 10;       // private 變成 public</B>
+             cout << "a.x = " << a.x << endl;
+             cout << "a.y = " << a.g() << endl;
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>函數呼叫 <TT>a.f(2)</TT> 時， <TT>a.x = 22</TT>， 又 <TT>a.f(2)</TT>
+      函數值 為 <TT>a.x</TT>， 因此， <BR><TT>a.f(2) = a.x + 3;</TT><BR> 就 如同
+      下列 程式碼：<BR><TT>a.x = y + 20;<BR>a.x = a.x + 3;</TT>
+  <LI>函數呼叫 <TT>a.g() = 10;</TT> 時， 即 <TT>a.y = 10;</TT>， 此時，
+      private data member y 變成 public data member。
+  <LI>該程式 執行 的 結果 為：<BR><TT>a.x = 25<BR>a.y = 10</TT>
+</OL>
+<P>
+參考型態 變數 可用來 改變 function 中 static 變數 的值， 如 例 8 所示。
+<P>
+<B>例 8：</B> function 中 static 變數 可以如同 一般 變數 來改變 其值。
+<TT>
+<PRE>
+        int &f()
+        {
+            static int x = 0;
+            x++;     // x 可用來記錄函數被呼叫的次數
+            return x;
+        }
+
+	main()
+        {
+             int i;
+
+             f();f();f();
+             i = f();
+             cout << "函數 f() 被呼叫 " << i << " 次" << endl;
+
+             <B>i = f() = 0; // 從新設定 static 變數 x 為 0</B>
+             cout << "從新設定後， 函數 f() 被呼叫 " << i << " 次" << endl;
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>函數 <TT>f()</TT> 所傳回的值為 函數 <TT>f()</TT> 中的 static 變數 x
+      的參考型態值， 即  變數 x 本身。
+  <LI>該程式 執行 的 結果 為：
+<TT><PRE>
+函數 f() 被呼叫 4 次
+從新設定後， 函數 f() 被呼叫 0 次
+</PRE></TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fourth">
+<HR>
+<!--------------------第 13.4 節--------------------------------------->
+<P>
+  <B>第 13.4 節  const 的宣告</B>
+<P>
+常數的設定 除了 使用 巨集 #define 外， C++ 可以 在變數 定義 前 加上 const，
+來標示 該變數 為一常數 ( 已經 不是 變數 了 )， 於程式中 任何地方 都不可以 改變 其值。
+<P>
+<A NAME="fourth1">
+<P>
+<B>第 13.4.1 節  於 block 中 const 的定義</B>
+<P>
+於 block 中 常數 的定義方式 如例 9 所示：
+<P>
+<B>例 9：</B> 於 block 中 常數 的定義。
+<TT>
+<PRE>
+	main()
+        {
+             const int MAXSIZE = 100; // 必須 給值
+             int a[MAXSIZE];
+             ...
+//           MAXSIZE = 200; // 錯誤敘述 
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI><TT>MAXSIZE</TT> 為一常數， 其值為 100。
+</OL>
+<P>
+<B>例 10：</B> 於 block 中 常數 與 指標 的關係。
+<TT>
+<PRE>
+1       main()
+2       {
+3            const int MAXSIZE = 100; // 必須 給值
+4            const int MINISIZE = 50; // 必須 給值
+5            int j = 0;
+6<B>
+7            int * const ip1 = &j;             // 必須 給值
+8            const int * ip2 = &MAXSIZE;       // 必須 給值
+9            const int * const ip3 = &MAXSIZE; // 必須 給值</B>
+10           ...
+11           ip2 = &MINISIZE;
+12           *ip1 = 10;
+13           ip1 = &MAXSIZE;  // error!
+14           ip2 = &j;        // ok!
+15           *ip2 = 20;       // error!
+16           ip3 = &MINISIZE; // error!
+17           *ip3 = 10;       // error!
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>由第 7 行 <TT>int * const ip1 = &j;</TT> 知， ip1 為一常數，
+      其值不可以被 改變， 但是， 其所指的 內容， 即變數 j 可以 被 改變，
+      因此， 第 12 行 是 沒有錯誤的， 但是， 第 13 行 是 有錯的。
+  <LI>由第 8 行 <TT>const int * ip2 = &MAXSIZE;</TT> 知， ip2 
+      所指的 內容 是常數， 不可以 被 改變， 因此，第 15 行 是有錯的。
+      但是， ip2 本身卻是可以 變動的， 如 第 14 行。
+  <LI>由第 9 行 <TT>const int * const ip3 = &MAXSIZE;</TT> 知， ip3
+      本身 及  所指的 內容 均為 常數， 不可以 被 改變。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fourth2">
+<P>
+<B>第 13.4.2 節  與 參考型態引數 的結合</B>
+<P>
+函數 中 以 call by reference 的方式 來傳遞 引數， 則 實質 引數 將可
+任意 被改變， 欲 限定 其使用 方式， 以達到 實質 引數 的被 保護， 同時，
+資料 傳遞間 記憶體 的 精簡， 則 可以 利用 下列 方式 如 例 11 來達成 目的。
+<P>
+<P>
+<B>例 11：</B> 
+<TT>
+<PRE>
+       struct S{ int a1, a2, .....};
+       struct T{ int b1, b2, .....};
+
+       <B>void g(const struct S &a, const struct T &b)</B>
+       { ... }
+
+       main()
+       {
+            struct S x;
+            struct T y;
+            ...
+            <B>g(x, y);</B>
+            ...
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>由 函數的呼叫 <TT>g(x, y);</TT> 與 函數
+      <TT>void g(const struct S &a, const struct T &b)</TT> 的關係，得知<BR>
+      a 的實際內容 為 變數 x 的 地址， 但引用 a 如同 引用 x
+  <BR>b 的實際內容 為 變數 y 的 地址， 但引用 b 如同 引用 y。
+  <LI>由 函數<TT>void g(<B>const</B> struct S &a, <B>const</B> struct T &b)</TT>
+      得知 a 與 b 為常數， 即 x 與 y 不因函數 g() 的呼叫 而 被改變。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fourth3">
+<P>
+<B>第 13.4.3 節  於 class 中 const 的定義</B>
+<P>
+於 class 中 const data member 的定義方式 如例 12 所示：
+<P>
+<B>例 12：</B>
+<TT>
+<PRE>
+        class CA
+        { public:
+             <B>CA(): MAXSIZE(100){s = new int[MAXSIZE];}</B>
+             <B>CA(int n): MAXSIZE(n){s = new int[MAXSIZE];}</B>
+             int size(){return MAXSIZE;}
+             ...
+          private:
+             <B>const int MAXSIZE; // error if "const int MAXSIZE = 100;"</B>
+             int *s;
+        };
+
+	main()
+        {
+             <B>CA a1, a2(200);</B>
+             ...
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>於 class 中 <TT>MAXSIZE</TT> 為一常數， 其值的設定 必須 在
+      class 的 constructor 中 起始值 設定區 來 設定。
+  <LI><TT>a1.size()</TT> 為 100。
+  <LI><TT>a2.size()</TT> 為 200。
+</OL>
+<P>
+一個 class 的 object 可以 定義 為 一 const object， 但 僅有
+有加上 const 用來標明 該 object 是一個 常數 的 member function
+方能 被 引用， 如 例 13 所示。 
+<P>
+<B>例 13：</B>
+<TT>
+<PRE>
+        class CA
+        { public:
+             CA(): MAXSIZE(100){s = new int[MAXSIZE]; dummy=0;}
+             CA(int *a, int n): MAXSIZE(n)
+             {  dummy=1;
+                s = new int[MAXSIZE];
+                for(int i=0; i < n; i++) s[i]=a[i];
+             }
+             int size(){return MAXSIZE;}
+             <B>int getAverage() const; // for const object only</B>
+             void setConstant(int n)
+             { for(int i=0; i < MAXSIZE; i++) s[i]=n; }
+
+          private:
+             const int MAXSIZE;
+             int *s, dummy;
+        };
+
+     <B>int CA::getAverage() const</B> // const 仍然要標示出來
+        {
+            int sum = 0;
+//          dummy = 10;  //Error, since the object is specified const.
+//          s[0] = 6;    //OK, since s in not changed!
+            for(int i=0; i < MAXSIZE; i++)
+               sum = sum + s[i];
+            return sum/MAXSIZE;
+        }
+
+	main()
+        {
+             int a[]={1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+             <B>const CA ca(a, 10);</B>
+//           ca.setConstant(10);   // Error, since object ca is a constant!
+             cout << "Average = " << ca.getAverage() << endl;
+	}
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>於 class 中的 member function <B><TT>getAverage()</TT></B> 標示 該 object
+      為一常數。 因此， 在函數中 class 的 data member 都不可以 被 改變。
+      即 <TT>MAXSIZE, s, dummy</TT> 均不可 放在 指派敘述 的 左側。 
+  <LI>雖然 s 於 member function <B><TT>getAverage()</TT></B> 中 不可以
+      被 改變。 但是， s 所指的 內容 卻 容許被 改變。 因此，
+      於 該 member function 中 <B><TT>s[0] = 6;</TT></B> 是被允許的。
+  <LI>於 main 中， object ca 是一 const。 因此， 只能 引用 class 宣告
+      中 具有 標示 使用 const object 的 member function， 如
+      <B><TT>getAverage()</TT></B>。 對於 member function
+      <B><TT>setConstant(10)</TT></B> 而言， 就不能 被引用。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+
+<A NAME="fifth">
+<HR>
+<!--------------------第 13.5 節--------------------------------------->
+<P>
+  <B>第 13.5 節  overloaded 函數</B>
+<P>
+於 C 程式 一 個檔案中 函數 的名稱 必須 是 唯一 的，
+於 C++ 程式 就沒有 這種 限制， 同一個 函數 的名稱 可以 有
+多種 不同 的定義， 只要 其形式 引數 的個數 不一 或 其中
+有一個 資料型態 不一樣 就可以， 即其 signature 不一樣 就可以，
+如 例 14 所示。
+<P>
+<B>例 14：</B>
+<TT>
+<PRE>
+        int f(){ return 10;}
+        int f(int x){ return x+100; }
+<!---
+//      int f(const int x){....} // 與 f(int x) 無法區分，但依 compiler 而定
+--->
+        int f(int x, int y){return x*y;}
+
+	main()
+        {
+           cout << "f() = " << f() << endl;
+           cout << "f(100) = " << f(100) << endl;
+           cout << "f(8, 9) = " << f(8, 9) << endl;
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>該程式 執行 的 結果 為：<BR>
+      <B><TT>f() = 10<BR>f(100) = 200<BR>f(8, 9) = 72</TT></B>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="sixth">
+<HR>
+<!--------------------第 13.6 節--------------------------------------->
+<P>
+  <B>第 13.6 節  函數模式 與 類別模式</B>
+<P>
+設計程式時， 我們 可能會 碰到 一種情況， 如 欲利用 insertion sort
+對於 兩種或多 種 不同 的 資料 來 排序， 對於 一種 資料 型態 就要
+寫 一 種 insertion sort， 這也太麻煩了， 畢竟 這些函數 的架構都一樣，
+因此， C++ 程式 提供了 函數模式， 使用 者 只要 將 資料 填入，
+就可以 直接 使用一種新的 函數。
+<P>
+函數模式 設定 的架構 如下：
+<TT>
+<PRE>
+      template< class type[, class Type] >
+      returnDataType functionName(parameter list)
+      { body of the function }
+</PRE>
+</TT>
+以例來說明，如例 15。
+<P>
+<B>例 15：</B>
+<TT>
+<PRE>
+        template< class T >
+        void insertionSort(T *a, const int n)
+        {
+            T current;
+
+            for (int i=1; i < n; i++)
+            { current = a[i];
+              for (int k = i-1; k >= 0 ; k--)
+                 if (current < a[k])   
+                    a[ k+1 ] = a[k];
+                 else break;
+              a[ k+1 ] = current;
+            }
+        }
+
+	main()
+        {
+             int a[]={21, 12, 33, 14, 51, 26, 7, 78, 9, 10};
+             char b[]={'t','7','z','K','S','1','u','B','0','A'};
+
+             insertionSort(a, 10);
+             insertionSort(b, 10);
+
+             for(int i=0; i < 10; i++)
+                cout<< a[i] << " ";
+             cout << endl;
+
+             for(i=0; i < 10; i++)
+                cout<< b[i] << " ";
+             cout << endl;
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>該程式 執行 的 結果 為：<BR><TT>
+      7 9 10 12 14 21 26 33 51 78<BR>
+      0 1 7 A B K S t u z</TT>
+</OL>
+<P>
+對於 class 的 設計 來說 也有 相同 的情形， 譬如， stack 可以 用於不同
+的資料 型態， 其 class 的 設計 也都完全一樣， 只是 資料 型態不同 而已。
+因此， C++ 程式 提供了  class 模式， 使用 者 只要 將 資料型態 填入，
+就可以 直接 使用一種新的 class。
+<P>
+class 模式 設定 的架構 如下：
+<TT>
+<PRE>
+      template< class type[, class Type] >
+      class className
+      { body of the class };
+</PRE>
+</TT>
+以例來說明，如例 16。
+<P>
+<B>例 16：</B>
+<TT>
+<PRE>
+        template< class T >
+        class CStack
+        {
+            public:
+              CStack():MAXSIZE(100){top=0; s = new T[MAXSIZE];}
+              CStack(int n):MAXSIZE(n){top=0; s = new T[MAXSIZE];}
+             ~CStack(){delete [] s;}
+
+              int isEmpty(){ return top==0;}
+              int isFull(){ return top == MAXSIZE;}
+              void push(T x){s[top++] = x;}
+              T    pop(){ return s[--top];}
+
+            private:
+              T *s;
+              int top;
+              const int MAXSIZE;
+        };
+
+	main()
+        {
+             int a[]={21, 12, 33, 14, 51, 26, 7, 78, 9, 10};
+             char b[]={'t','7','z','K','S','1','u','B','0','A'};
+
+             <B>CStack< int > s1;
+             CStack< char > s2;</B>
+
+             for(int i=0; i < 10; i++)
+                s1.push(a[i]);
+
+             for(i=0; i < 10; i++)
+                s2.push(b[i]);
+
+             while(!s1.isEmpty())
+                cout << s1.pop() << " ";
+             cout << endl;
+
+             while(!s2.isEmpty())
+                cout << s2.pop() << " ";
+
+             cout << endl;
+	};
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>該程式 執行 的 結果 為：<BR><TT>
+      10 9 78 7 26 51 14 33 12 21<BR>
+      A 0 B u 1 S K z 7 t</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="seventh">
+<HR>
+<!--------------------第 13.7 節--------------------------------------->
+<P>
+  <B>第 13.7 節  inline 函數</B>
+<P>
+當函數的定義僅有兩三行時， 函數的呼叫， 其額外的處理動作，
+相對於函數的呼叫就相當大。 此時， 函數的呼叫如果能像巨集指令一樣，
+在程式編譯時， 函數的呼叫， 就以 函數的定義 來替代， 如此一來，
+程式的執行就可免去 函數呼叫的額外處理動作。 C++ 程式語言就提供了
+這種功能， 只要在函數的定義之前加上 inline 即可， 不過 函數的 程式碼
+是否被替代， 則由 編譯器 自行裁決， 如 例 17 所示。
+<P>
+<B>例 17：</B>
+<TT><PRE>
+        <B>inline void swap(int &x, int &y)</B>
+        {   int temp; temp = x; x = y; y = temp; }
+
+        main()
+        {   int a, b;
+
+            cout << "Input 2 numbers: ";
+            cin >> a >> b;
+            if(a > b)  swap(a, b);
+            cout << "min(a, b) = " << a << endl;
+            cout << "max(a, b) = " << b << endl;
+        }
+</PRE></TT>
+經過編譯後， 該程式就像下列的程式：
+<TT><PRE>
+        main()
+        {   int a, b;
+
+            cout << "Input 2 numbers: ";
+            cin >> a >> b;
+            <b>if(a > b)
+            {  int &x = a; int &y = b;
+               int temp;  temp = x; x = y; y = temp; }</B>
+            cout << "min(a, b) = " << a << endl;
+            cout << "max(a, b) = " << b << endl;
+        }
+</PRE></TT>
+<P>
+class 的 member function 也有相同功能， 一般而言， member function 的
+定義於 class 的定義中， 就是一種 inline的定義。 通常 member function 的
+定義僅有兩三行時， 我們才在 函數定義前加上 inline， 如 class CStack 的
+定義， 可以在 member function isEmpty() 等之前 加上 inline。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="eighth">
+<HR>
+<!--------------------第 13.8 節--------------------------------------->
+<P>
+  <B>第 13.8 節  檔案的輸入與輸出格式</B>
+<P>
+C 程式 中 由 <TT>stdio.h</TT> 檔中 定義 了 檔案的 輸入 與 輸出 格式，
+如
+<B><TT><PRE>
+FILE *fp; 
+fp = fopen("../input.txt", "r");
+fscanf(fp, "%c %d", &cvaribale, &intvariable);
+</TT></PRE></B>
+於 C++ 中 由 <TT>fstream.h</TT> 檔中 定義 了 檔案的 輸入 與 輸出 格式，
+檔案 <TT>fstream.h</TT> 已經 include 了檔案 <TT>iostream.h</TT>，
+因此， 如果 已經含 <TT>fstream.h</TT>  就不需再 將 檔案 <TT>iostream.h</TT>
+含進去。
+<P>
+宣告輸入檔 的方式 如下：
+<OL>
+  <LI><B><TT><PRE>
+    ifstream fileObject("file name");
+    if( ! fileObject )
+    {  // open file failed
+       return;
+    }
+    </PRE></TT></B>
+ 
+  <LI><B><TT><PRE>
+    ifstream fileObject;
+
+    fileObject.open("file name");
+    if( ! fileObject )
+    {  // open file failed
+       return;
+    }
+    </PRE></TT></B>
+</OL>
+其輸入使用方式 如同 cin 的使用方式，如下：
+<OL>
+   <LI>變數的輸入
+       <B><TT><PRE>
+fileObject >> variable1 >> variable2;
+       </TT></PRE></B>
+   <LI>檔案結束的檢驗
+       <B><TT><PRE>
+while( ! fileObject.eof() ){ ... }
+       </TT></PRE></B>
+   <LI>檔案的關閉如同 C  程式 的 fclose()， 其使用方式如下：
+<B><TT><PRE>
+fileObject.close();
+</TT></PRE></B>
+</OL>
+<P>
+宣告輸出檔 的方式， 其使用方式 如下：
+<OL>
+   <LI>如果僅是輸出 而不是 附加 在檔案之後， 
+<B><TT><PRE>
+ofstream fileObject("file name", ios_base::out);
+</TT></PRE></B>
+其中 <B><TT>ios_base::out</TT></B> 是標示 輸出 而不是 附加 在檔案之後。<p>
+   <LI>或是以 預設 (default) 方式 (輸出 但不是 附加) 宣告 如下：
+<B><TT><PRE>
+ofstream fileObject("file name");
+</TT></PRE></B>
+   <LI>若是要標示 附加 在檔案之後， 其使用方式 如下：
+<B><TT><PRE>
+ofstream fileObject("file name", ios_base::app);
+</TT></PRE></B>
+</OL>
+其輸出使用方式 如同 cout 的使用方式，如下：
+<B><TT><PRE>
+fileObject << variable1 << string << endl;
+fileObject.close();
+</TT></PRE></B>
+一個檔案也可以宣告為 同時是 輸入檔 也是 append 輸出檔， 其使用方式 如下：
+<B><TT><PRE>
+fstream fileObject("file name", ios_base::in | ios_base::app );
+</TT></PRE></B>
+<P>
+<B>例 19：</B>複製檔案 in.txt 至檔案 out.txt
+<TT><PRE>
+     #include < fstream.h >
+
+     void main()
+     {
+         ifstream infile("in.txt");
+         ofstream outfile("out.txt");
+         char c;
+
+         if(!infile)
+         {
+             cout << "file in.txt not found!" << endl;
+             return;
+         }
+         if(!outfile)
+         {
+             cout << "No space for file out.txt!" << endl;
+             return;
+         }
+
+         while( !infile.eof() )
+         {
+             infile >> c;   outfile << c;
+         }
+
+         infile.close();
+         outfile.close();
+     }
+
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<A HREF="cpgch12.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch12.htm">回第 12 章</A><BR>
+<A HREF="cpgch14.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch14.htm">至第 14 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</html>

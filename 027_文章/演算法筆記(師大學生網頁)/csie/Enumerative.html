@@ -1,0 +1,263 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Enumerative Method</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Enumerative Method（Under Construction!）</p>
+<p class="r">程度★　難度★</p>
+<p class="w">愚者千慮，必有一得。《史記》</p>
+</div><div class="c">
+<p class="t">Enumerate</p>
+<p>「枚舉」、「列舉」。把目標物一筆一筆列出來，進行計算。</p>
+<p class="t">舉例：枚舉一百個平方數</p>
+<p>採用直接法：依序枚舉數字1到100；枚舉過程當中，將數字平方得到平方數。</p>
+<textarea>
+void generate_squares()
+{
+	for (int i=1; i<=100; i++)
+		cout << i*i << "是平方數";
+}
+</textarea>
+<p>採用試誤法：依序枚舉數字1到∞；枚舉過程當中，判斷數字是不是平方數。</p>
+<textarea>
+void generate_squares()
+{
+	for (int i=1; i<=100*100; i++)
+	{
+		int sqrt_i = sqrt(i);
+		if (sqrt_i * sqrt_i == i)
+			cout << i << "是平方數";
+	}
+}
+</textarea>
+<p class="t">Search</p>
+<p>「搜尋」。把所有東西瀏覽一遍，從中找出需要的部份。一旦找到了所有需要的東西，就可以即刻中止搜尋。</p>
+<p class="t">舉例：找出數列裡的特定數字</p>
+<p>瀏覽數列，尋找特定數字。一旦找到了一個，就停止搜尋。</p>
+<textarea>
+int array[10] = {4, -2, 4, 100, 9, -34, 17, 23, 55};
+
+bool find_number(int n)
+{
+	bool found = false;
+	for (int i=0; i<10; i++)	// 瀏覽數列
+		if (array[i] == n)		// 判斷是不是想要的東西
+		{
+			found = true;
+			break;
+		}
+
+	return found;
+}
+
+bool find_number(int n)
+{
+	for (int i=0; i<10; i++)	// 瀏覽數列
+		if (array[i] == n)		// 判斷是不是想要的東西
+			return true;
+
+	return false;
+}
+</textarea>
+<p class="t">舉例：找出數列裡的極大值</p>
+<p>瀏覽數列，逐一比較數值大小。最後就求出了極大值。</p>
+<textarea>
+int array[10] = {4, -2, 4, 100, 9, -34, 17, 23, 55};
+
+void find_maximum()
+{
+	int maximum = -1e9;
+	for (int i=0; i<10; i++)	// 瀏覽數列
+		if (array[i] > maximum)	// 比較大小
+			maximum = array[i];
+
+	cout << "最大值是" << maximum;
+}
+</textarea>
+<p class="t">Enumerative Method（Exhaustive Search）</p>
+<p>「枚舉法」、「列舉法」、「窮舉法」，是Enumerate與Search兩種動作的結合。枚舉全部數據，逐一計算，無一遺漏。瀏覽一遍所有東西，就能收集到充分的資訊，進而解決問題。</p>
+<img src="Enumerative1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Enumerative1.png">
+<pre>
+1. 找出不確定的因素（變數）。
+2. Enumerate：枚舉所有可能性。
+3. Search：逐一判斷正確的要素（數值）。
+</pre>
+<p class="t">舉例：統計分數</p>
+<p>實作窮舉法，可以用迴圈、遞迴、條列大量判斷式等等方式。</p>
+<p class="t">舉例：啦啦啦</p>
+<p>嘿嘿嘿</p>
+<p class="t">舉例：one-pass和multi-pass</p>
+<p>實作程式時，可以採用one-pass：一邊枚舉，一邊搜尋；也可以採用two-pass，枚舉所有數據，儲存在資料結構當中，之後才搜尋。</p>
+<p class="t">先排序、再搜尋</p>
+<p>資料有預先整理的話，搜尋就會變得容易又快速。</p>
+<p>我們可以先將資料依照大小順序排序，或者先將資料置入特別的資料結構當中，讓資料具有特性；然後運用該特性，設計特別的演算法，略過不相關的資料，快速找出正確資料。例如排序後使用Binary Search，又例如將資料置入Hash Table等等。</p>
+<p class="t">舉例：</p>
+<p>資料結構</p>
+<p>二分搜尋</p>
+<p class="t">依照特殊順序窮舉與搜尋</p>
+<p>我們可以依照資料大小進行窮舉，或者依照特殊順序進行窮舉，一邊窮舉一邊搜尋。</p>
+<p>中途相遇法</p>
+<p>交互前進法</p>
+<p class="e">UVa 972 10464</p>
+<p class="t">特殊的窮舉法</p>
+<pre>
+Backtracking
+窮舉多維度的數據，以遞迴方式進行。
+
+State Space Search
+窮舉所有的狀態，並依照衍生關係整理成樹狀圖或者網狀圖，在圖上搜尋。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Enumerate Permutations（Under Construction!）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">前言</p>
+<p>電腦擅於處理大量資料。處理大量資料，除了大家熟悉的排序和搜尋以外，其實還有排列和組合。</p>
+<p>很多時候我們想要知道最好的排列組合方式，像是求最佳排列的問題Travelling Salesman Problem、Scheduling 
+Problem</a>，像是求最佳組合的問題Partition Problem、Knapsack Problem。</p>
+<p>想要解決這些問題，最簡單的方法就是枚舉法。枚舉所有可能的排列、枚舉所有可能的組合，一一驗證，就能找到最好的排列方式、組合方式。</p>
+<p class="t">排列</p>
+<p>排列就是交換位置。排列就是交換順序。</p>
+<pre>
+例如有五筆資料　　　●★■▲◆
+
+這是其中一種排列　　▲●◆★■
+這也是其中一種排列　●★■▲◆
+</pre>
+<p class="t">枚舉所有排列</p>
+<p>這個網頁介紹了幾個枚舉所有排列的演算法：</p>
+<p><a href="javascript:if(confirm('http://www.cut-the-knot.org/do_you_know/AllPerm.shtml  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cut-the-knot.org/do_you_know/AllPerm.shtml'" tppabs="http://www.cut-the-knot.org/do_you_know/AllPerm.shtml">http://www.cut-the-knot.org/do_you_know/AllPerm.shtml</a></p>
+<p>最有效率的演算法是<a href="javascript:if(confirm('http://www.cut-the-knot.org/Curriculum/Combinatorics/JohnsonTrotter.shtml  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cut-the-knot.org/Curriculum/Combinatorics/JohnsonTrotter.shtml'" tppabs="http://www.cut-the-knot.org/Curriculum/Combinatorics/JohnsonTrotter.shtml">Steinhaus-Johnson-Trotter Algorithm</a>。</p>
+<p>STL next-permutation</p>
+<p class="t">替各種排列進行編號</p>
+<p>http://en.wikipedia.org/wiki/Lehmer_code</p>
+<p>http://stackoverflow.com/questions/1506078/</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Enumerate Combinations（Enumerate Subsets）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">組合（子集合）</p>
+<p>組合、子集合的意思是：從一堆東西當中，挑出其中幾個。可以全部都挑，也可以什麼都不挑。</p>
+<p>組合就是挑選。組合就是剔除。無關順序。</p>
+<pre>
+例如有五筆資料　　　　●★■▲◆
+
+這是其中一種組合　　　★■◆
+這和方才是同一種組合　◆★■
+這是其中一種組合　　　▲
+這是其中一種組合　　　●★■▲◆
+這是其中一種組合　　　nothing
+</pre>
+<p class="t">替各種組合進行編號</p>
+<p>一個二進位數字剛好可以代表一個子集合，每個位元代表每個集合元素，最低位數通常代表第一個元素，最高位數通常代表最後一個元素，0代表元素不存在，1代表元素存在。</p>
+<pre>
+       0       1      2     3       4
+U = {lemon, orange, lime, apple, banana};
+
+　　　　　43210
+二進位數字01010，即是子集合 {orange, apple}
+二進位數字00001，即是子集合 {lemon}
+二進位數字00000，即是子集合 { }
+</pre>
+<p>實作程式碼時，運用資料結構「<a href="Set.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Set.html">Bitset</a>」儲存一種組合，可以節省空間。運用程式語言的「<a href="standard.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/standard.html">Bitwise Operation</a>」語法，可以節省時間。</p>
+<textarea>
+// bs是一個bitset，
+// 各個位元即是各個集合元素。
+void print(int bs)
+{
+	cout << '{';
+	for (int i=0; i<32; --i)	// 實作時是這樣
+		if (bs & (1 << i))
+				cout << 1;
+			else
+				cout << 0;
+	cour << '}' << '\n';
+}
+</textarea>
+<p class="t">枚舉所有組合（子集合）</p>
+<p><a href="javascript:if(confirm('http://www.applied-math.org/subset.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.applied-math.org/subset.pdf'" tppabs="http://www.applied-math.org/subset.pdf">http://www.applied-math.org/subset.pdf</a></p>
+<p>不嫌棄的話，也可以使用「<a href="Backtracking.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Backtracking.html">Backtracking</a>」來枚舉。</p>
+<p>一、字典順序（Lexicographic Ordering）：二進位數字由小到大排列。</p>
+<pre>
+000
+001
+010
+011
+100
+101
+110
+111
+</pre>
+<textarea>
+for (int i=0; i<(1<<n); i++)
+	print(i);
+</textarea>
+<textarea>
+// 逆向字典順序
+int s = (1<<n) - 1;
+for (int i = s; i; i = i-1 & s)
+	print(i);
+</textarea>
+<p>二、Gray Code：相鄰數字僅改動一個位元。</p>
+<pre>
+000
+001
+011
+010
+110
+111
+101
+100
+</pre>
+<textarea>
+for (int i=0; i<(1<<n); i++)
+	print(i^(i>>1));
+</textarea>
+<p>三、Banker's Sequence：先枚舉小集合，再枚舉大集合；同樣大小的集合們之間，先枚舉二進位數字大的（字典順序大的），再枚舉二進位數字小的（字典順序小的）。</p>
+<pre>
+000
+100
+010
+001
+110
+101
+011
+111
+</pre>
+<p>【待補程式碼】</p>
+<p class="t">排容原理</p>
+<textarea>
+void inclusion_exclusion_principle(int N)
+{
+	for (int set=0; set<(1<<N); ++set)
+	{
+		int c = 0;
+		for (int i=0; i<N; ++i)
+			if (set & (1 << i))
+				c++;
+
+		if (c & 1) cout << "negative";
+		else cout << "positive";
+	}
+}
+</textarea>
+<p class="e">UVa 10325 11806 10458</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Straightforward Method / Trial and Error</p>
+<p class="r">程度★　難度★</p>
+<p class="t">Straightforward Method</p>
+<p>「直接法」，直接算出答案。例如套用公式計算答案、觀察得到答案、依照流程進行最後得到答案、直接印出答案，這些都算是「直接法」。</p>
+<p class="e">UVa 488 10055 10370 10878 10929</p>
+<p class="t">Trial and Error</p>
+<img src="TrialAndError1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TrialAndError1.png">
+<p>「嘗試錯誤法」、「試誤法」。針對答案進行Enumerate與Search的策略。有些困難的問題，難以直接推導答案，既然推導不出來，就慢慢測試答案、慢慢驗算吧──確立答案的範圍，窮舉所有可能的答案，再從中搜尋正確答案。</p>
+<p>直接法和試誤法剛好相反。直接法是由題目本身下手，推導答案；試誤法則是從答案下手，讓答案迎合題目需求。</p>
+<p class="e">UVa 10167 10125 296 846 714</p>
+<p class="t">舉例：Exhaustive Key Search（Brute Force Attack）</p>
+<p>在密碼學領域，破解密碼最簡單的方法叫做「暴力攻擊」。不知道密碼規則的情況下，就無法直接推導正確密碼；只好以試誤法一一檢驗所有可能的密碼，從中找出正確密碼。</p>
+<p class="t">延伸閱讀：One-way Function</p>
+<p>「單向函數」是一種特別的函數，給定輸入很容易算出輸出，但是給定輸出卻很難算出輸入。</p>
+<p>舉例來說，令一個函數的輸入是兩個質數，輸出是兩個質數的乘積。給定兩個質數可以輕易的在多項式時間內算出乘積，然而給定兩質數的乘積卻需要指數時間才能完成質因數分解。</p>
+<p>如果給定一個單向函數的輸入，求其輸出，就適合用直接法，套用函數快速算得答案；如果給定一個單向函數的輸出，求其輸入，就適合用試誤法，嘗試各種輸入並套用函數快速驗證答案。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

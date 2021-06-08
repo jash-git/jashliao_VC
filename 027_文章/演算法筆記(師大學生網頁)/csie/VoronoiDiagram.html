@@ -1,0 +1,93 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Voronoi Diagram</title></head><body>
+<script src="VoronoiDiagram.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram.js" defer></script>
+<div class="a"><div class="h">
+<p class="b">Voronoi Diagram</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Voronoi Diagram</p>
+<p>平面上散布許多點。互相鄰近的點，以中垂線劃分區域，就形成了Voronoi Diagram。Voronoi是發明者的姓氏。</p>
+<p>換個角度看。平面上每一處，各自歸類於最近的點，就形成了Voronoi Diagram。自然而然的，中垂線成為了分界線。</p>
+<p>仔細來說，Voronoi Diagram是分界線組成的集合。</p>
+<div class="i"><canvas id="VoronoiDiagram1" width="200" height="200"></canvas>
+<canvas id="VoronoiDiagram2" width="200" height="200"></canvas></div>
+<p>Voronoi Diagram是自然的圖案，諸如長頸鹿身上的斑紋、葉片的細胞結構等等，應用相當廣泛。</p>
+<p>Voronoi Diagram隱含著鄰近的資訊，所以「最靠近」、「距離最短」之類的問題，多半可以透過Voronoi Diagram解決。</p>
+<p class="t">Perpendicular Bisector</p>
+<p>「中垂線」，國中數學有教，看圖便知，不再贅述。</p>
+<img src="VoronoiDiagram1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram1.png">
+<textarea>
+typedef complex<double> Point;
+typedef pair<Point,Point> Line;
+#define x real()
+#define y imag()
+
+Line pb(Point& a, Point& b)
+{
+	// ab中點。
+	Point c = (a + b) / 2.0;
+
+	// ab向量，顛倒、變號，得到法向量。
+	Point s = b - a;
+	swap(s.x, s.y);
+	s.x *= -1;
+
+	// 中垂線。兩點得一線。
+	return make_pair(c, c + s);
+}
+</textarea>
+<p>三角形的三中垂線，交於一點，是外接圓圓心，稱作外心。中垂線有等距、平分的感覺，圓有等距、歸心的感覺，兩者之間是有點曖昧。</p>
+<img src="VoronoiDiagram2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram2.png">
+<p>由此可知，Voronoi Diagram一個點至少連著三條邊。</p>
+<p class="t">Voronoi Diagram點和邊的數量</p>
+<img src="VoronoiDiagram3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram3.png">
+<p>Voronoi Diagram看上去就像個平面圖。運用平面圖歐拉公式v-e+f=2，輔以「一個點至少連著三條邊」的限制，可以推理出Voronoi Diagram最多有2N-5個點、3N-6條邊，都是O(N)。</p>
+<p class="t">延伸閱讀：Farthest Point Voronoi Diagram</p>
+<p>既有最近，亦可最遠。平面上每一處，各自歸類於最遠的點，就形成了Farthest Point Voronoi Diagram。</p>
+<p>其分界線，皆是相離最遠的點的中垂線；相離最遠的點，自然而然都在凸包上，證明請參考「<a href="PointLinePlane2.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointLinePlane2.html">Farthest Pair</a>」。</p>
+<div class="i"><canvas id="VoronoiDiagram3" width="200" height="200"></canvas></div>
+<p>更進一步。平面上每一處，各自歸類於第k近的點，就形成了Order k Voronoi Diagram。至於這有什麼用途，我也不知道。</p>
+<p class="t">延伸閱讀：勢力消長</p>
+<p>每個點設定不同的強度，兩點之間依照其強度比例劃定界線。理論上可以生成所有平面圖？</p>
+<div class="i"><canvas id="VoronoiDiagram4" width="200" height="200"></canvas></div>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Voronoi Diagram: Half-plane Intersection</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p>枚舉每一點，求得該點的區域：與其他點形成的N-1條中垂線，求半平面交集。時間複雜度為O(N * NlogN)。</p>
+<p class="e">UVa 12109</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Voronoi Diagram: Incremental Method</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p>online演算法，一次加一點。先找到離當前輸入點最近的點，然後以中垂線繞行一圈求得當前輸入點的區域。</p>
+<img src="VoronoiDiagram4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram4.png">
+<p>由於Voronoi Diagram的點數和邊數都是O(N)，就算是窮舉路線轉折點所在的邊，整體時間複雜度仍是O(N^2)。</p>
+<p>附帶一提，當給定的點都在凸包上時，使用Randomized Incremental Method可達O(N)。</p>
+<p><a href="javascript:if(confirm('http://www.cs.dartmouth.edu/reports/TR90-147.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cs.dartmouth.edu/reports/TR90-147.pdf'" tppabs="http://www.cs.dartmouth.edu/reports/TR90-147.pdf">http://www.cs.dartmouth.edu/reports/TR90-147.pdf</a></p>
+<p class="e">UVa 12311</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Voronoi Diagram: Divide and Conquer</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p>所有點分成左右兩側，分別求出Voronoi Diagram，然後合而為一。合併Voronoi Diagram必須用到凸包，求得左右兩凸包的外公切線的中垂線，因此必須同時計算凸包與Voronoi Diagram。</p>
+<p>從左右凸包的外公切線的中垂線開始行進，一旦撞到左或右的Voronoi Diagram，就重新調整中垂線方向。</p>
+<p>時間複雜度O(NlogN)。</p>
+<img src="VoronoiDiagram5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram5.png">
+
+</div></div><div class="a"><div class="h">
+<p class="b">Voronoi Diagram: Fortune's Algorithm</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://www.cs.hmc.edu/~mbrubeck/voronoi.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cs.hmc.edu/~mbrubeck/voronoi.html'" tppabs="http://www.cs.hmc.edu/~mbrubeck/voronoi.html">http://www.cs.hmc.edu/~mbrubeck/voronoi.html</a></p>
+<p><a href="javascript:if(confirm('http://nodename.com/wpEmbeds/VoronoiToy/bin/PlanePointsApp.swf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://nodename.com/wpEmbeds/VoronoiToy/bin/PlanePointsApp.swf'" tppabs="http://nodename.com/wpEmbeds/VoronoiToy/bin/PlanePointsApp.swf" class="l">http://nodename.com/wpEmbeds/VoronoiToy/bin/PlanePointsApp.swf</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Nearest Neighbor</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="e">ICPC 3270</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

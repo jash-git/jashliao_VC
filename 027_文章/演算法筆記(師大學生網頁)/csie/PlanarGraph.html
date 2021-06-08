@@ -1,0 +1,116 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Planar Graph</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Planar Graph</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Planar Graph</p>
+<img src="PlanarGraph1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PlanarGraph1.png">
+<p>一張圖，畫在平面上，點不重疊、邊不交叉，稱作「平面圖」。</p>
+<p>先前在「<a href="Graph.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph.html">Graph</a>」已經提過同構的概念：一張圖可以挪動點與邊。一張平面圖，就算挪動點與邊，使得點重疊、邊交叉，也還是平面圖。倒過來說，一張圖，畫在平面上，挪動點與邊，使得點不重疊、邊不交叉，也算是平面圖。</p>
+<p>那有沒有球面圖呢？那有沒有立體不打結圖呢？應該有吧。</p>
+<p class="t">Euler Characteristic</p>
+<img src="PlanarGraph2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PlanarGraph2.png">
+<p>凡是點、邊、面這些基本元件之間的數量關係，就稱做Euler Characteristic。歐拉是第一位想到這件事情的數學家。</p>
+<p>平面圖當中，則有V+F=E+2這個數量關係，其中V代表點數、E代表邊數、F代表面數。</p>
+<p>進階版本是V+F=E+C+1，其中C代表連通分量數目。</p>
+<p>你會證明嗎？:-)</p>
+<p class="e">UVa 10178</p>
+<p class="t">Dual Graph</p>
+<img src="PlanarGraph3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PlanarGraph3.png">
+<p>設計平面圖演算法時，「對偶圖」是相當重要的工具。</p>
+<p>一張平面圖當中，面與面的相鄰關係表示成一張圖，就得到對偶圖。對偶圖當中，面與面的相鄰關係表示成一張圖，就得到原來的平面圖。</p>
+<p>原圖和對偶圖可以互相轉換成為對方，只要知道其中一張圖，就能使用平面對偶，得到另外一張圖。</p>
+<p>原圖和對偶圖擁有相等的資訊量，只是以不同形態呈現。</p>
+<img src="PlanarGraph4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PlanarGraph4.png">
+<p>對偶圖可能有許多種。運用同構的概念，挪動原圖的點與邊，就會得到另外一種對偶圖，各種對偶圖們不見得同構。</p>
+<p>最特別的對偶圖例子，就是橋（bridge）與自環（loop）。舉例來說，原圖是一棵樹，對偶圖是一個點加上一大堆自環；各種樹對應各種自環繪製方式。</p>
+<p>由於圖論問題習慣忽略自環，平面對偶問題也習慣忽略橋與自環。原圖凡是無橋、無自環，對偶圖即是無橋、無自環。</p>
+<img src="PlanarGraph5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PlanarGraph5.png">
+<p>圖論當中，最名聞遐邇的對偶方式，就是平面對偶。於是Dual Graph這個名詞，就留給了平面對偶所得到的圖；其他對偶方式所得到的圖，則有各自的獨特名稱。</p>
+<p class="t">備忘</p>
+<pre>
+平面圖判定           O(n)
+最小生成樹           O(n)
+st最短路徑(無負邊)   O(n * sqrt(log(n)))
+st最短路徑(負邊)     O(n^1.5)
+st最大割             O(n^1.5 * log(n))
+st最小割             = st最短路徑
+st最大流             = st最短路徑
+最小割               = ∅-join
+完美匹配計數         FKT algorithm
+</pre>
+<pre>
+平面圖是disk graph/coin graph
+平面圖是平面上一堆線段的intersection graph
+</pre>
+<pre>
+平面圖都可以表示成二維線段相交的intersection graph
+二分平面圖都可以表示成水平垂直線段相交的intersection graph
+沒有三角形的平面圖可以表示成三方向線段相交的intersection graph，3-colorable
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Planar Graph資料結構</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p>【待補文字】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Planar Graph Recognition</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法（Boyer & Myrvold, 2004）</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Planarity_testing  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Planarity_testing'" tppabs="http://en.wikipedia.org/wiki/Planarity_testing">http://en.wikipedia.org/wiki/Planarity_testing</a></p>
+<p>要判定一張圖是不是平面圖，老一輩將之轉換成排列順序問題，運用PQ Tree或PC Tree資料結構求解，規則複雜難以實作。</p>
+<p>後來出現簡易的演算法，運用Depth-first Search就能完成，時間複雜度O(V+E)。筆者尚未學習，歡迎讀者協助整理：</p>
+<p><a href="javascript:if(confirm('http://jgaa.info/accepted/2004/BoyerMyrvold2004.8.3.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://jgaa.info/accepted/2004/BoyerMyrvold2004.8.3.pdf'" tppabs="http://jgaa.info/accepted/2004/BoyerMyrvold2004.8.3.pdf">http://jgaa.info/accepted/2004/BoyerMyrvold2004.8.3.pdf</a></p>
+<p class="e">UVa 10768</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Mininum Spanning Tree</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法（Matsui, 1994）</p>
+<p>原圖的最小生成樹、對偶圖的最大生成樹，一一對應。</p>
+<img src="PlanarSpanningTree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PlanarSpanningTree1.png">
+<p>演算法原理類似「<a href="SpanningTree.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SpanningTree.html">Borůvka's Algorithm</a>」，同時考慮原圖和對偶圖，計算原圖的最小生成樹或者計算對偶圖的最大生成樹。</p>
+<pre>
+一、隨時刪除所有自己連向自己的邊，也就是刪除所有自環。
+二、重複以下步驟V次：
+　口、原圖加上對偶圖，一定找得到一個度數小於4的點，稱作a點。
+　口、如果a點在原圖上：
+　　甲、原圖找到權重最小的鄰邊ab。
+　　　　（a點所屬的MSS，找權重最小的聯外邊）
+　　乙、原圖的最小生成樹有邊ab，其實是邊ab收縮之前的原始邊。
+　　丙、原圖收縮邊ab，對偶圖刪除邊ab。兩圖隨時保持對偶。
+　口、如果a點在對偶圖上：
+　　甲、對偶圖找到權重最大的鄰邊ab。
+　　　　（a點所屬的MSS，找權重最大的聯外邊）
+　　乙、對偶圖的最大生成樹有邊ab，其實是邊ab收縮之前的原始邊。
+　　丙、對偶圖收縮邊ab，原圖刪除邊ab。兩圖隨時保持對偶。
+</pre>
+<p>因為度數小於4，找最小鄰邊的時間複雜度就下降為O(1)，總時間複雜度就下降為O(V+E)，到達了下限。</p>
+<pre>
+平面圖：V+F=E+C+1
+原圖加上對偶圖的總度數：2E + 2E' = 4E
+原圖加上對偶圖的總點數：V + V' = V + F = E+C+1
+原圖加上對偶圖，一個點的平均度數：4E / (E+C+1) < 4
+原圖加上對偶圖，一定至少有一個點，其度數小於等於平均度數，也就是小於4。
+</pre>
+<p>由於要維護原圖和對偶圖的資料結構，還要隨時找到度數小於四的點，所以此演算法的實際運行速度，遠比一般圖的最小生成樹演算法來得慢。</p>
+<p>儘管此演算法並不實用，但是此演算法開啟了一條道路，讓我們知道各種圖論問題一旦搬到平面圖上，只要運用對偶圖、度數等等性質，時間複雜度就會有很大的改進。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum Cut / Maximum Flow</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="e">ICPC 3661</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Graph Drawing</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Graph_drawing  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Graph_drawing'" tppabs="http://en.wikipedia.org/wiki/Graph_drawing">http://en.wikipedia.org/wiki/Graph_drawing</a></p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Crossing_number_(graph_theory)  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Crossing_number_(graph_theory)'" tppabs="http://en.wikipedia.org/wiki/Crossing_number_(graph_theory)">http://en.wikipedia.org/wiki/Crossing_number_(graph_theory)</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

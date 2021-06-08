@@ -1,0 +1,422 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Cover</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Cover</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Cover</p>
+<p>「覆蓋」是使用一種元件，壓住、蓋住圖上全部的點（邊）。例如拿一些點，壓住所有邊，叫做Vertex Cover；例如拿一些邊，壓住所有點，叫做Edge Cover。</p>
+<p>甚至可以拿Path來蓋、拿Cycle來蓋、拿Clique來蓋、拿Cut來蓋，想的到的都可以拿來蓋，款式可說是相當多。</p>
+<img src="Cover1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cover1.png">
+<p>有趣的是，以點為主體的問題們，都是NP-complete問題；以邊為主體的問題們，都是P問題。這就跟Hamilton Circuit與Euler Circuit的關係一樣奇妙。</p>
+<p>以點為主體的問題清一色都是NP-complete問題，似乎沒有什麼好討論的；然而遇到特殊的圖，例如有向無環圖、二分圖、樹等等，就可能變成P問題。最有趣、也是最傷腦筋的地方，也就是如何解決這些特例。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Vertex Cover</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Vertex Cover</p>
+<p>一張無向圖上，挑選數個點，碰觸到所有邊，這些點就叫做一個「點覆蓋」，可能有許多種。換句話說，每一條邊，都會碰觸到一個以上的選定點。</p>
+<img src="VertexCover1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VertexCover1.png">
+<p>點覆蓋，就像是紙鎮，壓住了所有邊，讓邊不會被吹走。</p>
+<p>點覆蓋，一個點集合，這些點會是圖上每一條邊，其中一端或兩端的端點。</p>
+<pre>
+Minimum Vertex Cover (NP-complete)
+一張圖上點數最少的Vertex Cover。
+
+Minimum Vertex Cover in Tree (P)
+當給定的圖是樹，得利用Greedy演算法，從樹葉往樹根方向選出節點。
+
+Minimum Vertex Cover in Bipartite Graph (P)
+當給定的圖是二分圖，得化作Maximum Cardinality Bipartite Matching解決。
+</pre>
+<p class="e">UVa 10243 10859 10984 11419 11095</p>
+<p class="t">Minimum Vertex Cover in Tree</p>
+<img src="VertexCover2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VertexCover2.png">
+<p>由樹葉往樹根方向開始選出Vertex Cover的點，如果一個節點與其父節點都沒有選中，也就表示他們之間的邊沒有被覆蓋到，也就表示必須要從兩點中選出一點作為Vertex Cover的點，而選擇父節點一定是比較好的。時間複雜度等同於一次Graph Traversal的時間。</p>
+<pre>
+一、利用DFS找出preorder，並且建立DFS tree。
+二、以preorder的逆序開始選出Vertex Cover的點。
+</pre>
+<pre>
+一、利用BFS找出levelorder，並且建立BFS tree。
+二、以levelorder的逆序開始選出Vertex Cover的點。
+</pre>
+<textarea>
+int adj[9][9];	// adjacency matrix
+bool visit[9];	// DFS visit record
+int parent[9];	// DFS tree
+
+int order[9];	// preorder of DFS tree
+int t = 0;
+
+bool cover[9];	// Minimum Vertex Cover
+
+void DFS(int i)
+{
+	order[t++] = i;
+	visit[i] = true;
+	for (int j=0; j<V; ++j)
+		if (adj[i][j] && !visit[j])
+		{
+			DFS(j);
+			parent[j] = i;
+		}
+}
+
+void minimum_vertex_cover()
+{
+	memset(visit, false, sizeof(visit));
+	memset(parent, -1, sizeof(parent));
+	t = 0;
+	DFS(0);
+
+	memset(cover, false, sizeof(cover));
+	for (int k=V-1; k>=1; --k)
+	{
+		int i = order[k];
+		int pi = parent[i];
+		if (!cover[i] && pi != -1 && !cover[pi])
+			cover[pi] = true;
+	}
+}
+</textarea>
+<p class="t">Minimum Vertex Cover in Bipartite Graph: König's theorem</p>
+<img src="VertexCover3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VertexCover3.png">
+<p>二分圖，Maximum Cardinality Matching的邊數，等於Minimum Vertex Cover的點數。證明過程如下：</p>
+<pre>
+令一張二分圖，有一最大匹配M，其邊數為|M|。
+
+甲、最小點覆蓋至少要|M|點：
+
+　最大匹配的這|M|條匹配邊，不會有同樣的端點。
+　也就是說，使用|M|點，就能涵蓋最大匹配的這|M|條匹配邊。
+　更進一步，至少使用|M|點以上，才能覆蓋圖上所有邊。
+
+乙、最小點覆蓋至多有|M|點：
+
+　找到最大匹配後，二分圖上任一條路徑僅有一端是未匹配邊。
+　請參考Berge's Theorem。
+
+　以X側的未匹配點為樹根，建立交錯樹，並且把所有交錯樹融合在一起：
+　<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/File:Koenigs-theorem-proof.svg  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/File:Koenigs-theorem-proof.svg'" tppabs="http://en.wikipedia.org/wiki/File:Koenigs-theorem-proof.svg">http://en.wikipedia.org/wiki/File:Koenigs-theorem-proof.svg</a>
+　由未匹配點開始的一條路徑，選取所有奇數距離的點，
+　即可覆蓋該條路徑的未匹配邊與已匹配邊。
+　Y側也是一樣的道理。
+
+　選取之點，都是匹配邊上其中一端的端點。
+　匹配邊僅有|M|條，故最多只會用到|M|點。
+
+由甲乙可知最小點覆蓋的點數，不多不少，等於|M|點。
+</pre>
+<p class="t">Minimum Vertex Cover in Bipartite Graph</p>
+<img src="VertexCover4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VertexCover4.png">
+<p>找完最大二分匹配後，有三種情況要分別處理：</p>
+<p>甲、X側未匹配點的交錯樹們。</p>
+<p>乙、Y側未匹配點的交錯樹們。</p>
+<p>丙、層層疊疊的交錯環們（包含單獨的匹配邊）。</p>
+<p>這三個情況互不干涉。用Graph Traversal建立甲、乙的交錯樹們，剩下部分就是丙。</p>
+<p>要找點覆蓋，甲、乙是取盡奇數距離的點，丙是取盡偶數距離的點、或者是取盡奇數距離的點，每塊連通分量可以各自為政。另外，小心處理的話，是可以印出字典順序最小的點覆蓋的。</p>
+<p>已經有最大匹配時，求點覆蓋的時間複雜度等同於一次Graph Traversal的時間。</p>
+<textarea>
+const int X = 9, Y = 9;
+bool adj[9][9];		// adjacency matrix
+bool mx[9], my[9];
+int cx[9], cy[9];
+
+bool match(int x)
+{
+	for (int y=0; y<Y; ++y)
+		if (adj[x][y] && !my[y])
+		{
+			my[y] = true;
+			if (cy[y] == -1 || match(cy[y]))
+			{
+				cx[x] = y; cy[y] = x;
+				return true;
+			}
+		}
+	return false;
+}
+
+int maximum_cardinality_bipartite_matching()
+{
+	memset(cx, -1, sizeof(cx));
+	memset(cy, -1, sizeof(cy));
+
+	int c = 0;
+	for (int x=0; x<X; ++x)
+	{
+		memset(my, false, sizeof(my));
+		if (match(x)) c++;
+	}
+	return c;
+}
+
+void DFSx(int x)
+{
+	for (int y=0; y<Y; ++y)
+		if (adj[x][y] && !my[y])
+		{
+			my[y] = true;
+			if (cy[y] != -1) DFSx(cy[y]);
+		}
+}
+
+void DFSy(int y)
+{
+	for (int x=0; x<X; ++x)
+		if (adj[x][y] && !mx[x])
+		{
+			mx[x] = true;
+			if (cx[x] != -1) DFSy(cx[x]);
+		}
+}
+
+void minimum_vertex_cover()
+{
+	maximum_cardinality_bipartite_matching();
+
+	// 建立X側未匹配點的交錯樹們
+	memset(my, false, sizeof(my));
+	for (int x=0; x<X; ++x)
+		if (cx[x] == -1)
+			DFSx(x);
+
+	// 建立Y側未匹配點的交錯樹們
+	memset(mx, false, sizeof(mx));
+	for (int y=0; y<Y; ++y)
+		if (cy[y] == -1)
+			DFSy(y);
+
+	// X側未匹配點的交錯樹們＋層層疊疊的交錯環們
+	for (int x=0; x<X; ++x)
+		if (mx[x] || (cx[x] != -1 && !mx[x] && !my[cx[x]]))
+			cout << "選中X側的第" << x << "點";
+
+	// Y側未匹配點的交錯樹們
+	for (int y=0; y<Y; ++y)
+		if (my[y])
+			cout << "選中Y側的第" << y << "點";
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Edge Cover</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Edge Cover</p>
+<p>一張無向圖上，挑選數條邊，碰觸到所有點，這些邊就叫做一個「邊覆蓋」，可能有許多種。</p>
+<img src="EdgeCover1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/EdgeCover1.png">
+<pre>
+Minimum Edge Cover (P)
+一張圖上邊數最少的Edge Cover。
+得化作Maximum Matching解決。
+
+Minimum/Maximum Weight Edge Cover (P)
+一張圖上權重最小（大）的Edge Cover。
+得化作Minimum/Minimum Weight Matching解決。【待補文字】
+</pre>
+<p class="t">Minimum Edge Cover</p>
+<p>首先在圖上求得一個Maximum Matching之後，對於那些單身的點，都由匹配點連過去。如此便形成了Minimum Edge Cover。</p>
+<p class="e">UVa 10349</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Path Cover</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Vertex-disjoint Path Cover（Path Cover）</p>
+<p>一張圖上選出數條路徑，這些路徑的點都不重複，並且涵蓋圖上所有點。路徑長度可以為零，也就是退化成一點。可以想做是一張圖抽取出許多條Hamilton Path。</p>
+<p>一個路徑集合，這些路徑們會包含圖上所有點，但是這些路徑們之間沒有共同的點。</p>
+<pre>
+Minimum Path Cover (NP-hard)
+ 一張圖上路徑最少條的Vertex-disjoint Path Cover。
+
+Minimum Path Cover in Tree (P)
+當給定的圖是樹，得利用Greedy演算法，從樹葉往樹根方向選出路徑。
+
+Minimum Path Cover in DAG (P)
+當給定的圖是有向無環圖，得化作Maximum Cardinality Bipartite Matching解決。
+
+Minimum/Maximum Weight Path Cover (NP-hard)
+一張圖上權重總和最小（大）的Path Cover。
+</pre>
+<p class="e">ICPC 4141</p>
+<p class="t">Minimum Vertex-disjoint Path Cover in Tree</p>
+<pre>
+一、建立BFS Tree。
+二、以levelorder的逆序拜訪各點。
+　　如果該點的鄰邊超過二條，
+　　就隨意留下兩條連往小孩的邊，刪除其餘鄰邊。
+</pre>
+<p>證明就省略了。時間複雜度O(V+E)。</p>
+<p class="t">Minimum Vertex-disjoint Path Cover in DAG</p>
+<img src="PathCover1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PathCover1.png">
+<p>嘗試建造一張特別的二分圖：若DAG有一條i點到j點的邊，那麼二分圖就有一條Xi點到Yj點的邊。</p>
+<p>現在，二分圖的一種Maximum Cardinality Bipartite Matching就會對應到DAG的一種Minimum Path Cover。反之亦同。</p>
+<pre>
+在二分圖的X集合當中，
+未匹配點會是路徑尾端端點，已匹配點不會是路徑尾端端點。
+當匹配數越大，尾端端點就會越少，表示路徑數也會越少。
+</pre>
+<p class="e">UVa 11381</p>
+<p class="t">Edge-disjoint Path Cover</p>
+<p>一張圖上選出數條路徑，這些路徑的邊都不重複，並且涵蓋圖上所有邊。可以想做是一張圖分割成許多條Euler Trail。</p>
+<pre>
+Minimum Edge-disjoint Path Cover (P)
+一張圖上路徑最少條的Edge-disjoint Path Cover。
+
+Minimum/Maximum Weight Edge-disjoint Path Cover (P)
+一張圖上權重總和最小（大）的Edge-disjoint Path Cover。
+其實就是整張圖所有邊的權重總和，沒有必要討論。
+</pre>
+<p class="t">Minimum Edge-disjoint Path Cover</p>
+<p>無向圖的情況下，奇點不得不成為路徑的端點，所以無向圖的Minimum Edge-disjoint Path Cover的路徑數目，就是奇點數目的一半。</p>
+<pre>
+1-1. 找Euler Trail，隨便挑一個奇點作為起點。
+1-2. 如果1-1.找不到奇點，則任選一點作為起點。
+     （表示Minimum Edge-disjoint Path Cover就是Euler Circuit）
+2. 走過的邊立即移除。
+3. 當窮途末路，可是圖上還有邊還沒走到的時候，
+   就在圖上增加一條邊，連到奇點。
+   然後又可以繼續走了。
+4. 最後找到的Euler Trail，移除剛剛所有增加的邊，
+   即形成Minimum Edge-disjoint Path Cover。
+</pre>
+<p>有向圖的情況下，出邊多於入邊的點，不得不成為路徑起點；入邊多於出邊的點，不得不成為路徑終點。所以有向圖的Minimum Edge-disjoint Path Cover的路徑數目，也很容易算得。</p>
+<pre>
+1-1. 找Euler Trail，起點選在出邊多於入邊的點。
+1-2. 如果1-1.找不到起點，則起點選在出邊等於入邊的點。
+    （表示Minimum Edge-disjoint Path Cover的每條Path都是Cycle）
+2. 走過的邊立即移除。
+3. 當窮途末路，可是圖上還有邊還沒走到的時候，
+   就在圖上增加一條邊，連到出邊多於入邊的點。
+   然後又可以繼續走了。
+4. 最後找到的Euler Trail，移除剛剛所有增加的邊，
+   即形成Minimum Edge-disjoint Path Cover。
+</pre>
+<p>加條邊，讓Minimum Edge-disjoint Path Cover的路徑們銜接上，最後再移除邊，是無傷大雅的。</p>
+<p>時間複雜度等於走遍圖上所有邊的時間，再加上走遍所有增加的邊的時間。增加的邊數，是Minimum Edge-disjoint Path Cover的路徑數目減掉一，此值少於原圖的邊數，對時間複雜度並無特別影響，因此時間複雜度等同於尋找Euler Trail的時間複雜度。</p>
+<p>下面提供有向圖的實作，可以找到字典順序最小的Minimum Edge-disjoint Path Cover。</p>
+<textarea t="從有向圖上找出Minimum Edge-disjoint Path Cover">
+int adj[9][9];		// adjacency matrix
+int in[9], out[9];	// 出邊數與入邊數
+deque<int> path;		// Euler Trail
+deque<int> pos;		// 插入的邊在Euler Trail中的位置
+
+int Find_Start_Vertex()
+{
+	// 先找出邊多於入邊的點當作起點
+	for (int i=0; i<10; ++i)
+		if (out[i] > in[i])
+			return i;
+
+	// 找不到的話，再找出邊等於入邊的點當作起點。
+	for (int i=0; i<10; ++i)
+		if (out[i] > 0 && out[i] == in[i])
+			return i;
+
+	return -1;	// 圖上沒有點
+}
+
+void EulerCircuit(int x)
+{
+	if (out[x] > 0)
+	{
+		// 找Euler Trail。
+		// 此部份屬於Minimum Edge-disjoint Vertex Cover的邊。
+		for (int y=0; y<9; ++y)
+			if (adj[x][y])
+			{
+				adj[x][y]--; out[x]--; in[y]--;
+				EulerCircuit(y);
+			}
+	}
+	else
+	{
+		// 找Euler Trail遇到窮途末路，在圖上增加一條邊。
+		// 此部份不屬於Minimum Edge-disjoint Vertex Cover的邊。
+		for (int y=0; y<9; ++y)
+			if (out[y] > in[y])
+			{
+				EulerCircuit(y);
+				break;
+			}
+
+		pos.push_front(path.size());	// 記錄插入的邊在哪個位置
+	}
+	path.push_front(x);
+}
+
+void Minimum_Edge_Disjoint_Path_Cover()
+{
+	memset(in, 0, sizeof(in));
+	memset(out, 0, sizeof(out));
+
+	for (int x=0; x<9; ++x)			// 找出所有有向邊
+		for (int y=0; y<9; ++y)
+		{
+			out[x] += adj[x][y];	// 加上從 x 點出去的邊數
+			in[y] -= adj[x][y];		// 減去進入到 y 點的邊數
+		}
+
+	int s = FindStartVertex();
+	if (s == -1) return;			// 此圖無點
+
+	path.clear();
+	pos.clear();
+	EulerCircuit(s);
+
+	cout << "路徑數目為" << pos.size();
+}
+</textarea>
+<p class="e">UVa 10248</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Cycle Cover</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Vertex-disjoint Cycle Cover（Cycle Cover）</p>
+<p>從一張圖抽離出幾只環，這些環上的點都不重覆，而且會涵蓋圖上所有點。</p>
+<pre>
+Minimum Vertex-disjoint Cycle Cover (NP-hard)
+一張圖上最少只環的Vertex-disjoint Cycle Cover。
+
+Minimum/Maximum Weight Vertex-disjoint Cycle Cover (P)
+一張圖上權重總和最小（大）的Vertex-disjoint Cycle Cover。
+</pre>
+<p class="t">Minimum/Maximum Weight Vertex-disjoint Cycle Cover</p>
+<img src="CycleCover1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/CycleCover1.png">
+<p>有向圖的情況下，仿照前面Minimum Path Cover in DAG的方式，建立一張二分圖，權重最小（大）的完美二分匹配即為所求。</p>
+<p>無向圖的情況下，每一個點連著兩條邊，其實就是Minimum/Maximum Weight 2-Factor。</p>
+<p class="e">ICPC 3353</p>
+<p class="t">Edge-disjoint Cycle Cover</p>
+<p>一張圖上選出數只環，這些環上的邊都不重覆，並且涵蓋圖上所有邊。</p>
+<pre>
+Minimum Edge-disjoint Cycle Cover (NP-hard)
+一張圖上權重總和最小的Edge-disjoint Cycle Cover。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Cut Cover</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Cut Cover</p>
+<p>一張圖上選出數個割，這些割上的邊涵蓋圖上所有邊。也就是說圖上每一條邊，至少都隸屬於一個割。</p>
+<pre>
+Minimum Cut Cover (NP-hard)
+一張圖上最少個割的Cut Cover。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Clique Cover</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p>最小著色數等於補圖的Minimum Clique Cover。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Cycle Double Cover Conjecture</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Cycle_double_cover  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Cycle_double_cover'" tppabs="http://en.wikipedia.org/wiki/Cycle_double_cover">http://en.wikipedia.org/wiki/Cycle_double_cover</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,346 @@
+<HTML>
+<HEAD><TITLE>第 4 章 指標(pointer)</TITLE>
+</HEAD>
+<BODY>
+<P>
+    <CENTER><B>第 4 章  指標(pointer)</B></CENTER>
+
+<P>
+      在 程式中 我們 宣告 一變數 之後， 例如 int x，
+      在 程式中 可 直接 使用 該變數
+      來 做 運算 或 其它。 該 變數 x 坐落於 主記憶体 何處 我們 不用去 擔心，
+      但是
+      有時 直接 以記憶体 地址 來處理 某些 問題 會較簡潔，
+      又 欲以 函數的 呼叫 來改變 參數值 時，
+      非得用 記憶体 地址 來當 參數不可， 如在 scanf 中的 參數 必須
+      加 &amp;， 以 表 一變數 的 記憶体地址。
+
+<P>
+<A NAME="start">
+<P>
+     本 章 主 要 內 容 如 下 :
+<UL>
+  <LI>第 4.1 節 <A href="#first">指標 ( pointer ) 與 地址 ( address )</A>
+    <UL TYPE=circle>
+      <LI>第 4.1.1 節 <A href="#first1">取址 運算子 &</A>
+      <LI>第 4.1.2 節 <A href="#first2">間接取值 運算子 *</A>
+      <LI>第 4.1.3 節 <A href="#first3">直接與間接 定/取 值</A>
+      <LI>第 4.1.4 節 <A href="#first4">不當的 使用 & 與 *</A>
+    </UL>
+  <LI>第 4.2 節 <A href="#second">陣列與指標</A>
+    <UL TYPE=circle>
+      <LI>第 4.2.1 節 <A href="#second1">插入排序</A>
+      <LI>第 4.2.2 節 <A href="#second2">字元 指標 與 整數 指標</A>
+    </UL>
+  <LI>第 4.3 節 <A href="#third">二維陣列、 一維陣列 與 指標</A>
+  <LI>第 4.4 節 <A href="#fourth">二維 陣列 與 一維 指標 陣列</A>
+</UL>
+<P>
+<A href="cpgch3.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch3.htm">回第 3 章</A><BR>
+<A href="cpgch5.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch5.htm">至第 5 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<HR>
+<P>
+<!--------------------第 4.1 節--------------------------------------->
+<A NAME="first">
+<P>
+  <B>第 4.1 節   指標 ( pointer ) 與 地址 ( address )</B>
+<P>
+
+      我們 可 宣告 一變數 為 一指標， 該 變數 的 值 為 一記憶体 的 地址，
+      例如
+<TT><PRE>int *ip;</PRE></TT>
+      ip 為 一變數， 如果 ip 的值 為 1000， 那麼 我們 可以 說 ip 指向 
+      記憶体 其 地址  為 1000。
+<P>
+<A NAME="first1">
+<P>
+  <B>第 4.1.1 節  取址 運算子 &</B>
+<P>
+
+      "&amp;" 是 可當做 取址 運算子， 用來 表示 (或 取得) 一變數 的 
+      記憶体 地址， 例如:
+<TT><PRE>
+	  int *ip;
+	  int x;
+
+	  scanf("%d ", &amp;x);
+	  ip = &amp;x;
+</PRE></TT>
+
+	  說明:
+<OL>
+	  <LI>&amp;x 即 變數 x 的 記憶 体地址， 於 
+              <TT>scanf("%d ", &amp;x);</TT>中， 我們 欲以
+	      輸入 方式 改變 x 的值， 或以 x 存 輸入值。<P>
+	  <LI>ip = &amp;x; 即 指標 變數 ip 指向 變數 x，
+              或 ip 的值 為 x 的 記憶体 地址。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="first2">
+<P>
+  <B>第 4.1.2 節  間接 取值 運算子 *</B>
+<P>
+      我們 可利用 指標 變數 來 間接取值， 例如:
+<TT><PRE>
+	  int *ip;	 /* ip 為一指標變數 */
+	  int x = 2, y;
+
+	  ip = &amp;x;
+	  y  = *ip + 1;        /* 與 y = x + 1; 相同 */
+	  printf("%d %u %d %u %d %u\n", x, &amp;x, *ip, ip, y, &amp;y);          
+</PRE></TT>
+
+	  其輸出結果為: <TT>2 65524 2 65524 3 65522</TT>
+<P>
+	  說明:
+<OL>
+          <LI><B>ip = &amp;x;</B> 其中 &amp;x 為 變數 x 的 記憶体 地址，
+              將之 指派給 ip。 即 ip 指向 x， 或 ip 等於 x 的 記憶体 地址，
+              因此 *ip 等於 x。<P>
+          <LI><B>y = *ip + 1;</B> 其中 *ip 為 間接取值， 不是 取 ip 值，
+              而是 取 ip 所指 記憶体 位址 上的 值， 即 x 的 值。
+              因此 該敘述 與 y = x + 1; 是有 相同 的結果。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="first3">
+<P>
+  <B>第 4.1.3 節  直接 與 間接 定/取 值</B>
+<P>
+
+      設 有 下列 部份 C 程式:
+<TT><PRE>
+	  int x, y, *ip, *iq;
+
+	  x   = 2;	      /*  敘述 1 */
+	  y   = x + 3;	      /*  敘述 2 */
+	  ip  = &x;	      /*  敘述 3 */
+	  iq  = ip;	      /*  敘述 4 */
+	  *iq = *ip + y;      /*  敘述 5 */
+</PRE></TT>
+說明：
+<OL>
+  <LI>敘述 1 中， x 直接 定值 為 2。 
+  <LI>敘述 2 中， x + 3 直接 取 x 的 值 2， 再 直接 定 y 值 為 5。
+  <LI>敘述 3 中， 由 &amp;x 直接 取 x 的地址，再 直接 定 ip 值 為 x 的地址。
+  <LI>敘述 4 中， 直接 取 ip 值， 再 直接 定 iq 值 為 ip 值。
+      到此時 我們 有 指標 ip 與 指標 iq 同 指向 x， 即 *ip、 *iq 與 x 都相等。
+  <LI>於 敘述 5 中， 先 由 *ip 間接取 x 的值， 又 直接取 y 值， 
+      再 由 *iq 間接定 x 值 為 7。
+</OL>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="first4">
+<P>
+  <B>第 4.1.4 節  不當的 使用 & 與 *</B>
+<P>
+
+      因 有 取址 運算子 &amp; 與 間接 取值 運算子 *，
+      有時 我們 會 誤用 它們， 例如:
+<OL>
+      <LI>對於 指標 變數值 的 設定， 如
+<TT><PRE>
+	      int *ip;
+	      ip = (int *) 1000;
+	      *ip = 4;
+</PRE></TT>
+
+      <DL><DT>說明:
+            <DD>
+              <OL TYPE=a>
+                <LI>將 ip 值 盲目 設定 並 改變 該地址 的 值，
+                    有時 會 破壞 作業系統， 這種 做法 少做 為 妙。
+                    通常 作業系統 所處的主記憶體 部分 都有保護， 一般程式
+                    無法改變其內容。 不過， 硬碟(HD) 就另當別論。
+                <LI>一般 來說， 指標 變數 可 用來 指向 一變數、
+                    一陣列 [參考 4.2 節]，
+                    或 以 特殊指令 malloc 來 指向 一記憶体 空間， 如<BR>
+                    <TT>ip = (int *) malloc( sizeof(int) );</TT>
+              </OL>
+      </DL><P>
+      <LI>對於 指標 變數 盲目的 間接設定， 如<BR>
+          <TT>int *ip = 4;</TT>
+<P>
+      <DL><DT>說明: 
+            <DD>ip 值 為 一 不定值， 盲目 改變 該地址 的 值，
+                其結果 有如 (1) 所提 的問題。 避免 方法 亦 如同 (1.b) 所述。
+      </DL><P>
+      <LI>不當 使用 間接 取值 運算子 *， 如
+<TT><PRE>
+	      int  x = 2;
+	      unsigned int y;
+	      y = (unsigned) &x;
+	      printf("%d ", *y); /* 錯誤使用 *y */
+</PRE></TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 4.2 節--------------------------------------->
+<A NAME="second">
+<P>
+  <B>第 4.2 節  陣列 與 指標</B>
+<P>
+
+      陣列 名稱 亦可 當做 指標 來 使用， 例如:
+<TT><PRE>
+	  int a[10], *pa;
+	  pa = &a[0];  /* 與 pa = a; 同 */
+</PRE></TT>
+	  陣列 a 有 十個 分量: a[0]、 a[1]、 ...、 a[9]， 
+      指標 pa 指向 陣列 a 的 第 0 分量， 即 a[0]， 
+      那麼， *(pa+i) 與 a[i] 值 相同， 其中 0 &lt;= i &lt;= 9。
+      又 pa = &amp;a[0] 可改為 pa = a; 即 陣列 a 可視為 一陣列 的地址，
+      但 我們 不可 使用 下列 方式 取值:<BR>
+      <TT> *(a+i);</TT>。
+<P>
+<A NAME="second1">
+<P>
+  <B>第 4.2.1 節  插入排序</B>
+<P>
+我們 以指標 的 方式 來修改 第 3.4 節中 的 插入排序 程序，<BR>
+原程式的 <TT>class[i]</TT> 由指標 <TT>*(ip+i)</TT> 來代替，<BR>
+原程式的 <TT>class[k]</TT> 由指標 <TT>*(ip+k)</TT> 來代替。<BR>
+如下例:
+<TT><PRE>
+	  main()
+	  {  int i, k, *ip, size, current, class[MAXSIZE];
+	     ip = class;
+	     scanf("%d ", &amp;size);
+	     for (i=0;i&lt;size;scanf(" %d",ip+i),i++);
+	     for (i=1;i&lt;size;i++)
+	     { current = *(ip+i);
+	       for ( k = i-1; k &gt;=0 ; k--)
+		   if (current &gt; *(ip+k)) *(ip+k+1) = *(ip+k);
+		   else break;
+               *(ip+k+1) = current;
+             }
+             for (i=0;i &lt; size;printf("%d ",*(ip+i)),i++);
+	  }
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="second2">
+<P>
+  <B>第 4.2.2 節  字元 指標 與 整數 指標</B>
+<P>
+ 對於 一 資料結構， 如 整數 陣列， 我們 亦可將之 視為 一字元陣列， 或
+ 其他， 其主要 關鍵 在於 指標 資料 型態 的 宣告。
+<TT><PRE>
+	  main()
+	  {  int a[10], i;
+	     char *cp;
+	     cp = a;
+	     for (i=0;i<10;i++)
+	     { *(cp+2*i)   = 65 + i;
+	       *(cp+2*i+1) = 65 + i % 3;
+	     }
+	     for (i=0;i<10;i++)
+	     {	  if (i>0 && i%5==0) printf("\n");
+		  printf("%d ", a[i]);
+	     }
+	     printf("\n\n");
+	     for (i=0;i<20;i++)
+	     {	  if (i>0 && i%10==0) printf("\n");
+		  printf("%c %d ", *(cp+i), *(cp+i));
+	  }
+</PRE></TT>
+	  其 輸出 為: 
+<TT><PRE>
+          16705 16962 17219 16708 16965
+          17222 16711 16968 17225 16714
+
+          A 65 A 65 B 66 B 66 C 67 C 67 D 68 A 65 E 69 B 66
+          F 70 C 67 G 71 A 65 H 72 B 66 I 73 C 67 J 74 A 65
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 4.3 節--------------------------------------->
+<A NAME="third">
+<P>
+  <B>第 4.3 節  二維陣列、 一維陣列 與 指標</B>
+<P>
+
+      宣告 一個 二維 字元 陣列， 如 char c[4][5]。
+      又 一個 一維 陣列 char ch[20]，
+      若 以 指標 來 處理 這 兩個 陣列， 我們 可 將它們 看做 相同的 結構，
+      例如:
+<TT><PRE>
+	  char c[4][5], ch[20], *cp;
+	  int i, j;
+
+	  for (i=0;i<4;i++)
+	      for (j=0;j<5;j++)
+		  c[i][j] = 65+i*5+j;
+	  for (i=0;i<20;i++) ch[i] = 65+i;
+	  cp=c;
+	  for (i=0;i<20;i++) putchar( *(cp+i) );
+	  putchar('\n');
+	  cp=ch;
+	  for (i=0;i<20;i++) putchar( *(cp+i) );
+</PRE></TT>
+       其 輸出 為: 
+<TT><PRE>
+          ABCDEFGHIJKLMNOPQRST
+          ABCDEFGHIJKLMNOPQRST	
+</PRE></TT>				
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 4.4 節--------------------------------------->
+<A NAME="fourth">
+<P>
+  <B>第 4.4 節  二維 陣列 與 一維 指標 陣列</B>
+<P>
+
+      宣告 一個 二維 字元 陣列， 如 char c[10][20]， 
+      與 宣告 一字元 指標 陣列， 如 char *ch[10] 有何 相異同?
+      我們 可利用 字元 指標 來 當做 一字元 陣列， 
+      一字元 陣列 亦可用 一字元 指標 來 替代，
+      基本上 char c[10][20] 與  char *ch[10] 是 互通的，
+      但 char *ch[10] 的 彈性 較大， 有時 亦 較省空間。
+      於 下例 中， 陣列 c 共 占用 200 位元組，
+      而 ch 共 占用 41 個 位元組。
+<TT><PRE>
+	  char c[10][20]={ {'a','b','c','d','e','f','g','h','\0'},
+			   {'d','e','f','i','n','e','\0'},
+			   {'x','\0'}, {'a','s','\0'}              };
+	  char *ch[10];
+
+	  ch[0] = "abcdefgh";
+	  ch[1] = "define";
+	  ch[2] = "x";
+	  ch[3] = "as";
+
+	  for (i=0;i<4;i++)
+	      printf("%s\n", c[i]);
+	  for (i=0;i<4;i++)
+	      printf("%s\n", ch[i]);
+</PRE></TT>
+      其 輸出 為: 
+<TT><PRE>
+          abcdefgh
+          define
+          x
+          as
+          abcdefgh
+          define
+          x
+          as
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A href="cpgch3.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch3.htm">回第 3 章</A><BR>
+<A href="cpgch5.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch5.htm">至第 5 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+</BODY>
+</HTML>

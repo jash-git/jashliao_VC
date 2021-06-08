@@ -1,0 +1,587 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Point, Line, Plane</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Vector Product</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">內積與外積</p>
+<p>電腦實施運算，通常會有浮點數誤差。為了避免浮點數誤差，當使用電腦計算幾何問題，會採用不同於一般的數學公式和定理。</p>
+<p>內積（inner product、dot product）、外積（outer product、cross product）這兩個運算只有加法和乘法，而不包括除法，能夠有效避免除法產生的浮點數誤差，另一方面也能夠減少計算時間。內積與外積有著許多好用的特性，大部分的幾何問題，都可以運用內積與外積來計算答案。</p>
+<p>以下都是用二維空間當作範例。</p>
+<p class="t">資料結構</p>
+<p>內積與外積是向量運算，所以先設計一個向量的資料結構。</p>
+<textarea>
+struct Vector {int x, y;};	// 二維向量的資料結構
+
+// 內積運算
+int dot(Vector& v1, Vector& v2)
+{
+	// 沒有除法，儘量避免誤差。
+	return v1.x * v2.x + v1.y * v2.y;
+}
+
+// 外積運算，回傳純量（除去方向）
+int cross(Vector& v1, Vector& v2)
+{
+	// 沒有除法，儘量避免誤差。
+	return v1.x * v2.y - v1.y * v2.x;
+}
+</textarea>
+<p>向量資料結構擁有一個座標，並且擁有一支內積函式與一支外積函式。</p>
+<p>兩個向量做內積的結果是一個純量。兩個向量做外積的結果為一個向量，然而我們通常只會用到純量部份，所以讓外積函式的回傳值為純量。</p>
+<p class="t">內積、外積跟長度的關係</p>
+<img src="VectorProduct1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VectorProduct1.png">
+<p>內積的結果為斜邊至底邊的投影量。投影量取絕對值，再除以底向量長度，得到底。</p>
+<p>外積的結果為平行四邊形的面積量。面積量取絕對值，再除以底向量長度，得到高。</p>
+<textarea>
+struct Point {double x, y;};	// 點的資料結構
+typedef Point Vector;			// 向量的資料結構，和點一樣
+
+// 向量的長度
+double length(Vector& v)
+{
+	return sqrt(v1.x * v1.x + v2.y * v2.y);
+//	return sqrt(dot(v, v));
+}
+
+void base_height(Point p, Point p1, Point p2)
+{
+	Vector v1 = p1 - p;
+	Vector v2 = p2 - p;
+
+	double base = fabs(dot(v1, v2)) / length(v1);
+	double height = fabs(cross(v1, v2)) / length(v1);
+}
+</textarea>
+<p class="t">內積、外積跟角度的關係</p>
+<img src="VectorProduct2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VectorProduct2.png">
+<textarea>
+void sin_cos_θ(Point p, Point p1, Point p2)
+{
+	Point p, p1, p2;
+	Vector v1 = p1 - p,     v2 = p2 - p;
+	double l1 = length(v1), l2 = length(v2);
+
+	double cosθ = dot(v1, v2)   / l1 / l2;
+	double sinθ = cross(v1, v2) / l1 / l2;
+
+	double θ = acos(cosθ);	// [0, π]
+	double θ = asin(sinθ);	// [-π/2, π/2]
+}
+</textarea>
+<p>注意到acos與asin的回傳值，回傳的結果是弳度量（radian）而非度度量（grade），而且回傳值的範圍也不同。一般都以內積與acos求得介於0˚到180˚之間的夾角大小。</p>
+<p class="t">內積與向量夾角</p>
+<img src="VectorProduct3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VectorProduct3.png">
+<p>利用內積的性質，可以粗略判斷夾角大小：內積大於0時，兩向量夾角小於90˚；等於0時，夾角等於90˚；小於零時，夾角大於90˚且小於180˚。</p>
+<textarea>
+// 向量oa與向量ob進行內積，判斷∠aob之大小。
+double dot(Point& o, Point& a, Point& b)
+{
+	return (a.x-o.x) * (b.x-o.x) - (a.y-o.y) * (b.y-o.y);
+}
+</textarea>
+<p class="t">外積與向量旋轉</p>
+<img src="VectorProduct4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VectorProduct4.png">
+<p>利用外積的性質，可以粗略判斷夾角方向：外積大於0時，兩向量前後順序為逆時針順序（在180˚之內）；等於0時，兩向量平行，也就是指夾角等於0˚或180˚；小於0時，兩向量前後順序為順時針順序（在180˚之內）。</p>
+<textarea>
+// 向量oa與向量ob進行外積，判斷oa到ob的旋轉方向。
+double cross(Point& o, Point& a, Point& b)
+{
+	return (a.x-o.x) * (b.y-o.y) - (a.y-o.y) * (b.x-o.x);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Distance</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Distance</p>
+<p>以下簡單介紹二維座標平面計算距離的方式。</p>
+<p class="e">UVa 152 10514 10709</p>
+<p class="t">點到原點距離</p>
+<textarea>
+double length(Point& p)
+{
+	return sqrt(p.x * p.x + p.y * p.y);
+}
+</textarea>
+<textarea>
+// 也可以運用pow來計算平方。但是沒有多大好處。
+double length(Point& p)
+{
+	return sqrt(pow(p.x, 2) + pow(p.y, 2));
+}
+</textarea>
+<textarea>
+// 也可以運用dot來計算距離。但是沒有多大好處。
+double length(Point& p)
+{
+	return sqrt(dot(p, p));
+}
+</textarea>
+<p>開根號相當耗費時間。有時候做一些幾何計算時，會將數學式子簡化到不必開根號，以節省計算時間。因此，設計不開根號的程式碼，有時候也是會有用途的。</p>
+<textarea>
+// 長度的平方倍，沒有開根號。
+double length2(Point& p)
+{
+	return p.x * p.x + p.y * p.y;
+}
+</textarea>
+<p class="t">點到點距離</p>
+<p>畢氏定理、勾股定理。</p>
+<textarea>
+double distance(Point& p1, Point& p2)
+{
+	return sqrt((p2.x - p1.x) * (p2.x - p1.x)
+				+ (p2.y - p1.y) * (p2.y - p1.y));
+}
+</textarea>
+<textarea>
+double distance(Point& p1, Point& p2)
+{
+	double dx = p2.x - p1.x, dy = p2.y - p1.y;
+	return sqrt(dx * dx + dy * dy);
+}
+</textarea>
+<textarea>
+double distance(Point& p1, Point& p2)
+{
+	return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2));
+}
+</textarea>
+<textarea>
+// 重複利用之前的程式碼
+// 好處是程式碼結構較穩定、可讀性高
+// 壞處是程式執行時要多呼叫一次函式，各有利弊
+double distance(Point& p1, Point& p2)
+{
+	return length(p2 - p1);
+}
+</textarea>
+<p class="t">點到線距離</p>
+<p>數學常常用ax+by+c=0表示直線，運用abs(ax+by+c)/sqrt(a^2+b^2)公式計算點到線距離。計算學則是直接以相異兩點表示直線，運用外積計算點到線距離。</p>
+<img src="DistancePL.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DistancePL.png">
+<P>外積求出v1 v2組成的平行四邊形面積，然後除以v2的長度，便是垂直距離。外積可能會有負值，請記得取絕對值，才不會得到負的距離。</p>
+<textarea>
+// 線的資料結構，注意p1和p2不能相等！
+struct Line {Point p1, p2;};
+
+double distance(Point& p, Line& l)
+{
+	// 面積除以底得高
+	Vector v1 = p - l.p1, v2 = l.p2 - l.p1;
+	return fabs(cross(v1, v2)) / length(v2);
+}
+</textarea>
+<p class="t">點到線段距離</p>
+<p>點到線段的最短距離，有時候是點到線上的垂直距離，有時候卻是點到線段端點的距離。</p>
+<img src="DistancePS.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DistancePS.png">
+<p>由圖片可觀察到，點到線段的距離，和三點共線、點在線上這些因素無關，所以這裡將空間劃分為垂直距離區和端點距離區兩塊，用內積進行判斷。這只是一種劃分方式，各位也可以自行發明適合的劃分方式。</p>
+<textarea>
+// 線的資料結構，注意p1和p2不能相等！
+struct Line {Point p1, p2;};
+// 線段的資料結構，注意p1和p2不能相等！
+typedef Line Segment;
+
+double distance(Point& p, Segment& s)
+{
+	// 建立向量求內積，以判斷點在哪一區。
+	Vector v = s.p2 - s.p1;
+	Vector v1 = p - s.p1;
+	Vector v2 = p - s.p2;
+
+	// 端點距離區：點到點距離
+	// 等於=可以省略
+	if (dot(v, v1) <= 0) return length(v1);
+	if (dot(v, v2) >= 0) return length(v2);
+	// 垂直距離區：點到線距離
+	return fabs(cross(v1, v)) / length(v);
+}
+</textarea>
+<p class="t">線段到線段距離</p>
+<img src="DistanceSS.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DistanceSS.png">
+<p>這個問題似乎沒有更簡單的方式：兩線段相交，距離為零；兩線段不相交，窮舉所有的端點到線段距離，取最短者。兩線段相交請參考後面章節，點到線段距離請參考前面章節。</p>
+<textarea>
+double distance(Segment& s1, Segment& s2)
+{
+	// 兩線段相交，距離為零。
+	if (intersect(s1, s2)) return 0;
+
+	// 兩線段不相交，兩線段平行或者共線。
+	return min(
+		distance(s1.p1, s2),	// 點到線段距離
+		distance(s1.p2, s2),
+		distance(s2.p1, s1),
+		distance(s2.p2, s1)
+	);
+}
+</textarea>
+<p class="t">線到線距離</p>
+<img src="DistanceLL.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DistanceLL.png">
+<p>兩線相交，距離為零；兩線平行，距離為l1上任取一點到l2的距離。用外積判斷平行。</p>
+<textarea>
+double distance(Line& l1, Line& l2)
+{
+	Vector v1 = l1.p2 - l1.p1;
+	Vector v2 = l2.p2 - l2.p1;
+
+	// 兩線不平行、兩線相交，距離為零。
+	if (cross(v1, v2) != 0) return 0;
+
+	// 兩線平行：點到線距離
+	return distance(l1.p1, l2);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Intersection</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Intersection</p>
+<p>人類比電腦擅長判斷相交。人類可以追著線條移動，快速找到交點；人類也有很強的空間感，能夠迅速劃分地理位置，看一眼就能區隔出成堆的線段。但是電腦卻做不到這些，電腦只會算數字、分條件。</p>
+<p>判斷相交原本是極容易的事情，主角改為電腦之後，卻變成極複雜的事情了。下面介紹二維座標平面上判斷相交的方式、計算交點的方式。</p>
+<p class="e">UVa 191 273 378 527 754 866 10902</p>
+<p class="t">線段與點相交</p>
+<p>利用點到點距離。開根號，有誤差。</p>
+<textarea>
+bool intersect(Segment& s, Point& p)
+{
+	return distance(s.p1, p) + distance(s.p2, p)
+		== distance(s.p2, s.p1);
+}
+</textarea>
+<p>比較妥當的方式，是先用外積判斷點與線段是否共線，再用內積判斷點是否位於線段端點之間。</p>
+<textarea>
+bool intersect(Segment& s, Point& p)
+{
+	// 點與線段共線，而且點要在線段之間。
+	return cross(s.p1, s.p2, p) == 0
+		&& dot(p, s.p1, s.p2) <= 0;
+}
+</textarea>
+<p class="t">兩共線線段相交</p>
+<p>線段端點位於另一條線段上面，則相交。</p>
+<textarea>
+// 線段與點已確定共線，判斷相交
+bool intersect(Point& p1, Point& p2, Point& p)
+{
+	return p.x >= min(p1.x, p2.x)
+		&& p.x <= max(p1.x, p2.x)
+		&& p.y >= min(p1.y, p2.y)
+		&& p.y <= max(p1.y, p2.y);
+}
+
+// 兩線段已確定共線，判斷相交
+bool intersect(Point& a1, Point& a2, Point& b1, Point& b2)
+{
+	return intersect(a1, a2, b1)
+		|| intersect(a1, a2, b2)
+		|| intersect(b1, b2, a1)
+		|| intersect(b1, b2, a2);
+}
+</textarea>
+<p class="t">兩線段相交，之一</p>
+<img src="IntersectSS1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/IntersectSS1.png">
+<p>兩線段相交，也就是一條線段被另一條線段分為兩邊。兩線段端點皆位於另一條線段的兩側，則相交。</p>
+<textarea>
+bool intersect(Point& a1, Point& a2, Point& b1, Point& b2)
+{
+	double c1 = cross(a1, a2, b1);
+	double c2 = cross(a1, a2, b2);
+	double c3 = cross(b1, b2, a1);
+	double c4 = cross(b1, b2, a2);
+
+	if (c1 * c2 < 0 && c3 * c4 < 0) return true;
+	if (c1 == 0 && intersect(a1, a2, b1)) return true;
+	if (c2 == 0 && intersect(a1, a2, b2)) return true;
+	if (c3 == 0 && intersect(b1, b2, a1)) return true;
+	if (c4 == 0 && intersect(b1, b2, a2)) return true;
+	return false;
+}
+</textarea>
+<p class="t">兩線段相交，之二</p>
+<img src="IntersectSS2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/IntersectSS2.png">
+<p>介紹更複雜的方法。</p>
+<p>線段相交，可以想像成是兩條交錯的四邊形對角線。換句話說，就是將線段的端點安排成四邊形的頂點，讓四邊形的對角線成為原來的兩條線段。如此一來，只要用一個四邊形，便可代表這兩條線段。</p>
+<p>凸四邊形的對角線，都會相交；凹四邊形、交叉四邊形的對角線，不會相交──於是判斷線段相交，可以轉化做判斷凸四邊形。要判斷凸多邊形，只要順著多邊形的外圍繞一圈，看看是否一直往同側轉彎即可。判斷轉彎得利用外積：順時針轉彎外積得正值，逆時針得負值。外積等於零則表示線段端點產生三點以上共線。</p>
+<textarea>
+// 判斷線段相交，但不能處理端點共線的情況
+bool intersect(Point& a1, Point& a2, Point& b1, Point& b2)
+{
+	Vector v1 = b1 - a1;
+	Vector v2 = a2 - b1;
+	Vector v3 = b2 - a2;
+	Vector v4 = a1 - b2;
+	double c1 = cross(v1, v2);
+	double c2 = cross(v2, v3);
+	double c3 = cross(v3, v4);
+	double c4 = cross(v4, v1);
+
+	// 朝同一方向轉彎。都是順時針，或者都是逆時針。
+	if (c1 > 0 && c2 > 0 && c3 > 0 && c4 > 0) return true;
+	if (c1 < 0 && c2 < 0 && c3 < 0 && c4 < 0) return true;
+	if (c1 == 0 && intersect(a1, a2, b1)) return true;
+	if (c2 == 0 && intersect(a1, a2, b2)) return true;
+	if (c3 == 0 && intersect(b1, b2, a1)) return true;
+	if (c4 == 0 && intersect(b1, b2, a2)) return true;
+	return false;
+}
+</textarea>
+<p class="t">兩線段相交，之三</p>
+<p>先判斷兩線段在X座標軸、Y坐標軸上的投影是否相交，然後再用外積判斷線段端點位於另一條線段的兩側。</p>
+<textarea>
+bool intersect1D(int a1, int a2, int b1, int b2)
+{
+	if (a1 > a2) swap(a1, a2);
+	if (b1 > b2) swap(b1, b2);
+	return max(a1, b1) <= min(a2, b2);
+}
+
+bool intersect(Point& a1, Point& a2, Point& b1, Point& b2)
+{
+	return intersect1D(a1.x, a2.x, b1.x, b2.x)
+		&& intersect1D(a1.y, a2.y, b1.y, b2.y)
+		&& cross(a1, a2, b1) * cross(a1, a2, b2) <= 0
+		&& cross(b1, b2, a1) * cross(b1, b2, a2) <= 0;
+}
+</textarea>
+<textarea>
+// 避免溢位
+double sign(double x)
+{
+	return fabs(x) < 1e-9 ? 0 : (x > 0 ? +1 : -1);
+}
+
+bool intersect(Point& a1, Point& a2, Point& b1, Point& b2)
+{
+	return intersect1D(a1.x, a2.x, b1.x, b2.x)
+		&& intersect1D(a1.y, a2.y, b1.y, b2.y)
+		&& sign(cross(a1, a2, b1)) * sign(cross(a1, a2, b2)) <= 0
+		&& sign(cross(b1, b2, a1)) * sign(cross(b1, b2, a2)) <= 0;
+}
+</textarea>
+<p class="t">兩線交點</p>
+<p><a href="javascript:if(confirm('http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/'" tppabs="http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/">http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/</a></p>
+<p>數學公式解，以聯立多項式計算。</p>
+<textarea>
+Point intersection(Point& a1, Point& a2, Point& b1, Point& b2)
+{
+	Point a = a2 - a1, b = b2 - b1, s = b1 - a1;
+
+	// 兩線平行，交點不存在。
+	// 兩線重疊，交點無限多。
+	if (cross(a, b) == 0) return INF;
+
+	// 計算交點
+	return a1 + a * cross(s, b) / cross(a, b);
+}
+</textarea>
+<p class="t">兩共線線段交點</p>
+<p>兩線段重疊，交點無限多；兩線段端點相接觸，交點恰為一點；兩線段不相交，交點不存在。</p>
+<p>如果兩共線線段恰有一個交點，那麼交點就一定是線段端點。</p>
+<textarea>
+Point intersection(Point& a1, Point& a2, Point& b1, Point& b2)
+{
+	// 確定交點後，剩下的線段端點必須位於交點的不同側。
+	if (a1 == b1 && dot(a1, a2, b2) <= 0) return a1;
+	if (a1 == b2 && dot(a1, a2, b1) <= 0) return a1;
+	if (a2 == b1 && dot(a2, a1, b2) <= 0) return a2;
+	if (a2 == b2 && dot(a2, a1, b1) <= 0) return a2;
+
+	// 交點無限多、交點不存在。
+	return INF;
+}
+</textarea>
+<p class="t">兩線段交點</p>
+<textarea>
+Point intersection(Point& a1, Point& a2, Point& b1, Point& b2)
+{
+	double c1 = cross(a1, a2, b1);
+	double c2 = cross(a1, a2, b2);
+	double c3 = cross(b1, b2, a1);
+	double c4 = cross(b1, b2, a2);
+
+	if (c1 * c2 < 0 && c3 * c4 < 0)
+		return 兩線交點;
+
+	if (c1 == 0 && c2 == 0)
+		return 兩共線線段交點;
+
+	// 兩線不平行、不共線、不交叉，有可能接觸於一點。
+	if (c1 == 0 && intersect(a1, a2, b1)) return b1;
+	if (c2 == 0 && intersect(a1, a2, b2)) return b2;
+	if (c3 == 0 && intersect(b1, b2, a1)) return a1;
+	if (c4 == 0 && intersect(b1, b2, a2)) return a2;
+	return INF;
+}
+</textarea>
+<p class="t">兩線交點，之二</p>
+<p>介紹另一個方法，本質等同於數學公式解。請見下圖：</p>
+<img src="IntersectionLL.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/IntersectionLL.png">
+<p>以p1為基準點，以p34為平行四邊形的底，利用兩個平行四邊形的高的比例，便能求出p1到p2與p1到交點的距離比例。</p>
+<p>平行四邊形的面積可用外積運算求出，所以這個方法相當方便。各位可依照下圖所列舉的各種情況（補上線段的延長線，使之為線），驗證此方法是有效的，並試著整理出例外情況。</p>
+<img src="DistanceSS.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DistanceSS.png">
+<p>實作程式碼時，要注意外積的順序，外積的順序將導致正負號的差異。</p>
+<textarea>
+Point intersection(Point& p1, Point& p2, Point& p3, Point& p4)
+{
+	Point p12 = p2 - p1, p13 = p3 - p1, p34 = p4 - p3;
+	double c1 = cross(p12, p34), c2 = cross(p13, p34);
+
+	if (c1 == 0)
+		if (c2 == 0)
+			return INF;	// 兩線重疊
+		else
+			return INF;	// 兩線平行但不重疊
+	else
+		return p1 + (p12 * (c2 / c1));
+}
+</textarea>
+<p class="t">兩線段交點，之二</p>
+<p>接續上一段內容。小心判斷兩個平行四邊形的高的比例是不是0到1，此即表示線段p34位於線段p12的範圍，兩者相交。至於範圍是指p1和p2兩點，以平行p34的方向所畫出的邊界線作為範圍，如下圖所示：</p>
+<img src="IntersectionSS.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/IntersectionSS.png">
+<p>另外，除了以p1為基準點，還要再以p3為基準點再算一遍，才能確定兩線段到底有沒有相交。</p>
+<textarea>
+Point intersection(Point& p1, Point& p2, Point& p3, Point& p4)
+{
+	Point p12 = p2 - p1, p13 = p3 - p1, p34 = p4 - p3;
+	double c1 = cross(p12, p34), c2 = cross(p13, p34);
+	Point p31 = p1 - p3;
+	double c3 = cross(p34, p12), c4 = cross(p31, p12);
+
+	if (c1 < 0) c1 = -c1, c2 = -c2;	// 調整一下正負號，方便判斷
+	if (c3 < 0) c3 = -c3, c4 = -c4;
+
+	if (c1 == 0)
+		if (c2 == 0)
+			return INF;	// 兩線段共線
+		else
+			return INF;	// 兩線段平行但不共線
+	else
+		if (c2 >= 0 && c2 <= c1 && c4 >= 0 && c4 <= c3)
+			return p1 + (p12 * (c2 / c1));
+		else
+			return INF;	// 不平行、不相交
+}
+</textarea>
+<p>由於p13與p31只差一負號，故可以用p13代替p31。另外c1與c3也只差一負號，故可以用c1代替c3。於是程式碼可再精簡。</p>
+<textarea>
+Point intersection(Point& p1, Point& p2, Point& p3, Point& p4)
+{
+	Point p12 = p2 - p1, p13 = p3 - p1, p34 = p4 - p3;
+	double c1 = cross(p12, p34), c2 = cross(p13, p34);
+	double c4 = cross(p13, p12);	// c3用c1取代，c4方向顛倒
+
+	if (c1 < 0) c1 = -c1, c2 = -c2, c4 = -c4;
+
+	if (c1 != 0 && c2 >= 0 && c2 <= c1 && c4 >= 0 && c4 <= c1)
+		return p1 + (p12 * (c2 / c1));
+	else
+		return INF;	// 兩線段共線
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">2D Transformation</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">2D Transformation</p>
+<p>以下介紹二維平面的常見動作。</p>
+<img src="2DTransformation1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation1.png">
+<p>運用C++的複數函式庫，以複數表示二維座標，就能少寫很多程式碼。</p>
+<textarea>
+// C與C++各有自己的複數函式庫，千萬不要混用了。
+// 此處是C++的複數函式庫。
+#include <complex>
+typedef complex<double> Point;
+#define x real()
+#define y imag()
+</textarea>
+<p class="e">UVa 12303</p>
+<p class="t">Translate</p>
+<img src="2DTransformation2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation2.png">
+<p>「位移」是直直移動，大小不變。</p>
+<p>運用Incremental Method的精神，圖形的位移，分解成線段的位移，分解成點的位移。</p>
+<p>點的位移有兩種想法，第一種是座標相加的概念，位移量便是座標差；第二種是向量相加的概念，位移量便是向量差。</p>
+<p>雖然第二種想法不太直覺，但是由於向量很強大，還是習慣一下向量吧！</p>
+<img src="2DTransformation3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation3.png">
+<textarea>
+Point a(2, 3);		// 原本的點
+Point t(4, 1);		// 位移量
+Point b = a + t;	// a位移至b
+</textarea>
+<p class="t">Rotate</p>
+<img src="2DTransformation4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation4.png">
+<p>「旋轉」，先取一個旋轉中心點，旋轉整張圖。</p>
+<p>點的旋轉，先把旋轉中心點位移至原點，就容易處理了。</p>
+<p>複數相乘等於角度相加、長度相乘。製造一個複數，長度等於一，角度等於旋轉角度，就可以運用複數乘法，完成點的旋轉。</p>
+<img src="2DTransformation5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation5.png">
+<textarea>
+Point a(5, 7);	// 原本的點
+Point o(2, 5);	// 旋轉中心點
+
+// 製造一個複數，長度等於一，角度等於30度。
+double θ = 30.0/360.0 * 2.0*pi;	// 逆時針、正30度。
+Point r(cos(θ), sin(θ));
+Point r = polar(1, θ);	// 同上
+
+// a以o為中心旋轉30度，旋轉至b。
+Point b = (a - o) * r + o;
+</textarea>
+<p class="t">Scale</p>
+<img src="2DTransformation6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation6.png">
+<p>「縮放」，先取一個縮放中心點，縮放整張圖。</p>
+<p>點的縮放，先把縮放中心點位移至原點，就容易處理了。</p>
+<img src="2DTransformation7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation7.png">
+<textarea>
+Point a(5, 7);	// 原本的點
+Point o(2, 5);	// 縮放中心點
+
+// p1以o為中心縮放5倍，縮放至p2。
+Point b = (a - o) * 5.0 + o;
+</textarea>
+<p class="t">Project</p>
+<img src="2DTransformation8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation8.png">
+<p>「投影」，先取一條投影線，整張圖垂直投射至線上。</p>
+<p>project這個英文單字有「投影」和「計畫」兩種意義，此處講的是「投影」。</p>
+<p>點的投影有兩種想法，第一種想法是直線交點的概念，首先求出投影線與其法線，再解聯立方程式；第二種想法是向量內積的概念，首先把投影線位移至原點，就容易處理了。</p>
+<p>雖然第二種想法不太直覺，但是由於向量很強大，老話一句，還是習慣一下向量吧！</p>
+<img src="2DTransformation9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation9.png">
+<textarea>
+Point a(5, 7);			// 原本的點
+Point p(1, 2), q(3, 4);	// 投影線
+
+// p位移至原點
+Point pa = p - a;
+Point pq = p - q;
+// a投影至直線(p,q)，得到b。
+Point pb = pq * dot(pa, pq) / norm(pq);
+Point b = a + pb;
+</textarea>
+<p class="t">Reflect</p>
+<img src="2DTransformation10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation10.png">
+<p>「鏡射」，先取一條對稱線，整張圖沿線翻轉，正面變反面。</p>
+<p>reflect這個英文單字有「鏡射」和「反射」兩種意義，此處講的是「鏡射」。</p>
+<p>有兩種實作方式，後者的程式碼比較簡潔。</p>
+<img src="2DTransformation11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2DTransformation11.png">
+<textarea>
+Point a(5, 7);			// 原本的點
+Point p(1, 2), q(3, 4);	// 投影線
+
+// p位移至原點
+Point pa = p - a;
+Point pq = p - q;
+// a投影至直線(p,q)，得到b。
+// a鏡射至直線(p,q)，得到c。
+Point pb = pq * dot(pa, pq) / norm(pq);
+Point c = a + pa + ((pb - pa) * 2);
+Point c = a + (pb * 2 - pa);
+</textarea>
+<p class="t">延伸閱讀：Homogeneous Coordinates</p>
+<p>上述動作們，可以看成函數，輸入、輸出各是一個數對。</p>
+<p>除了位移，其餘動作都是線性變換，可以表示成矩陣乘法。</p>
+<p>為了讓位移也可以表示成矩陣乘法，於是發展了「齊次座標」的概念，增加一個維度，使得全部動作都可以表示成矩陣乘法。</p>
+<p>有興趣的讀者請參考Computer Graphics相關書籍。</p>
+<p class="t">延伸閱讀：Affine</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Affine_transformation  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Affine_transformation'" tppabs="http://en.wikipedia.org/wiki/Affine_transformation">http://en.wikipedia.org/wiki/Affine_transformation</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

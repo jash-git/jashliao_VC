@@ -1,0 +1,1 @@
+(function(_c){var _url=_c.encodeUri('http://js2.dotmore.com.tw/sync.aspx?sid=-2107647246.zg2xog&expir='+_c.expire+'&w=108&st=78291&charset='+_c.charSet+'&mw=app,系統,第一,方便,使用,效果,區域,傳統,處理,效率,運算');_c.scriptLoader(_url);})(eval(DM_GLOBAL.getWorkingCore()));

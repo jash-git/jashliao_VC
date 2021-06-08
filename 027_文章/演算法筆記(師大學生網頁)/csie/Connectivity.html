@@ -1,0 +1,509 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Connectivity</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Articulation Vertex / Bridge</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Articulation Vertex（Articulation Point）（Cut-vertex）</p>
+<p>Articulation乃「關節」之意，骨骼與骨骼銜接的地方就是關節。關節一旦被拆開，肢體之間的連繫就被切斷了。</p>
+<img src="ArticulationVertex.jpg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ArticulationVertex.jpg">
+<p>「關節點」是讓一張無向圖維持連通，不可或缺的點。只要從一張無向圖上移除了關節點（以及與之相連的邊），就會讓這張圖分離成更多部分，呈現不連通的狀態。</p>
+<img src="ArticulationVertex1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ArticulationVertex1.png">
+<p class="t">Bridge（Cut-edge）</p>
+<p>中文稱作「橋」。只要從一張無向圖上移除了橋，就會讓這張圖分離成更多部分，呈現不連通的狀態。</p>
+<img src="Bridge1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Bridge1.png">
+<p class="t">尋找一張無向圖上所有的Articulation Vertex</p>
+<p>要判斷一個點是不是關節點，只要從圖上移除此點，再看看圖是否連通就好了；要判斷連通，可以使用任何一種Graph Traversal演算法。</p>
+<p>每一個點都用一次Graph Traversal來判斷是不是關節點，逐一試驗圖上每一個點，總共執行V次的Graph Traversal就可以找出全部的關節點了。V為圖上的點數。</p>
+<p>這個演算法簡單易懂又容易實做，只不過這個演算法還不夠漂亮。下面要介紹更妙的方法。</p>
+<p class="t">原本路線＋替代路線＝環</p>
+<p>移除一個點之後，經過該點的路線被截斷了。要是沒有替代路線，無法繞過該點，就會不連通，該點就形成關節點。反過來說，如果有替代路線，該點就不會形成關節點。</p>
+<img src="ArticulationVertex2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ArticulationVertex2.png">
+<p>原本路線和替代路線，併在一起看，又可以想做是一個環。這也就是說：找到了環，就找到了替代路線，可以繞過關節點；找不到環，就找不到替代路線，繞不過關節點。</p>
+<img src="ArticulationVertex3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ArticulationVertex3.png">
+<p>要在一張圖上找替代路線不太直覺，但是找環就比較直覺了──把圖重新畫成樹的形狀，就容易找環了！要把圖重新畫成樹的形狀，利用Graph Traversal就行了。這裡就利用一下DFS tree吧！</p>
+<img src="ArticulationVertex4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ArticulationVertex4.png">
+<p class="t">利用DFS tree尋找Articulation Vertex</p>
+<p>任取樹上的一個點，當這個點的祖先與每一棵子樹想要互通有無，利用tree edge的話，顯然會經過此點；另一方面，不想利用tree edge的話，不想經過此點的話，就必須利用back edge了。</p>
+<p>在DFS tree之中，子樹與子樹之間不會有邊，所以只需要考慮祖先與子樹之間有沒有back edge。</p>
+<p>這也就是說，祖先與每一棵子樹之間都有back edge的話，該點就不是關節點；祖先與其中一棵子樹之間缺少back edge的話，該點就是關節點。</p>
+<img src="ArticulationVertex5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ArticulationVertex5.png">
+<p>樹根沒有辦法直接套用上述規則，因為樹根沒有祖先。然而樹根更加容易判斷是不是關節點。</p>
+<p>如果樹根的各棵子樹想要互通有無，除了通過樹根之外，決不會有替代路線。所以，若樹根有兩棵以上的子樹，或者說樹根有兩個以上的小孩，則樹根一定是關節點。</p>
+<img src="ArticulationVertex6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ArticulationVertex6.png">
+<p>實作時，要判斷祖先與子孫，可以運用DFS的遍歷順序。</p>
+<p class="t">尋找一張無向圖上所有的Articulation Vertex</p>
+<textarea>
+bool adj[9][9];	// 無向圖，adjacency matrix。
+int dis[9];		// DFS遍歷順序，用來判斷祖先與子孫。
+int grand[9];	// 紀錄該點的子孫們用back edge連到的最高祖先。
+				// 例如第4點的子孫們，
+				// 有back edge連到祖先第grand[4]點。
+int t = 0;		// 時刻。
+
+void DFS(int p, int i)	// 第p點是第i點的父親
+{
+	dis[i] = ++t;		// 紀錄遍歷順序
+	grand[i] = i;		// 預設為沒找到back edge
+
+	int child = 0;		// 紀錄第i點有幾個小孩
+	bool ap = false;	// 紀錄第i點是不是關節點
+
+	for (int j=0; j<9; ++j)			// 進行DFS
+		if (adj[i][j] && j != p)	// 避免回頭路
+			if (dis[j])				// back edge
+			{
+				// 紀錄最高的祖先。
+				if (dis[j] < dis[grand[i]])
+					grand[i] = j;
+			}
+			else					// tree edge
+			{
+				child++;
+				DFS(i, j);
+
+				// 紀錄第i點的子孫們，利用back edge連到的最高祖先。
+				if (dis[grand[i]] < dis[grand[j]])
+					grand[i] = grand[j];
+
+				// 第i點的祖先、第i點的其中一棵子樹（樹根為第j點）
+				// 兩者之間缺少back edge，因此第i點為關節點。
+				if (dis[grand[j]] >= dis[i])
+					ap = true;
+			}
+
+	// 判斷是不是關節點。樹根和非樹根分開判斷。
+	if (i == p && child > 1 || i != p && ap)
+		cout << "第" << i << "點是關節點";
+}
+
+void articulation_vertex()
+{
+	memset(dis, 0, sizeof(dis));
+	t = 0;
+
+	// 進行DFS
+	for (int i=0; i<9; ++i)
+		if (!dis[i])
+			DFS(i, i);
+}
+</textarea>
+<p>上方的程式碼中，如果讓grand[]改為存入遍歷順序值，而不是點的編號，那麼程式碼可以再縮短一點點。</p>
+<textarea>
+bool adj[9][9];
+int dis[9];
+int low[9];	// 紀錄該點子孫們用back edge連到的最高祖先（的遍歷順序），
+			// 也就是遍歷順序盡量小的點，故取名為low。
+			// 例如第4點的子孫們，
+			// 有back edge連到遍歷順序為low[4]的祖先。
+int t = 0;
+
+void DFS(int p, int i)
+{
+	dis[i] = low[i] = ++t;
+
+	int child = 0;
+	bool ap = false;
+
+	for (int j=0; j<9; ++j)
+		if (adj[i][j] && j != p)
+			if (dis[j])	// back edge
+			{
+				// 紀錄遍歷順序較小的，即是最高祖先。
+				low[i] = min(low[i], dis[j]);
+			}
+			else		// tree edge
+			{
+				child++;
+				DFS(i, j);
+
+				// 紀錄遍歷順序較小的，即是最高祖先。
+				low[i] = min(low[i], low[j]);
+				if (low[j] >= dis[i]) ap = true;
+			}
+
+	if (i == p && child > 1 || i != p && ap)
+		cout << "第" << i << "點是關節點";
+}
+</textarea>
+<p>也可以改為在DFS結束之後，再來判斷關節點。程式碼切割成兩階段，比較清爽。</p>
+<textarea>
+bool adj[9][9];
+int dis[9], low[9], t = 0;
+
+void DFS(int p, int i)
+{
+	dis[i] = low[i] = ++t;
+	for (int j=0; j<9; ++j)
+		if (adj[i][j] && j != p)
+			if (dis[j])
+				low[i] = min(low[i], dis[j]);
+			else
+			{
+				DFS(i, j);
+				low[i] = min(low[i], low[j]);
+			}
+}
+
+bool articulation_vertex(int i)
+{
+	// 樹根要特別處理
+	if (i是樹根)
+		return i點的小孩數目 > 1;
+
+	for (int j=0; j<9; ++j)
+		if (adj[i][j] && (i,j) is tree edge)
+			if (low[j] >= dis[i])
+				return true;
+	return false;
+}
+
+void articulation_vertex()
+{
+	memset(dis, 0, sizeof(dis));
+	t = 0;
+
+	// 進行DFS
+	for (int i=0; i<9; ++i)
+		if (!dis[i])
+			DFS(i, i);
+
+	// 尋找所有關節點
+	for (int i=0; i<9; ++i)
+		if (articulation_vertex(i))
+			cout << "第" << i << "點是關節點";
+}
+</textarea>
+<p class="e">UVa 315 10199</p>
+<p class="t">尋找一張無向圖上所有的Bridge</p>
+<p>方法類似於尋找關節點，所以不再覆述。</p>
+<p>一張無向圖，就算有關節點，也不一定有橋。例如兩個環接觸於一點，該點便是關節點，但是沒有任何一條邊是橋。</p>
+<p class="e">UVa 796 610</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Dominator</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Dominator</p>
+<p>一張有向圖，選定一個起點、一個終點。由起點到終點，途中的必經之點、沒有替代路線的點，稱作「支配點」；起點與終點本身也是支配點。途中的必經之邊，則尚未命名。</p>
+<p>只要移除了支配點，起點到終點的連繫就被切斷了，成為不連通的狀態。</p>
+<img src="Dominator1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Dominator1.png">
+<p>支配點就像是交通要衝、軍事要津。守塔遊戲當中，最理想的禦敵之處，通常正是支配點：<a href="javascript:if(confirm('http://www.kingdomrush.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.kingdomrush.com/'" tppabs="http://www.kingdomrush.com/">http://www.kingdomrush.com/</a>。</p>
+<p class="t">Dominator Tree</p>
+<p>一張有向圖，選定一個起點，由起點到圖上各點的支配點們，形成一棵有向樹，稱作「支配樹」，只有唯一一種。</p>
+<img src="Dominator2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Dominator2.png">
+<p>支配樹有著父子支配關係（immediate dominate）、祖孫支配關係（dominate）。</p>
+<p>學過最短路徑的讀者，可以將支配樹類比為最短路徑樹──支配樹是疊合所有支配點、成為一棵樹；最短路徑樹亦是疊合所有最短路徑、成為一棵樹。</p>
+<p class="t">延伸閱讀：有向圖的關節點</p>
+<p><a href="javascript:if(confirm('http://verona.dei.unipd.it/~prin08/kickoff/laura.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://verona.dei.unipd.it/~prin08/kickoff/laura.pdf'" tppabs="http://verona.dei.unipd.it/~prin08/kickoff/laura.pdf">http://verona.dei.unipd.it/~prin08/kickoff/laura.pdf</a></p>
+<p>有向圖的關節點有兩種定義方式：第一種是移除關節點之後，造成圖上某兩點，從雙通變單通、不通（強連通分量數量變多）；第二種是從有通變不通（弱連通分量數量變多）。</p>
+<p>尋找雙通變單通、不通的所有關節點：圖上任選一點，找出此點出發的支配樹、以及抵達此點的支配樹。這兩棵樹，除去樹根與樹葉之後所剩下的節點（取其聯集），即是雙通變單通、不通的所有關節點──但是不包含樹根。樹根必須另行判斷是否為關節點。</p>
+<p>尋找有通變不通的所有關節點：上述內容，改為取其交集。</p>
+<p class="t">判斷一個點不是支配點</p>
+<p>只要從圖上移除此點，再看看起點到終點是否連通就好了。就跟前面章節、判斷關節點的演算法如出一轍。</p>
+<p class="e">UVa 11902</p>
+<p class="t">找出特定起點的支配樹（Iterative Dominator Algorithm）</p>
+<p><a href="javascript:if(confirm('http://www.cs.rice.edu/~keith/Embed/dom.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cs.rice.edu/~keith/Embed/dom.pdf'" tppabs="http://www.cs.rice.edu/~keith/Embed/dom.pdf">http://www.cs.rice.edu/~keith/Embed/dom.pdf</a></p>
+<pre>
+dom(s, t) = t ∪ { dom(s, pred1(t)) ∩ dom(s, pred2(t)) ∩ ... }
+</pre>
+<p>計算起點到終點的所有支配點，有個遞迴縮小問題的手法：窮舉起點到終點的各種路線，計算起點到「終點的前一點」的所有支配點。各種路線的支配點們取其交集，最後補上終點。</p>
+<p>各種路線的所有支配點取其交集，也就是在支配樹上，找「終點的前一點」的Lowest Common Ancestor。最後補上終點，也就是在支配樹上，把終點直接連向Lowest Common Ancestor。</p>
+<p>這個手法相當優雅，然而不幸的是：我們不明白計算順序。</p>
+<p>當圖上無環，尚可採用拓樸順序；當圖上有環，就不知道該如何安排計算順序了。【註：讀者可以觀察Bellman-Ford Algorithm，也許能獲得一些靈感，發明好的計算順序。】</p>
+<p>只好先求有、再求好。姑且按照拓樸順序（嚴格來說，是DFS的離開順序的反序，以應付圖上有環的情況），依序計算起點到圖上各點的支配點；然後反覆實施數次，趨近正確答案。當結果不再變動之時，即是正確答案。</p>
+<p>時間複雜度為O((V+E)*K)，K為實施次數。當給定的圖是有向無環圖DAG，K = 1。是實務上最快的演算法。</p>
+<p class="t">找出特定起點的支配樹（Lengauer-Tarjan Algorithm）</p>
+<p><a href="javascript:if(confirm('http://www.cl.cam.ac.uk/~mr10/lengtarj.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cl.cam.ac.uk/~mr10/lengtarj.pdf'" tppabs="http://www.cl.cam.ac.uk/~mr10/lengtarj.pdf">http://www.cl.cam.ac.uk/~mr10/lengtarj.pdf</a></p>
+<p>時間複雜度O(ElogV)，可以加速至O(E*alpha(E,V))，甚至O(V+E)，但是方法相當複雜，並不實用。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Component</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Connected Graph</p>
+<p>這不是一個專有名詞。對於一張圖來說，如果所有兩點之間皆得以邊相通，這張圖就是一張連通的圖。例如一棵樹就是一張連通的圖。</p>
+<img src="ConnectedComponent1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ConnectedComponent1.png">
+<p class="t">Connected Component（Component）<br>【註：1-connected component in undirected graph】</p>
+<p>譯作「連通分量」、「連通成分」、「連通元件」、「連通單元」等等，也有人簡稱為「分量」，沒有正式翻譯。</p>
+<p>當一張無向圖不連通、分隔成幾個區塊的時候，每一個區塊都是一個「連通分量」。一個獨立的點也是一個連通分量。</p>
+<img src="ConnectedComponent2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ConnectedComponent2.png">
+<p>一張無向圖的連通分量們，不可能互相重疊。一個連通分量是指在連通的情況下，點數盡量最多、擴展範圍最大的一個子圖；因此，從一個連通分量當中，切下一小塊仍舊連通的子圖，並不能叫做連通分量。</p>
+<p>運用Graph Traversal就能找到一張無向圖的所有連通分量。</p>
+<p class="e">UVa 459 10765</p>
+<p class="t">Biconnected Component（Block）<br>【註：2-vertex-connected component in undirected graph】</p>
+<p>一張無向圖上，不會產生關節點的連通分量，稱作「雙連通分量」。一張無向圖的雙連通分量們，通常會互相重疊，重疊的部分都是原圖的關節點。</p>
+<img src="ConnectedComponent3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ConnectedComponent3.png">
+<p>把一個雙連通分量視作一個點，把一個關節點也視作一個點，凡有接觸就添上一條邊，如此可以建立出一棵樹，通常稱做BCC Tree或Block Tree。</p>
+<p class="t">常常被誤認為是Biconnected Component的一種連通分量<br>【註：2-edge-connected component in undirected graph】</p>
+<p>一張無向圖上，不會產生橋的連通分量。常被誤認為「雙連通分量」。</p>
+<img src="ConnectedComponent4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ConnectedComponent4.png">
+<p>把一個這樣的連通分量視作一個點，凡有接觸就添上一條邊，如此可以建立出一棵樹。</p>
+<p class="e">ICPC 5135 4839</p>
+<p class="t">Strongly Connected Component<br>【註：1-connected component in directed graph】</p>
+<p>在無向圖當中，只要邊邊相連，即形成連通，不必在意方向。在有向圖當中，由於有了方向限制，因此細分為「強連通」和「弱連通」：所有兩點之間，雙向都有路可通，則是「強連通」；所有兩點之間，至少單向有路可通，則是「弱連通」。</p>
+<p>一張有向圖的「強連通分量」，是所有兩點之間，雙向皆有路可通的連通分量。一張有向圖的強連通分量們，不可能互相重疊。</p>
+<img src="ConnectedComponent5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ConnectedComponent5.png">
+<p>兩個點來回都有路徑，這兩條路徑勢必形成一只有向環。一個強連通分量，想必是由很多有向環交疊而成的。</p>
+<p>要是把一張圖的各個強連通分量，各自收縮成一個點，如此圖上就不會有環，形成有向無環圖（DAG）。這是一個很有用處的性質──沒有環的圖，常常會有效率極佳、令人眼睛一亮的演算法。當遇到一張有環的圖，不妨先把每個強連通分量統統收縮，簡化問題的複雜程度。</p>
+<p class="e">UVa 11504 11709 11770 11838</p>
+<p class="t">Weakly Connected Component</p>
+<p>一張有向圖的「弱連通分量」，是所有兩點之間，至少單向有路可通的連通分量。一張有向圖的弱連通分量們，通常會互相重疊。</p>
+<img src="ConnectedComponent6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ConnectedComponent6.png">
+<p>一個弱連通分量，可以看作是強連通分量的縮圖當中的一條有向路徑。要找最大的弱連通分量，即是縮圖當中，涵蓋最多原點的一條有向路徑。</p>
+<p class="e">UVa 11324</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Strongly Connected Components: Kosaraju's Algorithm</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>找到一張有向圖所有的強連通分量。亦可檢驗圖上是否有環。亦可收縮圖上所有的環。</p>
+<p>觀察強連通分量的縮圖、觀察先後順序，很容易得到演算法：</p>
+<img src="Kosaraju'sAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kosaraju'sAlgorithm1.png">
+<pre>
+一、找到縮圖的拓樸順序。
+　　原圖DFS的離開點的順序，顛倒之後，正好是縮圖的拓樸順序。
+回、儘管原圖DFS離開點的順序，顛倒之後，正好是縮圖的拓樸順序；
+　　但是原圖DFS離開點的順序，卻不是縮圖的逆向拓樸順序。
+　　所以無法直接使用原圖求得強連通分量。
+二、原圖顛倒所有邊的方向，得到新圖。
+　　所有強連通分量的位置依舊相同！
+三、依照原本縮圖的拓樸順序，在新圖上以DFS或BFS實施連通性測試。
+　　每一棵DFS tree或BFS tree，都對應一個強連通分量。
+</pre>
+<p class="t">時間複雜度</p>
+<p>時間複雜度為兩次DFS的時間，以及顛倒所有邊的時間。</p>
+<p>資料結構是adjacency matrix，不必變動資料結構就可以達到顛倒所有邊的效果，總時間複雜度O(V^2)；資料結構是adjacency lists，需要顛倒所有邊，總時間複雜度O(V+E)。</p>
+<textarea>
+int adj[9][9];			// adjacency matrix
+bool visit[9];			// DFS visit record
+vector<int> finish[9];	// DFS的離開順序
+int scc[9];				// 每個點的強連通分量編號
+
+void DFS1(int i)
+{
+	visit[i] = true;
+	for (int j=0; j<9; ++j)
+		if (adj[i][j] && !visit[j])
+			DFS1(j);
+
+	finish.push_back(i);
+}
+
+void DFS2(int i, int c)
+{
+	cout << "第" << c << "個強連通分量";
+	cout << "包含第" << i << "點";
+	scc[i] = c;	// 設定第i點屬於第c個強連通分量
+
+	visit[i] = true;
+	for (int j=0; j<9; ++j)
+		if (adj[j][i] && !visit[j])	// 顛倒所有邊的方向
+			DFS2(j, c);
+}
+
+void kosaraju()
+{
+	finish.clear();
+	memset(visit, false, sizeof(visit));
+	for (int i=0; i<9; ++i)
+		if (!visit[i])
+			DFS1(i);
+
+	memset(visit, false, sizeof(visit));
+	for (int i=9-1; i>=0; --i)
+		if (!visit[finish[i]])		// 原圖的拓樸順序
+			DFS2(finish[i], c++);	// 找到一個強連通分量
+}
+</textarea>
+<textarea>
+int adj[9][9];
+bool visit[9];
+vector<int> finish[9];	// 依照離開順序排好所有點
+int contract[9];		// 每個點收縮到的點
+
+void DFS1(int i)
+{
+	if (visit[i]) return;
+	visit[i] = true;
+	for (int j=0; j<9; ++j)
+		if (adj[i][j])
+			DFS1(j);
+	finish.push_back(i);
+}
+
+void DFS2(int i, int p)
+{
+	if (visit[i]) return;
+	visit[i] = true;
+	for (int j=0; j<9; ++j)
+		if (adj[j][i])	// 顛倒所有邊的方向
+			DFS2(j, n);
+	contract[i] = p;	// 收縮至第p點
+}
+
+void kosaraju()
+{
+	finish.clear();
+	memset(visit, false, sizeof(visit));
+	for (int i=0; i<9; ++i) DFS1(i);
+	memset(visit, false, sizeof(visit));
+	for (int i=9-1; i>=0; --i) DFS2(finish[i], finish[i]);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Strongly Connected Components: Tarjan's Algorithm</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>強連通分量由環組成。利用前述找關節點的手法，來找出環。</p>
+<pre>
+一、執行DFS。
+二、執行過程中，針對每一個點，
+　　都計算以該點為根的子樹，
+　　藉由back edge和tree edge所能回到的最高祖先。
+　　（與關節點演算法的主要差異：
+　　　關節點演算法走back edge時，走完了就停。
+　　　此處是不斷走back edge和tree edge，不斷找路往祖先走。）
+三、在回溯階段時，
+　　每當發現以某一點為根的子樹，已經形成一個完整的SCC，
+　　則馬上從目前的DFS Forest上面移除此SCC，
+　　並且將此SCC儲存到其他地方。
+</pre>
+<p>時間複雜度等於一次DFS的時間。圖的資料結構為adjacency matrix的話，便是O(V^2)；圖的資料結構為adjacency lists的話，便是O(V+E)。</p>
+<textarea t="一張有向圖，收縮所有的環。">
+int adj[9][9];				// adjacency matrix
+int dis[9], low[9], t = 0;	// 遍歷順序、追溯到的最高祖先（的遍歷順序）
+int stack[9], top = 0;		// 堆疊
+bool instack[9];			// 紀錄DFS forest目前還有哪些點
+int contract[9];			// 每個點收縮到的點
+
+void DFS(int i)
+{
+	dis[i] = low[i] = ++t;
+
+	stack[top++] = i;
+	instack[i] = true;
+
+	for (int j=0; j<9; ++j)
+		if (adj[i][j])
+		{
+			if (!dis[j])
+				DFS(j);
+
+			if (instack[j])
+				low[i] = min(low[i], low[j]);
+		}
+
+	// 形成 SCC，從目前的 DFS forest 移除它。
+	// i 點也是 SCC 裡面，發現時間最早的點。
+	if (dis[i] == low[i])
+	{
+		int j;
+		do
+		{
+			j = stack[--top];
+			instack[j] = false;
+			contract[j] = i;
+		} while (j != i);
+	}
+}
+
+void tarjan()
+{
+	memset(dis, 0, sizeof(dis));
+	t = 0;
+
+	for (int i=0; i<9; ++i)
+		if (!dis[i])
+			DFS(i);
+}
+</textarea>
+<textarea t="一張無向圖，收縮所有的環。">
+int adj[9][9];				// adjacency matrix，兩點間可能有多條邊。
+int dis[9], low[9], t = 0;	// 遍歷順序、追溯到的最高祖先（的遍歷順序）
+int s[9], *stack;			// 堆疊，紀錄已經遍歷過但是尚未收縮的點。
+
+// disjoint-sets forest，用來紀錄縮圖。
+int p[9];
+void init() {...}
+int find(int x) {...}
+void union(int x, int y) {...}
+
+void DFS(int p, int i)
+{
+	dis[i] = low[i] = ++t;
+
+	for (int j=0; j<9; ++j)
+		if (adj[i][j])
+			if (!dis[j])
+			{
+				*++stack = j;
+				DFS(i, j);
+				low[i] = min(low[i], low[j]);
+
+				if (low[j] > dis[i])	// 子孫沒有形成環
+					stack--;			// pop j
+				else if (low[j] == dis[i])	// 子孫形成環
+				{
+					while (*stack != j)
+						union(*stack--, i);
+					union(*stack--, i);	// pop j
+				}
+			}
+			else if (j != p || j == p && adj[i][j] >= 2)
+				low[i] = min(low[i], dis[j]);
+}
+
+void tarjan()
+{
+	init();
+	memset(d, 0, sizeof(d));
+	n = 0;
+	stack = s;
+
+	for (int i=0; i<9; ++i)
+		if (!dis[i])
+			DFS(-1, i);
+
+	int vertex = 0;
+	for (int i=0; i<9; ++i)
+		if (i == f(i))
+			vertex++;
+	cout << "收縮後共有" << vertex << "點";
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Orientation</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Orientation</p>
+<p>一張無向圖，無向邊改成有向邊，替每一條邊選擇一個方向，稱做「定向」。</p>
+<img src="Orientation1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Orientation1.png">
+<p>根據Robbins' theorem，沒有橋的無向圖，一定能改成強連通的Orientation，反之亦然。</p>
+<p class="e">UVa 610 10972</p>
+<p class="t">Underlying Graph</p>
+<p>一張有向圖，有向邊換成無向邊，稱做「底圖」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Connectivity</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Vertex Connectivity（Connectivity）</p>
+<p>一張圖的「點連通度」是指：欲讓圖不連通，最少需要從圖上拿掉多少個點？</p>
+<p>換句話說，一張圖上隨意拿掉「點連通度」減一個點，一定還是連通的。</p>
+<p>根據Menger's Theorem，此問題等價於：兩點之間，點不重覆（端點除外）的路徑同時最多有幾條（vertex-disjoint paths）？點連通度等於所有兩點的最小值。</p>
+<p>根據Max-Flow Min-Cut Theorem，此問題又等價於：點容量為一、邊無容量，求所有兩點之間的最大流的最小值。</p>
+<p>【待補圖片】</p>
+<p class="e">ICPC 4322</p>
+<p class="t">Edge Connectivity</p>
+<p>一張圖的「邊連通度」是指：欲讓圖不連通，最少需要從圖上拿掉多少條邊？</p>
+<p>換句話說，一張圖上隨意拿掉「邊連通度」減一條邊，一定還是連通的。</p>
+<p>根據Menger's Theorem，此問題等價於：兩點之間，邊不重覆的路徑同時最多有幾條（edge-disjoint paths）？邊連通度等於所有兩點的最小值。</p>
+<p>根據Max-Flow Min-Cut Theorem，此問題又等價於：邊容量為一、點無容量，求所有兩點之間的最大流的最小值。</p>
+<p>【待補圖片】</p>
+<p class="e">ICPC 3811</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

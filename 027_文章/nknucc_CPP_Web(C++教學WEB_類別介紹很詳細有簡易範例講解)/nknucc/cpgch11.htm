@@ -1,0 +1,381 @@
+<!--- file: cpgchpt11.htm
+      symbols: ，、。．‧；：？！·
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 11 章  第一個 C++ 程式</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 11 章  第一個 C++ 程式</B></CENTER>
+<P>
+<A NAME="start">
+
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 11.1 節 <A href="#first">第一個 C++ 程式</A>
+  <LI>第 11.2 節 <A href="#second">new 與 delete operators 及 iostream.h 檔</A>
+  <LI>第 11.3 節 <A href="#third">overloaded functions</A>
+</UL>
+<P>
+<A href="cpgch10.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch10.htm">回第 10 章</A><BR>
+<A href="cpgch12.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch12.htm">至第 12 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<P>
+<A NAME="first">
+<HR>
+<!--------------------第 11.1 節--------------------------------------->
+<P>
+  <B>第 11.1 節  第一個 C++ 程式</B>
+<P>
+由 10.1 節的方法 2， 利用 stack 來解決標準括號式的問題，於檔案 stack.h 與
+stack.c 已具有 C++ class 中資料封包的性質，以 class 的方式重新整
+理 stack.h 與 stack.c 成為新的檔案 stack.cpp 其內容為
+<P>
+<PRE>
+         #define  MAXSIZE  100
+         class  CStack
+         {   
+         public:
+             CStack( )  {  tos=0;  }
+            ~CStack( )  {  }
+             int  isEmpty( ) {  return tos == 0;  }
+             int  isFull( )  {  return tos == MAXSIZE;  }
+             void  push(char c) {  s[tos++]=c;  }
+             char  pop( )  {  return s[--tos];  }
+         private:
+             char  s[MAXSIZE];
+              int  tos;
+         }
+</PRE>
+<P>
+說明：
+<OL>
+<LI>新的 stack.cpp 檔 (注意其副檔名已經改成為 .cpp，其發音為 C plus plus，
+即 C++ ) 含一類別 (class) 的宣告，該 class 的名稱為 CStack。
+<LI>class CStack 含有二個 private 的 data members，即 s 與 tos。
+<LI>class CStack 含有四個 member functions，即 isEmpty()、 isFull()、 push() 及 pop()。
+<LI>class CStack 含有一個 建構函數 (constructor) CStack()， 該函數 如同第 10 章中的
+initializeStack() 函數。 <BR>任意一個 class 都有一個 預設 (default) 建構函數，
+即使 不將它 標明出來， 它仍然 存在。 一個 class 可能 含有 一個 或 多個
+建構函數。 如有多個函數 其名皆相同， 則稱之為 overloaded function， 將於
+第 3 節討論。
+<LI>class CStack 含有一個 解構函數 (destructor) ~CStack()。 於 destructor 
+中 可用來 釋放 一些 動態記憶体 或處理 其他一些事。
+<BR> 任意一個 class 都有一個 預設 (default) 解構函數，
+一個 class 也可能 含有 一個 或 多個 解構函數。
+</OL>
+<P>
+將檔案 main.c 改為 main.cpp 其內容如下：
+<PRE>
+         #include  &lt;stdio.h>
+         #include  "stack.cpp"
+         main( )
+         {   CStack  stack;
+             char  c;
+             while ( ( c=getchar() ) != '\n' )
+             {   if(c=='(')  stack.push(c);
+                 eise if (c==')')
+                 {  if (stack.isEmpty())
+                    { printf("Eorror input!\n");return;}
+                    else stack.pop();
+                  }
+                 else { printf("Eorror input!\n");return;}
+             }
+             if (stack.isEmpty()) printf("Correct input!\n");
+             else printf("Eorror input!\n");
+         }
+</PRE>
+說明：<BR>           
+<OL>
+  <LI>於 main() 中我們宣告了一物件 stack 其類別為 CStack
+  <LI>class 如同一 資料型態，並不佔有 記憶體 空間。一個 class 的變數
+      不稱為 變數 而稱為 物件，該物件如同 變數 一樣占有 記憶體空間。
+  <LI>對於物件 stack ，它含有兩個 private data members
+      s 與 tos ，因其 屬性為 private 故無法直接引用 stack.s[] 及
+      stack.tos。我們必須經由該 class 的 member functions 來改變
+      這兩個變數的值。
+  <LI>於第 10 章 stack.c 的設計方式，如果我們想要有 第二個 相同的 stack
+      ，那麼非 複製一份 stack.c 檔不可，且 函數名稱 也必須更改，當然 stack.h
+      也要有 新的一份。然而 對於 class 的 設計方式 就不用了。我們可以用
+      下列方式 即可得到 兩個 屬於同一個 class 的物件 S1 與 S2<BR>
+<TT><PRE>
+         CStack S1,S2;
+</PRE></TT>
+         那麼 S1 與 S2 分別有其變數 S 與 tos。當引用 member functions
+         如
+<TT><PRE>
+         S1.push(c);   S2.push(c)
+</PRE></TT>
+         物件 S1 與 S2 彼此都不互相影響。
+  <LI>以 class 來設計程式相當容易達到 code reusability 的要求，即將
+         stack.cpp 含進一檔案即可。然而， 欲達其 彈性的使用， class 尚有 其他
+         特性 可以 加以使用，將於 接下 幾章說明。不過 一般而言， stack.cpp 檔將會分
+         成兩個檔案， 一個是 stack.h 檔，另一個是 stack.cpp。
+</OL>
+<P>
+一般而言檔案 stack.h 的內容僅含 data members 及 member functions
+的宣告，其內容 如下：
+<TT>
+<PRE>
+        #define  MAXSIZE  100
+        class  CStack
+        {   
+	    public:
+                     CStack( );
+                    ~CStack( );
+                int  isEmpty( );
+                int  isFull( );
+               void  push(char c);
+               char  pop( );
+            private:
+               char  s[MAXSIZE];
+                int  tos;
+         }
+</PRE>
+</TT>
+檔案 stack.cpp 才將 member functions 的定義 (implmentation) 加進去。不過每個
+member functions 都要加上 class specification CStack::， 該 檔案的 內容如下：
+<TT><PRE>
+         #include  "stack.h"
+         CStack::  CStack( ){  tos=0;  }
+         CStack::  ~CStack( ){ }
+
+         int   CStack::  isEmpty( ){ return tos==0; }
+         int   CStack::  isFull( ){ return tos==MAXSIZE; }
+         void  CStack::  push(char c){ s[tos++]=c; }
+         char  CStack::  pop( ){ return s[--tos]; }   
+</PRE></TT>
+<P>
+當 class 的宣告， data members s 與 tos 之前的 private 去掉，那麼
+data protection 就沒有了，其屬性變成 public， 資料的一致性也無法達成。
+此時對於物件 stack
+而言，即可直接引用 s 及 tos 如 <TT>stack.tos=1002; stack.s[1]=100;</TT>等。
+<P>
+一般而言， private 的 data members 及 member functions 都是放在 class 宣告的尾部。
+<p>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="second">
+<HR>
+<!--------------------第 11.2 節--------------------------------------->
+<P>
+  <B>第 11.2 節  new 與 delete operators  及 iostream.h 檔</B>
+<P>
+<P>
+陣列亦可以經由 動態( dynamic ) 方式取得， 於 C 程式語言 是以 malloc 函數
+呼叫方式取得  動態記憶体， 於 C++ 程式語言 是以 new 來取得  動態記憶体。
+<P>
+於 C 程式語言 是以 free 方式來釋放  動態記憶体， 於 C++ 程式語言
+是以 delete 方式來釋放 動態記憶体。
+<P>
+將上一個程式修改成下列的程式如下：
+<P>
+檔案 stack.h 的內容 如 例 1 所示。
+<P>
+<B>例 1 :</B>
+<TT><PRE>
+        #define MAXSIZE 100
+        class  CStack
+        {   
+	    public:
+                     CStack( );
+                    ~CStack( );
+                int  isEmpty( );
+                int  isFull( );
+               void  push(char c);
+               char  pop( );
+            private:
+               char  *s;
+                int  tos;
+         }
+</PRE></TT>
+<P>
+說明：
+<OL>
+<LI>class CStack 含有二個 private 的 data members， 即 s 與 tos。
+<LI>class CStack 含有四個 member functions，即 isEmpty()、 isFull()、 push() 及 pop()。
+<LI>class CStack 含有一個 constructor CStack()。 
+<LI>class CStack 含有一個 destructor ~CStack()。 於 destructor 中 可用來釋放
+一些 動態記憶体。
+</OL>
+<p>
+檔案 stack.cpp 的內容 如下：
+<P>
+<TT><PRE>
+      #include  "stack.h"
+      CStack::  CStack( ){  tos=0;  s = <B>new</B> char[MAXSIZE]; }
+      CStack::  ~CStack( ){ <B>delete</B> [] s; }
+
+      int   CStack::  isEmpty( ){ return tos==0; }
+      int   CStack::  isFull( ){ return tos==MAXSIZE; }
+      void  CStack::  push(char c){ s[tos++]=c; }
+      char  CStack::  pop( ){ return s[--tos]; }   
+</PRE></TT>
+<P>
+說明：
+<OL>
+<LI>new 的功能 如同 C 之 malloc 用來取得  動態記憶体，
+    於上例 是用以處理 陣列的取得。
+<LI>delete 的功能 如同  C 之 free 用來釋放 動態記憶体，
+    於上例 是用以釋放 陣列所佔有的記憶体。
+<LI>delete s 僅釋放 s 所指的 一個 char， 無法將整個陣列釋放，
+    欲釋放整個陣列， 則須 標示 陣列符號 []， 即 delete [] s。
+</OL>
+<P>
+檔案  main.cpp 其內容如下：
+<P>
+<TT><PRE>
+         #include  &lt;iostream.h>  // 已經將 stdio.h 換成 iostream.h
+         #include  "stack.h"
+         main( )
+         {   CStack  stack;
+             char  c;
+             while ((cin >> c)!='\n')
+             {   if(c=='(')  stack.push(c);
+                 else if (c==')')
+                 {  if (stack.isEmpty())
+                    { cout << "Error input!\n";
+                      return;
+                    }
+                    else stack.pop();
+                  }
+                 else { cout << "Error input!\n"; return;}
+             }
+             if (stack.isEmpty()) cout << "Correct input!\n";
+             else cout << "Error input!\n";
+         }
+</PRE></TT>
+<P>
+說明:<BR>           
+<OL>
+  <LI>指令 <TT>cin</TT> 為輸入指令，定義於 <TT>iostream.h</TT>，
+      <BR> 其格式為 <TT>cin >> 變數 >> 字串;</TT>
+  <LI>指令 <TT>cout</TT> 為輸出指令，定義於 <TT>iostream.h</TT>，<BR>
+      其格式為 <TT>cout << 變數 << 字串;</TT>。<BR>欲跳行，可以用
+      <TT>cout << endl;</TT> 來替代 <TT>cout <<"\n";</TT>。
+      其中 <TT>endl</TT> 表 end of line。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="third">
+<HR>
+<!--------------------第 11.3 節--------------------------------------->
+<P>
+  <B>第 11.3 節  overloaded functions</B>
+<P>
+C++ 程式語言容許同一個函數名稱有不同的用法， 事實上 C 程式語言亦有
+類似情形， 如 <TT> 2 + 3 </TT> 與 <TT> 2.0 + 3.0 </TT>， 對於加法
+運算可以 用在 集合 int x int 與 集合 float x float 上， 即 加法運算
+有超載的情形。
+<p>
+對於 C++ 程式， 我們可以明確地定義超載函數， 同一個函數名稱，
+只要函數的引數當中，個數不一， 或同名函數中相對應的引數中的資料型態不一，
+即可定義不同的函數。
+<P>
+我們以例子來說明其使用法。
+<P>
+<B>例 2 :</B> overloaded functions
+<TT><PRE>
+    int f(int a)
+    {
+        return a*a;
+    }
+
+    char f(char a)
+    {
+        return a+1;
+    }
+
+    int f(int a, int b)
+    {
+        return a*b;
+    }
+
+    main()
+    {
+        cout<< "f(2)="<< f(2)<< endl;
+        cout<< "f('a')="<< f('a')<< endl;
+        cout<< "f(2, 3)="<< f(2,3)<< endl;
+    }
+</PRE></TT>
+<P>
+說明:<BR>           
+<OL>
+  <LI>函數 <TT>f()</TT> 共有 3 種不同的定義。
+  <LI>該程式的結果為
+<TT><PRE>
+f(2)=4
+f('a')=b
+f(2, 3)=6
+</PRE></TT>
+</OL>
+<P>
+C++ 程式語言提供了函數的設計更有彈性， 即呼叫函數時， 實際的引數 個數
+可以少於 形式引數的 個數。 欲達此功能， 只要在 函數的 定義中，
+將 形式引數 加上 <TT>=</TT> 以及其起始值即可。 其使用方式以例 3 來說明。
+<P>
+<B>例 3 :</B> overloaded functions with initial values
+<TT><PRE>
+    int f(int a=1, int b=2, int c=3)
+    {
+        return a*b*c;
+    }
+    main()
+    {
+        cout<< "f()="<< f()<< endl;
+        cout<< "f(10)="<< f(10)<< endl;
+        cout<< "f(10, 5)="<< f(10, 5)<< endl;
+        cout<< "f(10, 5, 2)="<< f(10, 5, 2)<< endl;
+    }
+</PRE></TT>
+說明:<BR>           
+<OL>
+  <LI>函數呼叫 <TT>f()</TT> 不含引數， 此時 <TT>a=1, b=2, c=3</TT>。
+  <LI>函數呼叫 <TT>f(10)</TT> 僅含 1 個引數， 此時 <TT>a=10, b=2, c=3</TT>。
+  <LI>函數呼叫 <TT>f(10, 5)</TT> 僅含 2 個引數， 此時 <TT>a=10, b=5, c=3</TT>。
+  <LI>函數呼叫 <TT>f(10, 5, 2)</TT> 僅含 3 個引數， 此時 <TT>a=10, b=5, c=2</TT>。
+  <LI>該程式的結果為
+<TT><PRE>
+f()=6
+f(10)=60
+f(10, 5)=150
+f(10, 5, 2)=100
+</PRE></TT>
+</OL>
+於例 1 中 CStack 的 constructor <TT>CStack()</TT> 就可以設計的更具彈性， 如例 4 所示。
+<P>
+<B>例 4 :</B> overloaded constructor CStack()
+<TT><PRE>
+     #define MAXSIZE 100
+     class  CStack
+     {   
+        public:
+            CStack(int n = MAXSIZE);
+            ~CStack( );
+            int  isEmpty( );
+            int  isFull( );
+            void  push(char c);
+            char  pop( );
+        private:
+            char  *s;
+            int  tos;
+            int  size;
+     }
+
+     CStack::  CStack(int n = MAXSIZE)
+     {  tos=0; size = n; s = <B>new</B> char[size]; }
+     CStack::  ~CStack( ){ <B>delete</B> [] s; }
+
+     int   CStack::  isEmpty( ){ return tos==0; }
+     int   CStack::  isFull( ){ return tos==size; }
+     void  CStack::  push(char c){ s[tos++]=c; }
+     char  CStack::  pop( ){ return s[--tos]; }  
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<A href="cpgch10.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch10.htm">回第 10 章</A><BR>
+<A href="cpgch12.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch12.htm">至第 12 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+</BODY>
+</HTML>

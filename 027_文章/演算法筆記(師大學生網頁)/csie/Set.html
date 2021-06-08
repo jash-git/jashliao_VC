@@ -1,0 +1,203 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Set</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Set</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Set</p>
+<p>set是指數學名詞「集合」。在這裡我們只考慮元素為整數的集合。集合有幾點特性：</p>
+<p>一、空集合。</p>
+<p>二、集合中的元素不會重複。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Set資料結構: 使用Sequential Container</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Array</p>
+<p>要表達一個集合，可以直觀的用一條一維的int陣列：將集合裡的所有元素，依序放進陣列中。再用一個變數，紀錄元素總數。</p>
+<textarea>
+struct Set
+{
+	int array[1000];	// 可存入 1000 個元素
+	int num;			// 紀錄集合中有多少元素
+};
+
+Set set1, set2;			// 建立兩個集合
+</textarea>
+<p>如果你對C++ STL很熟，用vector就更方便了！</p>
+<textarea>
+vector<int> set1(1000);
+vector<int> set2(1000);
+</textarea>
+<p>然而，以這種資料結構，做聯集、交集、差集之類的運算，則會相當麻煩，也會比較慢。各位可以自己試試看！</p>
+<p class="e">UVa 496</p>
+<p class="t">Linked List</p>
+<p>原理就和Array完全一樣。Array是一個一個數字連著放，Linked List則是一個一個數字連成串。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Set資料結構: 使用Associative Container</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Array</p>
+<p>另外一種表達集合的方法，是用一條一維的bool陣列：集合裡若有x這個元素，就讓array[x]這個位置為true，反之則為false。其概念類似於數學領域提到的Index Set。</p>
+<p>它的壞處就是數值有界限、受陣列大小影響。但是，以這種資料結構，做聯集、交集、差集之類的運算，則會比較快，時間複雜度為O(元素總個數)。</p>
+<textarea>
+bool set[1000];	// 一個集合，元素的數值範圍為 0 到 999
+
+// 加入元素
+void add_element(bool a[1000], int element)
+{
+	a[element] = true;
+}
+
+// 除去元素
+void delete_element(bool a[1000], int element)
+{
+	a[element] = false;
+}
+
+// 聯集
+void union(bool a[1000], bool b[1000], bool c[1000])
+{
+	for (int i=0;i<1000;i++) c[i] = a[i] || b[i];
+}
+
+// 交集
+void intersection(bool a[1000], bool b[1000], bool c[1000])
+{
+	for (int i=0;i<1000;i++) c[i] = a[i] && b[i];
+}
+
+// 差集
+void difference(bool a[1000], bool b[1000], bool c[1000])
+{
+	for (int i=0;i<1000;i++) c[i] = a[i] && !b[i];
+}
+
+// 補集
+void complement(bool a[1000], bool b[1000])
+{
+	for (int i=0;i<1000;i++) b[i] = !a[i];
+}
+
+// 判斷是否為空集合
+bool empty(bool a[1000])
+{
+	for (int i=0;i<1000;i++)
+		if (a[i])
+			return false;
+	return true;
+}
+
+// 判斷是否沒有交集
+bool disjoint(bool a[1000], bool b[1000])
+{
+	for (int i=0;i<1000;i++)
+		if (a[i] && b[i])
+			return false;
+	return true;
+}
+
+// 判斷a有沒有包含b
+bool contain(bool a[1000], bool b[1000])
+{
+	for (int i=0;i<1000;i++)
+		if (!a[i] && b[i])
+			return false;
+	return true;
+}
+</textarea>
+<p class="e">UVa 608 665 10227</p>
+<p class="t">Binary Search Tree</p>
+<p>只要是可以儲存大量數字的資料結構，都可以用來儲存一個集合。因此二元搜尋樹當然也能勝任這項任務！</p>
+<p>可以直接使用STL的set，不過它沒有聯集、交集、差集等功能，必須自己另外設計程式碼。也許你內心有點芥蒂；沒錯，STL的set，的確是名不符實的set。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Set資料結構: Bit Array</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Bit Array（Bitset）</p>
+<p>還有一種方法，是用bit來代替bool變數。在電腦當中，一個bit只有0和1兩種值，類似於bool變數，兩者都可以用來表示一個集合元素存不存在。利用bit們來表達集合，可以節省儲存空間，也可以節省運算時間。</p>
+<p>一個int變數所使用的記憶體大小為32bit，可以當作是32個數字的集合。需要更多bit的話，就開一條陣列吧！</p>
+<textarea>
+typedef int Bitset[100];	// 一個集合，元素的數值範圍為 0 到 3199
+
+// 求出element所在的陣列格子，即是element除以32的商數
+int get_pos(int element)
+{
+	return element >> 5;
+}
+
+// 求出element在陣列格子當中是第幾個bit，即是element除以32的餘數
+// 然後讓一個bit位移至適當位置，以利計算
+int get_bit(int element)
+{
+	return 1 << (element & 31);
+}
+
+// 加入元素
+void add_element(Bitset a, int element)
+{
+	a[get_pos(element)] |= get_bit(element);
+}
+
+// 除去元素
+void delete_element(Bitset a, int element)
+{
+	a[get_pos(element)] &= ~get_bit(element);
+}
+
+// 聯集
+void union(Bitset a, Bitset b, Bitset c)
+{
+	for (int i=0;i<100;i++) c[i] = a[i] | b[i];
+}
+
+// 交集
+void intersection(Bitset a, Bitset b, Bitset c)
+{
+	for (int i=0;i<100;i++) c[i] = a[i] & b[i];
+}
+
+// 差集
+void difference(Bitset a, Bitset b, Bitset c)
+{
+	for (int i=0;i<100;i++) c[i] = a[i] & ~b[i];
+}
+
+// 補集
+void complement(Bitset a, Bitset b)
+{
+	for (int i=0;i<100;i++) b[i] = !a[i];
+}
+
+// 判斷是否為空集合
+bool empty(Bitset a)
+{
+	for (int i=0;i<100;i++)
+		if (a[i])
+			return false;
+	return true;
+}
+
+// 判斷是否沒有交集
+bool disjoint(Bitset a, Bitset b)
+{
+	for (int i=0;i<100;i++)
+		if (a[i] & b[i])
+			return false;
+	return true;
+}
+
+// 判斷a有沒有包含b
+bool contain(Bitset a, Bitset b)
+{
+	for (int i=0;i<100;i++)
+		if (~a[i] & b[i])
+			return false;
+	return true;
+}
+</textarea>
+<p>可以直接使用STL的bitset。</p>
+<p class="e">UVa 11218</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

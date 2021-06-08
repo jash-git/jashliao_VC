@@ -1,0 +1,191 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Code</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Code</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Code</p>
+<p>原本的資訊，以特別的代號來表示，這些代號即稱做「碼」、「代碼」、「編碼」。</p>
+<pre>
+99，3qㄋ姑力i讀豬，偶會+ Uㄉ！
+口以ㄇ？ㄅ口以！
+</pre>
+<p>碼的用途是把原本的資訊替換成代號，用代號來表示原本的資訊。只要知道每種代號的意義，就能以代號來獲知原本的資訊。</p>
+<p class="t">Binary Code</p>
+<p>電腦進行儲存和運算，都是使用二進位體制。想讓電腦儲存和運算資料，必須先將資料轉換成二進位字串；換句話說，就是以二進位字串來代表資料。這些二進位字串就是碼。二進位字串所構成的碼，可直接稱作「二元碼」、「二進位碼」。</p>
+<p>在電腦中，要將英文轉換成二元碼，是參照「美國資訊交換標準碼ASCII, American Standard Code for Information Interchange」所列出的二元碼。ASCII的設計理念是：拆散英文文字，成為單獨的字母、句逗、特殊符號，讓各種不同的字符都有其固定的二元碼。</p>
+<pre>
+例如英文字母a會變成二元碼01100001，符號=會變成二元碼00111101。
+</pre>
+<p>在電腦中，要將繁體中文轉換成二元碼，主要是採用目前比較流行的「萬國碼Unicode」，以及逐漸落寞的「大五碼Big5」。讀者若有興趣，可以自行查一查這些東西的歷史、原理。</p>
+<p class="t">Symbol</p>
+<p>文字轉換成碼的基本單位、基本元素，叫做「符號」。</p>
+<pre>
+a是符號，對應的碼是01100001。
+=是符號，對應的碼是00111101。
+</pre>
+<p>也可以將數個連續字母、句逗、特殊符號合併在一起，看做一個符號，設定對應的碼。</p>
+<pre>
+99，3qㄋ姑力i讀豬，偶會+ Uㄉ！
+
+舅舅是符號，對應的碼是99。
+，是符號，對應的碼是，。
+thank you是符號，對應的碼是3q。
+你是符號，對應的碼是ㄋ。
+⋮
+！是符號，對應的碼是！。
+</pre>
+<p class="t">Code Table</p>
+<p>符號與碼的對照表。例如ASCII Table就是一個「碼表」。</p>
+<pre>
+symbol    | code   99，3qㄋ姑力i讀豬，偶會+ Uㄉ！
+----------| ----
+舅舅      | 99     舅舅是符號，對應的碼是99。
+，        | ，     ，是符號，對應的碼是，。
+thank you | 3q     thank you是符號，對應的碼是3q。
+你        | ㄋ     你是符號，對應的碼是ㄋ。
+⋮           ⋮
+！        | ！     ！是符號，對應的碼是！。
+</pre>
+<p class="t">Encode / Decode</p>
+<p>「編碼」是「符號轉碼」。「解碼」是「碼轉符號」。編碼與解碼都需要對照碼表。</p>
+<pre>
+碼表是ASCII Table。
+編碼 「cat」---> 「011000110110000101110100」
+解碼 「011000110110000101110100」---> 「cat」
+</pre>
+<p>編碼與解碼的方式有許多種。其中一種最簡潔的方式，是從左到右依序掃描：</p>
+<p>編碼時，從文字左端開始往右掃描，每發現一段文字有其對應的碼，就馬上換成碼，然後繼續掃描下去，讓碼越接越長。</p>
+<pre>
+碼表是ASCII Table。
+要編譯英文單字cat，
+首先掃到c，把c換成01100011，
+然後掃到a，把a換成01100001，並接在剛才的碼之後形成0110001101100001，
+接著掃到t，……，
+最後英文單字cat會變成二進位碼011000110110000101110100。
+</pre>
+<p>解碼時，從最左邊的位元開始往右掃描，每發現目前掃描出的碼是某段文字對應到的碼，就馬上換成文字，然後繼續掃描下去，讓文字越接越長。</p>
+<pre>
+碼表是ASCII Table。
+要解讀011000110110000101110100，首先掃到0，然後掃到1，接著掃到1，……，
+當掃到第八個位元時，便發現01100011是字母c的碼，就馬上將這段碼換成c，
+然後持續掃瞄下去，最後就得到cat。
+</pre>
+<p class="e">UVa 444</p>
+<p class="t">Fixed-length Code / Variable-length Code</p>
+<p>設計碼，有「固定長度編碼」與「可變長度編碼」兩種策略。</p>
+<p>「固定長度編碼」令每個符號的碼都一樣長。比如ASCII。</p>
+<p>二進位體制當中，N個不同符號，最少需要⌈log<sub>2</sub>N⌉個位元，才能讓每個符號擁有獨一無二的碼，讓解碼不生歧義。</p>
+<pre>
+假設符號是26個大寫英文字母。
+26個，不超過2<sup>5</sup>個，因此最少要5個位元。
+碼表可以設計如下：
+A  00001
+B  00010
+C  00011
+D  00100
+⋮    ⋮
+Z  11010
+</pre>
+<p>「可變長度編碼」令各個符號的碼不等長。</p>
+<pre>
+假設符號是26個大寫英文字母。
+碼表可以設計如下：
+A  000
+B  001
+C  0100
+D  0101
+⋮    ⋮
+Z  11111
+</pre>
+<p>「固定長度編碼」與「可變長度編碼」兩者可以合併使用。比如UTF-8，碼的前段是可變長度編碼，後段是固定長度編碼。</p>
+<p class="t">一個碼千萬不能是另一個碼的前綴</p>
+<p>當從左往右依序解碼，一個碼若是另一個碼的開頭，解碼就會產生歧義。</p>
+<pre>
+碼表
+X  011
+Y  0111
+Z  00111
+
+當要解讀011111...這段碼時，
+從左往右依序解讀，讀到第三個位元，
+得到011、也就是X，
+但是其實也可能是0111、也可能是Y。
+</pre>
+<p>「固定長度編碼」長度都相同，比較沒有這個問題，除非碼一樣；「可變長度編碼」就要特別注意這個問題。</p>
+<p class="t">Coding</p>
+<p>中文也譯作「編碼」。Coding是指設計一組適當的碼，讓資訊有效率的轉換成碼，讓碼有效的表達資訊。</p>
+<p>Coding務求資訊和碼能一一對應，讓編碼與解碼不生歧義。火星文就是一種很不好的Coding方式。</p>
+<p>所謂「寫程式」就是將電腦的「工作資訊」編成「程式碼」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">ASCII</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">American Standard Code for Information Interchange</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/ASCII  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/ASCII'" tppabs="http://en.wikipedia.org/wiki/ASCII">http://en.wikipedia.org/wiki/ASCII</a></p>
+<p>ASCII一共有128種字元，編號從0號到127號。每個字元對應的二元碼，換成數值剛好就是0到127的整數。</p>
+<p>大部分的字元，在鍵盤上面都有對應的按鍵，例如qwe123`-=等等。有一部分的字元，則沒有對應的按鍵，必須預先按住shift或者ctrl之後才能輸入。</p>
+<p>128種字元當中，其中有一部分電腦無法顯示，通常做為特殊用途。例如編號0號的字元，在C程式語言當中用來當作字串的結尾符號。</p>
+<p>可以發現這128種字元，都是英文字母、標點符號、數字、四則運算符號等等，卻沒有注音符號、中文字、微積分符號、可愛小圖示之類的。這是因為當初設計ASCII的人，從未想過電腦會普及遍佈全世界，所以只設計了一些簡易的符號。</p>
+<p class="t">1 byte</p>
+<p>早期的中央處理器，一次可以接受8 bit = 1 byte，因此我們就固定採用8 bit = 1 byte來儲存一個ASCII字元，每個ASCII字元對應的二元碼長度都是8。</p>
+<p>程式語言的char變數，記憶體大小正好就是1 byte。</p>
+<p>8 bit = 1 byte，一共有2^8 = 256種數字，照理來說可以對應256種字元。不過ASCII只有128種字元，所以剩下的128種，就有人拿來自由運用。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Unicode（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Unicode</p>
+<p>替世界上的每一個文字，設定獨一無二的二元碼。</p>
+<pre>
+前128個編號，與ASCII完全相同。
+再來到前65536 = 2byte個編號，是世界各國常見文字。
+再來到前4294967296 = 4byte個編號，是世界各國罕見文字。
+</pre>
+<pre>
+編號使用十六進位表示法，開頭加上U+，就能表示一個Unicode字元。
+U+0041  <-> A
+U+FF21  <-> Ａ
+U+FF1F  <-> ？
+U+00E6  <-> æ
+U+597D  <-> 好
+U+3042  <-> あ
+U+2260  <-> ≠
+U+32A3  <-> ㊣
+U+262F  <-> ☯
+U+2019F <-> 𠆟
+字型裡面沒有包含的字元，就會顯示成一個框框，裡面寫出編號。
+</pre>
+<p>想要在HTML裡面呈現輸入法打不出來的字元，有兩種方法：一種是從別的地方複製貼上，另一種是查到字元的編號，把U+改成&#x。</p>
+<p><a href="javascript:if(confirm('http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html'" tppabs="http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html">http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html</a></p>
+<p><a href="javascript:if(confirm('http://home.educities.edu.tw/wanker742126/asm/ap10.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://home.educities.edu.tw/wanker742126/asm/ap10.html'" tppabs="http://home.educities.edu.tw/wanker742126/asm/ap10.html">http://home.educities.edu.tw/wanker742126/asm/ap10.html</a></p>
+<p class="t">UTF-8與UTF-16</p>
+<p>網頁、email等等使用UTF-8，文字檔案使用UTF-16。</p>
+<p>http://www.cplusplus.com/reference/codecvt/</p>
+<p>UTF-8：<a href="javascript:if(confirm('http://tools.ietf.org/html/rfc3629  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://tools.ietf.org/html/rfc3629#page-4'" tppabs="http://tools.ietf.org/html/rfc3629#page-4">http://tools.ietf.org/html/rfc3629#page-4</a></p>
+<p>UTF-16：<a href="javascript:if(confirm('http://tools.ietf.org/html/rfc2781  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://tools.ietf.org/html/rfc2781#section-2'" tppabs="http://tools.ietf.org/html/rfc2781#section-2">http://tools.ietf.org/html/rfc2781#section-2</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Barcode</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">條碼</p>
+<p><a href="javascript:if(confirm('http://www.appsbarcode.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.appsbarcode.com/'" tppabs="http://www.appsbarcode.com/">http://www.appsbarcode.com/</a></p>
+<p class="t">Code39</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Code_39  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Code_39'" tppabs="http://en.wikipedia.org/wiki/Code_39">http://en.wikipedia.org/wiki/Code_39</a></p>
+<p class="t">ISBN</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/ISBN  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/ISBN'" tppabs="http://en.wikipedia.org/wiki/ISBN">http://en.wikipedia.org/wiki/ISBN</a></p>
+<p class="t">QR Code</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/QR_code  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/QR_code'" tppabs="http://en.wikipedia.org/wiki/QR_code">http://en.wikipedia.org/wiki/QR_code</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Morse code</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Morse code</p>
+<p><a href="javascript:if(confirm('https://en.wikipedia.org/wiki/Morse_code  \n\nThis file was not retrieved by Teleport Pro, because it is addressed using an unsupported protocol (e.g., gopher).  \n\nDo you want to open it from the server?'))window.location='https://en.wikipedia.org/wiki/Morse_code'" tppabs="https://en.wikipedia.org/wiki/Morse_code">https://en.wikipedia.org/wiki/Morse_code</a></p>
+<p class="t">International Code of Signals</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/International_Code_of_Signals  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/International_Code_of_Signals'" tppabs="http://en.wikipedia.org/wiki/International_Code_of_Signals">http://en.wikipedia.org/wiki/International_Code_of_Signals</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

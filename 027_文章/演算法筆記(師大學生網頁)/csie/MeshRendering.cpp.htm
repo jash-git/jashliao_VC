@@ -1,0 +1,296 @@
+<html>#include "glut.h"
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+struct Point {float x, y, z;};
+Point operator+(Point p1, Point p2) {return (Point){p1.x + p2.x, p1.y + p2.y, p1.z + p2.z};}
+Point operator-(Point p1, Point p2) {return (Point){p1.x - p2.x, p1.y - p2.y, p1.z - p2.z};}
+Point operator*(Point p, float s) {return (Point){p.x * s, p.y * s, p.z * s};}
+Point operator/(Point p, float s) {return (Point){p.x / s, p.y / s, p.z / s};}
+bool operator==(Point p1, Point p2) {return p1.x == p2.x && p1.y == p2.y && p1.z == p2.z;}
+istream& operator>>(istream& in, Point& p) {return in >> p.x >> p.y >> p.z;}
+ostream& operator<<(ostream& out, Point& p) {return out << '(' << p.x  << ',' << p.y << ',' << p.z << ')';}
+Point max(Point p1, Point p2) {return (Point){max(p1.x, p2.x), max(p1.y, p2.y), max(p1.z, p2.z)};}
+Point min(Point p1, Point p2) {return (Point){min(p1.x, p2.x), min(p1.y, p2.y), min(p1.z, p2.z)};}
+float dot(Point p1, Point p2) {return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;}
+//float length(Point p1) {return sqrt(dot(p1, p1));}
+Point cross(Point a, Point b) {return (Point){a.y * b.z - b.y * a.z, a.z * b.x - b.z * a.x, a.x * b.y - b.x * a.y};}
+float crossvalue(Point& a, Point& b) {return a.y * b.z - b.y * a.z + a.z * b.x - b.z * a.x + a.x * b.y - b.x * a.y;}
+float InvSqrt(float x) {float xhalf = 0.5f * x; int i = *(int*)&x; i = 0x5f3759df - (i >> 1); x = *(float*)&i; x = x * (1.5f - xhalf * x * x); return x;}
+Point normalize(Point a) {return a * InvSqrt(dot(a, a));}
+
+struct Matrix {float a[3][3];};
+Matrix operator*(Matrix m1, Matrix m2) {
+	Matrix m = {{{0,0,0},{0,0,0},{0,0,0}}};
+	for (int i=0; i<3; ++i)
+		for (int j=0; j<3; ++j)
+			for (int k=0; k<3; ++k)
+				m.a[i][j] += m1.a[i][k] * m2.a[k][j];
+	return m;
+}
+Point operator*(Matrix m, Point p) {
+	return (Point){
+		m.a[0][0] * p.x + m.a[0][1] * p.y + m.a[0][2] * p.z,
+		m.a[1][0] * p.x + m.a[1][1] * p.y + m.a[1][2] * p.z,
+		m.a[2][0] * p.x + m.a[2][1] * p.y + m.a[2][2] * p.z
+	};
+}
+
+	struct Triangle {Point foreColor, backColor, vertex[3], vnormal[3], normal;};
+	vector<Triangle> triangleList;
+
+bool LoadFile(const char fileName[]) {
+	ifstream fin(fileName);
+	if (!fin) return false;
+
+	string s;
+	while (fin >> s) {
+		Triangle t;
+		fin >> t.foreColor >> t.backColor;
+		for (int i = 0; i < 3; ++i) fin >> t.vertex[i] >> t.vnormal[i];
+
+		t.foreColor = t.foreColor / 256;
+		t.backColor = t.backColor / 256;
+		for (int i = 0; i < 3; ++i) t.vnormal[i] = normalize(t.vnormal[i]);
+		t.normal = cross(t.vertex[1] - t.vertex[0], t.vertex[2] - t.vertex[0]);
+		t.normal = normalize(t.normal);
+
+		if (fin) triangleList.push_back(t);
+	}
+	return true;
+}
+
+Point Center() {
+	Point a = {1e9, 1e9, 1e9}, b = {-1e9, -1e9, -1e9};
+	for (int i=0; i<(int)triangleList.size(); ++i)
+		for (int j=0; j<3; ++j) {
+			a = min(a, triangleList[i].vertex[j]);
+			b = max(b, triangleList[i].vertex[j]);
+		}
+	return (a + b) / 2;
+}
+
+Point Interpolate(Triangle& t, Point p) {
+	Point v0 = t.vertex[0] - p;
+	Point v1 = t.vertex[1] - p;
+	Point v2 = t.vertex[2] - p;
+	float c2 = crossvalue(v0, v1);
+	float c0 = crossvalue(v1, v2);
+	float c1 = crossvalue(v2, v0);
+	float c = c0 + c1 + c2;
+	return (Point){c0, c1, c2} / c;
+}
+
+	const int X = 400, Y = 300;
+	const Point screen = {X, Y, 0};
+
+struct Camera {
+	float radius, depth;
+	Point center, eye, angle, dirx, diry, dirz, light;
+
+	void init() {
+		radius = 1000; depth = 300;
+		angle = (Point){0,0,0};
+		center = Center();
+		rotate();
+	}
+
+	void rotate() {
+		float c, s;
+		c = cos(angle.x); s = sin(angle.x); Matrix rx = {{{1,0,0},{0,c,s},{0,-s,c}}};
+		c = cos(angle.y); s = sin(angle.y); Matrix ry = {{{c,0,-s},{0,1,0},{s,0,c}}};
+		c = cos(angle.z); s = sin(angle.z); Matrix rz = {{{c,s,0},{-s,c,0},{0,0,1}}};
+		Matrix r = rx * ry * rz;
+		dirx = r * (Point){1,0,0};
+		diry = r * (Point){0,0,1};
+		dirz = r * (Point){0,1,0};
+		light = r * (Point){1,0,0};
+		eye = center - (dirz * radius);
+	}
+
+	Point project(Point& p) {
+		Point v = p - eye;
+		Point d = {dot(v, dirx), dot(v, diry), dot(v, dirz)};
+		return d.z == 0 ? d : d / fabs(d.z) * depth + (screen / 2);
+	}
+	
+	float zvalue(int x, int y, Triangle& t) {
+		Point v = (dirx * (x - X/2)) + (diry * (y - Y/2)) + (dirz * depth);
+		float dv = dot(v, t.normal);
+		float dt = dot(t.vertex[0] - eye, t.normal);
+		return dv == 0 ? +1e9 : dt / dv;
+	}
+
+	bool toward(Triangle& t) {
+		return dot(t.vertex[0] - eye, t.normal) < 0;
+	}
+
+	float shade(Triangle& t, Point normal, Point view) {
+		float ambient  = 1.0;
+		float diffuse  = fabs(dot(normal, light));
+		float specular = pow(fabs(dot(view, light)), 5.0);
+		if (dot(view, t.normal) * dot(light, t.normal) < 0)
+			diffuse = specular = 0;
+		return (ambient * 0.7) + (diffuse * 0.4) + (specular * 0.4);
+	}
+
+	Point color(int x, int y, Triangle& t, float zvalue) {
+		Point v = (dirx * (x - X/2)) + (diry * (y - Y/2)) + (dirz * depth);
+		Point w = Interpolate(t, eye + (v * zvalue));
+		Point n = (t.vnormal[0] * w.x) + (t.vnormal[1] * w.y) + (t.vnormal[2] * w.z);
+		Point c = (dot(v, t.normal) < 0) ? t.foreColor : t.backColor;
+		return c * shade(t, n, normalize(v));
+	}
+} camera;
+
+	float zvalue[X][Y];
+	Triangle* triangle[X][Y];
+	float ymin[X], ymax[X];
+
+void FillEdge(Point& p1, Point& p2) {
+	int xmini = max(0,   (int)ceil (min(p1.x, p2.x)));
+	int xmaxi = min(X-1, (int)floor(max(p1.x, p2.x)));
+	for (int x = xmini; x <= xmaxi; ++x) {
+		float y = (p2.x == p1.x ? p1.y : (p2.y - p1.y) / (p2.x - p1.x) * (x - p1.x) + p1.y);
+		ymin[x] = min(ymin[x], y);
+		ymax[x] = max(ymax[x], y);
+	}
+}
+
+void FillTriangle(Triangle& t) {
+	static Point p[3];
+	float xmin = +1e9, xmax = -1e9;
+	for (int i=0; i<3; ++i) {
+		p[i] = camera.project(t.vertex[i]);
+		xmin = min(xmin, p[i].x);
+		xmax = max(xmax, p[i].x);
+	}
+
+	int xmini = max(0,   (int)ceil (xmin));
+	int xmaxi = min(X-1, (int)floor(xmax));
+	for (int x = xmini; x <= xmaxi; ++x) {
+		ymin[x] = +1e9;
+		ymax[x] = -1e9;
+	}
+
+	for (int i=0; i<3; ++i)
+		FillEdge(p[i], p[(i+1)%3]);
+
+	for (int x = xmini; x <= xmaxi; ++x) {
+		int ymini = max(0,   (int)ceil (ymin[x]));
+		int ymaxi = min(Y-1, (int)floor(ymax[x]));
+		for (int y = ymini; y <= ymaxi; ++y) {
+			float z = camera.zvalue(x, y, t);
+			if (z > 1.0 && z < zvalue[x][y]) {
+				zvalue[x][y] = z;
+				triangle[x][y] = &t;
+			}
+		}
+	}
+}
+
+/******************/
+/*	MAIN PROGRAM  */
+/******************/
+/*
+void display() {
+	glClear(GL_COLOR_BUFFER_BIT);
+	for (int i=0; i<(int)triangleList.size(); ++i) {
+		Triangle& t = triangleList[i];
+		Point p0 = camera.project(t.vertex[0]);
+		Point p1 = camera.project(t.vertex[1]);
+		Point p2 = camera.project(t.vertex[2]);
+
+		glColor3f(t.foreColor.x, t.foreColor.y, t.foreColor.z);
+		glBegin(GL_TRIANGLES);
+		glVertex2f(p0.x, p0.y);
+		glVertex2f(p1.x, p1.y);
+		glVertex2f(p2.x, p2.y);
+		glEnd();
+	}
+	glutSwapBuffers();
+}
+*/
+void display() {
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	for (int x = 0; x < X; ++x)
+	    for (int y = 0; y < Y; ++y)
+	        zvalue[x][y] = +1e9;
+
+	for (int i=0; i<(int)triangleList.size(); ++i)
+//		if (camera.toward(triangleList[i]))
+			FillTriangle(triangleList[i]);
+
+	for (int x = 0; x < X; ++x)
+	    for (int y = 0; y < Y; ++y) {
+			if (zvalue[x][y] == +1e9) continue;
+			Point c = camera.color(x, y, *triangle[x][y], zvalue[x][y]);
+			glColor3f(c.x, c.y, c.z);
+			glBegin(GL_POINTS);
+			glVertex2f(x, y);
+			glEnd();
+		}
+
+	glutSwapBuffers();
+}
+
+void reshape(int w, int h) {
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, w, 0, h);
+}
+
+void keyboard(unsigned char key, int x, int y) {
+	if		(key == 'w') camera.radius -= 50;
+	else if (key == 's') camera.radius += 50;
+	else if (key == 'a') camera.angle.z += .05;
+	else if (key == 'd') camera.angle.z -= .05;
+	camera.rotate();
+	glutPostRedisplay();
+}
+
+int press_x, press_y;
+Point press_angle;
+void mouse(int button, int state, int x, int y) {
+	if (state == GLUT_DOWN) {
+		press_x = x; press_y = y;
+		press_angle = camera.angle;
+	}
+}
+
+void motion(int x, int y) {
+	camera.angle = press_angle + (Point){y - press_y, 0, x - press_x} / 40;
+	camera.rotate();
+	glutPostRedisplay();
+}
+
+int main(int argc, char **argv) {
+	const char fileName[] = "csie.tri";
+	bool load = LoadFile(fileName);
+	if (!load) cout << "Cannot open: " << fileName << endl;
+
+	camera.init();
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(400, 300);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Computer Graphics");
+
+	glClearColor(0., 0., 0., 0.);
+	glShadeModel(GL_SMOOTH);
+
+	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
+	glutKeyboardFunc(keyboard);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	glutMainLoop();
+	return 0;
+}

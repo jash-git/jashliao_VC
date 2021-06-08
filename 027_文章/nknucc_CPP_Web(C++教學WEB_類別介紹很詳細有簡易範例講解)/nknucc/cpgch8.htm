@@ -1,0 +1,311 @@
+<!--- file: cpgchpt8.htm
+      symbols: ，、。．‧；：？！·
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 8 章  C 前置處理</TITLE>
+  </HEAD>
+<BODY>
+
+<CENTER><B>第 8 章  C 前置處理</B></CENTER>
+<P>
+在本章中 將 介紹 C 程式 中 #define 及 #include 等的使用，
+與 C 編譯器之間的關係。<P>
+對於一個 C 程式 編譯之前， C 編譯器 會先處理 C 程式 中含有
+#define、#undef、#if、#ifdef、#ifndef、#endif、#elif、#else
+及 #include 敘述， 將之置換成一新 C 程式， 再將之編譯 
+成一 assembly 程式， 再轉成 machine code(或 object code)。
+再經由 linker 變成一執行檔。<P>
+本章主要重點 即在討論 C 編譯器 前置處理 的部份 #define 及
+#include 等的使用。
+<P>
+  於 第 8.1 節 將介紹 #define 巨集 ( macro ) 的宣告與使用，
+  於 第 8.2 節 將介紹 #include 的使用，
+  於 第 8.3 節 將介紹 #if、#ifdef 等的使用。<BR>
+<!---  於 第 8.4 節 將談到 C portability 的問題。--->
+<P>
+<A NAME="start">
+
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 8.1 節 <A href="#first">#define 巨集的宣告與使用</A>
+    <UL>
+      <LI>第 8.1.1 節 <A href="#first1"> 常數辨識個體的宣告</A>
+      <LI>第 8.1.2 節 <A href="#first2"> 含引數型的巨集指令</A>
+    </UL>
+  <LI>第 8.2 節 <A href="#second">#include 的使用</A>
+  <LI>第 8.3 節 <A href="#third">#if、#ifdef 等的使用</A>
+</UL>
+<P>
+<A href="cpgch7.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch7.htm">回第 7 章</A><BR>
+<A href="cpgch9.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch9.htm">至第 9 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<HR>
+<!--------------------第 8.1 節--------------------------------------->
+<A NAME="first">
+<P>
+  <B>第 8.1 節  #define 巨集的宣告與使用</B>
+<P>
+巨集指令 #define 宣告的格式如下<BR>
+<BLOCKQUOTE>
+#define macroname string
+</BLOCKQUOTE>
+其說明如下:
+<UL>
+<LI>macroname 為一連串的字元(不含空白字元) 或是類似函數的標題，如
+    macroname(arg1, arg2) 含有左括號及右括號。
+<LI>編譯器於前置處理時會將程式中出現 macroname 以 string 來替代。
+<LI>巨集指令基本上是以一行為單位。因此替代字串是從 macroname
+後第一個非空白字元起至該行結束。
+<LI>如果巨集指令超過一行，則以反斜線 \ 表示下一行繼續下去。
+</UL>   
+<P>
+巨集指令的使用(或呼叫)，如同函數的呼叫，將 macroname 置於程式中，
+為一辨識個體(identifier)即可。對於含引數型的巨集指令(將於 8.1.2 節談到
+引數型的巨集指令)，其呼叫方式與函數的呼叫型式完全一樣。
+<P>
+巨集指令的使用範圍為有宣告處起至檔案的結束，一般而言，巨集指令
+都是宣告於檔案的開端，或是宣告於檔頭，即檔案其副檔名為 .h 再以 #include
+的方式加入。
+<P>
+例 1： 設有一 C 程式檔 file.c 其內容為：
+<PRE>
+        #define MAXSIZE 100
+        main( )
+        {   int A[MAXSIZE];   }
+</PRE>
+       
+       於編譯時經過前置處理後，該程式變成
+
+<PRE>
+        main( )      
+        {   int A[100];   }
+</PRE>
+
+      其中所有的 #define 指令都不見了，MAXSIZE 也都變成了 100。當然前
+      置處理後的結果我們也見不到。    
+<p>
+<A NAME="first1">
+<B>第 8.1.1 節  常數辨識個體的宣告</B>
+<P>
+為了程式易讀易維修，程式中的常數通常都是以巨集方式來宣告一常數
+名稱，該名稱通常是以大寫的字串來表示。
+本節將重複介紹 <A href="cpgch2.htm#second5" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch2.htm#second5">第 2.2.5 節</A> 所提到的 符號常數。
+<P>
+例 2： 設有一 C 程式其內容如下：
+
+<PRE>
+      #define MAXSIZE 100
+           :
+           :
+      main( )
+      {   int A[MAXSIZE]; .....;}
+      void f( )
+      { ......
+          for (i=0;i < MAXSIZE; i++)
+          .........
+       }
+</PRE>
+<P>
+說明：
+<OL>
+<LI>由辨識體 MAXSIZE 本身即可明白該文的意義。
+<LI>如果陣列的大小要改為 200，只要改巨集指令為 #define MAXSIZE 200 即可，
+整個程式仍保持其一致性。
+</OL>
+
+<P>
+一些常用的常數如 EOF, NULL 都是宣告於 stdio.h 檔中，要使用這些常數，於檔案
+中必須加上 #include <stdio.h> 指令。前置處理指令 #include 將於 8.2 節中討論
+<P>
+
+<A NAME="first2">
+<B>第 8.1.2 節  含引數型的巨集指令</B>
+<P>
+含引數型的巨集指令，其宣告格式為<BR>
+<BLOCKQUOTE>
+#define macroname(arg1[,arg])  string1 arg1
+</BLOCKQUOTE>
+<P>
+其說明如下：
+<UL>
+<LI>macroname 為該巨集指令的名稱
+<LI>arg1 為其引數
+<LI>string1 arg1 為其替代字串
+</UL>
+其呼叫方式如同函數呼叫方式一樣。
+<P>
+例 3：對於巨集指令的宣告
+
+<PRE>
+     #define set_nonnegative(A);  if (A<0)\
+                                     A=A*(-1);
+</PRE>
+
+     則於程式中
+
+<PRE>
+        set_nonnegative(i);
+</PRE>
+     經過前置處理後即變成
+
+<PRE>
+        if(i<0)
+         i=i*(-1);
+</PRE>
+     其中形式引數 A 皆由實際引數 i 來替代。
+<P>
+        
+例 4：對於巨集指令的宣告
+
+<PRE>
+     #define  swap_int(A,B);  {int t;\
+                                  t=A;A=B;B=t;}
+</PRE>
+     於程式中巨集呼叫
+<PRE>
+      swap_int(i,j);
+</PRE>
+     經過前置處理後即變成
+<PRE>
+      {int t; t=i; i=j; j=t;}
+</PRE>
+<P>   
+含引數的巨集指令，稍一不慎就會產生錯誤，如例 4 中 swap_int(s,t); 則會產生問題，
+為什麼？
+<P>
+巨集指令的宣告亦有階層式，即可利用前面宣告過的巨集指令，如例 5。
+<P>
+例 5：階層式巨集指令
+<PRE>
+           #define max(A,B)  ((A>B)?A:B)
+           #define max3(A,B,C)  max( max(A,B),c)
+</PRE>
+<P>
+問題：試比較 macro 與 function 的優劣點。<BR>
+C++ 的 inline 作用如同 macro 的作用。
+<p>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 8.2 節--------------------------------------->
+<A NAME="second">
+      <B>第 8.2 節  #include 的使用</B>
+<P>
+C 程式的設計，不僅可以用模組化的方式，以函數來表現，亦可將程式碼
+依其不同的目的與功能，呈現在不同的檔案中。為了程式碼的一致性，如
+常數，巨集指令，全域(global)變數的宣告(含 extern，將於第九章說明)一
+些函數的宣告（僅列出函數的標題 heading）等，都放在一檔頭檔 .h，
+當然不見的是要以 .h 當作副檔名，不過，一般都是以 .h 來當作
+include 檔的副檔名，
+再以指令 #include 方式將該檔  加入即可。指令 #include 的宣告方式如下
+<BLOCKQUOTE>
+#include &lt;filename>
+</BLOCKQUOTE>
+或
+<BLOCKQUOTE>
+#include "filename"
+</BLOCKQUOTE>
+<P>
+經過編譯器前置處理後，含指令 #include 這行則由該檔 filename 來代替，
+如果 filename 是由 <，> 所含，則編譯器會到 include 目錄下去找該檔或至
+預先所定的目錄去找。
+<P>
+
+例 6： 假設檔案 file1.h 的內容如下：
+<PRE>
+      #define MAXSIZE 100
+      extern int size；
+      int f(int x);
+</PRE>
+    假設檔案 file2.c 的內容如下：
+<PRE>
+      #include "file1.h"
+      main()
+      {  int A[MAXSIZE],i,sum;
+         for(i=0;i < size;i++)
+         sum=sum+f(i);
+      }
+</PRE>   
+   
+    又假設 file1.h 與 file2.c 都在同一目錄下
+    則經過前置處理， file2.c 就先變成
+
+<PRE>
+      #define MAXSIZE 100
+      extern int size;
+      int f(int x);
+      main()
+      { int A[MAXSIZE],i,sum;
+        for(i=0;i < size;i++)
+        sum=sum+f(i);
+      }
+</PRE>
+    經過前置處理完成後，file2.c 就變成
+<PRE>
+    extern int size;
+    int f(int x);
+    main()
+    { int A[100],i,sum;
+      for(i=0;i < size;i++)
+      sum=sum+f(x);
+    } 
+</PRE>
+<P>
+註： 
+<UL>
+<LI>檔頭檔(.h 檔)亦可含 #include 指令而形成階層式的架構。
+<LI>一個檔案可能會含有相當多 #include 的指令，有時會有重複重宣告情形而產
+      生錯誤。該現象可以參考 8.3 節的方式來避免。
+</UL>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 8.3 節--------------------------------------->
+<A NAME="third">
+      <B>第 8.3 節  #if、#ifdef 等的使用</B>
+<P>
+如果我們在一檔案欲 include 一檔頭檔 file1.h ，又想避免在同一檔案宣告兩次相
+同的東西，例如：<BR>
+<DL>
+<DD>檔案 file1.h 含 extern int size
+<DD>檔案 file2.h 含 #include "file1.h"
+<DD>檔案 file3.h 含 #include "file1.h"
+</DL>
+又
+<DL>
+<DD>檔案 file.c 含 #include "file2.h" 及 #include "file3.h"
+</DL>
+則在檔案 file.c 內，變數 size 重複宣告了兩次而產生錯誤。
+<P>    
+欲避免這種情況發生，每個 #include "file1.h" 指令， 我們可以改變為如下指令：
+<PRE>      
+      #if !define(FILE1)
+      #define FILE1 "file1.h"
+      #include FILE1
+      #endif
+</PRE>
+   或是
+<PRE>
+      #ifndef FILE1
+      #define FILE1 "file1.h"
+      #include FILE1
+      #endif
+</PRE>
+<P>
+註： 
+<UL>
+<LI>如果一個辨識名稱 X 沒有被 define 過， 則 define(X) 之值為 0， 或者
+    ifndef X 為真值。
+<LI>當 file2.h 與 file3.h 都含上述指令， 如此一來 file1.h 僅能一次被加入
+    file.c 而不致於產生衝突。
+</UL>
+<P> 
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<HR>
+<A HREF="cpgch7.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch7.htm">回第 7 章</A><BR>
+<A HREF="cpgch9.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch9.htm">至第 9 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</HTML>

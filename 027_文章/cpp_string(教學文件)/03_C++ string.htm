@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<!-- saved from url=(0037)http://www.byvoid.com/blog/cpp-string -->
+<html class=" js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms no-csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" href="http://www.byvoid.com/css/style-232f40302a2c024f64b78281fd35c2cb.css"><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="http://www.byvoid.com/feed"><title>C++ string 用法详解 - BYVoid</title><link rel="stylesheet" href="http://www.byvoid.com/css/zhs-eb1d43dfc872cf4b658923704c3df44b.css"><script type="text/javascript" async="" src="http://byvoid.disqus.com/embed.js"></script><script src="./03_C++ string_files/alfie.js" async="" charset="UTF-8"></script></head><body><div id="page"><div id="page-top" class="container clearfix"><div id="pre-header"><div id="social-icons"><ul id="social-links"><li class="facebook-link"><a id="social-01" href="http://www.facebook.com/byvoid" target="_blank" original-title="Find me on Facebook" class="facebook"></a></li><li class="twitter-link"><a id="social-02" href="http://twitter.com/byvoid" target="_blank" original-title="Find me on Twitter" class="twitter"></a></li><li class="google-link"><a id="social-03" href="http://plus.google.com/112163558251413006250" target="_blank" original-title="Find me on Google +" class="google"></a></li><li class="linkedin-link"><a id="social-04" href="http://www.linkedin.com/in/byvoid" target="_blank" original-title="My resume on LinkedIn" class="linkedin"></a></li><li class="github-link"><a id="social-05" href="http://github.com/BYVoid" target="_blank" original-title="My projects on Github" class="github"></a></li><li class="renren-link"><a id="social-06" href="http://www.renren.com/byvoid" target="_blank" original-title="人人網" class="renren"></a></li><li class="weibo-link"><a id="social-07" href="http://weibo.com/byvoid" target="_blank" original-title="新浪微博" class="weibo"></a></li><li class="douban-link"><a id="social-08" href="http://www.douban.com/people/byvoid/" target="_blank" original-title="豆瓣" class="douban"></a></li><li class="rss-link"><a id="social-09" href="http://www.byvoid.com/feed" target="_blank" original-title="RSS feed" class="rss"></a></li></ul></div></div><header id="header" role="banner" class="clearfix"><hgroup id="logo-wrapper"><h1><a id="index_link" href="http://www.byvoid.com/"><img src="./03_C++ string_files/logo.png" title="Beyond the Void"></a></h1></hgroup><div id="navigation-wrapper" class="clearfix"><nav id="main-navigation" class="main-menu"><ul id="menu-top-menu" class="sf-menu"><li class="menu-item "><a href="http://www.byvoid.com/blog">網誌</a></li><li class="menu-item "><a href="http://www.byvoid.com/blog/tag">標籤</a></li><li class="menu-item "><a href="http://www.byvoid.com/project" style="padding-right: 23px;">項目<span class="downarrowclass"></span><span class="downarrowclass"></span><span class="downarrowclass"></span></a><ul class="sub-menu" style="top: 127px; display: none; visibility: visible;"><li class="menu-item"><a href="http://www.byvoid.com/project/accounts9">Accounts9</a></li><li class="menu-item"><a href="http://www.byvoid.com/project/cogs">COGS</a></li><li class="menu-item"><a href="http://www.byvoid.com/project/continuation">Continuation.js</a></li><li class="menu-item"><a href="http://www.byvoid.com/project/ibus-bopomofo">ibus-bopomofo</a></li><li class="menu-item"><a href="http://www.byvoid.com/project/opencc">OpenCC</a></li><li class="menu-item"><a href="http://www.byvoid.com/project/ytenx">Yonh Tenx</a></li><li class="menu-item"><a href="http://www.byvoid.com/project">All projects</a></li></ul></li><li class="menu-item "><a href="http://www.byvoid.com/about" style="padding-right: 23px;">關於<span class="downarrowclass"></span><span class="downarrowclass"></span><span class="downarrowclass"></span></a><ul class="sub-menu" style="top: 127px; display: none; visibility: visible;"><li class="menu-item"><a href="http://www.byvoid.com/about/resume">Resume</a></li><li class="menu-item"><a href="http://www.byvoid.com/about/logo">Logo</a></li><li class="menu-item"><a href="http://byvoid.github.io/slides/">Slides</a></li></ul></li><li class="menu-item "><a href="http://www.byvoid.com/contact">聯繫</a></li></ul></nav></div></header></div><div id="content" class="container clearfix"><div class="container clearfix"><img src="./03_C++ string_files/banner-bg-0.jpg" class="intro-img"></div><section id="content-main"><article data-post-id="blog/cpp-string" class="post hentry clearfix"><aside class="entry-meta"><time datetime="2008-10-21T05:19:28.000Z" class="post-date"><span class="post-month">十月</span><strong class="post-day">21</strong><span class="post-year">2008</span></time><ul><li><span class="title">作者:<author>byvoid</author></span></li><li><span class="title">閱讀: 43529</span></li><li><ul><li><a href="http://www.byvoid.com/blog/tag/%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%B8">計算機科學</a></li><li><a href="http://www.byvoid.com/blog/tag/C++">C++</a></li><li><a href="http://www.byvoid.com/blog/tag/%E6%8A%80%E8%A1%93">技術</a></li><li><a href="http://www.byvoid.com/blog/tag/%E5%AD%97%E7%AC%A6%E4%B8%B2">字符串</a></li><li><a href="http://www.byvoid.com/blog/tag/string">string</a></li><li><a href="http://www.byvoid.com/blog/tag/%E7%94%A8%E6%B3%95">用法</a></li></ul></li></ul></aside><section class="entry-body entry-body-content"><header><h1><a href="./03_C++ string_files/03_C++ string.htm" data-post-id="blog/cpp-string" class="post_header_link">C++ string 用法详解</a></h1></header><p>C++ string 详解
+
+</p>
+<p>任何人对本文进行引用都要标明作者是Nicolai M.Josuttis 
+
+</p>
+<p>///////////////////////////////////////////////////////////////////////////////////
+
+
+</p>
+<p>C++ 语言是个十分优秀的语言，但优秀并不表示完美。还是有许多人不愿意使用C或者C++，为什么？原因众多，其中之一就是C/C++的文本处理功能太麻烦，用起来很不方便。以前没有接触过其他语言时，每当别人这么说，我总是不屑一顾，认为他们根本就没有领会C++的精华，或者不太懂C++，现在我接触 perl, php, 和Shell脚本以后，开始理解了以前为什么有人说C++文本处理不方便了。
+
+
+
+</p>
+<p>举例来说，如果文本格式是：用户名 电话号码，文件名name.txt
+Tom 23245332
+Jenny 22231231
+Heny 22183942
+Tom 23245332
+...
+
+</p>
+<p>现在我们需要对用户名排序，且只输出不同的姓名。
+
+</p>
+<p>那么在shell 编程中，可以这样用：
+
+</p>
+<pre><code class="lang-cpp nginx"><span class="title">awk</span> <span class="string">'{print <span class="variable">$1</span>}'</span> name.txt | sort | uniq</code></pre>
+<p>简单吧？
+
+</p>
+<p>如果使用C/C++ 就麻烦了，他需要做以下工作：
+先打开文件，检测文件是否打开，如果失败，则退出。
+声明一个足够大得二维字符数组或者一个字符指针数组
+读入一行到字符空间
+然后分析一行的结构，找到空格，存入字符数组中。
+关闭文件
+写一个排序函数，或者使用写一个比较函数，使用sort()排序
+遍历数组，比较是否有相同的，如果有，则要删除，copy...
+输出信息
+
+</p>
+<p>你可以用C++或者C语言去实现这个流程。如果一个人的主要工作就是处理这种类似的文本(例如做apache的日志统计和分析),你说他会喜欢C/C++么？
+
+</p>
+<p>当然，有了STL，这些处理会得到很大的简化。我们可以使用 fstream来代替麻烦的fopen fread fclose, 用vector来代替数组。最重要的是用 string来代替char * 数组，使用sort排序算法来排序，用unique 函数来去重。听起来好像很不错。看看下面代码(例程1）：
+
+</p>
+<pre><code class="lang-cpp cpp"><span class="preprocessor">#include &lt;string&gt;</span>
+<span class="preprocessor">#include &lt;iostream&gt;</span>
+<span class="preprocessor">#include &lt;algorithm&gt;</span>
+<span class="preprocessor">#include &lt;vector&gt;</span>
+<span class="preprocessor">#include &lt;fstream&gt;</span>
+<span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;
+<span class="keyword">int</span> main()
+{
+    ifstream in(<span class="string">"name.txt"</span>);
+    <span class="built_in">string</span> strtmp;
+    <span class="stl_container"><span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt;</span> vect;
+    <span class="keyword">while</span>(getline(in, strtmp, <span class="string">'\n'</span>))
+    vect.push_back(strtmp.substr(<span class="number">0</span>, strtmp.find(<span class="string">' '</span>)));
+    sort(vect.begin(), vect.end());
+    <span class="stl_container"><span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt;</span>::iterator it=unique(vect.begin(), vect.end());
+    copy(vect.begin(), it, ostream_iterator&lt;<span class="built_in">string</span>&gt;(<span class="built_in">cout</span>, <span class="string">"\n"</span>));
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</code></pre>
+<p>也还不错吧，至少会比想象得要简单得多！（代码里面没有对错误进行处理，只是为了说明问题，不要效仿).
+
+</p>
+<p>当然，在这个文本格式中，不用vector而使用map会更有扩充性，例如，还可通过人名找电话号码等等，但是使用了map就不那么好用sort了。你可以用map试一试。
+
+</p>
+<p>这里string的作用不只是可以存储字符串，还可以提供字符串的比较，查找等。在sort和unique函数中就默认使用了less 和equal_to函数, 上面的一段代码，其实使用了string的以下功能：
+存储功能，在getline() 函数中
+查找功能，在find() 函数中
+子串功能，在substr() 函数中
+string operator &lt; , 默认在sort() 函数中调用
+string operator == , 默认在unique() 函数中调用
+
+</p>
+<p>总之，有了string 后，C++的字符文本处理功能总算得到了一定补充，加上配合STL其他容器使用，其在文本处理上的功能已经与perl, shell, php的距离缩小很多了。 因此掌握string 会让你的工作事半功倍。
+
+</p>
+<p>1 string 使用
+
+</p>
+<p>其实，string并不是一个单独的容器，只是basic_string 模板类的一个typedef 而已，相对应的还有wstring, 你在string 头文件中你会发现下面的代码:
+
+</p>
+<pre><code class="lang-cpp cpp"><span class="keyword">extern</span> <span class="string">"C++"</span> {
+<span class="keyword">typedef</span> basic_string &lt;<span class="keyword">char</span>&gt; <span class="built_in">string</span>;
+<span class="keyword">typedef</span> basic_string &lt;<span class="keyword">wchar_t</span>&gt; wstring;
+} <span class="comment">// extern "C++"</span></code></pre>
+<p>由于只是解释string的用法，如果没有特殊的说明，本文并不区分string 和 basic_string的区别。
+
+</p>
+<p>string 其实相当于一个保存字符的序列容器，因此除了有字符串的一些常用操作以外，还有包含了所有的序列容器的操作。字符串的常用操作包括：增加、删除、修改、查找比较、链接、输入、输出等。详细函数列表参看附录。不要害怕这么多函数，其实有许多是序列容器带有的，平时不一定用的上。
+
+</p>
+<p>如果你要想了解所有函数的详细用法，你需要查看basic_string，或者下载STL编程手册。这里通过实例介绍一些常用函数。
+
+</p>
+<p>1.1 充分使用string 操作符
+
+</p>
+<p>string 重载了许多操作符，包括 +, +=, &lt;, =, , [], &lt;&lt;, &gt;&gt;等，正式这些操作符，对字符串操作非常方便。先看看下面这个例子：
+
+</p>
+<pre><code class="lang-cpp cpp"><span class="preprocessor">#include &lt;string&gt;</span>
+<span class="preprocessor">#include &lt;iostream&gt;</span>
+<span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;
+<span class="keyword">int</span> main()
+{
+    <span class="built_in">string</span> strinfo=<span class="string">"Please input your name:"</span>;
+    <span class="built_in">cout</span> &lt;&lt; strinfo ;
+    <span class="built_in">cin</span> &gt;&gt; strinfo;
+    <span class="keyword">if</span>( strinfo == <span class="string">"winter"</span> )
+        <span class="built_in">cout</span> &lt;&lt; <span class="string">"you are winter!"</span>&lt;&lt;endl;
+    <span class="keyword">else</span> <span class="keyword">if</span>( strinfo != <span class="string">"wende"</span> )
+        <span class="built_in">cout</span> &lt;&lt; <span class="string">"you are not wende!"</span>&lt;&lt;endl;
+    <span class="keyword">else</span> <span class="keyword">if</span>( strinfo &lt; <span class="string">"winter"</span>)
+        <span class="built_in">cout</span> &lt;&lt; <span class="string">"your name should be ahead of winter"</span>&lt;&lt;endl;
+    <span class="keyword">else</span>
+        <span class="built_in">cout</span> &lt;&lt; <span class="string">"your name should be after of winter"</span>&lt;&lt;endl;
+    strinfo += <span class="string">" , Welcome to China!"</span>;
+    <span class="built_in">cout</span> &lt;&lt; strinfo&lt;&lt;endl;
+    <span class="built_in">cout</span> &lt;&lt;<span class="string">"Your name is :"</span>&lt;&lt;endl;
+    <span class="built_in">string</span> strtmp = <span class="string">"How are you? "</span> + strinfo;
+    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span> ; i &lt; strtmp.size(); i ++)
+        <span class="built_in">cout</span>&lt;&lt;strtmp[i];
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</code></pre>
+<p>下面是程序的输出
+
+</p>
+<pre><code class="lang-cpp applescript">Please input your <span class="property">name</span>:Hero
+you are <span class="keyword">not</span> wende!
+Hero , Welcome <span class="keyword">to</span> China!
+How are you? Hero , Welcome <span class="keyword">to</span> China!</code></pre>
+<p>有了这些操作符，在STL中仿函数都可以直接使用string作为参数，例如 less, great, equal_to 等，因此在把string作为参数传递的时候，它的使用和int 或者float等已经没有什么区别了。例如，你可以使用：
+
+</p>
+<pre><code class="lang-cpp cpp"><span class="stl_container"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt;</span> mymap; <span class="comment">//以上默认使用了 less&lt;string&gt;</span></code></pre>
+<p>有了 operator + 以后，你可以直接连加，例如：
+
+</p>
+<pre><code class="lang-cpp cs"><span class="keyword">string</span> strinfo=<span class="string">"Winter"</span>;
+<span class="keyword">string</span> strlast=<span class="string">"Hello "</span> + strinfo + <span class="string">"!"</span>;
+<span class="keyword">string</span> strtest=<span class="string">"Hello "</span> + strinfo + <span class="string">" Welcome"</span> + <span class="string">" to China"</span> + <span class="string">" !"</span>;<span class="comment">//你还可以这样：</span></code></pre>
+<p>看见其中的特点了吗？只要你的等式里面有一个 string 对象，你就可以一直连续"+"，但有一点需要保证的是，在开始的两项中，必须有一项是 string 对象。其原理很简单：
+
+</p>
+<p>系统遇到"+"号，发现有一项是string 对象。
+系统把另一项转化为一个临时 string 对象。
+执行 operator + 操作，返回新的临时string 对象。
+如果又发现"+"号，继续第一步操作。
+
+</p>
+<p>由于这个等式是由左到右开始检测执行，如果开始两项都是const char<em> ，程序自己并没有定义两个const char</em> 的加法，编译的时候肯定就有问题了。
+
+</p>
+<p>有了操作符以后，assign(), append(), compare(), at()等函数，除非有一些特殊的需求时，一般是用不上。当然at()函数还有一个功能，那就是检查下标是否合法，如果是使用：
+
+</p>
+<pre><code class="lang-cpp javascript">string str=<span class="string">"winter"</span>;<span class="comment">//下面一行有可能会引起程序中断错误</span>
+str[<span class="number">100</span>]=<span class="string">'!'</span>;<span class="comment">//下面会抛出异常:throws: out_of_range</span>
+cout&lt;<span class="xml"><span class="tag">&lt;<span class="title">str.at(100)&lt;&lt;endl;</span></span></span></code></pre>
+<p>了解了吗？如果你希望效率高，还是使用[]来访问，如果你希望稳定性好，最好使用at()来访问。
+
+</p>
+<p>1.2 眼花缭乱的string find 函数
+
+</p>
+<p>由于查找是使用最为频繁的功能之一，string 提供了非常丰富的查找函数。其列表如下：
+函数名 描述 find 查找 rfind 反向查找 find_first_of 查找包含子串中的任何字符，返回第一个位置 find_first_not_of 查找不包含子串中的任何字符，返回第一个位置 find_last_of 查找包含子串中的任何字符，返回最后一个位置 find_last_not_of 查找不包含子串中的任何字符，返回最后一个位置以上函数都是被重载了4次，以下是以find_first_of 函数为例说明他们的参数，其他函数和其参数一样，也就是说总共有24个函数 ：
+
+</p>
+<pre><code class="lang-cpp haskell"><span class="title">size_type</span> find_first_of(const basic_string&amp; s, size_type pos = <span class="number">0</span>)
+<span class="title">size_type</span> find_first_of(const charT* s, size_type pos, size_type n)
+<span class="title">size_type</span> find_first_of(const charT* s, size_type pos = <span class="number">0</span>)
+<span class="title">size_type</span> find_first_of(charT c, size_type pos = <span class="number">0</span>)</code></pre>
+<p>所有的查找函数都返回一个size_type类型，这个返回值一般都是所找到字符串的位置，如果没有找到，则返回string::npos。有一点需要特别注意，所有和string::npos的比较一定要用string::size_type来使用，不要直接使用int 或者unsigned int等类型。其实string::npos表示的是-1, 看看头文件：
+
+</p>
+<pre><code class="lang-cpp actionscript">template &lt;<span class="class"><span class="keyword">class</span> <span class="title">_CharT</span>, <span class="title">class</span> <span class="title">_Traits</span>, <span class="title">class</span> <span class="title">_Alloc</span>&gt;
+<span class="title">const</span> <span class="title">basic_string</span>&lt;<span class="title">_CharT</span>,<span class="title">_Traits</span>,<span class="title">_Alloc</span>&gt;::<span class="title">size_type</span>
+<span class="title">basic_string</span>&lt;<span class="title">_CharT</span>,<span class="title">_Traits</span>,<span class="title">_Alloc</span>&gt;::<span class="title">npos</span>
+= <span class="title">basic_string</span>&lt;<span class="title">_CharT</span>,<span class="title">_Traits</span>,<span class="title">_Alloc</span>&gt;::<span class="title">size_type</span>) -1;</span></code></pre>
+<p>find 和 rfind 都还比较容易理解，一个是正向匹配，一个是逆向匹配，后面的参数pos都是用来指定起始查找位置。对于find_first_of 和find_last_of 就不是那么好理解。
+
+</p>
+<p>find_first_of 是给定一个要查找的字符集，找到这个字符集中任何一个字符所在字符串中第一个位置。或许看一个例子更容易明白。
+
+</p>
+<p>有这样一个需求：过滤一行开头和结尾的所有非英文字符。看看用string 如何实现：
+</p>
+<pre><code class="lang-cpp cpp"><span class="preprocessor">#include &lt;string&gt;</span>
+<span class="preprocessor">#include &lt;iostream&gt;</span>
+<span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;
+<span class="keyword">int</span> main()
+{
+    <span class="built_in">string</span> strinfo=<span class="string">" //*---Hello Word!......------"</span>;
+    <span class="built_in">string</span> strset=<span class="string">"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"</span>;
+    <span class="keyword">int</span> first = strinfo.find_first_of(strset);
+    <span class="keyword">if</span>(first == <span class="built_in">string</span>::npos)
+    {
+        <span class="built_in">cout</span>&lt;&lt;<span class="string">"not find any characters"</span>&lt;&lt;endl;
+        <span class="keyword">return</span> -<span class="number">1</span>;
+    }
+    <span class="keyword">int</span> last = strinfo.find_last_of(strset);
+    <span class="keyword">if</span>(last == <span class="built_in">string</span>::npos)
+    {
+        <span class="built_in">cout</span>&lt;&lt;<span class="string">"not find any characters"</span>&lt;&lt;endl;
+        <span class="keyword">return</span> -<span class="number">1</span>;
+    }
+    <span class="built_in">cout</span> &lt;&lt; strinfo.substr(first, last - first + <span class="number">1</span>)&lt;&lt;endl;
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</code></pre>
+<p>这里把所有的英文字母大小写作为了需要查找的字符集，先查找第一个英文字母的位置，然后查找最后一个英文字母的位置，然后用substr 来的到中间的一部分，用于输出结果。下面就是其结果：
+
+</p>
+<pre><code class="lang-cpp nginx"><span class="title">Hello</span> Word</code></pre>
+<p>前面的符号和后面的符号都没有了。像这种用法可以用来查找分隔符，从而把一个连续的字符串分割成为几部分，达到 shell 命令中的 awk 的用法。特别是当分隔符有多个的时候，可以一次指定。例如有这样的需求：
+
+</p>
+<pre><code class="lang-cpp r">张三|<span class="number">3456123</span>, 湖南
+李四,<span class="number">4564234</span>| 湖北
+王小二, <span class="number">4433253</span>|北京
+<span class="keyword">...</span></code></pre>
+<p>我们需要以 "|" ","为分隔符，同时又要过滤空格，把每行分成相应的字段。可以作为你的一个作业来试试，要求代码简洁。
+
+</p>
+<p>1.3 string insert, replace, erase
+
+</p>
+<p>了解了string 的操作符，查找函数和substr，其实就已经了解了string的80%的操作了。insert函数, replace函数和erase函数在使用起来相对简单。下面以一个例子来说明其应用。
+string只是提供了按照位置和区间的replace函数，而不能用一个string字串来替换指定string中的另一个字串。这里写一个函数来实现这个功能：
+
+</p>
+<pre><code class="lang-cpp cs"><span class="keyword">void</span> string_replace(<span class="keyword">string</span> &amp; strBig, <span class="keyword">const</span> <span class="keyword">string</span> &amp; strsrc, <span class="keyword">const</span> <span class="keyword">string</span> &amp;strdst)
+{
+    <span class="keyword">string</span>::size_type pos=<span class="number">0</span>;
+    <span class="keyword">string</span>::size_type srclen=strsrc.size();
+    <span class="keyword">string</span>::size_type dstlen=strdst.size();
+    <span class="keyword">while</span>( (pos=strBig.find(strsrc, pos)) != <span class="keyword">string</span>::npos)
+    {
+        strBig.replace(pos, srclen, strdst);
+        pos += dstlen;
+    }
+}</code></pre>
+<p>看看如何调用：
+</p>
+<pre><code class="lang-cpp vala"><span class="preprocessor">#include &lt;string&gt;</span>
+<span class="preprocessor">#include &lt;iostream&gt;</span>
+<span class="keyword">using</span> <span class="class"><span class="keyword">namespace</span> <span class="title">std</span>;
+<span class="title">int</span> <span class="title">main</span>()
+{</span>
+    <span class="keyword">string</span> strinfo=<span class="string">"This is Winter, Winter is a programmer. Do you know Winter?"</span>;
+    cout&lt;&lt;<span class="string">"Orign string is :\n"</span>&lt;&lt;strinfo&lt;&lt;endl;
+    string_replace(strinfo, <span class="string">"Winter"</span>, <span class="string">"wende"</span>);
+    cout&lt;&lt;<span class="string">"After replace Winter with wende, the string is :\n"</span>&lt;&lt;strinfo&lt;&lt;endl;
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</code></pre>
+<p>其输出结果：
+</p>
+<pre><code class="lang-cpp vbscript">Orign <span class="built_in">string</span> <span class="keyword">is</span> :
+This <span class="keyword">is</span> Winter, Winter <span class="keyword">is</span> a programmer. <span class="keyword">Do</span> you know Winter?
+After <span class="built_in">replace</span> Winter <span class="keyword">with</span> wende, the <span class="built_in">string</span> <span class="keyword">is</span> :
+This <span class="keyword">is</span> wende, wende <span class="keyword">is</span> a programmer. <span class="keyword">Do</span> you know wende?</code></pre>
+<p>如果不用replace函数，则可以使用erase和insert来替换，也能实现string_replace函数的功能：
+</p>
+<pre><code class="lang-cpp cs"><span class="keyword">void</span> string_replace(<span class="keyword">string</span> &amp; strBig, <span class="keyword">const</span> <span class="keyword">string</span> &amp; strsrc, <span class="keyword">const</span> <span class="keyword">string</span> &amp;strdst)
+{
+    <span class="keyword">string</span>::size_type pos=<span class="number">0</span>;
+    <span class="keyword">string</span>::size_type srclen=strsrc.size();
+    <span class="keyword">string</span>::size_type dstlen=strdst.size();
+    <span class="keyword">while</span>( (pos=strBig.find(strsrc, pos)) != <span class="keyword">string</span>::npos)
+    {
+        strBig.erase(pos, srclen);
+        strBig.insert(pos, strdst);
+        pos += dstlen;
+    }
+}</code></pre>
+<p>当然，这种方法没有使用replace来得直接。
+
+</p>
+<p>2 string 和C-style字符串
+
+</p>
+<p>现在看了这么多例子，发现const char* 可以和string 直接转换，例如我们在上面的例子中，使用
+
+</p>
+<pre><code class="lang-cpp erlang"><span class="function"><span class="title">string_replace</span><span class="params">(strinfo, <span class="string">"Winter"</span>, <span class="string">"wende"</span>)</span>;来代用<span class="title">void</span> <span class="title">string_replace</span><span class="params">(string &amp; str<span class="variable">Big</span>, const string &amp; strsrc, const string &amp;strdst)</span></span></code></pre>
+<p>在C语言中只有char<em> 和 const char</em>，为了使用起来方便，string提供了三个函数满足其要求：
+
+</p>
+<pre><code class="lang-cpp haskell"><span class="title">const</span> charT* c_str() const
+<span class="title">const</span> charT* <span class="typedef"><span class="keyword">data</span><span class="container">()</span> const</span>
+<span class="title">size_type</span> copy(charT* buf, size_type n, size_type pos = <span class="number">0</span>) const</code></pre>
+<p>其中：
+c_str 直接返回一个以\0结尾的字符串。
+data 直接以数组方式返回string的内容，其大小为size()的返回值，结尾并没有\0字符。
+copy 把string的内容拷贝到buf空间中。
+你或许会问，c_str()的功能包含data()，那还需要data()函数干什么？看看源码：
+
+</p>
+<pre><code class="lang-cpp nginx"><span class="title">const</span> charT* c_str () const
+{
+    <span class="title">if</span> (length () == <span class="number">0</span>)
+        return <span class="string">""</span>;
+    <span class="title">terminate</span> ();
+    <span class="title">return</span> data ();
+}</code></pre>
+<p>原来c_str()的流程是：先调用terminate()，然后在返回data()。因此如果你对效率要求比较高，而且你的处理又不一定需要以\0的方式结束，你最好选择data()。但是对于一般的C函数中，需要以const char*为输入参数，你就要使用c_str()函数。
+
+</p>
+<p>对于c_str() data()函数，返回的数组都是由string本身拥有，千万不可修改其内容。其原因是许多string实现的时候采用了引用机制，也就是说，有可能几个string使用同一个字符存储空间。而且你不能使用sizeof(string)来查看其大小。详细的解释和实现查看Effective STL的条款15：小心string实现的多样性。
+
+</p>
+<p>另外在你的程序中，只在需要时才使用c_str()或者data()得到字符串，每调用一次，下次再使用就会失效，如：
+
+</p>
+<pre><code class="lang-cpp r">string strinfo(<span class="string">"this is Winter"</span>);
+<span class="keyword">...</span>
+//最好的方式是:
+foo(strinfo.c_str());
+//也可以这么用:
+const char* pstr=strinfo.c_str();
+foo(pstr);
+//不要再使用了pstr了, 下面的操作已经使pstr无效了。
+strinfo += <span class="string">" Hello!"</span>;
+foo(pstr);//错误！</code></pre>
+<p>会遇到什么错误？当你幸运的时候pstr可能只是指向"this is Winter Hello!"的字符串，如果不幸运，就会导致程序出现其他问题，总会有一些不可遇见的错误。总之不会是你预期的那个结果。
+
+</p>
+<p>3 string 和 Charactor Traits
+了解了string的用法，该详细看看string的真相了。前面提到string 只是basic_string的一个typedef。看看basic_string 的参数：
+</p>
+<pre><code class="lang-cpp scala">template &lt;<span class="class"><span class="keyword">class</span> <span class="title">charT</span>, <span class="title">class</span> <span class="title">traits</span> = <span class="title">char_traits</span>&lt;<span class="title">charT</span>&gt;,</span>
+<span class="class"><span class="keyword">class</span> <span class="title">Allocator</span> = <span class="title">allocator</span>&lt;<span class="title">charT</span>&gt; &gt;</span>
+<span class="class"><span class="keyword">class</span> <span class="title">basic_string</span></span>
+{
+<span class="comment">//...</span>
+}</code></pre>
+<p>char_traits不仅是在basic_string 中有用，在basic_istream 和 basic_ostream中也需要用到。
+就像Steve Donovan在过度使用C++模板中提到的，这些确实有些过头了，要不是系统自己定义了相关的一些属性，而且用了个typedef，否则还真不知道如何使用。
+
+</p>
+<p>但复杂总有复杂道理。有了char_traits，你可以定义自己的字符串类型。当然，有了char_traits &lt; char &gt; 和char_traits &lt; wchar_t &gt; 你的需求使用已经足够了，为了更好的理解string ，咱们来看看char_traits都有哪些要求。
+
+</p>
+<p>如果你希望使用你自己定义的字符，你必须定义包含下列成员的结构： 表达式 描述
+
+</p>
+<pre><code class="lang-cpp erlang">char_type 字符类型
+int_type int 类型
+pos_type 位置类型
+off_type 表示位置之间距离的类型
+state_type 表示状态的类型
+<span class="function"><span class="title">assign</span><span class="params">(c1,c2)</span> 把字符<span class="title">c2</span>赋值给<span class="title">c1</span>
+<span class="title">eq</span><span class="params">(c1,c2)</span> 判断<span class="title">c1</span>,<span class="title">c2</span> 是否相等
+<span class="title">lt</span><span class="params">(c1,c2)</span> 判断<span class="title">c1</span>是否小于<span class="title">c2</span>
+<span class="title">length</span><span class="params">(str)</span> 判断<span class="title">str</span>的长度
+<span class="title">compare</span><span class="params">(s1,s2,n)</span> 比较<span class="title">s1</span>和<span class="title">s2</span>的前<span class="title">n</span>个字符
+<span class="title">copy</span><span class="params">(s1,s2, n)</span> 把<span class="title">s2</span>的前<span class="title">n</span>个字符拷贝到<span class="title">s1</span>中
+<span class="title">move</span><span class="params">(s1,s2, n)</span> 把<span class="title">s2</span>中的前<span class="title">n</span>个字符移动到<span class="title">s1</span>中
+<span class="title">assign</span><span class="params">(s,n,c)</span> 把<span class="title">s</span>中的前<span class="title">n</span>个字符赋值为<span class="title">c</span>
+<span class="title">find</span><span class="params">(s,n,c)</span> 在<span class="title">s</span>的前<span class="title">n</span>个字符内查找<span class="title">c</span>
+<span class="title">eof</span><span class="params">()</span> 返回<span class="title">end</span>-<span class="title">of</span>-<span class="title">file</span>
+<span class="title">to_int_type</span><span class="params">(c)</span> 将<span class="title">c</span>转换成<span class="title">int_type</span>
+<span class="title">to_char_type</span><span class="params">(i)</span> 将<span class="title">i</span>转换成<span class="title">char_type</span>
+<span class="title">not_eof</span><span class="params">(i)</span> 判断<span class="title">i</span>是否为EOF
+<span class="title">eq_int_type</span><span class="params">(i1,i2)</span> 判断<span class="title">i1</span>和<span class="title">i2</span>是否相等</span></code></pre>
+<p>想看看实际的例子，你可以看看sgi STL的char_traits结构源码.
+
+</p>
+<p>现在默认的string版本中，并不支持忽略大小写的比较函数和查找函数，如果你想练练手，你可以试试改写一个char_traits , 然后生成一个case_string类, 也可以在string 上做继承，然后派生一个新的类，例如：ext_string，提供一些常用的功能，例如：
+
+</p>
+<p>定义分隔符。给定分隔符，把string分为几个字段。
+提供替换功能。例如，用winter, 替换字符串中的wende
+大小写处理。例如，忽略大小写比较，转换等
+整形转换。例如把"123"字符串转换为123数字。
+这些都是常用的功能，如果你有兴趣可以试试。其实有人已经实现了，看看Extended STL string。如果你想偷懒，下载一个头文件就可以用，有了它确实方便了很多。要是有人能提供一个支持正则表达式的string，我会非常乐意用。
+
+</p>
+<p>4 string 建议
+使用string 的方便性就不用再说了，这里要重点强调的是string的安全性。
+string并不是万能的，如果你在一个大工程中需要频繁处理字符串，而且有可能是多线程，那么你一定要慎重(当然，在多线程下你使用任何STL容器都要慎重)。
+string的实现和效率并不一定是你想象的那样，如果你对大量的字符串操作，而且特别关心其效率，那么你有两个选择，首先，你可以看看你使用的STL版本中string实现的源码；另一选择是你自己写一个只提供你需要的功能的类。
+string的c_str()函数是用来得到C语言风格的字符串，其返回的指针不能修改其空间。而且在下一次使用时重新调用获得新的指针。
+string的data()函数返回的字符串指针不会以'\0'结束，千万不可忽视。
+尽量去使用操作符，这样可以让程序更加易懂
+
+</p>
+<p>5 小结
+难怪有人说：string 使用方便功能强，我们一直用它！
+
+</p>
+<p>6 附录
+
+</p>
+<pre><code class="lang-cpp haskell"><span class="title">string</span> 函数列表 函数名 描述
+<span class="title">begin</span> 得到指向字符串开头的<span class="type">Iterator</span>
+<span class="title">end</span> 得到指向字符串结尾的<span class="type">Iterator</span>
+<span class="title">rbegin</span> 得到指向反向字符串开头的<span class="type">Iterator</span>
+<span class="title">rend</span> 得到指向反向字符串结尾的<span class="type">Iterator</span>
+<span class="title">size</span> 得到字符串的大小
+<span class="title">length</span> 和size函数功能相同
+<span class="title">max_size</span> 字符串可能的最大大小
+<span class="title">capacity</span> 在不重新分配内存的情况下，字符串可能的大小
+<span class="title">empty</span> 判断是否为空
+<span class="title">operator</span>[] 取第几个元素，相当于数组
+<span class="title">c_str</span> 取得<span class="type">C</span>风格的const char* 字符串
+<span class="typedef"><span class="keyword">data</span> 取得字符串内容地址</span>
+<span class="title">operator</span>= 赋值操作符
+<span class="title">reserve</span> 预留空间
+<span class="title">swap</span> 交换函数
+<span class="title">insert</span> 插入字符
+<span class="title">append</span> 追加字符
+<span class="title">push_back</span> 追加字符
+<span class="title">operator</span>+= += 操作符
+<span class="title">erase</span> 删除字符串
+<span class="title">clear</span> 清空字符容器中所有内容
+<span class="title">resize</span> 重新分配空间
+<span class="title">assign</span> 和赋值操作符一样
+<span class="title">replace</span> 替代
+<span class="title">copy</span> 字符串到空间
+<span class="title">find</span> 查找
+<span class="title">rfind</span> 反向查找
+<span class="title">find_first_of</span> 查找包含子串中的任何字符，返回第一个位置
+<span class="title">find_first_not_of</span> 查找不包含子串中的任何字符，返回第一个位置
+<span class="title">find_last_of</span> 查找包含子串中的任何字符，返回最后一个位置
+<span class="title">find_last_not_of</span> 查找不包含子串中的任何字符，返回最后一个位置
+<span class="title">substr</span> 得到字串
+<span class="title">compare</span> 比较字符串
+<span class="title">operator</span>+ 字符串链接
+<span class="title">operator</span>== 判断是否相等
+<span class="title">operator</span>!= 判断是否不等于
+<span class="title">operator</span>&lt; 判断是否小于
+<span class="title">operator</span>&gt;&gt; 从输入流中读入字符串
+<span class="title">operator</span>&lt;&lt; 字符串写入输出流
+<span class="title">getline</span> 从输入流中读入一行</code></pre>
+<p>///////////////////////////////////////////////////////////////////////////////////
+
+</p>
+<p>之所以抛弃char*的字符串而选用C++标准程序库中的string类，是因为他和前者比较起来，不必担心内存是否足够、字符串长度等等，而且作为一个类出现，他集成的操作函数足以完成我们大多数情况下(甚至是100%)的需要。我们可以用 = 进行赋值操作，== 进行比较，+ 做串联（是不是很简单?）。我们尽可以把它看成是C++的基本数据类型。
+    好了，进入正题………
+首先，为了在我们的程序中使用string类型，我们必须包含头文件 <string>。如下：
+</string></p>
+<pre><code class="lang-cpp lua">#include &lt;<span class="built_in">string</span>&gt; //注意这里不是<span class="built_in">string</span>.h <span class="built_in">string</span>.h是C字符串头文件</code></pre>
+<p>1．声明一个C++字符串
+声明一个字符串变量很简单：
+</p>
+<pre><code class="lang-cpp nginx"><span class="title">string</span> Str;</code></pre>
+<p>这样我们就声明了一个字符串变量，但既然是一个类，就有构造函数和析构函数。上面的声明没有传入参数，所以就直接使用了string的默认的构造函数，这个函数所作的就是把Str初始化为一个空字符串。String类的构造函数和析构函数如下：
+</p>
+<pre><code class="lang-cpp delphi">a)    <span class="keyword">string</span> s;  <span class="comment">//生成一个空字符串s</span>
+b)    <span class="keyword">string</span> s(str) <span class="comment">//拷贝构造函数 生成str的复制品</span>
+c)    <span class="keyword">string</span> s(str,stridx) <span class="comment">//将字符串str内“始于位置stridx”的部分当作字符串的初值</span>
+d)    <span class="keyword">string</span> s(str,stridx,strlen) <span class="comment">//将字符串str内“始于stridx且长度顶多strlen”的部分作为字符串的初值</span>
+e)    <span class="keyword">string</span> s(cstr) <span class="comment">//将C字符串作为s的初值</span>
+f)    <span class="keyword">string</span> s(chars,chars_len) <span class="comment">//将C字符串前chars_len个字符作为字符串s的初值。</span>
+g)    <span class="keyword">string</span> s(num,c) <span class="comment">//生成一个字符串，包含num个c字符</span>
+h)    <span class="keyword">string</span> s(beg,<span class="keyword">end</span>) <span class="comment">//以区间beg;end(不包含end)内的字符作为字符串s的初值</span>
+i)    s.~<span class="keyword">string</span>() <span class="comment">//销毁所有字符，释放内存</span></code></pre>
+<p>都很简单，我就不解释了。
+
+</p>
+<p>2．字符串操作函数
+这里是C++字符串的重点，我先把各种操作函数罗列出来，不喜欢把所有函数都看完的人可以在这里找自己喜欢的函数，再到后面看他的详细解释。
+
+</p>
+<pre><code class="lang-cpp haskell"><span class="title">a</span>) =,assign()   //赋以新值
+<span class="title">b</span>) swap()   //交换两个字符串的内容
+<span class="title">c</span>) +=,append(),push_back() //在尾部添加字符
+<span class="title">d</span>) insert() //插入字符
+<span class="title">e</span>) erase() //删除字符
+<span class="title">f</span>) clear() //删除全部字符
+<span class="title">g</span>) replace() //替换字符
+<span class="title">h</span>) + //串联字符串
+<span class="title">i</span>) ==,!=,&lt;,&lt;=,&gt;,&gt;=,compare()  //比较字符串
+<span class="title">j</span>) size(),length()  //返回字符数量
+<span class="title">k</span>) max_size() //返回字符的可能最大个数
+<span class="title">l</span>) empty()  //判断字符串是否为空
+<span class="title">m</span>) capacity() //返回重新分配之前的字符容量
+<span class="title">n</span>) reserve() //保留一定量内存以容纳一定数量的字符
+<span class="title">o</span>) [ ], at() //存取单一字符
+<span class="title">p</span>) &gt;&gt;,getline() //从stream读取某值
+<span class="title">q</span>) &lt;&lt;  //将谋值写入stream
+<span class="title">r</span>) copy() //将某值赋值为一个<span class="type">C_string</span>
+<span class="title">s</span>) c_str() //将内容以<span class="type">C_string</span>返回
+<span class="title">t</span>) <span class="typedef"><span class="keyword">data</span><span class="container">()</span> //将内容以字符数组形式返回</span>
+<span class="title">u</span>) substr() //返回某个子字符串
+<span class="title">v</span>)查找函数
+<span class="title">w</span>)begin() end() //提供类似<span class="type">STL</span>的迭代器支持
+<span class="title">x</span>) rbegin() rend() //逆向迭代器
+<span class="title">y</span>) get_allocator() //返回配置器</code></pre>
+<p>下面详细介绍：
+
+</p>
+<p>2．1 C++字符串和C字符串的转换
+
+</p>
+<pre><code class="haskell"><span class="type">C</span>++提供的由<span class="type">C</span>++字符串得到对应的<span class="type">C_string</span>的方法是使用<span class="typedef"><span class="keyword">data</span><span class="container">()</span>、c_str<span class="container">()</span>和copy<span class="container">()</span>，其中，<span class="keyword">data</span><span class="container">()</span>以字符数组的形式返回字符串内容，但并不添加’\0’。c_str<span class="container">()</span>返回一个以‘\0’结尾的字符数组，而copy<span class="container">()</span>则把字符串的内容复制或写入既有的c_string 或字符数组内。<span class="type">C</span>++字符串并不以’\0’结尾。我的建议是在程序中能使用<span class="type">C</span>++字符串就使用，除非万不得已不选用c_string。由于只是简单介绍，详细介绍掠过，谁想进一步了解使用中的注意事项可以给我留言<span class="container">(到我的收件箱)</span>。我详细解释。</span></code></pre>
+<p>2．2 大小和容量函数
+    一个C++字符串存在三种大小：a)现有的字符数，函数是size()和length()，他们等效。Empty()用来检查字符串是否为空。 b)max_size() 这个大小是指当前C++字符串最多能包含的字符数，很可能和机器本身的限制或者字符串所在位置连续内存的大小有关系。我们一般情况下不用关心他，应该大小足够我们用的。但是不够用的话，会抛出length_error异常c)capacity()重新分配内存之前 string所能包含的最大字符数。这里另一个需要指出的是reserve()函数，这个函数为string重新分配内存。重新分配的大小由其参数决定，默认参数为0，这时候会对string进行非强制性缩减。
+
+</p>
+<p>还有必要再重复一下C++字符串和C字符串转换的问题，许多人会遇到这样的问题，自己做的程序要调用别人的函数、类什么的（比如数据库连接函数 Connect(char<em>,char</em>)），但别人的函数参数用的是char<em>形式的，而我们知道，c_str()、data()返回的字符数组由该字符串拥有，所以是一种const char</em>,要想作为上面提及的函数的参数，还必须拷贝到一个char<em>,而我们的原则是能不使用C字符串就不使用。那么，这时候我们的处理方式是：如果此函数对参数(也就是char</em>)的内容不修改的话，我们可以这样Connect((char<em>)UserID.c_str(), (char</em>)PassWD.c_str()),但是这时候是存在危险的，因为这样转换后的字符串其实是可以修改的（有兴趣地可以自己试一试），所以我强调除非函数调用的时候不对参数进行修改，否则必须拷贝到一个char<em>上去。当然，更稳妥的办法是无论什么情况都拷贝到一个char</em>上去。同时我们也祈祷现在仍然使用C字符串进行编程的高手们（说他们是高手一点儿也不为过，也许在我们还穿开裆裤的时候他们就开始编程了，哈哈…）写的函数都比较规范，那样我们就不必进行强制转换了。
+
+</p>
+<p>2．3元素存取
+    我们可以使用下标操作符[]和函数at()对元素包含的字符进行访问。但是应该注意的是操作符[]并不检查索引是否有效（有效索引 0~str.length()），如果索引失效，会引起未定义的行为。而at()会检查，如果使用at()的时候索引无效，会抛出 out_of_range异常。
+    有一个例外不得不说，const string a;的操作符[]对索引值是a.length()仍然有效，其返回值是’\0’。其他的各种情况，a.length()索引都是无效的。举例如下：
+
+</p>
+<pre><code class="lang-cpp objectivec"><span class="keyword">const</span> string Cstr(“<span class="keyword">const</span> string”);
+string Str(“string”);
+
+Str[<span class="number">3</span>];    <span class="comment">//ok</span>
+Str<span class="variable">.at</span>(<span class="number">3</span>);  <span class="comment">//ok</span>
+
+Str[<span class="number">100</span>]; <span class="comment">//未定义的行为</span>
+Str<span class="variable">.at</span>(<span class="number">100</span>);  <span class="comment">//throw out_of_range</span>
+
+Str[Str<span class="variable">.length</span>()]  <span class="comment">//未定义行为</span>
+Cstr[Cstr<span class="variable">.length</span>()] <span class="comment">//返回 ‘\0’</span>
+Str<span class="variable">.at</span>(Str<span class="variable">.length</span>());<span class="comment">//throw out_of_range</span>
+Cstr<span class="variable">.at</span>(Cstr<span class="variable">.length</span>()) <span class="comment">////throw out_of_range</span></code></pre>
+<p>我不赞成类似于下面的引用或指针赋值：
+char&amp; r=s[2];
+char* p= &amp;s[3];
+
+</p>
+<p>因为一旦发生重新分配，r,p立即失效。避免的方法就是不使用。
+
+</p>
+<p>2．4比较函数
+    C++字符串支持常见的比较操作符（&gt;,&gt;=,&lt;,&lt;=,==,!=），甚至支持string与C-string的比较(如 str&lt;”hello”)。在使用&gt;,&gt;=,&lt;,&lt;=这些操作符的时候是根据“当前字符特性”将字符按字典顺序进行逐一得比较。字典排序靠前的字符小，比较的顺序是从前向后比较，遇到不相等的字符就按这个位置上的两个字符的比较结果确定两个字符串的大小。同时，string(“aaaa”) &lt;string(aaaaa)。
+    另一个功能强大的比较函数是成员函数compare()。他支持多参数处理，支持用索引值和长度定位子串来进行比较。他返回一个整数来表示比较结果，返回值意义如下：0-相等 〉0-大于 &lt;0-小于。举例如下：
+</p>
+<pre><code class="lang-cpp objectivec">string s(“abcd”);
+s<span class="variable">.compare</span>(“abcd”); <span class="comment">//返回0</span>
+s<span class="variable">.compare</span>(“dcba”); <span class="comment">//返回一个小于0的值</span>
+s<span class="variable">.compare</span>(“ab”); <span class="comment">//返回大于0的值</span>
+s<span class="variable">.compare</span>(s); <span class="comment">//相等</span>
+s<span class="variable">.compare</span>(<span class="number">0</span>,<span class="number">2</span>,s,<span class="number">2</span>,<span class="number">2</span>); <span class="comment">//用”ab”和”cd”进行比较 小于零</span>
+s<span class="variable">.compare</span>(<span class="number">1</span>,<span class="number">2</span>,”bcx”,<span class="number">2</span>); <span class="comment">//用”bc”和”bc”比较。</span></code></pre>
+<p>怎么样？功能够全的吧！什么？还不能满足你的胃口？好吧，那等着，后面有更个性化的比较算法。先给个提示，使用的是STL的比较算法。什么？对STL一窍不通？你重修吧！
+
+</p>
+<p>2．5 更改内容
+这在字符串的操作中占了很大一部分。
+首先讲赋值，第一个赋值方法当然是使用操作符=，新值可以是string(如：s=ns) 、c_string(如：s=”gaint”)甚至单一字符（如：s=’j’）。还可以使用成员函数assign()，这个成员函数可以使你更灵活的对字符串赋值。还是举例说明吧：
+</p>
+<pre><code class="lang-cpp objectivec">s<span class="variable">.assign</span>(str); <span class="comment">//直接</span>
+s<span class="variable">.assign</span>(str,<span class="number">1</span>,<span class="number">3</span>);<span class="comment">//如果str是”iamangel” 就是把”ama”赋给字符串</span>
+s<span class="variable">.assign</span>(str,<span class="number">2</span>,string::npos);<span class="comment">//把字符串str从索引值2开始到结尾赋给s</span>
+s<span class="variable">.assign</span>(“gaint”); <span class="comment">//不说</span>
+s<span class="variable">.assign</span>(“nico”,<span class="number">5</span>);<span class="comment">//把’n’ ‘I’ ‘c’ ‘o’ ‘\0’赋给字符串</span>
+s<span class="variable">.assign</span>(<span class="number">5</span>,’x’);<span class="comment">//把五个x赋给字符串</span></code></pre>
+<p>把字符串清空的方法有三个：s=””;s.clear();s.erase();(我越来越觉得举例比说话让别人容易懂！)。
+string提供了很多函数用于插入（insert）、删除（erase）、替换（replace）、增加字符。
+先说增加字符（这里说的增加是在尾巴上），函数有 +=、append()、push_back()。举例如下：
+</p>
+<pre><code class="lang-cpp objectivec">s+=str;<span class="comment">//加个字符串</span>
+s+=”my name is jiayp”;<span class="comment">//加个C字符串</span>
+s+=’a’;<span class="comment">//加个字符</span>
+
+s<span class="variable">.append</span>(str);
+s<span class="variable">.append</span>(str,<span class="number">1</span>,<span class="number">3</span>);<span class="comment">//不解释了 同前面的函数参数assign的解释</span>
+s<span class="variable">.append</span>(str,<span class="number">2</span>,string::npos)<span class="comment">//不解释了</span>
+
+s<span class="variable">.append</span>(“my name is jiayp”);
+s<span class="variable">.append</span>(“nico”,<span class="number">5</span>);
+s<span class="variable">.append</span>(<span class="number">5</span>,’x’);
+
+s<span class="variable">.push_back</span>(‘a’);<span class="comment">//这个函数只能增加单个字符 对STL熟悉的理解起来很简单</span></code></pre>
+<p>也许你需要在string中间的某个位置插入字符串，这时候你可以用insert()函数，这个函数需要你指定一个安插位置的索引，被插入的字符串将放在这个索引的后面。
+</p>
+<pre><code class="lang-cpp sql">    s.<span class="operator"><span class="keyword">insert</span>(<span class="number">0</span>,”my name”);</span>
+    s.<span class="operator"><span class="keyword">insert</span>(<span class="number">1</span>,str);</span></code></pre>
+<p>这种形式的insert()函数不支持传入单个字符，这时的单个字符必须写成字符串形式(让人恶心)。既然你觉得恶心，那就不得不继续读下面一段话：为了插入单个字符，insert()函数提供了两个对插入单个字符操作的重载函数：insert(size_type index,size_type num,chart c)和insert(iterator pos,size_type num,chart c)。其中size_type是无符号整数，iterator是char*,所以，你这么调用insert函数是不行的：insert(0,1,’j’);这时候第一个参数将转换成哪一个呢？所以你必须这么写：insert((string::size_type)0,1,’j’)！第二种形式指出了使用迭代器安插字符的形式，在后面会提及。顺便提一下，string有很多操作是使用STL的迭代器的，他也尽量做得和STL靠近。
+删除函数erase()的形式也有好几种（真烦！），替换函数replace()也有好几个。举例吧：
+
+</p>
+<pre><code class="lang-cpp objectivec">string s=”il8n”;
+s<span class="variable">.replace</span>(<span class="number">1</span>,<span class="number">2</span>,”nternationalizatio”);<span class="comment">//从索引1开始的2个替换成后面的C_string</span>
+s<span class="variable">.erase</span>(<span class="number">13</span>);<span class="comment">//从索引13开始往后全删除</span>
+s<span class="variable">.erase</span>(<span class="number">7</span>,<span class="number">5</span>);<span class="comment">//从索引7开始往后删5个</span></code></pre>
+<p>2．6提取子串和字符串连接
+
+</p>
+<p>题取子串的函数是：substr(),形式如下：
+</p>
+<pre><code class="lang-cpp objectivec">s<span class="variable">.substr</span>();<span class="comment">//返回s的全部内容</span>
+s<span class="variable">.substr</span>(<span class="number">11</span>);<span class="comment">//从索引11往后的子串</span>
+s<span class="variable">.substr</span>(<span class="number">5</span>,<span class="number">6</span>);<span class="comment">//从索引5开始6个字符</span></code></pre>
+<p>把两个字符串结合起来的函数是+。（谁不明白请致电120）
+
+</p>
+<p>2．7输入输出操作
+1．&gt;&gt; 从输入流读取一个string。
+2．&lt;&lt; 把一个string写入输出流。
+另一个函数就是getline(),他从输入流读取一行内容，直到遇到分行符或到了文件尾。
+
+</p>
+<p>2．8搜索与查找
+查找函数很多，功能也很强大，包括了：
+</p>
+<pre><code class="lang-cpp matlab">    <span class="built_in">find</span>()
+    rfind()
+    find_first_of()
+    find_last_of()
+    find_first_not_of()
+    find_last_not_of()</code></pre>
+<p>这些函数返回符合搜索条件的字符区间内的第一个字符的索引，没找到目标就返回npos。所有的函数的参数说明如下：
+第一个参数是被搜寻的对象。第二个参数（可有可无）指出string内的搜寻起点索引，第三个参数（可有可无）指出搜寻的字符个数。比较简单，不多说 不理解的可以向我提出，我再仔细的解答。当然，更加强大的STL搜寻在后面会有提及。
+最后再说说npos的含义，string::npos的类型是string::size_type,所以，一旦需要把一个索引与npos相比，这个索引值必须是string::size)type类型的，更多的情况下，我们可以直接把函数和npos进行比较（如：if(s.find(“jia”)==string::npos)）。
+
+</p>
+<p>任何人对本文进行引用都要标明作者是Nicolai M.Josuttis 译者是侯捷/孟岩</p>
+<section class="related-post"><h2>相關日誌</h2><ul><li><a href="http://www.byvoid.com/blog/sort-radix">三种线性排序算法 计数排序、桶排序与基数排序</a></li><li><a href="http://www.byvoid.com/blog/cpp-fstream">C++中fstream的用法</a></li><li><a href="http://www.byvoid.com/blog/why-functional-programming">函数式程序设计为什么至关重要</a></li><li><a href="http://www.byvoid.com/blog/c-effect">C语言高效编程的的四大绝招</a></li><li><a href="http://www.byvoid.com/blog/scc-tarjan">有向图强连通分量的Tarjan算法</a></li><li><a href="http://www.byvoid.com/blog/c-string">C语言字符串函数大全</a></li><li><a href="http://www.byvoid.com/blog/fast-readfile">探寻C++最快的读取文件的方案</a></li><li><a href="http://www.byvoid.com/blog/linux-c-1">Linux C语言编程学习笔记 (1)进程控制入门</a></li><li><a href="http://www.byvoid.com/blog/lcs-suffix-array">最长公共子串问题的后缀数组解法</a></li><li><a href="http://www.byvoid.com/blog/hungary">匈牙利算法</a></li></ul></section></section></article><div id="disqus_thread"><iframe id="dsq1" data-disqus-uid="1" allowtransparency="true" frameborder="0" role="complementary" width="100%" src="./03_C++ string_files/saved_resource.htm" style="width: 100%; border: none; overflow: hidden; height: 1493px;" scrolling="no" horizontalscrolling="no" verticalscrolling="no"></iframe><iframe id="dsq2" data-disqus-uid="2" allowtransparency="true" frameborder="0" role="application" width="100%" src="./03_C++ string_files/client.htm" style="width: 100%; border: none; overflow: hidden; height: 0px; display: none;"></iframe></div></section><aside id="content-side"><div class="sidebarBox widget_search"><form id="searchform" role="search" method="get" action="https://www.google.com/cse" target="_blank"><label for="s" class="screen-reader-text">Search for:</label><input id="s" type="text" value="" name="q" placeholder="Search this site..."><input type="hidden" name="cx" value="partner-pub-7100557222552278:h6n6am-u2fu"><input type="hidden" name="ie" value="UTF-8"><input name="siteurl" type="hidden" value="www.byvoid.com"><input id="searchsubmit" type="submit" value="Search"></form></div><div class="sidebarBox"><h4>語言</h4><ul><li><a href="./03_C++ string_files/03_C++ string.htm">原文</a></li><li><a href="http://www.byvoid.com/zht/blog/cpp-string">正體中文</a></li><li><a href="http://www.byvoid.com/zhs/blog/cpp-string">簡體中文</a></li><li><a href="http://www.byvoid.com/en/blog/cpp-string">English</a></li></ul></div><div class="sidebarBox"><h4>分類</h4><ul><li><a href="http://www.byvoid.com/blog/tag/%E4%B8%AD%E6%96%87%E8%88%87%E6%BC%A2%E8%AA%9E">中文與漢語</a></li><li><a href="http://www.byvoid.com/blog/tag/%E7%94%9F%E6%B4%BB%E9%BB%9E%E6%BB%B4">生活點滴</a></li><li><a href="http://www.byvoid.com/blog/tag/%E7%A8%B7%E4%B8%8B%E5%AD%B8%E5%AE%AE">稷下學宮</a></li><li><a href="http://www.byvoid.com/blog/tag/%E7%B2%BE%E8%8F%AF%E8%BD%89%E8%BC%89">精華轉載</a></li><li><a href="http://www.byvoid.com/blog/tag/%E8%87%AA%E5%A8%9B%E8%87%AA%E6%A8%82">自娛自樂</a></li><li><a href="http://www.byvoid.com/blog/tag/%E8%A8%AD%E8%A8%88%E9%96%8B%E7%99%BC">設計開發</a></li><li><a href="http://www.byvoid.com/blog/tag/%E9%BB%9E%E6%BB%B4%E7%99%BC%E7%8F%BE">點滴發現</a></li><li><a href="http://www.byvoid.com/blog/tag/%E8%A8%88%E7%AE%97%E6%A9%9F%E7%A7%91%E5%AD%B8">計算機科學</a></li><li><a href="http://www.byvoid.com/blog/tag/%E7%AB%B6%E8%B3%BD%E9%A1%8C%E8%A7%A3">競賽題解</a></li><li><a href="http://www.byvoid.com/blog/tag/%E7%AB%B6%E8%B3%BD%E6%AD%B7%E7%A8%8B">競賽歷程</a></li><li><a href="http://www.byvoid.com/blog/tag/JavaScript">JavaScript</a></li></ul></div><div class="sidebarBox"><h4>最熱門</h4><ul><li><a href="http://www.byvoid.com/blog/scc-tarjan">有向图强连通分量的Tarjan算法</a> - 70470</li><li><a href="./03_C++ string_files/03_C++ string.htm">C++ string 用法详解</a> - 43529</li><li><a href="http://www.byvoid.com/blog/bh-diao-cao">避諱借字——“屌”、“肏”、“屄”</a> - 40097</li><li><a href="http://www.byvoid.com/blog/recommend-rime">推薦一個神級輸入法——Rime</a> - 38702</li><li><a href="http://www.byvoid.com/blog/biconnect">图的割点、桥与双连通分支</a> - 23951</li><li><a href="http://www.byvoid.com/blog/string-hash-compare">各种字符串Hash函数比较</a> - 20673</li><li><a href="http://www.byvoid.com/blog/cpp-fstream">C++中fstream的用法</a> - 20156</li><li><a href="http://www.byvoid.com/blog/recent-one-year">這一年來</a> - 18157</li><li><a href="http://www.byvoid.com/blog/fast-readfile">探寻C++最快的读取文件的方案</a> - 17013</li><li><a href="http://www.byvoid.com/blog/gjqt-plot">『古劍奇譚』劇情梗概</a> - 16583</li><li><a href="http://www.byvoid.com/blog/hungary">匈牙利算法</a> - 15038</li><li><a href="http://www.byvoid.com/blog/c-int64">C/C++的64位整型</a> - 11488</li><li><a href="http://www.byvoid.com/blog/http-keep-alive-header">HTTP协议头部与Keep-Alive模式详解</a> - 11445</li><li><a href="http://www.byvoid.com/blog/noip-allsolutions">NOIP2000-2007 全部题解</a> - 10245</li><li><a href="http://www.byvoid.com/blog/pal5-comment">仙劍奇俠傳五破關之談</a> - 9735</li><li><a href="http://www.byvoid.com/blog/lpf24-solution">线性规划与网络流24题 解题报告</a> - 9651</li><li><a href="http://www.byvoid.com/blog/kyonh">廣韻查詢系統</a> - 9230</li><li><a href="http://www.byvoid.com/blog/lcs-suffix-array">最长公共子串问题的后缀数组解法</a> - 8711</li><li><a href="http://www.byvoid.com/blog/match-km">二分图带权匹配 KM算法与费用流模型建立</a> - 8621</li><li><a href="http://www.byvoid.com/blog/linux-ssh-wall">Linux下实现自动设置SSH代理</a> - 7951</li><li><a href="http://www.byvoid.com/blog/noi-2008-employee">NOI 2008 志愿者招募 employee</a> - 7906</li><li><a href="http://www.byvoid.com/blog/mandarin-altaic">普通話是胡語嗎？</a> - 7858</li><li><a href="http://www.byvoid.com/blog/pal5q-comment">仙劍五前傳淺析</a> - 7787</li><li><a href="http://www.byvoid.com/blog/vim-syntex">Vim 语法高亮与自动缩进</a> - 7610</li><li><a href="http://www.byvoid.com/blog/c-string">C语言字符串函数大全</a> - 7398</li><li><a href="http://www.byvoid.com/blog/linux-c-1">Linux C语言编程学习笔记 (1)进程控制入门</a> - 7007</li><li><a href="http://www.byvoid.com/blog/pa-origin">注音符號的由來</a> - 6922</li><li><a href="http://www.byvoid.com/blog/2-sp-mst">次短路径与次小生成树问题的简单解法</a> - 6423</li><li><a href="http://www.byvoid.com/blog/ubuntu-wine-wow">Ubuntu下用wine玩魔兽世界</a> - 6196</li><li><a href="http://www.byvoid.com/blog/talk-about-cina">說說「支那」</a> - 6024</li></ul></div><div class="sidebarBox"><h4>存檔</h4><ul><li><a href="http://www.byvoid.com/blog/archive/2013/5">2013年五月</a> (4)</li><li><a href="http://www.byvoid.com/blog/archive/2013/4">2013年四月</a> (4)</li><li><a href="http://www.byvoid.com/blog/archive/2013/3">2013年三月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2013/2">2013年二月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2013/1">2013年一月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2012/12">2012年十二月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2012/9">2012年九月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2012/8">2012年八月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2012/7">2012年七月</a> (3)</li><li><a href="http://www.byvoid.com/blog/archive/2012/6">2012年六月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2012/5">2012年五月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2012/4">2012年四月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2012/3">2012年三月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2012/2">2012年二月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2012/1">2012年一月</a> (8)</li><li><a href="http://www.byvoid.com/blog/archive/2011/12">2011年十二月</a> (13)</li><li><a href="http://www.byvoid.com/blog/archive/2011/11">2011年十一月</a> (3)</li><li><a href="http://www.byvoid.com/blog/archive/2011/10">2011年十月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2011/9">2011年九月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2011/8">2011年八月</a> (3)</li><li><a href="http://www.byvoid.com/blog/archive/2011/7">2011年七月</a> (3)</li><li><a href="http://www.byvoid.com/blog/archive/2011/6">2011年六月</a> (6)</li><li><a href="http://www.byvoid.com/blog/archive/2011/5">2011年五月</a> (4)</li><li><a href="http://www.byvoid.com/blog/archive/2011/4">2011年四月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2011/2">2011年二月</a> (3)</li><li><a href="http://www.byvoid.com/blog/archive/2010/12">2010年十二月</a> (4)</li><li><a href="http://www.byvoid.com/blog/archive/2010/11">2010年十一月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2010/10">2010年十月</a> (3)</li><li><a href="http://www.byvoid.com/blog/archive/2010/9">2010年九月</a> (3)</li><li><a href="http://www.byvoid.com/blog/archive/2010/8">2010年八月</a> (7)</li><li><a href="http://www.byvoid.com/blog/archive/2010/6">2010年六月</a> (5)</li><li><a href="http://www.byvoid.com/blog/archive/2010/5">2010年五月</a> (11)</li><li><a href="http://www.byvoid.com/blog/archive/2010/4">2010年四月</a> (10)</li><li><a href="http://www.byvoid.com/blog/archive/2010/3">2010年三月</a> (12)</li><li><a href="http://www.byvoid.com/blog/archive/2010/2">2010年二月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2010/1">2010年一月</a> (10)</li><li><a href="http://www.byvoid.com/blog/archive/2009/12">2009年十二月</a> (5)</li><li><a href="http://www.byvoid.com/blog/archive/2009/11">2009年十一月</a> (11)</li><li><a href="http://www.byvoid.com/blog/archive/2009/10">2009年十月</a> (13)</li><li><a href="http://www.byvoid.com/blog/archive/2009/9">2009年九月</a> (6)</li><li><a href="http://www.byvoid.com/blog/archive/2009/8">2009年八月</a> (2)</li><li><a href="http://www.byvoid.com/blog/archive/2009/7">2009年七月</a> (9)</li><li><a href="http://www.byvoid.com/blog/archive/2009/6">2009年六月</a> (14)</li><li><a href="http://www.byvoid.com/blog/archive/2009/5">2009年五月</a> (16)</li><li><a href="http://www.byvoid.com/blog/archive/2009/4">2009年四月</a> (28)</li><li><a href="http://www.byvoid.com/blog/archive/2009/3">2009年三月</a> (21)</li><li><a href="http://www.byvoid.com/blog/archive/2009/2">2009年二月</a> (18)</li><li><a href="http://www.byvoid.com/blog/archive/2009/1">2009年一月</a> (6)</li><li><a href="http://www.byvoid.com/blog/archive/2008/12">2008年十二月</a> (22)</li><li><a href="http://www.byvoid.com/blog/archive/2008/11">2008年十一月</a> (21)</li><li><a href="http://www.byvoid.com/blog/archive/2008/10">2008年十月</a> (24)</li><li><a href="http://www.byvoid.com/blog/archive/2008/9">2008年九月</a> (6)</li><li><a href="http://www.byvoid.com/blog/archive/2008/8">2008年八月</a> (12)</li><li><a href="http://www.byvoid.com/blog/archive/2008/7">2008年七月</a> (20)</li><li><a href="http://www.byvoid.com/blog/archive/2008/6">2008年六月</a> (23)</li><li><a href="http://www.byvoid.com/blog/archive/2008/4">2008年四月</a> (29)</li><li><a href="http://www.byvoid.com/blog/archive/2008/3">2008年三月</a> (8)</li><li><a href="http://www.byvoid.com/blog/archive/2008/2">2008年二月</a> (1)</li><li><a href="http://www.byvoid.com/blog/archive/2008/1">2008年一月</a> (6)</li><li><a href="http://www.byvoid.com/blog/archive/2007/12">2007年十二月</a> (3)</li><li><a href="http://www.byvoid.com/blog/archive/2007/11">2007年十一月</a> (22)</li></ul></div></aside></div><footer id="footer"><div class="container clearfix"><div class="first one-fourth widget-container"><h1>Recent Posts</h1><ul><li><a href="http://www.byvoid.com/blog/why-speculation-benefits">爲什麼投機是有益的</a></li><li><a href="http://www.byvoid.com/blog/cpp-most-vexing-parse">C++語法分析中最讓人頭疼的歧義</a></li><li><a href="http://www.byvoid.com/blog/information-asymmetry-hurts-you">你不知道的東西正在傷害你——淺談信息不對稱</a></li><li><a href="http://www.byvoid.com/blog/cpp-constructor-exception">如何處理C++構造函數中的錯誤——兼談不同語言的錯誤處理</a></li><li><a href="http://www.byvoid.com/blog/pagerank-go">用Go語言計算PageRank</a></li></ul></div><div class="one-fourth widget-container"><h1>Blogroll</h1><ul><li><a href="http://aifreedom.com/" target="_blank">AIFreedom</a></li><li><a href="http://maskray.me/" target="_blank">MaskRay</a></li><li><a href="http://blog.blahgeek.com/" target="_blank">BlahGeek</a></li><li><a href="http://yangzhe1990.wordpress.com/" target="_blank">Yangzhe1990's Blog</a></li><li><a href="http://dangfan.me/" target="_blank">Dang Fan's Blog</a></li></ul></div><div class="one-fourth widget-container"><h1>Blogroll</h1><ul><li><a href="http://www.curimit.com/blog/" target="_blank">Swj's Home</a></li><li><a href="http://www.csslayer.info/" target="_blank">CS Slayer</a></li><li><a href="http://typeof.net/" target="_blank">Typeof.net</a></li><li><a href="http://blog.henryhu.net/" target="_blank">Henry's Blog</a></li><li><a href="http://blog.sina.com.cn/ychromosome" target="_blank">polyhedron(古韻)</a></li></ul></div><div class="last one-fourth widget-container"><h1>Blogroll</h1><ul><li><a href="http://zhiqiang.org/blog/" target="_blank">閱微堂</a></li><li><a href="http://www.liyaos.com/" target="_blank">優哉幽齋</a></li><li><a href="http://www.vuryleo.com/blog/" target="_blank">超越時空</a></li><li><a href="http://www.liuhanyu.com/" target="_blank">不安靜的書桌</a></li><li><a href="http://solog.me/" target="_blank">獨異誌</a></li></ul></div></div><div id="copyrights"><div class="container clearfix"><span class="right"><a href="http://www.byvoid.com/blog/cpp-string#" class="backtotop">↑</a></span>Originally designed by Site5 WordPress Themes. BYVoid refactored with Node.js, less, jade and CoffeeScript.</div></div></footer></div><script src="./03_C++ string_files/script-a7cfffb9f102fb4d317f28432dc657ed.js"></script><script type="text/javascript">var disqus_shortname = 'byvoid';
+var disqus_identifier = '230236d01a';
+var disqus_url = location.protocol + '//' + location.host + '/' + 'blog/cpp-string';
+var disqus_title = 'C++ string 用法详解';
+var disqus_developer = 1;
+(function() {
+var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><div style="display:none"><script language="javascript" type="text/javascript" src="./03_C++ string_files/2876281.js"></script><a href="http://www.51.la/?2876281" target="_blank"><img alt="51.la 专业、免费、强健的访问统计" src="./03_C++ string_files/icon_2.gif" style="border:none"></a>
+<img style="width:0px;height:0px" src="./03_C++ string_files/go.asp"><noscript>&lt;a href="http://www.51.la/?2876281" target="_blank"&gt;&lt;img alt="&amp;#x6211;&amp;#x8981;&amp;#x5566;&amp;#x514D;&amp;#x8D39;&amp;#x7EDF;&amp;#x8BA1;" src="http://img.users.51.la/2876281.asp" style="border:none" /&gt;&lt;/a&gt;</noscript></div><div id="fancybox-tmp"></div><div id="fancybox-loading"><div></div></div><div id="fancybox-overlay"></div><div id="fancybox-wrap"><div id="fancybox-outer"><div class="fancybox-bg" id="fancybox-bg-n"></div><div class="fancybox-bg" id="fancybox-bg-ne"></div><div class="fancybox-bg" id="fancybox-bg-e"></div><div class="fancybox-bg" id="fancybox-bg-se"></div><div class="fancybox-bg" id="fancybox-bg-s"></div><div class="fancybox-bg" id="fancybox-bg-sw"></div><div class="fancybox-bg" id="fancybox-bg-w"></div><div class="fancybox-bg" id="fancybox-bg-nw"></div><div id="fancybox-content"></div><a id="fancybox-close"></a><div id="fancybox-title"></div><a href="javascript:;" id="fancybox-left"><span class="fancy-ico" id="fancybox-left-ico"></span></a><a href="javascript:;" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span></a></div></div></body></html>

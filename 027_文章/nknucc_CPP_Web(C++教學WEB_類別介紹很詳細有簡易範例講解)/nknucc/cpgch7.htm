@@ -1,0 +1,611 @@
+<!--- file: cpgchpt7.htm
+      symbols: ，、。．‧；：？！·
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 7 章  延伸性資料型態</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 7 章   延伸性 資料型態</B></CENTER>
+<P>
+在本章中 將 介紹 C 程式 使用者定義的 struct 資料型態，
+基本上是利用 資料型態 如  char (字元)、
+int (整數)、 float (浮點)、 double (倍準浮點)、 指標
+陣列、 與使用者定義的 資料型態等的 混合體， 用來達到資料
+的抽象化 (data abstraction)。 其好處是 資料概念的具體化 
+及 資料表達的簡化。
+<P>
+同時亦將介紹  enum 及 union 資料型態。
+<p>
+對於 struct 資料型態以 平面上點的 座標為例來說明，
+平面上一點的 座標是由 x 座標與 y 座標所構成， 因此， 一點的資料結構
+可以由兩個 int 的資料構成， 其中一個 int 代表 x 座標， 另一個
+int 代表 y 座標。 
+<p> 
+經由 struct 來宣告一資料型態 point 如下:
+<TT><PRE>        struct point{
+            int x, y;
+        };
+</PRE></TT>
+<P>
+   定義三個 point 變數 p1， p2 與 p3，如下：
+<TT><PRE>        struct point p1, p2, p3;
+</PRE></TT>
+<P>
+   如此一來， 變數 p1， p2 與 p3 代表了平面上三個點。 又，如果有一函數
+   Area 可計算由三個頂點所構成的三角形的面積， 其宣告如下：
+<TT><PRE>        float Area(struct point , struct point, struct point);
+</PRE></TT>
+<P>
+   計算 由三個頂點 p1， p2 與 p3 所構成的三角形的面積， 可以呼叫函數 Area 如下：
+<TT><PRE>        tri_area = Area(p1, p2, p3);
+</PRE></TT>
+如果有一函數
+   mass_center 可計算由三個頂點所構成的三角形的重心， 其宣告如下：
+<TT><PRE>        struct point mass_center(struct point , struct point, struct point);
+</PRE></TT>
+<P>
+   計算 由三個頂點 p1， p2 與 p3 所構成的三角形的重心， 可以呼叫函數 mass_center 如下：
+<TT><PRE>        p4 = mass_center(p1, p2, p3);
+</PRE></TT>
+<P>
+  於 第 7.1 節與 第 7.2 節中將介紹 延伸性資料型態的宣告與使用，
+  於 第 7.3 節 介紹 資料型態 的命名法 typedef，以收 "詞達意" 的效果，
+  於 第 7.4 節與 第 7.5 節中將介紹兩個 延伸性資料型態 enum 及 union。<BR>
+  於 第 7.6 節將介紹 延伸性資料型態 struct longint。
+  資料型態 struct longint 主要是用來處理 100 位數 整數的
+  加、減、乘、除運算。
+
+<P>
+<A NAME="start">
+
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 7.1 節 <A href="#first">struct 資料型態的宣告</A>
+  <LI>第 7.2 節 <A href="#second">struct 資料型態的使用</A>
+    <UL TYPE=circle>
+      <LI>第 7.2.1 節 <A href="#second1">struct 資料型態的變數</A>
+      <LI>第 7.2.2 節 <A href="#second2">分量</A>
+      <LI>第 7.2.3 節 <A href="#second3">起始值的設定</A>
+      <LI>第 7.2.4 節 <A href="#second4">指標與分量</A>
+      <LI>第 7.2.5 節 <A href="#second5">延伸性資料型態的函數</A>
+    </UL>
+  <LI>第 7.3 節 <A href="#third">typedef</A>
+  <LI>第 7.4 節 <A href="#fourth">enum 資料型態</A>
+  <LI>第 7.5 節 <A href="#fifth">union 資料型態</A>
+  <LI>第 7.6 節 <A href="#sixth">延伸性資料型態：struct longint</A>
+</UL>
+<P>
+<A href="cpgch6.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch6.htm">回第 6 章</A><BR>
+<A href="cpgch8.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch8.htm">至第 8 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<HR>
+<!--------------------第 7.1 節--------------------------------------->
+<A NAME="first">
+<P>
+  <B>第 7.1 節  延伸性資料型態的宣告</B>
+<P>
+      C 的 延伸性資料型態的宣告，其語法如下：
+<P>
+<TT><PRE>
+          struct 延伸性資料型態的名稱
+          { 資料型態  變數名稱, ..., 變數名稱;
+                 .
+                 .
+                 .
+          };
+</TT></PRE>
+<P>
+例如， 在本章前面所見 平面上 點的 座標資料結構的宣告：
+<TT><PRE>
+          struct point{
+              int x, y;
+          };
+</PRE></TT>
+<p>
+該資料型態的名稱為  struct point。
+<P>
+注意: 
+<UL>
+   <LI>延伸性資料型態的名稱必須加上 "struct"。
+   <LI>延伸性資料型態的宣告不像變數一般占有記憶體空間。
+</UL>
+<P>
+經由點座標的 資料結構，我們可定出一些平面的幾何圖形，
+如 線段、三角形、矩形、圓形、橢圓、多邊形等：<br>
+<TT><PRE>
+          struct lineSegment{   /* 線段由兩個頂點所構成 */
+              struct point p1, p2; 
+          };
+          struct triangle{    /* p1, p2, p3 為三角形的三個頂點 */
+              struct point p1, p2, p3;   
+          };
+          struct rectangle{   /* 矩形由左上角及右下角所構成 */
+              struct point topLeft, bottmRight; 
+          };
+          struct circle{      /* 圓由圓心及半徑所構成 */
+              struct point center;
+                       int radius;
+          };
+          struct ellipse{   /* 橢圓的矩形範圍 */
+              struct point topLeft, bottmRight; 
+          };
+          struct polygon{      /* 多邊形由多個點所構成 */
+              struct point *pointArray;
+          };
+</PRE></TT>
+<B>問題</B>：如果一個畫板是由 這些 幾何圖形所構成， 其資料結構 該如何設定？
+(暫時不管畫筆的粗細及色彩的問題)
+<p>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 7.2 節--------------------------------------->
+<A NAME="second">
+      <B>第 7.2 節  延伸性資料型態的使用</B>
+<P>
+   延伸性資料型態的宣告不像變數一般占有記憶體空間， 其使用方式
+   如同基本資料型態一般。
+<P>
+<A NAME="second1">
+<P>
+      <B>第 7.2.1 節  延伸性資料型態的變數</B>
+<P>
+延伸性資料型態變數的定義 如同 基本資料型態變數的定義 一般， 其格式如下:
+<TT><PRE>
+          struct 延伸性資料型態名稱  變數名稱[, 變數名稱];
+</PRE></TT>
+<P>
+如在本章前面所見， 平面上 三個點的 變數 p1、 p2、 與 p3， 其定義為
+<TT><PRE>          struct point p1, p2, p3;
+</PRE></TT>
+或者可定義一個三角形如：
+<TT><PRE>          struct triangle aTriangle;
+</PRE></TT>
+<P>
+<A NAME="second2">
+<P>
+      <B>第 7.2.2 節  分量</B>
+<P>
+對於 struct 延伸性資料型態 變數的設定、 更改、與比較，
+經常要 使用到 struct 變數的分量， 即構成該 struct 資料型態 的成員，
+例如：<br>
+<TT><PRE>          struct point p1, p2, p3;
+</PRE></TT>
+struct 變數 p1 有兩個分量 p1.x 與 p1.y， 如果 p1 的座標欲設定為 (2, 3)，
+我們可以下列指派指令來設定：
+<TT><PRE>          p1.x = 2;
+          p1.y = 3;
+</PRE></TT>
+<P>
+p1 與 p2 為同一資料型態， 我們可以下列指派指令來設定 p2：
+<TT><PRE>          p2 = p1;
+</PRE></TT>
+如此一來， p2 各個分量的值與 p2 各個分量的值 都相同，
+當然， 我們可以用下列方式來達到相同目的， 不過是較煩一些。
+<TT><PRE>          p2.x = p1.x;
+          p2.y = p1.y;
+</PRE></TT>
+<p>
+又如：<br>
+<TT><PRE>          struct triangle aTriangle;
+</PRE></TT>
+struct 變數 aTriangle 有三個分量 aTriangle.p1， aTriangle.p2
+與 aTriangle.p3。 欲設定該三角形的三個頂點為 (1, 2)， (8, 1) 與 (4, 5)
+可以下列方式來設定：
+<TT><PRE>          aTriangle.p1.x = 1;
+          aTriangle.p1.y = 2;
+          aTriangle.p2.x = 8;
+          aTriangle.p2.y = 1;
+          aTriangle.p3.x = 4;
+          aTriangle.p3.y = 5;
+</PRE></TT>
+<p>
+<A NAME="second3">
+<P>
+      <B>第 7.2.3 節  起始值的設定</B>
+<P>
+struct 變數起始值的設定如同 陣列起始值的設定，
+例如: 
+<TT><PRE>#include &lt;stdio.h&gt;
+
+struct point{
+     int x, y;
+};
+struct triangle{    /* p1, p2, p3 為三角形的三個頂點 */
+     struct point p1, p2, p3;   
+};
+
+void main(){
+     <B>struct point p1 = {1, 2}; /* p1 起始值的設定 */
+     struct triangle aTriangle1 = 
+            { 2, 2, 8, 1, 5, 6 };/* aTriangle1 起始值的設定 */
+     struct triangle aTriangle2 =
+            { {1, 1}, {8, 2}, {5, 4} };/* aTriangle2 起始值的設定 */
+</B>
+     printf("The coordinate of the point p1 is (%d, %d).\n", p1.x, p1.y);
+     printf("The coordinates of the vertices of the triangle1 is\n");
+     printf("(%d, %d), (%d, %d), and (%d, %d).\n", 
+             aTriangle1.p1.x, aTriangle1.p1.y, 
+             aTriangle1.p2.x, aTriangle1.p2.y,
+             aTriangle1.p3.x, aTriangle1.p3.y);
+}
+</PRE></TT>
+該程式的執行結果為：
+<TT><PRE>
+The coordinate of the point p1 is (1, 2).
+The coordinates of the vertices of the triangle1 is
+(2, 2), (8, 1), and (5, 6).
+</PRE></TT>
+<P>
+<A NAME="second4">
+<P>
+      <B>第 7.2.4 節  指標與分量</B>
+<P>
+struct 變數是以 "<code>.</code>" 來涉及分量，對於 struct 指標變數是以 "<code>-></code>" 來涉及分量，
+以例說明如下：
+<TT><PRE>#include &lt;stdio.h&gt;
+struct point{
+     int x, y;
+};
+void main(){
+     struct point p1;
+     struct point *pp;
+
+     pp = &p1;
+<B>     pp->x = 1;
+     pp->y = 2;</B>
+     printf("The coordinate of the point p1 is (%d, %d).\n", p1.x, p1.y);
+}
+</PRE></TT>
+該程式的執行結果為：
+<TT><PRE>The coordinate of the point p1 is (1, 2).
+</PRE></TT>
+對於 struct 指標變數 也可以用 "<code>.</code>" 來涉及分量如下：
+<TT><PRE><B>     pp->x = 1;
+     pp->y = 2;</B>
+</PRE></TT>
+與
+<TT><PRE><B>     (*pp).x = 1;
+     (*pp).y = 2;</B>
+</PRE></TT>
+是相同的。
+<P>
+<A NAME="second5">
+<P>
+      <B>第 7.2.5 節  延伸性資料型態的函數</B>
+<P>
+函數參數的傳遞， 不僅可傳基本型態， 亦可傳 struct 資料型態。
+函數值的回傳， 亦是如此。
+例如:
+<TT><PRE>#include &lt;stdio.h&gt;
+struct point{
+     int x, y;
+};
+struct triangle{    /* p1, p2, p3 為三角形的三個頂點 */
+     struct point p1, p2, p3;   
+};
+<B>
+/* procedure mass_center is to compute the mass center of a triangle with
+   3 given vertices
+*/
+struct point mass_center(struct triangle a)
+{
+   struct point p;
+   p.x = (a.p1.x + a.p2.x + a.p3.x)/3;
+   p.y = (a.p1.y + a.p2.y + a.p3.y)/3;
+   return p;
+}
+</B>
+void main(){ 
+     struct triangle aTriangle = { 2, 2, 8, 1, 5, 6 };
+     struct point pt;
+
+     pt = mass_center(aTriangle);
+     printf("The mass center of the triangle is (%d, %d)\n", p.x, p.y);
+}                                                             
+</PRE></TT>
+該程式的執行結果為：
+<TT><PRE>
+The mass center of the triangle is (5, 3).
+</PRE></TT>
+<P>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 7.3 節--------------------------------------->
+<A NAME="third">
+      <B>第 7.3 節  typedef</B>
+<P>
+<DL><DT>typedef 宣告語法：
+      <DD>typedef  原資料型態  新資料型態 ;
+<P>
+    <DT>其目的是： 
+      <DD>(1) 改變一資料型態的名稱， 成為一個較有特定目的的名稱， 
+使程式易懂、易維修。<BR>
+          (2) 簡化 struct 資料型態的名稱。
+<P>
+    <DT>例： 欲宣告一新的資料型態 Triangle， 可以有下列兩種方式， 第一種是
+ 當資料型態 struct triangle 已經宣告， 第二種是 
+ 想省略資料型態 struct triangle 的宣告， 直接宣告資料型態 Triangle。 
+      <DD>
+<TT><PRE>
+ typedef struct triangle Triangle; /* 第一種 Triangle 資料型態的宣告 */
+
+ typedef struct {                  /* 第二種 Triangle 資料型態的宣告 */
+            struct point p1, p2, p3;   
+         } Triangle;
+</PRE></TT>
+<P>
+    <DT>例： 程式的設計有時因目前的需要有所改變， 如千喜年的問題， 為了省
+空間， 將 19xx 年 存為 xx 年， 本來需要 2 bytes 來存資料， 僅用 1 byte 來存，
+而產生 1999 年 將進入 2000 年 變成 99 年 將進入 0 年的問題。<BR>
+如果宣告 年的資料型態 如下：
+      <DD>
+<TT><PRE>
+ typedef char Year; 
+</PRE></TT></DD>
+ <DT>程式所用到儲存年的資料型態是 Year 而非 char， 如此一來， 當我們想改變
+ 年的資料從 1 byte  變成 2 bytes 時， 只要改變 typedef 即可，如下：
+      <DD>
+<TT><PRE>
+ typedef int Year; 
+</PRE></TT></DD>
+ <DT>程式所用到的變數 yy 如下：
+      <DD>
+<TT><PRE>
+ Year yy; 
+</PRE></TT></DD>
+<DT>就可以不用重新宣告， 變數 yy 的資料大小 即變成 2 bytes。
+</DL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+</A>
+<P>
+<!--------------------第 7.4 節--------------------------------------->
+<A NAME="fourth">
+      <B>第 7.4 節  enum 資料型態</B>
+<P>
+<DL><DT>enum 宣告語法：
+   <DD>enum  資料型態名稱 { 辨識名稱, 辨識名稱, ... };
+<P>
+ <DT>其目的是： 
+ <DD>(1) 如同 #define identifier value， 定義一些常數名稱。<BR>
+ (2) 可設定變數其資料型態為 enum 資料型態， 該變數的值為括號內的 
+ 辨識名稱。
+<P>
+ <DT>例： 宣告一新的資料型態 FigureType 及 變數 figure 其資料型態為
+     FigureType， 如下：  
+ <DD>
+<TT><PRE>   #include &lt;stdio.h&gt;
+
+   <B>enum FigureType{
+        LINE, RECTANGLE, ELLIPSE, POLYGON };</B>
+
+   main(){
+        <B>FigureType figure = ELLIPSE;</B>
+
+        switch(figure){
+              case LINE: printf("LINE = %d\n", figure); break;
+              case RECTANGLE: printf("RECTANGLE = %d\n", figure); break;
+              case ELLIPSE: printf("ELLIPSE = %d\n", figure); break;
+              case POLYGON: printf("POLYGON = %d\n", figure); break;
+              default: printf("figure type = %d\n", figure); break;
+        }
+   }
+</PRE></TT>
+ <DT>說明：
+ <DD>(1) enum 的資料型態中 <code>LINE</code>、<code>RECTANGLE</code>、<code>ELLIPSE</code>、 與 <code>POLYGON</code>， 其預設值
+分別為 0，1，2， 與 3。 因此， 該程式的輸出為
+<TT><PRE>   ELLIPSE = 2
+</PRE></TT>
+(2) enum 的資料型態中 <code>LINE</code>、<code>RECTANGLE</code>、<code>ELLIPSE</code>、 與 <code>POLYGON</code> 
+可自行設定， 設定的值必須是 整數值， 如下：
+<TT><PRE>   <B>enum FigureType{
+        LINE=1, RECTANGLE='a', ELLIPSE, POLYGON };</B>
+</PRE></TT>
+(3) 如果上述程式的 enum 的資料型態 改成新的 enum 的資料型態， 則該程式的輸出為
+<TT><PRE>   ELLIPSE = 98
+</PRE></TT>
+<DT>註： enum  的宣告與變數的定義經常 連在一起， 此時
+ enum 的資料型態名稱 就被省略， 如下：
+<TT><PRE>   #include &lt;stdio.h&gt;
+
+   main(){
+        <B>enum { LINE, RECTANGLE, ELLIPSE, POLYGON } figure;</B>
+   .
+   .
+   .
+   }
+</PRE></TT>
+</DL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 7.5 節--------------------------------------->
+<A NAME="fifth">
+      <B>第 7.5 節  union 資料型態</B>
+<P>
+<DL><DT>union 宣告語法：
+   <DD>union  資料型態名稱 { 資料型態, 資料型態, ... };
+<P>
+ <DT>其目的是：省空間， 其理由將由下例說明。
+<P>
+ <DT>例： union 資料型態經常與 struct 資料型態 連在一起， 當二者連在一起時，
+union 資料型態名稱經常被省略。<BR>
+以例子來說明， 如果欲將一畫板上的圖， 含有
+線段、 三角形、 矩形、 圓形、 橢圓、 多邊形 等
+平面幾何圖形 以 資料結構 鏈結 ( linked list ) 方式 串起來， 那麼， 每一個結
+可以代表這些幾何圖形中的一種。<BR>
+欲使用鏈結的資料結構， 首先， 宣告一新的資料型態 FigureType 如下：  
+<TT><PRE>   <B>enum FigureType{
+        LINE, TRIANGLE, RECTANGLE, CIRCLE, ELLIPSE, POLYGON };</B>
+</PRE></TT>
+再宣告 struct lineSegment 、struct triangle 等如前面所述，
+及 node 的資料型態如下：
+<TT><PRE>   <B>struct node{
+        struct node *next;
+        FigureType figure;
+        union {
+          struct lineSegment aLine;
+          struct triangle aTriangle;   
+          struct rectangle aRect;
+          struct circle aCircle;
+          struct ellipse aEllipse;
+          struct polygon aPolygon;
+        };
+      };</B>
+</PRE></TT>
+<DT>說明：
+ <DD>(1) node 資料型態的變數 占有的記憶体空間為 18 bytes， 分別為
+<UL type=disk>
+  <LI>指標 next 的記憶体空間( 約為 4 bytes )。
+  <LI>figure 的記憶体空間( 約為 2 bytes )。
+  <LI>幾何圖形的記憶体空間( 約為 12 bytes )。 因 線段、 三角形、 矩形、 圓形、 橢圓、 多邊形 
+這些 幾何圖形中， 占有 記憶体空間 最大的 為 三角形。
+</UL>
+(2) 一個 node 資料型態的變數 僅存一種幾何圖形， 因此，
+以 能儲存 最大圖形 所需的 記憶体空間 即可，
+而 不需要 儲存 全部的 幾何圖形 所需的 記憶体空間， 以 省下 一筆 為數不小的 空間
+( 約為 34 bytes )。
+<P>
+ <DT>例： 對於 node 資料型態的變數中 figure 與 幾何圖形 有不可分的密切關係，
+以例說明 如下：  
+<TT><PRE>void main(){
+     struct node v1;
+        .
+        .
+     /* v1 is a line with end points (2, 2) and (8, 8) */
+     <B>v1.figure = LINE; 
+     v1.aLine.p1.x = 2; v1.aLine.p1.y = 2;
+     v1.aLine.p2.x = 8; v1.aLine.p2.y = 8;</B>
+        .
+        .
+     /* v1 is change to a circle at center (7, 7) with radius 5 units */
+     <B>v1.figure = CIRCLE; 
+     v1.aCircle.center.x = 7; v1.aCircle.center.y = 7;
+     v1.aCircle.radius = 5; </B>
+        .
+        .
+     switch(<B>v1.figure</B>){
+     case LINE: printf("The figure is a line with 2 end points ");
+          printf("(%d, %d) and (%d, %d).\n", 
+          <B>v1.aLine.p1.x, v1.aLine.p1.y, v1.aLine.p2.x, v1.aLine.p2.y</B>);
+          break;
+        .
+        .
+     case CIRCLE: printf("The figure is a circle at center ");
+          printf("(%d, %d) and with radius = %d.\n", 
+          <B>v1.aCircle.center.x, v1.aCircle.center.y, v1.aCircle.radius</B>);
+          break;
+        .
+        .
+     } /* end of switch */
+        .
+        .
+} /* end of main */
+</PRE></TT>
+</DL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 7.6 節--------------------------------------->
+<A NAME="sixth">
+      <B>第 7.6 節  延伸性資料型態：struct longint</B>
+<P>
+C 程式中 能處理 整數的基本資料型態 是 char、 unsigned char、 int、 
+unsigned int、 long、 以及 unsigned long。
+其 處理 資料大小 分別為 -128～127、 0～255、 -32768～32767、 0～65535、
+-2147483648～2147483647、 及 0～4294967295。 最多也不過是 10 位數， 
+對於 10 位數 的相加、 減、 乘、 除 運算 也有溢位的問題。
+<P>
+對於超過 10 位數 的資料結構 就必須另外處理， 我們可以用 陣列的方式 來
+儲存資料。 例如， 以一個 char 來存單一位數， 欲能處理 100 位數的 加、
+減、 乘、 除 運算， 又不會產生 溢位的問題， 陣列的 大小就必須 要超過 199。
+再考慮正負號， 則 陣列的 大小就必須 要超過 200。
+<P>
+因一個 char 可存數值的範圍是 -128～127， 我們可利用 一個 char 來存二個位數，
+其 可存 數值的範圍 是 0～99。 因此， 一個 char 陣列 就是 一個 100 進位的整數。
+其 資料結構的 宣告 如下：
+<PRE><TT>   #define MAXSIZE 101
+   struct longint{
+      unsigned int n;
+              char D[MAXSIZE];
+   };
+</TT></PRE>
+struct longint 資料型態 的說明如下：
+<OL>
+   <LI>D[0]之值為 1、 -1、 或 0， 用來表示該數為 正、 負、 或 0。
+   <LI>n 表示 陣列的有效 大小。 如果 D[1] = 45、 D[2] = 23、 D[3] = 1、
+其餘的都是 0， 則 n = 3。
+   <LI>如果 D[0] = 1、D[1] = 45、 D[2] = 23、 D[3] = 1， 則該數為 <BR>
+1*10000 + 23*100 + 45。 即該數為 <BR>
+D[0] * { D[n]*(100)^(n-1) + D[n-1]*(100)^(n-2) + ... + D[2]*100 + D[1] }。
+   <LI>如果 D[n] &lt; 10， 則該數為 2*(n-1)+1 位數， 否則為 2*n 位數。
+   <LI>n 最大為 65535， 因此我們最多可以處理 65535 位數的數。
+</OL>
+建立長整數的主要目的是 想要
+<OL>
+   <LI>能處理 兩個很大的數的 四則運算。
+   <LI>能找到很大的質數， 如 30 位、 50 位、 或 100 位數的質數。
+   <LI>能對一個很大的數 分解因數 並 檢驗其是否為質數。
+   <LI>能求兩個很大數的 gcd。
+   <LI>能求第 2000 個費氏數。
+   <LI>其他。
+</OL>
+欲處理這些問題， 我們也該提供下列函數作為介面：
+<OL>
+  <LI>起始值的設定， 將長整數設定為 0， 如<BR>
+<B><CODE>void SetZero(struct longint* X);</CODE></B>
+  <LI>將整數轉成長整數、 將 數值字串 轉成 長整數、
+或將 長整數 轉成 數值字串， 如<BR>
+<B><CODE>struct longint LongToLongint(long number);<BR>
+struct longint StringToLongint(char s[]);<BR>
+char * LongintToString(struct longint X);</CODE></B>
+  <LI>檢驗一個長整數是否為 正、 負、 或 0， 如<BR>
+<B><CODE>int IsPositive(struct longint X);<BR>
+int IsNegative(struct longint X);<BR>
+int IsZero(struct longint X);</CODE></B>
+  <LI>兩個長整數的比較大小， 如<BR>
+<B><CODE>int Greater(struct longint X,  struct longint Y);<BR>
+int Equal(struct longint X,  struct longint Y);<BR>
+int LessThan(struct longint X,  struct longint Y);</CODE></B>
+  <LI>兩個長整數的四則運算， 如<BR>
+<B><CODE>struct longint Add(struct longint X,  struct longint Y);<BR>
+struct longint Minus(struct longint X, struct longint Y);<BR>
+struct longint Multi(struct longint X, struct longint Y);<BR>
+struct longint Divide(struct longint X, struct longint Y);<BR>
+struct longint Remainder(struct longint X,struct longint Y);</CODE></B>
+  <LI>將長整數列印出來， 如<BR>
+<B><CODE>void PrintLongint(struct longint Z);</CODE></B>
+</OL>
+這些函數的設計就留給讀者去完成。
+<p>
+利用這些函數求出的第 2000 個費氏數為：
+<TT><PRE>                           42,2469,6333,3923,0487,
+8706,7256,0234,1482,7825,7985,2840,2506,8109,8010,
+2801,3731,4308,5843,7013,0707,2241,2359,9639,1415,
+1108,8446,0875,3890,9603,6076,4019,4711,6435,9602,
+9271,9833,1259,8737,3262,5355,5802,6069,9158,5915,
+2294,9245,3904,9987,2225,6795,3169,8287,4482,4729,
+9226,3901,8337,1677,8060,6070,1161,5497,8867,1987,
+9858,3114,6887,0876,2645,9736,9086,7228,8402,3654,
+4222,9524,3347,9644,8013,9515,3495,6297,2087,6526,
+5606,9529,8064,9984,1977,4487,2015,5612,8026,6540,
+4554,1717,1788,1930,3240,2520,4312,0825,1681,7125
+</PRE></TT>
+試問讀者如何檢驗該數是否為第 2000 個費氏數？ 該數為 418 位數。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+
+<A HREF="cpgch6.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch6.htm">回第 6 章</A><BR>
+<A HREF="cpgch8.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch8.htm">至第 8 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</HTML>

@@ -1,0 +1,253 @@
+<html>#include "glut.h"
+#include <opencv2/opencv.hpp>
+#include <iostream>
+#include <fstream>
+#include <cstdio>
+#include <cmath>
+using namespace std;
+
+struct Point {float x, y, z;};
+Point operator+(Point p1, Point p2) {return (Point){p1.x + p2.x, p1.y + p2.y, p1.z + p2.z};}
+Point operator-(Point p1, Point p2) {return (Point){p1.x - p2.x, p1.y - p2.y, p1.z - p2.z};}
+Point operator*(Point p, float s) {return (Point){p.x * s, p.y * s, p.z * s};}
+Point operator/(Point p, float s) {return (Point){p.x / s, p.y / s, p.z / s};}
+istream& operator>>(istream& in, Point& p) {return in >> p.x >> p.y >> p.z;}
+ostream& operator<<(ostream& out, Point& p) {return out << '(' << p.x  << ',' << p.y << ',' << p.z << ')';}
+Point max(Point p1, Point p2) {return (Point){max(p1.x, p2.x), max(p1.y, p2.y), max(p1.z, p2.z)};}
+Point min(Point p1, Point p2) {return (Point){min(p1.x, p2.x), min(p1.y, p2.y), min(p1.z, p2.z)};}
+float dot(Point p1, Point p2) {return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;}
+//float length(Point p1) {return sqrt(dot(p1, p1));}
+Point cross(Point a, Point b) {return (Point){a.y * b.z - b.y * a.z, a.z * b.x - b.z * a.x, a.x * b.y - b.x * a.y};}
+float crossvalue(Point& a, Point& b) {return a.y * b.z - b.y * a.z + a.z * b.x - b.z * a.x + a.x * b.y - b.x * a.y;}
+float InvSqrt(float x) {float xhalf = 0.5f * x; int i = *(int*)&x; i = 0x5f3759df - (i >> 1); x = *(float*)&i; x = x * (1.5f - xhalf * x * x); return x;}
+Point normalize(Point a) {return a * InvSqrt(dot(a, a));}
+
+struct Matrix {float a[3][3];};
+Matrix operator*(Matrix m1, Matrix m2) {Matrix m = {{{0,0,0},{0,0,0},{0,0,0}}}; for (int i=0; i<3; ++i) for (int j=0; j<3; ++j) for (int k=0; k<3; ++k) m.a[i][j] += m1.a[i][k] * m2.a[k][j]; return m;}
+Point operator*(Matrix m, Point p) {return (Point){m.a[0][0] * p.x + m.a[0][1] * p.y + m.a[0][2] * p.z, m.a[1][0] * p.x + m.a[1][1] * p.y + m.a[1][2] * p.z, m.a[2][0] * p.x + m.a[2][1] * p.y + m.a[2][2] * p.z};}
+//float det(Matrix m) {return m.a[0][0] * m.a[1][1] * m.a[2][2] + m.a[0][1] * m.a[1][2] * m.a[2][0] + m.a[0][2] * m.a[1][0] * m.a[2][1] - m.a[0][2] * m.a[1][1] * m.a[2][0] - m.a[0][1] * m.a[1][0] * m.a[2][2] - m.a[0][0] * m.a[1][2] * m.a[2][1];}
+//Point solve(Matrix m, Point p) {Matrix mx = m; mx.a[0][0] = p.x; mx.a[1][0] = p.y; mx.a[2][0] = p.z; Matrix my = m; my.a[0][1] = p.x; my.a[1][1] = p.y; my.a[2][1] = p.z; Matrix mz = m; mz.a[0][2] = p.x; mz.a[1][2] = p.y; mz.a[2][2] = p.z; Point s = {det(mx), det(my), det(mz)}; return s / det(m);}
+
+	const int N = 99;
+	const int VX = 256;
+	const int VY = 256;
+	const int VZ = N * 2 - 1;
+	short img[VZ][VY][VX];
+	float alpha_func[256];
+	Point color_func[256];
+
+void LoadFile() {
+	for (int z=0; z<N; ++z) {
+		char name[50];
+		sprintf(name, "cthead-8bit\\cthead-8bit%03d.tif", z+1);
+		cout << name << endl;
+        cv::Mat image = cv::imread(name);
+		for (int x=0; x<VX; ++x)
+		    for (int y=0; y<VY; ++y) {
+				cv::Vec3b intensity = image.at<cv::Vec3b>(y, x);
+				img[z*2][y][x] = (intensity.val[0] + intensity.val[1] + intensity.val[2]) / 3;
+			}
+	}
+
+	// interpolation
+	for (int z=0; z<N-1; ++z)
+		for (int x=0; x<VX; ++x)
+		    for (int y=0; y<VY; ++y)
+				img[z*2+1][y][x] = (img[z*2][y][x] + img[z*2+2][y][x]) / 2;
+}
+
+bool involume(int x, int y, int z) {
+	return x >= 0 && x < VX && y >= 0 && y < VY && z >= 0 && z < VZ;
+}
+
+Point gradient(int x, int y, int z) {
+	if (involume(x+1, y+1, z+1) && involume(x-1, y-1, z-1))
+		return (Point){
+			img[z][y][x+1] - img[z][y][x-1],
+			img[z][y+1][x] - img[z][y-1][x],
+			img[z+1][y][x] - img[z-1][y][x]
+		};
+	else
+		return (Point){0, 0, 0};
+}
+
+void InitColor() {
+	for (int i=0; i<255; ++i)
+		color_func[i] = (Point){0,0,0};
+	for (int i=60; i<85; ++i)
+		color_func[i] = (Point){1,0.7,0};
+	for (int i=100; i<130; ++i)
+		color_func[i] = (Point){1,1,1};
+
+	for (int i=0; i<255; ++i)
+		alpha_func[i] = 0;
+	for (int i=60; i<85; ++i)
+		alpha_func[i] = 0.2;
+	for (int i=100; i<130; ++i)
+		alpha_func[i] = 0.9;
+}
+
+	const int X = 200, Y = 200;
+
+struct Camera {
+	float radius, depth;
+	Point center, eye, angle, dirx, diry, dirz, light;
+
+	void init() {
+		radius = 2000; depth = 1700;
+		angle = (Point){0,3.14,0};
+		center = (Point){VY,VX,VZ} / 2;
+		rotate();
+	}
+
+	void rotate() {
+		float c, s;
+		c = cos(angle.x); s = sin(angle.x); Matrix rx = {{{1,0,0},{0,c,s},{0,-s,c}}};
+		c = cos(angle.y); s = sin(angle.y); Matrix ry = {{{c,0,-s},{0,1,0},{s,0,c}}};
+		c = cos(angle.z); s = sin(angle.z); Matrix rz = {{{c,s,0},{-s,c,0},{0,0,1}}};
+		Matrix r = rx * ry * rz;
+		dirx = r * (Point){1,0,0};
+		diry = r * (Point){0,0,1};
+		dirz = r * (Point){0,1,0};
+		light = r * (Point){1,0,0};
+		eye = center - (dirz * radius);
+	}
+
+	float shade(Point normal, Point view) {
+		float ambient  = 1.0;
+		float diffuse  = fabs(dot(normal, light));
+		float specular = pow(diffuse, 5.0);
+//		if (dot(view, normal) * dot(light, normal) <= 0)
+//			diffuse = specular = 0;
+		return (ambient * 0.5) + (diffuse * 0.4) + (specular * 0.4);
+	}
+
+	void hitvolume(Point view, float& zmin, float& zmax) {
+		static Point vertex[6] = {{0,0,0},{0,0,0},{0,0,0},{VX,0,0},{0,VY,0},{0,0,VZ}};
+		static Point normal[6] = {{1,0,0},{0,1,0},{0,0,1},{1,0,0},{0,1,0},{0,0,1}};
+
+		zmin = +1e9, zmax = -1e9;
+		for (int i=0; i<6; ++i) {
+			float dv = dot(view, normal[i]);
+			float dt = dot(vertex[i] - eye, normal[i]);
+			if (dv == 0) continue;
+			float z = dt / dv;
+			if (!(z > 1.0 && z < +1e9)) continue;   // clipping
+
+			Point hit = eye + (view * z);
+			if (((hit.x >= 0 && hit.x < VX) || normal[i].x == 1.0) &&
+				((hit.y >= 0 && hit.y < VY) || normal[i].y == 1.0) &&
+				((hit.z >= 0 && hit.z < VZ) || normal[i].z == 1.0) ) {
+
+				if (z < zmin) zmin = z;
+				if (z > zmax) zmax = z;
+			}
+		}
+	}
+
+	Point color(int x, int y) {
+		Point view = (dirx * (x - X/2)) + (diry * (y - Y/2)) + (dirz * depth);
+		Point normalizeview = normalize(view);
+
+		float zmin = +1e9, zmax = -1e9;
+		hitvolume(view, zmin, zmax);
+		if (zmin == +1e9 || zmax == -1e9) return (Point){0,0,0};
+
+		// DDA algorithm
+//		Point pmin = eye + (view * zmin);
+		Point pmax = eye + (view * zmax);
+//		Point length = pmax - pmin;
+		Point length = view * (zmax - zmin);
+		int step = ceil(max(max(fabs(length.x), fabs(length.y)), fabs(length.z)));
+		Point gap = length / step;
+
+		Point color = {0,0,0};
+		for (int i=0; i<step; ++i) {
+			pmax = pmax - gap;
+			int x = round(pmax.x);
+			int y = round(pmax.y);
+			int z = round(pmax.z);
+			if (!involume(x, y, z)) continue;
+
+			Point normal = normalize(gradient(x,y,z));
+			float s = shade(normal, normalizeview);
+			Point c = color_func[img[z][y][x]] * s;
+			float a = alpha_func[img[z][y][x]];
+			color = color * (1.0 - a) + c * a;
+		}
+		return color;
+	}
+} camera;
+
+/******************/
+/*	MAIN PROGRAM  */
+/******************/
+
+void display() {
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	for (int x = 0; x < X ; ++x)
+	    for (int y = 0; y < Y ; ++y) {
+			Point c = camera.color(x, y);
+			glColor3f(c.x, c.y, c.z);
+			glBegin(GL_POINTS);
+			glVertex2f(x, y);
+			glEnd();
+		}
+
+	glutSwapBuffers();
+}
+
+void reshape(int w, int h) {
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, w, 0, h);
+}
+
+void keyboard(unsigned char key, int x, int y) {
+	if		(key == 'w') camera.radius -= 50;
+	else if (key == 's') camera.radius += 50;
+	else if (key == 'a') camera.angle.z += .05;
+	else if (key == 'd') camera.angle.z -= .05;
+	camera.rotate();
+	glutPostRedisplay();
+}
+
+int press_x, press_y;
+Point press_angle;
+void mouse(int button, int state, int x, int y) {
+	if (state == GLUT_DOWN) {
+		press_x = x; press_y = y;
+		press_angle = camera.angle;
+	}
+}
+
+void motion(int x, int y) {
+	camera.angle = press_angle + (Point){y - press_y, 0, x - press_x} / 40;
+	camera.rotate();
+	glutPostRedisplay();
+}
+
+int main(int argc, char **argv) {
+	LoadFile();
+	InitColor();
+	camera.init();
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(X, Y);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Volume Rendering");
+
+	glClearColor(0., 0., 0., 0.);
+	glShadeModel(GL_SMOOTH);
+
+	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
+	glutKeyboardFunc(keyboard);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	glutMainLoop();
+	return 0;
+}

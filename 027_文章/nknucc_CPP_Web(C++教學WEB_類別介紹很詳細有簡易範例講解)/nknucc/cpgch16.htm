@@ -1,0 +1,570 @@
+<!--- file: cpgchpt16.htm
+      symbols: ，、。．‧；：？！· ↗↖
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 16 章  類別 (class) 繼承的一些特性</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 16 章  類別 (class) 繼承的一些特性</B></CENTER>
+<P>
+本章主要的目的是在討論 C++ 程式 中 類別 (class) 階層架構的一些特性。
+為了類別使用的方便性，  C++ 提供了如 virtual function 的功能以解決
+類別指標的自動轉換成 base class 的問題。<P>
+C++ 也提供了多重繼承的功能， 讓類別的設計更有彈性， 不過 也增加其 複雜度， 程式的
+debug 也變的更加困難。難怪 Java 程式語言不提供多重繼承 的功能。 利用 virtual base class 的功能，
+亦可解決多重繼承中 base class 物件的單一性。<P>
+<P>
+<A NAME="start">
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 16.1 節 <A href="#first">類別指標與 class 自動轉換</A>
+  <LI>第 16.2 節 <A href="#second">虛擬函數 (virtual functions)</A>
+  <LI>第 16.3 節 <A href="#third">抽象類別 (Abstract classes)</A>
+  <LI>第 16.4 節 <A href="#fourth">多重繼承</A>
+  <LI>第 16.5 節 <A href="#fifth">多重繼承所產生的語意不清的問題</A>
+  <LI>第 16.6 節 <A href="#sixth">虛擬父類別 (Virtual base classes)</A>
+</UL>
+<P>
+<A href="cpgch15.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch15.htm">回第 15 章</A><BR>
+<A href="javascript:if(confirm('http://nknucc.nknu.edu.tw/~jwu/c/cpgch17.htm  \n\nThis file was not retrieved by Teleport Pro, because the server reports that this file cannot be found.  \n\nDo you want to open it from the server?'))window.location='http://nknucc.nknu.edu.tw/~jwu/c/cpgch17.htm'" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch17.htm">至第 17 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<P>
+<A NAME="first">
+<HR>
+<!--------------------第 16.1 節--------------------------------------->
+<P>
+  <B>第 16.1 節  類別指標與 class 自動轉換</B>
+<P>
+子類別 (drived class) 亦是父類別 (base class)， 因此， 父類別的指標 亦可指向
+子類別的物件。
+但是， 如果子類別有一些函數 ( 設為 <TT>f()</TT> ) 覆蓋父類別的函數，
+同時有一 父類別指標 pBase 指向 子類別物件， 那麼，<TT>pBase->f()</TT>
+是執行父類別的函數 <TT>f()</TT>，而無法 執行子類別的函數 <TT>f()</TT>。
+也就是說 *pBase 的 class 型態自動轉換為父類別， 而不是子類別的  class 型態。
+以 15.7 節的例子，修飾 <TT>class CFigure</TT> 與 <TT>main()</TT> 之後，
+如例 1 所示。
+<p>
+<B>例 1</B>：類別指標與 class 自動轉換
+<TT><PRE>
+    class CFigure{
+       public:
+          CFigure(){ next = 0; }
+          float area(){ return 0; }
+          void link(CFigure *pFigure){ next = pFigure; }
+          CFigure *getLink(){ return next; }
+       protected:
+          CFigure *next;
+    };
+
+    // The rest are same to what in section 15.7
+
+    main()
+    {
+        CLineSegment line(1,1, 10, 10);
+        CRectangle   rect(10, 10, 90, 50);
+        CEllipse     ellipse(20, 20, 40, 40);
+        CFigure     *pBase;
+
+        rect.link( &ellipse );
+        line.link( &rect );
+        pBase = &line;
+
+        while( pBase )
+        {
+            cout << "The figure area = " << pBase->area() << endl;
+            pBase = pBase->getLink();
+        }
+    }
+</PRE></TT>
+說明：
+<OL>
+  <LI>pBase 為父類別指標。<P>
+  <LI>子類別的物件 line、 rect 與 ellipse 亦屬於父類別。<P>
+  <LI>當 pBase 指向子類別物件  line 時，  pBase  自動轉換成指向 line 的
+      sub-object，即  line 父類別的物件。 因此， <TT>pBase->area()</TT>
+      乃是執行 class CFigure 的函數 <TT>area()</TT>。<P>
+  <LI>該程式的執行結果為 <TT><BR>The figure area = 0<BR>The figure area = 0<BR>The figure area = 0</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="second">
+<HR>
+<!--------------------第 16.2 節--------------------------------------->
+<P>
+  <B>第 16.2 節  虛擬函數 (virtual functions)</B>
+<P>
+於第一節所產生的問題，即我們希望 <TT>pBase->area()</TT> 是執行子類別的函數 <TT>area()</TT>，
+而不是父類別的函數 <TT>area()</TT>。欲解決此問題，我們將父類別函數 <TT>area()</TT> 的定義之前加上
+virtual 即可， 此乃物件導向的 polymorphism 概念。
+<P>polymorphism 本意是具有多種形式， 而具有 polymorphism 的性質就是
+『不用標示一個物件 是何種類別， 就可以使用該類別的函數』。 對於第 7 章所討論
+的平面幾何圖形階層式 struct 架構， 我們必須要以 switch 與 case 的方式來辨別一個指標變數
+所指的是何種圖形。 利用 virtual function 的功能， 程式就顯得相當簡潔。
+以例 2 來說明如下。
+<P>
+<B>例 2</B>：virtual functions 
+<TT><PRE>
+    class CFigure{
+       public:
+          CFigure(){ next = 0; }
+          <B>virtual float area(){ return 0; }</B>  // virtual function
+          void link(CFigure *pFigure){ next = pFigure; }
+          CFigure *getLink(){ return next; }
+       protected:
+          CFigure *next;
+    };
+
+    // The rest are same to what in section 15.7
+
+    main()
+    {
+        CLineSegment line(1,1, 10, 10);
+        CRectangle   rect(10, 10, 90, 50);
+        CEllipse     ellipse(20, 20, 40, 40);
+        CFigure     *pBase;
+
+        rect.link( &ellipse );
+        line.link( &rect );
+        pBase = &line;
+
+        while( pBase )
+        {
+            cout << "The figure area = " << pBase->area() << endl;
+            pBase = pBase->getLink();
+        }
+    }
+</PRE></TT>
+說明：
+<OL>
+  <LI>當 pBase 指向子類別物件 line 時，<TT>pBase->area()</TT> 乃是執行子類別
+      CLineSegment 的函數 <TT>area()</TT>。<BR>
+      當 pBase 指向子類別物件  rect 時，<TT>pBase->area()</TT>
+      乃是執行子類別 CRectangle 的函數 <TT>area()</TT>， 此乃是
+      dynamic binding。 即到底是那一個函數被呼叫， 程式編譯時尚未知曉，
+      函數的呼叫是在程式執行時才決定的。<P>
+  <LI>該程式的執行結果為 <TT><BR>The figure area = 0
+      <BR>The figure area = 3200<BR>The figure area = 314.159</TT>
+</OL>
+<P>
+當然子類別函數的定義之前 亦可加上 virtual 用以解決 子類別 與
+子類別的子類別 之間函數覆蓋的問題， 如例 3 所示。<P>
+<B>例 3</B>：virtual functions 
+<TT><PRE>
+   #include &lt;iostream.h&gt;
+    class CA{
+       public:
+          virtual void f(){ cout << "In class CA." << endl; }
+    };
+
+    class CB: public CA{
+       public:
+          virtual void f(){ cout << "In class CB." << endl; }
+    };
+
+    class CC: public CB{
+       public:
+          virtual void f(){ cout << "In class CC." << endl; }
+    };
+
+    main()
+    {
+        CA *pCA;  CB b;  CC c;
+
+        pCA = &b;   pCA->f();
+        pCA = &c;   pCA->f();
+    }
+</PRE></TT>
+說明：
+<OL>
+  <LI>當 pCA 為 class CA 的指標。<BR>
+         當 pCA 指向子類別物件 b 時，<TT>pCA->f()</TT> 乃是執行子類別
+         CB 的函數 <TT>f()</TT>。<BR>
+         當 pCA 指向子類別物件 c 時，<TT>pCA->f()</TT> 乃是執行子類別
+         CC 的函數 <TT>f()</TT>。<P>
+  <LI>該程式的執行結果為 <TT><BR>In class CB.<BR>In class CC.</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="third">
+<HR>
+<!--------------------第 16.3 節--------------------------------------->
+<P>
+  <B>第 16.3 節  抽象類別 (Abstract classes)</B>
+<P>
+一般而言， 類別的設計， 都有最上層的父類別， 其他的類別都是 該類別的
+子類別。 如果使用上並不會用到 該類別的 物件， 我們可以將該類別 設計為一個
+抽象類別。<P>
+<B>抽象類別的定義</B>：
+<UL>
+   <LI>抽象類別是一個至少含有一個純虛擬函數 (pure virtual functions) 的類別。<P>
+   <LI>純虛擬函數是一個僅有函數標題且加上 <TT>=0</TT> 的虛擬函數，如
+       <BR><TT>virtual int f() = 0</TT>
+</UL>
+<P>
+圖形如線段、三角形、矩形、圓形、橢圓及多邊形等， 都是平面幾何圖形。
+因我們並不會用到 class CFigure 的物件， 因此， class CFigure 可以設計為一個
+abstract class 如例 4 所示。
+<P>
+<B>例 4</B>： Abstract class 
+<TT><PRE>
+    class CFigure{
+       public:
+          CFigure(){ next = 0; }
+          <B>virtual float area() = 0;</B>  // pure virtual function
+          void link(CFigure *pFigure){ next = pFigure; }
+          CFigure *getLink(){ return next; }
+       protected:
+          CFigure *next;
+    };
+</PRE></TT>
+說明：
+<UL>
+  <LI>函數 <TT>area()</TT> 的定義為 <TT><B>virtual float area() = 0;</B></TT>，
+      是一個 pure virtual function， 因此， class CFigure 為一 abstract class。
+</UL><P>
+一個抽象類別 (abstract class) 具有下列特性：
+<UL>
+  <LI>一個抽象類別無法產生該類別的物件。 即下列的宣告是錯誤的<BR>
+      <TT>CFigure anObject;</TT><P>
+  <LI>雖然一個抽象類別無法產生該類別的物件， 但是， 可以宣告一個
+      抽象類別的指標。 因此，下列的宣告是正確的<BR><TT>CFigure *pObject;</TT><P>
+  <LI>一個抽象類別的子類別也繼承了 pure virtual function。<P>
+  <LI>一個抽象類別的子類別 如果也含有 pure virtual function
+      那麼， 該子類別也是抽象類別。<P>
+  <LI>欲使一個抽象類別的子類別成為一個非抽象類別， 則必須重新定義所有
+      父類別中的 pure virtual function， 即覆蓋父類別中的
+      pure virtual function<P>
+  <LI>一個抽象類別可以用來當作其子類別的使用介面， 子類別就如同是該
+      抽象類別的使用主體 (implementation)。
+</UL>
+<P>
+以例 5 來說明上述的用法。
+<p>
+<B>例 5</B>： 抽象類別與其子類別
+<TT><PRE>
+   #include &lt;iostream.h&gt;
+    class CFigure{                    // abstract based class
+       public:
+          CFigure(){ next = 0; }
+          <B>virtual float area() = 0;</B>  // pure virtual function
+          void link(CFigure *pFigure){ next = pFigure; }
+          CFigure *getLink(){ return next; }
+       protected:
+          CFigure *next;
+    };
+
+    class CDlFigure: public CFigure{  // abstract drived class
+       public:
+          void linkPrevious(CDlFigure *pFigure){ previous = pFigure; }
+          CFigure *getPrevious(){ return previous; }
+       protected:
+          CDlFigure *previous;
+    };
+
+    class CPoint{
+        public:
+          CPoint(int a=0, int b=0){x=a; y=b;}
+          int x, y;
+    };
+
+    class CRectangle: public CFigure{
+        public:
+          CRectangle(int x1=0, int y1=0, int x2=0, int y2=0)
+          {topLeft.x=x1; topLeft.y=y1; bottomRight.x=x2; bottomRight.y=y2; }
+          float area(){return (bottomRight.x-topLeft.x)
+                             *(bottomRight.y-topLeft.y); }
+        protected:        
+          CPoint topLeft, bottomRight;
+    };
+
+    main()
+    {
+        CFigure      *pFigure;
+        CDlFigure    *pDlFigure;
+        CRectangle   rect(10, 10, 90, 50);
+
+        pFigure = &rect;
+        cout<< "rect area = " << pFigure->area()<< endl;
+    }
+</PRE></TT>
+說明：
+<OL>
+  <LI>class CFigure  含有一 pure virtual function <TT>area()</TT>，
+      所以是一個抽象類別。<P>
+  <LI>class CDlFigure 為一抽象子類別， 因繼承著 class CFigure 的 pure virtual
+      function <TT>area()</TT>。<P>
+  <LI>class CRectangle 繼承著 class CFigure， 因重新定義了函數
+      <TT>area()</TT>， 因此， 它不是一個抽象類別。<P>
+  <LI>因 class CFigure 中 <TT>area()</TT> 是一個 virtual function， 所以，
+      子類別的 函數可以覆蓋父類別的 virtual 函數。 因此， <TT>pFigure->area()</TT>
+      是呼叫 class CRectangle 的函數 <TT>area()</TT>。<P>
+  <LI>該程式執行的結果如下：<TT><BR>rect area = 3200</TT>
+
+</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fourth">
+<HR>
+<!--------------------第 16.4 節--------------------------------------->
+<P>
+  <B>第 16.4 節  多重繼承</B>
+<P>
+生態上的分類， 例如鯨魚是哺乳動物， 也是水中生物。
+因此， 鯨魚具有哺乳動物的特性，同時也具有水中生物的一些特性。<P>
+類別的設計上也有類似的情況，一個子類別可以同時是好幾種類別的衍生類別。
+其設計的架構如下：
+<TT><PRE>
+   class baseClass1{
+      ...
+   };
+   class baseClass2{
+      ...
+   };
+   ...
+   class drivedClass: <inheritance mode> baseClass1[, <inheritance mode> baseClass2]{
+      public:
+          ...
+      protect:
+          ...
+      private:
+          ...
+   };
+</PRE></TT>
+說明：
+<OL>
+  <LI>父類別有 baseClass1 與 baseClass2 等。<P>
+  <LI>子類別 drivedClass 同時為類別 baseClass1 與 baseClass2 等的衍生類別。
+</OL>
+<P>
+以例 6 來說明。
+<P>
+<B>例 6</B>：多重繼承
+<TT><PRE>
+   #include &lt;iostream&gt;
+   #define SEA 0
+   class CAquaticAnimal{
+      public:
+        CAquaticAnimal(int whichType=SEA){ freshwaterOrSea = whichType; }
+         int getType(){return freshwaterOrSea; }
+      private:
+         int freshwaterOrSea;
+   };
+
+   class CMammal
+   {
+      public:
+         CMammal(int w=0){weight=w;}
+         int getWeight(){return weight;}
+         void setWeight(int w=0){weight=w;}
+      private:
+         int weight;
+   };
+
+   class CWhale: public CMammal, public CAquaticAnimal
+   {
+      public:
+         CWhale(int t=0, int w=0, int f=0):CMammal(w), CAquaticAnimal(f) { whaleType = t; }
+         int getWhaleType(){ return whaleType; }
+      private:
+         int whaleType;
+   };
+
+   main()
+   {
+      CWhale b(15, 35, SEA);
+      
+      cout<< "The type of whale b is "<< b.getWhaleType()<< endl;
+      cout<< "The weight of whale b is "<< b.getWeight()<< endl;
+      cout<<  "And it is a ";
+      if( b.getType() == SEA)
+         cout<< "sea animal." << endl;
+      else
+         cout<< "freshwater animal." << endl;
+   }
+</PRE></TT>
+說明：
+<OL>
+  <LI>CWhale 同時為 CMammal 與 CAquaticAnimal 的子類別。<P>
+  <LI>物件 b 為 CWhale 的物件， 同時也是 CMammal 與 CAquaticAnimal 的物件。<P>
+  <LI>物件 b 含 資料(data members) <TT>whaleType</TT>、 <TT>weight</TT> 及  <TT>freshwaterOrSea</TT>，
+         也含函數 <TT>getWhaleType()、 getWeight()、 setWeight()</TT> 及 <TT>getType()</TT>。<P>
+  <LI>該程式執行的結果如下：<TT><BR>
+The type of whale b is 15<BR>
+The weight ofwhale b is 35<BR>
+And it is a sea animal.
+</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fifth">
+<HR>
+<!--------------------第 16.5 節--------------------------------------->
+<P>
+  <B>第 16.5 節  多重繼承所產生的語意不清的問題</B>
+<P>
+多重繼承一處理不好，就會產生一些 ambiguity 的問題， 如例 7 所示。<P>
+ 
+生態上的分類， 哺乳動物與水中生物都是動物。 因此， 我們可以將 類別 CMammal 與 CAquaticAnimal
+重新設計為 類別 CAnimal 的子類別， 其設計 如下：
+<TT><PRE>
+   #include &lt;iostream&gt;
+   #define SEA 0
+
+   class CAnimal{
+      public:
+         CAnimal(int m=0){movability = m;}
+         int getMobility(){return movability;}
+      private:
+         int movability;
+   };
+
+   class CMammal: public CAnimal
+   {
+      public:
+         CMammal(int w=0): CAnimal(1) {weight=w;}
+         int getWeight(){return weight;}
+         void setWeight(int w=0){weight=w;}
+      private:
+         int weight;
+   };
+
+   class CAquaticAnimal: public CAnimal{
+      public:
+        CAquaticAnimal(int whichType=SEA): CAnimal(2) { freshwaterOrSea = whichType; }
+         int getType(){return freshwaterOrSea; }
+      private:
+         int freshwaterOrSea;
+   };
+</TT></PRE>
+當類別 CWhale 繼承類別 CMammal 與 CAquaticAnimal 如前面的例 6 時， 其宣告如下：
+<TT><PRE>
+   class CWhale: public CMammal, public CAquaticAnimal
+   {
+      public:
+         CWhale(int t=0, int w=0, int f=0):CMammal(w), CAquaticAnimal(f) { whaleType = t; }
+         int getWhaleType(){ return whaleType; }
+      private:
+         int whaleType;  
+   };
+</PRE></TT>
+此時，一個 CWhale 物件以例  7 為例其架構如下，其中劍頭的方向 為類別繼承的方向：
+<TT><PRE>
+                    CAnimal               CAnimal
+                 ┌─────┐        ┌─────┐
+       movability│    1     │        │    2     │ movability
+                 └─────┘        └─────┘
+                       ↑                    ↑
+                     CMammal           CAquaticAnimal
+                 ┌─────┐        ┌─────┐
+           weight│    35    │        │     0    │freshwaterOrSea
+                 └─────┘        └─────┘
+                                 ↖ ↗                 
+                                CMammal
+                             ┌─────┐ 
+                    whaleType│    15    │
+                             └─────┘
+</PRE></TT>
+一個 CWhale 物件有兩個資料其名稱皆為 movability， 於例  7 中 <TT>b.getMobility()</TT>
+就會產生語意不清的問題， 因為 CMammal 物件含有一個 movability 資料， 同時 CAquaticAnimal
+ 物件也含有一個 movability 資料。因此， C++ compiler 無法辨識 <TT>b.getMobility()</TT> 是要取
+CMammal 物件中的 movability 資料， 或是要取 CAquaticAnimal 物件中的 movability 資料。
+<P><B>例  7</B>：
+<TT><PRE>
+   main()
+   {
+      CWhale b(15, 35, SEA);
+      
+      cout<< "The mobility of whale b is "<< b.getMobility()<< endl;
+   }
+</TT></PRE>
+說明：
+<OL>
+  <LI>該程式因 CWhale 物件 b 有兩個資料其名稱皆為 movability， 而產生 ambiguity 的錯誤。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="sixth">
+<HR>
+<!--------------------第 16.6 節--------------------------------------->
+<P>
+  <B>第 16.6 節  虛擬父類別 (Virtual base classes)</B>
+<P>
+為了避免於例 7 所產生 ambiguity 的問題， 在繼承父類別的模式，可以加上 virtual 以解決資料的唯一性，
+但這也限定了在子類別中對於父類別 constructor 的呼叫，所呼叫父類別 constructor 是不加加參數
+的 constructor。<P>
+<B>例  8</B>：Virtual base class
+<TT><PRE>
+   #include &lt;iostream&gt;
+   #define SEA 0
+
+   class CAnimal{
+      public:
+         CAnimal(int m=0){movability = m;}
+         int getMobility(){return movability;}
+      private:
+         int movability;
+   };
+
+   <B>class CMammal: virtual public CAnimal</B>  // virtual base class 宣告
+   {
+      public:
+         CMammal(int w=0): CAnimal(1){weight=w;}
+         int getWeight(){return weight;}
+         void setWeight(int w=0){weight=w;}
+      private:
+         int weight;
+   };
+
+  <B> class CAquaticAnimal:virtual public CAnimal{</B> // virtual base class 宣告
+      public:
+        CAquaticAnimal(int whichType=SEA):CAnimal(2) { freshwaterOrSea = whichType; }
+         int getType(){return freshwaterOrSea; }
+      private:
+         int freshwaterOrSea;
+   };
+
+
+   class CWhale: public CMammal, public CAquaticAnimal
+   {
+      public:
+         CWhale(int t=0, int w=0, int f=0):CMammal(w), CAquaticAnimal(f) { whaleType = t; }
+         int getWhaleType(){ return whaleType; }
+      private:
+         int whaleType;
+   };
+   main()
+   {
+      CWhale b(15, 35, SEA);
+      
+      cout<< "The mobility of whale b is "<< b.getMobility()<< endl;
+      cout<< "The mobility of whale b is "<< b.CMammal::getMobility()<< endl;
+      cout<< "The mobility of whale b is "<< b.CAquaticAnimal::getMobility()<< endl;
+   }
+</TT></PRE>
+說明：
+<OL>
+  <LI>該程式 CWhale 物件 b 僅有一個名為 movability 的資料，其值為 0。
+         呼叫  CAnimal constructor 只有一次，其參數為 0 。<P>
+  <LI>於 CAquaticAnimal 的 constructor 呼叫  CAnimal(2) constructor 傳 2 是不起作用的。<P>
+  <LI>於 CMammal 的 constructor 呼叫  CAnimal(1) constructor 傳 1 是不起作用的。<P>
+  <LI>該程式執行的結果如下：<TT><BR>
+The mobility of whale b is 0<BR>
+The mobility of whale b is 0<BR>
+The mobility of whale b is 0
+</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<A HREF="cpgch15.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch15.htm">回第 15 章</A><BR>
+<A HREF="javascript:if(confirm('http://nknucc.nknu.edu.tw/~jwu/c/cpgch17.htm  \n\nThis file was not retrieved by Teleport Pro, because the server reports that this file cannot be found.  \n\nDo you want to open it from the server?'))window.location='http://nknucc.nknu.edu.tw/~jwu/c/cpgch17.htm'" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch17.htm">至第 17 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</html>

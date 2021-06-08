@@ -1,0 +1,670 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Audio</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Audio（Under Construction!）</p>
+</div><div class="c">
+<p class="t">Audio</p>
+<p>感受「聲音sound」是人類的本能。音樂、說話、風吹草動蟲鳴鳥叫等等聲響，都是聲音。</p>
+<p>與科技裝置有關係的聲音，則稱作「聲音audio」。電視播放的聲音、電話通話的聲音等等，都是聲音。</p>
+<p class="t">Sample</p>
+<img src="Audio1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Audio1.png">
+<p>聲音源自振動。耳膜感受空氣振動，在腦中產生聲覺。</p>
+<img src="Audio2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Audio2.png">
+<p>要讓電腦處理聲音，必須預先讓聲音變成數字，也就是讓聲音經過「取樣sampling」與「量化quantization」兩個步驟：先取得每一個時間點的振幅大小，再把振幅大小以整數表示。</p>
+<pre>
+取樣：把時間變成離散數字。
+量化：把振幅變成離散數字。
+</pre>
+<img src="Audio3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Audio3.png">
+<p>sampling rate，取樣率：一秒鐘有多少個訊號。數值越高，聲音就越連貫。電腦的聲音檔案，通常採用44100Hz；手機與電話的聲音傳輸，公定為8000Hz。</p>
+<p>bit depth或bits per sample，位元深度：一個訊號用多少位元紀錄。數值越高，聲音就越精準。一般使用16bit就足夠詳細了，因此每個訊號都是-32768到32767的整數值，恰好符合C語言的short變數。</p>
+<p>channel，聲道：聲音訊號共有幾條。每一條聲音訊號都是一樣長。舉例來說，民眾所熟悉的立體雙聲道，其實就是同時播出兩條不同的聲音訊號。</p>
+<p>在電腦當中，聲音是很多個整數數列，資料結構是陣列。</p>
+<textarea>
+short signal1[44100], signal2[44100];	// 雙聲道
+</textarea>
+<p>順帶一提，經過取樣與量化得到的訊號資料，稱做PCM data。「脈衝編碼調變pulse-code modulation」源自訊號學，所以名稱才會如此不直覺。</p>
+<p class="t">Frequency</p>
+<p>請讀者先徹底了解「<a href="Wave.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave.html">Wave</a>」以及相關演算法。</p>
+<p>人類擅於感受的不是振動的幅度，而是振動的頻率。</p>
+<p>spectrum，頻譜：理論上，是一個特定時間點的頻率分布圖。實際上，是截取一段時間範圍內的訊號，實施Fourier Transform，得到每一種頻率的波的強度。</p>
+<p>比如說以44100Hz的取樣率、1024點訊號，實施Fourier Transform，頻譜的每一個波相差44100Hz / 1024 = 43Hz。</p>
+<img src="Audio4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Audio4.png">
+<audio id="audio1" src="music.ogg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/material/music.ogg" controls="true"></audio>
+<div class="i"><canvas id="spectrum" width="512" height="200"></canvas></div>
+<script>
+var FFT = function(N) {
+	this.N            = N;
+	this.spectrum     = new Float32Array(N/2);
+	this.real         = new Float32Array(N);
+	this.imag         = new Float32Array(N);
+	this.reverseTable = new Uint32Array(N);
+	this.sinTable     = new Float32Array(N+1);
+	this.cosTable     = new Float32Array(N+1);
+
+	for (var i=1, j=N>>1; i<N; i<<=1, j>>=1)
+		for (var k=0; k<i; k++)
+			this.reverseTable[k + i] = this.reverseTable[k] + j;
+
+	for (var i=1; i<N; i<<=1) {
+		this.sinTable[i] = Math.sin(-Math.PI/i);
+		this.cosTable[i] = Math.cos(-Math.PI/i);
+	}
+};
+
+FFT.prototype.forward = function(sample) {
+	var N            = this.N,
+		cosTable     = this.cosTable,
+		sinTable     = this.sinTable,
+		reverseTable = this.reverseTable,
+		real         = this.real,
+		imag         = this.imag,
+		spectrum     = this.spectrum;
+
+	var cosdt, sindt, cost, sint, tr, ti, temp_cost, i, j, k, jj;
+
+	for (i=0; i<N; ++i) {
+		real[i] = sample[reverseTable[i]];
+		imag[i] = 0;
+	}
+
+	for (k=1; k<N; k<<=1) {
+//		double ω = -2.0 * π / k;
+//		complex<double> dθ(cos(ω), sin(ω));
+//		complex<double> θ(1, 0);
+		cosdt = cosTable[k]; sindt = sinTable[k];
+		cost = 1; sint = 0;
+		for (i=0; i<k; i++) {
+			for (j=i; j<N; j+=(k<<1)) {
+//				complex<double> a = x[j];
+//				complex<double> b = x[j + k/2] * θ;
+//				x[j + k/2] = a - b;
+//				x[j]       = a + b;
+				jj = j + k;
+				tr = real[jj] * cost - imag[jj] * sint;
+				ti = real[jj] * sint + imag[jj] * cost;
+				real[jj] = real[j] - tr;
+				imag[jj] = imag[j] - ti;
+				real[j] += tr;
+				imag[j] += ti;
+			}
+//			θ *= dθ;
+			temp_cost = cost;
+			cost = cost      * cosdt - sint * sindt;
+			sint = temp_cost * sindt + sint * cosdt;
+		}
+	}
+
+	i = N/2;
+	while (i--)
+		spectrum[i] = 2 * Math.sqrt(real[i] * real[i] + imag[i] * imag[i]) / N;
+};
+</script>
+<script>
+var _1_ = function() {
+var canvas = document.getElementById('spectrum');
+var ctx = canvas.getContext('2d');
+
+var audio = document.getElementById('audio1');
+audio.addEventListener('MozAudioAvailable', audioAvailable, false);
+audio.addEventListener('loadedmetadata', loadedMetadata, false);
+
+var channels;
+var rate;
+var frameBufferLength;
+var fft;
+
+function loadedMetadata() {
+	channels          = audio.mozChannels;
+	rate              = audio.mozSampleRate;
+	frameBufferLength = audio.mozFrameBufferLength;
+
+	fft = new FFT(frameBufferLength / channels);
+}
+
+function audioAvailable(event) {
+	var fb = event.frameBuffer;
+	var t  = event.time;
+
+	var signal = new Float32Array(fb.length / channels);
+	for (var i = 0, fbl = frameBufferLength / 2; i < fbl; i++ ) {
+		signal[i] = (fb[2*i] + fb[2*i+1]) / 2;
+	}
+	fft.forward(signal);
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = "brown";
+	for (var i = 0; i < fft.spectrum.length; i++ ) {
+		var magnitude = fft.spectrum[i] * 4000;
+		ctx.fillRect(i * 4, canvas.height, 3, -magnitude);
+	}
+}
+}();
+</script>
+<p>spectrogram，頻譜圖：所有時間點的頻率分布圖。我們改變頻譜的繪圖方式，將頻率強度改成亮度高低，讓一個頻譜變成一條線，讓各個時間點的頻譜疊成一個長方形。</p>
+<img src="Audio5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Audio5.png">
+<style>
+#out {
+display:block;
+width:512;
+height:auto;
+border:1px solid navy;
+}
+</style>
+<audio id="audio2" src="music.ogg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/material/music.ogg" controls="true"></audio>
+<div class="i"><canvas id="spectrogram" width="500" height="128"></canvas></div>
+<div id="out2-2"></div>
+<script>
+var out = document.getElementById('out2-2');
+
+var _2_ = function() {
+var canvas = document.getElementById('spectrogram');
+var ctx = canvas.getContext('2d');
+
+var audio = document.getElementById('audio2');
+audio.addEventListener('MozAudioAvailable', audioAvailable, false);
+audio.addEventListener('loadedmetadata', loadedMetadata, false);
+
+var channels;
+var rate;
+var frameBufferLength;
+var fft;
+
+function loadedMetadata() {
+	channels          = audio.mozChannels;
+	rate              = audio.mozSampleRate;
+	frameBufferLength = audio.mozFrameBufferLength;
+
+	fft = new FFT(frameBufferLength / channels);
+}
+
+function audioAvailable(event) {
+	var fb = event.frameBuffer;
+	var t  = event.time;
+
+	var signal = new Float32Array(fb.length / channels);
+	for (var i = 0, fbl = frameBufferLength / 2; i < fbl; i++) {
+		signal[i] = (fb[2*i] + fb[2*i+1]) / 2;
+	}
+	fft.forward(signal);
+
+	var max_scale = -10000;
+	var min_scale = 10000;
+
+	var x = Math.round(rate * t / (frameBufferLength / channels));
+	for (var i = 0; i < fft.spectrum.length; i++) {
+		var magnitude = fft.spectrum[i];
+		var scale = Math.round(magnitude * 4000);
+//		var scale = Math.round((Math.log(magnitude) / Math.log(10) + 7) * 40);
+		if (scale > max_scale) max_scale = scale;
+		if (scale < min_scale) min_scale = scale;
+
+		if (i < 128) {
+			ctx.fillStyle = "rgb(" + scale + "," + scale + "," + scale + ")";
+			ctx.fillRect(x / 2, canvas.height - i, 1, -1);
+		}
+	}
+
+	out.innerHTML += min_scale + ',' + max_scale + '\n';
+}
+}();
+</script>
+<p>人類對於強度與頻率的感覺是取log的。頻譜的低音部分非常不明顯。</p>
+<p class="t">Sampling Theory</p>
+<p>「取樣定理」提到：以取樣頻率10Hz將一個波記錄為訊號（每秒取10點訊號），以此訊號只能重建出5Hz以下的波。</p>
+<p>人類的聽覺範圍約是20Hz~20000Hz，所以上一節提到的44100Hz就是這樣來的，兩倍多一點。</p>
+<p class="t">存取靜態聲音資料：檔案</p>
+<p>此處我們使用<a href="javascript:if(confirm('http://www.sfml-dev.org/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.sfml-dev.org/'" tppabs="http://www.sfml-dev.org/">SFML</a>這套函式庫，輕鬆開啟WAV格式的聲音檔案，將聲音儲存至陣列。</p>
+<textarea>
+#include <SFML/Audio.hpp>
+
+int main()
+{
+	// 利用 SFML 讀取 .wav 檔案
+	sf::SoundBuffer buffer;
+	bool load = buffer.loadFromFile("poem.wav");
+	if (!load) return 0;
+	const short* sample
+		= buffer.getSamples();
+	int sample_length
+		= buffer.getSampleCount();
+	unsigned int sample_rate
+		= buffer.getSampleRate();
+	unsigned int channel
+		= buffer.getChannelCount();
+
+	// 利用 SFML 播放聲音。
+	sf::Sound sound;
+	sound.setBuffer(loadBuffer);
+	sound.play();
+
+	// 利用 SFML 儲存 .wav 檔案。
+	bool save = buffer.saveToFile("save.wav");
+	if (!save) return 0;
+
+	return 0;
+}
+</textarea>
+<p class="t">存取即時聲音資料：錄音、播音、網路傳輸</p>
+<p><a href="javascript:if(confirm('https://developer.mozilla.org/en-US/docs/Web_Audio_API  \n\nThis file was not retrieved by Teleport Pro, because it is addressed using an unsupported protocol (e.g., gopher).  \n\nDo you want to open it from the server?'))window.location='https://developer.mozilla.org/en-US/docs/Web_Audio_API'" tppabs="https://developer.mozilla.org/en-US/docs/Web_Audio_API">https://developer.mozilla.org/en-US/docs/Web_Audio_API</a></p>
+<p><a href="javascript:if(confirm('https://wiki.mozilla.org/Audio_Data_API  \n\nThis file was not retrieved by Teleport Pro, because it is addressed using an unsupported protocol (e.g., gopher).  \n\nDo you want to open it from the server?'))window.location='https://wiki.mozilla.org/Audio_Data_API'" tppabs="https://wiki.mozilla.org/Audio_Data_API">https://wiki.mozilla.org/Audio_Data_API</a></p>
+<p>bit rate，位元率：即是sampling rate乘以bit depth。電腦存取聲音檔案時，每一秒要處理多少位元。將滑鼠停留在聲音檔案圖示上面，就會出現bit rate大小。</p>
+<pre>
+麥克風的構造以及頻率響應
+http://www.sounderpro.com.tw/reviw/microphone/mic_01.html
+</pre>
+<pre>
+flash錄音
+http://fms.denniehoopingarner.com/hiddenAudioControl/howto.html
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Sound Effect（Under Construction!）</p>
+</div><div class="c">
+<p class="t">Sound Effect</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Sound_effect  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Sound_effect'" tppabs="http://en.wikipedia.org/wiki/Sound_effect">http://en.wikipedia.org/wiki/Sound_effect</a></p>
+<p>聲音特效、音效。</p>
+<p>讀者可以安裝麥克風，運用錄音軟體錄製聲音，選擇單聲道，儲存成WAV格式。WAV格式是最基本的聲音檔案格式。</p>
+<p class="t">Emphasize</p>
+<p>有時候麥克風品質不佳，錄製到的聲音很粗糙。微分運算可使聲音稍微清晰。</p>
+<textarea>
+short sample[100000];
+short new_sample[100000];
+int sample_length;
+
+void pre_emphize()
+{
+	new_sample[0] = sample[0];
+	for (int i=1; i<sample_length; ++i)
+		new_sample[i] = sample[i] - 0.95 * sample[i-1];
+}
+</textarea>
+<p class="t">Smooth</p>
+<p>平均值可使聲音起來模糊不清。</p>
+<p>【待補程式碼】</p>
+<textarea>
+short sample[100000];
+short new_sample[100000];
+int sample_length;
+
+void smooth()
+{
+	int k = 5;	// k點平均值
+	int n = 0;
+	for (int i=0; i<sample_length; ++i)
+	{
+		n += sample[i];
+		if (i-k >= 0) n -= sample[i-k];
+		new_sample[i-k/2] = n / k;
+	}
+}
+</textarea>
+<p class="t">Echo</p>
+<p>延遲訊號、疊加訊號，製造回聲效果，聽起來彷彿位於寬敞的密閉空間。</p>
+<textarea>
+short sample[100000];
+short new_sample[100000];
+int sample_length;
+
+void echo()
+{
+	for (int i=0; i<sample_length; ++i)
+	{
+		new_sample[i] = sample[i];
+		// 延遲 11012 / 44050 = 0.25 秒，音量減少一半。
+		if (i - 11012 >= 0) new_sample[i] += sample[i - 11012] / 2;
+	}
+}
+</textarea>
+<p class="t">變聲器</p>
+<iframe src="Qnj2oU8MYCI" tppabs="http://www.youtube.com/embed/Qnj2oU8MYCI"></iframe>
+<p>原理其實非常簡單，只要把聲音訊號進行傅立葉轉換，然後在頻域上稍作處理，便有這種效果。</p>
+<p>在頻域上作位移、也就是改變頻率高低之後，聽起來就像是變性一樣。一般來說男生低、女生高，所以調高頻率後聽起來像女聲，調低頻率後聽起來像男聲。</p>
+<p>除了改變頻率高低，也可以位移後再疊加，聽起來就有和聲效果。流行歌曲最常使用這種招數，歌唱的難聽的也會變得好聽，單調的曲子的也會變得豐富。</p>
+<p>針對音質做處理，專業的術語叫做「vocoder」，此單字取自於 voice coder ，也就是聲音編碼器的意思。電子琴基本上就是個 vocoder，喜歡玩音樂的人應該是不陌生的。</p>
+<p>傅立葉轉換除了可以用電腦計算，也可以直接用電子電路兜出來。像是下面這個影片，似乎就是買個了現成的電路板，自己組裝一下就變成了變聲器。</p>
+<iframe src="fE1zsZvzRms" tppabs="http://www.youtube.com/embed/fE1zsZvzRms"></iframe>
+<p class="t">伴唱帶音源</p>
+<div class="pre">
+<iframe src="_ilErbGsXPo" tppabs="http://www.youtube.com/embed/_ilErbGsXPo"></iframe>
+<iframe src="IcY_peOex9o" tppabs="http://www.youtube.com/embed/IcY_peOex9o"></iframe>
+
+大致上可以分為兩個方向來說。
+灌錄CD唱片時，
+通常伴奏和人聲會分做不同聲道來儲存，
+所以只要知道如何把人聲的訊號源抽取出來，
+降低一個比例再放回去，
+就可以做成伴唱帶。
+
+另一個方向是，
+手上拿到的是聲音檔而不是CD音源，
+人聲和伴奏混在一起的情況。
+把聲音訊號進行傅立葉轉換，
+觀察一下伴奏和人聲的頻率變化，
+然後把人聲所在頻率抽取出來。
+最簡單的想法是使用去除雜訊演算法，
+專業術語「speech enhancement」，
+把伴奏當做雜訊來抽取。
+或者打「off vocal algorithm」之類的
+可以找到一些資料，
+不過我也不是很懂，各位可以自己研究看看。
+</div>
+<p class="t">傾聽顏色</p>
+<div class="pre">
+<iframe src="neil_harbisson_i_listen_to_color.html" tppabs="http://embed.ted.com/talks/lang/zh-tw/neil_harbisson_i_listen_to_color.html"></iframe>
+
+在電腦當中，一切東西都是數字。
+色彩是數字，聲音也是數字。
+只要把色彩轉換成數字，數字再轉換成聲音，
+那麼就可以運用聲音來辨別色彩。
+</div>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Music Composition（Under Construction!）</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Algorithmic_composition  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Algorithmic_composition'" tppabs="http://en.wikipedia.org/wiki/Algorithmic_composition">http://en.wikipedia.org/wiki/Algorithmic_composition</a></p>
+<p>http://stackoverflow.com/questions/7717178/</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Sonic Interaction Design（Under Construction!）</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Sonic_interaction_design  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Sonic_interaction_design'" tppabs="http://en.wikipedia.org/wiki/Sonic_interaction_design">http://en.wikipedia.org/wiki/Sonic_interaction_design</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Speech Recognition（Under Construction!）</p>
+</div><div class="c">
+<p class="t">Speech</p>
+<p><a href="javascript:if(confirm('http://mirlab.org/jang/books/audioSignalProcessing/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mirlab.org/jang/books/audioSignalProcessing/'" tppabs="http://mirlab.org/jang/books/audioSignalProcessing/">http://mirlab.org/jang/books/audioSignalProcessing/</a></p>
+<p>這份<a href="javascript:if(confirm('http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-345-automatic-speech-recognition-spring-2003/lecture-notes/lecture23.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-345-automatic-speech-recognition-spring-2003/lecture-notes/lecture23.pdf'" tppabs="http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-345-automatic-speech-recognition-spring-2003/lecture-notes/lecture23.pdf">課程投影片</a>講的是一些語音處理的基本玩意；雖然是2003年的，不過還是滿有參考價值。</p>
+<pre>
+Speech Recognition / Speech Verification
+Speech Evaluation
+Speech Emotion Recognition
+Speech Synthesis
+Speech Compression / Speech Encoding
+</pre>
+<pre>
+語音辨識與合成
+http://www.speechapi.com/main/
+</pre>
+<pre>
+Audiology（聽力學）
+醫學系、復健系的學問，另外心理系會用到。
+探討人類聽力器官構造、人類聽覺、設計實驗測量聽力、各種聽力疾病。
+
+Acoustics（音響學）（聲學）
+機械系、物理系的學問，另外建築系、傳播系、音樂系會用到。
+各科系的討論方向不同。探討波的數學表示法、聲波的物理性質、聲波位在各種材質上的數學表示法、錄製與播放聲音的設備、音樂。
+
+Linguistics（語言學）
+中文系、外文系的學問。
+探討文法結構、字詞連結方式與語意的關係、咬字發音。
+目前的語音處理，完全沒有用到語言學！
+而是採用數學方法，採用的數學方法是n-gram。
+http://www.matrix67.com/blog/archives/4870
+</pre>
+<p class="t">Auditory / Articulation</p>
+
+<p class="t">Frame</p>
+<p>由於訊號很長、變化很大，因此必須將訊號分成小段處理，使得小段之內變化很小。每個小段都稱做一個「音框Frame」。</p>
+<img src="Speech1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Speech1.png">
+<p>當取樣頻率是44100Hz，音框設定為512點的時候，這個音框占有512/44100 ≈ 0.01秒，人耳無法分辨這麼短時間的變化，人聲也無法控制這麼短時間的變化，可以說是足夠細膩了。</p>
+<p class="t">Window</p>
+<p>原本完整的聲音波形，硬生生被音框截斷了，因此使用傅立葉轉換分析頻率會產生誤差。解法是：將音框兩端的訊號漸漸減弱，減少影響。也就是將音框點對點乘上一個中央高、兩側低的函數，數值皆介於零到一之間，稱做「<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Window_function  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Window_function'" tppabs="http://en.wikipedia.org/wiki/Window_function">窗函數Window Function</a>」。</p>
+<img src="Speech2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Speech2.png">
+<textarea>
+const double pi = 2.0 * acos(0.0);	// π
+const int frame_size = 512;
+double hamming[512];
+
+void InitHammingWindow()
+{
+	for (int i=0; i<frame_size; i++)
+		hamming[i] = 0.54 - 0.46 * cos( (double)i * pi / (frame_size - 1) );
+}
+
+void UseHammingWindow(double* sample)
+{
+	for (int i=0; i<frame_size; i++)
+		sample[i] *= hamming[i];
+}
+</textarea>
+<p>窗函數仍然具有缺陷。把窗函數從時域轉換成頻域，外觀是很多圓丘擠在一起，窗函數會增強凸起處對應的頻率，但也會削弱凹陷處對應的頻率。</p>
+<img src="Speech3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Speech3.png">
+<p class="t">Mel-frequency Cepstrum Coefficients</p>
+<p>也就是說，如果對象是男低音、頻率極低的聲音，那麼音框必須大一點才行。</p>
+<textarea>
+void ceptrum()
+{
+	float h[ORDER + 1];
+	h[0] = c[0];
+	h[1] = c[1];
+	for (int n=2; n<=ORDER; ++n)
+	{
+		float sum = 0;
+		for (int k=1; k<n; ++k)
+			sum += float(k) / float(n) * h[k] * c[n-k];
+		h[n] = c[n] + sum;
+	}
+	for (int i=1; i<=ORDER; ++i)
+		c[i-1] = h[i] * (1 + ORDER / 2 * sin(pi * j));
+}
+</textarea>
+<p class="t">Phoneme</p>
+<pre>
+Voice Onset Time
+氣流通過與聲帶震動的時機，會產生不同感受的聲音。
+</pre>
+<p class="t">Pitch / Formant / Tone</p>
+<pre>
+algorithm list
+http://access.feld.cvut.cz/view.php?cisloclanku=2009060001
+
+matlab
+http://www.ee.ic.ac.uk/hp/staff/dmb/voicebox/voicebox.html
+
+SFS
+http://www.phon.ucl.ac.uk/resource/sfs/download.htm
+
+get peak
+http://www.surina.net/soundtouch/
+</pre>
+<p>先來個AMDF好了。其實做出來的圖還滿亂的。也許我該寫個偵測靜音、median smoothing之類的。</p>
+<p>綠色線是音量（dB）。黃色線是音高。我唸的是「紅豆生南國，春來發幾枝」，還不錯可以看到tone，也有反映出抑揚頓挫。音高上升就是二聲、音高下降就是四聲，三聲就是下去再上來。</p>
+<audio id="au3" src="poem.wav" tppabs="http://www.csie.ntnu.edu.tw/~u91029/material/poem.wav" controls="true"></audio>
+<input id="input3" type="button" value="清除" />
+<div><canvas id="pitch" width="900" height="128"></canvas></div>
+<!--<div id="out"></div>-->
+<script>
+var _3_ = function() {
+var out = document.getElementById('out');
+
+var canvas = document.getElementById('pitch');
+var ctx = canvas.getContext('2d');
+
+document.getElementById('input3').onclick = function clean() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+var audio = document.getElementById('au3');
+audio.addEventListener('MozAudioAvailable', audioAvailable, false);
+audio.addEventListener('loadedmetadata', loadedMetadata, false);
+
+var channels;
+var rate;
+var frameBufferLength;
+var fft;
+
+function loadedMetadata() {
+//	audio.mozFrameBufferLength = 1024;
+	channels          = audio.mozChannels;
+	rate              = audio.mozSampleRate;
+	frameBufferLength = audio.mozFrameBufferLength;
+
+	fft = new FFT(frameBufferLength / channels);
+}
+
+var lastenergy = 0;
+var lastpitch = 0;
+function audioAvailable(event) {
+	var fb = event.frameBuffer;
+	var t  = event.time;
+	var x = Math.round(rate * t / (frameBufferLength / channels));
+
+	var signal = new Float32Array(fb.length / channels);
+	for (var i = 0, fbl = frameBufferLength / 2; i < fbl; i++)
+		signal[i] = (fb[2*i] + fb[2*i+1]) / 2;
+
+	var energy = Math.log(getEnergy(signal));
+	ctx.strokeStyle = "green";
+	ctx.beginPath();
+	ctx.moveTo((x-1)*4, lastenergy * -20);
+	ctx.lineTo(x*4, energy * -20);
+	ctx.stroke();
+	lastenergy = energy;
+
+	var pitch = 0;
+	if (energy > -4.3) pitch = getPitch(signal);
+//	out.innerHTML += pitch + '\n';
+	pitch -= 80;
+	ctx.strokeStyle = "yellow";
+	ctx.beginPath();
+	ctx.moveTo((x-1)*4, canvas.height - lastpitch);
+	ctx.lineTo(x*4, canvas.height - pitch);
+	ctx.stroke();
+	lastpitch = pitch;
+}
+
+function getEnergy(fSample) {
+	var iEnergy = 0;
+	for (var i=0; i<fSample.length; ++i)
+		iEnergy += fSample[i] * fSample[i];
+
+	return iEnergy;
+}
+
+// [iBegin, iEnd) 的加權平均。
+function masscenter(array, iBegin, iEnd) {
+	var sum = 0, wsum = 0;
+	for (var i = iBegin; i < iEnd; ++i) {
+		if (i >= 0 && i < array.length) {
+			sum += array[i];
+			wsum += array[i] * i;
+		}
+	}
+	if (sum < 1e-6) return 0;
+	return wsum / sum ;
+}
+
+// 找到 [iBegin, iEnd) 最低點，以擷取基頻F0。
+function trough(fAMDF, iBegin, iEnd) {
+	// 找到全域最低點。
+	var iTrough = iBegin;
+	var fTroughValue = fAMDF[iBegin];
+	for (var i = iBegin + 1; i < iEnd; i++)
+		if (fAMDF[i] < fTroughValue)
+			fTroughValue = fAMDF[iTrough = i];
+
+	// 加權平均。
+	var iTroughBegin = iTrough - 2;
+	var iTroughEnd   = iTrough + 2;
+	if (iTroughBegin < iBegin) iTroughBegin = iBegin;
+	if (iTroughEnd   > iEnd  ) iTroughEnd   = iEnd;
+	var fTrough = masscenter(fAMDF, iTroughBegin, iTroughEnd);
+	return fTrough;
+}
+
+var fAMDF = new Float32Array(1024);
+function getPitch(fSample) {
+	var iBegin = 300;	// 44100Hz / 300 = 147Hz for man :D
+	var iHalfLength = fSample.length >> 1;
+	var i, j;
+	for (i = iBegin; i < iHalfLength; i++) {
+		// 最多疊三倍週期，防止高頻oversampling。
+		fAMDF[i] = 0;
+		for (j = 0; j < i * 3 && j < iHalfLength; j++)
+			fAMDF[i] += Math.abs(fSample[j] - fSample[j + i]);
+		// normalize
+		if (j == iHalfLength) fAMDF[i] /= iHalfLength;
+		else fAMDF[i] /= (i * 3);
+	}
+
+	// 找到AMDF函數第一個高峰，從高峰之後開始找最低點。
+	var p = iBegin;
+	while (p < iHalfLength && fAMDF[p] < fAMDF[p + 1]) p++;
+	p = trough(fAMDF, p, iHalfLength);
+	if (p == 0) return 0;
+	return rate / p;
+}
+
+}();
+</script>
+<p class="t">Voice Activity Detection（Endpoint Detection）</p>
+<p class="t">Noise Detection / Noise Reduction</p>
+<p class="t">語音揀貨</p>
+<div class="pre">
+<iframe src="ZfMlAHyI27k" tppabs="http://www.youtube.com/embed/ZfMlAHyI27k"></iframe>
+
+倉庫管理是個很重要的工作，
+以往的方式，是採用RFID技術，
+也就是在每個貨物上面貼條碼標籤，
+想要檢驗貨物，就以人力拿著刷條碼機，
+翻轉一下貨物，找到貨物上的條碼，
+然後掃描一下條碼，
+就像便利商店結帳那樣。
+接著貨物的相關資訊，就會透過網路，
+傳送到中央機房的資料庫裡面。
+
+<iframe src="J5MnyD1XAy8" tppabs="http://www.youtube.com/embed/J5MnyD1XAy8"></iframe>
+
+貨物形狀千奇百怪，
+一手拿著刷條碼機，一手要從貨物上找到條碼，
+似乎有點麻煩。
+科技始終來自於惰性，
+就有人想到出一張嘴的方法：把語音辨識技術用在揀貨上面！
+只要戴個藍芽耳麥，一邊散步一邊念出貨品名稱，
+就能取代刷條碼機了，
+是不是很方便呢？
+
+最厲害的，
+是將貨品名稱轉為人工語音，
+直接對揀貨員下指令，
+如此揀貨員就不用拿著一張報表、拿著一台PDA，
+能夠空出一雙手、到處去搬貨物了。
+
+說不定不久之後，
+就能看到超商店員自顧自的碎碎念呢。
+</div>
+
+<p class="t">語音查號</p>
+<div class="pre">
+<iframe src="uNfluFG-Dew" tppabs="http://www.youtube.com/embed/uNfluFG-Dew"></iframe>
+
+這整個過程是「語音辨識」技術。
+將說話者的聲音即時錄音，
+用 Fourier Transform 解析說話頻率，
+然後用 Hidden Markov Model 辨識出說話者發出的是哪些注音符號，
+然後建立語句資料庫，收集大量文件，
+然後用 n-gram 判斷說話者說出的是哪些字。
+然後再去搜尋電話資料庫看看哪些電話符合說話者的描述內容，
+整個過程相當複雜，有點工程的味道。
+
+由這報導可知，
+顯然當今的施工工法還不是很好。
+各位資訊工程師加油吧！
+
+<iframe height="360" src="kxToOTjmviw" tppabs="http://www.youtube.com/embed/kxToOTjmviw" type="application/x-shockwave-flash" width="480"></iframe>
+
+還有一個最近開始流行的，
+叫作「語音搜尋」。
+只要說話，就可以搜尋了，很方便的。
+希望有朝一日瀏覽器也可以直接語音搜尋，
+這樣就可以少敲一點鍵盤了。
+那些學了一堆輸入法的人應該感到很嘔吧。
+</div>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Audio File Format</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Audio_file_format  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Audio_file_format'" tppabs="http://en.wikipedia.org/wiki/Audio_file_format">http://en.wikipedia.org/wiki/Audio_file_format</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,250 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Palindrome</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Palindrome</p>
+<p class="r">程度★　難度★</p>
+<p class="w">仁智懷德聖虞唐，貞志篤終誓穹蒼，　　　　　</p>
+<p class="w">欽所感想妄淫荒，心憂增慕懷慘傷。《璇機圖》</p>
+</div><div class="c">
+<p class="t">Palindrome</p>
+<p>「迴文」在中文當中是指倒正著念和反著念都相同的句子，前後對稱，例如「上海自來水來自海上」。在英文當中是指正著看和反著看都相同的單字，例如「madam」。</p>
+<p>另外也舉些不是迴文的例子：「aabb」、「abcabc」。下圖也非迴文，儘管它非常對稱：</p>
+<img src="Palindrome1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Palindrome1.png">
+<p>要檢查一個單字是否是迴文很簡單：</p>
+<textarea>
+bool palindrome(const string& s)
+{
+	for (int i=0; i<s.size()/2; ++i)
+		if (s[i] != s[s.size() - 1 - i])
+			return false;
+	return true;
+}
+</textarea>
+<textarea>
+bool palindrome(char* s)
+{
+	int length = strlen(s);
+	for (int i=0; i<length/2; ++i)
+		if (s[i] != s[length - 1 - i])
+			return false;
+	return true;
+}
+</textarea>
+<textarea>
+bool palindrome(char* s)
+{
+	for (int i=0, j=strlen(s)-1; i<j; ++i, --j)
+		if (s[i] != s[j])
+			return false;
+	return true;
+}
+</textarea>
+<textarea>
+bool palindrome(char* s)
+{
+	char* t = s + strlen(s) - 1;
+	for ( ; s < t; ++s, --t)
+		if (*s != *t)
+			return false;
+	return true;
+}
+</textarea>
+<p>驗證一下程式寫的對不對：如果字母個數為奇數，則最中間的字母沒必要檢查，其他字母都會檢查到；如果字母個數為偶數，每個字母都會檢查到。OK啦！</p>
+<p class="e">UVa 10945 401 257 10716</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Palindromic Subsequence</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Longest Palindromic Subsequence</p>
+<p>是迴文而且是最長的子序列，可能有許多個。</p>
+<pre>
+  s = 1 5 2 4 3 3 2 4 5 1
+LPS = 1 5   4 3 3   4 5 1
+</pre>
+<p class="t">演算法（Dynamic Programming）</p>
+<p>利用迴文的特性，從字串的左右兩端判斷其是否對稱，來縮小問題範疇。找出一個最長迴文子序列的時間複雜度是O(N^2)。</p>
+<textarea>
+// top-down
+char s[1000+1];		// 原字串
+int dp[1000][1000];	// 儲存每個小問題的答案，初始化為-1
+int p[1000][1000];	// 紀錄每個小問題應當插入字母的地方
+
+int f(int i, int j)
+{
+	if (i == j) return 1;
+	if (i > j) return 0;
+	if (dp[i][j] != -1) return dp[i][j];
+
+	// 左右兩端字元相等，定能形成更長迴文，同時從兩端縮小問題範疇。
+	if (s[i] == s[j])
+		dp[i][j] = f(i+1, j-1) + 2, p[i][j] = 0;
+
+	// 刪除左端字元比較好。
+	else if (f(i+1, j) > f(i, j-1))
+		dp[i][j] = f(i+1, j), p[i][j] = 1;
+
+	// 刪除右端字元比較好。
+	else if (f(i+1, j) < f(i, j-1))
+		dp[i][j] = f(i, j-1), p[i][j] = 2;
+
+	// 可以刪除其中一端的字元，都一樣好。
+	else /* if (f(i+1, j) == f(i, j-1)) */
+		dp[i][j] = f(i, j-1), p[i][j] = 3;
+
+	return dp[i][j];
+}
+
+void print(int i, int j)
+{
+	if (i > j) return;
+
+	// 當迴文長度為奇數，最中間的字母。
+	if (i == j)
+		cout << s[i];
+
+	// 兩端字母一樣。
+	else if (p[i][j] == 0)
+		cout << s[i], print(i+1, j-1), cout << s[i];
+
+	// 刪除左端字元。
+	else if (p[i][j] == 1)
+		print(i+1, j);
+
+	// 刪除右端字元。
+	else
+		print(i, j-1);
+}
+
+void longest_palindromic_subsequence()
+{
+	memset(dp, -1, sizeof(dp));
+
+	int N = strlen(s);
+	cout << "最長迴文子序列的長度是" << f(0, N-1);
+	cout << "最長迴文子序列是";
+	print(0, N-1);
+}
+</textarea>
+<p class="e">UVa 11151 11404 10453 10617 10739 11584 689</p>
+<p class="t">演算法（Longest Common Subsequence）</p>
+<p>原本字串與反轉字串，兩者的LCS長度即是LPS長度，兩者的所有LCS包含了所有LPS、有一些LCS不是LPS。</p>
+<pre>
+        s  = 1 5 2 4 3 3 2 4 5 1
+reverse(s) = 1 5 4 2 3 3 4 2 5 1
+       LCS = 1 5 2   3 3   4 5 1
+
+s和reverse(s)的LCS不一定剛好就是迴文，會有左右不對稱的問題。
+</pre>
+<p>LCS只求前半段，再自行回文得到後半段，就得到LPS了。</p>
+<p>【待補證明】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Palindromic Substring</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法（Manacher's Algorithm）</p>
+<p>運用了Gusfield's Algorithm的概念。時間複雜度為O(N)。</p>
+<p>定義一個函數Z()，Z(i)是指以s[i]為中心的最長迴文，從中心到外端的長度，也就是說s[i ... i-Z(i)+1] = s[i ... i+Z(i)-1]呈鏡面對稱。</p>
+<p>這種方式無法紀錄偶數長度的迴文。解決辦法是：在每個字元中間，插入同樣一個並且沒出現過的字元，如此就只剩下奇數長度的迴文了，而且也能紀錄原先偶數長度的迴文。</p>
+<pre>
+  |                    10  12  14  16
+  | 0 1 2 3 4 5 6 7 8 9  11  13  15
+--+-----------------------------------
+s | a b a a b a a b
+s'| . a . b . a . a . b . a . a . b .
+z | 1 2 1 4 1 2 7 2 1 8 1 2 5 2 1 2 1
+
+Z(0)：.，由中心可以左右延伸長度1。
+Z(1)：.a.，由中心可以左右延伸長度2。
+Z(2)：.，由中心可以左右延伸長度1。
+Z(3)：.a.b.a.，由中心可以左右延伸長度4。
+</pre>
+<p>計算Z()，是由左往右算。Z(0)是特例，等於1，由Z(1)開始算。</p>
+<p>計算Z(i)，是運用已經算好的Z(j)，j < i。也就是指某一段已經算好的s[j ... j-Z(j)+1] = s[j ... j+Z(j)-1]。首先找出有覆蓋到s[i]的s[j ... j+Z(j)-1]是那一段，而且j+Z(j)-1越右邊越好。</p>
+<img src="LongestPalindromicSubstring1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LongestPalindromicSubstring1.png">
+<p>一、如果找不到可以覆蓋s[i]的s[j ... j+Z(j)-1]，表示已經算好的部份都派不上用場。從s[i+1]與s[i-1]開始比對，逐字比下去。</p>
+<img src="LongestPalindromicSubstring2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LongestPalindromicSubstring2.png">
+<p>二、如果找到可以覆蓋s[i]的s[j ... j+Z(j)-1]，表示s[i]也會出現在s[j ... j-Z(j)+1]之中，把i鏡射到對應的位置i'。接著運用Z(i')，也就是指s[i' .... i'-Z(i')+1] = s[i' ... i'+Z(i')-1]。</p>
+<img src="LongestPalindromicSubstring3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LongestPalindromicSubstring3.png">
+<p>二之一、如果s[i ... i+Z(i')-1]短少於s[j ... j+Z(j)-1]的右端，那就可以直接算出Z(i)的答案，就是Z(i')。</p>
+<img src="LongestPalindromicSubstring4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LongestPalindromicSubstring4.png">
+<p>二之二、如果s[i ... i+Z(i')-1]剛好貼齊s[j ... j+Z(j)-1]的右端，那就必須檢查未確定的部分，直接從s[i+Z(i')]與s[i-Z(i')]繼續比對，逐字比下去。</p>
+<img src="LongestPalindromicSubstring5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LongestPalindromicSubstring5.png">
+<p>二之三、如果s[i ... i+Z(i')-1]突出了s[j ... j+Z(j)-1]的右端，根據Z(j)可知s[j-Z(j)]與s[j+Z(j)]一定是不同字元，根據Z(i')可知s[j-Z(j)]與其鏡射位置是相同字元。對於i來說，s[j+Z(j)]與其鏡射位置就會是不同字元，不可能形成更長的迴文，因此可以直接算出Z(i)的答案，就是j+Z(j)-i。</p>
+<img src="LongestPalindromicSubstring6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LongestPalindromicSubstring6.png">
+<img src="LongestPalindromicSubstring7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LongestPalindromicSubstring7.png">
+<img src="LongestPalindromicSubstring8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LongestPalindromicSubstring8.png">
+<textarea>
+char t[1001];		// 要處理的字串
+cahr s[1001 * 2];	// 中間插入特殊字元的t。
+int Z[1001 * 2], L, R;	// Gusfield's Algorithm
+
+// 由a往左、由b往右，對稱地作字元比對。
+int match(int a, int b)
+{
+	int i = 0;
+	while (a-i>=0 && b+i<N && s[a-i] == s[b+i]) i++;
+	return i;
+}
+
+void longest_palindromic_substring()
+{
+	int N = strlen(t);
+
+	// 在t中插入特殊字元，存放到s。
+	memset(s, '.', N*2+1);
+	for (int i=0; i<N; ++i) s[i*2+1] = t[i];
+	N = N*2+1;
+
+	// modified Gusfield's lgorithm
+	Z[0] = 1;
+	L = R = 0;
+	for (int i=1; i<N; ++i)
+	{
+		int ii = L - (i - L);	// i的映射位置
+		int n = R + 1 - i;
+
+		if (i > R)
+		{
+			Z[i] = match(i, i);
+			L = i;
+			R = i + Z[i] - 1;
+		}
+		else if (Z[ii] == n)
+		{
+			Z[i] = n + match(i-n, i+n);
+			L = i;
+			R = i + Z[i] - 1;
+		}
+		else
+		{
+			Z[i] = min(Z[ii], n);
+		}
+	}
+
+	// 尋找最長迴文子字串的長度。
+	int n = 0, p = 0;
+	for (int i=0; i<N; ++i)
+		if (Z[i] > n)
+			n = Z[p = i];
+
+	// 記得去掉特殊字元。
+	cout << "最長迴文子字串的長度是" << (n-1) / 2;
+
+	// 印出最長迴文子字串，記得別印特殊字元。
+	for (int i=p-Z[p]+1; i<=p+Z[p]-1; ++i)
+		if (i & 1)
+			cout << s[i];
+}
+</textarea>
+<p class="e">Timus 1297</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Palindromic Subsequence</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p>Dynamic Programming O(N^4)。</p>
+<p><a href="javascript:if(confirm('http://arxiv.org/pdf/1110.5296v1.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://arxiv.org/pdf/1110.5296v1.pdf'" tppabs="http://arxiv.org/pdf/1110.5296v1.pdf">http://arxiv.org/pdf/1110.5296v1.pdf</a></p>
+<p class="e">UVa 12473</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

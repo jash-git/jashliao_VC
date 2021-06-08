@@ -1,0 +1,458 @@
+<HTML>
+<HEAD><TITLE>第 5 章 函數</TITLE>
+</HEAD>
+<BODY>
+<P>
+    <CENTER><B>第 5 章  函數</B></CENTER>
+<P>
+
+      程式語言 的 函數 與 數學上 的 函數 非常類似， 例如 我們 可 定義 一
+      數學 函數
+<P>
+               <CENTER>f(x) = 3x<SUP>3</SUP> - 2x<SUP>2</SUP> + 5x - 6</CENTER>
+<P>
+      函數值 f(2) 即 將 2 代入 x 得 <BR>
+      3*2<SUP>3</SUP> - 2*2<SUP>2</SUP> + 5*2 - 6，<BR>
+      其值 為 20。 
+<P>
+      如果 函數 g(x, y) 定義 為
+<P>
+               <CENTER>g(x, y) = x<SUP>2</SUP> + y<SUP>2</SUP> - 4</CENTER>
+<P>
+      則 g(2, 3)= 2*2 + 3*3 - 4 = 9。
+<P>
+      數學的 函數 可分為 函數的 定義 及 函數的 求值，
+      例如<BR>
+      f(x) = 3x<SUP>3</SUP> - x<SUP>2</SUP> + 5x - 6  與 
+      g(x, y) = x<SUP>2</SUP> + y<SUP>2</SUP> - 4<BR>
+      都是 函數的 定義， f(2) 與 g(2, 3) 都是 函數值，
+      就是代入參數值， 即 將 2 與 3 代入 函數。
+<P>
+          程式 語言 中 函數的 架構 與 數學的 函數 觀念上 是 相似，
+      但 較複雜。 按 其結構 可分 為 函數定義、 函數宣告 及 函數呼叫。
+      函數參數 可分為 實質參數 及 形式參數，
+      函數 呼叫 的 參數 為 實質 參數， 函數 定義 的 參數 為 形式 參數。
+      函數 呼叫的 參數 傳遞 方式 基本上 只有 傳值 (call by value) 一種，
+      但 我們 可藉用 地址 運算子 達到 傳地址(call by address)的方式。
+<P>
+          設計 函數 的 目地 是 將 程式 以 模組 (module) 方式 來 構成 程式，
+      如此 一來， 就有 下列 的 優點:
+<OL>
+      <LI>程式碼 可被抽象化， 在 閱讀 程式 時 也 較容易 些。 例如， 看到<BR>
+               <TT>x = sqrt( y );</TT><BR>
+          我們 馬上 可以 知到 x 是 y 的 開方根。 這 比起 以下的 程式 
+          容易 看得多，<BR>
+          <TT>for ( i = 0 ; i*i < y; i++ )<BR>
+           x = --i;</TT><P>
+      <LI>程式 可 以 top down 或 bottom up 的 方式 來設計， 
+          整個 架構 較為 清晰，
+          段落 分明， 較 不易 犯錯。<P>
+      <LI>設計 一個 函數 後， 即可 將之 改成 獨立的 程式，
+          檢驗 其 正確 與 否，查錯較易。<P>
+      <LI>檔案 的 分批 編譯， 沒 修改過 的 .obj 檔 就 不須 重新 編譯，
+          因此 可 節省 編譯 時間。<P>
+
+      <LI>較易 分工。<P>
+
+      <LI>遞迴函數 較 迴圈 簡潔， 因此 較容易 表示。                          
+</OL>
+      設計 函數的 缺點 是: 因 必需 處理 一些 前續 及 後續 動做，
+      如 暫存器 (registers) 的值、 狀態值 (status word) 及 回返址 等的 存取。
+      因此， 執行起來 會 比 不用 函數 慢一些。 不過， 我們 是 很難 察覺到的。
+<P>
+<A NAME="start">
+<P>
+     本 章 主 要 內 容 如 下 :
+<UL>
+  <LI>第 5.1 節 <A href="#first">函數定義</A>
+  <LI>第 5.2 節 <A href="#second">函數宣告</A>
+  <LI>第 5.3 節 <A href="#third">函數呼叫</A>
+  <LI>第 5.4 節 <A href="#fourth">函數呼叫 與 函數定義 的關係</A>
+  <LI>第 5.5 節 <A href="#fifth">以 數值方法 來求 實數函數的 根</A>
+  <LI>第 5.6 節 <A href="#sixth">函數呼叫 與 傳地址</A>
+  <LI>第 5.7 節 <A href="#seventh">函數 與 陣列</A>
+</UL>
+<P>
+<A href="cpgch4.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch4.htm">回第 4 章</A><BR>
+<A href="cpgch6.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch6.htm">至第 6 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<HR>
+<P>
+<!--------------------第 5.1 節--------------------------------------->
+<A NAME="first">
+<P>
+  <B>第 5.1 節   函數定義</B>
+<P>
+
+      函數的 定義， 即 函數本體， 其語法 (或樣本) 如下:
+<P>
+<TT><PRE>
+          資料型  函數名(資料型 形式參數名[,資料型 形式參數名])
+          { 區域變數宣告
+                 .
+                 .
+            敘述;
+                 .
+            return expression;
+          }
+</TT></PRE>
+          函數的 定義 可放在 main( ) 之前， 亦可 放在 其後， 也可以 擺在 不同
+      的 檔案中， 例如:
+<TT><PRE>
+          int f(int a)   /* 函數 f(x) 的定義 */
+          {  return ( 3*a*a*a - 2*a*a + 5*a - 6 );
+          }
+
+          main(){
+              int x;
+              printf("輸入一整數: ");
+              scanf("%d ", &x);
+              printf("f(%d)= %d\n", x, f(x) );
+          }
+</TT></PRE>
+          說明：
+<OL>
+          <LI>若 輸入 2 則 其結果 如下:<P>
+              輸入一整數: 2 ctrl z&lt;enter&gt;<BR>
+              f(2)= 20<P>
+          <LI>於 函數 定義 <TT>int f(int a)</TT> 中， a 為 一 形式 參數
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 5.2 節--------------------------------------->
+<A NAME="second">
+<P>
+  <B>第 5.2 節   函數宣告</B>
+<P>
+
+      函數 的 宣告 為 使用 函數 (函數呼叫) 前 的 宣告， 
+      主要 目的 是 提供 給 程式設計者 參考 及 使用，
+      亦可 讓 編譯系統 (compiler) 預知 該名稱 為 一函數 名稱，
+      因此 可做 較 快速 編譯。 通常 函數的 宣告 都是 因 該函數的 定義 
+      不在 函數呼叫 所在地 的 檔案 之前。 但是， 如果 函數的 定義
+      在 函數呼叫 所在地 的 檔案 之前， 那麼 我們 就 不需 要 函數的 宣告。
+      如 第 5.1 節 中 
+      函數 f 定義 在 呼叫處 <TT>printf(..., f(x) )</TT>
+      之前， 因此 在 main() 裡面 就不需 要 宣告 函數 f。
+      
+<P>
+          其 語法 如下：
+<center>
+              資料型  函數名(資料型 參數名[,資料型 參數名]);
+</center>
+<P>
+          我們 亦可 將 參數名 省略掉, 即
+<center>
+              資料型  函數名(資料型 [,資料型]);
+</center>
+          例如:
+<TT><PRE>
+              main(){
+                  int x;
+                  int f(int);  /* 函數 f( ) 的宣告 */
+
+                  printf("輸入一整數: ");
+                  scanf("%d ", &x);
+                  printf("f(%d)= %d\n", x, f(x) );
+              }
+
+              int f(int y)   /* 函數 f( ) 的定義 */
+              {  return ( 3*y*y*y - 2*y*y + 5*y - 6 );
+              }
+</TT></PRE>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 5.3 節--------------------------------------->
+<A NAME="third">
+<P>
+  <B>第 5.3 節   函數呼叫</B>
+<P>
+      函數的 呼叫， 即 使用 該函數。 其 呼叫 方式 如下:<P>
+
+          函數名(實質參數 [,實質參數]);
+<P>
+      實質 參數 可為 一式子(expression) 如 變數 或 一 運算式。
+<P>
+          於  5.1 節 與 5.2 節 中 <TT>printf(..., f(x) ...)</TT> 的 
+      <TT>f(x)</TT> 即 為 
+      函數 的 呼叫， 其中 x 為 函數 f 的 實質參數。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 5.4 節--------------------------------------->
+<A NAME="fourth">
+<P>
+  <B>第 5.4 節   函數呼叫 與 函數定義 的關係</B>
+<P>
+      函數呼叫 與 其 相對應 函數 定義的 參數 個數、 相對應 參數 資料型態
+      都 必須 相同。 一個 函數 的 呼叫， 會 將 其 實質 參數 的 值 傳給
+      相對應的 形式 參數，如同 數學 函數的 數值 代入， 之後 程式 會跳到 
+      函數的 定義 處 去 執行。 在 執行完 函數 或 執行到 return 時，
+      再 轉回 到 原程式的 下一個 敘述。 例如:       
+<TT><PRE>
+          #define PI 3.14159
+
+          float cylinder_vol(float radius, float height)
+          { return PI * radius * radius * height;
+          }
+
+          main()
+          { printf("半徑為 %f 高為 %f 的圓柱形体積為", 3.0, 4.0);
+            printf(" %f\n", cylinder_vol(3.0, 4.0) );
+          }
+</TT></PRE>
+          其輸出為:
+
+          半徑為 3.000000 高為 4.000000 的圓柱形体積為 113.097240
+<P>
+<DL><DT>說明: 
+      <DD>函數呼叫
+<TT><PRE>
+             printf(" %f\n", cylinder_vol(3.0, 4.0) );
+                               ┌─────┘   │
+                               │ 代入      ┌─┘代入
+                               ↓           ↓
+    float cylinder_vol(float radius, float height)
+</TT></PRE>
+          即將 3.0 代入 形式 參數 radius， 4.0 代入 形式 參數 height。
+          之後， 即 執行
+<P>
+              <TT>PI * radius * radius * height</TT>
+<P>
+            即 計算  
+<P>
+             <TT>3.14159 * 3.0 * 3.0 * 4.0 = 113.097240</TT>
+<P>
+            因此， 函數值 <TT>cylinder_vol(3.0, 4.0) = 113.097240</TT>
+</DL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 5.5 節--------------------------------------->
+<A NAME="fifth">
+<P>
+  <B>第 5.5 節   以 數值方法 來求 實數函數的 根</B>
+<P>
+
+      設 有一 實函數 <TT>f(x) = 3x<SUP>7</SUP> - 2x<SUP>4</SUP> + 5x - 5，</TT>
+      欲求 一根， 我們 可 利用 勘根
+      定理， 並且 使用 數值法 來求解。 已知 f(0)=-5 小於 0，
+      又 f(1)=1 大於 0， 因此
+      必有 一根 介於 0 與 1 之間。 利用 這些 資訊 來求解， 其 C 程式 如下:
+<TT><PRE>
+          #define EPSILON 0.000001
+          float f( float x)
+          { return 3*x*x*x*x*x*x*x - 2*x*x*x*x + 5*x - 5;
+          }
+
+          main()
+          { float left=0.0, right=1.0, mid=0.5;
+            while ( (right - left) > EPSILON )
+            {  mid = ( right + left ) / 2;
+               if ( f(mid) == 0 )    break;
+               else if ( f(mid) > 0) right = mid;
+               else                  left = mid;
+            }
+            printf("根為 %f\n", mid);
+            printf("f(%f)=%f\n", mid, f(mid) );
+          }
+</TT></PRE>
+          其輸出為:
+<TT><PRE>
+          根為 0.933343
+          f(0.933343)=-0.000002                              
+</TT></PRE>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 5.6 節--------------------------------------->
+<A NAME="sixth">
+<P>
+  <B>第 5.6 節   函數呼叫 與 傳地址</B>
+<P>
+
+      於 第 4 章中， 我們 利用 指標 來達到 間接 定值的 方式，
+      如果 我們 欲以 呼叫 函數 方式 來改變 一個 變數 (實質參數) 的值，
+      則 必須 使用指標， 以 間接 方 式 來改變 參數值， 如同 輸入函數
+      <NOBR><TT>scanf("%d ", &x)</TT></NOBR> 中的 &amp;x。 由 下例 即可 知其一二。
+<P>
+          輸入 三整數， 再依其 大小順序， 由小而大 輸出。
+<TT><PRE>
+          main()
+          {  int a, b, c, temp;
+             printf("輸入三個整數: ");
+             scanf("%d %d %d", &a, &b, &c);
+             if (a > b) temp = a, a = b, b = temp;
+             if (b > c) temp = b, b = c, c = temp;
+             if (a > b) temp = a, a = b, b = temp;
+             printf("%d %d %d\n", a, b, c);
+          }
+</TT></PRE>
+          其輸出為：
+<TT><PRE>
+          輸入兩個整數： 34 10  5
+          5 10 34
+</TT></PRE>
+          該程式 有 三個 類似的 敘述 做 兩個變數的 交換， 我們 可將其 
+          換成 函數，
+          如此 一來， 程式 會 較易看懂。
+<TT><PRE>
+          void swap( int *x, int *y)
+          { int temp;
+            temp = *x;  *x = *y;  *y = temp;
+          }
+          main()
+          {  int a, b, c;
+             printf("輸入三個整數: ");
+             scanf("%d %d %d", &a, &b, &c);
+             if (a > b) swap(&a, &b);
+             if (b > c) swap(&b, &c);
+             if (a > b) swap(&a, &b);
+             printf("%d %d %d\n", a, b, c);
+          }                                                             
+</TT></PRE>
+          說明: 如果 輸入 三個 整數為 34、 10、 5， 
+          則 一開始 a = 34，b = 10，c = 5。
+<P>
+          由下圖 來看 執行 敘述 <TT>if (a > b) swap(&a, &b);</TT> 的結果：
+<P>
+<BLOCKQUOTE>
+          假設 變數 a， b， c 記憶体 所在地  的地址 分別是 
+          1000， 1002， 1004。 
+<P>
+          函數 swap 中的 參數 x， y 及 區域 變數 temp 
+          其 記憶体 所在地  的地址 分別是 2000， 2002， 2004。
+<P>
+          其執行 的 過程 如下：
+     <OL>
+       <LI>呼叫 函數 <TT>swap(&a, &b)</TT> 時，  參數 值的 傳遞 如下：
+          <OL TYPE=a>
+             <LI>x 為一指標 其值 被 設定為 1000， 即為 變數 a 記憶体 的地址。
+             <LI>y 為一指標 其值 被 設定為 1002， 即為 變數 b 記憶体 的地址。
+          </OL><P>
+       <LI>當 控制轉移 至 執行 函數<BR>
+           <TT>void swap( int *x, int *y)</TT> 時，<BR>
+           先 執行<BR>
+           <TT>temp = *x;</TT><BR>
+           x 值為 1000， 由 *x 間接取 a 值 34， 將 34 指派給 變數 temp。
+           執行完 該指派敘述 後， 變數 temp 的值 變為 34。<P>
+       <LI>執行 指派敘述 &#153
+           <TT>*x = *y;</TT> 時，<BR> 
+           *y 的值 即為 b 的值 10， 將之 指派給 *x， 即為 a。
+           執行完 該指派敘述 後， *x 的值 變為 10， 
+           即 變數 a 的值 變為 10。<P>
+       <LI>最後 執行完 指派敘述<BR>
+           <TT>*y = temp;</TT><BR>
+           *y 的值 變為 變數 temp 的值 34，
+           即 變數 b 的值 變為 34。
+     </OL>
+<P>
+       注意： 參數 x 與 y 的值， 在 執行 函數 的過程中， 其值 都是
+              1000 與 1002， 沒有  被改變 過。
+</BLOCKQUOTE>
+
+<TT><PRE>
+ <B>swap(&a, &b);</B>         <B>temp = *x;</B>          <B>*x = *y;</B>         <B>*y = temp;</B>
+
+    ├──┤1000       ├──┤1000       ├──┤1000       ├──┤1000
+   a│ 34 │←──┐  a│ 34 │←──┐  a│ 10 │←──┐  a│ 10 │←──┐
+    ├──┤1002  │   ├──┤1002  │   ├──┤1002  │   ├──┤1002  │
+   b│ 10 │←─┐│  b│ 10 │←─┐│  b│ 10 │←─┐│  b│ 34 │←─┐│
+    ├──┤1004││   ├──┤1004││   ├──┤1004││   ├──┤1004││
+   c│  5 │    ││  c│  5 │    ││  c│  5 │    ││  c│  5 │    ││
+    ├──┤    ││   ├──┤    ││   ├──┤    ││   ├──┤    ││
+ <B>swap(&a, &b);</B>  ││   <B>temp = *x;</B>  ││   <B>*x = *y;</B>    ││  <B>*y = temp;</B>   ││
+ 1000┌┘ │1002││   間接取 a 值 ││   a 值改為 10 ││  b 值改為 34  ││
+     控制轉移   ││   temp 值為 34││      (間接)   ││     (間接)    ││
+     ↓   ↓    ││               ││               ││               ││
+<B>swap(*x,  *y)</B>   ││               ││               ││               ││
+    ├──┤2000││   ├──┤2000││   ├──┤2000││   ├──┤2000││
+   x│1000┼──┼┘  x│1000┼──┼┘  x│1000┼──┼┘  x│1000┼──┼┘
+    ├──┤2002│     ├──┤2002│     ├──┤2002│     ├──┤2002│
+   y│1002┼──┘    y│1002┼──┘    y│1002┼──┘    y│1002┼──┘
+    ├──┤2004       ├──┤2004       ├──┤2004       ├──┤2004
+temp│ ?  │       temp│ 34 │       temp│ 34 │       temp│ 34 │
+    ├──┤           ├──┤           ├──┤           ├──┤
+
+</TT></PRE>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>        
+<HR>
+<P>
+<!--------------------第 5.7 節--------------------------------------->
+<A NAME="seventh">
+<P>
+  <B>第 5.7 節   函數 與 陣列</B>
+<P>
+
+      陣列 可以 當做 函數的參數， 陣列名稱 又可 當做 指標用，
+      因此 傳 一陣列 不須加 &amp;。 如果 傳 一陣列 在 函數中 會 被 改變值，
+      同時 我們 又 不想要 它 被改變， 我們 只好 重新 複製 一份陣列，
+      再 傳出。 在 函數 宣告中 的 陣列參數，
+      其 陣列 分量 是 不用 標示出來， 如 
+      <TT>void sort( int n, int class[] )</TT>。
+      在 函數 定義中 的 陣列 參數， 其 陣列 第一維 分量 是 不用 標示出來，
+      但 高維 分量 必須 標示出來， 如
+<TT><PRE>
+          void sort(int n, char name[][NAMELEN+1], int class[] )
+</TT></PRE>
+          我們 可利用 插入 排序法 修改 1.15 程式， 使得 輸出 能 按 學生 
+      總成績 高低 排列。下列程式含有 3 個函數<BR>
+      <TT>get_data()</TT>，<TT>sort()</TT> 與 <TT>output_data()</TT>，
+      僅 <TT>sort()</TT> 有列出， 其餘的兩個函數由讀者自行處理。
+<TT><PRE>
+          #include &lt;stdio.h&gt;
+          #define  MAXSIZE     100
+          #define  NAMELEN       8
+          void sort(int n, char name[][], int md1[], int md2[],
+                    int final[], int total[]);
+          main(){
+              int no, md1[MAXSIZE], md2[MAXSIZE], final[MAXSIZE];
+              int total[MAXSIZE];
+              char name[MAXSIZE][NAMELEN+1];
+              get_data(&no, name, md1, md2, final, total);
+              sort(no, name, md1, md2, final, total);
+              output_data(no, name, md1, md2, final, total);
+          }/* end of main */
+          void sort(int n, char name[][NAMELEN], int md1[], int md2[],
+                    int final[], int total[])
+          {  int i, j, k;
+             char tname[NAMELEN+1];
+             int  tmd1, tmd2, tfinal, ttotal;
+             for (i=1;i &lt; n;i++)
+             {   for (k=0;k &lt; NAMELEN;k++) tname[k]=name[i][k];
+                 tmd1 = md1[i]; tmd2 = md2[i]; tfinal = fianl[i];
+                 ttotal = total[i];
+                 for (j = i-1;j>=0; j--)
+                 {   if ( ttotal > total[j])
+                     {   for(k=0;k &lt; NAMELEN ;k++)
+                             name[j+1][k] =  name[j][k];
+                         md1[j+1]=md1[j]; md2[j+1]=md2[j];
+                         final[j+1]=final[j]; total[j+1]=total[j];
+                     }
+                     else break;
+                 }
+                 if ( j &lt; i-1 )
+                 {   for(k=0; k &lt; NAMELEN; k++) name[j+1][k]=tname[k];
+                     md1[j+1] = tmd1; md2[j+1] = tmd2;
+                     final[j+1]=tfinal; total[j+1] = ttotal;
+          }  }    }
+</TT></PRE>
+<P>
+試將 sort 修改為 3 個參數如， <TT>sort(int n, int total[], int rank[])</TT>，
+由 <TT>total[]</TT> 針對 <TT>rank[]</TT> 排序，使得第 <TT>i</TT> 個學生的名次
+為 <TT>rank[i]</TT>。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A href="cpgch4.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch4.htm">回第 4 章</A><BR>
+<A href="cpgch6.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch6.htm">至第 6 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+</BODY>
+</HTML>

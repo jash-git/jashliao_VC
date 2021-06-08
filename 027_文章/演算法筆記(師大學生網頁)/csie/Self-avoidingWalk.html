@@ -1,0 +1,166 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Self-avoiding Walk</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Staircase Walk</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">問題描述</p>
+<p>有一個長方形的方格棋盤，從左上角開始，欲走至右下角，每次只能往右走一格或者往下走一格。請問有幾種不同走法？</p>
+<img src="StaircaseWalk1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StaircaseWalk1.png">
+<p class="e">UVa 10599 825 926 ICPC 4787</p>
+<p class="t">Recurrence</p>
+<p>對某個位置的方格來說，只可能是從左走來或者從上走來，將這兩種情形分開，便得到遞迴公式：</p>
+<pre>
+count(i, j) =
+ { 0                               , if i < 0 or j < 0    [Exterior]
+ { 1                               , if i = 0             [Initial]
+ { 1                               , if j = 0             [Initial]
+ { count(i-1, j) + count(i, j-1)   , if i > 0 and j > 0   [Compute]
+
+count(i, j)：從格子 (0, 0) 走到格子 (i, j) 的走法種類數。
+</pre>
+<img src="StaircaseWalk2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StaircaseWalk2.png">
+<p>如果能夠懂得遞迴關係，就不必強記遞迴公式。如果能看得懂圖解的話，就不必硬背數學式子。</p>
+<p>除了遞迴公式之外，這個問題也有一般公式解，會用到排列組合的技巧：<a href="javascript:if(confirm('http://mathworld.wolfram.com/StaircaseWalk.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathworld.wolfram.com/StaircaseWalk.html'" tppabs="http://mathworld.wolfram.com/StaircaseWalk.html" class="l">http://mathworld.wolfram.com/StaircaseWalk.html</a></p>
+<p class="t">複雜度</p>
+<p>時間複雜度分析：令X和Y分別是棋盤的長和寬。每個問題用O(1)時間（用了兩個更小的問題）就可算得，共有X*Y個問題，所以算出所有問題要用O(XY)時間。</p>
+<p>空間複雜度分析：共有X*Y個問題，所以要用O(XY)空間，簡單來說就是開一個二維陣列啦！如果不需要紀錄全部問題的答案，只想算出一個特定問題的答案，那只需要一條一維陣列就可以了，也就是O(min(X, Y))空間。</p>
+<p class="t">程式碼</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[10][10];
+
+void staircase_walk()
+{
+	// initial
+	for (int i=0; i<X; i++)
+		count[i][0] = 1;
+
+	for (int j=0; j<Y; j++)
+		count[0][j] = 1;
+
+	// compute
+	for (int i=1; i<X; i++)
+		for (int j=1; j<Y; j++)
+			count[i][j] = count[i-1][j] + count[i][j-1];
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[9][9] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[X-1][Y-1] << 種走法;
+
+	int x, y;
+	while (cin >> x >> y)
+		cout << "由(0,0)走到(x,y)有" << count[x][y] << 種走法;
+}
+</textarea>
+<p class="t">程式碼</p>
+<p>為了讓程式碼更清爽，這裡把count[]裡面的數值都往右移動一格，如此就可以簡化設定初始值的過程。</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[10 + 1][10 + 1];
+
+void staircase_walk()
+{
+	// initial
+	memset(count, 0, sizeof(count));
+	count[0][0] = 1;	// 只需要設定一格為1
+
+	// compute
+	for (int i=0; i<X; i++)	// 可以從零開始了
+		for (int j=0; j<Y; j++)
+			if (i != 0 && j != 0)
+				count[i][j] = count[i-1][j] + count[i][j-1];
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[10][10] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[X][Y] << 種走法;
+}
+</textarea>
+<p>下面是比較奸詐的做法，連判斷式都省略了。</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[10 + 1][10 + 1];
+
+void staircase_walk()
+{
+	// initial
+	memset(count, 0, sizeof(count));
+	count[0][1] = 1;
+	count[1][0] = 1;
+
+	// compute
+	for (int i=0; i<X; i++)
+		for (int j=0; j<Y; j++)
+			count[i][j] = count[i-1][j] + count[i][j-1];
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[10][10] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[X][Y] << 種走法;
+}
+</textarea>
+<p class="t">節省記憶體空間</p>
+<img src="StaircaseWalk3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StaircaseWalk3.png">
+<p>如果只打算求出一個問題，那麼中途所有的問題其實都不必紀錄下來，只要紀錄最近算出來的問題，讓計算過程可以順利進行就可以了。</p>
+<p>使用兩條陣列，就足夠紀錄最近算出來的問題，並且也能夠避免count[i-1][j]造成邊界溢位。這個實作技巧在中文網路上稱做「滚动数组」，「数组」是陣列的意思，「滚动」也就是兩條陣列輪替使用的意思。</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[2][10 + 1];	// 兩條陣列，紀錄最近算出來的問題。
+
+void staircase_walk()
+{
+	// initial
+	memset(count, 0, sizeof(count));
+	count[0][0] = 1;
+
+	// compute
+	for (int i=0; i<X; i++)
+		for (int j=0; j<Y; j++)
+			if (i != 0 && j != 0)
+				// 只是多了 mod 2，
+				// 外觀看起來就像兩條陣列輪替使用。
+				count[i % 2][j] = count[(i-1) % 2][j] + count[i % 2][j-1];
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[10 % 2][10 % 2] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[X % 2][Y % 2] << 種走法;
+}
+</textarea>
+<img src="StaircaseWalk4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StaircaseWalk4.png">
+<p>不過事實上，一條陣列就夠了。也不能再少了。</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[10 + 1];	// 一條即可
+
+void staircase_walk()
+{
+	// initial
+	memset(count, 0, sizeof(count));
+	count[0] = 1;
+
+	// compute
+	for (int i=0; i<X; i++)
+		for (int j=0; j<Y; j++)
+			if (i != 0 && j != 0)
+				count[j] += count[j-1];	// 累加即可
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[10] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[Y] << 種走法;
+}
+</textarea>
+<p class="t">往其他方向走的話？</p>
+<p>如果某些格子上有障礙物呢？其實也很簡單，如果某格有障礙物，在計算過程中，遇到障礙物就把此格的c(i, j)設為零就可以了。</p>
+<p>如果也可以往右下斜角走呢？那麼遞迴公式就再修改一下，多加一項c(i-1, j-1)就行了。</p>
+<p>如果可以往上下左右走呢？那麼就可以不斷繞圈子，走法就成了無限多種了。寫成遞迴公式的話，就會產生無窮遞迴，永遠也不會結束。</p>
+<p>如果也可以往右上斜角走呢？因為不會產生無窮遞迴，所以這是可以解的！</p>
+<p class="t">Tree / DAG</p>
+<p>這裡談一點圖論。無向樹、有向無環圖，都是沒有環的圖。不會無窮遞迴的遞迴公式，其實都可以表示成無向樹、有向無環圖。</p>
+<p>換句話說，如果發現問題具有無向樹、有向無環圖的特性，極有機會可以使用DP解決問題。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Self-avoiding Walk</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://mathworld.wolfram.com/Self-AvoidingWalk.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathworld.wolfram.com/Self-AvoidingWalk.html'" tppabs="http://mathworld.wolfram.com/Self-AvoidingWalk.html">http://mathworld.wolfram.com/Self-AvoidingWalk.html</a></p>
+<iframe src="Q4gTV4r0zRs" tppabs="http://www.youtube.com/embed/Q4gTV4r0zRs"></iframe>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,269 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - String Matching</title></head><body>
+<div class="a"><div class="h">
+<p class="b">String Matching（Under Construction!）</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">建立索引表處理字串匹配問題</p>
+<p>我們可以預先把重要單字挑出來，預先計算好位置。將來要進行字串比對，就可以直接比對單字了。</p>
+<p>Full-text Indexing</p>
+<p class="e">ICPC 3134</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Inverted Index</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">字元索引表</p>
+<p>找到每個字元的所在位置。</p>
+<pre>
+string:
+012345678910
+mississippi
+
+inverted index:
+i : 1 4 7 10
+m : 0
+p : 8 9 
+s : 2 3 5 6
+</pre>
+<p>建立過程正是Counting Sort的第一個步驟。時間複雜度為O(T+A)。</p>
+<textarea>
+char t[11+1] = "mississippi";
+vector<int> index[128];	// inverted index
+
+void inverted_index()
+{
+	for (int i=0; t[i]; ++i)
+		index[t[i]].push_back(i);
+}
+</textarea>
+<p class="t">字串匹配</p>
+<p>先查閱索引表，再實施窮舉法，時間複雜度為O(T * P)。</p>
+<p>時間複雜度乍看之下沒有任何改進，但是實際上是大躍進！尤其是當各個字元的出現次數很平均、差不多相等，那麼窮舉次數就降低成1/128倍、執行速度增加128倍了！</p>
+<textarea>
+char t[11+1] = "mississippi";
+char p[4+1] = "issi";
+vector<int> index[128];	// inverted index
+
+void string_matching()
+{
+	inverted_index();
+
+	if (p[0] == '\0') return;
+
+	for (int i=0; i<index[p[0]].size(); ++i)
+	{
+		int x = index[p[0]][i];
+
+		bool match = true;
+		for (int j=1; p[j]; ++j)
+			if (t[x+j] != p[j])
+			{
+				match = false;
+				break;
+			}
+
+		if (match)
+			cout << "T的第" << x << "個字元開始為P";
+	}
+}
+</textarea>
+<p class="t">單字索引表</p>
+<p>實務上則是習慣建立單字索引表。可以用Trie儲存單字。</p>
+<pre>
+documents:
+d[0] : "it is what it is"
+d[1] : "what is it"
+d[2] : "it is a banana"
+
+inverted index:
+"a"      : (2,2)
+"banana" : (2,3)
+"is"     : (0,1) (0,4) (1,1) (2,1)
+"it"     : (0,0) (0,3) (1,2) (2,0)
+"what"   : (0,3) (1,0)
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Move-to-front Transform</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Move-to-front Transform</p>
+<pre>
+一、A種字元依序排隊。（將A種字元存入具有排名功能的資料結構）
+二、每當讀入一個字元，就印出字元的名次。（把名次數值轉型成ASCII字元）
+三、該字元插隊到最前面。
+</pre>
+<p>排名資料結構採用array，每次插隊需時O(A)，總時間複雜度O(NA)。</p>
+<p>排名資料結構採用binary search tree，每次插隊需時O(logA)，總時間複雜度O(NlogA)。</p>
+<p>出現地點比較密集（不是指出現次數比較多），名次數字比較小。是個奇妙的轉換，講不出個所以然。反覆實施MFT，不知道最後會怎麼樣。</p>
+<p class="t">Inverse Move-to-front Transform</p>
+<pre>
+一、A種字元依序排隊。（A種字元存入具有排名功能的資料結構）
+二、每當讀入一個名次，就印出字元。
+三、該字元插隊到最前面。
+</pre>
+<p>時間複雜度同前。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Burrows-Wheeler Transform</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Burrows-Wheeler Transform</p>
+<p>輸入是一個字串，輸出是一個字串、附帶一個索引值。</p>
+<p>窮舉輸入字串的每個位置，得到N個循環字串。排序之後，依序取得每個字串的最後一個字元（也有人取第二個字元），作為輸出字串。順便找到輸入字串的排名，以便將來實施逆向BWT。</p>
+<pre>
+            BWT
+"suffixes" ----> "xuffessi" ("suffixes" is rank 5)
+
+rank        V
+ 0   essuffix
+ 1   ffixessu
+ 2   fixessuf
+ 3   ixessuff
+ 4   ssuffixe
+*5   suffixes
+ 6   uffixess
+ 7   xessuffi
+</pre>
+<p>運用「<a href="StringMatching2.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StringMatching2.html">Suffix Array</a>」達成BWT，時間複雜度為O(N+A)。</p>
+<p>將輸入字串重複一遍、接在後面，形成長度為2N的字串，如此一來BWT等同於排序前N個後綴。（唯一的例外是：輸入字串的所有字元都相同；然而這種情況下根本不必實施BWT，BWT的結果顯而易見就是原本字串。）</p>
+<p>有些人是在輸入字串尾端刻意添上'\0'，並且將'\0'包含於循環字串之中，迫使BWT與Suffix Array的排序結果變得一樣。然而排序結果與原先不同。</p>
+<pre>
+"suffixes"          | "suffixessuffixes"
+sort cyclic strings | sort first N suffixes
+--------------------| ---------------------
+essuffix            | essuffixes      
+ffixessu            | ffixessuffixes  
+fixessuf            | fixessuffixes   
+ixessuff            | ixessuffixes    
+ssuffixe            | ssuffixes       
+suffixes            | suffixessuffixes
+uffixess            | uffixessuffixes 
+xessuffi            | xessuffixes     
+^^^^^^^^              ^^^^^^^^
+只要有一個字元與其他字元不相同，
+用前N個字元就能決定排序結果。
+</pre>
+<textarea>
+const int N = 8;			// 字串長度
+int s[N+N+1] = "suffixes";	// 字串，後面預留一倍空間。
+int sa[N];					// 後綴陣列
+int pivot;
+
+int cmp(const void* i, const void* j)
+{
+	return strncmp(s+*(int*)i, s+*(int*)j, N);
+}
+
+// 此處採用 O(N^2 * logN) 的後綴陣列演算法
+void BWT()
+{
+	strncpy(s + N, s, N);
+	for (int i=0; i<N; ++i) sa[i] = i;
+	qsort(sa, N, sizeof(int), cmp);
+	// 當輸入字串的所有字元都相同，就必須改用stable sort；
+	// 或者當作特例處理。
+
+	for (int i=0; i<N; ++i)
+		cout << s[(sa[i] + N-1) % N];
+
+	for (int i=0; i<N; ++i)
+		if (sa[i] == 0)
+		{
+			pivot = i;
+			break;
+		}
+}
+</textarea>
+<p>實施BWT之後，相同字元容易黏在一起，是一大特色。</p>
+<p>想要相同字元黏在一起，為什麼不直接排序輸入字串的所有字元就好了？原因很簡單，因為沒辦法還原成原本字串。</p>
+<p class="t">Inverse Burrows-Wheeler Transform</p>
+<p>運用輸出字串、輸入字串的名次，還原成輸入字串。</p>
+<pre>
+            IBWT
+"suffixes" <----- "xuffessi" (original string is rank 5)
+</pre>
+<p>IBWT的本質，是將N個循環字串，從排序之後的順序，還原成排序之前的順序。完成這件事，那麼IBWT也差不多了。</p>
+<p>輸出字串，就是倒數第一直行；輸出字串的所有字元排序之後，就是第一直行。運用第一直行與倒數第一直行，推理出N個循環字串排序之前的順序。</p>
+<p>運用「<a href="StringMatching3.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StringMatching3.html">Inverted Index</a>」達成IBWT，時間複雜度為O(N+A)。</p>
+<pre>
+rank          | next str | next str rank
+--------------| ---------| -------------
+ 0   e??????x | ??????xe |  4
+ 1   f??????u | ??????uf |  2
+ 2   f??????f | ??????ff |  3
+ 3   i??????f | ??????fi |  7
+ 4   s??????e | ??????es |  5
+*5   s??????s | ??????ss |  6
+ 6   u??????s | ??????su |  1
+ 7   x??????i | ??????ix |  0
+
+在排序之前，rank 0: "e??????x" 的下一個字串，理論上是 "??????xe"
+因為 "??????xe" 結尾是 'e'，
+符合條件的只有 rank 4: "s??????e" 結尾是 'e'
+所以 "??????xe" 正是 rank 4: "s??????e"
+在排序之前，rank 0: "e??????x" 的下一個字串是 rank 4: "s??????e"
+
+在排序之前，rank 4: "s??????e" 的下一個字串，理論上是 "??????es"
+在排序之前，rank 5: "s??????s" 的下一個字串，理論上是 "??????ss"
+"??????es" 與 "??????ss" 結尾都是 's'，
+符合條件的有 rank 5: "s??????s" 與 rank 6: "u??????s" 結尾都是 's'
+那麼誰對應誰呢？
+因為 rank 4: "s??????e" 與 rank 5: "s??????s" 已經排序好了
+因為 rank 4: "s??????e" 與 rank 5: "s??????s" 開頭都是 's'
+所以 rank 4: "s??????e" 的 "??????e" ，小於 rank 5: "s??????s" 的 "??????s"
+所以         "??????es" 的 "??????e" ，小於         "??????ss" 的 "??????s"
+所以                       "??????es"，小於                       "??????ss"
+又因為 rank 5: "s??????s" 與 rank 6: "u??????s" 也已經排序好了，
+所以 "??????es" 對應到 rank 5: "s??????s"，小的對應小的
+所以 "??????ss" 對應到 rank 6: "u??????s"，大的對應大的
+在排序之前，rank 4: "s??????e" 的下一個字串是 rank 5: "s??????s"
+在排序之前，rank 5: "s??????s" 的下一個字串是 rank 6" "u??????s"
+
+簡而言之，當結尾一樣，必定按照排名順序互相對應。
+rank[i] < rank[j] iff next_str_rank[i] < next_str_rank[j]
+</pre>
+<textarea>
+const int N = 8;			// 字串長度
+char t[N+1] = "xuffessi";	// 字串
+int pivot;
+int next[N];
+
+void IBWT()
+{
+	vector<int> index[256];
+	for (int i=0; i<N; ++i)
+		index[t[i]].push_back(i);
+
+	for (int i=0, n=0; i<256; ++i)
+		for (int j=0; j<index[i].size(); ++j)
+			next[n++] = index[i][j];
+
+	int p = pivot;
+	for (int i=0; i<N; ++i)
+		cout << t[p = next[p]];
+}
+</textarea>
+<p class="e">UVa 632 741</p>
+<p class="t">Dynamic Burrows-Wheeler Transform</p>
+<p>【待補文字】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">FM-Index（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://pizzachili.di.unipi.it/indexes.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://pizzachili.di.unipi.it/indexes.html'" tppabs="http://pizzachili.di.unipi.it/indexes.html">Compressed Indexes and their Testbeds</a></p>
+<p><a href="javascript:if(confirm('http://alexbowe.com/fm-index/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://alexbowe.com/fm-index/'" tppabs="http://alexbowe.com/fm-index/">http://alexbowe.com/fm-index/</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">LZ-Index（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+
+</div></div><div class="a"><div class="h">
+<p class="b">Wavelet Tree（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p>http://en.wikipedia.org/wiki/Wavelet_Tree</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

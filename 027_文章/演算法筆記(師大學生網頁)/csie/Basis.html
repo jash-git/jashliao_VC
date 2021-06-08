@@ -1,0 +1,91 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Basis</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Basis（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+
+</div></div><div class="a"><div class="h">
+<p class="b">Orthogonal Basis（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">QR Decomposition（QR Factorization）</p>
+<p>【待補文字】</p>
+<p class="t">演算法（Gram-Schmidt process）</p>
+<p>【待補文字】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Eigenbasis（Under Construction!）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Eigendecomposition</p>
+<p>數學家發現，線性變換的本質，是在某些向量上面分別伸縮。這些向量稱作eigenvector，對應的伸縮比率稱作eigenvalue。</p>
+<p>線性變換，是以eigenvector作為新座標軸，找到輸入向量的分量，每個分量各自按照eigenvalue伸縮之後，再度合而為一，就完成了線性變換。</p>
+<img src="Eigenbasis1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Eigenbasis1.png">
+<p>反覆實施變換、不斷疊代，eigenvalue絕對值小於一的方向會趨近零，eigenvalue絕對值等於一的方向保持不動，eigenvalue絕對值大於一的方向趨近無限大。絕對值越小就縮短越快，絕對值越大就伸長越快，輸入向量將漸漸偏向絕對值最大的方向。</p>
+<p>eigenvalue、eigenvector為虛數，外觀看起來像是螺旋、繞圓，沒有明確方向。</p>
+<img src="Eigenbasis2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Eigenbasis2.png">
+<p>【待補文字、圖片】</p>
+<p class="e">UVa 720</p>
+<p class="t">演算法（解方程式、方程式求根）</p>
+<p>想要找到eigenvalue與eigenvector，可以設定A x = λ x，A是線性變換，λ是eigenvalue，x是eigenvector。</p>
+<p>A x = λ x移項之後，運用det = 0，就可以化作多項式求根問題。同時說明了，N*N的線性變換，恰有N個eigenvalue，可能是虛數可能是實數。</p>
+<p>但是由於eigenvector有著縮放的特性，所以一般不採用多項式求根演算法。</p>
+<p class="t">演算法（Power Method）</p>
+<p>Iterative Method。只能得到絕對值最大的eigenvalue、eigenvector近似值，時間複雜度O(N^2 * K)，K是疊代次數。</p>
+<pre>
+eigenvalue of A: |λ1| ≥ |λ2| ≥ |λ3| ≥ ...
+eigenvector of A: e1 , e2 , e3
+
+若|λ1| > |λ2|，則A<sup>∞</sup>趨近e1的方向。
+x<sub>k+1</sub> = A x<sub>k</sub> / |u|
+u是絕對值最大者，用於穩定x長度。
+</pre>
+<img src="Eigenbasis3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Eigenbasis3.png">
+<p class="t">演算法（Inverse Power Method）</p>
+<pre>
+B = (A - αI)<sup>-1</sup>
+eigenvalue of B: 1/(λ1-α) , 1/(λ2-α) , 1/(λ3-α) ...
+
+α猜得準，會讓1/(λ-α)變很大，成為B的λ1。
+此時套用Power Method即可得到1/(λ-α)。
+
+x<sub>k+1</sub> = B x<sub>k</sub> = (A - αI)<sup>-1</sup> x<sub>k</sub>
+此處化作 (A - αI) x<sub>k+1</sub> = x<sub>k</sub>
+就可採用 LU Decomposition，疊代一次時間複雜度O(N^2)。
+</pre>
+<p>時間複雜度是N次Power Method的時間。</p>
+<p class="t">演算法（QR algorithm）</p>
+<p>http://www.prefield.com/algorithm/math/eigensystem.html</p>
+<p>http://blog.csdn.net/xlvector/article/details/1667243</p>
+<p>【待補文字】</p>
+<p class="t">Singular Value Decomposition</p>
+<p>【待補文字】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Dimension Reduction</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Principle Component Analysis</p>
+<p><a href="javascript:if(confirm('http://www.cmlab.csie.ntu.edu.tw/~cyy/learning/tutorials/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cmlab.csie.ntu.edu.tw/~cyy/learning/tutorials/'" tppabs="http://www.cmlab.csie.ntu.edu.tw/~cyy/learning/tutorials/">http://www.cmlab.csie.ntu.edu.tw/~cyy/learning/tutorials/</a></p>
+<img src="PrincipleComponentAnalysis1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PrincipleComponentAnalysis1.png">
+<p>首先，座標軸位移到資料中心（平均值）。然後，covariance matrix的eigenvalue從小到大排列（資料投影到eigenvector後的變異數），對應的eigenvector就是新的座標軸，剛好互相垂直。</p>
+<p>把eigenvalue最小的幾個eigenvector拿掉，就有降維、壓縮的功效。PCA是誤差最小的降維方式。</p>
+<p>套用singular value decomposition就能得到eigenvalue與eigenvector。</p>
+<img src="PrincipleComponentAnalysis2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PrincipleComponentAnalysis2.png">
+<p>PCA其實就是移動、旋轉座標軸，讓座標軸原點是平均值，讓所有資料投影到第一座標軸之後的變異數越大越好，然後是第二座標軸、第三座標軸、……。</p>
+<p>也可以理解為移動、旋轉所有資料。</p>
+<p>更白話一點，PCA就是在空間中重新找一個視角，讓資料看起看最分散；不斷旋轉滾動資料，讓資料看起來最分散。</p>
+<p>這裡只有二維空間的圖片，說不太明白。想像一下三維空間，從不同角度看資料，有時寬有時窄、有時散有時密，PCA就是找最散的方向作為主軸。</p>
+<img src="PrincipleComponentAnalysis3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PrincipleComponentAnalysis3.png">
+<p>PCA對付黏在一起的資料，同前述，效果仍舊不好。</p>
+<p>PCA主要用途是壓縮。</p>
+<p class="t">Linear Discriminative Analysis</p>
+<p>PCA處理未分類資料，LDA處理已分類資料。原理相同。</p>
+<p>所有資料都已經訂立類別。讓各類資料投影到第一座標軸之後，各類資料的平均值們，變異數越大越好。然後是第二座標軸、第三座標軸、……。</p>
+<img src="LinearDiscriminativeAnalysis1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LinearDiscriminativeAnalysis1.png">
+<p>如果各類資料都黏在一起，那麼LDA完全無效。</p>
+<p>要做壓縮，將各類資料分別實施PCA即可，全部資料一起實施LDA效果較差。</p>
+<p class="t">Self-organizing Map</p>
+<p>http://alaric-research.blogspot.tw/2011/02/self-organizing-map.html</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

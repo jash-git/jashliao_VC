@@ -1,0 +1,308 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - String</title></head><body>
+<div class="a"><div class="h">
+<p class="b">String</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">String</p>
+<p>「字串」由一串字元所構成。例如aaabbbccc、48Dfua@~!0H、m、How are you?等都是字串。有個特例是空字串：一個字元都沒有的字串，通常標記為ф。</p>
+<p>字串的長度就是一個字串擁有的字元數目。空字串就是長度為零的字串。</p>
+<p class="t">Character</p>
+<p>「字元」是字串的基本單元，一個字串當中的每個符號皆是字元，例如字串How are you?的字元依序為：H、o、w、 、a、r、e、 、y、o、u、?。字串How are you?的第一個字元為英文字母H，第三個字元為英文字母w，第四個字元為空白符號 ，最後一個字元為問號?。</p>
+<p>中文句子的各個文字也都是字元。例如「你好嗎？」的第二個字元是「好」，第四個字元是全形問號「？」。</p>
+<p>ASCII Table列出了電腦中基本的128種字元，包括大小寫英文字母、標點符號、阿拉伯數字、數學運算符號、其他雜七雜八的符號等等。</p>
+<p class="t">Substring</p>
+<p>「子字串」是字串當中的一段字串。例如algo的各個子字串為ф, a, l, g, o, al, lg, go, alg, lgo, algo。</p>
+<p class="t">Prefix</p>
+<p>「前綴」。一個字串的開頭幾個字元所構成的子字串（砍去末端幾個字元），為原字串的前綴。例如taiwan的各個前綴是ф, t, ta, tai, taiw, taiwa, taiwan這七個前綴，ф是指空字串。</p>
+<p class="t">Suffix</p>
+<p>「後綴」。一個字串的末端幾個字元所構成的子字串（砍去開頭幾個字元），為原字串的後綴。例如taiwan的各個後綴是ф, n, an, wan, iwan, aiwan, taiwan這七個後綴，ф是指空字串。</p>
+<p class="t">Sequence（String）</p>
+<p>「數列」由一串數字所構成。例如1, 2, 3, -1, 99、0, 0, 0, 0、1, 1, 2, 3, 5, 8, ...等都是數列。</p>
+<p>字串學當中，習慣譯作「序列」而不是「數列」，習慣討論有限長度的數列，習慣把數列當作字串。</p>
+<p>字串與數列唯一的差異在於：字串裡面的字元，是有限多種；數列裡面的數字，有無限多種。屏除這項差異之後，字串與數列是完全相同的，字串可以視作數列、數列可以視作字串。</p>
+<p class="t">Subsequence</p>
+<p>「子序列」是字串當中由左到右抽取字元所構成的字串。例如algo的各個子序列為ф, a, l, g, o, al, ag, ao, lg, lo, go, alg, alo, ago, lgo, algo。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">String資料結構: Array</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">使用Array儲存一個字串</p>
+<p>把字元依序填入陣列，最後用個特殊符號標記字串結尾。</p>
+<textarea t="儲存一個字串">
+char s[10];
+s[0] = 'a';
+s[1] = 'l';
+s[2] = 'g';
+s[3] = 'o';
+s[4] = '\0';	// 特殊符號，字串到此為止
+</textarea>
+<p>要不然也可以記錄最後一個字元的索引值，這樣就不用加特殊符號。紀錄字串長度也是可以的，數值比前者多一。</p>
+<textarea t="儲存一個字串">
+char s[10];
+int s_end = 3;		// 最後一個字元的索引值
+int s_length = 4;	// 字串長度
+s[0] = 'a';
+s[1] = 'l';
+s[2] = 'g';
+s[3] = 'o';
+</textarea>
+<p>缺點是插入字串比較慢，需要搬動插入點之後的所有字元。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">String資料結構: Rope</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Rope</p>
+<p>【待補文字】</p>
+<pre>
+a balanced binary tree whose external node has characters.
+string concatenation: O(1)
+string indexing: O(logN)
+get substring: string indexing + string anti-concatenation = O(logN)
+string traversal: O(N)
+</pre>
+<p>可以直接使用STL的string。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量String資料結構: Array / Binary Search Tree</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Dictionary</p>
+<p>儲存大量字串的資料結構，有人通稱為Dictionary。就好比擁有即時排序功能的資料結構，有人通稱為Priority Queue。</p>
+<p>這些泛稱凸顯的是資料結構的功能。有了這樣的泛稱，當遇到的問題隱含著字典的概念，就能直覺聯想到Dictionary資料結構，而不會被Array、BST這種不直覺的名稱困住了思考。</p>
+<p class="t">Array</p>
+<p>一些經典的資料結構就可以直接儲存大量字串了，例如陣列。</p>
+<textarea>
+char dictionary[100][10];	// 100個字串，長度不超過10。
+int n;						// 字串個數
+
+void add(char* s)
+{
+	int i = 0;
+	for (; s[i]; i++)
+		dictionary[n][i] = s[i];
+	s[i] = '\0';
+	n++;
+}
+
+void add(char* s)
+{
+	char* t = dictionary[n++];
+	while (*s) *t++ = *s++;
+	*t = '\0';
+}
+
+void add(char* s)
+{
+	strcpy(dictionary[n++], s);
+}
+</textarea>
+<textarea>
+vector<string> dictionary;
+</textarea>
+<p class="t">Binary Search Tree</p>
+<p>當然二元搜尋樹也行，一個節點儲存一個字串。</p>
+<textarea>
+char s[10][100];
+char t[100];
+
+struct cmp
+{
+	bool operator()(const char* a, const char* b)
+	{
+		return strcmp(a, b) < 0;
+	}
+};
+
+void string_matching()
+{
+	// 使用C++內建的紅黑樹
+	set<char*, cmp> dictionary;
+	for (int i=0; i<10; ++i)
+		dictionary.insert(s[i]);
+
+	set<char*, cmp>::iterator it = dictionary.find(t);
+	if (it == dictionary.end())
+		cout << "字典裡沒有t字串";
+	else
+		cout << "字典裡有t字串";
+}
+</textarea>
+<textarea>
+string s[10];
+string t;
+
+void string_matching()
+{
+	set<string> dictionary;
+	for (int i=0; i<10; ++i)
+		dictionary.insert(s[i]);
+
+	set<string>::iterator it = dictionary.find(t);
+	if (it == dictionary.end())
+		cout << "字典裡沒有t字串";
+	else
+		cout << "字典裡有t字串";
+}
+</textarea>
+<p class="e">UVa 148 156 245 642 630 10295 10282 10686 10896 429 10150</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量String資料結構: Trie</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Trie【翻譯成「櫥」似乎不錯】</p>
+<p>儲存大量字串的資料結構，可以想作是一部字典。Trie是一棵特別的樹，每一層的節點以indexing的方式依序紀錄字串的各個字元。一棵Trie可以想作是二維的indexing。</p>
+<p>舉一個簡單的例子。假設字串中的字母只有abcde五種。現在要儲存abc這個字串：</p>
+<img src="Trie1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trie1.png">
+<p>由樹根往下，每一層的節點依序對應到字串中每一個字元。多出來的樹葉，可以想成是類似於'\0'的東西。現在再儲存aeb這個字串：</p>
+<img src="Trie2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trie2.png">
+<p>有相同開頭的字串，就會歸類在一起。這種儲存字串的方式，與查字典的模式非常相像，可以減低檢索單字的困難度。相信各位對Trie的儲存模式已經駕輕就熟了。</p>
+<p class="t">設計Trie的節點</p>
+<p>ASCII一共有128個不同的字元，所以一個節點只需要一條128格的陣列就可以了。</p>
+<textarea>
+struct TrieNode
+{
+	TrieNode* l[128];	// 128種字元
+};
+</textarea>
+<p>如果遇到abc和abcde這種一個字串是另一個字串的字首的例子，就無法輕易的以樹葉來判斷字串結束了沒。所以必須再用一個變數來記錄：從樹根到目前的節點是不是已經形成了一個字串。</p>
+<textarea>
+struct TrieNode
+{
+	TrieNode* l[128];
+	bool word;		// 紀錄現在是不是一個字
+};
+</textarea>
+<p>如果遇到abcde和abcde這種相同字串一樣的例子，則可以用一個變數進行累計。</p>
+<textarea>
+struct TrieNode
+{
+	TrieNode* l[128];
+	int n;			// 計算該字串出現了幾次
+};
+</textarea>
+<img src="Trie3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trie3.png">
+<p class="t">特例：空字串</p>
+<p>值得一提的是，一棵Trie可以儲存空字串、空字串可以存入一棵Trie。</p>
+<img src="Trie4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trie4.png">
+<p class="t">Trie的節點</p>
+<textarea>
+struct TrieNode
+{
+	TrieNode* l[128];
+	int n;
+
+	TrieNode()
+	{
+		memset(l, 0, sizeof(TrieNode*) * 128);
+		n = 0;
+	}
+} *root = new TrieNode();
+</textarea>
+<p class="t">增加一個字串</p>
+<p>時間複雜度是O(S)，其中S是字串的長度。</p>
+<textarea>
+void add(char* s)
+{
+	TrieNode* p = root;
+	for (; *s; ++s)
+	{
+		if (!p->l[*s]) p->l[*s] = new TrieNode();
+		p = p->l[*s];
+	}
+	p->n++;
+}
+</textarea>
+<p class="t">尋找一個字串（判斷字串存不存在）</p>
+<p>時間複雜度是O(S)，其中S是字串的長度。</p>
+<textarea>
+bool lookup(char* s)
+{
+	TrieNode* p = root;
+	for (; *s; ++s)
+	{
+		if (!p->l[*s]) return false;
+		p = p->l[*s];
+	}
+	return p->n > 0;
+}
+</textarea>
+<p class="t">依照順序印出所有字串</p>
+<p>使用遞迴走訪每個節點。簡單來說就是DFS。時間複雜度等同於Trie上的節點個數。</p>
+<textarea>
+char w[20+1];	// 20個字的字串
+
+void traversal(TrieNode* p = root, char* s = w)
+{
+	*s = '\0';
+	for (int i=0; i<p->n; ++i)
+		cout << w << endl;
+
+	for (int i=0; i<128; ++i)
+		if (p->l[i])
+		{
+			*s = i;
+			traversal(p->l[i], s+1);
+		}
+}
+</textarea>
+<textarea>
+char w[20+1];	// 20個字的字串
+
+void traversal(TrieNode* p = root, char* s = w)
+{
+	if (!p) return;
+
+	*s = '\0';
+	for (int i=0; i<p->n; ++i)
+		cout << w << endl;
+
+	for (int i=0; i<128; ++i)
+	{
+		*s = i;
+		traversal(p->l[i], s+1);
+	}
+}
+</textarea>
+<p class="t">釋放記憶體空間</p>
+<p>寫了new而不寫delete是大逆不道的事情！一定要記得寫！</p>
+<textarea>
+void release(TrieNode* p = root)
+{
+	for (int i=0; i<26; ++i)
+		if (p->l[i])
+			release(p->l[i]);
+	delete p;
+}
+</textarea>
+<p class="t">結論</p>
+<p>Trie的優點就是處理速度奇快無比，字串有多少字元，就花多少時間，到達了速度的極限；缺點就是耗費大量記憶體，陣列中會有許多空格，樹上也會有許多空樹葉。各位有興趣的話可以數數看一個節點用了多少byte的記憶體，然後再數一數一棵Trie有多少個節點，粗估一下一棵Trie所需要的記憶體空間。</p>
+<p class="t">Trie的幾種圖示法</p>
+<img src="Trie5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trie5.png">
+<p class="e">UVa 902 10226 10391 10745</p>
+<p class="t">延伸閱讀：Compressed Trie</p>
+<img src="Trie6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trie6.png">
+<p>去掉沒有分岔、連成一直線的節點。每個節點增加一個數字，紀錄是第幾個字元開始分岔。</p>
+<p>去掉節點之後，字串資訊不完整，只好在樹葉裡儲存完整字串。每個節點增加一個指標，紀錄要參考哪一個葉子的字串開頭。</p>
+<img src="Trie7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trie7.png">
+<img src="Trie8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trie8.png">
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量String資料結構: Ternary Search Tree</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Ternary Search Tree</p>
+<p>【待補文字】</p>
+<pre>
+a ternary tree whose every node has 1 character.
+left-child: lexi.-smaller string, original index.
+right-child: lexi.-larger string, original index.
+mid-child: next character of current string, index + 1.
+
+a ternary search tree is equivalent to 'a binary tree of strings.'
+it's just a better presentation.
+</pre>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

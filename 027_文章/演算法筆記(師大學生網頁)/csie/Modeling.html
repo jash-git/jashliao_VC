@@ -1,0 +1,520 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Modeling</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Modeling</p>
+<p class="r">程度★　難度★★</p>
+<p class="w">他山之石，可以攻玉。《詩經》　</p>
+<p class="w">前事不忘，後事之師。《戰國策》</p>
+</div><div class="c">
+<p class="t">Modeling</p>
+<p>觀察問題的性質，轉化原問題，將之映射到另外一套恰如其分又耳熟能詳的模型（系統）上；亦可自行設計一套別出心裁的模型（系統）。</p>
+<p>Simulation與Modeling息息相關。Simulation是嘗試模擬各種行為，Modeling則是觀察各種行為後，歸納一套固定模式，以後就直接套用此模式來模擬類似問題。</p>
+<p class="t">舉例：Josephus Problem</p>
+<p>「<a href="Residue.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Residue.html">Josephus Problem</a>」有一種解法是把問題映射至queue，數數殺人變成了一連串的push和pop──該映射就是Modeling。</p>
+<p class="t">舉例：State Space Search</p>
+<p>「<a href="StateSpaceSearch.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceSearch.html">State Space Search</a>」將狀態串聯，映射至圖，以圖論演算法來搜尋答案──該映射也是Modeling。</p>
+<p class="t">舉例：用生命遊戲作為模型，模擬生命遊戲。</p>
+<iframe src="QtJ77qsLrpw" tppabs="http://www.youtube.com/embed/QtJ77qsLrpw"></iframe>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Connected Component Labeling</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Flood Fill Algorithm</p>
+<p>Flood Fill Algorithm的flood是指「淹水」，fill是指「填滿」。這個演算法的功用，舉例來說，就像是小畫家倒墨水的功能，將鄰近同顏色的區塊，一併染成同一個顏色。</p>
+<img src="FloodFill.gif" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FloodFill.gif">
+<p>電腦中的圖片，都是以一點一點的像素所組成的。簡單的來說，一張圖片，可以想做是一張方格紙，每個格子都對應到圖片上的一點像素。Flood Fill Algorithm會以某一格當做起點，開始向四周淹水，只要鄰近的格子是空的（顏色一樣的），水就會淹過去。</p>
+<p>這裡提供一個簡單的程式碼。它往上下左右四個方向淹水。</p>
+<textarea>
+int picture[11][21];	// 圖片的大小為 11x21，請參考上圖
+
+int flood(int x, int y, int fill_color, int original_color)
+{
+	if (x>=0 && x<11 && y>=0 && y<21)	// 不能超出邊界
+		if (picture[x][y] == original_color)	// 顏色一樣才flood
+		{
+			picture[x][y] = fill_color;
+			flood(x+1, y, fill_color, original_color);
+			flood(x-1, y, fill_color, original_color);
+			flood(x, y+1, fill_color, original_color);
+			flood(x, y-1, fill_color, original_color);
+		}
+}
+
+int main()
+{
+	// 在座標(5,4)的位置開始，淋上3號顏色
+	flood(5, 4, 3, picture[5][4]);
+}
+</textarea>
+<p>亦可以將淹水的程式碼寫成這種風格：</p>
+<textarea>
+// 四個方向
+const int dx[4] = {1, -1, 0, 0};
+const int dy[4] = {0, 0, 1, -1};
+
+// 判斷是否超出邊界
+bool on_picture(int x, int y)	// 位於圖片上
+{
+	return x>=0 && x<11 && y>=0 && y<21;
+}
+
+void flood(int x, int y, int fill_color, int original_color)
+{
+	// 不能超出邊界
+	if (!on_picture(x, y)) return;
+
+	// 顏色一樣才flood
+	if (picture[x][y] != original_color) return;
+
+	picture[x][y] = fill_color;
+
+	for (int i=0; i<4; i++)
+	{
+		// 求出下一個預定要淹沒的位置
+		int next_x = x + dx[i], next_y = y + dy[i];
+		flood(next_x, next_y, fill_color, original_color);
+	}
+}
+</textarea>
+<p>實作時要特別注意，避免淹過水的地方又反反覆覆淹了很多次。這會使程式的執行時間大幅上升，在有生之年都不會結束。</p>
+<p>言盡於此。這裡有許多類似於Flood Fill Algorithm的演算法，可以參考看看：<a href="javascript:if(confirm('http://www.codeproject.com/gdi/QuickFill.asp  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.codeproject.com/gdi/QuickFill.asp'" tppabs="http://www.codeproject.com/gdi/QuickFill.asp" class="l">http://www.codeproject.com/gdi/QuickFill.asp</a>。</p>
+<p class="t">兩點是否在同一區塊</p>
+<p>Flood Fill Algorithm除了可以達到小畫家中倒墨水的效果之外，還可以找出地圖上某兩點是不是屬於同一區塊。</p>
+<p>判斷座標(5,4)和座標(10,10)是不是屬於同一區塊的方法：</p>
+<textarea>
+int picture[11][21];
+bool visit[11][21];	// 新增一個二維陣列，紀錄淹到水的區域
+
+void flood(int x, int y, int original_color)
+{
+	if (x>=0 && x<11 && y>=0 && y<21)
+		if (picture[x][y] == original_color && !visit[x][y])
+		{
+			visit[x][y] = true;
+			flood(x+1, y, original_color);
+			flood(x-1, y, original_color);
+			flood(x, y+1, original_color);
+			flood(x, y-1, original_color);
+		}
+}
+
+int main()
+{
+	// 初始化
+	for (int i=0; i<11; i++)
+		for (int j=0; j<21; j++)
+			visit[i][j] = false;
+
+	// 從其中一個點開始淹水，看看會不會淹到另一個點
+	flood(5, 4);
+
+	if (visit[10][10])
+		cout << "兩點相連" << endl;
+	else
+		cout << "兩點不相連" << endl;
+}
+</textarea>
+<p class="t">不同區塊的數目</p>
+<p>找出這張圖總共有幾個區塊。只需修改一下main function：</p>
+<textarea>
+int main()
+{
+	for (int i=0; i<11; i++)
+		for (int j=0; j<21; j++)
+			visit[i][j] = false;
+
+	int count = 0;
+	for (int x=0; x<11; x++)
+		for (int y=0; y<21; y++)
+			if (!visit[x][y])
+			{
+				count++;
+				flood(x, y, picture[x][y]);
+			}
+
+	cout << "總共有" << count << "個區塊" << endl;
+}
+</textarea>
+<p class="t">計算距離</p>
+<p>找出由某一點開始，到其他所有點的距離。常用來解決走迷宮之類的問題。</p>
+<textarea>
+int picture[11][21];
+int dist[11][21];
+
+void flood(int x, int y, int d, int original_color)
+{
+	if (x>=0 && x<11 && y>=0 && y<21)
+		if (picture[x][y] == original_color && d < dist[x][y])
+		{
+			dist[x][y] = d;
+			flood(x+1, y, d+1, original_color);
+			flood(x-1, y, d+1, original_color);
+			flood(x, y+1, d+1, original_color);
+			flood(x, y-1, d+1, original_color);
+		}
+}
+
+int main()
+{
+	for (int i=0; i<11; i++)
+		for (int j=0; j<21; j++)
+			dist[i][j] = 0;
+
+	flood(5, 4, 0, picture[5][4]);	// 找出和座標(5,4)到其他點的距離
+}
+</textarea>
+<p class="t">以Connected Component作為模型</p>
+<p>以圖論的觀點，Flood Fill Algorithm其實就是運用Depth-first Search找到Connected Component。</p>
+<p>Flood Fill Algorithm應用廣泛。練習題目也不少。</p>
+<p class="e">UVa 260 280 352 469 572 601 657 776 782 784 785 871 10267 10336 10946</p>
+<p class="e">ICPC 4792 5130</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Sentiment Relation</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Social Balance Theory</p>
+<p>從前有一位心理學者認為，人與人之間的關係，可以粗略分為兩種：互相喜歡、互相討厭。這種關係稱做Sentiment Relation，是一種雙向關係，而且擁有喜歡與討厭兩種類型。假使兩人之間好惡分明，沒有亦敵亦友的情況，就會形成Sentiment Relation。</p>
+<pre>
+   like            hate
+A<------>B      A<------>B
+</pre>
+<p>另外Sentiment Relation還具有相當特殊的性質，有點像是transitivity、symmetry、antisymmetry的總合。這種性質的最佳寫照，諸如同仇敵愾、合縱連橫等等，翻成白話就是這樣：</p>
+<pre>
+1. 朋友的朋友就是我的朋友。
+2. 朋友的敵人就是我的敵人。
+3. 敵人的朋友就是我的敵人。
+4. 敵人的敵人就是我的朋友。
+</pre>
+<p>在Sentiment Relation所形成的社交結構當中，如果產生了好與惡的矛盾，那麼這樣的社交結構就是不平衡的；如果好與惡合理，那麼這樣的社交結構就是平衡的。心理學者相信，當社交結構不平衡的時候，個體會嘗試改變自己的觀點，讓社交結構趨向平衡。</p>
+<pre>
+balance:
+
+      A                A           like   like
+like / \ like    hate / \ hate      ----A----
+    /   \            /   \         /  ha|te  \
+   B-----C          B-----C       B-----C-----D
+     like             like         hate   hate
+ 
+imbalance:
+
+      A                A           like   like
+hate / \ hate    like / \ like      ----A----
+    /   \            /   \         /  ha|te  \
+   B-----C          B-----C       B-----C-----D
+     hate             hate         like   like
+</pre>
+<p>後來心理學者進一步發現，當社交結構達到平衡，所有人可以分成兩大陣營，使得陣營內部的關係都是互相喜歡，陣營與陣營之間的關係都是互相討厭。</p>
+<img src="SentimentRelation.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SentimentRelation.png">
+<p>說了這麼多終於要提到重點。現在問題來了，假設社交結構是平衡的，而我們也知道一些兩兩相互喜歡、相互討厭的資訊時，我們該如何確認誰在同一陣營、誰在不同陣營呢？</p>
+<p class="t">以Bipartite Graph作為模型</p>
+<p>把社交結構看做是Bipartite Graph，Bipartite Graph的兩側分別是兩大陣營。首先利用Graph Traversal走訪喜歡的邊，找出所有連通分量，並各自縮成一點。然後再度利用Graph Traversal走訪討厭的邊，嘗試建立Bipartite Graph，如果無法建立則表示社交結構不平衡。</p>
+<p class="t">以聯集為基礎來建立新模型</p>
+<pre>
+當x與y是朋友：
+　x及朋友、y及朋友，都是好朋友。
+　x的敵人、y的敵人，都是好朋友。
+
+當x與y是敵人：
+　x及朋友、y的敵人，都是好朋友。
+　x的敵人、y及朋友，都是好朋友。
+</pre>
+<p>用Disjoint Sets的union，把好朋友們聯集在一起。要判斷同一陣營，就看看大家是不是同一群好朋友；要判斷不同陣營，就看看對方的敵人是不是跟自己是同一群好朋友。由於一開始每個人都沒有敵人，所以替每個人都設定一個虛擬的假想敵。</p>
+<textarea>
+#define _x (x + 100)	// x的假想敵
+#define _y (y + 100)	// y的假想敵
+
+// Disjoint-sets Forest
+int p[100 + 100];		// 前百人為本尊，後百人為假想敵。
+int init() {for (int i=0; i<200; ++i) p[i] = i;}
+int find(int x) {return x == p[x] ? x : (p[x] = find(p[x]));}
+void union(int x, int y) {p[find(x)] = find(y);}
+
+bool if_like(int x, int y)
+{
+	return find(x) == find(y);
+//	return find(_x) == find(_y);
+}
+
+bool if_hate(int x, int y)
+{
+	return find(x) == find(_y);
+//	return find(_x) == find(y);
+}
+
+// 結交朋友
+void like(int x, int y)
+{
+	if (if_hate(x, y)) return;	// imbalance
+	union(x, y);
+	union(_x, _y);
+}
+
+// 樹立敵人
+void hate(int x, int y)
+{
+	if (if_like(x, y)) return;	// imbalance
+	union(x, _y);
+	union(_x, y);
+}
+</textarea>
+<p class="e">UVa 10158 10505 10608</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">System of Difference Constraints</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">System of Difference Constraints in Linear Programming</p>
+<img src="SystemOfDifferenceConstraints.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SystemOfDifferenceConstraints.png">
+<p>問題：給定變數x1到xN，並給定一些xi-xj≤c的式子，作為條件限制。請判斷有沒有解，如果有解就求出其中一組解。</p>
+<p>這個問題可以巧妙的轉換成最短路徑問題。x1到xN看做是圖上的N個點，一條xi-xj≤c的限制式子看做是一條xj到xi的邊，其權重是c。</p>
+<p>如果無解，那麼圖上有負環。如果有解，那麼圖上各點的最短路徑長度就是其中一組解。為了讓圖上各點都有最短路徑長度值，可參考Johnson's Algorithm的做法。</p>
+<p class="e">UVa 515 ICPC 2058</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">2-Satisfiability（Under Construction!）</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">2-Satisfiability（2-SAT）</p>
+<img src="2-Satisfiability1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2-Satisfiability1.png">
+<p>X0、X1、……是變數，變數的值只會是true或者false。變數可以重複出現在式子當中，變數還可以加上not運算子。每個括號裡面只有兩個變數，or與and的格式是固定的。</p>
+<img src="2-Satisfiability2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2-Satisfiability2.png">
+<p>如何設定變數的值，讓整個式子成為true呢？</p>
+<p class="t">簡易分析</p>
+<p>2-SAT式子主要以and銜接。每個括號必須都是true，整個式子才是true。</p>
+<p>括號內部只有一個or，「左右都是true」或者「左true右false」或者「右true左false」，整個括號才是true。</p>
+<p class="t">2-Satisfiability，換句話說</p>
+<p>2-SAT是要設定每一個變數的值，讓整個式子成為true。</p>
+<p>一個變數的值只會是true或者false。一個變數X，要嘛X = true，要嘛X = false。至於X = false也可以寫成notX = true。</p>
+<p>2-SAT的解答，就是每個變數X，「X = true」與「notX = true」兩個選一個。要不選X，要不選notX，不會一起選。X與notX有著勢不兩立的關係。</p>
+<img src="2-Satisfiability3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2-Satisfiability3.png">
+<p>2-SAT問題，換句話說，每個變數X，都看成兩個元件X與notX，然後選一個當作解答，讓每個括號成立，讓整個式子成立。</p>
+<img src="2-Satisfiability4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2-Satisfiability4.png">
+<p>一個括號當中共有兩個元件，如果其中一個確定不選，就必須選另一個了，如此括號才會成立。</p>
+<p class="e">UVa 10319 11294 11861 11930 ICPC 3211 4452</p>
+<p class="t">以有向圖作為模型</p>
+<img src="2-Satisfiability5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2-Satisfiability5.png">
+<p>學過「<a href="TopologicalSort.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort.html">Topological Sort</a>」的讀者，可以發現，把「受限關係」建立成有向圖，是一個很常見的模式。</p>
+<pre>
+一、將變數相互影響的情形，表示成一張有向圖。
+　　替每個變數X建立兩個點，分別代表X = true與notX = true。
+　　變數有N種，有向圖上就有2N個點。
+二、依序處理每個括號。
+　甲、當括號內變數不同時，例如(A or B)。
+　　回、不選A（選了notA），就一定要選B：建立一條notA -> B的邊。
+　　回、不選B（選了notB），就一定要選A：建立一條notB -> A的邊。
+　乙、當括號內變數相同時，例如(A or A)。
+　　回、一定要選A，一定不能選notA：建立一條notA -> A的邊。
+　　　　（從A可以觸及的節點一定都要選。）
+　丙、當括號內變數相同，卻一正一反時，例如(A or notA)。
+　　回、不管是選A或是選notA，結果都會是true：不必建立邊。
+</pre>
+<p class="t">對稱性</p>
+<p>【待補文字】</p>
+<img src="2-Satisfiability6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2-Satisfiability6.png">
+<p class="t">判斷式子是否可以成為true</p>
+<pre>
+三、檢查每一個節點：
+　甲、如果某個變數X和notX都不得不選，就產生矛盾：有環經過X與not X。
+　　　因此整個式子為false。
+　乙、如果都沒有發生矛盾，表示至少會有一種合理的設定方式。
+　　　因此整個式子為true。
+</pre>
+<p>如果有一個環同時經過X和notX，則整個式子為false。</p>
+<p>想要檢驗圖上是否有環經過X與notX，一個簡單的做法是：收縮圖上所有環，看看X與notX是否收縮於在同一點。如此就不必窮舉圖上所有的環。</p>
+<p>實作時，可以不必縮環，直接看看X與notX是否在同一個Strongly Connected Component即可──SCC即是一群交疊在一起的環。請參考「<a href="Connectivity.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Connectivity.html">Component</a>」。</p>
+<img src="2-Satisfiability7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/2-Satisfiability7.png">
+<p class="t">找出其中一組變數設定方式，讓整個式子成為true。</p>
+<pre>
+四、每一對X與notX都從中選出一個作為2-SAT的解答。
+　　有向圖上有2N個點，總共會選出N個點。
+</pre>
+<p>把clause全部建成圖。如果令X = true，那麼X暨子孫就必須通通都選，同時notX暨祖先也必須統統不選；如果令notX = true，那麼情況恰恰顛倒。</p>
+<pre>
+一、建立有向圖。
+二、尋找所有Strongly Connected Component。
+三、收縮每個Strongly Connected Component，成為有向無環圖DAG。
+四、依序判斷每個變數是否為解：
+　甲、嘗試X作為解：若X的子孫存在非解者，則X非解。
+　乙、嘗試notX作為解：若notX的子孫存在非解者，則notX非解。
+　丙、確認X與not X何者為解後，將其子孫確實標記為解。
+</pre>
+<p>逐一嘗試，時間複雜度為O(VE)。能找出字典順序最小的解。</p>
+<textarea>
+const int N = 10;	// 變數的數量
+bool adj[20][20];	// adjancecy matrix
+int visit[20];		// DFS visit record
+int sat[20];		// 紀錄一組變數設定方式
+
+// 令A為0，not A為10；B為1，not B為11。
+int not(int a) {return a<N ? a+N : a-N;}
+
+/*
+// 另外一種方式：令A為0，not A為1；B為2，not B為3。
+int not(int a) {return a&1 ? a : a+1;}
+int not(int a) {return a^1;}
+*/
+
+bool dfs_try(int i)
+{
+	if (visit[i] == 1 || sat[i] == 1) return true;
+	if (visit[i] == 2 || sat[i] == 2) return false;
+	visit[i] = 1;
+	visit[not(i)] = 2;
+	for (int j=0; j<N+N; ++j)
+		if (adj[i][j] && !dfs_try(j))
+			return false;
+	return true;
+}
+
+void dfs_mark(int i)
+{
+	if (sat[i] == 1) return;
+	sat[i] = 1;
+	sat[not(i)] = 2;
+	for (int j=0; j<N+N; ++j)
+		if (adj[i][j])
+			dfs_mark(j);
+}
+
+void two_satisfiability()
+{
+	// 輸入clause
+	memset(adj, false, sizeof(adj));
+	int a, b;
+	while (cin >> a >> b)
+	{
+		map[not(a)][b] = true;
+		map[not(b)][a] = true;
+	}
+
+	// 找出一組解
+	for (int i=0; i<N; ++i)
+	{
+		memset(visit, 0, sizeof(visit));
+		if (dfs_try(i)) {dfs_mark(i); continue;}
+
+		memset(visit, 0, sizeof(visit));
+		if (dfs_try(not(i))) {dfs_mark(not(i)); continue;}
+
+		// 無解則立即結束。
+		return;
+	}
+
+	// 印出一組解。
+	for (int i=1; i<N; ++i)
+		if (sat[i] == 1)
+			cout << i;
+		else /*if (sat[i] == 2)*/
+			cout << "not" << i;
+}
+</textarea>
+<p class="t">找出最小一組變數設定方式，讓整個式子成為true。</p>
+<pre>
+一、建立有向圖。
+二、尋找所有Strongly Connected Component。
+三、收縮每個Strongly Connected Component，成為有向無環圖DAG。
+四、尋找縮圖的Topological Order。
+五、在縮圖上，以Topological Order的反序，列出解。
+</pre>
+<p>時間複雜度為O(V+E)。</p>
+<textarea>
+bool adj[20][20];	// adjancecy matrix
+int visit[20];
+int sat[20];		// 紀錄一組變數設定方式
+int finish[20], scc[20], n = 0;
+
+void DFS1(int i)
+{
+	visit[i] = true;
+	for (int j=0; j<N+N; ++j)
+		if (map[i][j] && !visit[j])
+			DFS1(j);
+	finish[n++] = i;
+}
+
+void DFS2(int i)
+{
+	scc[i] = n;
+	visit[i] = true;
+	for (int j=0; j<N+N; ++j)
+		if (map[j][i] && !visit[j])
+			DFS2(j);
+}
+
+void two_satisfiability()
+{
+	......
+
+	// Kosaraju's Algorithm：尋找拓樸順序。
+	n = 0;	// 時刻
+	memset(visit, false, sizeof(visit));
+	for (int i=0; i<N+N; ++i)
+		if (!visit[i])
+			DFS1(i);
+
+	// Kosaraju's Algorithm：找出強連通分量。
+	n = 0;	// 強連通分量的編號
+	memset(visit, false, sizeof(visit));
+	for (int k=N+N-1; k>=0; --k)
+	{
+		int i = finish[k];
+		if (!visit[i])
+			DFS2(i), n++;
+	}
+
+	// 檢查是否有解，無解則立即結束。
+	for (int i=0; i<N; ++i)
+		if (scc[i] == scc[inv(i)])
+			return;
+
+	// 找出一組解
+	memset(sat, 0, sizeof(sat));
+	for (int k=0; k<N+N; ++k)
+	{
+		int i = finish[k];
+		if (!sat[scc[i]])
+		{
+			sat[scc[i]] = 1;
+			sat[scc[not(i)]] = 2;
+		}
+	}
+
+	// 印出一組解
+	for (int i=1; i<N; ++i)
+		if (sat[scc[i]] == 1)
+			cout << i;
+		else /*if (sat[scc[i]] == 2)*/
+			cout << "not" << i;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Lights Out Puzzle（Minimum All-Ones Problem）</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">點燈遊戲</p>
+<p>此遊戲的目的是操作開關以熄滅（或點燃）所有燈。按下一個燈上的開關後，會連帶影響自己及其四周的燈，亮變暗、暗變亮：<a href="javascript:if(confirm('http://oddest.nc.hcc.edu.tw/math171.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://oddest.nc.hcc.edu.tw/math171.htm'" tppabs="http://oddest.nc.hcc.edu.tw/math171.htm" class="l">http://oddest.nc.hcc.edu.tw/math171.htm</a>。</p>
+<p>這篇文章將介紹最廣為人知的解法，是以線性函數當作模型：<a href="javascript:if(confirm('http://mathworld.wolfram.com/LightsOutPuzzle.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathworld.wolfram.com/LightsOutPuzzle.html'" tppabs="http://mathworld.wolfram.com/LightsOutPuzzle.html" class="l">http://mathworld.wolfram.com/LightsOutPuzzle.html</a>。以下文章只點到為止。</p>
+<p class="t">點燈遊戲的性質</p>
+<pre>
+無論開關們同時按和分開按、先按和後按，其造成的影響都一樣。
+一個開關按兩次，跟按零次一樣，會相互抵銷。按開關次數可以模二。按開關可想成是與1做xor。
+一個燈受開關們影響兩次，會相互抵銷，變成沒有影響，不論燈經過了任何點燃還是熄滅。
+</pre>
+<p class="t">確立模型</p>
+<p>該問題得以函數當作模型來表示之：f(按下的開關) = 盤面，f就是遊戲規則，是固定的。只要求出f的反函數，就可以用盤面求得按下的開關。巧妙的是，f是線性函數，故可以解聯立線性方程式來找到反函數。</p>
+<pre>
+加法封閉性：f(同時按下開關A和B) = f(按下開關A) + f(按下開關B)，加法定義為xor。
+倍率封閉性：f(按下開關A一共k次) = k * f(按下開關A)，k模二後，乘法即可定義為and。
+</pre>
+<p>附帶一提，有一種常見的函數模型是：g(舊盤面) = 新盤面，g為一種按開關的方式。這種模型更加常見，但這裡並不適用此模型來解決問題。</p>
+<p class="t">解聯立線性方程式</p>
+<p>要解聯立線性方程式，可以用高斯消去法或其他解聯立方程式的方法：<a href="javascript:if(confirm('http://mathworld.wolfram.com/LinearAlgebra.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathworld.wolfram.com/LinearAlgebra.html'" tppabs="http://mathworld.wolfram.com/LinearAlgebra.html" class="l">http://mathworld.wolfram.com/LinearAlgebra.html</a>。解聯立方程式是中級學校的數學教材，故省去不提。</p>
+<p>時間複雜度為O((H*W)^3)，H和W分別為盤面的長和寬，而三次方是高斯消去法的時間複雜度。</p>
+<p class="t">判斷盤面是否有解</p>
+<p>解聯立方程式之時，同時也可以驗證盤面是否有解。f如果有反函數，則表示值域和對應域中的元素一一對應；這也就是說，無論一開始燈是如何亮著的，必恰有一組獨特的操作方式，每個燈只按一次或零次，就能熄滅（點燃）所有燈。f如果有反函數，不論盤面長得如何，都一定有解。</p>
+<p>然而，當f沒有反函數時，則不能確定盤面是否有解，這種情況下是一個NP-complete問題。</p>
+<p class="e">UVa 10309 10318</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

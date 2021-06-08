@@ -1,0 +1,329 @@
+<!--- file: cpgchpt9.htm
+      symbols: ，、。．‧；：？！·
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 9 章  變數的生命期與使用範圍</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 9 章   變數的生命期與使用範圍</B></CENTER>
+<P>
+變數可分成區域 (local 或 dynamic 或 block) 變數與全域 (global) 變數，其記憶體 的分配方式
+與 時段 都不太相同，
+
+<P>
+  於 第 9.1 節將介紹區域變數。<br>
+  於 第 9.2 節將介紹全域變數。<br>
+  於 第 9.3 節將介紹一些物件(辨識體)的區域性與全域性的關係。<br>
+  於 第 9.4 節將介紹加上 static 修飾詞的變數與函數的性質。<br>
+<P>
+<A NAME="start">
+
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 9.1 節 <A href="#first">區域變數</A>
+  <LI>第 9.2 節 <A href="#second">全域變數</A>
+  <LI>第 9.3 節 <A href="#third">物件的使用範圍</A>
+  <LI>第 9.4 節 <A href="#fourth">static變數與函數</A>
+</UL>
+<P>
+<A href="cpgch8.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch8.htm">回第 8 章</A><BR>
+<A href="cpgch10.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch10.htm">至第 10 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<HR>
+<!--------------------第 9.1 節--------------------------------------->
+<A NAME="first">
+<P>
+  <B>第 9.1 節  區域變數</B>
+<P>
+在一個 block，即於 大括號內 定義的變數都是 區域變數，於 該區域變數的名稱是 唯一的。
+因此，在 main 或 任意一函數內 定義的變數 都是區域性的，其生命期 --
+即有記憶體配置與該變數 --
+為程式執行該 block 的開始 至該 block 結束，程式的執行 一離開含變數定義的 block 則該
+變數就不存在。
+<P>
+<B>例 1.</B> 一程式的大綱含變數的宣告如下：
+<TT><PRE>
+    1.    void f(int i)
+    2.    { int j;.....}
+    3.    void main()
+    4.    {int a;
+    5.    .....
+    6.        {int i;.....
+    7.        }
+    8.       f(a);
+    9.    }
+</TT></PRE>
+<P>
+說明：
+<OL>
+<li>程式的執行由 main 開始
+  因此，執行時 第 4 行的區域變數 a 已經存在，但第 6 行的變數
+  i 則尚未成形， 函數 f 的引數 i 與變數 j 亦不存在。
+<li>程式執行  第 6 行 區域變數 i 才存在。程式執行至第 8 行，該變數
+  i 就消失了。
+<li>程式執行  第 8 行 呼叫函數 f 時，引數 i 及變數 j 方產生。函數 f
+  執行結束後，引數 i 及變數 j 均消失不存在，除非再呼叫函數 f，這些
+  引數及變數 才重新出現。
+</OL>
+一個區域變數其使用範圍僅限於含變數定義的 block。因此，在該 block 各地都可
+引用 該變數名稱。<p>
+
+由於 block 可含 block 形成階層式的架構，因此可能產生內外 block 都定義同名稱的變數
+，此時，內部 block 的區域變數可蓋過外部 block 的區域變數，即在內部 block 所引用的
+變數名稱都是引用內部 block 的變數而非外部的 block 的變數。  由例 2 來說明此現象。
+
+<P>
+<B>例 2.</B>
+<TT><PRE>
+      1.  main()          
+      2.  {   int i,j;
+      3.      i=10; j=5;
+      4.      {  int i; 
+      5.         i=j++;
+      6.         printf("i=%d,j=%d\n",i,j);
+      7.      }
+      8.      printf("i=%d,j=%d\n",i,j);
+      9.  }
+</PRE></TT>
+說明：<br>
+<OL>
+<LI>main 含 2 個區域變數 i 及 j (以 i<sub>2</sub>，
+j<sub>2</sub> 表之，其中下標之 2 表示 變數定義於第 2 行)，又於第 4 行
+至第 7 行的 block 含一區域變數 i<sub>4</sub>。
+<LI>i<sub>2</sub> 的使用範圍為自第 2 行至第 9 行，扣除第 4 行至第 7 行，即自第 5 行 引用變數 i
+是 i<sub>4</sub>而不是 i<sub>2</sub>。
+<LI>j<sub>2</sub> 的使用範圍為自第 2 行至第 9 行。
+<LI>i<sub>4</sub> 的使用範圍是自第 4 行至第 7 行。
+<LI>程式執行完 第 5 行 i=j++; 後， i 的值為 5，即 i<sub>4</sub> 之值為 5，
+但 i<sub>2</sub> 的值仍為 10。
+<LI>執行完該程式的結果為 
+<TEXT><pre>
+i=5,j=6
+i=10,j=6<br></PRE></TEXT>
+</OL>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 9.2 節--------------------------------------->
+<A NAME="second">
+      <B>第 9.2 節  全域變數</B>
+<P>
+在函數之外 宣告或定義 的變數都是 全域變數。全域變數 於程式編譯 之後就 存在一直到 程式的結束
+才消失，其
+使用範圍 為 自檔案的宣告或定義處 開始 至檔案的 結束，其名稱於 一個檔案 也必須是 唯一的。
+<P>
+全域變數的使用，其好處是 減少函數呼叫的 引數個數，其壞處是程式 較不易維修、除錯。
+<p>
+註：函數的呼叫其 side-effect (副作用)愈少愈好，即函數的呼叫 會改變 函數外 變數的值。
+將於例 3 說明。
+<p>
+如果 區域變數 與 全域變數 同名，則 全域變數 的使用範圍就不包含
+區域變數 的 使用範圍。
+<p>
+於例 3 將說明 全域變數 的上述性質。
+<P>
+<B>例 3.</B> 全域變數的使用範圍。
+<TT><PRE>
+1.   int s=0;
+2.   int square(int i)  
+3.   { s=i+1; printf("s=%d,i=%d\n",s,i);
+4.     return i*i;
+5.   }
+6.   int t=1;
+7.   main()
+8.   { int s=10;
+9.     t=square(s);
+10.    printf("s=%d,t=%d\n",s,t);
+11.  }
+</PRE></TT>
+<p>
+說明：<br>
+<Ol>
+<LI>例 3 含 2 個全域變數 s<SUB>1</SUB>及 t<SUB>6</SUB>，
+   s<SUB>1</SUB>的使用範圍為整個檔案扣去第 7 行至第 11 行，因 main() 有區域變數
+   s<SUB>8</SUB>。
+<LI>於第 9 行，呼叫函數 square，傳 10 出去，傳 100 回來給變數 t。
+<LI>呼叫函數 square 的過程中，有一 side-effect(副作用) 即改變了全域變數
+    s<SUB>1</SUB> 的值，因此，
+    square 的語意並不僅含將引數 i 平方而已，
+    此函數已不能形成一 獨立的模組， 因此， 維修變得 較難，
+    同時 程式也 較不易 讓人看懂。
+<LI>程式執行的結果為
+<tt><PRE>
+  s=11,i=10
+  s=10,t=100
+</PRE></tt>
+</OL>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 9.3 節--------------------------------------->
+<A NAME="third">
+      <B>第 9.3 節  物件的區域性與全域性</B>
+<P>
+不僅變數的 宣告或定義 具有 區域性與全域性， 事實上任意一 辨識體(物件)
+如 struct、 typedef、 enum、 巨集的宣告、 函數的定義等，其 使用範圍的規則 也相同。
+<P>
+C 程式 函數的定義不像 Pascal，函數 不能 定義在 另一個函數之內。因此，函數
+都具有 全域性。 一般而言， 我們會宣告一個函數 在 檔頭或 在一個 block 的開頭，如：<p>
+<B>例 4.</B>
+<TT><PRE>
+int square(int i);  或  main()
+main()                  { int square(int i);
+{ int i=10,j=2;           int i=10,j=2;
+  j=square(i);            j=square(i);
+}                       }
+int square()            int square(int i)
+{return i*i;}           {return i+i;}
+</PRE></TT>
+<p>
+通常 一個程式的設計，可 能會因性質的不同 而 將 程式碼 分散於 不同的檔案，
+對於一些
+常數的定義， 全域變數的宣告， 函數的宣告， 資料型態的設定 都放在 檔頭檔，
+以 #include
+的方式 來達到 宣告的一致性。我們將於第 10 章 來 介紹 程式設計的一些技巧。
+<p>
+<B>例 5.</B> 設檔案 file.txt 含下列內容：<br>
+<TT><PRE>
+#include< stdio.h >
+struct point {int x,y;};
+struct rect {point topLeft, bottomRight};
+int pointInRect(struct point, stuct rect);
+extern point currentLoc;
+</PRE></TT>
+設檔案 file.c 含下列內容：<br>
+<TT><PRE>
+#include "file.txt"
+point currentLoc;
+
+int pointInRect(struct point p, stuct rect r)
+{  int x1,x2,y1,y2;
+   if(r.topLeft.x < r.bottomRight.x)
+   { x1=r.topLeft.x; x2=r.bottomRight.x;}
+   else
+   { x2=r.topLeft.x; x1=r.bottomRight.x;}
+
+   if(r.topLeft.y < r.bottomRight.y)
+   { y1=r.topLeft.y; y2=r.bottomRight.y;}
+   else
+   { y2=r.topLeft.y; y1=r.bottomRight.y;}
+
+   if(x1 &lt;= p.x && p.x &lt;= x2 && y1 &lt;=p.y && p.y &lt;= y2)
+        return 1;
+   else return 0;
+}
+</PRE></TT>
+<P>
+設檔案 main.c 含下列內容<br>
+<TT><PRE>
+#include "file.txt"
+main()
+{ struct rect r;
+
+  r.topLeft.x=10; r.topLeft.y=10;
+  r.bottomRight.x=20; r.bottomRight.y=20;
+
+  scanf("%d %d", &amp;currentLoc.x, &amp;currentLoc.y);
+
+  if(pointInRect(currentLoc,r))
+     printf("in the rectangle\n");
+  else
+     printf("not in the rectangle\n");
+}
+</PRE></TT>
+<p>
+說明：
+<OL>
+<LI>檔案 file.c 含 全域變數 currentLoc 的定義。
+<LI>檔案 file.txt 含全域變數 currentLoc 的宣告，即 extern point currentLoc，
+其中  extern 表示 全域變數定義 於它處。
+<LI>檔案 file.txt 含函數 pointInRect 的宣告，即
+int pointInRect(struct point,struct rect);。
+<LI>資料型態 struct point 及 struct rect 都宣告於檔案 file.txt 中，
+file.c 與 main.c 皆有 #include 指令
+  "file.txt"，因此可直接使用 struct point 及 struct rect。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+</A>
+<P>
+<!--------------------第 9.4 節--------------------------------------->
+<A NAME="fourth">
+      <B>第 9.4 節  static 變數與函數</B>
+<P>
+區域變數的定義加上 static，其使用範圍與沒有加上 static 是沒有區別的，
+但是其生命期就 如同 全域變數一樣，以下例來解說：<p>
+<B>例 6.</B>
+<TT><PRE>   
+  int square(int i)  
+  { static int count=0;
+
+    count++;
+    return i*i;
+  }
+</PRE></TT>
+說明：
+<OL>
+<LI>函數 square 中含一 static 區域變數 count。
+<LI>變數 count 於編譯後就存在了。
+<LI>變數 count 不管函數 square 呼叫 多少次， 僅 initialize 一次。
+每呼叫函數 square 一次， 變數 count 就增加 1。
+<LI>count 可以說是 專屬於 函數 square 的全域變數。
+</OL>
+<p>
+全域變數 的定義加上 static，則 該變數 就 變成 專屬於 該檔案 的 全域變數，
+其它檔案 就 無法 引用該 變數， 即 其它檔案 就不能 含有 該變數的 extern 指令。
+<p>
+<B>例 7.</B> 設有三個檔案 file.h、 file.c 及 main.c 其內容分別如下：
+<P>
+檔案 file.h 含 
+<TT><PRE>  
+ void Add(int n);
+ void Mult(int n);
+ int get();
+</PRE></TT><br>
+檔案 file.c 含
+<TT><PRE>
+ #include "file.h"
+ static int s=0;
+ void Add(int n) {s=s+n;} 
+ void Mult(int n) {s=s*n;}
+ int get(){return s;}
+</PRE></TT><br>
+檔案 main.c 含
+<TT><PRE>
+ #include < stdio.h >
+ #include "file.h"
+ void main()
+ {Add(5);
+  Mult(10);
+  printf("s=%d\n",get());
+ }
+</PRE></TT>
+說明：
+<OL>
+<LI>檔案 file.c 含一 static 全域變數 s，該 變數 僅能於 file.c 引用。
+<LI>檔案 main.c 不可加上 extern int s; 而引用變數 s。
+<LI>程式執行的結果為
+<TT><PRE>
+  s=50
+</PRE></TT>
+<LI>C++ 程式 class 的設計方式 非常類似 file.c 與 file.h 的架構，
+變數 s 就如同一個 private 的 data member。
+</OL>
+<p>
+一個函數的定義加上 static， 該 函數 也就變成 專屬該檔案 的函數，
+其它檔案 就無法 呼叫該函數，於 C++ class 的設計，就好像一個 private 的
+member function。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<A HREF="cpgch8.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch8.htm">回第 8 章</A><BR>
+<A HREF="cpgch10.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch10.htm">至第 10 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</HTML>

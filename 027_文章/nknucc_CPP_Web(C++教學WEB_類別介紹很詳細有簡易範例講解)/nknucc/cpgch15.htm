@@ -1,0 +1,568 @@
+<!--- file: cpgchpt15.htm
+      symbols: ，、。．‧；：？！·
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 15 章  類別 (class) 的繼承性</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 15 章  類別 (class) 的繼承性</B></CENTER>
+<P>
+本章主要的目的是在討論 C++ 程式 中 類別 (class) 的繼承性。
+類別的繼承性如同生態上的分類， 例如鯨魚是哺乳動物， 也是水中生物。
+因此， 鯨魚具有哺乳動物的特性，也具有水中生物的一些特性。
+<P>
+<A NAME="start">
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 15.1 節 <A href="#first">父類別與子類別 (base and drived classes) 的宣告</A>
+  <LI>第 15.2 節 <A href="#second">父類別與子類別的建構函數與解構函數</A>
+  <LI>第 15.3 節 <A href="#third">父子類別間起始值的設定</A>
+  <LI>第 15.4 節 <A href="#fourth">成員名稱的覆蓋性</A>
+  <LI>第 15.5 節 <A href="#fifth">子類別使用父類別成員的權限</A>
+  <LI>第 15.6 節 <A href="#sixth">繼承的模式</A>
+  <LI>第 15.7 節 <A href="#sixth">平面圖形 class figure</A>
+</UL>
+<P>
+<A href="cpgch14.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch14.htm">回第 14 章</A><BR>
+<A href="cpgch16.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch16.htm">至第 16 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<P>
+<A NAME="first">
+<HR>
+<!--------------------第 15.1 節--------------------------------------->
+<P>
+  <B>第 15.1 節  父類別與子類別 (base and drived classes) 的宣告</B>
+<P>
+欲達到程式碼的重複使用以節省設計時間， 利用類別的繼承性可以達到此效果。
+我們將逐次解釋該概念。<P>
+由父類別 (base class)， 可以定出子類別 (drived class)。 子類別的物件
+就保有父類別的特性，即子類別的物件亦含有父類別的資料與函數， 當然，
+子類別也是父類別。但是， 父類別可就不是子類別了。<P>
+類別的繼承的格式， 其宣告方式如下：<BR>
+<TT><PRE>
+   class baseClass{
+      public:
+         ...
+      protected:
+         ...
+      private:
+         ...
+   };
+
+   class drivedClass: &lt;inheritance Mode&gt; <B>baseClass</B>, ...{
+      ....
+   };
+</PRE></TT>
+說明：
+<OL>
+  <LI>baseClass 為父類別， drivedClass 為子類別。
+  <LI>繼承的模式 &lt;inherited Mode&gt; 可為 private、 protected 與 public。
+      其作用乃在設定 子類別 drivedClass 所衍生的子(或是孫)類別 X 使用 (祖)類別 baseClass 中
+      的資料與函數的權限， 將於 第 6 節討論。
+</OL>
+<P>
+以例 1 來說明如下：
+<p>
+<B>例 1</B>：父類別與子類別的宣告
+<TT><PRE>
+   #include &lt;iostream.h&gt;
+   class CMammal       //父類別 CMammal 的宣告
+   {
+      public:
+         CMammal(int h=0, int w=0){height=h; weight=w;}
+         ~CMammal(){ }
+         int getHeight(){return height;}
+         int getWeight(){return weight;}
+         void setHeight(int h=0){height=h;}
+         void setWeight(int w=0){weight=w;}
+      private:
+         int height, weight;
+   };
+
+   class CWhale: public CMammal    //子類別 CWhale 的宣告
+   {
+      public:
+         CWhale(int d=0){ whaleType = d; }
+         ~CWhale(){ }
+         int getWhaleType(){ return whaleType; }
+      private:
+         int whaleType;  //何種鯨魚
+   };
+
+   main()
+   {
+      CMammal a(20, 30);
+      cout<< "Height and weight of mammal a are "<< a.getHeight();
+      cout<< " and "<< a.getWeight()<< ", respectively."<< endl<< endl;
+
+      CWhale b(15);
+      b.setHeight(25);
+      b.setWeight(35);
+      cout<< "The type of whale b is "<< b.getWhaleType()<< endl;
+      cout<< "The height and weight of whale b are "<< b.getHeight();
+      cout<< " and "<< b.getWeight()<< ", respectively."<< endl << endl;
+
+      a = b;
+      cout<< "Height and weight of mammal a are "<< a.getHeight();
+      cout<< " and "<< a.getWeight()<< ", respectively."<<  endll;
+//    b = a;      // error!
+   }
+</PRE></TT>
+說明：
+<OL>
+  <LI>CWhale 為 CMammal 的子類別。
+  <LI>物件 a 為 CMammal 的物件。 物件 b 為 CWhale 的物件， 也是 CMammal 的物件。
+  <LI>物件 a 含資料(data members) height 及 weight，
+      也含函數 <TT>getHeight()、 getWeight()、 setHeight()</TT> 及 
+      <TT>setWeight()</TT>。
+  <LI>物件 b 含 資料(data members) <TT>height、 weight</TT> 及 <TT>whaleType</TT>，
+      也含函數 <TT>getHeight()、 getWeight()、 setHeight()、 setWeight()</TT>、
+      及 <TT>getWhaleType()</TT>。
+  <LI>於子類別中的函數無法直接涉及父類別中的 private 成員。 因此，
+      class CWhale 無法直接涉及資料 height 及 weight， 必須經由 class CMammal
+      中的 public 函數 <TT>getWeight()、 setWeight()</TT> 等方能改變或取其值。
+  <LI>物件 b 為 class CWhale 的物件，也是屬於 class CMammal， 因此， <TT>a = b;</TT> 是行的通的。
+         但是 <TT>b = a;</TT> 卻是行不通的， 此乃因物件 a 並不是屬於 class CWhale。
+  <LI>該程式執行的結果如下：<TT><BR>
+Height and weight of mammal a are 20 and 30, respectively.<BR>
+<BR>
+The type of whale b is 15<BR>
+The height and weight ofwhale b are 25 and 35, respectively.<BR>
+<BR>
+Height and weight of mammal a are 25 and 35, respectively.
+</TT></PRE>
+</OL>
+
+<p>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="second">
+<HR>
+<!--------------------第 15.2 節--------------------------------------->
+<P>
+  <B>第 15.2 節  父類別與子類別的建構函數與解構函數</B>
+<P>
+子類別的物件建立時，必先呼叫父類別的建構函數，再呼叫本身的建構函數。
+子類別的物件執行結束時，必先呼叫本身的解構函數，再呼叫父類別的解構函數。
+以例 2 來看其執行情況。
+<P>
+<B>例 2</B>：父類別與子類別的建構函數與解構函數
+<TT><PRE>
+   #include &lt;iostream.h&gt;
+   class CMammal       //父類別 CMammal 的宣告
+   {
+      public:
+         CMammal(){cout<< "CMammal constructor!"<< endl;}
+         ~CMammal(){cout<< "CMammal destructor!"<< endl;}
+      private:
+         int height, weight;
+   };
+
+   class CWhale: public CMammal    //子類別 CWhale 的宣告
+   {
+      public:
+         CWhale(){cout<< "CWhale constructor!"<< endl;}
+         ~CWhale(){cout<< "CWhale destructor!"<< endl;}
+      private:
+         int whaleType;  //何種鯨魚
+   };
+
+   void f()
+   {  CWhale w; 
+      cout<< "Inside function f()!"<< endl;
+   }
+
+   main()
+   {
+     f();
+   }
+</PRE></TT>
+說明：
+<OL>
+  <LI>CWhalel 為 CMammal 的子類別。
+  <LI>函數 <TT>f()</TT> 中含類別 CWhale 的物件 w。 執行函數 <TT>f()</TT> 時，
+      在建立 類別 CWhale 的物件之前， 先呼叫父類別 CMammal 的建構函數
+      <TT>CMammal()</TT>， 再呼叫 CWhale 的建構函數 <TT>CWhale()</TT>。
+      執行函數 <TT>f()</TT> 結束之前，
+      先呼叫 類別 CWhale 的解構函數 <TT>~CWhale()</TT>， 再呼叫 父類別 CMammal
+      的解構函數 <TT>~CMammal()</TT>。
+  <LI>該程式執行的結果如下：<TT><BR>
+CMammal constructor!<BR>
+CWhale constructor!<BR>
+Inside function f()!<BR>
+CWhale destructor!<BR>
+CMammal destructor!
+</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="third">
+<HR>
+<!--------------------第 15.3 節--------------------------------------->
+<P>
+  <B>第 15.3 節  父子類別間起始值的設定</B>
+<P>
+由前一節，我們知道子類別的物件建立時，必先呼叫父類別的建構函數，
+再呼叫本身的建構函數。 如果父類別的建構函數有參數時， 欲引用該
+建構函數， 則須以起始值的設定的方式來設定 父類別的物件。
+<P>
+於下例中， CWhale 的建構函架構如下：
+<TT><PRE>
+      <B>CWhale(int d=0, int h=0, int w=0): CMammal(h, w)
+      { whaleType = d; }</B>
+</PRE></TT>
+<P>
+我們加上了 <TT><B>CMammal(h, w)</B></TT> 以起始值設定方式來設定 CMammal 中
+的 <TT><B>height</B></TT> 及 <TT><B>weight</B></TT>。
+<p>
+<B>例 3</B>：父子類別間起始值的設定
+<TT><PRE>
+   #include &lt;iostream.h&gt;
+   class CMammal       //父類別 CMammal 的宣告
+   {
+      public:
+         CMammal(int h=0, int w=0){height=h; weight=w;}
+         ~CMammal(){ }
+         int getHeight(){return height;}
+         int getWeight(){return weight;}
+      private:
+         int height, weight;
+   };
+
+   class CWhale: public CMammal    //子類別 CWhale 的宣告
+   {
+      public:
+         CWhale(int d=0, int h=0, int w=0): <B>CMammal(h, w)</B>
+         { whaleType = d; }
+         ~CWhale(){ }
+         int getWhaleType(){ return whaleType; }
+      private:
+         int whaleType;  //何種鯨魚
+   };
+
+   main()
+   {
+      CWhale b(15, 25, 35);
+
+      cout<< "The type of whale b is "<< b.getWhaleType()<< endl;
+      cout<< "The height and weight of mammal b are "<< b.getHeight();
+      cout<< " and "<< b.getWeight()<< ", respectively."<< endl;
+   }
+</PRE></TT>
+說明：
+<OL>
+  <LI>於主程式 <TT>main()</TT> 中定義物件
+      <TT><B>CWhale b(15, 25, 35);</B></TT>，
+      可以省下如例 1 中的 <TT><B>b.setHeight(25);</B></TT> 與
+       <TT><B>b.setWeight(35);</B></TT>。
+  <LI>該程式執行的結果如下：<TT><BR>
+The type of whale b is 15<BR>
+The height and weight of mammal b are 25 and 35, respectively.
+</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fourth">
+<HR>
+<!--------------------第 15.4 節--------------------------------------->
+<P>
+  <B>第 15.4 節  成員名稱的覆蓋性</B>
+<P>
+子類別的成員的名稱可能會跟父類別的成員的名稱相同而產生衝突，
+子類別的成員可以覆蓋父類別的成員。 欲引用父類別的成員，則須
+加上 父類別的標示。以例 4 來說明。
+<P>
+<B>例 4</B>：成員名稱的覆蓋性
+<TT><PRE>
+   #include &lt;iostream.h&gt;
+   class CA{
+      public:
+         CA(){a=2; b=3; c=4; }
+         int a, b, c;
+   };
+
+   class CB: public CA{
+      public:
+         CB(){ a=100; b=200;}
+         int a, b;
+         int getX(){ return a*b; }
+         int getY(){ return CA::a*CA::b*c; }
+   };
+
+   main()
+   {
+      CB b;
+      cout<< "a*b= "<< b.getX()<< endl;
+      cout<< "a*b= "<< b.getY()<< endl;
+      b.a = 1;
+      b.CA::a = 5;
+      b.c = 2;
+      cout<< "a*b= "<< b.getX()<< endl;
+      cout<< "a*b= "<< b.getY()<< endl;
+    }
+</PRE></TT>
+說明：
+<OL>
+  <LI>class CB 中的資料 <TT>int a, b;</TT> 與父類別 CA 中的資料
+      <TT>int a, b;</TT> 相同而產生衝突。因此， class CB 
+      的函數 <TT>getX()</TT> 中引用的 變數 a 與 b 是 class CB 的資料成員，
+      它會覆蓋父類別 class CA 的資料成員 a 與 b。
+  <LI>於 class CB 中的函數 <TT>getY()</TT> 欲引用父類別中 public member a， 則須
+      加上父類別 CA 的標示， 如 <TT>CA::a</TT>。
+  <LI>於 <TT>main()</TT> 中， 有一 class CB 的物件 b， 欲引用 class CB 的資料 a，
+      則直接引用， 如 <TT>b.a</TT>， 欲引用 class CA 的資料 a，
+      則須加上父類別 CA 的標示， 如 <TT>b.CA::a</TT>， class CA 的資料 c，
+      並沒有跟子類別 CB 的成員名稱衝突， 因此，可以直接引用，
+      如同 class CB 的資料， 即 <TT>b.c</TT>。
+  <LI>該程式的執行結果為  <TT><BR>a*b= 20000<BR>a*b= 24
+      <BR>a*b= 200<BR>a*b= 30</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fifth">
+<HR>
+<!--------------------第 15.5 節--------------------------------------->
+<P>
+  <B>第 15.5 節  子類別使用父類別成員的權限</B>
+<P>
+父類別中的 public 及 protected members 可以在 子類別中被引用。
+父類別中的 private members 無法在 子類別中被引用。 除了 friend 之外，
+僅有父與子類別中的 public members 方可在類別之外被引用。以例 5 來說明。
+<p>
+<B>例 5</B>：使用父類別成員的權限
+<TT><PRE>
+   #include &lt;iostream.h&gt;
+   class CA{
+      public:
+         CA(){a=2; b=3; c=5;}
+         int a;
+      protected:
+         int b;
+      private:
+         int c;
+   };
+
+   class CB: public CA{
+      public:
+         CB(){ x=10; y=20; }
+         int getX(){ return a*b; }
+//       int getY(){ return a*b*c; }  // error! can't refer to c
+      protected:
+         int x;
+      private:
+         int y;
+   };
+
+   main()
+   {
+      CB b;
+      cout<< "a*b= "<< b.getX()<< endl;
+      b.a = 1;
+//    b.b = 2; b.c = 3; b.x = 4; b.y = 5;    // error!
+      cout<< "a*b= "<< b.getX()<< endl;
+   }
+</PRE></TT>
+說明：
+<OL>
+  <LI>class CB 不能引用父類別 CA 中 private member c。因此， class CB 中
+      的函數 <TT>getY()</TT> 是有問題的。
+  <LI>於 <TT>main()</TT> 中， 可以引用父類別中 public member a。 因此，
+      <TT>b.a = 1;</TT> 是沒有問題的。
+  <LI>於 <TT>main()</TT> 中， 是不可以引用父類別與子類別中的 protected 與 private
+      members。 因此， <TT>b.b = 2; b.c = 3; b.x = 4; b.y = 5;</TT> 是有問題的。
+  <LI>該程式的執行結果為<BR><TT>a*b= 6<BR>a*b= 3</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="sixth">
+<HR>
+<!--------------------第 15.6 節--------------------------------------->
+<P>
+  <B>第 15.6 節  繼承的模式</B>
+<P>
+子類別繼承父類別的模式有 3 種： <TT>public， protected</TT> 與
+<TT>private</TT>。 父類別中可以被繼承的成員僅有 public 成員與 protected 成員。<P>
+
+設有父類別 CA 及其子類別 CB， 其繼承的模式的作用
+乃在限制子類別 CB 的子類別 CC 使用父類別 CA 成員的權限。<P>
+
+以現實的財產繼承來做類似的說明如下， 當 CA 有 3 份財產 a、 b 與 c。
+財產 c 自己使用， 不讓任何其他人使用， 財產 b 留給 自己的孩子 CB 使用，
+財產 a 則任何人都可以碰。<P>
+CB 擁有自己的 3 份財產 x、 y 與 z， 並且繼承了父親的財產 a 與 b。
+CB 的孩子 CC 可以繼承 CB 自己的財產 x 與 y 這兩份， 財產 z 則 CB 自己使用。
+對於 CB 所擁有的繼承財產 a 與 b， 如何讓自己的孩子 CC 去經營， 則由 CB 繼承
+CA 的繼承模式來決定。<P>
+如果 CB 覺得自己的孩子 CC 不錯可以去經營財產 a 與 b， 而且財產 a 可供給
+任何人使用， 則 CB 繼承 CA 的繼承模式為 <TT>public</TT>。<P> 
+如果 CB 覺得自己的孩子 CC 相當好， 可以去經營財產 a 與 b， 而且
+任何他人都不得使用財產 a 與 b， 則 CB 繼承 CA 的繼承模式為 <TT>protected</TT>。<P>
+如果 CB 覺得自己的孩子 CC 不好， 無法經營財產 a 與 b，
+則 CB 繼承 CA 的繼承模式為 <TT>private</TT>。<P>
+
+程式設計上，繼承模式的使用，可以說， 當我們想要設計 class CB 好了之後，
+也讓其他人使用 class CB 去設計出 class CC。 同時， 我們也想要適當的保護
+class CA 資料的一致性。 因此， 在設計 class CB 繼承父類別 CA 時，
+則須考慮繼承的模式，以達到保護 class CA 資料的效果。<P>
+
+其說明如下：
+<UL >
+  <LI>繼承模式為 <TT>public</TT>： 父類別 CA 的 protected 及 public 成員
+    亦分別為子類別 CB 的 protected 及 public 成員。<P></LI>
+  <LI>繼承模式為 <TT>protected</TT>： 父類別的 protected 及 public 成員
+    為子類別的 protected 成員。<P></LI>
+  <LI>繼承模式為 <TT>private</TT>： 父類別的所有可繼承的成員皆為子類別的 private 成員。<P></LI>
+  <LI>若沒有標示繼承模式，  其預設繼承模式為 <TT>private</TT>。</LI>
+</UL>
+<P>
+以例 6 來說明繼承模式。
+<P>
+<B>例 6</B>：繼承模式
+<TT><PRE>
+   class CA{
+      public:     int a;
+      protected:  int b;
+      private:    int c;
+   };
+
+   class CB: public CA{
+      public:     int x;
+      protected:  int y;
+      private:    int z;
+   };
+
+   class CC: &lt;any inheritance mode&gt; CB{ ... };
+</PRE></TT>
+說明：
+<OL>
+  <LI>class CB 繼承父類別 CA， 其繼承模式為 public。 因此， class CA 中
+      的成員  <TT>a</TT> 與 <TT>b</TT> 被繼承下來， 分別成為 class CB 的
+      public member 與 protected member。
+  <LI>class CC 繼承 class CB， 則視 class CB 為<TT><PRE>
+   class CB{
+      public:     int a, x;
+      protected:  int b, y;
+      private:    int z;
+   };</PRE></TT>
+  <LI>父類別 CA 中的 private member c 無法被繼承下來至子類別 CB。
+  <LI>如果 class CB 的繼承模式改為 protected。 則 class CC 視
+      class CB 為<TT><PRE>
+   class CB{
+      public:     int x;
+      protected:  int a, b, y;
+      private:    int z;
+   };</PRE></TT>
+  <LI>如果 class CB 的繼承模式改為 private。 則 class CC 視
+      class CB 為<TT><PRE>
+   class CB{
+      public:     int x;
+      protected:  int y;
+      private:    int a, b, z;
+   };</PRE></TT>
+</OL>
+<p>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="seventh">
+<HR>
+<!--------------------第 15.7 節--------------------------------------->
+<P>
+  <B>第 15.7 節  平面圖形 class figure</B>
+<P>
+於 <A HREF="cpgch7.htm#fifth" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch7.htm#fifth">7.5 節</A> 曾經提過
+畫板上的圖， 有線段、 三角形、 矩形、 圓形、 橢圓、
+多邊形 等 平面幾何圖形， 並以 資料結構 鏈結 ( linked list ) 方式 串起來， 
+鏈結中的每一個結都可以代表這些幾何圖形 中的一種。<P>
+現在，我們以類別的方式，重新設計並祺望設計更為簡單明瞭，更易使用及維修。<P>
+首先，我們知道 圖形如 三角形、 矩形等， <B>都是</B> 平面幾何圖形。
+因此， 我們可以設計一 父類別 class CFigure 如下：
+<TT><PRE>
+    class CFigure{
+        public:
+          CFigure(){ next = 0; }
+          float area(){return 0;}
+        protected:
+          CFigure *next;
+    };
+</PRE></TT>
+說明：
+<UL>
+<LI>class CFigure 可以依 link 的方式連接。
+<LI>class CFigure 僅提供一個函數 <TT>float area( )</TT>。
+</UL>
+對於平面上的幾何圖形， 如線段、 三角形、 矩形、 橢圓與多邊形等，
+都是點的集合。 我們先設計點類別為 class CPoint 如下：
+<TT><PRE>
+    class CPoint{
+        public:
+          CPoint(int a=0, int b=0){x=a; y=b;}
+          int x, y;
+    };
+</PRE></TT>
+註：
+<UL>
+<LI>CPoint 中的變數 <TT>x, y</TT> 宣告為 public 無法達到資料封包的效果，但因沒有提供 member functions，
+        同時為了使用方便，只好宣為 public data members。
+</UL>
+線段、 矩形、 橢圓等都是 class CFigure 的子類別。其設計如下：
+<TT><PRE>
+    class CLineSegment: public CFigure{
+        public:
+          CLineSegment(int x1=0, int y1=0, int x2=0, int y2=0)
+          { p1.x=x1; p1.y=y1; p2.x=x2; p2.y=y2;}
+          float area(){return 0;}
+        protected:        
+          CPoint p1, p2;
+    };
+
+    class CRectangle: public CFigure{
+        public:
+          CRectangle(int x1=0, int y1=0, int x2=0, int y2=0)
+          {topLeft.x=x1; topLeft.y=y1; bottomRight.x=x2; bottomRight.y=y2; }
+          float area(){return (bottomRight.x-topLeft.x)*(bottomRight.y-topLeft.y);}
+        protected:        
+          CPoint topLeft, bottomRight;
+    };
+
+    class CEllipse: public CFigure{
+        public:
+          CEllipse(int x1=0, int y1=0, int x2=0, int y2=0)
+          :PI(3.1415926)
+          {topLeft.x=x1; topLeft.y=y1; bottomRight.x=x2; bottomRight.y=y2; }
+
+          float area(){return PI*(bottomRight.x-topLeft.x)*(bottomRight.y-topLeft.y)/4;}
+        protected:        
+          CPoint topLeft, bottomRight;
+          const float PI;
+    };
+
+   #include &lt;iostream.h&gt;
+    main()
+    {
+        CLineSegment line(1,1, 10, 10);
+        CRectangle   rect(10, 10, 90, 50);
+        CEllipse     ellipse(20, 20, 40, 40);
+
+        cout<< "line area = " << line.area()<< endl;
+        cout<< "rect area = " << rect.area()<< endl;
+        cout<< "ellipase area = " << ellipse.area()<< endl;
+    }
+</PRE></TT>
+說明：
+<OL>
+<LI>class CLineSegment、 CRectangle 與 CEllipse 都有自己的函數 <TT>float area( )</TT>， 可以覆蓋
+    父類別 CFigure 的函數 <TT>float area( )</TT>。
+<LI>該程式的執行結果為 <TT><BR>line area = 0<BR>
+rect area = 3200<BR>ellipase area = 314.159</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A HREF="cpgch14.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch14.htm">回第 14 章</A><BR>
+<A HREF="cpgch16.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch16.htm">至第 16 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</html>

@@ -1,0 +1,277 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Arithmetic</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Arithmetic</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">算術（Arithmetic）</p>
+<p>計算數值，像是加減乘除，統稱為算術。</p>
+<p class="t">Symbolic Computation / Numerical Computation</p>
+<p>算術當中，數值是數學記號，稱做Symbolic Computation；相反的，數值是實際數值，稱做Numerical Computation。</p>
+<p>比如多項式乘法：</p>
+<pre>
+Symbolic Computation:
+(x+1)(3y+2) = 3xy + 2x + 3y + 2
+
+Numerical Computation:
+x = 2, y = 1
+(2+1)*(3*1+2) = 3*(3*1+2) = 3*(3+2) = 3*5 = 15
+</pre>
+<p>比如整數除法：</p>
+<pre>
+Symbolic Computation:
+         1 
+1 ÷ 3 = ---　（使用數學記號：一條橫槓，代表分數，記下答案。）
+         3 
+
+Numerical Computation:
+1 ÷ 3 = 0.3333333333333　（使用實際數值，記下答案。答案通常不精確！）
+</pre>
+<p>數學經常使用Symbolic Computation，計算學則經常使用Numerical Computation。</p>
+<p>經過了中學與大學的數學課程，大家應該非常習慣Symbolic Computation。不過接下來要談的只有Numerical Computation，是另一套截然不同的學問。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Number資料結構（Under Construction!）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">整數（Integer）</p>
+<p>大家習慣使用二的補數表示法：</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Two\'s_complement  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Two\'s_complement'" tppabs="http://en.wikipedia.org/wiki/Two's_complement">http://en.wikipedia.org/wiki/Two's_complement</a></p>
+<p>C與C++語言當中，可以直接使用char、short、int、long long int建立整數資料結構。切記，數值範圍有固定的上下限。</p>
+<p>整數的資料結構、以及各種基礎演算法（例如加減乘除），已經製作成電路，放在中央處理器裡面，並且擁有對應的組合語言指令。我們不必再實作資料結構與演算法，直接在程式語言當中宣告變數、使用運算子即可。</p>
+<p class="t">浮點數（Floating-point）</p>
+<p>已經有標準規格，請參考IEEE 754：</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/IEEE_floating_point  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/IEEE_floating_point'" tppabs="http://en.wikipedia.org/wiki/IEEE_floating_point">http://en.wikipedia.org/wiki/IEEE_floating_point</a></p>
+<p>C與C++語言當中，可以直接使用float、double、long double建立浮點數資料結構。切記，數值範圍有固定的上下限。</p>
+<p>浮點數與整數一樣，直接下指令即可。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Big Number資料結構</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Big Number</p>
+<p>「大數」就是很大的數字，大到無法以一個簡單的變數型態儲存這個值。</p>
+<p>一般來說，int這個變數型態，記憶體大小為32 bit，可以儲存數值範圍為-2^31到2^31 - 1的整數，大約是1後面再接九個零；而long long這個變數型態是64 bit的，可以儲存數值範圍為-2^63到2^63 - 1的整數。另外還有unsigned這個關鍵字，它能讓原本的變數型態能夠存入更大一點的正整數。</p>
+<p>雖然int、long long的數值大小已經夠用了，但是人的慾望是無止盡的，總是想讓電腦能夠處理更大的數字、算得更精準。於是大數的技術就這樣產生了。</p>
+<p class="t">資料結構</p>
+<p>要讓電腦存放這麼大的數字，有個好方法就是使用陣列。陣列有很多格子，一個格子存一個數字；只要宣告1000格大小的int陣列，就可以存1000位數了！至於一個int變數，充其量也不過十位數而已──陣列能存放的數值大小，和int相比之下，實在是多很多很多。</p>
+<textarea>
+struct BigNumber
+{
+	int array[1000];	// 一個欄位存一個數字，可以存 1000 位數
+	bool sign;			// 正負號
+	int length;			// 位數
+};
+</textarea>
+<p>通常我們習慣將低位數放在索引值（index）比較小的位置，高位數放在索引值比較大的位置。假設要存放680468975231245。</p>
+<img src="BigNumber1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BigNumber1.png">
+<p>每個人對陣列的思考模式不一樣，像這裡就是由左至右的，另外也有人覺得陣列是由右至左、由上至下、彎彎曲曲的、……。要怎麼思考都是可以的，一以貫之就好囉。</p>
+<p>陣列右端劃上橫線的格子，通常我喜歡存0進去，這樣子做運算的時候會比較方便；如果將橫線的部分設成-1，在運算時會出現點麻煩，所以我不喜歡、也不建議這麼做。</p>
+<p class="t">大數的各種功能</p>
+<p>設計好了資料結構之後，接下來便要開始設計大數的各種功能，例如說顯示大數，以及大數的四則運算。</p>
+<p>為了讓初學者能夠清楚了解大數運算的方式，以下的程式碼舉要治繁，而不修邊幅。各位了解箇中道理之後，可以自行添加修改，讓程式碼更美觀。</p>
+<p class="t">顯示大數</p>
+<p>在螢幕上印出大數可以這麼做。</p>
+<textarea>
+void print(int a[100])
+{
+	int i = 100 - 1;			// 要印的數字位置
+	while (a[i] == 0) i--;		// 數字開頭的零都不印
+	while (i >= 0) cout << a[i--];
+}
+</textarea>
+<p>如果這個大數有可能是零，就得加個幾行程式碼。</p>
+<textarea>
+void print(int a[100])
+{
+	int i = 100 - 1;
+	while (i >= 0 && a[i] == 0) i--;
+	
+	if (i < 0)
+		cout << '0';
+	else
+		while (i >= 0) cout << a[i--];
+}
+</textarea>
+<p class="t">比較大小</p>
+<p>比較哪個數字比較大。</p>
+<textarea>
+// a > b
+bool largerthan(int a[100], int b[100])
+{
+	for (int i=100-1; i>=0; i--)	// 從高位數開始比，對應的位數相比較。
+		if (a[i] != b[i])		// 發現 a b 不一樣大，馬上回傳結果。
+			return a[i] > b[i];
+	return false;		// 完全相等
+}
+</textarea>
+<p class="t">加法運算</p>
+<p>大數的四則運算不會很困難。這裡提供大數加法的粗略程式碼，希望能一目瞭然。</p>
+<textarea>
+// c = a + b;
+void add(int a[100], int b[100], int c[100])
+{
+	for (int i=0; i<100; i++)	// 對應的位數相加
+		c[i] = a[i] + b[i];
+		
+	for (int i=0; i<100-1; i++)	// 一口氣進位
+	{
+		c[i+1] += c[i] / 10;	// 進位
+		c[i] %= 10;				// 進位後餘下的數
+	}
+}
+</textarea>
+<p>大數的運算有個有趣的地方，就是運算時不用立即進位，可以後來再去一口氣進位。這件事情值得細想。</p>
+<p class="e">UVa 10035</p>
+<p class="t">減法運算</p>
+<p>這裡繼續提供大數減法的粗略程式碼。</p>
+<textarea>
+void sub(int a[100], int b[100], int c[100])
+{
+	for (int i=0; i<100; i++)
+		c[i] = a[i] - b[i];
+		
+	for (int i=0; i<100-1; i++)	// 一口氣借位和補位
+		if (c[i] < 0)
+		{
+			c[i+1]--;			// 借位
+			c[i] += 10;			// 補位
+		}
+}
+</textarea>
+<p class="t">乘法運算</p>
+<p>大數乘法的粗略程式碼。我一定要強調它是粗略的。</p>
+<textarea>
+void mul(int a[100], int b[100], int c[100])
+{
+	for (int i=0; i<100; i++)
+		c[i] = 0;
+
+	for (int i=0; i<100; i++)
+		for (int j=0; j<100; j++)
+			if (i+j < 100)
+				c[i+j] += a[i] * b[j];
+				
+	for (int i=0; i<100-1; i++)	// 一口氣進位
+	{
+		c[i+1] += c[i] / 10;
+		c[i] %= 10;
+	}
+}
+</textarea>
+<p>至於大數乘以int是比較容易的。</p>
+<textarea>
+void mul(int a[100], int b, int c[100])
+{
+	for (int i=0; i<100; i++)
+		c[i] = a[i] * b;
+				
+	for (int i=0; i<100-1; i++)	// 一口氣進位
+	{
+		c[i+1] += c[i] / 10;
+		c[i] %= 10;
+	}
+}
+</textarea>
+<p class="e">UVa 338 10106</p>
+<p class="t">除法運算</p>
+<p>大數除法可直接使用長除法。還滿複雜的。程式碼就隨便寫寫囉！</p>
+<textarea>
+void div(int a[100], int b[100], int c[100])
+{
+	int t[100];
+	
+	for (int i=100-1; i>=0; i--)
+		for (int k=9; k>0; k--)	// 嘗試商數
+		{
+			mul(b+i, k, t);
+			if (largerthan(a+i, t))
+			{
+				sub(a+i, t, c+i);
+				break;
+			}
+		}
+}
+</textarea>
+<p>商數範圍是零到九，所以必須一一嘗試。可以利用高位數相除來估計商數的範圍，便不必一一嘗試。這裡不加說明。</p>
+<p>至於大數除以int是比較容易的。</p>
+<textarea>
+void div(int a[100], int b, int c[100])
+{
+	int r = 0;
+	for (int i=100-1; i>=0; i--)
+	{
+		r = r * 10 + a[i];
+		c[i] = r / b;
+		r %= b;
+	}
+}
+</textarea>
+<p class="t">開平方根運算</p>
+<p>大數開平方根可利用直式開方法。【待補文字】</p>
+<p class="e">UVa 10023 10606</p>
+<p class="t">改進資料結構</p>
+<img src="BigNumber1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BigNumber1.png">
+<p>一個欄位只存一個數字有點浪費。</p>
+<p>int的範圍約為十位數字，一個欄位其實能夠存入九個位數的。一個欄位可存九個位數，那麼1000格的陣列，便可從原來的1000位數，搖身一變成為9000位數；一個欄位可存九個位數，若要表示1000位數，只需要112格的陣列就可以了。這個新想法，相當的節省空間，運算次數也會隨之減少。</p>
+<img src="BigNumber2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BigNumber2.png">
+<p>不過，如果一個欄位存了很多位數，會對運算造成什麼影響呢？</p>
+<p>從最簡單的加法、乘法開始思考好了：</p>
+<p>首先，進位會受影響。如果一個欄位存了兩位數字，那麼做進位時，要每到100才能進位。</p>
+<p>第二，進位後會溢位（overflow）嗎？進位會讓隔壁的欄位增加一些數字。如果隔壁的欄位原本就有一個很大的數字，那麼它加上進位的數值之後，會不會產生溢位？</p>
+<p>第三，乘法是將某兩個欄位相乘，加到另一個欄位上。兩個欄位相乘，如果他們各是8位數，相乘之後至少也有15位數，這遠超過int的上限了，怎麼可能存進一個int之中呢？</p>
+<p>或許還會有很多的問題需要考慮。</p>
+<p>雖然問題重重，但是也並不代表一個欄位還是只能存一個數字吧？一個欄位存個兩三位，應該不成問題吧？這些問題就留給大家思考，在此不加贅述。</p>
+<p class="e">UVa 288 10220 10814 10925 748</p>
+<p class="t">延伸閱讀：乘法運算</p>
+<p>運用「<a href="Wave.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave.html">Convolution</a>」，時間複雜度可以從O(N^2)下降至O(NlogN)。</p>
+<p class="t">延伸閱讀：GMP</p>
+<p>GMP是一個C/C++大數運算函式庫，相當實用。</p>
+<p><a href="javascript:if(confirm('http://gmplib.org/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://gmplib.org/'" tppabs="http://gmplib.org/">http://gmplib.org/</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Summation</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Kahan Summation Algorithm</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Kahan_summation_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Kahan_summation_algorithm'" tppabs="http://en.wikipedia.org/wiki/Kahan_summation_algorithm" class="l">http://en.wikipedia.org/wiki/Kahan_summation_algorithm</a></p>
+<p>可以用來加總一連串大小差異很大的浮點數並保持精確。</p>
+<p class="t">square and cubic</p>
+<p>n^2 = 1+3+5+7+9+...，畫成L形，最後形成正方形。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Multiplication</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">直式乘法</p>
+<p>就是小學有教的直式乘法。這裡提供視覺化的直式乘法影片。</p>
+<p><a href="javascript:if(confirm('http://www.youtube.com/watch?v=aD0lp5pzHuM  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.youtube.com/watch?v=aD0lp5pzHuM'" tppabs="http://www.youtube.com/watch?v=aD0lp5pzHuM">http://www.youtube.com/watch?v=aD0lp5pzHuM</a></p>
+<p class="t">Russian Peasant Multiplication</p>
+<p>除了直式乘法以外，另一種兩數求乘積的方法，相當有趣。原理就跟快速次方運算是一樣的。</p>
+<p><a href="javascript:if(confirm('http://mathforum.org/dr/math/faq/faq.peasant.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathforum.org/dr/math/faq/faq.peasant.html'" tppabs="http://mathforum.org/dr/math/faq/faq.peasant.html" class="l">http://mathforum.org/dr/math/faq/faq.peasant.html</a></p>
+<p class="t">演算法（Double-and-Add Algorithm）</p>
+
+
+</div></div><div class="a"><div class="h">
+<p class="b">Factorial</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Binary Splitting</p>
+<p><a href="javascript:if(confirm('http://hi.baidu.com/qingmuxiaoyao/blog/item/40e56f34a795f33f5bb5f587.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://hi.baidu.com/qingmuxiaoyao/blog/item/40e56f34a795f33f5bb5f587.html'" tppabs="http://hi.baidu.com/qingmuxiaoyao/blog/item/40e56f34a795f33f5bb5f587.html" class="l">http://hi.baidu.com/qingmuxiaoyao/blog/item/40e56f34a795f33f5bb5f587.html</a></p>
+<p>可以用來加速階乘和許多數值的運算。</p>
+<p class="t">Stirling's Formula</p>
+<p class="e">UVa 1185</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Trigonometry</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="e">UVa 12413</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">π</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Category:Pi_algorithms  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Category:Pi_algorithms'" tppabs="http://en.wikipedia.org/wiki/Category:Pi_algorithms">http://en.wikipedia.org/wiki/Category:Pi_algorithms</a></p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Spigot_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Spigot_algorithm'" tppabs="http://en.wikipedia.org/wiki/Spigot_algorithm">http://en.wikipedia.org/wiki/Spigot_algorithm</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

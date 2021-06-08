@@ -1,0 +1,111 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Incremental Method</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Incremental Method</p>
+<p class="r">程度★　難度★</p>
+<p class="w">不積跬步，無以至千里。不積小流，無以成江海。《荀子》</p>
+</div><div class="c">
+<p class="t">Incremental Method</p>
+<p>「遞增法」是符合電腦運作特性的方法。電腦執行程式，一次只做一個動作，完成了一件事才做下一件事。當一個問題太大太多時，化整為零、一個一個解決吧！</p>
+<p>合抱之木，生於毫末；九層之臺，起於累土；千里之行，始於足下。謹以此句與大家共勉。</p>
+<p class="t">舉例：加總數字</p>
+<p>無論電腦再怎麼強，還是得一個一個數字累加。</p>
+<textarea>
+void summation()
+{
+	int array[5] = {3, 6, 9, -8, 1};
+
+	for (int i=0; i<5; i++)
+		sum += array[i];
+
+	cout << "總和是" << sum;
+}
+</textarea>
+<p class="t">舉例：複製字串</p>
+<p>無論電腦再怎麼強，還是得逐字複製。</p>
+<textarea>
+void copy(char* s, char* t)
+{
+	int i;
+	for (i=0; s[i] != '\0'; ++i) t[i] = s[i];
+	t[i] = '\0';
+}
+</textarea>
+<p class="t">舉例：選擇排序法（Selection Sort）</p>
+<p>把第一小的數值找出來，放在第一個位置；再把第二小的數值找出來，放在第二個位置。一次找一個數字，如此下去就可以把所有數值按照順序排好了。</p>
+<textarea>
+void selection_sort()
+{
+	int array[5] = {3, 6, 9, -8, 1};
+
+	for (int i=0; i<5; ++i)
+	{
+		// 從尚未排序的數值中，找出第i小的數值
+		int min_index = i;
+		for (int j=i+1; j<5; ++j)
+			if (array[j] < array[min_index])
+				min_index = j;
+
+		// 把第i小的數值，放在第i個位置
+		swap(array[i], array[min_index]);
+	}
+}
+</textarea>
+<p class="t">舉例：印出直角三角形</p>
+<p>多字成行，多行成直角三角形。由細微的東西開始，一件一件組起來。</p>
+<textarea>
+// 多字成行
+void print_line(int n)	// n 是一行的長度
+{
+	for (int i=1; i<=n; i++) cout << '@';
+	cout << '\n';
+}
+
+// 多行成直角三角形
+void print_triangle(int n)	// n 是行數
+{
+	for (int i=n; i>=1; i--) print_line(i);
+}
+</textarea>
+<p class="e">UVa 488 10038 10107 10370</p>
+<p class="t">舉例：宴會中訪客數目的極大值（Interval Partitioning Problem）</p>
+<p>我們將原問題轉換成比較容易理解的形式。有一群訪客參加宴會，我們知道每一個人的進場時刻與出場時刻，請問宴會現場擠進最多人的時段。</p>
+<p>換個角度想，如果在會場門口裝一支監視器，有訪客進入，會場就多一人，有訪客離開，會場就少一人。將所有訪客的留滯時段化整為零，逐步遞增，遞增的目標物是時刻，而不是訪客的索引值。</p>
+<p>【註：這個技巧在中文網路上暱稱為「離散化」。】</p>
+<img src="IntervalPartitioning1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/IntervalPartitioning1.png">
+<textarea>
+struct Guest {int arrival, leave;} g[10];
+
+bool cmp(const int& i, const int& j)
+{
+	return abs(i) < abs(j);
+}
+
+void maximum_guest()
+{
+	vector<int> time;
+	for (int i=0; i<10; ++i)
+	{
+		time.push_back(+g[i].arrival);
+		time.push_back(-g[i].leave);
+	}
+
+	sort(time.begin(), time.end(), cmp);
+
+	int n = 0, max_n = 0;
+	for (int i=0; i<time.size(); ++i)
+	{
+		if (time[i] >= 0)
+			n++;
+		else
+			n--;
+
+		max_n = max(max_n, n);
+	}
+	cout << "人最多時有" << max_n << "人";
+}
+</textarea>
+<p>另外還可以找出人最多的時段，就留給各位自行嘗試吧。</p>
+<p class="e">UVa 105 688 972 10613 10585 10963</p>
+<p class="e">UVa 308 837</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

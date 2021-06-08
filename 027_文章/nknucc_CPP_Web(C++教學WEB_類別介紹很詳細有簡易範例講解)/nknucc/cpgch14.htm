@@ -1,0 +1,671 @@
+<!--- file: cpgchpt14.htm
+      symbols: ，、。．‧；：？！·
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 14 章  class 的一些基本架構</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 14 章  class 的一些基本架構</B></CENTER>
+<P>
+C++ 程式 中 類別(class) 的架構 除了
+<UL>
+  <LI>constructor
+  <LI>destructor
+  <LI>const
+  <LI>initialization
+  <LI>inline functions
+  <LI>overloaded functions
+  <LI>call by reference
+  <LI>template functions 與 template classes 
+</UL>
+尚有一些其他基本架構， 如：
+<UL>
+  <LI>隱藏的 this pointer
+  <LI>static data member
+  <LI>static member function
+  <LI>operator
+  <LI>friend 的標示
+</UL>
+本章將 說明這幾項 class 的功能。
+<P>
+<A NAME="start">
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 14.1 節 <A href="#first">隱藏的 this pointer</A>
+  <LI>第 14.2 節 <A href="#second">static data member</A>
+  <LI>第 14.3 節 <A href="#third">static member function</A>
+  <LI>第 14.4 節 <A href="#fourth">friend 的標示</A>
+      <UL>
+           <LI>第 14.4.1 節 <A href="#fourth1"> friend functions</A>
+           <LI>第 14.4.2 節 <A href="#fourth2">friend classes</A>
+      </UL>
+  <LI>第 14.5 節 <A href="#fifth">operator</A>
+</UL>
+<P>
+<A href="cpgch13.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch13.htm">回第 13 章</A><BR>
+<A href="cpgch15.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch15.htm">至第 15 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<P>
+<A NAME="first">
+<HR>
+<!--------------------第 14.1 節--------------------------------------->
+<P>
+  <B>第 14.1 節  隱藏的 this pointer</B>
+<P>
+每一個 物件都有一個隱藏的 pointer 其名為 <B>this</B>。 對於 class 為 CStack  的
+物件 stack1 與 stack2 而言， 都有共同的 member functions <B>push()</B>， 其程式碼為
+<TT><PRE>
+   void CStack::push(char c)
+   {
+       s[tos++] = c;
+   }
+</PRE></TT>
+事實上， 將上一個 程式碼改為如下的程式亦可：
+<TT><PRE>
+   void CStack::push(char c)
+   {
+      <B>this-></B>s[<B>this-></B>tos++] = c;
+   }
+</PRE></TT>
+對於 物件 stack1 而言， 函數的呼叫
+<B><TT>stack1.push('('); </TT></B>
+於 函數 <B><TT>push()</TT></B> 中的 <B><TT>*this</TT></B> 為
+<B><TT>stack1</TT></B>。<BR>
+對於 物件 stack2 而言， 函數的呼叫
+<B><TT>stack2.push('('); </TT></B>
+於 函數 <B><TT>push()</TT></B> 中的 <B><TT>*this</TT></B> 為
+<B><TT>stack2</TT></B>。
+<P>函數 <TT>push()</TT> 相對應的 C 程式碼(或 將 C++ 程式 編譯為 C 程式)為
+<TT><PRE>
+   void push(CStack *this, char c)
+   {
+       this->s[ this->tos++] = c;
+   }
+</PRE></TT>
+其中 將 CStack 視為一 struct 架構， 如
+<TT><PRE>
+   struct CStack
+   {
+       char *s;
+       int  tos;
+   }
+</PRE></TT>
+<P>
+如此一來， 對於物件 stack1 ( 為一 struct CStack 資料型態 ) 而言，
+函數 <TT>stack1.push('(')</TT> 的呼叫變為 <B><TT>push(&stack1, '('); </TT></B>。<BR>
+對於 物件 stack2 ( 為一 struct CStack 資料型態 ) 而言，
+函數 <TT>stack2.push('(')</TT> 的呼叫變為 <B><TT>push(&stack2, '('); </TT></B>。
+<P>
+如此一來， 就可以解決 共同函數 <TT>push()</TT> 的問題。
+<p>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="second">
+<HR>
+<!--------------------第 14.2 節--------------------------------------->
+<P>
+  <B>第 14.2 節  static data member</B>
+<P>
+class 的一個 static data member 就如同一個全域變數
+(global variable)， 它並不屬於該 class 的 data member。
+一個 private static data member 是專屬於該 class 的一個全域變數，
+一個 public static data member 就如同 C 程式中 的一個全域變數。
+其定義方式就是在 一般 data member 之前 加上 static 即可。
+<P>
+<B>例 1：</B> static data member 的定義
+<TT><PRE>
+    class CTest
+    {
+        public:
+            CTest(){}
+            ~CTest(){}
+
+            <B>static int constructNum;</B>
+            int value;
+        private:
+            <B>static int destructNum;</B>
+    }
+</PRE></TT>
+<P>
+說明：
+<OL>
+  <LI><B>constructNum;</B> 是如同 C 程式中 的一個全域變數。
+  <LI><B>destructNum;</B> 是專屬於 class CTest 的一個全域變數。
+</OL>
+一個 static data member 起始值 的設定 必須在 class 定義及 函數的
+implementation
+之外， 如例 2。
+<P>
+<B>例 2：</B> static data member 起始值 的設定
+<TT><PRE>
+    class CTest
+    {
+        public:
+            CTest(){constructNum++;}
+            ~CTest(){destructNum++;}
+
+            <B>static int constructNum;</B>
+            int value;
+
+            int getDestructorNum(){ return destructNum;}
+        private:
+            <B>static int destructNum;</B>
+    };
+
+    <B>int CTest::constructNum=0;</B> // static data member 起始值 的設定
+    <B>int CTest::destructNum=0;</B>  // static data member 起始值 的設定
+
+    main()
+    {
+
+    }
+</PRE></TT>
+<P>
+一個 public static data member 就如同 C 程式中 的一個全域變數，
+其引用方式， 即將 變數之前加上 class 的標示， 如下：
+<BR>
+<TT><PRE>
+    CTest:: constructNum 
+</PRE></TT>
+<P>
+<B>例 3：</B> public static data member 的引用
+<TT>
+<PRE>
+    class CTest
+    {
+        public:
+            CTest(){constructNum++;}
+            ~CTest(){destructNum++;}
+            <B>static int constructNum;</B>
+            int value;
+            int getDestructorNum(){ return destructNum;}
+        private:
+            <B>static int destructNum;</B>
+    };
+    <B>int CTest::constructNum=0;</B> // static data member 起始值 的設定
+    <B>int CTest::destructNum=0;</B>  // static data member 起始值 的設定
+    class CB
+    {
+        public:
+            CB(){}
+            ~CB(){}
+            void set(){     // public static data member 的引用
+                x = <B>CTest::constructNum;</B> 
+            }
+            int get(){ return x;}
+        private:
+           int x;
+    };
+
+    main()
+    {
+       CTest t1, t2, *pt;
+       CB b;
+       b.set();
+       cout<< "number of constructed class CTest = ";
+       cout<< CTest::constructNum<< endl; // public static data member 的引用
+       cout<< "number of destructed class CTest = ";
+       cout<< t1.getDestructorNum()<< endl;
+       cout<< "b.x = "<< b.get()<< endl;
+
+       pt = new CTest;
+       b.set();
+       cout<< "number of constructed class CTest = ";
+// public static data member 的引用             
+       cout<< <B>CTest::constructNum</B><< endl; 
+       cout<< "number of destructed class CTest = ";
+       cout<< t1.getDestructorNum()<< endl;
+       cout<< "b.x = "<< b.get()<< endl;
+
+       delete pt;
+       cout<< "number of constructed class CTest = ";
+// public static data member 的引用
+       cout<< <B>CTest::constructNum</B><< endl;
+       cout<< "number of destructed class CTest = ";
+       cout<< t1.getDestructorNum()<< endl;
+    }
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>於 class CB 中亦可引用全域變數 <B>CTest::constructNum</B>， 該變數宣告的位置
+      在 引用處之前。
+  <LI>於 main() 中亦可引用全域變數 <B>CTest::constructNum</B>。
+  <LI>該程式的結果為<TT><PRE>
+number of constructed class CTest = 2
+number of destructed class CTest = 0
+b.x = 2
+number of constructed class CTest = 3
+number of destructed class CTest = 0
+b.x = 3
+number of constructed class CTest = 3
+number of destructed class CTest = 1</PRE></TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="third">
+<HR>
+<!--------------------第 14.3 節--------------------------------------->
+<P>
+  <B>第 14.3 節  static member function</B>
+<P>
+對於例 3 中 class CTest 的 member function <TT><B>getDestructorNum()</B></TT>
+僅牽扯到
+<TT>static data member <B>destructNum</B></TT>， 欲知 該變數
+<TT><B>destructNum</B></TT> 的值， 實在不用牽扯到任何一個 CTest 的 object。
+因此， 可以將該 member function <TT><B>getDestructorNum()</B></TT> 加上 static
+而形成一個 static member function。
+<P>
+引用 static member function 的方式與時機 跟 引用 static data member 的方式
+相同。
+<P>
+讀者可試將例 3 中 於 main() 的 指令
+<TT><B>t1.getDestructorNum()</B></TT> 改成
+<TT><B>CTest::getDestructorNum()</B></TT>。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fourth">
+<HR>
+<!--------------------第 14.4 節--------------------------------------->
+<P>
+  <B>第 14.4 節  friend 的標示</B>
+<P>
+本節將討論一個非 class 的 member function 如何 來引用 class 中 private elements 如同
+class 的 member function 一般， 還有， 不同的 class， 又如何去引用 其他 class 的 private
+elements。
+<P>
+<A NAME="fourth1">
+<P>
+<B>第 14.4.1 節  friend functions</B>
+<P>
+設有一個函數 <TT>int f(const A &a)</TT> 含有一個引數 a， 其為 class A 的一物件， 又   函數 f
+並不是 class A 的一個 memeber function， 若於 函數 f 的定義中， 欲能自由引用 class A 的
+private elements 如同 class A 的 member function 一般， 則需要在 class A 中 宣告為一
+friend function， (就好像得到 class A 的允許， 可以使用其 公用 與 私用 資料 )， 其 宣告方式如下：
+<TT><PRE>
+    class A
+    {
+      public:
+         A(int r=0){x=r;}
+         <B>friend int f(const A &a);</B>
+      private:
+         int x;
+    }
+
+    int f(const A &a)
+    {
+         return a.x*a.x;
+    }
+</PRE></TT>
+說明：
+<OL>
+  <LI>函數<TT>int f(const A &a)</TT> 的設計， 可以在 class A 的定義之內，或在 class A 的定義之外，
+         如上述情況。
+  <LI>函數<TT>int f(const A &a)</TT> 並非是 class A 的一個 member function， 因此， 於上述情況
+         函數<TT>int f(const A &a)</TT> 的定義並不加上<TT> A::</TT>  的標示。
+  <LI>函數<TT>int f(const A &a)</TT> 於 class A 的宣告地方， 不限定在 public 或  private 區。
+</OL>
+<P>
+設有一個函數 <TT>int h(const A &a, const B &b)</TT> 含有兩個引數 a 與 b， 其分別為 class A 與 class B 的物件，
+又函數 h 既不是 class A 的 memeber function， 也不是 class B 的  memeber function。 若 函數 h 欲能自由引用
+class A 與 class B 的 private elements， 則需要在 class A 與 class B 中 宣告為一 friend function，
+其 宣告方式如下例：
+<P>
+<B>例 4：</B> a friend function of 2 different classes。
+<TT>
+<PRE>
+     #include &lt;iostream.h>
+
+     class B;
+     class A
+     {
+         public:
+           A(int r=0){x=r;}
+           ~A(){}
+           <B>friend int h(const A &a, const B &b);</B>
+         private:
+           int x;
+     };
+
+     class B
+     {
+         public:
+           B(int r=0){y=r;}
+           ~B(){}
+
+           <B>friend int h(const A &a, const B &b);</B>
+         private:
+           int y;
+     };
+
+     <B>int h(const A &a, const B &b)
+     {
+           return a.x*b.y;
+     }</B>
+
+     main()
+     {
+           A a(10);
+           B b(20);
+
+           cout<< "h() = "<< h(a, b)<< endl;
+     }
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>函數<TT>int h(const A &a, const B &b)</TT> 同時為 class A 與 class B 的 friend function。
+  <LI>該程式的執行結果為  <TT>h() = 200</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<P>
+<A NAME="fourth2">
+<P>
+<B>第 14.4.2 節  friend classes</B>
+<P>
+一個 class A 的定義中， 亦可宣告 class B 為其 friend， 如此一來， class B 中的 member function f(A &a) 若
+有 引數 為 class A 的物件， 則 於函數 f() 的定義中就可以直接引用 class A 的 private elements。
+這好像是 class A 宣告 class B 為其 好朋友， 因此， class B  就可以分享 class A 的資源。
+由例 5 來看如何使用 friend class 的功能。
+<P>
+<B>例 5 ：</B> friend class 
+<TT><PRE>
+     #include &lt;iostream.h>
+
+     class A
+     {
+       public:
+            A(int r=0){x=r;}
+            ~A(){}
+
+          <B>friend class B;</B>
+
+       private:
+            int x;
+     };
+
+     class B
+     {
+       public:
+            B(int r=0){y=r;}
+            ~B(){}
+            <B>int g(A &a){ return a.x+y;}</B>
+       private:
+            int y;
+     };
+
+     main()
+     {
+         A a(3);
+         B b(12);
+
+         cout<< "g(3) = "<< b.g(a)<< endl;
+     }
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>於 class A 中宣告 class B 為其 friend。
+  <LI>class B 的 member function g 可以自由引用 class A 的 private elements， 如 <TT>a.x</TT>。
+  <LI>該程式的執行結果為  <TT>g(3) = 15</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+
+<A NAME="fifth">
+<HR>
+<!--------------------第 14.5 節--------------------------------------->
+<P>
+  <B>第 14.5 節  operator</B>
+<P>
+int 有 加、減、乘、除 等運算， 其他 資料型態 與 class 也有相對應的運算。
+本節將討論 C++ 程式如何將此概念推衍至 class 的運算。
+<P>
+int 的 加、減、乘、除 運算是二元 運算， 亦是 一函數 其定義域為 N ※ N ，其對應域為 N。
+因此， int 的 加法運算 就如同 下列函數 <TT> add()</TT>：
+<TT><PRE>
+   int add(int x, int y){ return x + y;}
+</PRE></TT>
+<P>
+對於向量的運算，有加法運算， 常量與向量相乘，向量的內積及 外積等。
+一個 2 度空間向量 <TT>u = <2, 3></TT> 與 向量<TT> v = <3, 5></TT>， 其和為 <TT>u+v = <5, 8></TT>，
+又 其內積為 <TT>u*v = 2*3+3*5=21</TT>， <TT>2*v =< 2*3, 3*5>=<6, 15></TT>
+<P>
+首先， 我們先來定義 class CVector 如下：
+<TT><PRE>
+    class CVector
+   {
+    public:
+        CVector(int r=0, int s=0){x=r; y=s;}
+        ~CVector(){}
+
+    private:
+        int x, y;
+   }
+</PRE></TT>
+欲定義函數 <TT>add(const CVector &v)</TT> 將兩個 向量加起來， 可以將 函數 <TT>add(const CVector &v)</TT>
+定義為 class CVector 的一個 member function 如下：
+<TT><PRE>
+    class CVector
+   {
+    public:
+        CVector(int r=0, int s=0){x=r; y=s;}
+        ~CVector(){}
+
+        <B>CVector add(const CVector &v)
+        {
+             CVector u;
+
+             u.x = x + v.x;
+             u.y = y + v.y;
+             return u;
+        }</B>    
+    private:
+        int x, y;
+   }
+</PRE></TT>
+將兩個向量加起來變成第三個向量， 就如下列程式：
+<TT><PRE>
+    class u, v, w;
+    ...
+
+    w = u.add(v);
+</PRE></TT>
+將函數 add() 改為 operator +， 其定義方式如下：
+<TT><PRE>
+    class CVector
+   {
+    public:
+        CVector(int r=0, int s=0){x=r; y=s;}
+        ~CVector(){}
+
+        <B>CVector operator +(const CVector &v)
+        {
+             CVector u;
+
+             u.x = x + v.x;
+             u.y = y + v.y;
+             return u;
+        }</B>    
+    private:
+        int x, y;
+   }
+</PRE></TT>
+將兩個向量加起來變成第三個向量， 就如下列程式：
+<TT><PRE>
+    class u, v,w;
+    ...
+
+    w = u.operator +(v);
+</PRE></TT>
+C++ 程式語言 結合了 friend 與 operator 功能，提供了簡潔的運算式 ，如下例所示：
+<P>
+<B>例 6：</B> friend operator +
+<TT>
+<PRE>
+#include &lt;iostream.h>
+
+class CVector
+{
+    public:
+    CVector(int r=0, int s=0){x=r; y=s;}
+    ~CVector(){}
+
+    void printOut()
+    {   cout<< "x= "<<  x <<", y= "<<  y << endl;
+    }
+    <B>friend CVector operator +(const CVector &u, const CVector &v);</B>
+    private:
+        int x, y;
+};
+
+
+<B>CVector operator +(const CVector &u, const CVector &v)</B>
+{
+	CVector w;
+
+	w.x = u.x + v.x;
+	w.y = u.y + v.y;
+	return w;
+}
+
+main()
+{
+    CVector a(10, 20), b(20, 30), sum;
+
+   <B> sum = a + b;</B>
+
+    sum.printOut();
+}
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>operator + 成為 class CVector 的一個具有左結合律的二元運算。
+  <LI> <TT><B> sum = a + b;</B></TT> 就如同一般運算式。
+  <LI>該程式的執行結果為  <TT>x= 30, y=50</TT>
+</OL>
+<P>
+
+一個具有 2 維向量的運算，如 加法運算、 常量與向量相乘、向量的內積 的 class CVector
+其定義如例 7：
+<P>
+<B>例 7：</B> friend operators +, * 
+<TT>
+<PRE>
+#include &lt;iostream.h>
+
+class CVector
+{
+    public:
+        CVector(int r=0, int s=0){x=r; y=s;}
+        ~CVector(){}
+
+        void printOut()
+        { cout<< "x= "<< x << ", y= "<< y << endl;
+        }
+
+    friend CVector operator +(const CVector &a, const CVector &b);
+    friend CVector operator *(const CVector &a, const int r);
+    friend CVector operator *(const int r, const CVector &a);
+    friend int operator *(const CVector &a, const CVector &b);
+
+    private:
+        int x, y;
+};
+
+CVector operator +(const CVector &a, const CVector &b)
+{
+    CVector c;
+
+    c.x=a.x+b.x;
+    c.y=a.y+b.y;
+    return c;
+}
+
+ CVector operator *(const int r, const CVector &a)
+{
+    CVector c;
+
+    c.x=a.x*r;
+    c.y=a.y*r;
+    return c;
+}
+ CVector operator *(const CVector &a, const int r)
+{
+    CVector c;
+
+    c.x=a.x*r;
+    c.y=a.y*r;
+    return c;
+}
+int operator *(const CVector &a, const CVector &b)
+{
+    return a.x*b.x+a.y*b.y;
+}
+main()
+{
+    CVector a(1, 2), b(2, 3), sum;
+	
+    sum =((5*a + b*2)*( 3*a))*a;
+
+    sum.printOut();
+}
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI> operator * 可以做 向量的內積運算， 或 長量與向量相乘。
+  <LI>該程式的執行結果為 <TT>x= 123, y= 246</TT>
+</OL>
+於第 7.6 節中所談的 struct longint， 將之改為 class CLongint， 其運算
+為一般 整數的 加減乘除， 該 class CLongint 的宣告如下：
+<TT><PRE>
+    class CLongint
+    {
+       public:
+           CLongint(int m=101):MAXSIZE(m){ D = new char[MAXSIZE]; n=0;}
+           CLongint(int m=101, long k):MAXSIZE(m)
+           { D = new char[MAXSIZE]; n = 0; LongToLongint(k); }
+           CLongint(char s[]){ StringToLongint(s); }
+           ~CLongint(){}
+
+           void SetZero();
+           void LongToLongint(long number);
+           void StringToLongint(char s[]);
+           char * LongintToString();
+           int IsPositive();
+           int IsNegative();
+           int IsZero();
+           void PrintLongint();
+
+       friend int operator >(const CLongint &a, const CLongint &b);
+       friend int operator <(const CLongint &a, const CLongint &b);
+       friend int operator ==(const CLongint &a, const CLongint &b);
+
+       friend CLongint operator +(const CLongint &a, const CLongint &b);
+       friend CLongint operator -(const CLongint &a, const CLongint &b);
+       friend CLongint operator *(const CLongint &a, const CLongint &b);
+       friend CLongint operator /(const CLongint &a, const CLongint &b);
+       friend CLongint operator %(const CLongint &a, const CLongint &b);
+
+       private:
+           unsigned int n;
+           char *D;
+           const int MAXSIZE;
+    }
+</PRE></TT>
+<P>
+class CLongint 的設計則留給讀者去發揮。
+<p>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<A HREF="cpgch13.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch13.htm">回第 13 章</A><BR>
+<A HREF="cpgch15.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch15.htm">至第 15 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</html>

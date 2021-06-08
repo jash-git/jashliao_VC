@@ -1,0 +1,493 @@
+<HTML>
+  <HEAD>
+   <TITLE>第 2 章  常數，變數與資料型態</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <B>第 2 章   常數， 變數 與 資料型態</B>
+<P>
+      在本章中 將 介紹 C 程式 資料型態 並 配合 常數 與 變數 的使用。
+      電腦有 8 位元、 16 位元、 32 位元 及 64 位元等 的限制，
+      又整數 與 浮點的 內部 結構 的不同，
+      其 算術 運算方式 也不相同， 因此 產生 資料型態 的區別。
+      資料 型態 的 轉換 基本上 都 需 加以 申明，
+      或 呼叫函數 做 轉換， 例如 字元 '9' 轉成 整數 9，
+      字元 指標 與 整數指標 的轉換， 有些 則 不需要 做明確的 標示，
+      如 整數 與 浮點 參雜 在一齊的 算術 運算。
+<P>
+          變數的 宣告 必須 表明 其 資料型態， 如此 一來 C 
+      編譯 程式 (compiler) 方能 安排 適當 大小的 記憶空間 給 該變數，
+      並 處理 適當的運算。
+
+<P>
+<A NAME="start">
+
+     本 章 主 要 內 容 如 下 :
+<UL>
+  <LI>第 2.1 節 <A href="#first">資料型態</A>
+    <UL TYPE=circle>
+      <LI>第 2.1.1 節 <A href="#first1">資料容量</A>
+      <LI>第 2.1.2 節 <A href="#first2">資料內部表示</A>
+    </UL>
+  <LI>第 2.2 節 <A href="#second">常數</A>
+    <UL TYPE=circle>
+      <LI>第 2.2.1 節 <A href="#second1">字元常數</A>
+      <LI>第 2.2.2 節 <A href="#second2">字串常數</A>
+      <LI>第 2.2.3 節 <A href="#second3">整數常數</A>
+      <LI>第 2.2.4 節 <A href="#second4">浮點常數</A>
+      <LI>第 2.2.5 節 <A href="#second5">符號常數</A>
+    </UL>
+  <LI>第 2.3 節 <A href="#third">變數</A>
+  <LI>第 2.4 節 <A href="#fourth">運算子</A>
+    <UL TYPE=circle>
+      <LI>第 2.4.1 節 <A href="#fourth1">算術運算子</A>
+      <LI>第 2.4.2 節 <A href="#fourth2">關係運算子</A>
+      <LI>第 2.4.3 節 <A href="#fourth3">邏輯運算子</A>
+      <LI>第 2.4.4 節 <A href="#fourth4">位元運算子</A>
+    </UL>
+  <LI>第 2.5 節 <A href="#fifth">資料型態轉換</A>
+</UL>
+<P>
+<A href="cpgch1.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch1.htm">回第 1 章</A><BR>
+<A href="cpgch3.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch3.htm">至第 3 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<HR>
+<!--------------------第 2.1 節--------------------------------------->
+<A NAME="first">
+<P>
+  <B>第 2.1 節   資料型態</B>
+<P>
+      C 的 資料型態 基本上 可分 為 二大類：
+<OL>
+     <LI>基本型態 (basic data types)，
+     <LI>延伸性型態 (user-defined data types)。
+</OL>
+<P>
+          在本章中 我們 僅討論 基本 資料型態， 延伸性 型態 
+      將於 第 7 章 討論。 C 的 基本 資料型態 有 char (字元)，
+      int (整數)， float (浮點)， 與 double (倍準浮點)。
+      此外， 還有 一些 修飾詞 (qualifier)， 如 unsigned、 short
+      及 long 可加在 基本 型態 之前，例如:
+<P>
+<TABLE>
+   <TR><TD>unsigned<TD>char  <TD> c;
+   <TR><TD>short   <TD>int   <TD>i, j;
+   <TR><TD>long    <TD>int   <TD>x, y;
+   <TR><TD>unsigned<TD>int   <TD>positive;
+   <TR><TD>long    <TD>double<TD>area;
+</TABLE>
+<P>
+          C 語言 基本上 是 沒有 布林 ( boolean ) 資料 型態， 
+          但以 0 當做 "假"，以 非 0 當做 "真"。
+<P>
+<A NAME="first1">
+  <B>第 2.1.1 節   資料容量</B>
+<P>
+<TABLE>
+<TR><TH>資料型<TH>容量<TH>數值範圍<TH>輸入/出格式<TH>運算子
+<TR><TD>char<TD>1 byte<TD ALIGN=center>-128～127
+            <TD>%c<TD>+, -, *, /, %
+<TR><TD>int<TD>2<TD ALIGN=center>-32768～32767
+            <TD>%d, %x, %o, %u, %X<TD>+, -, *, /, %
+<TR><TD>long<TD>4<TD ALIGN=center>-2147483648～2147483647
+            <TD>%ld, %lx, %lX, %lo, %lu<TD>+, -, *, /, %
+<TR><TD>float<TD>4<TD ALIGN=center>3.4E-38～3.4E+38(7位有效)
+            <TD>%f, %e, %E, %g, %G<TD>+, -, *, /
+<TR><TD>double<TD>8<TD ALIGN=center>1.7E-308～1.7E+308(15位)
+            <TD>%lf, %le, %lg<TD>+, -, *, /    
+</TABLE>
+<P>
+<A NAME="first2">
+  <B>第 2.1.2 節   資料內部表示</B>
+<P>
+      char 佔有 8 個 位元， 即 位元 0、 位元 1、 ... 位元 7。
+      位元 7 為 0 時， 該數 為 正數， 否則 為 負數。
+<P>
+      int 佔有 16 個 位元， 即 位元 0、 位元 1、 ... 位元 15。
+      位元 15 為 0 時， 該數 為 正數， 否則 為負數。
+<P>
+      float 佔有 32 個 位元， 即 位元 0、 位元 1、 ... 位元 31。
+      位元 0 為 0 時，
+      該數 為 正數， 否則 為 負數。 位元 1 至 位元 8 表 指數 大小，
+      位元 9 至 位元 31 表 分數 大小。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 2.2 節--------------------------------------->
+<A NAME="second">
+      <B>第 2.2 節   常數</B>
+<P>
+   C 的常數 有 <B>字元</B>常數、 <B>字串</B>常數、 <B>整數</B>常數、
+   <B>浮點</B>常數 等。
+<P>
+<A NAME="second1">
+<P>
+      <B>第 2.2.1 節   字元常數</B>
+<P>
+      <B>字元常數</B>  <!---[參閱附錄 1 及 3]--->  基本上 有 三種 表示法：
+<OL>
+          <LI>一般 均在 字元 前 後 加上 單引號 (')，
+              如 'a'、 'A'、 '9'、 '+' 等。<P>
+          <LI>一些 特殊 控制 字元， 如 跳行、 跳頁、 水平定位、
+              游標 歸位等 均 無法 在螢幕上 或 印表機 顯示 出來，
+              因此 使用 這些 字元時， 必須 用 倒斜線 (\)， 在其後
+             <OL TYPE=a>
+               <LI>並 附加 一字元， 如 '\n'、 '\f'、 '\t'、 '\r';
+               <LI>或 附加 三個 八進位 數， 如 '\007' (鈴聲)、 '\101'(='A');
+               <LI>或 附加 x 及 兩個 十六進 位數， 如 '\x61'(='a')。
+             </OL>
+          例如:   
+<TT><PRE>
+          char c;
+
+          c = '\x61';
+          printf("%c\n%d", c, c);
+</PRE></TT>
+          其輸出為:
+<TT><PRE>
+          a
+          97
+</PRE></TT>
+          <LI>我們 亦可 用 整數 0 至 255 來表 一字元 常數 或 用 整數
+              -128 至 127 來表 一字元 常數。 這會 牽扯到 變數的 宣告，
+              例如:
+<TT><PRE>
+          unsigned char ch;
+          char c;
+
+          ch = 224;   /* ch = -32  亦可 */
+          c  = -32;   /* c  = 224  亦可 */
+
+          printf("%c %d %c %d", ch, ch, c, c);
+</PRE></TT>
+          其輸出為: <TT>α 224 α -32。</TT>
+</OL>
+<P>
+
+          在 字串中 (連續 兩個 雙引號 "..." ) 就無法 使用 整數 0 至 255
+          來表 一字元 常數。 不然， 就要用 倒斜線 (\)在 再加上 整數。
+<P>
+<A NAME="second2">
+<P>
+      <B>第 2.2.2 節   字串常數</B>
+<P>
+      <B>字串</B> 是 由 連續的 0 個 或 多個 字元 並 前後 各加上 一個 雙引號
+      (") 所構成， 如:
+<TT><PRE>
+          "This is a string!"，
+          "這是一字串"，
+          "0123\n0123\t\x61\n"。
+</PRE></TT>
+<P>
+<A NAME="second3">
+<P>
+      <B>第 2.2.3 節   整數常數</B>
+<P>
+      <B> 整數常數</B>基本上 有 三種 表示 方式:
+<OL>
+          <LI>十 進位: 由 0、 1、 ... 9 所構成， 但 第一個 數 不可為 0。<BR>
+              例如: -1、 231、 32767 等。<P>
+          <LI>八 進位: 由 0、 1、 ... 7 所構成， 第一 個數 必須 為 0。<BR>
+              例如: -012 (即十進位 -10)、 0201 (即十進位 129) 等。<P>
+          <LI>十六 進位: 由 0、 1、 ...  9、 A、 B、 C、 D、 E、 F
+              (或 a、 b、 c、 d、 e、 f) 所構成， 
+              第一 個數 必須 為 0x 或 0X。<BR>
+              例如: -0x12(= -18)、 0XA1(= 161) 等。
+</OL>
+          例如: 
+<TT><PRE>
+          #define MAXSIZE 100
+
+          main(){
+          int i = 0xFF;
+          printf("%o %#o %d %x %#x %X %#X\n",i,i,i,i,i,i,i);
+          printf("%d %d %d %d\n",MAXSIZE,-0x12,0XA1,32768);
+          printf("%ld %ld ", 0xabcde, 0xabcdeL);
+          printf("%#lx %lX\n",0xabcde, 0xabcdeL);
+          }
+</PRE></TT>
+
+          其輸出為  
+<TT><PRE>
+          377 0377 255 ff 0xff FF 0XFF
+          100 -18 161 -32768
+          703710 703710 0xabcde ABCDE
+</PRE></TT>
+
+      整數常數 的 資料 型態 有 兩種: int 與 long。 整數常數 為 long，
+      其後 要加上 字元 'l' 或 'L'， 如 123456l、 32788L、 0xabcdeL
+      (如 上例 所示)。
+<P>
+<A NAME="second4">
+<P>
+      <B>第 2.2.4 節  浮點常數</B>
+<P>
+      <B>浮點常數</B> 基本上 有 兩種 表示 方式:
+<OL>
+          <LI>十 進位: 如 -12.4、 3.1415926。<P>
+          <LI>科學 符號: 如 2.34E+02、 0.34e-12。
+</OL>
+<P>
+<A NAME="second5">
+<P>
+      <B>第 2.2.5 節  符號常數</B>
+<P>
+      為了 容易 閱讀 及 修改 方便， 常數 經常 以 符號常數 來代替，
+      其 宣告 方式 通常是 在 檔案起頭 加上<BR>
+      <TT><B>#define 常數名稱 常數</B></TT>
+<P>
+      在 程式中 就用 該常數 名稱， 例如:
+<TT><PRE>
+          #define  EOF     -1
+          #define  PI      3.1415926
+          #define  e       2.718281828459045
+          #define  EPSILON 0.000001
+
+          main()
+          { .
+            area = PI * radius * radius;
+            .
+            while ((c=getchar()) != EOF )
+            .
+            .
+            .
+            while ( abs( f(x) ) &gt; EPSILON )
+            .
+            .
+            .
+          }                                                             
+</PRE></TT>
+說明： C 編譯器在編譯該程式時， 會先做前置處理， 即將 #define 中所定義的
+名稱， 如 <CODE>PI</CODE> 和 <CODE>EPSILON</CODE> 以 3.1415926 及 0.000001 來代換， 之後
+再加以編譯。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 2.3 節--------------------------------------->
+<A NAME="third">
+      <B>第 2.3 節  變數(variables)</B>
+<P>
+<DL><DT>變數宣告語法：
+      <DD>資料型態  變數名稱[, 變數名稱];
+    <DT>變數宣告處： 
+      <DD>(1) 在 一個 檔案 任何 函數 (包括 main) 之前，<BR>
+          (2) 在 任一 括號 { ... } 內的 起頭。
+    <DT>例： 
+      <DD>
+<TT><PRE>
+       char c ='0', C ='c', ch;
+       int i, j, k, sum = 0;
+       long verylong = 123456789;
+       float x, y, z, area = 0.0, radius;
+       double total_area;
+</PRE></TT>
+</DL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+</A>
+<P>
+<!--------------------第 2.4 節--------------------------------------->
+<A NAME="fourth">
+      <B>第 2.4 節  運算子</B>
+<P>
+      運算子 可分為 算術 運算子、 關係 運算子、 及 邏輯 運算子。
+
+<A NAME="fourth1">
+<P>
+    <B>第 2.4.1 節  算術運算子</B>
+<P>
+      算術 運算子 有 下列 六種， 按其 運算 優先 順序 說明 如下：
+<P>
+<TABLE>
+  <TR><TH>優先順序<TH>算術運算子<TH>說明
+  <TR ALIGN=center><TD>1<TD> -  <TD>負號
+  <TR ALIGN=center><TD>2<TD> *  <TD>乘
+  <TR ALIGN=center><TD>2<TD> /  <TD>除
+  <TR ALIGN=center><TD>2<TD> %  <TD>餘數
+  <TR ALIGN=center><TD>3<TD> +  <TD>加
+  <TR ALIGN=center><TD>3<TD> -  <TD>減
+</TABLE>
+
+<P>
+<A NAME="fourth2">
+<P>
+    <B>第 2.4.2 節  關係運算子</B>
+<P>
+      關係運算子 有 下列 六種， 按 其 運算 優先 順序 說明 如下：
+<P>
+<TABLE>
+  <TR><TH>優先順序<TH>關係運算子<TH>說明
+  <TR ALIGN=center><TD>1<TD><TT>&gt;</TT><TD>大於
+  <TR ALIGN=center><TD>1<TD><TT>&lt;</TT><TD>小於
+  <TR ALIGN=center><TD>1<TD><TT>&gt;=</TT><TD>大於等於
+  <TR ALIGN=center><TD>1<TD><TT>&lt;=</TT><TD>小於等於
+  <TR ALIGN=center><TD>2<TD><TT>==</TT><TD>等於
+  <TR ALIGN=center><TD>2<TD><TT>!=</TT><TD>不等於
+</TABLE>
+<P>
+
+<P>
+<A NAME="fourth3">
+<P>
+    <B>第 2.4.3 節  邏輯運算子</B>
+<P>
+      邏輯運算子 有 下列 三種， 按 其 運算 優先 順序 說明 如下：
+<P>
+<TABLE>
+  <TR><TH>優先順序<TH>邏輯運算子<TH>說明
+  <TR ALIGN=center><TD>1<TD><TT>!</TT><TD>非 (not)
+  <TR ALIGN=center><TD>2<TD><TT>&&</TT><TD>且 (and)
+  <TR ALIGN=center><TD>2<TD><TT>||</TT><TD>或 (or)
+</TABLE>
+<P>
+<A NAME="fourth4">
+<P>
+    <B>第 2.4.4 節  位元運算子</B>
+<P>
+      位元運算子 有 下列 幾種， 按 其 運算 優先 順序 說明 如下：
+<P>
+<TABLE>
+  <TR><TH>優先順序<TH>位元運算子<TH>名稱<TH>說明
+  <TR VALIGN= TOP ALIGN=center><TD>1<TD><TT>~</TT><TD ALIGN=left>1's complement<TD ALIGN=left>將0改為1，將1改為0
+  <TR VALIGN= TOP ALIGN=center><TD>2<TD><TT>>></TT><TD ALIGN=left>right shift<TD ALIGN=left>將一組字元右移，
+<BR>如果最左一個位元為1，則新的最左幾個位元填入1，<BR>若為unsigned，則新的最左位元填入0 
+  <TR VALIGN= TOP ALIGN=center><TD>2<TD><TT>&lt;&lt;</TT><TD ALIGN=left>left shift<TD ALIGN=left>將一組字元左移，新的最右位元填入0
+  <TR VALIGN= TOP ALIGN=center><TD>3<TD><TT>&</TT><TD ALIGN=left>bitwise AND<TD ALIGN=left>1&1為1，其餘的情況皆為0
+  <TR VALIGN= TOP ALIGN=center><TD>4<TD><TT>^</TT><TD ALIGN=left>bitwise exclusive OR<TD ALIGN=left>0^1與1^0皆為1，其餘的情況皆為0
+  <TR VALIGN= TOP ALIGN=center><TD>5<TD><TT>|</TT><TD ALIGN=left>bitwise OR<TD ALIGN=left>0|0為0，其餘的情況皆為1
+</TABLE>
+<P>
+假設 ch 為一字元變數，其值為 076，其八個位元的內容為 00111110。<BR>
+c 為一字元變數，其值為 0360，其八個位元的內容為 11110000。
+則下列運算式及其結果以八個位元的內容表示如下：
+<P>
+<TABLE>
+  <TR><TH>運算式<TH>結果
+  <TR><TD><TT>~ch</TT><TD>11000001
+  <TR><TD><TT>c>>2</TT><TD>11111100
+  <TR><TD><TT>c&lt;&lt;3</TT><TD>10000000
+  <TR><TD><TT>ch&c</TT><TD>00110000
+  <TR><TD><TT>ch^c</TT><TD>11001110
+  <TR><TD><TT>ch|c</TT><TD>11111110
+</TABLE>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 2.5 節--------------------------------------->
+<A NAME="fifth">
+      <B>第 2.5 節  資料型態轉換</B>
+<P>
+      在做 資料型態 轉換時， 儘 可能 避免 將 長形 資料型態 轉成 短形，
+      例 如 將 long 轉成 int。 資料型態 轉換 基本上 有 四種 方式：<BR>
+<OL>
+      <LI>指派轉換、
+      <LI>算術轉換、
+      <LI>模式轉換 (cast) 及
+      <LI>函數轉換， 
+</OL>
+<P>
+      其 說明 如下：
+<P>
+<OL>
+     <LI> 指派轉換： C 自動 將 指派值 轉成 等號 左邊 變數的 資料 型態，如：
+<TT><PRE>
+          main()
+          { int i;
+            long x = 100000, y=1000;
+
+            i = x * y;
+            printf("i =%d\n", i);
+            i = -1691154500L;
+            printf("i =%d\n", i);
+          }
+</PRE></TT>
+
+              其輸出為： 
+<TT><PRE>
+           i =-7936
+           i =1980
+</PRE></TT>
+<P>
+              說明： 
+           -1691154500L 的 二進位 表示式 為<BR>
+<TT><PRE>
+           1001101100110011  0000011110111100<BR>
+                             <---- 1980 ---->
+</PRE></TT>
+                    其較低的 兩個 位元組 的值 為 1980， 因此 對於 指派 敘述<BR>
+                    <TT>i = -1691154500L;</TT><BR>
+                    經 指派 轉換 後， 變數 i 的值 為 1980。<P>
+
+          <LI>算術轉換: C 自動 先將 算術式中 不同 資料 型態值 轉成 相同 資料
+              型態，再做 算術 運算， 基本上 是 將 容量小的 轉成 容量大， 例如：
+<TT><PRE>
+           int   i = 2;
+           float x, y;
+
+           x = i * 9 / 8 + 32.0;
+           y = i * 9 / 8.0 + 32.0;
+           printf("%f %f\n", x, y);
+</PRE></TT>
+              其輸出為: 34.000000 34.250000<BR>
+<P>
+              說明:
+<OL TYPE=a>
+              <LI>i * 9 / 8 中 每一項 皆 為 整數， 其值 為 2 * 9 / 8 = 3，
+                  小數 部份的值 被刪除， 剩下 整數 部份。
+
+              <LI>i * 9 / 8.0 中 有一項 為 浮點數 8.0， 因此， 
+                  i 及 9 皆被化為 浮點數 2.0 及 9.0， 再做 浮點 算數運算，
+                  其值 為 2.25， 再加上 32.0， 其值 為 34.25。<P>
+</OL>
+          <LI>模式轉換: 由 使用者 標示 轉成的 資料型態， 例如：
+<TT><PRE>
+          main(){
+          int i;
+          float x=14.8;
+
+          i = (int) ( x + 0.9 );
+          x = (int) x + 0.9;
+          printf("i =%d\nx = %f\n", i, x );
+          }
+</PRE></TT>
+              其輸出為: 
+<TT><PRE>
+          i = 15
+          x = 14.900000
+</PRE></TT>
+<P>
+              說明:
+<OL TYPE=a>
+              <LI>i = (int) ( x + 0.9 ); 則 將 x + 0.9 的值 15.7 轉成 15，
+                  再將 15 指派 給 變數 i。
+
+              <LI>x = (int) x + 0.9; 則 先將 x 的值 14.8 轉成 整數 14，
+                  再加上 0.9 成為 14.9， 再將 14.9 指派 給 變數 x。<P>
+</OL>
+          <LI>函數轉換: 在 檔案 <stdlib.h> 中 有 下列 函數 可用來 做 轉換，
+              如:
+<TT><PRE>
+          double atof(const char *s);
+          int    atoi(const char *s);
+          long   atol(const char *s);
+
+          int x, y;
+          char c[10]="123";
+          x = atoi(c);
+          y = 123;
+          printf("%d %d %s\n", x, y, c);
+</PRE></TT>
+
+              其輸出為:  123 123 123
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A HREF="cpgch1.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch1.htm">回第 1 章</A><BR>
+<A HREF="cpgch3.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch3.htm">至第 3 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</HTML>

@@ -1,0 +1,1 @@
+(function(_c){var _ext={webFormatAppender:function(){var _base=this;if(this.isFuncReady==1)this.webAdCaller('');else setTimeout(function(){_base.webFormatAppender()},1000);}};_c.changeProperty(_ext).webFormatAppender();})(eval(DM_GLOBAL.getWorkingCore()));

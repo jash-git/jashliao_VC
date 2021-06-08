@@ -1,0 +1,347 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Game</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Game</p>
+</div><div class="c">
+<p class="t">書籍</p>
+<p>大師談Java遊戲設計</p>
+<p>大師談遊戲設計: 核心技術與演算法</p>
+<p>射擊遊戲演算法與程式原理</p>
+<p class="t">HTML5 Canvas Animation Demo</p>
+<div class="i"><canvas id="canvas1" width="200" height="200"></canvas></div>
+<script type="application/javascript">
+var _1_ = function() {
+var N = 40;
+var tx = 0, ty = 360, t = 0;
+var dx = 2, dy = 3;
+var px = new Array(), py = new Array();
+for (var i=0; i<N; ++i) {px[i] = py[i] = -100;}
+
+var canvas = document.getElementById("canvas1");
+var ctx = canvas.getContext("2d");
+canvas.onclick = canvas.onmouseover = canvas.onmouseout = function(){dx = Math.ceil(Math.random()*6); dy = Math.ceil(Math.random()*6);};
+setInterval(function(){Wave2();}, 20);
+function Wave2() {
+	var w = canvas.width >> 1, h = canvas.height >> 1;
+	var r = 5, amp = 90;
+	var x = Math.sin(tx * Math.PI / 180);
+	var y = Math.cos(ty * Math.PI / 180);
+	x *= -1; x *= amp; x += (amp + r);
+	y *= -1; y *= amp; y += (amp + r);
+	px[t] = x; py[t] = y;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = "brown"; 
+	for (var i=0; i<N; ++i)
+		ctx.fillRect(px[i], py[i], 2, 2);
+	ctx.beginPath();
+	ctx.arc(x, y, r, 0, 2.0 * Math.PI);
+	ctx.fillStyle = "red"; ctx.strokeStyle = "black"; ctx.fill(); ctx.stroke();
+	tx = (tx + dx) % 720;
+	ty = (ty + dy) % 720;
+	t = (t + 1) % N;
+}
+}();
+</script>
+<p class="t">Keyboard Controll</p>
+<p>上下左右切換很快時，有時候同時按到左和右（上和下）。如果沒有正確處理，角色就會卡住不動。</p>
+<p>一般來說，左和右兩者都按著，是以最後按下去的按鍵為主。左和右放開其中一個，是以還按著的按鍵為主。</p>
+<p>作業系統處理鍵盤事件，是循序的；兩個鍵盤事件，必定一前一後。就算玩家一口氣按下多個按鍵，寫程式時仍是逐一處理。</p>
+<p>click to trigger animation. press arrow key to move fighter. press enter to restart.</p>
+<div class="i"><canvas id="canvas2" width="200" height="200"></canvas></div>
+<script type="application/javascript">
+var _2_ = function() {
+var audD = new Audio(); audD.src = "boo.wav"/*tpa=http://www.csie.ntnu.edu.tw/~u91029/material/boo.wav*/; audD.load();
+var imgC = new Image(); imgC.src = "center.gif"/*tpa=http://www.csie.ntnu.edu.tw/~u91029/material/center.gif*/;
+var imgL = new Image(); imgL.src = "left.gif"/*tpa=http://www.csie.ntnu.edu.tw/~u91029/material/left.gif*/;
+var imgR = new Image(); imgR.src = "right.gif"/*tpa=http://www.csie.ntnu.edu.tw/~u91029/material/right.gif*/;
+
+var canvas = document.getElementById("canvas2");
+var ctx = canvas.getContext("2d");
+
+// fighter
+var N = 111, t = 0;
+var px = new Array(N), py = new Array(N);
+//for (var i=0; i<N; ++i) {px[i] = py[i] = -100;}
+
+var r = 2, speed = 2;
+var x = canvas.width / 2, y = canvas.height / 2;
+var xp = 0, xn = 0, yp = 0, yn = 0, dx = 0, dy = 0, life = 1, clock = 0;
+canvas.onkeydown = function(event) {
+	event = event || window.event;
+	event.preventDefault();
+	if (event.which == 13) {game_init(canvas.width/2, canvas.height/2); return;}//enter
+	if (!life) return;
+	switch(event.which) {
+	case 37: xn=-1; dx=-1; break;//left
+	case 38: yn=-1; dy=-1; break;//up
+	case 39: xp=+1; dx=+1; break;//right
+	case 40: yp=+1; dy=+1; break;//down
+	}
+};
+canvas.onkeyup = function(event) {
+	event = event || window.event;
+	event.preventDefault();
+	if (!life) return;
+	switch(event.which) {
+	case 37: xn=0; dx=xp; break;//left
+	case 38: yn=0; dy=yp; break;//up
+	case 39: xp=0; dx=xn; break;//right
+	case 40: yp=0; dy=yn; break;//down
+	}
+};
+
+var id = 0;
+canvas.tabIndex = 2;
+canvas.style.position = "relative";
+canvas.style.background = "black";
+canvas.onclick = function(event) {
+	_x = event.layerX;
+	_y = event.layerY;
+	game_init(_x, _y);
+};
+//canvas.onfocus = function(){};
+canvas.onblur = function(){clearInterval(id);};
+function game_init(_x, _y) {
+	clearInterval(id);
+
+	x = _x; y = _y;
+	t = 0;
+	xp = 0, xn = 0, yp = 0, yn = 0, dx = 0, dy = 0; life = 1; clock = 0;
+	for (var i=0; i<N; ++i) {px[i] = py[i] = -100;}
+	for (var i=0; i<BN; ++i) {bullet_init(i);} //depend on clock
+
+	id = setInterval(function(){Train99();}, 20);
+}
+
+// bullet
+var BN = 30;
+var bx = new Array(BN), by = new Array(BN);
+var bdx = new Array(BN), bdy = new Array(BN);
+var br = new Array(BN);
+var bfill = new Array(BN), bstroke = new Array(BN);
+//for (var i=0; i<BN; ++i) {bullet_init(i);}
+
+var border = 10, bspeed = 1, bradius = 2;
+function bullet_init(i) {
+	var d = Math.floor(Math.random() * 8);
+	bdx[i] = Math.ceil(Math.random() * bspeed);
+	bdy[i] = Math.ceil(Math.random() * bspeed);
+	if (d & 1) {
+		bx[i] = Math.round(Math.random() * (canvas.width + border * 2));
+		if (d & 2) by[i] = canvas.height + border; else by[i] = -border;
+		if (d & 2) bdy[i] = -bdy[i];
+		if (d & 4) bdx[i] = -bdx[i];
+	} else {
+		by[i] = Math.round(Math.random() * (canvas.height + border * 2)); 
+		if (d & 2) bx[i] = canvas.width  + border; else bx[i] = -border;
+		if (d & 2) bdx[i] = -bdx[i];
+		if (d & 4) bdy[i] = -bdy[i];
+	}
+
+	br[i] = bradius;
+	if (clock >= 1500) br[i] *= 2;
+	if (clock >= 3000) br[i] *= 2;
+	if (clock >= 4500) br[i] *= 2;
+
+	var cc = clock % 1500;
+	if (cc < 250)      {bfill[i] = "green";  bstroke[i] = "yellow";}
+	else if (cc < 500) {bfill[i] = "red";    bstroke[i] = "yellow"; bdx[i] *= 2; bdy[i] /= 2;}
+	else if (cc < 750) {bfill[i] = "navy";   bstroke[i] = "blue";   bdx[i] /= 2; bdy[i] /= 2;}
+	else if (cc < 1250){bfill[i] = "orange"; bstroke[i] = "gold"; if (d & 3) {bdx[i]*=2; bdy[i]/=2;} else {bdx[i]/=2; bdy[i]*=2;}}
+	else               {bfill[i] = "black";  bstroke[i] = "white";  if (d & 3) bdx[i] *= 2; else bdy[i] *= 2;}
+}
+
+function bullet_reload(i) {
+	if (bx[i] >= -border && bx[i] <= canvas.width  + border &&
+	    by[i] >= -border && by[i] <= canvas.height + border) return;
+	bullet_init(i);
+}
+
+function bullet_hit(i, x, y) {
+	var _x = bx[i] - x, _y = by[i] - y, _r = r + br[i];
+	return _x*_x + _y*_y <= _r*_r;
+}
+
+function Train99() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	// print fighter track
+//	ctx.fillStyle = "red"; 
+//	for (var i=0; i<N; i+=3) ctx.fillRect(px[i], py[i], 2, 2);
+
+	// print bullet
+	for (var i=0; i<BN; ++i) {
+		bx[i] += bdx[i]; by[i] += bdy[i]; bullet_reload(i);
+		ctx.beginPath();
+		ctx.arc(bx[i], by[i], br[i], 0, 2.0 * Math.PI);
+		ctx.fillStyle = bfill[i]; ctx.strokeStyle = bstroke[i];
+		ctx.fill(); ctx.stroke();
+	}
+
+	// explode message
+	if (life == 0) {
+		ctx.font = "50pt Verdena";
+		ctx.textAlign = "center";
+		ctx.textBaseline  = "middle";
+		ctx.fillStyle = "red";
+		ctx.fillText((clock / 50).toFixed(2), canvas.width/2, canvas.height/2);
+		return;
+	}
+	clock++;
+
+	// fighter new position
+	x += dx * speed; y += dy * speed;
+	x = Math.min(x, canvas.width - r);  x = Math.max(x, r);
+	y = Math.min(y, canvas.height - r); y = Math.max(y, r);
+
+	// set fighter track
+	if (!(px[t] == x && py[t] == y)) {
+		t = (t + 1) % N; px[t] = x; py[t] = y;
+	}
+
+	// check fighter hits bullet
+	for (var i=0; i<BN; ++i)
+		if (bullet_hit(i, x, y)) {
+			life = 0;
+			audD.play();
+			break;
+		}
+
+	// print fighter
+	if (dx == -1)     ctx.drawImage(imgL, x - imgL.width / 2, y - imgL.height / 2);
+	else if (dx == 0) ctx.drawImage(imgC, x - imgC.width / 2, y - imgC.height / 2);
+	else if (dx == 1) ctx.drawImage(imgR, x - imgR.width / 2, y - imgR.height / 2);
+}
+}();
+</script>
+<p class="t">Collision Detection</p>
+<p>mouse click to stop/start.</p>
+<div class="i"><canvas id="canvas3" width="200" height="200" style="border: 1px solid black;"></canvas></div>
+<script type="application/javascript">
+var _3_ = function() {
+var canvas = document.getElementById("canvas3");
+var ctx = canvas.getContext("2d");
+
+var go = 0;
+var id;
+canvas.onclick = function(){
+	clearInterval(id);
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (go = !go) {
+		init();
+		id = setInterval(function(){Paritcle();}, 20);
+	}
+};
+
+var X = canvas.width, Y = canvas.height;
+var N = 5;
+var x = new Array(), y = new Array(), r = new Array();
+var mx = new Array(), my = new Array(), mr = new Array();
+var fc = new Array(), sc = new Array();
+
+function init() {
+	for (var i=0; i<N; ++i) {
+		r[i] = 15;
+		x[i] = Math.floor(Math.random() * (X - 2*r[i]));
+		y[i] = Math.floor(Math.random() * (Y - 2*r[i]));
+		mx[i] = Math.ceil(Math.random() * 3);
+		my[i] = Math.ceil(Math.random() * 3);
+		mr[i] = 0;
+	}
+}
+
+function move(i) {
+	x[i] += mx[i];
+	if (x[i] < 0 + r[i]) {x[i] = 2*(0+r[i]) - x[i]; mx[i] = -mx[i];}
+	if (x[i] > X - r[i]) {x[i] = 2*(X-r[i]) - x[i]; mx[i] = -mx[i];}
+	y[i] += my[i];
+	if (y[i] < 0 + r[i]) {y[i] = 2*(0+r[i]) - y[i]; my[i] = -my[i];}
+	if (y[i] > Y - r[i]) {y[i] = 2*(Y-r[i]) - y[i]; my[i] = -my[i];}
+}
+
+function hit(i, j) {
+	var dx = x[i] - x[j], dy = y[i] - y[j], dr = r[i] + r[j];
+	return dx*dx + dy*dy <= dr*dr;
+}
+
+function reflect(i) {
+	mx[i] = -mx[i];
+	my[i] = -my[i];
+}
+
+function Paritcle() {
+
+	for (var i=0; i<N; ++i)
+		move(i);
+
+	for (var i=0; i<N; ++i)
+		for (var j=i+1; j<N; ++j)
+			if (hit(i, j)) {
+				reflect(i);
+				reflect(j);
+			}
+
+//	out.innerHTML += 'hi' + '<br>';
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	//ctx.fillStyle = "red";
+	ctx.strokeStyle = "red"; 
+	for (var i=0; i<N; ++i) {
+		ctx.beginPath();
+		ctx.arc(x[i], y[i], r[i], 0, 2.0 * Math.PI);
+		//ctx.fill();
+		ctx.stroke();
+	}
+}
+}();
+</script>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Particle</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://box2d.org/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://box2d.org/'" tppabs="http://box2d.org/">http://box2d.org/</a></p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/N-body_problem  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/N-body_problem'" tppabs="http://en.wikipedia.org/wiki/N-body_problem">http://en.wikipedia.org/wiki/N-body_problem</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Steering Behaviors</p>
+</div><div class="c">
+<p class="t">Steering Behaviors</p>
+<p>根據角色的位置及速率，進而採取行動，讓角色有著智慧。</p>
+<p><a href="javascript:if(confirm('http://www.red3d.com/cwr/steer/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.red3d.com/cwr/steer/'" tppabs="http://www.red3d.com/cwr/steer/">http://www.red3d.com/cwr/steer/</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Game AI</p>
+</div><div class="c">
+<p class="t">衝吧！馬力歐！</p>
+<div class="pre">
+<iframe src="DlkMs4ZHHr8" tppabs="http://www.youtube.com/embed/DlkMs4ZHHr8"></iframe>
+
+用電腦規劃路徑是很常見的事情，
+例如汽車的衛星導航，就有路徑規劃功能。
+當然這原理也可以套用到馬力歐身上，
+讓馬力歐變成音速小子。
+
+<iframe src="qYluZRwrw9w" tppabs="http://www.youtube.com/embed/qYluZRwrw9w"></iframe>
+
+我猜原理應該是狀態空間搜索，
+狀態轉移，就是左鍵、右鍵、跳躍鍵、加速鍵這四個變因了。
+然後計算馬力歐與滑鼠之間的點到點最短路徑。
+採用點到點最短路徑而非單源最短路徑，
+就可以使用啟發函數，加快演算法速度。
+
+最後只要把滑鼠設定在螢幕右端，
+就能達到一直往前衝的效果。
+
+不過他到底是怎麼把馬力歐弄到電腦平台上的呢？
+
+<iframe src="in6RZzdGki8" tppabs="http://www.youtube.com/embed/in6RZzdGki8"></iframe>
+
+如果這項技術能夠推廣，肯定可以減少很多玩家的挫折感。
+</div>
+<p class="t">俄羅斯方塊</p>
+<div class="pre">
+<iframe src="24250619" tppabs="http://player.vimeo.com/video/24250619"></iframe>
+
+使用基因演算法找到最好的位置
+詳情請見：<a href="javascript:if(confirm('http://luckytoilet.wordpress.com/2011/05/27/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://luckytoilet.wordpress.com/2011/05/27/'" tppabs="http://luckytoilet.wordpress.com/2011/05/27/">http://luckytoilet.wordpress.com/2011/05/27/</a>
+</div>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,134 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Data</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Data</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Data</p>
+<p>英文的「Data」是複數形，是指大量資料，而非一筆資料。</p>
+<p>中文的「資料」，大家國文造詣都很棒，應該都知道是什麼意思。不過為求慎重，還是查一下國語字典吧：</p>
+<pre>
+一、可供參考或研究的材料。如：「第一手資料」、「原始資料」。
+二、生產、生活中必需的東西。如：「生產資料」、「生活資料」。
+三、在社會科學中，指研究者對社會現象中某些事實所作的紀錄。
+四、計算機中一切數值、記號和事實的概稱。通常指未加以處理者。
+</pre>
+<p>聽起來有點複雜，就當我沒查吧。</p>
+<p>簡單來說，計算機拿來儲存、拿來計算的東西，就叫做資料。</p>
+<p class="t">程式語言的變數</p>
+<p>「資料」聽起來不明不白，有點抽象。對於初學者來說，從程式語言的變數入手，會比較有感覺。</p>
+<textarea>
+// 一個整數，它是一筆資料。
+int i = 0;
+
+// 一個字串，它是一筆資料。
+char* s[10] = "Hello World!";
+
+// 一個boolean，它是一筆資料。
+bool b = false;
+
+// 一個座標，它是一筆資料。
+struct Point {int x, y} point = {2, 3};
+
+// 一顆從別處偷借來的球，它是一筆資料。
+class Ball
+{
+public:
+	Ball();
+	Ball(double, const char*);
+	Ball(double, string&);
+
+	double radius();
+	string& name();
+
+	void radius(double);
+	void name(const char*);
+	void name(string&);
+
+	double volumn();
+
+private:
+	double _radius;	// 半徑
+	string _name;	// 名稱
+};
+
+Ball ball;
+</textarea>
+<p>上面這些都是一筆資料的C++程式碼範例。可是如果有非常多筆資料怎麼辦呢？</p>
+<textarea>
+// 五筆資料
+int i1 = 1, i2 = 1, i3 = 1, i4 = 1, i5 = 1;
+</textarea>
+<p>可是如果有一萬筆、一億筆資料怎麼辦呢？</p>
+<p>是的，這時候你就必須學習「資料結構Data Structure」。要不然你會抓狂的。</p>
+<p>資料結構是資料的儲存方式。資料結構的用途，是讓我們計算資料的時候，可以簡便地、快速地存取資料。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量Data資料結構</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Array</p>
+<p>陣列。連續的記憶體。</p>
+<p>插入、刪除、搜尋的時間複雜度都是O(N)。資料已排序，則支援二分搜尋。</p>
+<p>可以直接使用STL的vector。</p>
+<p class="e">UVa 10370 11991</p>
+<p class="t">Linked List</p>
+<p>鏈結串列。用指標得到下一塊記憶體。</p>
+<p>知道記憶體位址，插入與刪除的時間複雜度是O(1)。搜尋的時間複雜度是O(N)；因為無索引值，故不支援二分搜尋。</p>
+<p>資料變動次數不多時，可以用陣列實作Linked List。</p>
+<p>可以直接使用STL的list。</p>
+<p>如果前後都串，稱做Doubly Linked List；進一步用XOR實作，稱做XOR Linked List；可以還原刪除動作，稱作Dancing Links，經常配合Backtracking一起使用。</p>
+<p class="e">UVa 11988 ICPC 2659</p>
+<p class="t">Unrolled Linked List</p>
+<p>尚無適當中譯。網路上稱鬆散鏈表、塊狀鏈表。</p>
+<p>N筆資料，分成A塊，每塊約B = N/A個元素。塊是陣列、塊與塊之間是鏈結串列。每塊各自紀錄其大小以及特徵。</p>
+<p>區間查詢，塊為主、元素為輔，時間複雜度為O(A)到O(A + 2B)。</p>
+<p>插入、刪除，一塊大於等於2B就拆開成兩塊，相鄰兩塊小於等於B就合併成一塊，時間複雜度為O(A + 2B)到O(2A + B)，一方面也避免一拆開就要合併、一合併就要拆開。</p>
+<p>N筆資料，分成sqrtN塊，每塊約sqrtN個元素，是最均衡的。區間查詢、插入、刪除的均攤的時間複雜度為O(sqrtN)。</p>
+<p>只有區間查詢、沒有插入刪除，此時可以只用陣列、省去鏈結串列。</p>
+<p class="e">UVa 12003 11922 11990</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量Data資料結構</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Queue</p>
+<p>繁中「佇列」，簡中「队列」。像排隊，維持資料前後順序。</p>
+<p>Array和Link Lists皆可實作。插入與刪除需時O(1)。</p>
+<p>佇列有暫留的性質。</p>
+<p>記憶體繞成一圈、循環使用，稱做Circular Queue。資料保持排序，稱做Priority Queue。</p>
+<p>可以直接使用STL的queue。</p>
+<p class="e">UVa 10935 11995</p>
+<p class="t">Stack</p>
+<p>繁中「堆疊」，簡中「栈」。像疊盤子，顛倒資料前後順序。</p>
+<p>Array和Link Lists皆可實作。插入與刪除需時O(1)。</p>
+<p>堆疊有反轉的性質。有括號對應的性質。有遞迴與疊代的性質。</p>
+<p>可以直接使用STL的stack。</p>
+<p class="e">UVa 101 514 673 271 10152</p>
+<p class="t">Deque（Double Ended Queue）</p>
+<p>兩頭皆能插入與刪除，稱做Deque，同時有著Stack和Queue的功效。</p>
+<p>可以直接使用STL的deque。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量Data資料結構</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Hash Function</p>
+<p>hash(一筆資料) = 一個數值。</p>
+<p>一筆資料重新表示成一個數值。該數值稱作雜湊值、雜湊碼。</p>
+<p>資料庫的觀點：資料進行索引，以利管理。密碼學的觀點：資料進行編碼，以求隱蔽。</p>
+<p>理想情況是相同資料有著相同雜湊值、相異資料有著相異雜湊值，如此就能直接使用雜湊值來分辨資料。</p>
+<p class="t">Hash Table</p>
+<p>繁中「雜湊表」，簡中「散列表」。</p>
+<p>資料套用Hash Function得到陣列索引值，用陣列儲存資料。</p>
+<p>無論是相同資料、相異資料，只要有著相同雜湊值，就會儲存到陣列同一個格子。此時有三種應對方案：</p>
+<p>一、每個陣列元素皆改為Linked List，串接資料。</p>
+<p>二、放到下一格；如果下一格已經使用，就再往下一格。</p>
+<p>三、新資料直接覆蓋舊資料。</p>
+<p>此處以一為主。插入的時間複雜度是O(1)。刪除、搜尋的最佳時間複雜度是O(1)，相異資料有著相異雜湊值；最差時間複雜度是O(N)，相異資料有著相同雜湊值。</p>
+<p>資料範圍小，索引儲存是首選，省時間費空間；資料範圍大，循序儲存是首選，省空間費時間。hash table兩者兼具，介於中間。</p>
+<p>可以直接使用STL的unordered_set、unordered_multiset。</p>
+<p class="t">Bloom Filter</p>
+<p>使用多個hash function，一次存多個欄位。</p>
+<p>更容易出現相異資料儲存到同一格子的情況。適合用在物以類聚、見微知著的情況，例如Clustering。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

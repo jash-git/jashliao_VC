@@ -1,0 +1,818 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - State Space Search</title></head><body>
+<div class="a"><div class="h">
+<p class="b">State Space Search（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+<p class="w">乾坤大地，日月星辰，森羅萬象。《五燈會元》</p>
+</div><div class="c">
+<p class="t">State Space</p>
+<p>一件事物，以宏觀、全知的角度望去，當前的模樣稱作「狀態」。比方說：影片拍攝著一臺行駛中的車輛，底片的一格畫面，就是一個狀態。</p>
+<img src="StateSpaceSearch1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceSearch1.png">
+<p>狀態可以是一盤棋的局面，也可以是今天下午五點整時的車潮（說成「車輛的分佈情況」就更貼切）。狀態與狀態之間，可以是離散的（棋盤局面），也可以是連續的（車潮）。</p>
+<img src="StateSpaceSearch2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceSearch2.png">
+<p>一件事物，其所有狀態構成的集合，稱做「狀態空間」。</p>
+<img src="StateSpaceSearch3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceSearch3.png">
+<p class="t">Successor Function</p>
+<p>每一個狀態都可以經過特定動作，改變現有狀態、「轉移」到下一個狀態。</p>
+<img src="StateSpaceSearch4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceSearch4.png">
+<p>例如象棋，我們可以移動一顆棋子到其他空地、移動一顆棋子收拾對手的棋子。例如車潮，每一輛車可以踩油門、煞車、轉彎。這些改變現有狀態、轉移到下一個狀態的動作們，稱作「轉移函數」。</p>
+<p>一般來說，狀態空間可從某幾個狀態開始，藉由「轉移函數」不斷衍生而得。</p>
+<p class="t">State Space Search</p>
+<p>「狀態空間搜尋」，搜尋一件事物的所有狀態，求得答案。</p>
+<p>將所有狀態依照衍生關係相連成圖，圖可以是樹狀圖或是網狀圖，然後在圖上移動，搜尋各種狀態。</p>
+<img src="StateSpaceSearch5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceSearch5.png">
+<p class="t">Branch and Bound</p>
+<p>中文稱做「分枝界限法」，一邊如同樹狀圖分枝、一邊</p>
+<pre>
+http://wiki.answers.com/Q/What_is_Difference_between_backtracking_and_branch_and_bound_method
+
+Backtracking
+
+[1] It is used to find all possible solutions available to the problem.
+[2] It traverse tree by DFS(Depth First Search).
+[3] It realizes that it has made a bad choice & undoes the last choice by
+backing up.
+[4] It search the state space tree until it found a solution.
+[5] It involves feasibility function.
+
+Branch and Bound
+
+[1] It is used to solve optimization problem.
+[2] It may traverse the tree in any manner, DFS or BFS.
+[3] It realizes that it already has a better optimal solution that the
+pre-solution leads to so it abandons that pre-solution.
+[4] It completely searches the state space tree to get optimal solution.
+[5] It involves bounding function.
+</pre>
+<p>後來人工智慧領域提出了State Space Search，理論體系完整，完整涵蓋了Backtracking和Branch and Bound的精神。因此此處我們不再細談Branch and Bound，直接講述State Space Search。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">State Space Tree</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">State Space Tree</p>
+<p>選定一個狀態，衍生各式各樣的狀態，形成一棵樹，便是「狀態空間樹」。狀態空間樹無窮無盡衍生，同一個狀態很可能重複出現、重複衍生。</p>
+<p>另外，轉移狀態需要「成本」，製圖時一般繪於分枝上。每當轉移狀態，就要記得累加成本。</p>
+<img src="StateSpaceTree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceTree1.png">
+<p class="t">舉例：下棋</p>
+<pre>
+State：一個符合規則的棋盤盤面。（棋子不疊合、位置不踰矩。）
+Successor Function：棋子移動規則。
+State Space：所有符合規則的棋盤盤面。
+Cost：轉移狀態的成本都是一，代表走了一步。
+</pre>
+<img src="StateSpaceTree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceTree2.png">
+<p class="t">舉例：單源最短路徑</p>
+<pre>
+State：目前所在地點。
+Successor Function：圖的連接情形。（每一個點所連著的邊。）
+State Space：所有可以走到的地點。
+Cost：圖上各條邊的成本。
+</pre>
+<img src="StateSpaceTree3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceTree3.png">
+<p>狀態空間樹亦可簡潔呈現如下：</p>
+<img src="StateSpaceTree4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceTree4.png">
+<p class="t">Initial State / Goal State</p>
+<p>狀態空間樹的功能，是計算一個特定狀態到其他所有狀態、或者兩個狀態之間，成本最小（大）的轉移過程。</p>
+<p>其中一個狀態作為「起始狀態」、另一個就作為「目標狀態」，就像是起點與終點。</p>
+<p>一般來說，是以起始狀態建立狀態空間樹。由於狀態空間樹會重複衍生，所以目標狀態會重複出現、散布在狀態空間樹當中。然後從狀態空間樹當中搜尋目標狀態，找到最佳的轉移過程。</p>
+<p>由於狀態空間樹是無窮無盡衍生的，所以一般都是一邊建立、一邊搜尋。想要找到最佳轉移過程，還得一邊累加成本。</p>
+<pre>
+evaluating function g(x)：起始狀態轉移到當前狀態x，實際的轉移成本。
+heuristic function  h(x)：當前狀態x轉移到目標狀態，預估的轉移成本。
+</pre>
+<img src="StateSpaceTree5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceTree5.png">
+<p>以g(x)由小到大的順序建立狀態空間樹，最先遇到的目標狀態，就是g(x)最小的目標狀態。</p>
+<p class="e">UVa 260 298 314 321 429 571 589 704 985 10047 10603 10653 10682 10923 10103 10704 10067</p>
+<p>以g(x) + h(x)由小到大的順序建立狀態空間樹，並且h(x)小於等於真正的轉移成本（不高估），最先遇到的目標狀態，亦是g(x)最小的目標狀態。</p>
+<p>當h(x)估計的很精準，可以直接從起始狀態走到目標狀態，而不會到處閒逛。當g(x) + h(x)滿足三角不等式，時間複雜度可以達到O(nd)。</p>
+<p><a href="javascript:if(confirm('http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html'" tppabs="http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html" class="l">http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html</a></p>
+<p><a href="javascript:if(confirm('http://cg2010studio.wordpress.com/2011/12/20/A星搜尋演算法-a-search-algorithm/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://cg2010studio.wordpress.com/2011/12/20/A星搜尋演算法-a-search-algorithm/'" tppabs="http://cg2010studio.wordpress.com/2011/12/20/A星搜尋演算法-a-search-algorithm/" class="l">http://cg2010studio.wordpress.com/2011/12/20/A星搜尋演算法-a-search-algorithm/</a></p>
+<p class="e">UVa 529 851 10073 10422 10798 11163 11376 10314</p>
+<p>附帶一提，h(x)與最短路徑問題的reweighting手法是等價的；h(x)亦可公用，不侷限於特定的起始狀態和目標狀態，請參考「<a href="Path2.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path2.html">Point-to-Point Shortest Path</a>」。</p>
+<p class="t">狀態空間樹建立暨搜尋演算法</p>
+<pre>
+Breadth-first Search（BFS）
+忽視g(x)、h(x)，優先建立離起始狀態最近的狀態。適用於轉移成本是固定值。
+
+Depth-first Search（DFS）
+忽視g(x)、h(x)，優先建立離起始狀態最遠的狀態。適用於轉移成本是固定值。
+
+Depth-limited Search（DLS）/ 過去稱作 Depth-first Branch-and-Bound（DFBnB）
+DFS的改良版本。限制建立的深度（或成本），當深度（或成本）太深就不再往下分枝衍生。
+
+Iterative Deepening DFS（IDS）
+DLS的改良版本。反覆使用DLS，並逐次放寬深度限制。
+若每次放寬的量極少時，可達到類似於BFS的功能。
+
+Uniform-cost Search（UCS）
+g(x)由小到大建立。以BFS實作。
+
+Best-first Search
+h(x)由小到大建立。以BFS實作。
+
+Recursive Best-first Search（RBFS）
+h(x)由小到大建立。以IDS實作，逐步放寬h(x)的限制。
+
+A* Search（A*）
+g(x)+h(x)由小到大建立。以BFS實作。
+
+Iterative Deepening A* Search（IDA*）
+g(x)+h(x)由小到大建立。以IDS實作，逐步放寬g(x)+h(x)的限制。
+若每次放寬的量極少時，可達到類似A*的功能。
+
+Memory-bounded A* Search（MA*） / Simplified Memory-bounded A* Search（SMA*）
+限制記憶體用量的A*。當queue全滿時，就從中刪除g(x)+h(x)最大的狀態。
+</pre>
+<p>BFS系列，效率通常較差；IDS系列，效率通常較好。</p>
+<p>假設狀態空間樹剛好是一棵二元樹，而目標狀態位於第N層的狀態。BFS搜尋的狀態數目是(1+2+4+8+...+2^N)，IDS搜尋的狀態數目是1 + (1+2) + (1+2+4) + ... + (1+2+4+8+...+2^N)，大約是前者的兩倍。如果狀態空間樹是K元樹，則大約是前者的K倍。</p>
+<p>儘管BFS搜尋的狀態數目比起IDS少了許多倍，然而BFS必須維護priority queue，還得indexing，因此BFS的執行速度通常比起IDS慢上許多，而且記憶體用量也大上許多。</p>
+<p class="t">狀態空間樹建立暨搜尋手段</p>
+<pre>
+Forward Search 正向搜尋
+起始狀態建立狀態空間樹，從中搜尋目標狀態。
+
+Backward Search 反向搜尋
+目標狀態建立狀態空間樹，從中搜尋起始狀態。
+
+Bidirectional Search 雙向搜尋
+起始狀態、目標狀態分別建立狀態空間樹，搜尋共同狀態。
+實作時，通常是輪流建立，一次建立一層，直到兩邊出現共同狀態。
+
+Perimeter Search 周界搜尋
+起始狀態建立狀態空間樹，儲存所有狀態，直到記憶體幾乎用光。
+然後目標狀態建立狀態空間樹，直到出現儲存過的狀態。
+實作時，通常起始狀態採用BFS，目標狀態則採用DFS、IDS、IDA*等節省計憶體的演算法。
+
+Beam Search 柱狀搜尋
+限制狀態空間樹每一層的狀態數目。當某一層抵達上限後，該層後來產生的狀態皆捨棄。
+</pre>
+<p class="e">ICPC 5098</p>
+<p class="t">狀態空間樹建立暨搜尋技巧</p>
+<p>branching：由於狀態空間樹可以漫無止境的滋長，而電腦記憶體有限、人類時間有限，所以只好一邊走訪狀態空間樹，一邊衍生分支、建立狀態空間樹，走到哪，建到哪。</p>
+<p>pruning：參照題目給定的特殊限制，裁剪狀態空間樹，去掉多餘子樹。好處是減少搜尋時間。</p>
+<p>bounding：搜尋時，隨時檢查目前的成本。目前成本太壞，就不再往深處搜尋；目前的成本足夠好，也不必往深處搜尋。好處是減少搜尋時間。</p>
+<p>memoization：紀錄所有遭遇到的狀態，避免狀態空間樹重複衍生相同狀態。當起始狀態固定不變時，亦可作為lookup table。當記憶體不足時，也可以只紀錄一部分的狀態。通常配合bounding使用，好處是減少搜尋時間。</p>
+<p>indexing：所有狀態進行編號，以數值、tuple、bitset等形式呈現，好處是方便memoization。當記憶體不足時，可以配合hashing達到壓縮功效。</p>
+<p class="e">UVa 233 10536 10941 690 ICPC 6010</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Game Tree（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Game Tree</p>
+<pre>
+max層是從下層各個數字中取最大值所算出來的層
+min層是從下層各個數字中取最小值所算出來的層
+也有顛倒定義的。兩種都有人用。
+</pre>
+<p>遊戲樹比狀態空間樹所算的東西還多。狀態空間樹每個節點的成本，是由樹根往樹葉方向慢慢推導出來的。遊戲樹除了要算狀態空間樹的成本之外，另外在回溯時還要再算min值（或max值）的結果──更詳細的說，遍歷到樹葉（勝負已定）並得到樹葉的成本之後，回溯時還要利用樹葉的成本算出樹上各個節點的min值（或max值）。</p>
+<pre>
+求最少步數的狀況下
+先手贏了當然取min較好　先手在min層
+可是要是先手輸了...先手得盡量拖步數...此時沒辦法取min...反而要取max
+解決方法是
+輸的時候的把步數設定成由很大的數字開始減少
+例如N步是零步　N-1步是一步
+取min時會先取到贏的步數，取不到贏的才會取到輸的步數
+</pre>
+<p class="t">α-β Pruning</p>
+<p>使用條件是遍歷時必須採用DFS。</p>
+<pre>
+有兩部分　兩部分可獨立coding
+
+1. 相鄰的兩層： (alpha pruning)
+
+　若這層是min，上層是max
+　-> min層數字小於max層數字就沒意義　砍
+
+　coding時傳一個參數是上層的數字　一般稱alpha
+
+2. 隔一層的兩層：  (beta pruning)
+
+　若這層是max，上上層是max
+　搜這層時　其數字底限可由上上層目前之數字決定
+　大於上上層才會有機會更新上上層的數字
+  (同理上上...上上層也一樣，不過只要作到上上層就有連鎖效果了)
+　實際上沒砍到啥東西...但是配合alpha後就可以砍到東西
+
+　coding時傳一個參數是上上層的數字  一般稱beta
+</pre>
+<pre>
+一層min一層max  不好coding　變成要寫兩個function
+可以改成都是max  然後在算min層的的時候數字都先加負號　取min後再用負號還原
+如此只要寫一個function
+</pre>
+<pre>
+如果從葉子開始回溯時累加步數  就沒辦法用beta  而且也很難coding
+從根往下走時就開始計步  世界就變得簡單些了
+</pre>
+<p class="e">UVa 682 10111 10838 ICPC 4451</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">3 Jugs Problem</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">3 Jugs Problem</p>
+<p>手邊有三個裝水的容器，容量由大到小分別是X公升、Y公升、Z公升，都沒有刻度。其中X公升的容器已經裝滿水了，問題是：如何將水在這三個容器中倒來倒去，使得其中一杯剛好有C公升的水？</p>
+<p class="t">資料結構</p>
+<p>使用三個變數來記錄容器的容量，再使用三個變數來記錄容器中的水量。</p>
+<textarea>
+int capacity[3] = {X, Y, Z};
+int water[3];
+</textarea>
+<p class="t">Initial State：空容器</p>
+<p>把三個容器裝水的情形視做一個狀態。一開始所有容器都是空的，沒有裝水。</p>
+<textarea>
+struct State {int water[3];};
+
+State initial()
+{
+	State s;
+	s.water[0] = capacity[0];
+	s.water[1] = 0;
+	s.water[2] = 0;
+}
+</textarea>
+<p class="t">Goal State：有一個容器裝了C公升的水量</p>
+<textarea>
+bool goal(State& s)
+{
+	return s.water[0] == C || s.water[1] == C || s.water[2] == C;
+}
+</textarea>
+<p class="t">Successor Function：把A容器的水倒入到B容器中</p>
+<p>有兩種情形需要考慮。甲、A水量不夠、B剩餘容量太多，倒不滿B，A沒有剩水；乙、A水量太多、B剩餘容量不夠，B被倒滿，A還有剩水。</p>
+<textarea>
+void pour(State& s, int a, int b)
+{
+	int w = min(s.water[a], capacity[b] – s.water[b]);
+	s.water[a] -= w;
+	s.water[b] += w;
+}
+</textarea>
+<p class="t">Cost</p>
+<p>倒一次水算一個步驟，成本可定為一。</p>
+<p class="t">State Space：Memoization與空間複雜度</p>
+<p>為了避免同樣的狀態循環不斷的發生，所以就把遭遇過的狀態給記錄下來。三個容器的水量只有可能是0~X公升、0~Y公升、0~Z公升，所以所有的狀態一共只有(X+1)*(Y+1)*(Z+1)個，可寫成O(XYZ)個。</p>
+<textarea>
+// 假設三個容器都不超過100公升
+bool visit[100][100][100];
+</textarea>
+<p class="t">時間複雜度</p>
+<p>一個狀態總共可以衍生出三種裝水後、三種倒水後、C(3,2)種相互裝倒水後的狀態，也就是說每一個狀態都需要衍生O(3!)次，所以時間複雜度一共是O(XYZ * 3!)。</p>
+<p class="t">程式碼（BFS）</p>
+<p>這種寫法可以找到步驟數最小的答案。</p>
+<textarea>
+bool visit[100][100][100];
+
+void BFS(State s = initial())
+{
+	memset(visit, false, sizeof(visit));
+
+	queue<State> Q;
+	Q.push(s);
+
+	while (!Q.empty())
+	{
+		State p = Q.front(); Q.pop();
+		for (int i=0; i<3; ++i)
+			for (int j=0; j<3; ++j)
+			{
+				State q = p;
+				pour(q, i, j);	// 把容器i的水倒入容器j
+				if (visit[q.w[0]][q.w[1]][q.w[2]]) continue;
+				visit[q.w[0]][q.w[1]][q.w[2]] = true;
+				if (goal(q)) {cout << "量出了C公升"; return;}
+			}
+	}
+	cout << "無法量出C公升";
+}
+</textarea>
+<p class="e">UVa 10603</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Rat in a Maze</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">老鼠走迷宮</p>
+<iframe src="Ma8HCM3Z5Ic" tppabs="http://www.youtube.com/embed/Ma8HCM3Z5Ic"></iframe>
+<p>老鼠很聰明，進入死胡同就會馬上回頭，不會傻傻的一直進入同一個死胡同。老鼠每一次重跑，都會越來越快。老鼠也會選擇看起來離乳酪比較近的路線。</p>
+<p class="t">一開始就已經背熟地圖，隨意找出一條路線。</p>
+<p>老鼠走迷宮可以套用圖論的圖。如果從入口開始探索迷宮，每當探索到新地點，就表示已經找到一條路線能到達該地點──搜尋過的地點就不必再搜尋，因此能用DFS或BFS來尋找路徑，大可不必用backtracking窮舉所有排列來尋找路徑。</p>
+<p>實作的時候，不一定要用adjacency matrix或adjacency lists來儲存地圖，也不一定要替每個地點設定索引值，只需要懂得DFS和BFS的原理，依照原理來搜尋迷宮就可以了。</p>
+<p>老鼠走迷宮也可以套用狀態空間搜尋。把老鼠的位置想做是狀態，建立狀態空間樹，再以狀態空間樹的遍歷演算法來尋找路徑，例如DFS或BFS。由於搜尋過的地點就不必再搜尋──狀態不必重複衍生，因此可以使用memoization避免重複衍生相同狀態。</p>
+<p>無論是套用圖還是套用狀態空間搜尋，兩者的運作原理基本相同，只是以不同角度來解釋同一件事情而已。附帶一提，當要找出兩條以上的路線，套用圖就不太適合了，套用回溯法、或者套用狀態空間搜尋會比較適合。</p>
+<p>大家的思緒應該開始攪亂了。直接來看程式碼吧，是以DFS遍歷狀態空間樹。由於原本的線條牆壁迷宮難以實作，不太適合初學者，所以這裡採用方塊牆壁迷宮，走一格當作是一步。</p>
+<pre>
+                  ########
+                         #
+_________         # ### ##
+   __  __|        # #    #
+| |____  |  --->  # #### #
+|  __  |_|        #    # #
+|____|____        # ## ###
+                  #  #    
+                  ########
+</pre>
+<textarea>
+const int dx[4] = {1, 0, -1, 0};	// 四種方向
+const int dy[4] = {0, 1, 0, -1};	// 記於陣列
+
+int X, Y;			// 迷宮大小。是一個長方形迷宮。
+int sx, sy, tx, ty;	// 入口座標與出口座標
+char maze[10][10];	// 迷宮
+bool visit[10][10];	// memoization
+int ans = -1;		// 紀錄是否找到解
+
+// 老鼠座標仍在迷宮裡
+bool inmaze(int x, int y)
+{
+	return x >= 0 && x < X && y >= 0 && y < Y;
+}
+
+// 老鼠座標與距離
+void DFS(int x, int y, int d)
+{
+	// 到達出口？寫在這裡並不好，因為出口可能是牆，會誤判。
+//	if (x == tx && y == ty) {ans = d; return;}
+
+	// 走到迷宮外？
+	if (!inmaze(x, y)) return;
+
+	// 走進牆？
+	if (maze[x][y] == '#') return;
+
+	// 已經到過的地點、已經搜尋過的狀態？
+	if (visit[x][y]) return;
+	visit[x][y] = true;	// memoization
+
+	// 到達出口？寫在這裡較理想，此狀態已儲存。
+	if (x == tx && y == ty) {ans = d; return;}
+
+	// 老鼠可以往四種方向走
+	// 如果把四種方向存入陣列，此處用一個迴圈就能搞定。
+	for (int i=0; i<4; ++i)
+	{
+		DFS(x + dx[i], y + dy[i], d + 1);
+		if (ans != -1) return;	// 找到解答，馬上結束DFS。
+	}
+}
+
+void rat_in_a_maze()
+{
+	memset(visit, false, sizeof(visit));
+
+	// 老鼠從入口開始走迷宮
+	ans = -1;
+	DFS(sx, sy, 0);
+
+	if (ans == -1)
+//	if (!visit[tx][ty])
+		cout << "老鼠找不到出口。";
+	else
+		cout << "老鼠找到一條路徑，行走距離是：" << ans;
+}
+</textarea>
+<textarea>
+void DFS(int x, int y, int d)
+{
+	for (int i=0; i<4; ++i)
+	{
+		// 將判斷式放在迴圈裡面，可以減少呼叫函式的次數。
+		int nx = x + dx[i], ny = y + dy[i], nd = d + 1;
+		if (!inmaze(nx, ny)) return;
+		if (maze[nx][ny] == '#') return;
+		if (visit[nx][ny]) return;
+		visit[nx][ny] = true;
+
+		if (nx == tx && ny == ty) {ans = nd; return;}
+		DFS(nx, ny, nd);
+		if (ans != -1) return;
+	}
+}
+
+void rat_in_a_maze()
+{
+	memset(visit, false, sizeof(visit));
+
+	// 別忘記入口也是狀態，需要儲存。
+	// 程式碼變得稍微亂一點。
+	ans = -1;
+	if (maze[sx][sy] != '#')
+	{
+		visit[sx][sy] = true;
+		if (sx == tx && sy == ty)
+			ans = 0;
+		else
+			DFS(sx, sy, 0);
+	}
+
+	if (ans == -1)
+//	if (!visit[tx][ty])
+		cout << "老鼠找不到出口。";
+	else
+		cout << "老鼠找到一條路徑，行走距離是：" << ans;
+}
+</textarea>
+<p>還有一種實作方式，是把四個方向分別寫成四行if式子，而不是寫成一個迴圈。優點是可以提升程式執行速度，程式碼很直觀；缺點是程式碼有太多相似段落，不易檢驗、不易維護。各位可以視情況做取捨。</p>
+<p>把所有變量統統儲存到陣列，再用迴圈依序存取，是一個很好用的實作技巧，可以大幅簡化程式碼的規模。</p>
+<p>前面的程式碼只求出了老鼠的行走距離。要印出老鼠走過的路線，可以運用backtracking的solution vector概念，新增一條陣列，隨時紀錄老鼠當下走出的路線。各位可以自行嘗試。</p>
+<p class="t">一開始就已經背熟地圖，找出最佳路線。</p>
+<p>要找出最短路線，可以使用BFS遍歷狀態空間樹，先遇到的目標狀態，會是成本最小的目標狀態。</p>
+<textarea>
+const int dx[4] = {1, 0, -1, 0};	// 四種方向
+const int dy[4] = {0, 1, 0, -1};	// 記於陣列
+
+int X, Y;			// 迷宮大小。是一個長方形迷宮。
+int sx, sy, tx, ty;	// 入口座標與出口座標
+char maze[10][10];	// 迷宮
+bool visit[10][10];	// memoization
+
+// BFS queue，狀態設定為老鼠座標，另外再儲存g(x)值。
+struct Node {int x, y, d;} q[10*10], *qf, *qb;
+
+// 老鼠座標仍在迷宮裡
+bool inmaze(int x, int y)
+{
+	return x >= 0 && x < X && y >= 0 && y < Y;
+}
+
+int BFS()
+{
+	memset(visit, false, sizeof(visit));
+	qf = qb = q;
+
+	// 把起始狀態放入queue
+	Node s = {sx, sy, 0};
+	*qb++ = s;
+
+	while (qf < qb)
+	{
+		Node& a = *qf++;	// 也可以不寫&，速度只慢一點點。
+
+		for (int i=0; i<4; ++i)
+		{
+			// 狀態轉移
+			int x = a.x + dx[i];
+			int y = a.y + dy[i];
+			int d = a.d + 1;
+
+			if (!inmaze(x, y)) continue;
+
+			if (maze[x][y] == '#') continue;
+
+			if (visit[x][y]) continue;
+			visit[x][y] = true;
+
+			Node b = {x, y, d};
+			*qb++ = b;
+			if (x == tx && y == ty) return d;
+		}
+	}
+	return 1e9;
+}
+
+void rat_in_a_maze()
+{
+	int ans = BFS();
+	if (ans == 1e9)
+		cout << "老鼠找不到出口。";
+	else
+		cout << "老鼠找到一條路徑，行走距離是：" << ans;
+}
+</textarea>
+<textarea>
+// 將visit陣列改為dist紀錄距離，如此節點就變得更單純。
+int dist[10][10];	// memoization
+struct Node {int x, y;} q[10*10], *qf, *qb;
+
+// 功能像是define macro，簡化程式碼，視覺變清晰。
+// 也可以在開頭加上inline關鍵字，執行速度也許會快一點點。
+int& d(Node& n) {return dist[n.x][n.y];}
+char& m(Node& n) {return maze[n.x][n.y];}
+
+// 座標仍在迷宮裡
+bool inmaze(Node& n)
+{
+	return n.x >= 0 && n.x < X && n.y >= 0 && n.y < Y;
+}
+
+int BFS()
+{
+	memset(dist, -1, sizeof(dist));
+	qf = qb = q;
+
+	// 把起始狀態放入queue
+	Node s = {sx, sy};
+	d(s) = 0;	// 設定距離
+	*qb++ = s;
+
+	while (qf < qb)
+	{
+		Node& a = *qf++;
+		for (int i=0; i<4; ++i)
+		{
+			Node b = {a.x + dx[i], a.y + dy[i]};
+
+			if (!inmaze(b)) continue;
+			if (m(b) == '#') continue;
+			if (d(b) != -1) continue;
+			d(b) = d(a) + 1;	// 設定距離
+
+			*qb++ = b;
+			if (b.x == tx && b.y == ty) return d(b);
+		}
+	}
+	return 1e9;
+}
+</textarea>
+<textarea>
+int BFS()
+{
+	memset(dist, -1, sizeof(dist));
+	qf = qb = q;
+
+	Node s = {sx, sy};
+	d(s) = 0;
+	*qb++ = s;
+
+	while (qf < qb)
+	{
+		Node& a = *qf++;
+		for (int i=0; i<4; ++i)
+		{
+			Node b = {a.x + dx[i], a.y + dy[i]};
+
+			// 也可以把 continue 去掉，改為 if 式子。
+			if (inmaze(b) && m(b) != '#' && d(b) == -1)
+			{
+				d(b) = d(a) + 1;
+				*qb++ = b;
+				if (b.x == tx && b.y == ty) return d(b);
+			}
+		}
+	}
+	return 1e9;
+}
+</textarea>
+<p>搜尋過的狀態都會存放在queue裡面。要印出最佳路徑，可以在節點裡面新增加一個變數，紀錄狀態的來源。</p>
+<textarea>
+// 增加一個變數，紀錄狀態的來源。
+struct Node {int x, y; Node* p;} q[10*10], *qf, *qb;
+
+Node* BFS()
+{
+	memset(dist, -1, sizeof(dist));
+	qf = qb = q;
+
+	Node s = {sx, sy, 0};	// 起始狀態的來源是NULL
+	d(s) = 0;
+	*qb++ = s;
+
+	while (qf < qb)
+	{
+		Node& a = *qf++;
+		for (int i=0; i<4; ++i)
+		{
+			// 來源設為a
+			Node b = {a.x + dx[i], a.y + dy[i], &a};
+//			Node b = {a.x + dx[i], a.y + dy[i], qf - 1};
+
+			if (inmaze(b) && m(b) != '#' && d(b) == -1)
+			{
+				d(b) = d(a) + 1;
+				*qb++ = b;
+				if (b.x == tx && b.y == ty) return qb - 1;
+			}
+		}
+	}
+	return 0;	// NULL
+}
+
+void rat_in_a_maze()
+{
+	Node* n = BFS();
+	if (!n)
+		cout << "老鼠找不到出口。";
+	else
+	{
+		cout << "老鼠找到一條路徑，行走距離是：" << n->d;
+
+		cout << "老鼠行走的路徑是（反過來印）：";
+		for (; n; n = n->p)
+			cout << '(' << n->x << ',' << n->y << ')';
+	}
+}
+</textarea>
+<p class="t">延伸閱讀：步伐儲存方式</p>
+<p>西洋棋騎士。</p>
+<textarea>
+int dir[8][2] =
+{
+	{1,2}, {2,1}, {-1,2}, {-2,1},
+	{-2,-1}, {-1,-2}, {1,-2}, {2,-1}
+};
+</textarea>
+<textarea>
+int dx[8] = {1, 2, -1, -2, -2, -1, 1, 2};
+int dy[8] = {2, 1, 2, 1, -1, -2, -2, -1};
+</textarea>
+<p class="e">UVa 10426 10463 10477 633</p>
+<p>方塊滾動。</p>
+<textarea>
+int dx[4] = {0, 0, -1, 1};
+int dy[4] = {-1, 1, 0, 0};
+int df[4] = {0, 1, 2, 3};
+
+// 方塊的六個面，分別是數字0到5。
+// 第一個維度是向上的方向，第二個維度是滾動的方向。
+int rotate[6][4] =
+{
+	{0,0,3,1}, {5,4,0,2}, {2,2,1,3},
+	{4,5,2,0}, {1,3,4,4}, {3,1,5,5}
+};
+</textarea>
+<p class="e">UVa 10021</p>
+<p class="t">一開始不知道地圖，第一次走，隨意找出一條路線。</p>
+<p>此處就是要模擬老鼠的行為了，跟狀態空間搜尋沒有關係。</p>
+<p>以下介紹兩種走迷宮的智慧：</p>
+<p>有一種走迷宮的方式，叫做右手原則。當迷宮的入口、出口都在外牆，而且迷宮裡面沒有環狀路線，此時只要用右手一直摸著牆走，一定可以走出迷宮。右手原則其實就是一種DFS。各位可以仔細觀察影片，說不定老鼠真的懂右手原則喔！</p>
+<p>在迷宮上隨意框一塊區域，如果只剩一個以下開口，則不必走進去，因為一定出不來；如果仍有兩個以上開口，則可以考慮走進去，有可能走得出來，也可能走不出來。如果老鼠一開始知道迷宮大小，也知道自己行走的方向、走了幾步路，如此老鼠隨時可以推敲出自己是不是走入了一個沒有出口的區域。</p>
+<p>各位應該也能設計出許多種走迷宮的智慧。如果有興趣，可以上網搜尋一些老鼠走迷宮的影片來研究。</p>
+<p class="t">一開始不知道地圖，再走幾次，逐次找出更佳路線。</p>
+<p>如果老鼠記憶力很強，記得走過的地點（甚至是路），我們在實作時，就可以運用memoization，把搜尋過程中遭遇到的地點統統紀錄起來。老鼠的記憶力，就變成了電腦的記憶體。</p>
+<p>老鼠行動時，會有一定機率去探索未知的區域，並且會將探索結果記在腦海中。然而現實中，老鼠的記憶力有限，也就是電腦的記憶體有限，不能記得所有地點。想要模擬老鼠的記憶力，可以限制電腦的記憶體用量，當記憶體用罄時，就忘掉一些地點。例如queue、hash table都是不錯的選擇。</p>
+<p class="t">製造迷宮</p>
+<p><a href="javascript:if(confirm('http://daviddr.blogspot.com/2009/12/blog-post_10.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://daviddr.blogspot.com/2009/12/blog-post_10.html'" tppabs="http://daviddr.blogspot.com/2009/12/blog-post_10.html">http://daviddr.blogspot.com/2009/12/blog-post_10.html</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">8 Puzzle Problem</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">8 Puzzle Problem</p>
+<p>上下左右推動一個缺了一格的3x3方塊拼圖，讓它排列整齊。是小時候的回憶：<a href="javascript:if(confirm('http://www.permadi.com/java/puzzle8/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.permadi.com/java/puzzle8/'" tppabs="http://www.permadi.com/java/puzzle8/" class="l">http://www.permadi.com/java/puzzle8/</a>。</p>
+<img src="8PuzzleProblem.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/8PuzzleProblem.png">
+<p>目前最常見的解決方法，便是將盤面化作「狀態」，直接使用State Space Search，所有狀態都搜一搜後就有答案。沒有花心思去想一些推動方塊的策略，而直接Search，感覺上挺隨便的。</p>
+<p>處理這個問題時，每塊方塊都標上數字編號，會更清楚一些。</p>
+<p class="t">15 Puzzle Problem</p>
+<p>就是改為4x4啦！相關數學資料：<a href="javascript:if(confirm('http://mathworld.wolfram.com/15Puzzle.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathworld.wolfram.com/15Puzzle.html'" tppabs="http://mathworld.wolfram.com/15Puzzle.html" class="l">http://mathworld.wolfram.com/15Puzzle.html</a>。</p>
+<p class="t">檢查不合理的盤面：Permutation Inversion</p>
+<p><a href="javascript:if(confirm('http://mathworld.wolfram.com/PermutationInversion.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathworld.wolfram.com/PermutationInversion.html'" tppabs="http://mathworld.wolfram.com/PermutationInversion.html" class="l">http://mathworld.wolfram.com/PermutationInversion.html</a></p>
+<p><a href="javascript:if(confirm('http://bal4u.dip.jp/mt/program/2006/05/uva-10181-15puzzle-problem-2.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://bal4u.dip.jp/mt/program/2006/05/uva-10181-15puzzle-problem-2.html'" tppabs="http://bal4u.dip.jp/mt/program/2006/05/uva-10181-15puzzle-problem-2.html" class="l">http://bal4u.dip.jp/mt/program/2006/05/uva-10181-15puzzle-problem-2.html</a></p>
+<p>當一個盤面的inversion的個數是偶數的時候，表示該盤面可以從排列整齊的狀態，經過一連串推動而得；如果個數是奇數，則表示該盤面不合理、不可能存在。另外還要考慮空格的位於哪一列。此處省略原理說明。</p>
+<textarea>
+// 一個盤面。其數值1~8代表方塊號碼，0代表空格。
+int board[3][3] = {2, 3, 4, 1, 5, 0, 7, 6, 8};
+
+// 檢查 permutation inversion。檢查不通過，表示盤面不合理。
+bool check_permutation_inversion(int board[3][3])
+{
+	int inversion = 0;
+	for (int a=0; a<9; ++a)
+		for (int b=0; b<a; ++b)
+		{
+			int i = a / 3, j = a % 3;
+			int ii = b / 3, jj = b % 3;
+			if (board[i][j] && board[ii][jj]
+				&& board[i][j] < board[ii][jj])
+				inversion++;
+		}
+
+	int row_number_of_0 = 0;
+	for (int i=0; i<3 && !row_number_of_0; ++i)
+		for (int j=0; j<3 && !row_number_of_0; ++j)
+			if (board[i][j] == 0)
+				row_number_of_0 = i+1;
+
+	return (inversion + row_number_of_0) % 2 == 0;
+}
+</textarea>
+<p class="t">heuristic function</p>
+<p>這裡提供兩種不高估的方法，不高估的理由都很明顯：</p>
+<pre>
+1. 不在正確位置上的方塊個數。
+2. 每個方塊與其正確位置的 taxicab distance（Manhattan distance）的總和。
+</pre>
+<textarea>
+// heuristic function，採用不在正確位置上的方塊個數。
+int h(int board[3][3])
+{
+	int cost = 0;
+	for (int i=0; i<3; ++i)
+		for (int j=0; j<3; ++j)
+			if (board[i][j])
+				if (board[i][j] != i*3 + j + 1)
+					cost++;
+	return cost;
+}
+</textarea>
+<textarea>
+int taxicab_distance(int x1, int y1, int x2, int y2)
+{
+	return abs(x1 - x2) + abs(y1 - y2);
+}
+
+// heuristic function，採用taxicab distance。
+int h(int board[3][3])
+{
+	// 每塊方塊的正確位置。{0,0}是為了方便編寫程式而多加的。
+	static const int right_pos[9][2] =
+	{
+		{0,0},
+
+		{0,0}, {0,1}, {0,2},
+		{1,0}, {1,1}, {1,2},
+		{2,0}, {2,1}
+	};
+
+	// 計算每個方塊與其正確位置的 taxicab distance 的總和。
+	int cost = 0;
+	for (int i=0; i<3; ++i)
+		for (int j=0; j<3; ++j)
+			if (board[i][j])
+				cost += taxicab_distance(
+							i, j,
+							right_pos[board[i][j]][0],
+							right_pos[board[i][j]][1]
+						);
+	return cost;
+}
+</textarea>
+<p class="t">實做：使用IDA*</p>
+<textarea>
+// 上下左右
+const string operator[4] = {"up", "down", "right", "left"};
+const int dx[4] = {-1, 1, 0, 0}, dy[4] = {0, 0, 1, -1};
+char solution[30];		// 正確的推動方式，其數值是方向0~3。
+
+// 用表格紀錄每一個方向的反方向。可用於避免來回推動的判斷。
+const int reverse_dir[4] = {1, 0, 3, 2};
+
+// 起始狀態。其數值1~8代表方塊號碼，0代表空格。
+int board[3][3] = {2, 3, 4, 1, 5, 0, 7, 6, 8};
+
+// 空格的位置。可馬上知道推動方塊的目的地。
+int sx = 1, sy = 2;
+
+bool onboard(int x, int y)
+{
+	return x>=0 && x<3 && y>=0 && y<3;
+}
+
+int IDAstar(int x, int y, int gv, int prev_dir, int& bound, bool& ans)
+{
+	int hv = h(board);
+	if (gv + hv > bound) return gv + hv;	// 超過，回傳下次的bound
+	if (hv == 0) {ans = true; return gv;}	// 找到最佳解
+
+	int next_bound = 1e9;
+	for (int i=0; i<4; ++i)							// 四種推動方向
+	{
+		int nx = x + dx[i], ny = y + dy[i];			// 空格的新位置
+
+		if (reverse_dir[i] == prev_dir) continue;	// 避免來回推動
+		if (!onboard(nx, ny)) continue;				// 避免出界
+
+		solution[gv] = oper[i];						// 紀錄推動方向
+		swap(board[x][y], board[nx][ny]);			// 推動
+
+		int v = IDAstar(nx, ny, gv+1, i, bound, ans);
+		if (ans) return v;
+		next_bound = min(next_bound, v);
+
+		swap(board[nx][ny], board[x][y]);			// 回復原狀態
+	}
+	return next_bound;
+}
+
+void 8puzzle()
+{
+	if (!check_permutation_inversion(board))
+	{
+		cout << "盤面不合理，無法解得答案。" << endl;
+		return;
+	}
+
+	// IDA*
+	bool ans = false;
+	int bound = 0;
+	while (!ans && bound <= 50)
+		bound = IDAstar(sx, sy, 0, -1, bound, ans);
+
+	if (!ans)
+	{
+		cout << "50步內無法解得答案。" << endl;
+		return;
+	}
+
+	// 印出移動方法
+	for (int i=0; i<bound; ++i)
+		cout << operation[solution[i]] << ' ';
+	cout << endl;
+}
+</textarea>
+<p class="t">其他</p>
+<p>如果有需要一次計算大量的8 Puzzle Problem，那麼可以考慮從排列整齊的狀態當作起始狀態，建立狀態空間樹，並將搜尋過的狀態、路徑、成本都紀錄起來，存於表格當中，以後便可以從表格內直接找到各種盤面的答案，不需再計算。</p>
+<p class="e">UVa 652 10181 10085</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

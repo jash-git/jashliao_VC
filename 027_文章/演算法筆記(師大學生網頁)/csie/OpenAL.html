@@ -1,0 +1,715 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - OpenAL</title></head><body>
+<div class="a"><div class="h">
+<p class="b">OpenAL</p>
+</div><div class="c">
+<p class="t">參考資料</p>
+<p>《Beginning iPhone Games Development》有三個章節講述OpenAL。此書的繁體中文譯本《iPhone遊戲開發之練：前進App Store最強指南》。</p>
+<p class="t">OpenAL</p>
+<p>全名Open Audio Library，播放聲音、製造3D音效的函式庫。設計理念仿照OpenGL。</p>
+<p class="t">安裝</p>
+<p>首先到官網下載OpenAL 1.1 Core SDK這個檔案（適用Windows系列）執行安裝動作，請記住安裝路徑。然後編譯器設定好include、binary的路徑，就大功告成了。</p>
+<p>官方也提供了外掛，專案名稱為freealut。下載Windows Binary，把alut.h、alut.lib、alut.dll等檔案，放到OpenAL的include資料夾、libs資料夾、以及作業系統的system32資料夾。就跟平常在設定函式庫的方式一樣。</p>
+<p>順便修改一下alut.h檔案內容，把include路徑的AL去掉。</p>
+<textarea>
+#if defined(_MSC_VER)
+#include <alc.h>
+#include <al.h>
+#elif defined(__APPLE__)
+#include <OpenAL/alc.h>
+#include <OpenAL/al.h>
+#else
+#include <AL/al.h>	// 改成 #include "al.h"
+#include <AL/alc.h>	// 改成 #include "alc.h"
+#endif
+</textarea>
+<p>link的時候加上這些參數（我是用32bit的中央處理器）：</p>
+<pre>
+-lOpenAL32 -lalut
+</pre>
+<p class="t">OpenAL Soft</p>
+<p>由於官方版本已經不再更新，後來熱心人士製作了非官方版本，並且做了大幅改進。</p>
+<p><a href="javascript:if(confirm('http://kcat.strangesoft.net/openal.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://kcat.strangesoft.net/openal.html'" tppabs="http://kcat.strangesoft.net/openal.html">http://kcat.strangesoft.net/openal.html</a></p>
+<p>他們也有出一套功能強大的外掛，取名為ALURE。</p>
+<p><a href="javascript:if(confirm('http://kcat.strangesoft.net/alure.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://kcat.strangesoft.net/alure.html'" tppabs="http://kcat.strangesoft.net/alure.html">http://kcat.strangesoft.net/alure.html</a></p>
+<p class="t">以下程式碼所使用的範例聲音檔案</p>
+<p><a href="poem.wav" tppabs="http://www.csie.ntnu.edu.tw/~u91029/material/poem.wav">poem.wav</a>、<a href="boo.wav" tppabs="http://www.csie.ntnu.edu.tw/~u91029/material/boo.wav">boo.wav</a>。</p>
+<p>各位也可以安裝錄音軟體，弄個麥克風錄音，滿有趣的！</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Play</p>
+</div><div class="c">
+<p class="t">播放</p>
+<pre>
+一、裝置（device）
+二、環境（context）
+三、聲源（source）
+四、緩衝區（buffer）
+五、聲音檔案擷取出聲音訊號
+六、聲音訊號複製至緩衝區
+七、緩衝區附加至聲源
+八、播放
+九、釋放記憶體
+</pre>
+<p class="t">一、裝置（device）</p>
+<textarea>
+ALCdevice* theDevice;
+theDevice = alcOpenDevice(NULL);
+</textarea>
+<p>傳入NULL得到預設播放裝置。</p>
+<p class="t">二、環境（context）</p>
+<textarea>
+ALCcontext* theContext;
+theContext = alcCreateContext(theDevice, NULL);
+alcMakeContextCurrent(theContext);
+</textarea>
+<p class="t">三、聲源（source）</p>
+<p>我們只會得到聲源編號，記憶體則由OpenAL控管。數量上限是256個，但是16個通常就是極限了。</p>
+<textarea>
+ALuint theSource;
+alGenSources(1, &theSource);
+</textarea>
+<p>亦可一口氣建立大量聲源。</p>
+<textarea>
+ALuint theSources[16];
+alGenSources(16, theSources);
+</textarea>
+<p class="t">四、緩衝區（buffer）</p>
+<p>與聲源相同，我們只會得到緩衝區編號，記憶體則由OpenAL控管。</p>
+<textarea>
+ALuint theBuffer;
+alGenBuffers(1, &theBuffer);
+</textarea>
+<textarea>
+ALuint theBuffers[32];
+alGenBuffers(32, theBuffers);
+</textarea>
+<p class="t">五、聲音檔案擷取出聲音訊號</p>
+<p>OpenAL沒有讀檔、存檔的功能，必須使用其他專門函式庫，或者使用OpenAL專用外掛alut。由於alut發展的不太好，不建議使用。</p>
+<textarea>
+alutInitWithoutContext(&argc, argv);
+
+ALenum format;
+ALsizei data_size;
+ALfloat sample_rate;
+ALvoid* thePCMdata;
+
+thePCMdata = alutLoadMemoryFromFile(
+	"poem.wav", &format, &data_size, &sample_rate
+);
+
+alutExit();
+</textarea>
+<p class="t">六、聲音訊號複製至緩衝區</p>
+<textarea>
+alBufferData(theBuffer, format, thePCMdata, data_size, sample_rate);
+</textarea>
+<p>平白無故複製一遍，無法簡單地傳入一個指標，非常浪費時間。也許規格書未來會修正。</p>
+<p class="t">七、緩衝區附加至聲源</p>
+<textarea>
+alSourcei(theSource, AL_BUFFER, theBuffer);
+</textarea>
+<p class="t">八、播放</p>
+<textarea>
+alSourcePlay(theSource);
+alutSleep(5);
+</textarea>
+<textarea>
+alSourcePlay(theSource);
+system("pause");
+</textarea>
+<p>可以想成是另外建立一個thread馬上播放聲音。</p>
+<p>加上sleep、pause，是避免程式碼馬上執行下一個步驟，也就是釋放記憶體。一旦釋放記憶體，馬上就會停止播放聲音；sleep的時間必須長於播放聲音的時間，才會完整播放聲音。</p>
+<p>正常情況下，通常不需要馬上釋放記憶體，也不需要加上sleep、pause。</p>
+<p class="t">九、釋放記憶體</p>
+<textarea>
+alDeleteSources(1, &theSource);
+alDeleteBuffers(1, &theBuffer);
+alcMakeContextCurrent(NULL);
+if (theContext) {alcDestroyContext(theContext); theContext = NULL;}
+if (theDevice) {alcCloseDevice(theDevice); theDevice = NULL;}
+if (thePCMdata) {free(thePCMdata); thePCMdata = NULL;}
+</textarea>
+<p class="t">播放</p>
+<textarea>
+#include "al.h"
+#include "alc.h"
+#include "alut.h"
+
+int main(int argc, char **argv)
+{
+	// 一、裝置（device）
+	ALCdevice* theDevice = alcOpenDevice(NULL);
+
+	// 二、環境（context）
+	ALCcontext* theContext = alcCreateContext(theDevice, NULL);
+	alcMakeContextCurrent(theContext);
+
+	// 三、聲源（source）
+	ALuint theSource;
+	alGenSources(1, &theSource);
+
+	// 四、緩衝區（buffer）
+	ALuint theBuffer;
+	alGenBuffers(1, &theBuffer);
+
+	// 五、聲音檔案擷取出聲音訊號
+	alutInitWithoutContext(&argc, argv);
+	ALenum format;
+	ALsizei data_size;
+	ALfloat sample_rate;
+	ALvoid* thePCMdata = alutLoadMemoryFromFile("poem.wav", &format, &data_size, &sample_rate);
+	alutExit();
+
+	// 六、聲音訊號複製至緩衝區
+	alBufferData(theBuffer, format, thePCMdata, data_size, sample_rate);
+
+	// 七、緩衝區附加至聲源
+	alSourcei(theSource, AL_BUFFER, theBuffer);
+
+	// 八、播放
+	alSourcePlay(theSource);
+	system("pause");
+//	alutSleep(5);
+
+	// 九、釋放記憶體
+	alDeleteSources(1, &theSource);
+	alDeleteBuffers(1, &theBuffer);
+	alcMakeContextCurrent(NULL);
+	if (theContext) {alcDestroyContext(theContext); theContext = NULL;}
+	if (theDevice) {alcCloseDevice(theDevice); theDevice = NULL;}
+	if (thePCMdata) {free(thePCMdata); thePCMdata = NULL;}
+
+	return 0;
+}
+</textarea>
+<p class="t">其他播放設定</p>
+<p>循環播放。</p>
+<textarea>
+alSourcei(theSource, AL_LOOPING, AL_TRUE);
+alSourcePlay(theSource);
+
+alSourceStop(theSource);
+alSourcei(theSource, AL_LOOPING, AL_FALSE);
+</textarea>
+<p>調整音量。0.0表示無聲、1.0表示原始音量。</p>
+<textarea>
+alSourcei(theSource, AL_GAIN, 0.5);
+</textarea>
+<p>得到聲源播放狀態。</p>
+<textarea>
+ALint state;
+alGetSourcei(theSource, AL_SOURCE_STATE, &state);
+</textarea>
+<pre>
+AL_INITIAL
+AL_STOPPED
+AL_PLAYING	此時無法修改緩衝區
+AL_PAUSED	此時無法修改緩衝區
+</pre>
+<p>切換緩衝區。</p>
+<textarea>
+ALint state;
+alGetSourcei(theSource, AL_SOURCE_STATE, &state);
+if (state == AL_PLAYING || state == AL_PAUSED)
+	alSourceStop(theSource);
+alSourcei(theSource, AL_BUFFER, anotherBuffer);
+alSourcePlay(theSource);
+</textarea>
+<p>卸載緩衝區。</p>
+<textarea>
+ALint state;
+alGetSourcei(theSource, AL_SOURCE_STATE, &state);
+if (state == AL_STOPPED)
+	alSourcei(theSource, AL_BUFFER, AL_NONE);
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Capture</p>
+</div><div class="c">
+<p class="t">收音</p>
+<pre>
+一、擷取裝置
+二、開始收音
+三、擷取訊號
+四、中止收音
+五、關閉裝置
+</pre>
+<p class="t">零、列舉裝置名稱</p>
+<p>預設裝置名稱。</p>
+<textarea>
+const ALchar *theDeviceName;
+theDeviceName = alcGetString(NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
+cout << theDeviceName;
+</textarea>
+<p>所有裝置名稱，中間以一個\0隔開，最後以兩個\0結尾。</p>
+<textarea>
+const ALchar* theDeviceNames;
+theDeviceNames = alcGetString(NULL, ALC_CAPTURE_DEVICE_SPECIFIER);
+cout << theDeviceNames;	// 顯然只會印出第一個裝置
+
+const ALCchar* s = theDeviceNames;
+for (int i=0; *s; ++i)
+{
+	cout << "device number" << i;
+	cout << "device name" << s;
+	s += strlen(s) + 1;
+}
+</textarea>
+<p class="t">一、擷取裝置</p>
+<p>設定裝置的取樣頻率、聲道、位元深度、緩衝區大小。</p>
+<textarea>
+ALCuint frame_rate = 44100;
+ALenum format = AL_FORMAT_MONO16;
+ALCsizei buffer_size = 4410;
+ALCdevice *theDevice = alcCaptureOpenDevice(
+	NULL, frame_rate, format, buffer_size
+);
+</textarea>
+<p>可以順便印出裝置名稱。</p>
+<textarea>
+const ALchar *theDeviceName;
+theDeviceName = alcGetString(theDevice, ALC_DEVICE_SPECIFIER);
+cout << theDeviceName;
+</textarea>
+<p class="t">收音</p>
+<textarea>
+#include "al.h"
+#include "alc.h"
+#include <conio.h>		// _kbhit()
+#include <windows.h>	// Sleep()
+#include <iostream>
+using namespace std;
+
+int main(int argc, char *argv[])
+{
+	// 一、擷取裝置
+	const ALCsizei buffer_size = 4410;
+	ALCdevice *theDevice = alcCaptureOpenDevice(NULL, 44100, AL_FORMAT_MONO16, buffer_size);
+
+	// 二、開始收音
+	alcCaptureStart(theDevice);
+
+	while (!_kbhit())
+	{
+		Sleep(100);	// 0.1 second = 4410 / 44100
+
+		// 三、擷取訊號
+		// 先取得緩衝區訊號數量，俟數量足夠才裝入buffer。
+		// buffer大小要考慮取樣頻率、聲道、位元深度。
+		ALint sample_size;
+		alcGetIntegerv(theDevice, ALC_CAPTURE_SAMPLES, 1, &sample_size);
+
+		if (sample_size >= buffer_size)
+		{
+			ALshort buffer[buffer_size];
+			alcCaptureSamples(device, (ALCvoid*)buffer, sample_size);
+
+			// 隨便印個東西，看看有沒有抓到訊號。
+			cout << buffer[0] << endl;
+			cout << buffer[1] << endl;
+		}
+	}
+
+	// 四、中止收音
+	alcCaptureStop(theDevice);
+
+	// 五、關閉裝置
+	alcCaptureCloseDevice(theDevice);
+
+	return 0;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Effect</p>
+</div><div class="c">
+<p class="t">音效</p>
+<pre>
+一、聽者（listener）
+二、聲源（source）
+三、距離衰減（distance attenuation）
+四、都卜勒效應（Doppler effect）
+</pre>
+<p class="t">一、聽者（listener）</p>
+<p>建立環境之後，一個環境只有一個聽者。聽者擁有位置座標、頭頂方向向量，是三維空間的右手座標系統。OpenAL與OpenGL的座標系統完全相同。</p>
+<p>如果聲源的位置座標在聽者左邊，那麼音響、耳機就會從左邊播放聲音。</p>
+<textarea>
+ALfloat orientation[6] =
+{
+	position.x, position.y, position.z,
+	up.x, up.y, up.z
+};
+alListenerfv(AL_ORIENTATION, orientation);
+</textarea>
+<p class="t">二、聲源（source）</p>
+<p><a href="javascript:if(confirm('http://playcontrol.net/iphonegamebook/_Media/openal3dcone2-4.jpeg  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://playcontrol.net/iphonegamebook/_Media/openal3dcone2-4.jpeg'" tppabs="http://playcontrol.net/iphonegamebook/_Media/openal3dcone2-4.jpeg" class="l">http://playcontrol.net/iphonegamebook/_Media/openal3dcone2-4.jpeg</a></p>
+<p>聲源擁有位置座標、方向向量、聲音播放範圍。</p>
+<p>聲音播放範圍呈圓錐狀，共三層，內層聽到原始音量、中層聽到內插音量、外層聽不到音量。</p>
+<textarea>
+ALuint theSource;
+alGenSources(1, &theSource);
+alSource3f(theSource, AL_POSITION, 10.0, 10.0, 10.0);
+alSource3f(theSource, AL_DIRECTION, -1.0, 0, 0);
+alSourcef(theSource, AL_CONE_INNER_ANGLE, 90.0);
+alSourcef(theSource, AL_CONE_OUTER_ANGLE, 270.0);
+alSourcef(theSource, AL_CONE_OUTER_GAIN, 0.5);
+</textarea>
+<p>不想限制聲音播放範圍，就不必設定角度；或者設定角度為360度、增益為0。</p>
+<textarea>
+alSourcef(theSource, AL_CONE_INNER_ANGLE, 360.0);
+alSourcef(theSource, AL_CONE_OUTER_ANGLE, 360.0);
+alSourcef(theSource, AL_CONE_OUTER_GAIN, 0.0);
+</textarea>
+<p class="t">三、距離衰減（distance attenuation）</p>
+<p>聲源和聽者的位置座標改變之時，隨著距離遠近、音量自動放大縮小。</p>
+<p>一共有六種距離衰減模型，有三種參數要設定。詳細定義請查參考資料！</p>
+<pre>
+inverse distance
+inverse distance clamped
+linear distance
+linear distance clamped
+expontial distance
+expontial distance clamped
+</pre>
+<textarea>
+// 距離衰減模型
+alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
+// 衰減速度，內插範圍內才有效
+alSourcef(theSource, AL_ROLLOFF_FACTOR, 1.0);
+// 內插範圍內界，進內界之前不會衰減
+alSourcef(theSource, AL_REFERENCE_DISTANCE, 5);
+// 內插範圍外界，出外界之後不再衰減
+alSourcef(theSource, AL_MAX_DISTANCE, 10);
+</textarea>
+<p>不想使用時，也可以取消。</p>
+<textarea>
+// 取消整個環境中的所有聲源的距離衰減
+alDistanceModel(AL_NONE);
+// 僅取消一個聲源的距離衰減
+alSourcef(theSource, AL_ROLLOFF_FACTOR, 0.0);
+</textarea>
+<p class="t">四、都卜勒效應（Doppler effect）</p>
+<iframe src="Kg9F5pN5tlI" tppabs="http://www.youtube.com/embed/Kg9F5pN5tlI"></iframe>
+<p>聲源和聽者的速度向量改變之時，播放頻率自動增加減少。</p>
+<pre>
+                             音速 - D * 聽者速度 
+播放頻率變化值 = 取樣頻率 x ---------------------
+                             音速 -     聲源速度 
+</pre>
+<textarea>
+// 設定聲源速度向量
+alSource3f(theSource, AL_VELOCITY, 0, 0, 0);
+// 設定聽者速度向量
+alListener3f(AL_VELOCITY, 10, 0, 0);
+// 設定都卜勒係數D
+alDopplerFactor(5);
+cout << alGetFloat(AL_DOPPLER_FACTOR);
+// 設定音速
+alSpeedOfSound(343);
+cout << alGetFloat(AL_SPEED_OF_SOUND);
+</textarea>
+<p class="t">音效</p>
+<textarea>
+#include "al.h"
+#include "alc.h"
+#include "alut.h"
+
+int main (int argc, char **argv)
+{
+	// 裝置、環境
+	ALCdevice* theDevice = alcOpenDevice(0);
+	ALCcontext* theContext = alcCreateContext(theDevice, 0);
+	alcMakeContextCurrent(theContext);
+
+	// 聲音檔案擷取出聲音訊號
+	// 此段程式碼不可放在裝置、環境之前，否則無效。
+	alutInitWithoutContext(&argc, argv);
+	ALenum format;
+	ALsizei data_size;
+	ALfloat sample_rate;
+	ALvoid* thePCMdata = alutLoadMemoryFromFile("boo.wav", &format, &data_size, &sample_rate);
+	alutExit();
+
+	// 一、聽者（listener）
+	ALfloat orientation[6] = {0, 0, 0, 1, 1, 1};
+	alListenerfv(AL_ORIENTATION, orientation);
+
+	// 二、聲源（source）
+	ALuint theSource;
+	alGenSources(1, &theSource);
+//	alSource3f(theSource, AL_POSITION, 10.0, 10.0, 10.0);
+	alSource3f(theSource, AL_DIRECTION, -1.0, 0, 0);
+	alSourcef(theSource, AL_CONE_INNER_ANGLE, 90.0);
+	alSourcef(theSource, AL_CONE_OUTER_ANGLE, 270.0);
+	alSourcef(theSource, AL_CONE_OUTER_GAIN, 0.5);
+
+	// 三、距離衰減（distance attenuation）
+	alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
+	alSourcef(theSource, AL_ROLLOFF_FACTOR, 1.0);
+	alSourcef(theSource, AL_REFERENCE_DISTANCE, 5);
+	alSourcef(theSource, AL_MAX_DISTANCE, 5);
+
+	// 四、都卜勒效應（Doppler effect）
+//	alSource3f(theSource, AL_VELOCITY, 0, 0, 0);
+	alListener3f(AL_VELOCITY, 10, 0, 0);
+	alDopplerFactor(5);
+	alSpeedOfSound(343);
+
+	// 緩衝區
+	ALuint theBuffer;
+	alGenBuffers(1, &theBuffer);
+	alBufferData(theBuffer, format, thePCMdata, data_size, sample_rate);
+	alSourcei(theSource, AL_BUFFER, theBuffer);
+
+	// 播放
+	for (int i=0; i<20; ++i)
+	{
+		alutSleep(0.2);
+		alSource3f(theSource, AL_VELOCITY, 15.0-(float)i*10.0, 0, 0);
+		alSource3f(theSource, AL_POSITION, -15.0+(float)i*2.0, 10, 10);
+		alSourcePlay(theSource);
+	}
+
+	// 釋放記憶體
+	alDeleteSources(1, &theSource);
+	alDeleteBuffers(1, &theBuffer);
+	alcMakeContextCurrent(0);
+	if (theContext) {alcDestroyContext(theContext); theContext = 0;}
+	if (theDevice) {alcCloseDevice(theDevice); theDevice = 0;}
+	if (thePCMdata) {free(thePCMdata); thePCMdata = 0;}
+
+	return 0;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Stream</p>
+</div><div class="c">
+<p class="t">串流</p>
+<pre>
+一、一個聲源
+二、數個緩衝區
+三、播放指標
+四、回收緩衝區
+五、訊號填入至緩衝區、緩衝區添入至聲源佇列
+六、維持播放
+</pre>
+<p class="t">一、一個聲源</p>
+<textarea>
+ALuint theSource;
+alGenSources(1, &theSource);
+</textarea>
+<p class="t">二、數個緩衝區</p>
+<p>如果聲音斷斷續續，就增加數量。</p>
+<textarea>
+ALuint theBuffers[8];
+alGenBuffers(8, theBuffers);
+</textarea>
+<p class="t">三、播放指標</p>
+<p>首先讀入檔案、擷取訊號。此處使用alut。</p>
+<textarea>
+// 此段程式碼不可放在裝置、環境之前，否則無效。
+alutInitWithoutContext(&argc, argv);
+ALenum format;
+ALsizei data_size;
+ALfloat sample_rate;
+ALvoid* thePCMdata = alutLoadMemoryFromFile("poem.wav", &format, &data_size, &sample_rate);
+alutExit();
+</textarea>
+<p>建立一個指標，紀錄當下播放到的訊號位置。</p>
+<textarea>
+char* data = (char*)thePCMdata;
+int offset = 0;
+</textarea>
+<p>我們預計讓一個緩衝區儲存2048byte，因此偷偷截去訊號尾端，讓程式碼比較好寫。此處便宜行事，實務上不應該這樣處理。</p>
+<textarea>
+data_size -= data_size % 2048;
+</textarea>
+<p class="t">四、回收緩衝區</p>
+<p>首先用一個容器紀錄所有可用的緩衝區。容器是stack和queue都行。</p>
+<textarea>
+stack<ALuint> freeBuffers;
+for (int i=0; i<8; ++i)
+	freeBuffers.push(theBuffers[i]);
+</textarea>
+<p>已經播放完畢的緩衝區，就回收至容器。</p>
+<textarea>
+ALint processed;
+alGetSourcei(theSource, AL_BUFFERS_PROCESSED, &processed);
+while (processed > 0)
+{
+	ALuint dequeueBuffer;
+	alSourceUnqueueBuffers(theSource, 1, &dequeueBuffer);
+	freeBuffers.push(dequeueBuffer);
+	processed--;
+}
+</textarea>
+<p class="t">五、訊號填入至緩衝區、緩衝區添入至聲源佇列</p>
+<p>所有未使用的緩衝區通通拿來用。把緊接著要播放的訊號依序填入至緩衝區，並將緩衝區依序添入至聲源佇列。聲源將自動持續播放佇列裡的所有緩衝區，包括後來加入的緩衝區。</p>
+<textarea>
+if (freeBuffers.size() > 0)
+{
+	if (offset >= data_size) offset = 0;
+
+	ALuint enqueueBuffer = freeBuffers.top();
+	alBufferData(enqueueBuffer, format, (ALvoid*)(data + offset), 2048, sample_rate);
+	alSourceQueueBuffers(theSource, 1, &enqueueBuffer);
+	freeBuffers.pop();
+
+	offset += 2048;
+}
+</textarea>
+<p>緩衝區的大小是可以調整的，緩衝區越大越好！一般我們會讓一個緩衝區儲存2^n點訊號，例如512點訊號，有利於實施快速傅立葉轉換。</p>
+<p>一般以位元深度、聲道，決定緩衝區的大小。由於筆者使用的聲音檔案，位元深度是16bit = 2byte、雙聲道，所以緩衝區的大小設定為512sample × 2byte × 2channel = 2048byte。</p>
+<p>進行訊號處理時，緩衝區就不可過大，免得聲音變化過大，影響分析結果。由於筆者使用的聲音檔案，取樣頻率是44100Hz，所以一個緩衝區的時間長度是512sample ÷ 44100Hz = 0.01second，差不多足夠長了。</p>
+<p class="t">六、維持播放</p>
+<p>如果緩衝區補充太慢、入不敷出，造成聲源佇列的緩衝區全數播放完畢，那麼聲源會自動中止播放，而後來加入的緩衝區也就不會繼續播放了。因此必須偵測聲源是否中止播放，如果中止了，就啟動它。</p>
+<textarea>
+ALenum state;
+alGetSourcei(theSource, AL_SOURCE_STATE, &state);
+if (state != AL_PLAYING)
+{
+	ALint queued;
+	alGetSourcei(theSource, AL_BUFFERS_QUEUED, &queued);
+	if (queued > 0)
+		alSourcePlay(theSource);
+}
+</textarea>
+<p class="t">串流</p>
+<textarea>
+#include "al.h"
+#include "alc.h"
+#include "alut.h"
+#include <conio.h>	// _kbhit()
+#include <stack>
+#include <iostream>
+using namespace std;
+
+int main (int argc, char **argv)
+{
+	// 裝置、環境
+	ALCdevice* theDevice = alcOpenDevice(0);
+	ALCcontext* theContext = alcCreateContext(theDevice, 0);
+	alcMakeContextCurrent(theContext);
+
+	// 一、一個聲源
+	ALuint theSource;
+	alGenSources(1, &theSource);
+
+	// 二、數個緩衝區
+	ALuint theBuffers[8];
+	alGenBuffers(8, theBuffers);
+
+	// 可用的緩衝區
+	stack<ALuint> freeBuffers;
+	for (int i=0; i<8; ++i)
+		freeBuffers.push(theBuffers[i]);
+
+	// 聲音檔案擷取出聲音訊號
+	alutInitWithoutContext(&argc, argv);
+	ALenum format;
+	ALsizei data_size;
+	ALfloat sample_rate;
+	ALvoid* thePCMdata = alutLoadMemoryFromFile("poem.wav", &format, &data_size, &sample_rate);
+	alutExit();
+
+	// 三、播放指標
+	char* data = (char*)thePCMdata;
+	int offset = 0;
+	data_size -= data_size % 2048;
+
+	while (!_kbhit())
+	{
+		// 四、回收緩衝區
+		ALint processed;
+		alGetSourcei(theSource, AL_BUFFERS_PROCESSED, &processed);
+		while (processed > 0)
+		{
+			ALuint dequeueBuffer;
+			alSourceUnqueueBuffers(theSource, 1, &dequeueBuffer);
+			freeBuffers.push(dequeueBuffer);
+			processed--;
+		}
+
+		// 五、訊號填入至緩衝區、緩衝區添入至聲源佇列
+		if (freeBuffers.size() > 0)
+		{
+			if (offset >= data_size) offset = 0;
+
+			ALuint enqueueBuffer = freeBuffers.top();
+			alBufferData(enqueueBuffer, format, (ALvoid*)(data + offset), 2048, sample_rate);
+			alSourceQueueBuffers(theSource, 1, &enqueueBuffer);
+			freeBuffers.pop();
+
+			offset += 2048;
+		}
+
+		// 六、維持播放
+		ALenum state;
+		alGetSourcei(theSource, AL_SOURCE_STATE, &state);
+		if (state != AL_PLAYING)
+		{
+			ALint queued;
+			alGetSourcei(theSource, AL_BUFFERS_QUEUED, &queued);
+			if (queued > 0)
+				alSourcePlay(theSource);
+		}
+	}
+
+	// 釋放記憶體
+	alDeleteSources(1, &theSource);
+	alDeleteBuffers(8, theBuffers);
+	alcMakeContextCurrent(0);
+	if (theContext) {alcDestroyContext(theContext); theContext = 0;}
+	if (theDevice) {alcCloseDevice(theDevice); theDevice = 0;}
+	if (thePCMdata) {free(thePCMdata); thePCMdata = 0;}
+
+	return 0;
+}
+</textarea>
+<p class="t">位元深度、聲道</p>
+<p>OpenAL只能藉由緩衝區得到位元深度、聲道，程式碼相當噁心。</p>
+<textarea>
+ALuint theBuffer;
+ALint channel, bits;
+alGenBuffers(1, &theBuffer);
+// 如果只填入少量訊號，例如一個、兩個，
+// 等一下就會得到錯誤的channel數量，應該是bug。
+alBufferData(theBuffer, format, thePCMdata, 16, sample_rate);
+alGetBufferi(theBuffer, AL_BITS, &bits);
+alGetBufferi(theBuffer, AL_CHANNELS, &channel);
+alDeleteBuffers(1, &theBuffer);
+cout << bits;
+cout << channel;
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Error Handling</p>
+</div><div class="c">
+<p class="t">偵錯</p>
+<p>基本上所有的地方都可以使用偵錯，但是一般只在關鍵的地方使用偵錯，例如開啟裝置、建立緩衝區等等，用以得知執行結果是否成功。</p>
+<p>呼叫之後，得到上次呼叫迄今為止的所有錯誤。</p>
+<p>分為al與alc兩種。alut也順便提一下。</p>
+<textarea t="al">
+alGetError();	// 清除目前的錯誤訊息
+alSourcePlay(theSource);	// 執行al系列函式
+ALenum error = alGetError(theDevice);
+if (error != AL_NO_ERROR)
+	cout << alGetErrorString(error);
+</textarea>
+<textarea t="alc">
+alcGetError(theDevice);	// 清除目前的錯誤訊息
+alcMakeContextCurrent(theContext);	// 執行alc系列函式
+ALCenum error = alcGetError(theDevice);
+if (error != ALC_NO_ERROR)
+	cout << alcGetErrorString(theDevice, error);
+</textarea>
+<textarea t="alut">
+alutGetError();	// 清除目前的錯誤訊息
+alutXXXXX();	// 執行alut系列函式
+ALenum error = alutGetError();
+if (error != ALUT_ERROR_NO_ERROR)
+	cout << alutGetErrorString(error);
+</textarea>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

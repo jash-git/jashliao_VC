@@ -1,0 +1,114 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Randomized Method</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Randomized Method</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Randomized Method</p>
+<p>「隨機法」是指：當有許多種計算順序，我們可以隨機挑選其中一種計算順序，而不是固定使用其中一種計算順序。</p>
+<p>套用隨機法之後，必須運用機率來分析時間複雜度。一種計算順序，對應一個時間複雜度；考慮每一種計算順序的出現機率，求得時間複雜度的期望值（平均值）。</p>
+<p class="t">Randomized Method的用途</p>
+<p>一、當我們不清楚輸入資料的分布情況，無從分析average case的時間複雜度──此時可以套用隨機法，將時間複雜度的期望值，姑且當作是average case的時間複雜度。</p>
+<p>二、當我們十分清楚輸入資料的分布情況、而且輸入資料接近worst case──此時可以運用隨機法破壞worst case，有很大機率能趨吉避凶，減少計算時間；但是也有一定機率會弄巧成拙，增加計算時間。</p>
+<p class="t">範例：隨機搜尋</p>
+<p>隨便搜尋其中一筆資料。如果失敗，就縮小搜尋範圍，從剩下的位置，再隨便搜尋其中一筆資料。</p>
+<p>為了讓演算法能夠結束，我們一定要逐步縮小搜尋範圍。已經搜尋過的資料，千萬不要再重複搜尋了。</p>
+<textarea>
+int array[5] = {3, 5, 6, -2, 1};
+int visit[5];
+
+int random_search(int n)
+{
+	for (int i=0; i<5; i++)
+		visit[i] = false;
+
+	// 錯誤的實作方式。
+	// 程式可能永不結束，儘管機率趨近無限小。
+	srand(time(0));
+	for (int k=0; k<5: k++)
+	{
+		int i;
+		do i = rand() % k; while (visit[i]);
+		if (array[i] == n) return i;
+		visit[i] = true;
+	}
+	return -1;
+}
+</textarea>
+<textarea>
+int array[5] = {3, 5, 6, -2, 1};
+int index[5];
+
+int random_search(int n)
+{
+	srand(time(0));
+	for (int k=5; k>0; k--)
+	{
+		// 已經找過的資料，就挪到最後、永不再找。
+		int i = rand() % (5 - k);
+		if (array[i] == n) return i;
+		swap(array[i], array[5 - k - 1]);
+	}
+	return -1;
+}
+</textarea>
+<p>這裡再額外補充一個實作方式。</p>
+<p>仔細觀察計算過程。一個步驟恰好讀取了一筆資料，所有步驟恰好讀取了每一筆資料──綜觀整個計算過程，其實是以隨機的順序，讀取了每一筆資料。</p>
+<p>因此，在此範例當中，隨機的計算順序，恰好可以改成隨機的輸入順序。實作時，預先隨機排列輸入資料，然後循序搜尋。</p>
+<textarea>
+int array[5] = {3, 5, 6, -2, 1};
+
+int random_search(int n)
+{
+	// 隨機排列 random permutation
+	random_shuffle(array, array+5);
+
+	// 循序搜尋 sequential search
+	for (int i=0; i<5; ++i)
+		if (array[i] == n)
+			return i;
+	return -1;
+}
+</textarea>
+<textarea>
+int array[5] = {3, 5, 6, -2, 1};
+int index[5];
+
+int random_search(int n)
+{
+	// 隨機排列索引值或者指標，
+	// 就不必搬動原本的輸入資料。
+	for (int i=0; i<5; ++i) index[i] = i;
+	random_shuffle(index, index+5);
+
+	for (int i=0; i<5: ++i)
+		if (array[index[i]] == n)
+			return index[i];
+	return -1;
+}
+</textarea>
+<p>搜尋次數的期望值是(N+1)/2。N是資料數量。</p>
+<pre>
+尚待搜尋的資料，在每個位置的出現機率都一樣多，都是1/N。
+資料出現在第一個位置，從頭開始讀入一筆資料就能找到。
+資料出現在第N個位置，從頭開始讀入N筆資料才能找到。
+  (1/N) * 1 + (1/N) * 2 + ... + (1/N) * N
+= (1/N) * (1+...+N)
+= (1/N) * (1+N)*N/2
+= (1+N)/2
+</pre>
+<p class="t">範例：隨機排序</p>
+<p>從陣列當中隨便挑兩個數字，如果左邊數字大於右邊數字就交換位置。不斷交換位置，直到排序成功。</p>
+<p>仔細來說，每一次想要交換兩個數字，一開始有N*(N-1)種數對可供選擇，隨便挑一個數對並且嘗試交換位置。如果無法交換位置，就從剩下的數對當中，再隨便挑一個數對，直到可以交換位置為止。如果所有數對都試過了，依然無法交換位置，就表示排序成功了。</p>
+<p>我不知道如何分析時間複雜度，也不知道如何實作。</p>
+<p class="t">範例：快速排序法（Quicksort）</p>
+<p>無論挑選哪一個陣列元素作為pivot，最後都能得到正確的排序結果。</p>
+<p>遞迴的時候，對半分是最好的，遞迴深度最少，遞迴次數也最少。也就是說，選擇「排序之後位於中央」的陣列元素作為pivot是最理想的。</p>
+<p>因此，實務上最好的方式其實不是隨機選取pivot；而是將陣列切三份、取三個中央值的中位數作為pivot。因為上一層的partition步驟當中，陣列已經大略排序好了，所以這種方式更有機會得到「排序之後位於中央」的陣列元素。</p>
+<p class="t">範例：Label Correcting Algorithm</p>
+<p>詳見「<a href="Path.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path.html">Label Correcting Algorithm</a>」。</p>
+<p>不斷地從圖上隨便挑一條邊，更新最短路徑長度。限制接下來要挑選的邊是鄰邊，就不會反覆挑中同一條邊。限制每個點的最短路徑長度只能更新V次，讓演算法一定能夠結束。</p>
+<p class="t">範例：Floyd-Warshall Algorithm</p>
+<p>詳見「<a href="Path2.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path2.html">Floyd-Warshall Algorithm</a>」。</p>
+<p>最外層迴圈的索引值，可以採用任何一種順序，不見得要剛好是從0到V-1。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

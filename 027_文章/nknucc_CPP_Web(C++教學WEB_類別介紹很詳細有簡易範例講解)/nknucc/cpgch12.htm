@@ -1,0 +1,610 @@
+<!--- file: cpgchpt12.htm
+      symbols: ，、。．‧；：？！·
+<TT>
+<PRE>
+</PRE>
+</TT>
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 12 章  類別與物件的基本架構</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 12 章   類別與物件的基本架構</B></CENTER>
+<P>
+本章將介紹 類別(class) 與 物件(object) 的基本架構，並以 二元搜尋樹
+為例來 說明其使用方式。 一個 物件 是由 一些 資料 與作用 其上 的 函數
+(或稱之為 方法 --- 即 method) 所構成。 一個 類別 可以 說是 一種
+物件的 描述。
+<P>
+<A NAME="start">
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 12.1 節 <A href="#first">類似 struct 的類別宣告 與 物件的定義</A>
+  <LI>第 12.2 節 <A href="#second">含成員函數的類別宣告 與 物件的定義</A>
+  <LI>第 12.3 節 <A href="#third">遞迴式類別宣告</A>
+  <LI>第 12.4 節 <A href="#fourth">二元搜尋樹基本資料結構</A>
+  <LI>第 12.5 節 <A href="#fifth">二元搜尋樹程式</A>
+</UL>
+<P>
+<A href="cpgch11.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch11.htm">回第 11 章</A><BR>
+<A href="cpgch13.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch13.htm">至第 13 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<P>
+<A NAME="first">
+<HR>
+<!--------------------第 12.1 節--------------------------------------->
+<P>
+  <B>第 12.1 節  類似 struct 的類別宣告 與 物件的定義</B>
+<P>
+類別 (class) 的設定，可以分成兩部分， 一部分是 資料儲存部分，
+稱之為 資料成員(data members)，
+另一部分是 作用於這些資料 的相關 函數，
+稱之為 成員函數 (member functions)。
+按資料成員 與 成員函數使用方式， 可分為自用 (private) 部分，
+與 公用 (public) 部分。 公用部分 亦可稱為 使用介面。
+<p>
+沒有成員函數 的類別， 其架構如同 struct 的架構，
+其使用方式 (即一個 物件的定義) 也相同。
+一個沒有成員函數 的類別的宣告， 其格式如下：
+<p>
+<TT><B><PRE>
+	class className
+	{
+	    public:	
+		dataType1 id1;
+		dataType2 id2;
+                ...
+	    private:
+		dataType3 id3;
+		dataType4 id4;
+                ...
+	};
+</PRE></B></TT>
+<P>
+說明：
+<OL>
+  <LI>id1 與 id2， 為公用資料成員 (data member) 或變數， (將 id1 與 id2 說是變數
+      是不正確的， 因其不具有記憶体空間。) 公用變數於程式各處均可引用。
+  <LI>id3 與 id4， 為私用變數， 僅有 該 class 的成員函數 (及其他，如 
+      friend 函數) 中可以引用該變數。
+  <LI>className 如同 一個使用者自定的 struct 資料型態， 其變數的 定義方式如同
+      一般的變數的定義一般， 即 <TT>className objectName;</TT>。 此時， 變數
+      <TT>objectName</TT> 已不稱為變數， 而稱為 物件。
+</OL>
+以例來說明如下。
+<P>
+<B>例 1：</B> 類別 CTest 的宣告 與 物件 object 的定義。
+<TT>
+<PRE>
+      #include &lt;iostream.h>
+
+      class CTest            // 類別 CTest 的宣告
+      {
+          public:
+             int x, y;
+          private:
+             int a, b;
+      };
+
+      main()
+      {
+          CTest object;      // 物件 object 的定義
+
+          object.x = 2;      // 資料成員 x 的引用
+          object.y = 3;      // 資料成員 y 的引用
+
+//        object.a = 4;      // compile error
+
+          cout << "x = " << object.x << "; y = " << object.y << endl;
+      }
+</PRE>
+</TT>
+<P>
+說明：
+<OL>
+  <LI>該程式宣告一類別 (class) 其名稱為 CTest， 大寫的 C 表示 class 的宣告。
+      該類別有 兩個 自用的變數 a 與 b， 及 兩個 公用變數 x 與 y。</LI>
+  <LI>於 class 的宣告處 之外， 僅有 公用 的 資料成員 與 公用 的成員函數 方能被引用。
+      因此， 於 主程式 中 定義了 一個 物件 <TT>object</TT>，
+      因 x 與 y 為公用變數， 如同 struct 的使用方式， 我們 以 <TT>object.x</TT>
+      與 <TT>object.y</TT> 來引用變數 x  與 y。</LI>
+  <LI>a 與 b 為私用變數， 於主程式 中引用它們， 如 <TT>object.a = 4;</TT>
+      與 <TT>object.b = 5;</TT>  是會產生編譯錯誤 (compile error)。</LI>
+  <LI>該程式的執行結果為<BR>
+      <TT>x = 2; y = 3</TT></LI>
+</OL>
+<P>
+註：
+<OL>
+ <LI>對於任意一 struct 資料型態 皆有一對等的 class。 反之， 則不一定成立。
+ <LI>struct 資料型態 可以是 階層式 的架構， class 的架構 也可以是 階層式，
+     如例 2。
+</OL>
+<P>
+<B>例 2：</B>
+<TT>
+<PRE>
+      #include &lt;iostream.h>
+
+      class CA
+      {
+          class CB
+          {  public: int z; }
+
+          public:
+             int x;
+             CB w;
+      }
+
+      main()
+      {  CA object;
+
+         object.x = 2;
+         object.w.z = 3;
+         cout << "x = " << object.x << "; z = " << object.w.z << endl;
+      }
+</PRE>
+</TT>
+<P>
+說明：
+<OL>
+  <LI>class CA 的宣告 含 class CB 的宣告。
+  <LI>該程式執行結果為<BR>
+      <TT>x = 2; z = 3</TT></LI>
+</OL>
+
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="second">
+<HR>
+<!--------------------第 12.2 節--------------------------------------->
+<P>
+  <B>第 12.2 節  含成員函數的類別宣告 與 物件的定義</B>
+<P>
+欲達到 資料的一致性， 資料的隱藏是一個可行的辦法。 class 的使用
+就具有這種功能， 就是將 作用在 資料(成員) 的 (成員)函數 與 資料(成員)
+結合在一起，
+並限定 其 使用權限以達成 資料使用 的 一致性， 如此一來 就 可達到
+資料的抽象化。 資料的抽象化 的好處 是 對於一個 class 就知道
+如何 去使用它， 省去對其 內部詳細 架構的了解， 就像 一個函數 <TT>sqrt()</TT>
+就代表一串的 程式碼， 亦是一種 抽象化， 我們 可以 省去對其 
+程式碼 的了解 就可直接 使用該函數。
+<P>
+一個類別的成員函數， 亦可分成 自用 與 公用 的 使用方式，
+公用部分 亦可稱為 使用介面。 使用者僅知道 使用介面 就可以 使用 該類別，
+可以 省去 對使用介面 的 詳細 內容。
+<P>
+例如， 於第 11 章所提的堆疊 (stack) 的類別 <TT>CStack</TT>， 我們只要知道
+其 public 函數的作用， 如 <TT>isEmpty()</TT>、 <TT>isFull()</TT>、
+<TT>push(char c)</TT> 及 <TT>pop()</TT>，
+就可直接使用它們，如例 3。
+<P>
+<B>例 3：</B> class CStack 與 object stack
+<TT><PRE>
+        class  CStack
+        {   
+	    public:
+                int  isEmpty( );
+                int  isFull( );
+               void  push(char c);
+               char  pop( );
+
+            ...
+         }
+
+         main()
+         {
+            CStack stack;
+            char   c;
+            ...
+            if(!stack.isFull())
+               stack.push(c);
+            ...
+            if(!stack.isEmpty())
+               c = stack.pop();
+
+         }
+</PRE></TT>
+一般而言， 一個 class 的宣告， 可以將之分成兩個 檔案， 一個是
+.h 檔， 另一個是 .cpp 檔。
+<P>
+.h 檔含 class 資料成員的宣告 及 成員函數的標題(即，宣告)， 但不含
+成員函數的定義(即，函數主体)。 .cpp 檔 才含成員函數的主体， 如例 4。
+<P>
+<B>例 4：</B> 檔案 bstree.h 含 struct node 及 class CBSTree 的宣告，
+class CBStree 是用來建立一 二元搜尋樹。 二元搜尋樹 的定義 將於第 4 節
+討論， 二元搜尋樹 的功能 有 
+<UL>
+  <LI><TT>find(int v)</TT> 用來查看 v 是否在 二元搜尋樹中， 如果在，
+      則 return 1， 否則 return 0。
+  <LI><TT>insertItem(int v)</TT> 用來將 v 加入 二元搜尋樹中。
+  <LI><TT>deleteItem(int v)</TT> 從 二元搜尋樹中 將所有的 v 刪除。
+  <LI><TT>printOut(int traversalType)</TT>  如果 traversalType= 0，
+      則由小而大列印； traversalType= 1， 則由大而小列印；
+      traversalType= -1， 則按 preorder 方式列印。
+</UL>
+檔案 bstree.h 的內容如下：
+<TT>
+<PRE>
+typedef int nodeValueType;
+struct node{
+	struct node *left, *right;
+	nodeValueType value;
+};
+
+class CBSTree{
+
+//operations
+private:
+	void insertNodes(struct node *pNode, nodeValueType v);
+	void deleteTree(struct node *pNode);
+	void printNodeValue(struct node *pNode);
+	void printPreOrder(struct node *pNode);
+	void printInOrder(struct node *pNode);
+	void printMAxMin(struct node *pNode);
+	int searchNodes(struct node *pNode, nodeValueType v);
+	
+//constructor
+public:
+	CBSTree(){root = 0;}
+
+//destructor : need to clear all dynamic storages
+public:
+	~CBSTree(){ deleteTree(root); }
+
+//operations
+public:
+	int find(nodeValueType v)
+	{  return searchNodes(root, v);}
+	void insertItem(nodeValueType v)
+	{  insertNodes(root, v); }
+	void deleteItem(nodeValueType v);
+	void printOut(int traversalType);
+
+// attributes
+private:
+	struct node *root;
+};
+
+</PRE>
+</TT>
+說明：
+<OL>
+  <LI>class CBSTree 的宣告 僅含一個 變數 <TT>struct node *root;</TT>。
+  <LI>class CBSTree 含 private 函數 如
+       <UL>
+         <LI><TT>void insertNodes(struct node *pNode, nodeValueType v);</TT>
+             將 v 加入 以 *pNode 為 root 的 subtree 中。
+         <LI><TT>void deleteTree(struct node *pNode);</TT>
+             將  以 *pNode 為 root 的 subtree 中的每一個 node 清掉。
+         <LI><TT>void printNodeValue(struct node *pNode);</TT>
+             將 pNode 所指 node 的值列印出來。
+         <LI><TT>void printPreOrder(struct node *pNode);</TT>
+             以遞迴方式將 pNode 所指的 tree 依 preorder 的方式 將值列印出來。
+         <LI><TT>void printInOrder(struct node *pNode);</TT>
+             以遞迴方式將 pNode 所指 tree 的值， 由小而大列印出來。
+         <LI><TT>void printMAxMin(struct node *pNode);</TT>
+             以遞迴方式將 pNode 所指 tree 的值， 由大而小列印出來。
+         <LI><TT>int searchNodes(struct node *pNode, nodeValueType v);</TT>
+             以遞迴方式於 pNode 所指的 tree， 查看 v 是否在 tree 中，
+             如果在，則 return 1， 否則 return 0。
+       </UL>
+  <LI>class CBSTree 含 public 函數 有find()、 insertItem()、 deleteItem() 與
+      printOut()， 形成該 class 的 介面。
+</OL>
+<p>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="third">
+<HR>
+<!--------------------第 12.3 節--------------------------------------->
+<P>
+  <B>第 12.3 節  遞迴式類別宣告</B>
+<P>
+於第 2 節的 例 4 中 struct node 的宣告 含有 struct node 的指標， 而形成一
+遞迴式的宣告， 即
+<TT><PRE>
+struct node{
+	struct node *left, *right;
+	nodeValueType value;
+};
+</PRE></TT>
+對於 class 的宣告 亦是如此， 即 class 的宣告 本身 可以含 該 class 的 指標，
+如同 struct 一樣， 但不能 含 該 class 的變數(物件)。
+<p>
+因此， 對於 例 4 中 我們 可以 合併 struct node 與
+class CBSTree 的宣告 成為 下列的方式。
+<TT><PRE>
+class CBSTree
+{
+  ... 
+// 以上皆同例 4 中 class CBSTree 的宣告
+// attributes
+private:
+	CBSTree *left, *right;
+	nodeValueType value;
+};
+</PRE></TT>
+註： 下列 class A 的宣告為何無法成立？
+<TT><PRE>
+     class A
+     {
+        public:
+	    A   a;
+	    int value;
+     };
+</PRE></TT>
+解：
+<BLOCKCODE>
+如果 一個 class A 的物件佔有 <I>x</I> bytes， int 佔有 <I>y</I> bytes，
+則 <I>x = x + y</I>。 該式欲有解， 除非 <I>x = infinity</I>。 因此，
+此種遞迴式 的宣告 是無法成立的。
+</BLOCKCODE>
+<P>
+一般而言， 只要有 class 的標題， 其主體尚未宣告 就可以使用該 class 的
+指標， 如例 5。
+<p>
+<B>例 5：</B>class 的標題。
+<TT><PRE>
+     #include &lt;iostream.h>
+
+     class A;  // class A 的標題
+
+     class B
+     {
+        public:
+	    A   *a;  // 這是沒有問題， 雖然 class A 尚未宣告完成，
+                     // 但 class A; 已經有了。
+//          A    x;  // 這是有問題的， 因 class A 的 size 未知。
+	    int  v;
+     };
+
+     class A
+     {
+        public:
+            B   b;  // 這也是沒有問題， 因 class B 以宣告完成。
+            int c;
+     };
+
+     main()
+     {
+        A x;
+
+        x.c = 1;
+        x.b.v = 2;
+        x.b.a = new A;
+        x.b.a->c=3;
+        x.b.a->b.v=4;
+
+        cout << "x.c= " << x.c;
+        cout << "; x.b.v= " << x.b.v << endl;
+        cout << "x.b.a->c= " << x.b.a->c;
+        cout << "; x.b.a->b.v= "; << x.b.a->b.v << endl;
+     }
+</PRE></TT>
+說明：
+<OL>
+ <LI><TT>x.b.a</TT> 為一 class 指標。
+ <LI>該程式的輸出為
+<TT>
+<PRE>
+x.c= 1; x.b.v= 2
+x.b.a->c= 3; x.b.a->b.v= 4
+</PRE>
+</TT>
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="fourth">
+<HR>
+<!--------------------第 12.4 節--------------------------------------->
+<P>
+  <B>第 12.4 節  二元搜尋樹基本資料結構</B>
+<P>
+一個 二元搜尋樹 (binary seach tree) 為一 connected graph， 並 滿足 下列條件：
+<OL>
+  <LI>不含 cycle 的 graph。
+  <LI>每一個 node 可以 有 0 個、 1 個 或 2 個 children， 稱之為 left child 與
+      right child。
+  <LI>每一個 node 可以 含有 一數值 (或 其他)， 每一個 node 所含有的 數值 皆
+      不比其 left subtree 中 任意 一個 node 所含的 數值 還小， 同時， 也不比其
+      right subtree 中 任意 一個 node 所含的 數值 還大。
+  <LI>tree operations 為 search、 insert 與 delete。
+</OL>
+<P>一個 node 的 基本資料結構 為
+<TT>
+<PRE>
+     typedef int nodeValueType;
+     struct node
+     {
+	  struct node *left, *right;
+	  nodeValueType value;
+     };
+</PRE>
+</TT>
+其概念性的圖形如下：
+<TT>
+<PRE>
+            ┌─┬──┬─┐
+     left ←┼  │int │  ┼→ right
+            └─┴──┴─┘
+</PRE>
+</TT>
+<P>
+例 6 所示即為一 二元搜尋樹。
+<P>
+<B>例 6：</B>
+<TT>
+<PRE>
+                                   root
+                                    ↓
+                             ┌─┬──┬─┐
+                   ┌────┼  │ 30 │  ┼───┐
+                   │        └─┴──┴─┘      │
+                   ↓                              ↓
+            ┌─┬──┬─┐                ┌─┬──┬─┐
+        ┌─┼  │ 20 │\ │          ┌──┼  │ 50 │  ┼─┐
+        │  └─┴──┴─┘          │    └─┴──┴─┘  │
+        ↓                            ↓                      ↓
+ ┌─┬──┬─┐              ┌─┬──┬─┐        ┌─┬──┬─┐
+ │/ │ 10 │  ┼┐            │/ │ 40 │\ │    ┌─┼  │ 70 │\ │
+ └─┴──┴─┘│            └─┴──┴─┘    │  └─┴──┴─┘
+                 ↓                                ↓
+          ┌─┬──┬─┐                  ┌─┬──┬─┐
+          │/ │ 15 │\ │                  │/ │ 60 │\ │
+          └─┴──┴─┘                  └─┴──┴─┘
+
+
+</PRE>
+</TT>
+一個 二元搜尋樹的 搜尋方式 為 從 root 開始， 如果 目前 node 所含 的值
+為 所要 搜尋 的， 即可停止 搜尋， 如果 目前 node 所含 的值 比
+所要 搜尋 的 大， 則 移向 左支去 搜尋， 不然 就移向 右支去 搜尋。
+<P>
+insert 的方式與搜尋方式，其移動的方式基本上是相同的。
+不過仍然有些不同，如果目前 node 所含的值比所要 insert 的還大，
+則移向左支。如果左支為空，則左支加入一個新的 node 。
+如果目前 node 所含的值比所要 insert 的還小，就移向右支。
+如果右支為空，則右支加入一個新的 node。
+<P>
+上一個 二元搜尋樹 insert 35 之後 的結果 如例 7 所示。
+<P>
+<B>例 7：</B>
+<TT>
+<PRE>
+                                   root
+                                    ↓
+                             ┌─┬──┬─┐
+                   ┌────┼  │ 30 │  ┼───┐
+                   │        └─┴──┴─┘      │
+                   ↓                              ↓
+            ┌─┬──┬─┐                ┌─┬──┬─┐
+        ┌─┼  │ 20 │\ │          ┌──┼  │ 50 │  ┼─┐
+        │  └─┴──┴─┘          │    └─┴──┴─┘  │
+        ↓                            ↓                      ↓
+ ┌─┬──┬─┐              ┌─┬──┬─┐        ┌─┬──┬─┐
+ │/ │ 10 │  ┼┐            │  │ 40 │\ │    ┌─┼  │ 70 │\ │
+ └─┴──┴─┘│            └┼┴──┴─┘    │  └─┴──┴─┘
+                 ↓              ↓                ↓
+          ┌─┬──┬─┐┌─┬──┬─┐  ┌─┬──┬─┐
+          │/ │ 15 │\ ││/ │ 35 │\ │  │/ │ 60 │\ │
+          └─┴──┴─┘└─┴──┴─┘  └─┴──┴─┘
+
+
+</PRE>
+</TT>
+<P>
+delete 的動作比較複雜一點， 所要 delete 值所在的 node 依其 children 個數的
+不同有 不同的 處理方法。 其處理方法如下：
+<OL>
+  <LI>如果該 node 為一 leaf， 即沒有 child， 則將 該 node 去掉即可。 當然
+      也要考慮 該 node 是否為 root。
+  <LI>如果該 node 有一 child node， 且有一 parent node， 則將 parent node
+      連上 child node， 並將 該 node 去掉即可。 如果該 node 沒有 parent node，
+      即 該 node 為 root， 則將 child node 變成 root， 並將 該 node 去掉即可。
+  <LI>如果該 node 有兩 children， 則找其 左支 中含 最大值 的 node，
+     (或 右支 中含 最小值 的 node 亦可) 將這兩個 node 的值對調， 再去掉
+     左支 中含 最大值 的 node。
+</OL>
+<P>
+<B>例 8：</B> 將例 7 中的二元搜尋樹 欲去掉 50， 因 含 50 的 node
+ 有兩個 children， 其左支 最大值 為 40， 將這兩值 對調後， 再去掉 含 40
+ 的 node， 其結果如下圖。
+<TT>
+<PRE>
+                                   root
+                                    ↓
+                             ┌─┬──┬─┐
+                   ┌────┼  │ 30 │  ┼───┐
+                   │        └─┴──┴─┘      │
+                   ↓                              ↓
+            ┌─┬──┬─┐                ┌─┬──┬─┐
+        ┌─┼  │ 20 │\ │          ┌──┼  │ 40 │  ┼─┐
+        │  └─┴──┴─┘          │    └─┴──┴─┘  │
+        ↓                            ↓                      ↓
+ ┌─┬──┬─┐              ┌─┬──┬─┐        ┌─┬──┬─┐
+ │/ │ 10 │  ┼┐            │/ │ 30 │\ │    ┌─┼  │ 70 │\ │
+ └─┴──┴─┘│            └─┴──┴─┘    │  └─┴──┴─┘
+                 ↓                                ↓
+          ┌─┬──┬─┐                  ┌─┬──┬─┐
+          │/ │ 15 │\ │                  │/ │ 60 │\ │
+          └─┴──┴─┘                  └─┴──┴─┘
+
+
+</PRE>
+</TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="fifth">
+<HR>
+<!--------------------第 12.5 節--------------------------------------->
+<P>
+  <B>第 12.5 節  二元搜尋樹程式</B>
+<P>
+下列檔案 含有 class CBSTree 的定義 及其使用：
+<UL>
+  <LI>於檔案 <A HREF="BSTree.h" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/programs/ch12/BSTree.h">BSTree.h</A>
+      中 有 class CBSTree 的宣告。 
+  <LI>檔案 <A HREF="BSTree.cpp" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/programs/ch12/BSTree.cpp">BSTree.cpp</A> 
+      則含該 class 的主要 函數的定義。
+  <LI>檔案 <A HREF="main.cpp" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/programs/ch12/main.cpp">main.cpp</A> 
+      的內容如下。
+</UL>
+<TT>
+<PRE>
+#include &lt;iostream.h>
+#include "BSTree.h"
+
+void main()
+{
+	nodeValueType a[]={30, 20, 10,  5, 80,
+		           70, 60, 40, 50, 90,
+			   28, 35, 45, 65, 80,
+			   35, 25, 35, 32, 38, 
+			   12, 35,  9,  1,  7};
+	int i;
+	CBSTree tree;
+
+	for(i=0; i<25; i++)
+           tree.insertItem(a[i]);
+
+	tree.printOut(0);
+	cout << endl;
+
+	tree.deleteItem(30);
+	tree.printOut(0);
+	cout << endl;
+
+	tree.deleteItem(70);
+	tree.printOut(0);
+	cout << endl;
+
+	tree.deleteItem(35);
+	tree.printOut(0);
+	cout << endl;
+
+	tree.deleteItem(90);
+	tree.printOut(0);
+	cout << endl;
+}
+</PRE>
+</TT>
+該程式的執行結果如下：
+<TT>
+<PRE>
+1 5 7 9 10 12 20 25 28 30 32 35 35 35 35 38 40 45 50 60 65 70 80 80 90 
+1 5 7 9 10 12 20 25 28 32 35 35 35 35 38 40 45 50 60 65 70 80 80 90 
+1 5 7 9 10 12 20 25 28 32 35 35 35 35 38 40 45 50 60 65 80 80 90 
+1 5 7 9 10 12 20 25 28 32 38 40 45 50 60 65 80 80 90 
+1 5 7 9 10 12 20 25 28 32 38 40 45 50 60 65 80 80
+</PRE>
+</TT>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<A HREF="cpgch11.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch11.htm">回第 11 章</A><BR>
+<A HREF="cpgch13.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch13.htm">至第 13 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</html>

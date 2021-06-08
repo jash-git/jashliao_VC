@@ -1,0 +1,133 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Triangulation</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Triangulation（Under Construction!）</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Triangulation</p>
+<p>一個多邊形，沿對角線分割成三角形，對角線不交叉，稱做「三角剖分」。</p>
+<img src="PolygonTriangulation1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonTriangulation1.png">
+<p>實心多邊形，有N個頂點，恰可剖分成N-2個三角形（用掉N-3條對角線、內角總和(N-2)π）。證明很簡單，宛如刀削麵，不斷從邊邊角角割下三角形，同時觀察多邊形頂點數量，即可證得。</p>
+<p>空心多邊形，只要知道內與外各有多少頂點，就能推算三角形數量。留給讀者吧。</p>
+<p>總之，一個多邊形的三角形數量是固定的。至於如何剖分，則是接下來的課題。</p>
+<p class="t">Ear / Mouth</p>
+<p>「耳」是凸點與鄰點組成的三角形，而且對角線不與其他邊相交。「嘴」是凹點與鄰點組成的三角形。剩下來的點並沒有被叫做鼻子。</p>
+<img src="PolygonTriangulation2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonTriangulation2.png">
+<p>一個三角剖分，把三角形的相鄰關係，建立為圖，恰好是一棵樹。即是平面對偶。</p>
+<img src="PolygonTriangulation3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonTriangulation3.png">
+<p>耳就是樹葉。由此可得「兩耳定理」：四個點以上的多邊形至少有兩耳，且兩耳不重疊。</p>
+<p>也就是說，無論是哪種多邊形，必可不斷刵之！</p>
+<p class="t">演算法：判斷一點是否為耳（判斷兩鄰點是否能連成對角線）</p>
+<p>這很簡單，窮舉多邊形所有點，看看是否都在耳外，便是耳。可用外積判斷內外。O(N)。</p>
+<p>也可以窮舉多邊形所有邊，看看是否與對角線皆不相交，便是耳。線段相交實作麻煩，故乏人問津。O(N)。</p>
+<p class="t">演算法：找到一耳</p>
+<p>O(N)，原理是Divide and Conquer，不太健康，鮮為人知。</p>
+<p><a href="javascript:if(confirm('http://cgm.cs.mcgill.ca/~godfried/teaching/cg-projects/97/Ian/algorithm2.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://cgm.cs.mcgill.ca/~godfried/teaching/cg-projects/97/Ian/algorithm2.html'" tppabs="http://cgm.cs.mcgill.ca/~godfried/teaching/cg-projects/97/Ian/algorithm2.html" class="l">http://cgm.cs.mcgill.ca/~godfried/teaching/cg-projects/97/Ian/algorithm2.html</a></p>
+<p class="t">演算法：實心多邊形的三角剖分</p>
+<p>用O(N)時間找個耳，持續刵N-3個耳即得。O(N^2)。</p>
+<p>比較健康的方式是，逐點判斷是否為耳，勤做紀錄，亦可達到O(N^2)。資料結構是doubly linked list。</p>
+<textarea>
+int ear[9];		// 0非耳、1是耳、-1未知也
+int L[9], R[9];	// doubly linked list
+
+void triangulation(vector<Point>& polygon)
+{
+	int N = polygon.size();
+
+	// 初始化 doubly linked list
+	for (int i=0; i<N; ++i)
+		L[i] = i-1, R[i] = i+1;
+	L[0] = N-1, R[N-1] = 0;
+
+	// 一開始所有點都不知是否為耳
+	memset(ear, -1, sizeof(ear));
+
+	// 刵N-3次
+	int i = 0;
+	for (int k=0; k<N-3; ++k)
+	{
+		// 嘗試找到一耳，根據兩耳定理一定找得到。
+		while (true)
+		{
+			// 未知，則算。
+			if (ear[i] == -1) ear[i] = is_ear(i, polygon);
+			// 找到一耳。
+			if (ear[i] == 1) break;
+			// doubly linked list的下一點。
+			i = R[i];
+		}
+
+		cout << "找到一耳" << L[i] << i << R[i];
+
+		// 刵。僅有左右鄰點受到影響，狀態成為未知。
+		ear[R[i]] = ear[L[i]] = -1;
+
+		// 從doubly linked list去除此點。
+		R[L[i]] = R[i];
+		L[R[i]] = L[i];
+		i = R[i];
+	}
+
+	cout << "找到一耳" << L[i] << i << R[i];
+}
+</textarea>
+<p>用均攤分析求時間複雜度：</p>
+<p>不知是否為耳的點，一開始有N點，之後每刵一次最多增加2點，共刵N-3次──不知是否為耳的點，最多出現3N-6點。</p>
+<p>判斷是否為耳，需時O(N)，最多判斷3N-6次，推得總時間複雜度是O(N^2)。</p>
+<p class="e">ICPC 4426</p>
+<p class="t">演算法：凸多邊形的三角剖分</p>
+<p>到處皆可刵，刵完仍是凸多邊形，仍是到處皆可刵，時間複雜度為O(N)。感覺像是連續平滑函數作微分，不管怎麼微都還是可微。</p>
+<p class="t">演算法：單調多邊形的三角剖分</p>
+<p>時間複雜度O(N)。</p>
+<p class="t">演算法：有洞多邊形的三角剖分</p>
+<p>時間複雜度下限O(NlogN)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Trapezoidalization（Under Construction!）</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Trapezoidalization</p>
+<p>一個多邊形，沿著穿過頂點的水平線分割成梯形，稱做「梯形剖分」。</p>
+<img src="Trapezoidalization1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Trapezoidalization1.png">
+<p class="e">ICPC 2479 3702</p>
+<p class="t">Triangulation</p>
+<p class="e">UVa 12310</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Convex Partition（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p>Hertel-Mehlhorn algorithm</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum Weight Triangulation（Under Construction!）</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p>要得到每個三角形周長總和最小的三角剖分，採用Dynamic Programming，時間複雜度為O(N^2)。此問題與Matrix Chain Multiplication關係密切，時間複雜度可以加速至O(NlogN)。</p>
+<p>要得到分割線段長度總和最小的三角剖分，不太清楚。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minmax Angle Triangulation（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p>O(N^2 * logN)。</p>
+<p>Edelsbrunner et al. An O(n2 log n) time algorithm for the minmax angle triangulation.</p>
+<p class="e">ICPC 3132 4458</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Art Gallery Problem（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<pre>
+簡單多邊形：邊不相交的多邊形
+問題：一個簡單多邊形，至少要放幾個360度鏡頭，才能看到所有地方？
+NP-Complete問題
+上限是ceil(n/3)，證明是：簡單多邊形三角化後，點著色數為三，在同一個顏色放鏡頭。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Visibility Graph（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="e">UVa 10762 ICPC 3306</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

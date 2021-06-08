@@ -1,0 +1,468 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Path</title></head><body>
+<div class="a"><div class="h">
+<p class="b">All Pairs Shortest Paths: Label Correcting Algorithm</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>一張有向圖，求出所有兩點之間的最短路徑，順便偵測圖上是否有負環。</p>
+<p class="t">演算法</p>
+<pre>
+令w[a][b]是a點到b點的距離（即是邊的權重）。
+令d[a][b]是a點到b點的最短路徑長度，設為w[a][b]。
+
+1. 重複下面這件事，直到圖上任兩點之間再也找不到捷徑：
+　甲、找到i點到j點的捷徑i~k~j：d[i][k] + d[k][j] < d[i][j]。
+　乙、更新i點到j點的最短路徑：d[i][j] = d[i][k] + d[k][j]。
+　丙、如果d[i][j]被標記V次以上，表示圖上有負環。演算法立刻結束。
+</pre>
+<textarea t="找出所有兩點之間最短路徑＋偵測負環（adjacency matrix）">
+int w[9][9];	// 一張有權重的圖：adjacency matrix
+int d[9][9];	// 紀錄各個點到各個點的最短路徑長度
+int path[9][9];	// 紀錄各個點在最短路徑樹上的父親是誰
+int n[9][9];	// 記錄各個點被標記幾次，初始化為零。
+queue<int> Q;	// 一個存放點的容器：queue。
+
+void label_correcting()
+{
+	for (int i=0; i<9; i++)
+		for (int j=0; j<9; j++)
+		{
+			d[i][j] = w[i][j];
+			n[i][j] = 1;
+		}
+
+	while (還能找到三個點ijk讓d[i][k] + d[k][j] < d[i][j])
+	{
+		// 圖上有負環，最短路徑樹不存在
+		if (++n[i][j] >= 9) return;
+
+		// 更新由起點到b點的最短路徑
+		d[i][j] = d[i][k] + d[k][j];
+		parent[i][j] = k;
+	}
+}
+
+int main()
+{
+	int a, b;
+	while (cin >> a >> b)
+		cout << "a到b的最短路徑為" << d[a][b];
+	return 0;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">All Pairs Shortest Paths: Floyd-Warshall Algorithm</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">演算法：找出所有兩點之間最短路徑</p>
+<p>請參考本站文件「<a href="Reachability.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Reachability.html">Transitive Closure: Warshall's Algorithm</a>」。Floyd只是把Warshall's Algorithm套用在最短路徑問題上面罷了。</p>
+<pre>
+d(i, j, k) = min( d(i, k, k+1) + d(k, j, k+1), d(i, j, k+1) )
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^
+                  經過第k點                    沒有經過第k點
+
+d(i, j ,k)：紀錄由i點到j點的最短路徑長度，當中繼點遞迴到第k點的時候。
+</pre>
+<p>時間複雜度是O(V^3)。空間複雜度和Warshall's Algorithm類似，使用Dynamic Programming紀錄每個小問題的答案。另外，由於計算順序以及最小值運算的關係，造成記憶體可以重複使用，只需要開二維陣列。</p>
+<textarea t="找出所有兩點之間最短路徑長度（adjacency matrix）">
+int w[9][9];	// 一張有權重的圖
+int d[9][9];	// 最短路徑長度
+
+void Floyd_Warshall()
+{
+	for (int i=0; i<9; i++)
+		for (int j=0; j<9; j++)
+			d[i][j] = w[i][j];
+
+	for (int i=0; i<9; i++)
+		d[i][i] = 0;
+
+	for (int k=0; k<9; k++) 	// 嘗試每一個中繼點
+		for (int i=0; i<9; i++)	// 計算每一個i點與每一個j點
+			for (int j=0; j<9; j++)
+				if (d[i][k] + d[k][j] < d[i][j])
+					d[i][j] = d[i][k] + d[k][j];
+}
+</textarea>
+<p>有兩種紀錄路徑的方法。</p>
+<textarea t="找出所有兩點之間最短路徑（adjacency matrix）">
+int w[9][9];
+int d[9][9];
+int medium[9][9];	// 由i點到j點的路徑，其中繼點為medium[i][j]。
+
+void Floyd_Warshall()
+{
+	for (int i=0; i<9; i++)
+		for (int j=0; j<9; j++)
+		{
+			d[i][j] = w[i][j];
+			medium[i][j] = -1;	// 預設為沒有中繼點
+		}
+
+	for (int i=0; i<9; i++)
+		d[i][i] = 0;
+
+	for (int k=0; k<9; k++)
+		for (int i=0; i<9; i++)
+			for (int j=0; j<9; j++)
+				if (d[i][k] + d[k][j] < d[i][j])
+				{
+					d[i][j] = d[i][k] + d[k][j];
+					medium[i][j] = k;	// 由i點走到j點經過了k點
+				}
+}
+
+// 這支函式並不會印出起點和終點，必須另行印出。
+void find_path(int i, int j)		// 印出由i點到j點的最短路徑
+{
+	if (medium[i][j] == -1) return;	// 沒有中繼點就結束
+
+	find_path(i, medium[i][j]);		// 先把前面的路徑都印出來
+	cout << medium[i][j];			// 再把中繼點印出來
+	find_path(medium[i][j], j);		// 最後把後面的路徑都印出來
+}
+</textarea>
+<textarea t="找出所有兩點之間最短路徑（adjacency matrix）">
+int w[9][9];
+int d[9][9];
+int next[9][9];	// 由i點到j點的路徑，第二點為next[i][j]。
+
+void Floyd_Warshall()
+{
+	for (int i=0; i<9; i++)
+		for (int j=0; j<9; j++)
+		{
+			d[i][j] = w[i][j];
+			next[i][j] = j;	// 一開始沒有中繼點，所以第二點就是終點。
+		}
+
+	for (int i=0; i<9; i++)
+		d[i][i] = 0;
+
+	for (int k=0; k<9; k++)
+		for (int i=0; i<9; i++)
+			for (int j=0; j<9; j++)
+				if (d[i][k] + d[k][j] < d[i][j])
+				{
+					d[i][j] = d[i][k] + d[k][j];
+
+					//由i點到j點的路徑的第二點，
+					// 正是由i點到k點的路徑的第二點。
+					next[i][j] = next[i][k];
+				}
+}
+
+// 遞迴版
+void find_path(int i, int j)		// 印出由i點到j點的最短路徑
+{
+	cout << i;						// 先把起點印出來
+	if (i != j)						// 當還有中繼點的時候
+		find_path(next[i][j], j);	// 再把第二點以後的路徑都印出來
+}
+
+// 迴圈版
+void find_path(int a, int b)		// 印出由a點到b點的最短路徑
+{
+	for (int i=a; i!=b; i=p[i][b])
+		cout << i;
+	cout << b;
+}
+</textarea>
+<p class="t">演算法：偵測負環</p>
+<p>除了使用Bellman-Ford Algorithm的方式以外，另外還有個更直觀的檢查方法：</p>
+<p>d[i][j]意指著一條由i點走到j點的最短路徑長度。以d[i][i]來說，其實它代表著一條由i點出發，周遊在外，最後繞一圈回到i點的最短路徑長度──它亦是一只環。因此，如果d[i][i]這條繞一圈的路徑長度是負值，就表示這是一只負環，或者表示這條路徑包含負環、這條路徑以負環作為捷徑。</p>
+<p>最後，只要檢查所有可以作為環的起點的i點，就可以知道圖上有沒有負環。</p>
+<textarea t="偵測負環（adjacency matrix）">
+bool negative_cycle()
+{
+	for (int i=0; i<9; i++)
+		if (d[i][i] < 0)
+			return true;
+	return false;
+}
+</textarea>
+<p class="t">偵測連通</p>
+<p>要偵測由一個點到另一個點連不連通，可以在起點使用遍歷演算法，或者之前所述的最短路徑演算法，若可由起點到達終點，便是連通。然而一次只能計算一個起點到其他點連不連通。</p>
+<p>使用Floyd-Warshall Algorithm，就可以一口氣算出圖上各點之間連不連通。相當方便。</p>
+<p>圖的資料結構為adjacency matrix的話，那麼不管是用DFS、BFS還是Floyd-Warshall Algorithm來計算所有點之間的距離（或者連通），時間複雜度都是一樣多的。圖的資料結構為adjacency lists的話，則DFS、BFS可能會因為邊的數量少，而會快一點；然而事實上Floyd-Warshall Algorithm的程式碼比較乾淨俐落，實際效率通常不比DFS、BFS差的！各位可以自行斟酌一番。</p>
+<p class="t">演算法應用</p>
+<p>一個問題若有下述性質，則可嘗試此演算法：</p>
+<p>一、繞路：由i點到j點時，若繞路結果會更好的話，那就一定要繞路。但是至多只能將所有點都恰好繞過一次，絕不能重複地經過同一點，否則會照下面第二點所述，使結果變成無窮無盡的好，產生無限循環。</p>
+<p>二、最佳化：只要由i點到j點有辦法變得更好的時候，其他事物也一定可以同時共用、享受這個由i點到j點的好處。附帶一提的是，有一種特殊情況是「無限循環」：i到j讓a到b變好，a到b讓i到j變好，不斷循環下去，變成無窮無盡的好。負環也是無限循環的一種。</p>
+<p class="t">三角不等式 v.s. 繞路性質</p>
+<p>三角不等式是指兩邊長的和必大於第三邊、兩邊長的差必小於第三邊。方才提到的繞路性質則是指兩邊長的和最好小於第三邊（三角形的邊成了路徑、兩邊和成了距離），和三角不等式有點類似，但不完全相同。</p>
+<p class="e">UVa 104 125 423 436 534 544 567 10048 10099 10246 10342 10985 10987</p>
+<p class="t">延伸閱讀：找出邊數最少、然後字典順序最小的最短路徑</p>
+<p>不知道要怎麼做。筆者隨便寫了一支程式碼，不知道對不對。</p>
+<textarea t="找出所有兩點之間，邊數最短、然後字典順序最小的最短路徑（adjacency matrix）">
+int w[9][9];
+int d[9][9];
+int edge[9][9];	// 由i點到j點的最短路徑，邊數為edge[i][j]。
+int next[9][9];	// 由i點到j點的路徑，第二點為next[i][j]。
+
+bool relax(int i, int j, int k)
+{
+	return
+			d[i][k] + d[k][j] < d[i][j]
+		||
+			d[i][k] + d[k][j] == d[i][j] &&
+			edge[i][k] + edge[k][j] < edge[i][j]
+		||
+			d[i][k] + d[k][j] == d[i][j] &&
+			edge[i][k] + edge[k][j] == edge[i][j] &&
+			next[i][k] < next[i][j];
+}
+
+void Floyd_Warshall()
+{
+	for (int i=0; i<9; i++)
+		for (int j=0; j<9; j++)
+		{
+			d[i][j] = w[i][j];
+			edge[i][j] = 1;	// 邊數為1
+			next[i][j] = j;	// 紀錄第二點
+		}
+
+	for (int k=0; k<9; k++)
+		for (int i=0; i<9; i++)
+			for (int j=0; j<9; j++)
+				if (relax(i, j, k))
+				{
+					d[i][j] = d[i][k] + d[k][j];
+					edge[i][j] = edge[i][k] + edge[k][j];
+					next[i][j] = next[i][k];
+				}
+}
+
+void find_path(int i, int j)
+{
+	cout << i;
+	if (i != j) find_path(next[i][j], j);
+}
+</textarea>
+<p class="e">ICPC 4524</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">All Pairs Shortest Paths: Matrix Multiplication</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>請參考本站文件「<a href="Reachability.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Reachability.html">Transitive Closure: Matrix Multiplication</a>」。把矩陣加法改成最小值運算，矩陣乘法改成加法運算就可以了！時間複雜度為O(logV)次矩陣相乘的時間。</p>
+<p>偵測負環則可使用Floyd-Warshall Algorithm的方法。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">All Pairs Shortest Paths: Johnson's Algorithm</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">前情提要</p>
+<p>Johnson's Algorithm可以說是加強版的Dijkstra's Algorithm。由於Dijkstra's Algorithm無法用於邊的權重為負數的情況，所以Johnson's Algorithm首先重新調整邊的權重為非負數，並順便檢查圖上是否有負環，接著才放心的使用Dijkstra's Algorithm來計算所有兩點之間的最短路徑。</p>
+<p class="t">重新調整權重</p>
+<p>要如何調整權重，才不會影響最短路徑的路線呢？</p>
+<p>這裡介紹一個巧妙的方法：首先把圖上每一個x點都設定一個權重h(x)，然後將一條由i點到j點的邊的權重w(i, j)，重新調整成w'(i, j) = w(i, j) + h(i) - h(j)。</p>
+<p>此時，任取圖上的一條路徑s~t，其路徑長度就變成了：</p>
+<pre>
+  w'(s~t)
+= w'(sab…xt)
+= w'(s,a) + w'(a,b) + … + w'(x,t)
+= [ w(s,a)+h(s)-h(a) ] + [ w(a,b)+h(a)-h(b) ] + … + [ w(x,t)+h(x)-h(t) ]
+= w(s,a) + w(a,b) + … + w(x,t) + h(s) - h(t)
+= w(sab…xt) + h(s) - h(t)
+= w(s~t) + h(s) - h(t)
+</pre>
+<p>一加一減相消後，可以推導出簡潔的結果。</p>
+<p>由s點到t點的各條路徑的長度之中，其h(s)和h(t)都是定值，於是乎w(s~t)增減之時，w'(s~t)亦會同進退，長度的大小關係依舊不變，於是乎由s點到t點的最短路徑也就不動了。</p>
+<p>我們再看看圖上的環：</p>
+<pre>
+  w'(s~s)
+= w'(sab…s)
+= w(sab…s) + h(s) - h(s)
+= w(s~s)
+</pre>
+<p>圖上的環不會因調整權重而改變。就算是圖上有負環，最短路徑的存在性不會因調整權重而改變，</p>
+<p class="t">重新調整權重為非負數</p>
+<p>調整權重而不會影響最短路徑的方法已經有了。現在要想想如何好好設定h(x)的值，讓每一條邊的權重都可以調整為非負數。</p>
+<p>Johnson發現：最短路徑找到後，圖上每一條邊都不可能再做relaxation，式子可寫成d(i) + w(i, j) >= d(j)，經過移項之後就是w(i, j) + d(i) - d(j) >= 0，正好就是調整權重的式子。因此，只要令h(x)是由一個起點到各個x點的最短路徑長度，那麼調整後的權重就是非負數；無論起點是哪一點，這個式子都會成立。</p>
+<p>至於起點該選在哪裡好呢？注意到圖上的每一條邊都要重新調整權重、圖上每個點都必須設定h(x)值，因此選定的起點建立最短路徑樹後，必須涵蓋圖上每一個點，如此圖上每一個點才會有h(x)值。</p>
+<img src="Johnson'sAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Johnson'sAlgorithm1.png">
+<p>找起點頗麻煩。Johnson想出了一個絕妙方法，不必找起點：</p>
+<img src="Johnson'sAlgorithm2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Johnson'sAlgorithm2.png">
+<pre>
+一、在圖上增加一個點，並建立此點連向圖上其他點的邊，權重設定為零。
+　　如此找出的最短路徑樹必可涵蓋圖上所有點。
+二、由此點作為起點，執行Bellman-Ford Algorithm。
+　甲、由此點到各個X點的最短路徑長度，作為h(x)。
+　乙、順便檢查圖上是否有負環。
+三、移除新增的點及邊，還原這張圖。
+四、調整圖上每一條邊的權重：
+　　由i點連到j點的邊，令其權重為w(i, j)。
+　　新的權重為w'(i, j) = w(i, j) + h(i) - h(j)。
+</pre>
+<p class="t">演算法</p>
+<pre>
+一、調整圖上的邊為非負數。
+二、圖上每一點都作為起點，分別執行Dijkstra's Algorithm，
+　　以找出圖上任兩點之間的最短路徑。
+三、找出最短路徑後，對照原來的邊的權重，重新求出正確的最短路徑長度。
+　　或者直接利用h(x)逆推：w(s~t) = w'(s~t) - h(s) + h(t)。
+</pre>
+<p class="t">時間複雜度</p>
+<p>當圖上的邊很少時，做一次Bellman-Ford Algorithm以及做V次Dijkstra's Algorithm，比做一次Floyd-Warshall Algorithm還快一點點。各位可以算一算時間複雜度。</p>
+<p class="t">延伸閱讀：以最短路徑長度重新調整權重</p>
+<p>附帶一提，以最短路徑長度重新調整權重的話，所有最短路徑上的邊，其權重都會變成零。當要找出一張圖所有的最短路徑時，這是一個很好用的特性。</p>
+<p class="t">延伸閱讀：重新調整權重為非負數，另一種方式</p>
+<p>先前提到，令h(x)是由一個起點到各個x點的最短路徑長度，根據最短路徑之三角不等式h(i) + w(i, j) >= h(j)，移項之後w(i, j) + h(i) - h(j) >= 0，因此以w'(i, j) = w(i, j) + h(i) - h(j)得調整每一條邊的權重為非負數。</p>
+<p>事實上呢，令h(x)是由各個x點到一個終點的最短路徑長度，根據最短路徑之三角不等式w(i, j) + h(j) >= h(i)，移項之後w(i, j) - h(i) + h(j) >= 0，因此以w'(i, j) = w(i, j) - h(i) + h(j) = w(i, j) + (-h(i)) - (-h(j))亦得調整每一條邊的權重為非負數。</p>
+<p>起點出發改為抵達終點，調整權重要記得變號。</p>
+<img src="Johnson'sAlgorithm3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Johnson'sAlgorithm3.png">
+
+</div></div><div class="a"><div class="h">
+<p class="b">Point-to-Point Shortest Path: A* Search</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>一張有向圖，選定一個起點與一個終點，求出起點到終點的最短路徑。</p>
+<p class="t">直接套用Single Source Shortest Paths</p>
+<p>點到點最短路徑問題，可以直接套用單源最短路徑演算法。</p>
+<p>執行單源最短路徑演算法，一旦遇到終點就馬上停止，比起點到終點還要長的路徑就能略過計算，提升效率。</p>
+<img src="P2PShortestPath1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/P2PShortestPath1.png">
+<p>然而引申一個問題：單源最短路徑演算法找出了起點衍生的所有最短路徑，既然現在已經知道終點，那麼沒有通往終點的那些最短路徑們，能不能略過計算呢？</p>
+<p class="t">直接套用State Space Search</p>
+<p>單源最短路徑問題，可以套用「<a href="StateSpaceSearch.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StateSpaceSearch.html">State Space Search</a>」解決。</p>
+<p>至於點到點最短路徑問題，可以套用估計函數h(x)。好的估計函數，容易直奔終點，改善了方才的問題。</p>
+<img src="P2PShortestPath2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/P2PShortestPath2.png">
+<p>在二維平面上的最短路徑，我們可以用「當前點到終點的直線距離」作為估計函數h(x)。但是一般的圖的最短路徑，並沒有規律可循，無法估計距離，只能直接計算。</p>
+<p class="t">時間複雜度</p>
+<p>A*的時間複雜度仍與Label Setting Algorithm相同。但是實際上，A*容易直奔終點，所以效率快上許多。</p>
+<p>時間複雜度無法明確描述A*與Label Setting Algorithm的效率差異。各位將來可以發明更貼切的描述方式。</p>
+<p class="t">調整函數、估計函數</p>
+<p>Johnson's Algorithm的調整函數h(x)，State Space Search的估計函數h(x)，兩者都可以用來改變遍歷順序，並且不影響最短路徑的位置。事實上兩者大有關聯。</p>
+<img src="P2PShortestPath3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/P2PShortestPath3.png">
+<p>套用原本權重w(i, j)的Label Setting Algorithm、套用原本權重g(x)的Uniform-cost Search，兩者的遍歷順序完全相同。</p>
+<pre>
+  min { d(s~i) + w(i,j) }   尋找不在樹上、離起點最近的點。
+   j
+= min { d(s~j) }            整理成A*的模樣
+   j
+= min { g(j) }              整理成A*的模樣
+   j
+</pre>
+<p>套用調整函數w(i, j) - h(i) + h(j)的Label Setting Algorithm、套用估計函數g(x) + h(x)的A*，兩者的遍歷順序也正巧相同！</p>
+<pre>
+  min { d'(s~i) + w'(i,j) }               尋找不在樹上、
+   j                                      離起點最近的點
+= min { d(s~i) - h(s) + h(i)              分解成原本權重
+      + w(i,j) - h(i) + h(j) }
+= min { d(s~i) + w(i,j) + h(j) - h(s) }   整理
+= min { d(s~j)          + h(j) - h(s) }   整理成A*的模樣
+= min { g(j)            + h(j) - h(s) }   整理成A*的模樣
+= min { g(j)            + h(j) } - h(s)   h(s)為定值
+
+h(s) 從頭到尾都是固定值，所以不影響取最小值的結果。
+</pre>
+<p>因此，用Label Setting Algorithm得取代A*，用A*得取代Label Setting Algorithm。</p>
+<p>因此，調整函數得當作估計函數，估計函數得當作調整函數。調整權重之後，即是完成估計了。</p>
+<p>註：以群論的觀點來看，一種調整函數可以視作圖上所有點的一種permutation。以調整函數來描述permutation，不知道有沒有數學家作過研究。</p>
+<p class="t">調整函數調整權重為非負數，估計函數就滿足三角不等式。</p>
+<p>調整權重至非負數，可以使用抵達終點的最短路徑長度；對應到估計函數，就是估計得最準確的方式，並且滿足三角不等式，時間複雜度可降至多項式時間。【待補文字】</p>
+<p class="t">Landmark</p>
+<p>調整權重至非負數，亦可以使用任意一點出發、抵達任意一點的最短路徑長度（甚至是多點），而且都具有估計函數的效果！此點稱做「地標」。</p>
+<p>若需要多次計算點到點最短路徑，可以預先設定一點或多點作為地標，預先計算地標出發、或者抵達地標的最短路徑長度，並且預先調整權重，作為一個公用的估計函數。如此一來，每次計算點到點最短路徑時，每次都能達到A*的效果。</p>
+<p>當地標設立在交通要衝、四通八達之處，遍歷時就容易直奔要衝，節省時間！</p>
+<p>若僅計算一次點到點最短路徑，地標是沒有用處的。因為處理地標，就是計算單源最短路徑，不如直接求解。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Point-to-Point Shortest Path: ALT Algorithm</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">註記</p>
+<p>Andrew V. Goldberg, Chris Harrelson. Computing the Shortest Path: A* Search Meets Graph Theory. ACM-SIAM Symposium on Discrete Algorithms, 2005.</p>
+<p>ALT Algorithm是作者自行取名。ALT是指A*、Landmark、Triangle Inequality三樣東西。</p>
+<p>原論文只討論每一條邊皆為非負權重的圖，事實上可以推廣至一般的圖。</p>
+<p class="t">合併調整函數</p>
+<p>兩個調整函數h1(x)與h2(x)能夠調整權重為非負數，兩者的最大值（最小值）亦能夠調整權重為非負數、得作為調整函數。証明很簡單，但是數學式子有點落落長，參考看看就好：</p>
+<pre>
+w(i, j) + h1(i) - h1(j) >= 0
+w(i, j) + h2(i) - h2(j) >= 0
+
+max { w(i, j) + h1(i) - h1(j), w(i, j) + h2(i) - h2(j) } >= 0
+max { w(i, j), w(i, j) } + max { h1(i), h2(i) } - max { h1(j), h2(j) } >= 0
+w(i, j) + max { h1(i), h2(i) } - max { h1(j), h2(j) } >= 0
+</pre>
+<p>取最大值的好處，以估計函數的立場來看，就是估計更加精準了，仍舊不高估。</p>
+<p class="t">地標出發、抵達地標的最短路徑長度，合併成一個調整函數。</p>
+<p>地標出發、抵達地標的最短路徑長度，兩者取最大值，合併成一個調整函數，遍歷時更容易直奔終點。</p>
+<p>也可以選定多個地標，求出地標出發、抵達地標的多源最短路徑長度，兩者取最大值，合併成一個調整函數。求多源最短路徑，只要把所有起點（終點）的距離設定為零，再執行單源最短路徑演算法即可；時間複雜度亦等同於單源最短路徑演算法。</p>
+<p>也可以選定多個地標，個別求出地標出發、抵達地標的單源最短路徑長度，全部取最大值，合併成一個調整函數。如此能形成估計更加精準的調整函數，但是計算時間就會變長。</p>
+<p class="t">如何選擇地標</p>
+<p>目前還沒有定論。地標均勻分布、地標兩兩相距最遠、地標放在主幹道上宛如收費站、地標呈輻射狀散開，各位可以多加研究。如何找到交通要衝也是一個好問題。</p>
+<p>如果圖上有負邊，為了方便起見，最好調整每一條邊為非負數。請參考Johnson's Algorithm，必須讓圖上每一個點都擁有最短路徑長度；或者更精確的說，必須讓圖上每一條負邊的端點都擁有最短路徑長度。</p>
+<p class="t">演算法</p>
+<pre>
+一、Preprocessing：選定地標。
+　　若有負邊，必須讓圖上每一條負邊的端點，都擁有最短路徑長度，
+　　以調整權重為非負數。
+二、Preprocessing：製作調整函數。
+　甲、計算地標出發、抵達地標的最短路徑長度。
+　　回、若為正權重圖，則採Label Setting Algorithm系列。
+　　回、若為負權重有向圖，則採Label Correcting Algorithm系列。
+　　回、若為負權重無向圖，則採T-Join。
+　乙、取兩者最大值，合併成一個調整函數。
+三、計算點到點最短路徑。
+　　一邊調整權重，一邊遍歷。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Point-to-Point Shortest Path: Matching</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">有向圖演算法</p>
+<p>註：請先具備「<a href="Matching.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Matching.html">Matching</a>」之知識。</p>
+<p>利用最小權二分匹配，得解決有向圖的點到點最短路徑問題。但是圖上不得有負環。</p>
+<img src="ShortestPathByMatching1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPathByMatching1.png">
+<pre>
+一、額外建立二分圖：
+　點：X側、Y側都有V個點。
+　邊：若原圖有一條i點到j點的有向邊，
+　　　則二分圖就有一條Xi點到Yj點的邊。
+二、轉化問題：
+　口、增加Xi點到Yi點的邊，權重設為零。
+　口、X側，去掉起點，也去掉連至起點的邊。
+　口、Y側，去掉終點，去掉終點連出的邊。
+三、計算最小權二分匹配。
+</pre>
+<pre>
+一、額外建立二分圖：
+　口、複製原圖的adjacency matrix。
+二、轉化問題：
+　口、對角線改為零。
+　口、去除起點編號的column。
+　口、去除終點編號的row。
+　　　（最後成為(V-1)*(V-1)矩陣。）
+三、計算最小權二分匹配。
+</pre>
+<p>以類似手法還可解其他問題：</p>
+<pre>
+Minimum Vertex Cover in Bipartite Graph
+Minimum Path Cover in DAG
+Minimum Weight Cycle Cover in Directed Graph
+</pre>
+<p class="t">無向圖演算法</p>
+<p>利用最小權匹配，得解決無向圖的點到點最短路徑問題。但是圖上不得有負環。</p>
+<pre>
+一、額外建立無向圖：
+　點：V個原來的點，再加上V個複製的點。
+　邊：若原圖有一條i點到j點的無向邊，
+　　　則新圖就有：
+　　　一條i 點到j 點的無向邊、
+　　　一條i'點到j 點的無向邊、
+　　　一條i 點到j'點的無向邊、
+　　　一條i'點到j'點的無向邊。
+二、轉化問題：
+　口、增加i點到i'點的無向邊，權重設為零。
+　口、去掉起點，也去掉連著該點的邊。
+　口、去掉終點的複製點，也去掉連著該點的邊。
+三、計算最小權匹配。
+</pre>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

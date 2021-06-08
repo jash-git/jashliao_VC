@@ -1,0 +1,287 @@
+<HTML>
+ <HEAD>
+  <TITLE>第 3 章 陣列</TITLE>
+ </HEAD>
+ <BODY>
+<P>
+  <CENTER><B>第 3 章  陣列</B></CENTER>
+<P>
+<A NAME="start">
+      陣列 可說是 一組 資料 型態 相同 的變數， 藉用 索引 (index) 以 
+      區別 並 使用 該 陣列 的 變數 (陣列 分量)。 我們 可 宣告 一維 或 
+      多維 陣列 來解決 問題， 如 排序問題、矩陣運算 等。
+<P>
+     本 章 主 要 內 容 如 下 :
+<UL>
+  <LI>第 3.1 節 <A href="#first">陣列的不可缺</A>
+  <LI>第 3.2 節 <A href="#second">陣列的宣告</A>
+  <LI>第 3.3 節 <A href="#third">陣列起始值的設定</A>
+  <LI>第 3.4 節 <A href="#fourth">插入排序(insertion sort)</A>
+  <LI>第 3.5 節 <A href="#fifth">矩陣相乘</A>
+  <LI>第 3.6 節 <A href="#sixth">字串</A>
+  <LI>第 3.7 節 <A href="#seventh">作業 3</A>
+</UL>
+<P>
+<A href="cpgch2.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch2.htm">回第 2 章</A><BR>
+<A href="cpgch4.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch4.htm">至第 4 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<HR>
+<P>
+<!--------------------第 3.1 節--------------------------------------->
+<A NAME="first">
+<P>
+      <B>第 3.1 節   陣列的不可缺</B>
+<P>
+      如果 我們 想 輸入 10 個 整數， 再 依 相反 順序 輸出 這 10 個數，
+      這 問題 我們 可用 10 個 整數 變數 來 解決， 如 下列 程式:
+
+<TT><PRE>
+      main()
+      {  int x0, x1, x2, x3, x4, x5, x6, x7, x8, x9;
+
+         scanf("%d %d %d %d %d ",&x0,&x1,&x2,&x3,&x4);
+         scanf("%d %d %d %d %d", &x5,&x6,&x7,&x8,&x9);
+         printf("%d %d %d %d %d ", x9, x8, x7, x6, x5);
+         printf("%d %d %d %d %d ", x4, x3, x2, x1, x0);
+      }
+</PRE></TT>
+
+          如果 我們 想 輸入 100 個 整數， 或 1000 個 整數 時，
+      上述 的 方法 就不管用。 以 陣列的 方式 就 相當 簡潔， 例如:
+
+<TT><PRE>
+      #define MAXSIZE 100
+      #define SIZE    10
+      main()
+      {  int x[MAXSIZE];
+         int i;
+         for ( i = 0; i &lt; SIZE ; i++ )
+             scanf(" %d", &x[i]);
+         for ( i = SIZE - 1; i &gt;= 0 ; i-- )
+             printf("%d ", x[i]);
+      }
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 3.2 節--------------------------------------->
+<A NAME="second">
+<P>
+
+      <B>第 3.2 節   陣列的宣告</B>
+<P>
+      陣列 有 一維 或 多維 陣列， 一維 陣列 的 宣告 方式 如下:<BR>
+
+          資料型態  陣列名稱[ 陣列分量總數 ];
+<P>
+          例如: int x[10];                                              
+<P>
+          說明:
+<OL>
+          <LI>x 為 陣列 名稱， 共有 10 個 分量 x[0]， x[1]， 、、、 ，
+              x[9]。 亦可說 我們 宣告了 10 個 變數 x[0]， x[1]， 、、、 ，
+              x[9]， 即 我們 藉用 索引 (index) 以 區別 並 使用 該陣列 的 
+              分量。<P>
+          <LI>通常 我們 會 宣告 一整數 變數， 如 int i; 來當 做 索引。
+</OL>
+<P>
+          二維 陣列的 宣告 方式 如下:<BR>
+
+              資料型態  陣列名稱[ 第一維分量總數 ][ 第二維分量總數 ];
+<P>
+          例如:   int x[20][10];
+<P>
+          說明:
+<OL>
+          <LI>x 為 陣列 名稱， 共有 200 個 分量 x[0][0]、 x[0][1]、 
+              ...、 x[19][9]。<P>
+          <LI>二維 陣列 可稱為 矩陣， 因此 x[i][j] 亦可 稱為 第 i 列 
+              第 j 行 分量。<P>
+          <LI>x 陣列 於 記憶体 中 共佔有 連續 400 個 位元組 (byte)，
+              每個 分量 各佔 2 個 位元組， 第 0 列 佔前 20 個 位元組，
+              即 x[0][0]、 x[0][1]、 ... 、 x[0][9] 佔前 20 個 位元組，
+              第 19 列 佔 最後 20 個 位元組， 即 x[19][0]、 x[19][1]、
+              ...、 x[19][9] 佔 最後 20 個 位元組。
+</OL>
+<P>
+          多維 陣列的 宣告 方式 如同 二維 陣列的 宣告 方式。
+          例如:
+              int A[10][20][30];
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 3.3 節--------------------------------------->
+<A NAME="third">
+<P>
+     <B>第 3.3 節   陣列起始值的設定</B>
+<P>
+       例:  
+<TT><PRE>
+       int x[10] = {0,0,0,0,0,0,0,0,0,0};
+       int days[13] = {0, 31, 28, 31, 30, 31, 30,
+                          31, 31, 30, 31, 30, 31};
+       int xdays[2][13] = { {0, 31, 28, 31, 30, 31, 30,
+                                31, 31, 30, 31, 30, 31};
+                            {0, 31, 29, 31, 30, 31, 30,
+                                31, 31, 30, 31, 30, 31}  };
+       int y[3][4] = { {1,2,3,4},{5,6,7,8},{4,3,2,1} };
+       int z[3][4] = { 1,2,3,4,5,6,7,8,4,3,2,1 };
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 3.4 節--------------------------------------->
+<A NAME="fourth">
+<P>
+      <B>第 3.4 節   插入排序(insertion sort)</B>
+<P>
+      排序的 方法 有 相當 多種， 在這裡 我們 介紹 插入排序法， 其法 如下:
+<P>
+          如果 有 一班學生 欲 按高矮 順序 排成 一排，
+      設 第 1 位 至 第 i-1 位 學生 都 已經 排好了，
+      欲 排 第 i 位， 我們 可 由 第 i-1 位 開始 比起， 如果 比第 i-1 位高，
+      則 與 第 i-1 位 對調， 再 往前比。 否則 排 下一位 學生， 
+      即 第 i+1 學生。    
+<P>
+          其 相對應的 程式 為:
+<TT><PRE>
+      current = class[ i ];
+      for ( k = i-1; k &gt;=0 ; k--)
+            if (current &gt; class[k])
+                class[ k+1 ] = class[k];
+            else break;
+      class[ k+1 ] = current;
+</PRE></TT>
+
+          以下 為 插入 排序法 程式:
+<TT><PRE>
+      #define MAXSIZE 100
+
+      main()
+      {  int i, k;
+         int current;
+         int class[MAXSIZE];
+         int size;
+
+         scanf("%d ", &size);
+         for (i=0;i&lt;size;i++)
+             scanf(" %d", &amp;class[i] );
+         for (i=1;i&lt;size;i++)
+         { current = class[i];
+           for ( k = i-1; k &gt;=0 ; k--)
+               if (current &gt; class[k])   /* current&lt;class[k] */
+                   class[ k+1 ] = class[k];
+               else break;
+           class[ k+1 ] = current;
+         }
+         for (i=0;i&lt;size;i++)
+             printf("%d ", class[i] );
+      }                                                              
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 3.5 節--------------------------------------->
+<A NAME="fifth">
+<P>
+      <B>第 3.5 節   矩陣相乘</B>
+<P>
+      設 有 兩矩陣 A pxq 及 B qxr，欲求 其 乘積 C pxr， 其 程式 如下:
+<TT><PRE>
+      #define  MAXSIZE  50
+
+      main(){
+          int A[MAXSIZE][MAXSIZE];
+          int B[MAXSIZE][MAXSIZE];
+          int C[MAXSIZE][MAXSIZE];
+          int i, j, k;
+          int p, q, r;
+
+          scanf("%d %d %d ", &p, &q, &r); /* get dimensions */
+ 
+          for (i=0;i&lt;p;i++)               /* get matrix A */
+              for (j=0;j&lt;q;j++)
+                  scanf(" %d ", &A[i][j]);
+
+          for (i=0;i&lt;q;i++)               /* get matrix B */
+              for (j=0;j&lt;r;j++)
+                  scanf(" %d ", &B[i][j]);
+
+          for (i=0;i&lt;p;i++)               /*    C = A B    */
+              for (j=0;j&lt;r;j++)
+                  { C[i][j] = 0;
+                    for (k=0;k&lt;q;k++)
+                        C[i][j]=C[i][j] + A[i][k] * B[k][j];
+                  }
+          for (i=0;i&lt;p;i++)               /* get matrix A */
+          { for (j=0;j&lt;r;j++)
+                printf(" %d ", C[i][j]);
+            printf("\n");
+          }
+      }
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 3.6 節--------------------------------------->
+<A NAME="sixth">
+<P>
+      <B>第 3.6 節   字串</B>
+<P>
+      字串 可由 字元陣列 產生， 
+      其 產生 方式 即 在 字元陣列中 加上 \0 即可， 例如:
+<TT><PRE>
+      char s[10]={'a', 'b', 'c', 'd', '\0'};
+      char t[10]="abcd";
+      for (i=0;s[i]!='\0';i++) putchar(s[i]);
+      printf("\n%s\n%s\n", s, t);
+</PRE></TT>
+      其輸出為: 
+<TT><PRE>
+      abcd
+      abcd
+      abcd                                                     
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<!--------------------第 3.7 節--------------------------------------->
+<A NAME="seventh">
+<P>
+<P>
+      <B>第 3.7 節   作業 3</B>
+<P>
+      作業 3：
+<OL>
+  <LI>運用 篩選法 列出 2 至 30000 之間的 質數。
+  <LI>修改 第 1.15 節 中的 程式， 使得 輸出 能按 總成績 高低 排列，
+      或 按姓名 排列。
+  <LI>批次 (或 線上) 陣列的 線性 查尋 與 分半 查尋、 增添、 刪除。
+  <LI>輸入 一英文字 並 檢查 該字 是否 為 palindrome, 即 正反 讀 都 相同。
+  <LI>試將兩個 已排序 好的 數值 陣列 合併 成一個 排序的 陣列。
+  <LI>輸入 一 50 位數的 正整數， 並 檢驗 該數 為 質數 與否。
+  <LI>檢驗 一文字檔中 是否有 一字串 "long"， 如果有 則 將 該行數 
+      及 該行 列印出來。 例如: 於 MS-DOS 下 鍵入 grep &lt;file.txt，
+      其結果為
+<TT><PRE>
+         5 It is said that the longer is the better, but I don't
+         36 As long as he insists on that, I would not allow him
+</PRE></TT>
+          我們 又 如何 修改 該程式， 使得 程式 能 更加有 彈性 一些，
+          例如 我們 可以 在 MS-DOS 下 鍵入 grep file.txt long 或 
+          其它 檔案 及 字串 來 達到 相同 效果，
+          而 不須 將 字串 "long" 擺在 程式 當中。
+</OL>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A HREF="cpgch2.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch2.htm">回第 2 章</A><BR>
+<A HREF="cpgch4.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch4.htm">至第 4 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+ </BODY>
+</HTML>

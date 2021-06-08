@@ -1,0 +1,193 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Pack</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Independent Set</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Independent Set</p>
+<img src="IndependentSet1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/IndependentSet1.png">
+<p>無向圖上，選定數點，互不相鄰，稱做「獨立集」。</p>
+<pre>
+Maximum Independent Set (NP-complete)
+無向圖上，點數最多的Maximum Independent Set。
+
+Minimum Independent Set in Tree (P)
+當給定的圖是樹，得利用Greedy Method求解。
+</pre>
+<p class="e">UVa 193 11065 11069</p>
+<p class="t">Independent Edge Set（Matching）</p>
+<img src="IndependentSet2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/IndependentSet2.png">
+<p>無向圖上，選定數邊，互不相鄰，稱做「邊獨立集」。正是先前介紹的「匹配」。</p>
+<p class="t">Pack與Cover相互對應</p>
+<img src="IndependentSet3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/IndependentSet3.png">
+<p>Pack針對點與點、邊與邊，Cover針對點與邊、邊與點。</p>
+<p>最大點獨立集、最小點覆蓋，兩者恰好互補。|Maximum Independent Set| + |Minimum Vertex Cover| = |V|。</p>
+<p>各種點獨立集、各種點覆蓋，恰好一一對應、兩兩互補。</p>
+<p>最大邊獨立集（最大匹配）、最小邊覆蓋，兩者幾乎相等，差異只在於未匹配點所連接的邊。|Maximum Independent Edge Set| + |Minimum Edge Cover| = |V|。</p>
+<p>各種邊獨立集、各種邊覆蓋，沒有一一對應。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Dominating Set</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Dominating Set</p>
+<img src="DominatingSet1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DominatingSet1.png">
+<p>無向圖上，選定數點，使所有點與之相鄰，稱做「支配集」。</p>
+<p>Minimal Dominating Set、Maximal Independent Set，兩者完全相等，一一對應。支配與獨立的均衡界線，若離若即，可以當作開關機制。</p>
+<pre>
+Minimum Dominating Set (NP-complete)
+無向圖上點數最少的Dominating Set。
+
+Minimum Dominating Set in Tree (P)
+當給定的圖是樹，得利用DP求解。
+</pre>
+<p class="e">UVa 10160</p>
+<p class="t">Edge Dominating Set</p>
+<p>無向圖上，選定數邊，使所有邊與之相鄰，稱做「邊支配集」。</p>
+<pre>
+Minimum Edge Dominating Set (NP-hard)
+無向圖上邊數最少的Edge Dominating Set。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Clique</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Clique</p>
+<img src="Clique1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Clique1.png">
+<p>無向圖上，完全子圖，即是所有兩點之間都有邊的子圖，稱做「團」。</p>
+<pre>
+Maximum Clique (NP-complete)
+無向圖上點數最多的Clique。
+
+Maximum Weight Clique (NP-hard)
+無向圖上權重最大的Clique。
+</pre>
+<p class="t">Vertex Cover ⇔ Independent Set ⇔ Clique</p>
+<pre>
+Vertex Cover：一個點集合，所有邊皆與之相鄰。
+Independent Set：一個點集合，這些點必不相鄰。
+Clique：一個點集合，這些點兩兩相鄰。
+</pre>
+<p>一張圖的（最大）獨立集、（最小）點覆蓋，恰好互補。</p>
+<p>一張圖的（最大）獨立集，即是補圖的（最大）團。</p>
+<p>點覆蓋、獨立集、團，三者是等價問題，可以互相轉換。</p>
+<p class="e">UVa 11159 12083 12168 Sphere 3196</p>
+<p class="t">列舉Maximal Clique（Bron-Kerbosch Algorithm）</p>
+<p>尋找最大團是NP-complete問題，沒有快速的演算法。因此，列舉所有的Maximal Clique，從中找到Maximum Clique，不失為一個務實的方法。</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Bron–Kerbosch_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Bron–Kerbosch_algorithm'" tppabs="http://en.wikipedia.org/wiki/Bron–Kerbosch_algorithm">http://en.wikipedia.org/wiki/Bron–Kerbosch_algorithm</a></p>
+<pre>
+R: 目前的clique。
+P: 可以增大目前clique的點集合。接下來要列舉的點。
+　（與目前clique上所有點皆相鄰的點，構成的集合）
+X: 可以增大目前clique的點集合，但是先前已經列舉過。用來避免重複列舉。
+</pre>
+<p>此演算法採用backtracking。改變列舉順序、調整pruning方式，就會得到不同的時間複雜度。</p>
+<p>陽春版本的時間複雜度是O(n*3^(n/3))。</p>
+<p>選擇適當的pivot，讓各階段列舉的點都是最少，時間複雜度加速為O(3^(n/3))。</p>
+<p>點的列舉順序採用degeneracy order，時間複雜度加速為O(d*n*3^(d/3))，其中d是原圖的degeneracy。</p>
+<p>下面提供的實作是隨意選擇pivot，稍微減少列舉的點。</p>
+<textarea>
+const int V = 30;
+bool adj[V][V];	// adjacency matrix
+struct Set {bool s[30]; int size;};
+int maximal_clique = 0;
+
+Set intersect(Set S, int p)
+{
+	for (int i=0; i<V; ++i)
+		if (S.s[i] && !adj[p][i])
+		{
+			S.s[i] = false;
+			S.size--;
+		}
+	return S;
+}
+
+void backtrack(Set R, Set P , Set X)
+{
+	if (P.size == 0)
+	{
+		if (X.size == 0)
+		{
+			maximal_clique++;
+			for (int i=0; i<V; ++i)
+				if (R[i])
+					cout << i;
+		}
+		return;
+	}
+
+	int pivot;
+	for (pivot=0; pivot<V; ++pivot)
+		if (P.s[pivot] || X.s[pivot])
+			break;
+//	if (p == V) return;
+
+	for (int i=0; i<V; ++i)
+		if (P.s[i] && !adj[pivot][i])
+		{
+			R.s[i] = true; R.size++;
+			backtrack(R, intersect(P,i), intersect(X,i));
+			R.s[i] = false; R.size--;
+			P.s[i] = false; P.size--;
+			if (!X.s[i]) {X.s[i] = true; X.size++;}
+		}
+}
+
+void Bron_Kerbosch()
+{
+	// 刪除自環
+	for (int i=0; i<V; ++i) adj[i][i] = false;
+
+	Set R, P, X;
+	for (int i=0; i<V; ++i) R.s[i] = false;
+	for (int i=0; i<V; ++i) P.s[i] = true;
+	for (int i=0; i<V; ++i) X.s[i] = false;
+	R.size = 0;
+	P.size = V;
+	X.size = 0;
+	backtrack(R, P, X);
+}
+</textarea>
+<textarea>
+int adj[30];	// adjacency matrix
+int c = 0;		// count maximal clique
+
+void backtrack(int P, int X)
+{
+	if (P == 0 && X == 0) {c++; return;}
+
+	int p = __builtin_ctz(P | X);
+	int Q = P & ~adj[p];
+
+	while (Q)
+	{
+		int i = __builtin_ctz(Q);
+		backtrack(P & adj[i], X & adj[i]);
+		Q &= ~(1<<i);
+		P &= ~(1<<i);
+		X |= (1<<i);
+	}
+}
+
+void Bron_Kerbosch()
+{
+	// remove loop
+	for (int i=0; i<N; ++i)
+		adj[i] &= ~(1<<i);
+
+	c = 0;
+	backtrack((1<<N)-1, 0);
+	cout << ans << '\n';
+}
+</textarea>
+<p class="e">UVa 10475 ICPC 6309</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Partially Ordered Set（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Partially Ordered Set（Poset）（Transitive Acyclic Digraph）</p>
+<p class="t">Dilworth's Theorem</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

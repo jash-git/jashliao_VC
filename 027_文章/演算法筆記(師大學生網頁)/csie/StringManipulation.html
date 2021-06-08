@@ -1,0 +1,67 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - String Manipulation</title></head><body>
+<div class="a"><div class="h">
+<p class="b">String Manipulation</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">String Manipulation</p>
+<p>程式語言的內建函式庫，已經囊括所有常見的字串操作函式，建議讀者仔細研究：</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/String_function  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/String_function'" tppabs="http://en.wikipedia.org/wiki/String_function">http://en.wikipedia.org/wiki/String_function</a></p>
+<p>以下額外整理了一些古怪罕見的字串操作。通常只會出現在求職面試的考題當中，平常極少用到。</p>
+<p class="t">Rotate</p>
+<p>循環位移n個元素，只使用swap、不使用額外空間。時間複雜度O(N)。</p>
+<textarea>
+void rotate(int array[], int size, int n)
+{
+	reverse(array, 0, size-1);
+	reverse(array, 0, n-1);
+	reverse(array, n, size-1);
+}
+
+void reverse(int array[], int a, int b)
+{
+	while (a < b)
+		swap(array[a++], array[b--]);
+}
+</textarea>
+<p class="t">Interleave</p>
+<p>字串A之中，由左到右參差穿插字串B，判斷是否可以形成字串C。</p>
+<p>換句話說，A和B都是C的子序列，而且A和B的全部字元就是C的全部字元。</p>
+<pre>
+A = abc
+B = xyz
+C = axbycz, xaybzc, abxycz, abcxyz, xyzabc, ......
+C != cbaxyz, abyxcz, ......
+</pre>
+<p>當A和B沒有共同的字元，得以採用Greedy Method，時間複雜度O(A+B)。</p>
+<textarea>
+bool interleave(char* a, char* b, char* c)
+{
+	for (; *c; c++)
+		if (*c == *a)
+			a++;
+		else if (*c == *b)
+			b++;
+		else
+			return false;
+
+	return !*a && !*b && !*c;
+}
+</textarea>
+<p>當A和B有共同的字元，只能採用Dynamic Programming，分割問題的方式等同Longest Common Subsequence，時間複雜度O(A*B)。程式碼就不提供了。</p>
+<p class="t">Cover（Under Construction!）</p>
+<p>從字串A找出最短的子字串，包含字串B每一種字元。時間複雜度O(N)。</p>
+<pre>
+http://www.cs.ucr.edu/~stelo/cpm/cpm10/23.pdf
+http://www.cas.mcmaster.ca/~bill/best/algorithms/02AllCovers.pdf
+http://stackoverflow.com/questions/2459653
+
+Input string 1: "this is a test string"
+Input string 2: "tist"
+Output string: "t stri"
+
+how can I approach towards finding smallest substring of string 1
+that contains all the characters from string 2?
+O(N) histogram
+</pre>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

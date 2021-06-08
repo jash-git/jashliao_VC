@@ -1,0 +1,681 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - C/C++ Programming</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Array Indexing</p>
+</div><div class="c">
+<p class="t">Array Indexing</p>
+<p>「索引」可說是電腦的奇技！一個元素存放到陣列之後，不論是在陣列的哪個地方，只要利用索引值（index），就能在一瞬間找到元素。</p>
+<p>大多數的演算法都運用了「索引」的技巧，讓程式執行速度更快。</p>
+<p>以下介紹索引的幾種運用方式。是我自己歸類整理的，並不是標準。</p>
+<p class="t">一、定位</p>
+<p>概念為：將物件放入陣列中，array[位置] = 物件。</p>
+<p>當元素很多時，我們可以放到陣列裡。我們只要記錄索引值，依舊可以常數時間得到元素。</p>
+<p>範例：求最大值。將元素連續地放入陣列，若想紀錄一元素，僅需一索引值。</p>
+<textarea t="求最大值">
+void find_maximum() // 用變數直接記最大值
+{
+	int array[5] = {3, 6, 9, 8, 1};
+	
+	int max = -10000;
+	for (int i=0; i<5; i++)
+		if (array[i] > max)
+			max = array[i];
+
+	cout << "最大值為" << max;
+}
+
+void find_maximum() // 用索引值紀錄最大值位置
+{
+	int array[5] = {3, 6, 9, 8, 1};
+
+	int p = 0;	// 最大值的索引值
+	for (int i=1; i<5; i++)
+		if (array[i] > array[p])
+			p = i;
+
+	cout << "最大值為" << array[p];
+}
+</textarea>
+<p>範例：求子字串。將元素連續地放入陣列，若想紀錄一區間，僅需頭尾的索引值。</p>
+<textarea t="求子字串">
+void substring()
+{
+	char s[10] = "Hello, world!";
+	char t[10];
+
+	int i, j;
+	for (i=2, j=0; i<6; i++, j++)
+		t[j] = s[i];
+	t[j] = '\0';
+
+	cout << "s的子字串[2,6)是" << t;
+}
+</textarea>
+<p>範例：連續數字和。將元素連續地放入陣列，利用問題本身的數學性質以及索引值，快速得到答案。</p>
+<textarea t="連續數字和">
+void consecutive_sum()
+{
+	int array[5] = {3, 6, 9, 8, 1};
+	int sum[5] = {0};
+	
+	sum[0] = array[0];
+	for (int i=1; i<5; i++)
+		sum[i] = sum[i-1] + array[i];
+
+	cout << "區間[2,4]的連續數字和是" << sum[4] - sum[2-1];
+}
+</textarea>
+<p>範例：求中位數。將元素依照大小順序並連續地放入陣列，利用索引值得到位於中間的元素。</p>
+<textarea t="求中位數">
+void median()
+{
+	int array[5] = {1, 3, 6, 8, 9};	// 由小到大排序
+	cout << "中位數是" << array[5/2];
+}
+</textarea>
+<p>範例：二分搜尋法（Binary Search）。將元素依照大小順序並連續地放入陣列，然後夾擠索引值。如果使用的是鏈接串列，因為元素們都沒有索引值，就無法使用二分搜尋法。</p>
+<textarea t="二分搜尋法（Binary Search）">
+void binary_search()
+{
+	int array[5] = {1, 3, 6, 8, 9};	// 由小到大排序
+
+	int key = 3;					// 搜尋陣列裡有沒有3
+	int left = 0, right = 5;		// 索引值範圍
+	while (left < right)
+	{
+		int mid = (left + right) / 2;
+		if (array[mid] < pivot)
+			left = mid + 1;
+		else if (array[mid] > pivot)
+			right = mid - 1;
+		else if (array[mid] == pivot)
+			return mid;
+	}
+	return left;
+}
+</textarea>
+<p>範例：二元樹（Binary Tree）。元素的索引值對應到樹的結構，是一種特殊的定位。</p>
+<textarea t="二元樹（Binary Tree）">
+// 得到array[index]的左邊小孩的索引值
+int left_child_index(int index) {return index * 2;}
+
+// 得到array[index]的右邊小孩的索引值
+int right_child_index(int index) {return index * 2 + 1;}
+
+void binary_tree()
+{
+	int array[5 + 1] = {0, 3, 6, 9, 8, 1};	// array[0]不使用
+	cout << "根為" << array[1];
+	cout << "根的左邊小孩是" << array[ left_child_index(1) ];
+	cout << "根的右邊小孩是" << array[ right_child_index(1) ];
+}
+</textarea>
+<p>範例：堆疊（stack）、佇列（queue）。元素連續地放入陣列，然後以改變索引值的方式，來動態增減堆疊及佇列的元素。</p>
+<textarea t="堆疊（stack）、佇列（queue）">
+void stack()
+{
+	int stack[10];				// 一個堆疊
+	int top = 0;				// 索引值
+
+	stack[top++] = 3;			// push
+	stack[top++] = 6;			// push
+
+	if (top > 0)				// is empty?
+		int n = stack[--top];	// pop
+}
+
+void queue()
+{
+	int stack[10];				// 一個佇列
+	int front = 0, rear = 0;	// 索引值
+
+	queue[rear++] = 3;			// push
+	queue[rear++] = 6;			// push
+
+	if (front < rear)			// is empty?
+		int n = queue[front++];	// pop
+}
+</textarea>
+<p class="t">二、歸類並標記</p>
+<p>概念為：物件直接作為陣列的索引值，array[物件] = 物件的屬性。</p>
+<p>範例：正整數集合。物件是：正整數，物件的屬性是：是否在集合裡頭出現。</p>
+<textarea t="正整數集合">
+void add_element()
+{
+	// 一個有限集合
+	bool set[100];
+
+	// 初始化為空集合
+	for (int i=0; i<100; i++) set[i] = false;
+
+	// 設定集合元素
+	set[5] = true;	// 集合裡有5
+	set[3] = true;	// 集合裡有3
+	set[3] = false;	// 集合裡沒有3
+}
+</textarea>
+<p>範例：統計英文字母出現次數。物件是英文字母，物件的屬性是英文字母的出現次數。</p>
+<textarea t="統計英文字母出現次數">
+void count_letter()
+{
+	char s[20] = "hi, I am a boy";
+
+	// 歸類並標記
+	// 26個字母，字母的ASCII值剛好連續。
+	int count[26 + 26] = {0};
+	for (int i=0; s[i] != '\0'; i++)
+		if (s[i] >= 'a' && s[i] <= 'z')
+			count[ s[i] - 'a' ]++;
+		else if (s[i] >= 'A' && s[i] <= 'Z')
+			count[ s[i] - 'A' ]++;
+
+	// 印出英文字母的出現次數，不分大小寫。
+	for (int i=0; i<26; i++)
+		if (count[i] > 0)
+			cout << char('A' + i) << "的個數為" << count[i];
+}
+</textarea>
+<p>範例：計數排序法（Counting Sort）。索引值的大小順序，剛好也是元素的大小順序，故可用於排序。</p>
+<textarea t="計數排序法（Counting Sort）">
+void counting_sort()
+{
+	// 假設陣列裡數值不重複
+	int array[5] = {3, 6, 9, 8, 1};
+
+	// 歸類並標記
+	bool count[100] = {false};
+	for (int i=0; i<5; i++)
+		count[ array[i] ] = true;
+
+	// 索引值的大小順序，剛好也是元素的大小順序。
+	for (int i=0, j=0; i<100 && j<5; i++)
+		if (count[i])   // 數值不重複
+			array[j++] = i;
+}
+</textarea>
+<p>範例：雜湊表（hash table）。元素的索引值由特殊方法決定，是一種特殊的歸類。</p>
+<textarea t="雜湊表（hash table）">
+int hash(int n)	// 根據元素的數值來製造一個index
+{
+	return n * 97 % 100;
+}
+
+void hash_table()
+{
+	int array[5] = {3, 6, 9, 8, 1};
+
+	int table[100];
+	for (int i=0; i<5; i++)
+	{
+		// 替array[i]製造一個index
+		int index = hash(array[i]);
+
+		// 將array[i]放入hash table
+		table[index] = array[i];
+	}
+}
+</textarea>
+<p class="t">三、轉換</p>
+<p>概念為：array[物件] = 另一個物件。類似函數的概念。</p>
+<p>範例：取代（Substitution）、移位（Transposition）。取代和移位是密碼學的基礎概念。取代是文字的轉換，移位則是位置的轉換。</p>
+<textarea t="取代（Substitution）、移位（Transposition）">
+void substitution()
+{
+	char s[10] = "Hello!", t[10] = "";
+
+	// 建立轉換表格
+	char crypt[128];
+	for (int i=0; i<128; i++) crypt[i] = i;
+	crypt['!'] = 'w';
+	crypt['H'] = 'Y';
+
+	// 開始轉換
+	int n;
+	for (n=0; s[n] != '\0'; n++)
+		t[n] = crypt[ s[n] ];
+	t[n] = '\0';
+}
+
+void transposition()
+{
+	char s[10] = "Hello!", t[10] = "";
+
+	// 建立轉換表格
+	int crypt[50];
+	for (int i=0; i<50; ++i) crypt[i] = i;
+	crypt[2] = 3;
+	crypt[3] = 5;
+	crypt[5] = 2;
+
+	// 開始轉換
+	int n;
+	for (n=0; s[n] != '\0'; n++)
+		t[n] = crypt[ s[n] ];
+	t[n] = '\0';
+}
+</textarea>
+<p>範例：page table。作業系統的機制，可將虛擬位址轉換成實體位址，是位址的轉換。</p>
+<textarea t="page table">
+程式碼略。
+</textarea>
+<p class="t">附錄：定址的時間複雜度</p>
+<p>當索引值大小為N時，有人認為定址的時間複雜度是O(log<sub>2</sub>N)，也有人認為是O(1)。這兩種說法都是有其依據的。</p>
+<p>以數學的觀點來看：N共有log<sub>2</sub>N個位元，用二元樹的概念，依照各個位元的數值是0或是1進行分支，分支到底後就完成定址了。所以定址的時間複雜度是O(log<sub>2</sub>N)。</p>
+<p>以電路的觀點來看：一顆中央處理器可以平行處理32位元（現在已有64位元），只要是介於0到2^32-1的索引值，都可以在1單位時間完成定址，而不必用32單位時間來完成定址。所以定址的時間複雜度是O(1)。</p>
+<p>討論演算法的時間複雜度時，我們傾向假設定址的時間複雜度是O(1)。</p>
+<p class="t">附錄：定址的範圍</p>
+<p>方才提到一顆中央處理器可以平行處理32位元，理論上可以定址到2^32以內的位址。一個位址一般擁有1byte的記憶體大小，所以我們利用定址方式，可以運用的記憶體就有2^32 * 1byte = 4GB 這麼多。</p>
+<p>但是作業系統會保留一些位址、預留一些記憶體空間以維持系統運作，所以使用者實際可以運用的記憶體其實不到4GB。</p>
+<p>當記憶體沒有插到4GB的時候，作業系統利用一種叫做virtual memory的技術，以硬碟空間補足記憶體不足4GB的部份。</p>
+<p>位址是連續不斷的，我們寫程式也都直接假設位址對應到的記憶體空間是連續不斷的，然而實際上並不是連續的。作業系統運用一種叫做paging的技術，藉由page table，讓記憶體看起來是連續的。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Recursion（Under Construction!）</p>
+</div><div class="c">
+<p class="e">UVa 110 177 183 839</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Standard Library</p>
+</div><div class="c">
+<p class="t">sstream - 讀取一行不知道有多少個的數字</p>
+<p>sstream當中的istringstream物件，可以以近似於cin的方式來讀取一個string變數內含的資料。</p>
+<p>sstream的意義為string stream，也就是說，把string變數看待成stream。至於istringstream的i，應該就是指input之意吧。</p>
+<p>下面的程式可以讀入一行不知道個數為多少個的數字，並輸出這些數字的總和。</p>
+<textarea>
+#include <sstream>
+
+void demo()
+{
+	string line;
+	while ( getline( cin, line ) )	// 利用 getline() 讀入一行輸入
+	{
+		// 針對此行建立一個 istringstream 物件	
+		istringstream in( line );
+
+		int sum = 0, x;
+		while ( in >> x ) sum += x;
+		cout << sum << endl;
+	}
+}
+</textarea>
+<p class="t">sstream - 讀取不知道有多少行的輸入、並且做tokenize</p>
+<textarea>
+#include <sstream>
+
+int main()
+{
+	int a, b, c;
+	char line[100];
+
+	while (cin.getline(line, 100) && *line)
+	{
+		istringstream sin(line);
+		sin >> a >> b >> c;
+		cout << "read abc: " << a << " " << b << " " << c << endl;
+	}
+	return 0;
+}
+</textarea>
+<p class="e">UVa 483</p>
+<p class="t">cstdio - 數字轉字串，字串轉數字</p>
+<p>C的標準函式庫提供了兩個非常好用的函式，可以快速的轉換字串成為數值。</p>
+<textarea>
+char s[10];
+int n;
+int count = sscanf(s, "%d", &n);	// 字串s轉數字n
+int length = sprintf(s, "%d", n);	// 數字n轉字串s
+</textarea>
+<p class="e">UVa 10427</p>
+<p class="t">iostream iomaip - 八、十、十六進位數的輸出入</p>
+<textarea>
+int num;
+cin >> hex >> num;
+cout << hex << num;	// 讀入/輸出八進位數字
+
+cin >> dec >> num;
+cout << dec << num;	// 讀入/輸出十進位數字
+
+cin >> oct >> num;
+cout << oct << num;	// 讀入/輸出十六進位數字
+</textarea>
+<textarea>
+// 讀入/輸出 n 進位數字，但是 n 只能是 8、10、16
+#include <iomanip>
+cout << setbase(n) << num;
+cin >> setbase(n) >> num;
+</textarea>
+<p>就算使用者輸入ABC或abc（十六進位表示法），compiler還是可以將之轉換成十進位數字，存到num裡面。</p>
+<p>十六進位時，輸入的數字有0x或0X開頭也可以（不要把0打成英文字母o或O了）。</p>
+<p>附帶一提，因為iomanip已經建好了hex oct dec等關鍵字，所以用setiosflags(ios::hex)是沒有任何效果的。【有待商榷】</p>
+<textarea>
+double num;
+cin >> num;
+</textarea>
+<p>就算使用者輸入2e3（科學記號表示法），compiler還是可以將之轉換成十進位數字，存到num裡面。
+<p class="e">UVa 537</p>
+<p class="t">string cstring - 字串運算</p>
+<p>一、讀字串，直到遇見空白、換行、檔案結束為止。</p>
+<textarea>
+string s1, s2;
+cin >> s1 >> s2;
+
+char s1[100], s2[100];
+cin >> s1 >> s2;
+</textarea>
+<p>二、讀字串，直到一定數量，或者遇見空白、換行、檔案結束為止。</p>
+<textarea>
+string s;
+cin >> setw(50) >> s;
+
+char s[100];
+cin >> setw(50) >> s;	// 讀入49個字元和補一個'\0' 
+</textarea>
+<p>三、讀一行。</p>
+<textarea>
+string s;
+getline(cin, s);		// C++
+
+char s[100];
+cin.getline(s, 100);	// C++
+
+char s[100];
+gets(s);				// C
+</textarea>
+<p>四、讀全部。</p>
+<textarea>
+string s;
+getline(cin, s, EOF);		// C++
+
+char s[10000];
+cin.getline(s, 10000, EOF);	// C++
+
+char s[10000];
+fgets(s, 10000, stdin);		// C
+</textarea>
+<p>五、讀到特定字元為止。</p>
+<textarea>
+string s1;
+getline(cin, s1, '$');
+
+char s1[100];
+cin.getline(s1, 100, '$');
+</textarea>
+<p>六、交換。</p>
+<textarea>
+string s1, s2;
+s1.swap(s2);	// O(1)
+
+char s1[100], s2[100], temp[100];
+strcpy(temp, s1); strcpy(s1, s2); strcpy(s2, temp);	// O(N)
+</textarea>
+<p>七、長度。</p>
+<textarea>
+string s1;
+int length = s1.length();	// O(1)
+
+char s1[100];
+int length = strlen(s1);	// O(N)
+</textarea>
+<p>八、比大小。</p>
+<textarea>
+string s1, s2;
+if (s1 > s2) parapara...
+if (s1 < s2) parapara...
+if (s1 == s2) parapara...
+
+char s1[100], s2[100];
+if (strcmp(s1, s2) > 0) parapara...
+if (strcmp(s1, s2) < 0) parapara...
+if (strcmp(s1, s2) == 0) parapara...
+
+結果為負數是 a < b : abc 和 edf 、 abc 和 abcde 、 abc 和 acb。
+結果等於零是 a = b : abcde 和 abcde。
+結果為正數是 a > b : b 和 a。
+
+a > b 的意思，就是 a 的字典順序在 b 之後，順序比較後面。
+</textarea>
+<p>九、字串後面接字串。</p>
+<textarea>
+string s1, s2;
+s1 += s2;
+
+char s1[100], s2[100];
+strcat(s1, s2);	// 小心s1空間不足
+</textarea>
+<p class="t">cstring - 初始化陣列</p>
+<p>memset可以快速的初始化陣列的每一個byte，讓每一個byte都是一樣的值。</p>
+<textarea>
+int n;	// 一個int變數是4 byte
+memset(n, 0x2d, sizeof(n));	// n初始化為0x2d2d2d2d。
+
+// int變數與long long變數，
+// 最高位元是0則代表正值或零，最高位元是1則代表負值。
+int a[100];
+memset(a, 0x00, sizeof(a));	// 0。因為0x00000000 = 0。
+memset(a, 0, sizeof(a));	// 0。參數0是0x00000000，轉型成char只剩低位數的0x00，其實就跟上一行程式碼一樣。
+memset(a, 0xff, sizeof(a));	// -1。因為0xffffffff = -1。
+memset(a, -1, sizeof(a));	// -1。參數-1是0xffffffff，轉型成char只剩低位數的0xff，其實就跟上一行程式碼一樣。
+memset(a, 0x7f, sizeof(a));	// +INF。大於+2e9。
+memset(a, 0x80, sizeof(a));	// -INF。小於-2e9。
+memset(a, 0x3f, sizeof(a));	// +INF。略大於+1e9，相加不會溢位。
+
+// 一個bool變數剛好是1 byte
+bool b[100];
+memset(b, false, sizeof(b));// false是0，其實是0x00。
+memset(b, true, sizeof(b));	// true是1，其實是0x01。
+</textarea>
+英文字母大小寫可以改　結果都一樣
+<p class="t">algorithm - 排序</p>
+<p>sort()為Intro Sort，stable_sort()為Merge Sort。</p>
+<p>排序基本資料型態的方法。</p>
+<textarea>
+int A[] = {1, 4, 2, 8, 5, 7};
+int N = sizeof(A) / sizeof(int);
+sort(A, A + N);
+
+vector<int> B(A, A + N);
+sort(B.begin(), B.end());
+</textarea>
+<p>排序自訂資料型態的方法有兩種寫法。</p>
+<textarea>
+struct Point {int x, y;} A[10];
+
+bool compare(const Point& i, const Point& j)
+{
+	return i.x < j.x || i.x == j.x && i.y < j.y;
+}
+
+void demo()
+{
+	sort(A, A + 10, compare);
+
+	vector<Point> B(A, A + 10);
+	sort(B.begin(), B.end(), compare);
+}
+</textarea>
+<textarea>
+struct Point
+{
+	int x, y;
+
+	bool operator<(const Edge& j) const
+	{
+		return x < j.x || x == j.x && y < j.y;
+	}
+
+} A[10];
+
+void demo()
+{
+	sort(A, A + 10);
+
+	vector<Point> B(A, A + 10);
+	sort(B.begin(), B.end());
+}
+</textarea>
+<p class="t">ctime - 計時</p>
+<textarea>
+// 一秒鐘的clock數目，每臺電腦的執行結果通常不一樣。
+cout << CLOCKS_PER_SEC;
+
+clock_t start, end;
+start = clock();
+
+function();	// 估計function的執行時間
+
+end = clock();
+cout << end - start;
+
+// 換算成秒
+cout << (float)(end - start) / CLOCKS_PER_SEC;
+</textarea>
+<p class="t">ctime - 亂數</p>
+<textarea>
+// 要先設定一個 random seed，用系統時間來設定
+srand( static_cast< unsigned int >( time(0) ) );
+
+// 取 0~99 之間的亂數
+for (int i=0; i<10; i++)
+{
+	int k = rand() % 100;
+	cout << k << "\n";
+}
+</textarea>
+<p class="t">climits - 變數型態的極值</p>
+<pre>
+CHAR_BIT	char變數的記憶體大小(bits)    8
+MB_LEN_MAX	一個字元的記憶體大小(byte)    1(英文系統) 2(中文系統)
+SCHAR_MIN	有號char變數的下限值          -128
+SCHAR_MAX	有號char變數的上限值          127
+UCHAR_MAX	無號char變數的上限值          255
+CHAR_MIN	char變數的下限值              -128 或 0
+CHAR_MAX	char變數的上限值              127 或 255
+SHRT_MIN	short int變數的下限值         -32768
+SHRT_MAX	short int變數的上限值         32767
+USHRT_MAX	無號short int變數的上限值     65535
+INT_MIN		int變數的下限                 -2147483648
+INT_MAX		int變數的上限值               2147483647
+UINT_MAX	無號int變數的上限值           4294967295
+LONG_MIN	long int變數的上限值          -2147483648
+LONG_MAX	long int變數的下限值          2147483647
+ULONG_MAX	無號long int變數的下限值      4294967295
+</pre>
+<p>附帶一提< limits.h >和< climits >是屬於C的函式庫，C++另有推出< limits >。</p>
+<p class="e">UVa 465</p>
+<p class="t">cassert - 檢查程式有沒有問題</p>
+<p>assert()可以用來檢查程式中的變數數值正不正確。</p>
+<p>在程式執行的期間，一旦執行至assert()的地方，若是assert()括號之中的敘述句不成立，就會跳出程式有問題的視窗。若沒有跳出任何程式有問題的視窗，就意味著程式成功的通過了所有assert()的檢查。</p>
+<p>下面的這段程式碼利用了assert()，藉以檢查queue的運算是否如預期所料。</p>
+<textarea>
+queue<int> Q;
+Q.push(8); Q.push(7); Q.push(6); Q.push(2);
+
+assert(Q.size() == 4);
+assert(Q.back() == 2);
+
+assert(Q.front() == 8); Q.pop();
+assert(Q.front() == 7); Q.pop();
+assert(Q.front() == 6); Q.pop();
+assert(Q.front() == 2); Q.pop();
+
+assert(Q.empty());
+</textarea>
+<p class="t">typeinfo - 印出變數型態的名稱</p>
+<p>利用typeid(變數).name()這個語法，可以得到該變數的變數型態。如果該變數是一個物件，則會得到該物件所屬的class名稱。範例程式碼如下所示：</p>
+<textarea>
+class haha { ...... } obj;
+int value = 0;
+int array[2][3];
+
+void demo()
+{
+	cout << typeid(obj).name();		// 得到class haha
+	cout << typeid(value).name();	// 得到int
+	cout << typeid(array).name();	// 得到A2_A3_i
+}
+</textarea>
+<p class="t">VC++和gcc同時能使用long long的方法</p>
+<textarea>
+/* Declares 64-bit unsigned integer type 'uint64' */
+#ifdef _MSC_VER
+typedef unsigned __int64 uint64;
+#else
+typedef unsigned long long uint64;
+#endif
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Metaprogramming</p>
+</div><div class="c">
+<p class="t">Metaprogramming</p>
+<p>設計一支程式來製造程式碼，令該程式碼充分運用程式語言自身擁有的能力，輕鬆地、更有效率地完成更多事情。</p>
+<p>舉個例子。例如現在有一個四則運算式需要計算：</p>
+<pre>
+5 + 8 * (2 - 3) + 7 * -6 / (2 - 1) + 1
+</pre>
+<p>這是一個經典的問題，大家應該不陌生。身經百戰的演算法設計高手，必然不假思索說出：stack，把所有符號依序放入stack，依照運算符號的優先次序push和pop，一下子就算完了。聽來簡單，但實做起來還是頗麻煩。</p>
+<p>這裡要介紹的是更輕鬆、更強悍的方法：寫程式製造一支會進行四則運算的程式。大家都知道C/C++的語法當中，就有四則運算的語法了。現在來設計一支程式，製作出四則運算的程式碼吧！</p>
+<textarea>
+void arithmetic()
+{
+	// 輸入四則運算式
+	string s;
+	cin >> s;
+	
+	// 製作程式碼
+	ofstream fout("temp.cpp");
+	fout << "#include <iostream>\n";
+	fout << "int main()\n";
+	fout << "{\n"
+	fout << "	std::cout << (" << s << ") << endl;\n";
+	fout << "	return 0;\n";
+	fout << "}\n";
+	fout.close();
+}
+</textarea>
+<p>如果輸入方才的四則運算式，就會產生如下程式碼，檔名為temp.cpp。</p>
+<textarea>
+#include <iostream>
+int main()
+{
+	std::cout << (5 + 8 * (2 - 3) + 7 * -6 / (2 - 1) + 1) << endl;
+	return 0;
+}
+</textarea>
+<p>然後編譯temp.cpp、執行一下，就有答案了。您甚至可以把編譯、執行的指令，統統寫進程式碼當中：</p>
+<textarea>
+void arithmetic()
+{
+	// 輸入四則運算式
+	......
+	
+	// 製作程式碼
+	......
+	
+	// 編譯和執行（在Linux底下）
+	system("g++ temp.cpp -o temp.out");
+	system("./temp.out");
+	
+	// 刪除暫存檔案
+	system("rm temp.out");
+	system("rm temp.cpp");
+}
+</textarea>
+<p>程式設計師藉由Metaprogramming能做更多事情！現在的資訊領域當中，應用到Metaprogramming的也相當多，各位可以再去蒐集相關資料來閱讀。:)</p>
+<p class="t">Quine</p>
+<p>寫一支程式，其功能是輸出本身程式碼。</p>
+<p>給一題尚未有測試資料的題目，目前還不能送。</p>
+<p class="e">UVa 724</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Programming Paradigm</p>
+</div><div class="c">
+<p><a href="
+javascript:if(confirm('http://en.wikipedia.org/wiki/Programming_paradigm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Programming_paradigm'" tppabs="http://en.wikipedia.org/wiki/Programming_paradigm">http://en.wikipedia.org/wiki/Programming_paradigm</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Application</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://www.stroustrup.com/applications.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.stroustrup.com/applications.html'" tppabs="http://www.stroustrup.com/applications.html">http://www.stroustrup.com/applications.html</a></p>
+<p><a href="javascript:if(confirm('http://www.lextrait.com/vincent/implementations.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lextrait.com/vincent/implementations.html'" tppabs="http://www.lextrait.com/vincent/implementations.html">http://www.lextrait.com/vincent/implementations.html</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,487 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Curve</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Curve</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Curve</p>
+<p>本單元的先備知識是「<a href="Interpolation.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Interpolation.html">Polynomial Interpolation</a>」！</p>
+<img src="Curve1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Curve1.png">
+<p>想要製作曲線，最簡單的方式就是點上幾個點，然後運用多項式內插，得到一條穿過這些點的曲線。</p>
+<p>這種方式有個嚴重的問題：曲線是一個函數，每個X值只對應一個Y值；曲線不能到處亂繞，只能左右伸展。</p>
+<p>要解決這個問題，最簡單的方法，就是分別處理X軸與Y軸。用一個多項式專門處理X座標，用另一個多項式專門處理Y座標。</p>
+<img src="Curve2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Curve2.png">
+<pre>
+x(t) = a<sub>0</sub> + a<sub>1</sub> t<sup>1</sup> + ... + a<sub>N-1</sub> t<sup>N-1</sup>
+y(t) = b<sub>0</sub> + b<sub>1</sub> t<sup>1</sup> + ... + b<sub>N-1</sub> t<sup>N-1</sup>
+
+例如
+x(t) = 1 + 2t<sup>1</sup> + 3t<sup>2</sup> - t<sup>3</sup>
+y(t) = 2 - t<sup>1</sup> + t<sup>2</sup> - t<sup>3</sup>
+
+      ⋮
+t代入-0.1，得到一個座標(x(-0.1), y(-0.1)) = (0.831, 2.111)
+t代入   0，得到一個座標(x(0)   , y(0)   ) = (1, 2)
+t代入 0.1，得到一個座標(x(0.1) , y(0.1) ) = (1.229, 1.909)
+      ⋮
+</pre>
+<p>由於X軸與Y軸互相垂直，兩者完全不會互相干擾。學過線性代數的讀者，應該能夠體會這種軸與軸互相獨立的精神。</p>
+<p>其實這個手法就叫做「參數式Parametric Equation」，高中數學、微積分、線性代數課程都有提到，既基礎又常見，不是什麼艱深晦澀的玩意。</p>
+<img src="Curve3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Curve3.png">
+<p>回到正題。電腦擅於處理大量資料。我們可以製作非常多條曲線，讓曲線銜接曲線，就得到各式各樣的形狀了。因此，通常我們不會製作無限長的曲線，其實製作一小段曲線就夠了。</p>
+<p>我們習慣讓t值的範圍是0.0到1.0，設定三個點、用二次多項式實施內插；或者設定四個點，用三次多項式實施內插。一次多項式只能產生直線，二次以上的多項式就足以產生曲線。</p>
+<div class="i"><canvas id="Curve" width="500" height="300"></canvas></div>
+<pre>
+平面上有四個點(1,3) (1,0) (2,2) (3,4)
+使用三次多項式（四項）做為內插多項式，製作依序穿過這四點的曲線。
+x(t) = a<sub>0</sub> t<sup>0</sup> + a<sub>1</sub> t<sup>1</sup> + a<sub>2</sub> t<sup>2</sup> + a<sub>3</sub> t<sup>3</sup>
+y(t) = b<sub>0</sub> t<sup>0</sup> + b<sub>1</sub> t<sup>1</sup> + b<sub>2</sub> t<sup>2</sup> + b<sub>3</sub> t<sup>3</sup>
+</pre>
+<pre>
+首先處理X座標！
+令這四點對應的t值分別是 t = 0 , t = 1/3 , t = 2/3 , t = 1
+也就是說 x(0) = 1 , x(1/3) = 1 , x(2/3) = 2 , x(1) = 3
+
+[     0<sup>0</sup>     0<sup>1</sup>     0<sup>2</sup>     0<sup>3</sup> ] [ a<sub>0</sub> ]   [ 1 ]
+[ (1/3)<sup>0</sup> (1/3)<sup>1</sup> (1/3)<sup>2</sup> (1/3)<sup>3</sup> ] [ a<sub>1</sub> ] = [ 1 ]
+[ (2/3)<sup>0</sup> (2/3)<sup>1</sup> (2/3)<sup>2</sup> (2/3)<sup>3</sup> ] [ a<sub>2</sub> ]   [ 2 ]
+[     1<sup>0</sup>     1<sup>1</sup>     1<sup>2</sup>     1<sup>3</sup> ] [ a<sub>3</sub> ]   [ 3 ]
+                                      -1
+[ a<sub>0</sub> ]   [     0<sup>0</sup>     0<sup>1</sup>     0<sup>2</sup>     0<sup>3</sup> ] [ 1 ]
+[ a<sub>1</sub> ] = [ (1/3)<sup>0</sup> (1/3)<sup>1</sup> (1/3)<sup>2</sup> (1/3)<sup>3</sup> ] [ 1 ]
+[ a<sub>2</sub> ]   [ (2/3)<sup>0</sup> (2/3)<sup>1</sup> (2/3)<sup>2</sup> (2/3)<sup>3</sup> ] [ 2 ]
+[ a<sub>3</sub> ]   [     1<sup>0</sup>     1<sup>1</sup>     1<sup>2</sup>     1<sup>3</sup> ] [ 3 ]
+
+[ a<sub>0</sub> ]   [    1     0     0     0 ] [ 1 ]
+[ a<sub>1</sub> ] = [ -5.5     9  -4.5     1 ] [ 1 ]
+[ a<sub>2</sub> ]   [    9 -22.5    18  -4.5 ] [ 2 ]
+[ a<sub>3</sub> ]   [ -4.5  13.5 -13.5   4.5 ] [ 3 ]
+
+矩陣乘以向量，就得到多項式係數。這裡就省略不算了。
+多項式代入各種t值（範圍是0≤t≤1），就得到曲線上每個點的X座標。這裡就省略不算了。
+
+另一方面，其實矩陣是固定不變的。
+不管給定的點是哪四個點，往後都可以直接套用公式，求得多項式係數：
+
+[ a<sub>0</sub> ]   [    1     0     0     0 ] [ x<sub>0</sub> ]
+[ a<sub>1</sub> ] = [ -5.5     9  -4.5     1 ] [ x<sub>1</sub> ]
+[ a<sub>2</sub> ]   [    9 -22.5    18  -4.5 ] [ x<sub>2</sub> ]
+[ a<sub>3</sub> ]   [ -4.5  13.5 -13.5   4.5 ] [ x<sub>3</sub> ]
+</pre>
+<pre>
+Y座標也是如法炮製！
+
+令這四點對應的t值分別是 t = 0 , t = 1/3 , t = 2/3 , t = 1
+也就是說 y(0) = 3 , y(1/3) = 0 , y(2/3) = 2 , y(1) = 4
+
+[ b<sub>0</sub> ]   [    1     0     0     0 ] [ y<sub>0</sub> ]
+[ b<sub>1</sub> ] = [ -5.5     9  -4.5     1 ] [ y<sub>1</sub> ]
+[ b<sub>2</sub> ]   [    9 -22.5    18  -4.5 ] [ y<sub>2</sub> ]
+[ b<sub>3</sub> ]   [ -4.5  13.5 -13.5   4.5 ] [ y<sub>3</sub> ]
+</pre>
+<p class="t">延伸閱讀：Blending Functions</p>
+<p>把內插多項式改寫為線性變換的模樣，代入方才求得的公式解，然後重新整理式子：</p>
+<pre>
+x(t) = a<sub>0</sub> t<sup>0</sup> + a<sub>1</sub> t<sup>1</sup> + a<sub>2</sub> t<sup>2</sup> + a<sub>3</sub> t<sup>3</sup>
+
+                      [ a<sub>0</sub> ]
+     = [ t<sup>0</sup> t<sup>1</sup> t<sup>2</sup> t<sup>3</sup> ] [ a<sub>1</sub> ]   寫成內積
+                      [ a<sub>2</sub> ]
+                      [ a<sub>3</sub> ]
+
+                      [   1     0     0     0] [ x<sub>0</sub> ]
+     = [ t<sup>0</sup> t<sup>1</sup> t<sup>2</sup> t<sup>3</sup> ] [-5.5     9  -4.5     1] [ x<sub>1</sub> ]   代入公式
+                      [   9 -22.5    18  -4.5] [ x<sub>2</sub> ]
+                      [-4.5  13.5 -13.5   4.5] [ x<sub>3</sub> ]
+
+                                   [ x<sub>0</sub> ]
+     = [ a<sub>0</sub>(t) a<sub>1</sub>(t) a<sub>2</sub>(t) a<sub>3</sub>(t) ] [ x<sub>1</sub> ]   前面兩個矩陣先相乘
+                                   [ x<sub>2</sub> ]
+                                   [ x<sub>3</sub> ]
+其中
+a<sub>0</sub>(t) = -4.5 (t-1/3) (t-2/3) (t-1)
+a<sub>1</sub>(t) = 13.5t (t-2/3) (t-1)
+a<sub>2</sub>(t) = -13.5t (t-1/3) (t-1)
+a<sub>3</sub>(t) = 4.5t (t-1/3) (t-2/3)
+</pre>
+<img src="Curve4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Curve4.png">
+<p>運用線性代數的知識，把原本的內插多項式，轉化成四個多項式、以不同比重相加；比重是一開始那四個點的座標值。</p>
+<p>仔細觀察這四個多項式，在0≤t≤1範圍內，有一些部分小於零。這造成四個多項式疊加之後，曲線忽陡忽緩、有進有退，曲線扭動得太厲害，曲線不太平順。</p>
+<p>（以數學術語來說，四個多項式在0≤t≤1範圍內有根、有負值，疊加之後既不是凸函數也不是凹函數，不夠平順。）</p>
+<p>接下來將一步一步製作更平順的曲線。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Hermite Curve</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Hermite Curve</p>
+<p>改用兩個點以及這兩個點的斜率來建立曲線。特色是：曲線與曲線之間得以共用端點、共用斜率，讓銜接之處看起來比較平順，讓銜接之處是一次可微的。</p>
+<div class="i"><canvas id="HermiteCurve" width="500" height="300"></canvas></div>
+<pre>
+平面上有兩個點 (1,1) (3,2) 以及這兩個點的斜率 (0,9) (-3,-6) 
+使用三次多項式（四項）做為內插多項式，製作依序穿過這兩點的曲線。
+x(t) = a<sub>0</sub> t<sup>0</sup> + a<sub>1</sub> t<sup>1</sup> + a<sub>2</sub> t<sup>2</sup> + a<sub>3</sub> t<sup>3</sup>
+y(t) = b<sub>0</sub> t<sup>0</sup> + b<sub>1</sub> t<sup>1</sup> + b<sub>2</sub> t<sup>2</sup> + b<sub>3</sub> t<sup>3</sup>
+x'(t) = a<sub>1</sub> t<sup>0</sup> + 2 a<sub>2</sub> t<sup>1</sup> + 3 a<sub>3</sub> t<sup>2</sup>
+y'(t) = b<sub>1</sub> t<sup>0</sup> + 2 b<sub>2</sub> t<sup>1</sup> + 3 b<sub>3</sub> t<sup>2</sup>
+</pre>
+<pre>
+首先處理X座標！
+令這兩點對應的t值分別是 t = 0 , t = 1
+也就是說 x(0) = 1 , x(1) = 3 , x'(0) = 0 , x'(1) = -1
+
+x (0) =  1 = a<sub>0</sub> 0<sup>0</sup> + a<sub>1</sub> 0<sup>1</sup> + a<sub>2</sub> 0<sup>2</sup> + a<sub>3</sub> 0<sup>3</sup>
+x (1) =  3 = a<sub>0</sub> 1<sup>0</sup> + a<sub>1</sub> 1<sup>1</sup> + a<sub>2</sub> 1<sup>2</sup> + a<sub>3</sub> 1<sup>3</sup>
+x'(0) =  0 = a<sub>1</sub> 0<sup>0</sup> + 2 a<sub>2</sub> 0<sup>1</sup> + 3 a<sub>3</sub> 0<sup>2</sup>
+x'(1) = -3 = a<sub>1</sub> 1<sup>0</sup> + 2 a<sub>2</sub> 1<sup>1</sup> + 3 a<sub>3</sub> 1<sup>2</sup>
+
+x (0) =  1 = a<sub>0</sub> 
+x (1) =  3 = a<sub>0</sub> + a<sub>1</sub> + a<sub>2</sub> + a<sub>3</sub>
+x'(0) =  0 = a<sub>1</sub>
+x'(1) = -3 = a<sub>1</sub> + 2 a<sub>2</sub> + 3 a<sub>3</sub>
+
+[ 1 0 0 0 ] [ a<sub>0</sub> ]   [  1 ]
+[ 1 1 1 1 ] [ a<sub>1</sub> ] = [  3 ]
+[ 0 1 0 0 ] [ a<sub>2</sub> ]   [  0 ]
+[ 0 1 2 3 ] [ a<sub>3</sub> ]   [ -3 ]
+                   -1
+[ a<sub>0</sub> ]   [ 1 0 0 0 ] [  1 ]
+[ a<sub>1</sub> ] = [ 1 1 1 1 ] [  3 ]
+[ a<sub>2</sub> ]   [ 0 1 0 0 ] [  0 ]
+[ a<sub>3</sub> ]   [ 0 1 2 3 ] [ -3 ]
+
+[ a<sub>0</sub> ]   [  1  0  0  0 ] [  1 ]
+[ a<sub>1</sub> ] = [  0  0  1  0 ] [  3 ]
+[ a<sub>2</sub> ]   [ -3  3 -2 -1 ] [  0 ]
+[ a<sub>3</sub> ]   [  2 -2  1  1 ] [ -3 ]
+
+矩陣乘以向量，就得到多項式係數。這裡就省略不算了。
+多項式代入各種t值（範圍是0≤t≤1），就得到曲線上每個點的X座標。這裡就省略不算了。
+
+另一方面，其實矩陣是固定不變的。
+不管給定的點是哪四個點，往後都可以直接套用公式，求得多項式係數：
+
+[ a<sub>0</sub> ]   [  1  0  0  0 ] [  x<sub>0</sub> ]
+[ a<sub>1</sub> ] = [  0  0  1  0 ] [  x<sub>1</sub> ]
+[ a<sub>2</sub> ]   [ -3  3 -2 -1 ] [ dx<sub>0</sub> ]
+[ a<sub>3</sub> ]   [  2 -2  1  1 ] [ dx<sub>1</sub> ]
+
+a<sub>0</sub> = x<sub>0</sub>
+a<sub>1</sub> = dx<sub>0</sub>
+a<sub>2</sub> = -3x<sub>0</sub> + 3x<sub>1</sub> - 2dx<sub>0</sub> - dx<sub>1</sub>
+a<sub>3</sub> = 2x<sub>0</sub> + -2x<sub>1</sub> + dx<sub>0</sub> + dx<sub>1</sub>
+
+進一步求得多項式：
+
+x(t) = (2t<sup>3</sup> - 3t<sup>2</sup> + 1) * x<sub>0</sub>
+     + (t<sup>3</sup> - 2t<sup>2</sup> + t) * dx<sub>0</sub>
+     + (-2t<sup>3</sup> + 3t<sup>2</sup>) * x<sub>1</sub>
+     + (t<sup>3</sup> - t<sup>2</sup>) * dx<sub>1</sub>
+</pre>
+<pre>
+Y座標也是如法炮製！
+
+令這兩點對應的t值分別是 t = 0 , t = 1
+也就是說 y(0) = 1 , y(1) = 2 , y'(0) = 9 , y'(1) = -6
+
+[ b<sub>0</sub> ]   [  1  0  0  0 ] [  y<sub>0</sub> ]
+[ b<sub>1</sub> ] = [  0  0  1  0 ] [  y<sub>1</sub> ]
+[ b<sub>2</sub> ]   [ -3  3 -2 -1 ] [ dy<sub>0</sub> ]
+[ b<sub>3</sub> ]   [  2 -2  1  1 ] [ dy<sub>1</sub> ]
+
+y(t) = (2t<sup>3</sup> - 3t<sup>2</sup> + 1) * y<sub>0</sub>
+     + (t<sup>3</sup> - 2t<sup>2</sup> + t) * dy<sub>0</sub>
+     + (-2t<sup>3</sup> + 3t<sup>2</sup>) * y<sub>1</sub>
+     + (t<sup>3</sup> - t<sup>2</sup>) * dy<sub>1</sub>
+</pre>
+<textarea>
+struct Point {float x, y;};
+Point p0 = {1,3}, p1 = {3,4};
+Point m0 = {0,9}, m1 = {-3,-6};
+
+void hermite_curve()
+{
+	for (float t = 0.0; t <= 1.0; t += 0.01)
+	{
+		float x = (2*t*t*t - 3*t*t + 1) * p0.x
+				+ (t*t*t - 2*t*t + t) * m0.x
+				+ (-2*t*t*t + 3*t*t) * p1.x
+				+ (t*t*t - t*t) * m1.x;
+		float y = (2*t*t*t - 3*t*t + 1) * p0.y
+				+ (t*t*t - 2*t*t + t) * m0.y
+				+ (-2*t*t*t + 3*t*t) * p1.y
+				+ (t*t*t - t*t) * m1.y;
+		cout << '(' << x << ',' << y << ')';
+	}
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Bézier Curve</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Bézier Curve</p>
+<p>Hermite Curve的改良版本。直接使用四個點，推導出兩個點與兩個點的斜率。特色是：在使用者介面當中，控制點的位置，比起控制斜率大小來得直覺多了。</p>
+<p>也可以使用三個點。但是曲線與曲線銜接的地方就不平順了。</p>
+<div class="i"><canvas id="BézierCurve" width="500" height="300"></canvas></div>
+<pre>
+平面上有四個點 (1,3) (1,0) (2,2) (3,4)
+(1,3) (3,4) 是曲線穿過的點，對應的t值分別是 t = 0 , t = 1
+(1,0) (2,2) 用來計算斜率，對應的t值分別是 t = 1/3 , t = 2/3
+[(1,0) - (1,3)] ÷ 1/3 , [(3,4) - (2,2)] ÷ 1/3 是這兩個點的斜率。
+
+[ a<sub>0</sub> ]   [  1  0  0  0 ] [ x<sub>0</sub> ]
+[ a<sub>1</sub> ] = [ -3  3  0  0 ] [ x<sub>1</sub> ]
+[ a<sub>2</sub> ]   [  3 -6  3  0 ] [ x<sub>2</sub> ]
+[ a<sub>3</sub> ]   [ -1  3 -3  1 ] [ x<sub>3</sub> ]
+
+x(t) = (-t<sup>3</sup> + 3t<sup>2</sup> - 3t + 1) * x<sub>0</sub>
+     + (3t<sup>3</sup> - 6t<sup>2</sup> + 3t) * x<sub>1</sub>
+     + (-3t<sup>3</sup> + 3t<sup>2</sup>) * x<sub>2</sub>
+     + (t<sup>3</sup>) * x<sub>3</sub>
+
+[ b<sub>0</sub> ]   [  1  0  0  0 ] [ y<sub>0</sub> ]
+[ b<sub>1</sub> ] = [ -3  3  0  0 ] [ y<sub>1</sub> ]
+[ b<sub>2</sub> ]   [  3 -6  3  0 ] [ y<sub>2</sub> ]
+[ b<sub>3</sub> ]   [ -1  3 -3  1 ] [ y<sub>3</sub> ]
+
+y(t) = (-t<sup>3</sup> + 3t<sup>2</sup> - 3t + 1) * y<sub>0</sub>
+     + (3t<sup>3</sup> - 6t<sup>2</sup> + 3t) * y<sub>1</sub>
+     + (-3t<sup>3</sup> + 3t<sup>2</sup>) * y<sub>2</sub>
+     + (t<sup>3</sup>) * y<sub>3</sub>
+</pre>
+<textarea>
+struct Point {float x, y;};
+Point p0 = {1,3}, p1 = {1,0};
+Point p2 = {2,2}, p3 = {3,4};
+
+void bézier_curve()
+{
+	for (float t = 0.0; t <= 1.0; t += 0.01)
+	{
+		float x = (-t*t*t + 3*t*t - 3*t + 1) * p0.x
+				+ (3*t*t*t - 6*t*t + 3*t) * p1.x
+				+ (-3*t*t*t + 3*t*t) * p2.x
+				+ (t*t*t) * p3.x;
+		float x = (-t*t*t + 3*t*t - 3*t + 1) * p0.y
+				+ (3*t*t*t - 6*t*t + 3*t) * p1.y
+				+ (-3*t*t*t + 3*t*t) * p2.y
+				+ (t*t*t) * p3.y;
+		cout << '(' << x << ',' << y << ')';
+	}
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">B-spline Curve</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p>【待補文字】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">NURBS Curve</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Non-uniform_rational_B-spline  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Non-uniform_rational_B-spline'" tppabs="http://en.wikipedia.org/wiki/Non-uniform_rational_B-spline">http://en.wikipedia.org/wiki/Non-uniform_rational_B-spline</a></p>
+<p class="e">UVa 12565</p>
+
+<script>
+var Curve = 0, Bézier = 1, Hermite = 2;	// type
+function CreateCanvas(id, f, px, py, type) {
+	var canvas = this.canvas = document.getElementById(id),
+		ctx = this.ctx = canvas.getContext('2d'),
+		hitpoint = this.hitpoint = -1;
+
+	canvas.tabIndex = 2;
+	canvas.style.position = "relative";
+	canvas.onmousedown = function(e){
+		var pos = coordinate(canvas, e.layerX, e.layerY);
+		hitpoint = -1;
+		for (var i=0; i<4; ++i)
+			if (hit(px[i], py[i], pos.x, pos.y))
+				hitpoint = i;
+	};
+
+	canvas.onmousemove = function(e){
+		if (hitpoint == -1) return;
+		var pos = coordinate(canvas, e.layerX, e.layerY);
+		px[hitpoint] = pos.x;
+		py[hitpoint] = pos.y;
+		Draw(canvas, ctx, f, px, py, type);
+	};
+
+	canvas.onmouseup = function(e){
+		hitpoint = -1;
+	};
+
+	Draw(canvas, ctx, f, px, py, type);
+}
+
+function hit(x, y, mousex, mousey) {
+	return x - 2 <= mousex && x + 2 >= mousex
+		&& y - 2 <= mousey && y + 2 >= mousey;
+}
+
+var move = 50, s = 10;
+function coordinate(canvas, x, y) {
+	x -= move; y -= canvas.height - move; y = -y;
+	x /= s; y /= s;
+	return {x: Math.round(x), y: Math.round(y)};
+}
+
+function Draw(canvas, ctx, f, px, py, type) {
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	ctx.font = "32pt Arial";
+	ctx.lineWidth = 1;
+	ctx.textAlign = "right";
+	ctx.textBaseline = "top";
+	ctx.strokeStyle = "rgb(0,127,0)";
+	ctx.strokeText("Drag the Point !", canvas.width, 0);
+
+	ctx.translate(move, canvas.height - move);
+	ctx.scale(1, -1);
+
+	DrawXY(ctx, 400, 200);
+	if      (type == Hermite) DrawHermiteSupport(ctx, px, py);
+	else if (type == Bézier) DrawBézierSupport(ctx, px, py);
+	DrawCurve(ctx, f, px, py);
+	for (var i=0; i<4; ++i) {
+		var str = "p"+i+"("+px[i]+","+py[i]+")";
+		if (type == Hermite) {
+			if      (i == 0 || i == 2) str = "p"+Math.floor(i/2)+"("+px[i]+","+py[i]+")";
+			else if (i == 1 || i == 3) str = "m"+Math.floor(i/2)+"("+px[i]+","+py[i]+")";
+		}
+		DrawPoint(ctx, px[i] * s, py[i] * s, str);
+	}
+}
+
+function DrawCurve(ctx, f, px, py) {
+	for (var t = 0.0, cc = 0; t < +1.01; t += 0.01) {
+		var x = 0.0, y = 0.0;
+		for (var i=0; i<4; ++i) {
+			var c = f[i](t);
+			x += c * px[i];
+			y += c * py[i];
+		}
+		if (!cc++) {
+			ctx.beginPath();
+			ctx.moveTo(x * s, y * s);
+		} else {
+			ctx.lineTo(x * s, y * s);
+		}
+	}
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = "rgb(198,24,24)";
+	ctx.stroke();
+}
+
+function DrawBézierSupport(ctx, px, py) {
+	ctx.beginPath();
+	ctx.moveTo(px[0] * s, py[0] * s);
+	ctx.lineTo(px[1] * s, py[1] * s);
+	ctx.moveTo(px[2] * s, py[2] * s);
+	ctx.lineTo(px[3] * s, py[3] * s);
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = "blue";
+	ctx.stroke();
+}
+
+function DrawHermiteSupport(ctx, px, py) {
+	var n0 = Math.sqrt(px[1] * px[1] + py[1] * py[1]);
+	m0 = {x: px[1] / n0 * 5, y: py[1] / n0 * 5};
+	var n1 = Math.sqrt(px[3] * px[3] + py[3] * py[3]);
+	m1 = {x: px[3] / n1 * 5, y: py[3] / n1 * 5};
+
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = "blue";
+	DrawArrow(ctx, 0, 0, px[1]*s, py[1]*s, 8, Math.PI / 5, 0);
+	DrawArrow(ctx, 0, 0, px[3]*s, py[3]*s, 8, Math.PI / 5, 0);
+	DrawArrow(ctx, px[0]*s, py[0]*s, (px[0]+m0.x)*s, (py[0]+m0.y)*s, 8, Math.PI / 5, 0);
+	DrawArrow(ctx, px[2]*s, py[2]*s, (px[2]+m1.x)*s, (py[2]+m1.y)*s, 8, Math.PI / 5, 0);
+}
+
+function DrawArrow(ctx, x1, y1, x2, y2, len, angle, gap) {
+	var slope = Math.atan2(y2 - y1, x2 - x1);
+	x1 += gap * Math.cos(slope);
+	y1 += gap * Math.sin(slope);
+	x2 -= gap * Math.cos(slope);
+	y2 -= gap * Math.sin(slope);
+
+	ctx.beginPath();
+	ctx.moveTo(x1, y1);
+	ctx.lineTo(x2, y2);
+	ctx.lineTo(x2 - len * Math.cos(slope-angle), y2 - len * Math.sin(slope-angle));
+	ctx.moveTo(x2, y2);
+	ctx.lineTo(x2 - len * Math.cos(slope+angle), y2 - len * Math.sin(slope+angle));
+	ctx.stroke();
+}
+
+function DrawXY(ctx, scalarX, scalarY) {
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = "gray";
+	DrawArrow(ctx, -scalarX, 0, +scalarX, 0, 8, Math.PI / 5, 0);
+	DrawArrow(ctx, 0, -scalarY, 0, +scalarY, 8, Math.PI / 5, 0);
+
+	ctx.save();
+	ctx.font = "16pt Arial";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.fillStyle = "black";
+	ctx.fillText("x", +scalarX+8, 0);
+	ctx.textBaseline = "bottom";
+	ctx.scale(1, -1);
+	ctx.fillText("y", 0, -scalarY-8);
+	ctx.scale(1, -1);
+	ctx.restore();
+}
+
+function DrawPoint(ctx, x, y, str) {
+	var gapx = -24, gapy = 24;
+
+	ctx.beginPath();
+	ctx.arc(x, y, 4, 0, 2 * Math.PI);
+	ctx.fillStyle = "black";
+	ctx.fill();
+
+	ctx.save();
+	ctx.translate(x,y);
+	ctx.scale(1,-1);
+	ctx.font = "11pt Arial";
+	ctx.textAlign = "left";
+	ctx.textBaseline = "bottom";
+	ctx.fillStyle = "black";
+	ctx.fillText(str, gapx, gapy);
+	ctx.restore();
+}
+
+	// curve
+	var f1 = [
+		function(t){return -4.5*(t-1/3)*(t-2/3)*(t-1);},
+		function(t){return 13.5*t*(t-2/3)*(t-1);},
+		function(t){return -13.5*t*(t-1/3)*(t-1);},
+		function(t){return 4.5*t*(t-1/3)*(t-2/3);}
+	];
+
+	// Hermite curve
+	var f2 = [
+		function(t){return 2*t*t*t - 3*t*t + 1;},
+		function(t){return t*t*t - 2*t*t + t;},
+		function(t){return -2*t*t*t + 3*t*t;},
+		function(t){return t*t*t - t*t;}
+	];
+
+	// Bézier curve
+	var f3 = [
+		function(t){return -t*t*t + 3*t*t - 3*t + 1;},
+		function(t){return 3*t*t*t - 6*t*t + 3*t;},
+		function(t){return -3*t*t*t + 3*t*t;},
+		function(t){return t*t*t;}
+	];
+
+new CreateCanvas('Curve', f1, [0,10,10,30], [1,0,10,20], Curve);
+new CreateCanvas('HermiteCurve', f2, [28,17,34,18], [4,2,18,7], Hermite);
+new CreateCanvas('BézierCurve', f3, [15,10,25,30], [0,10,20,7], Bézier);
+</script>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

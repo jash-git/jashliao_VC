@@ -1,0 +1,205 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Topological Sort</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Topological Sort</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">楔子</p>
+<p>在枚舉所有排列的問題之中，如果我們另外再限制誰要排在誰前方、誰要排在誰後方，那麼在這些限制之下，合理的排列還會剩下哪些呢？</p>
+<img src="TopologicalSort1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort1.png">
+<p>【註：枚舉所有排列，讀者們可另行參考「<a href="Backtracking.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Backtracking.html">Enumerate all n-tuples</a>」一文。】</p>
+<p class="t">先後限制與圖</p>
+<p>誰要排在誰前方、誰要排在誰後方，其實就是兩兩之間的關係，故可以改用圖來表示：把圖上一條由A點連向B點的邊，想成是A必須排在B前方（B必須排在A後方）。</p>
+<img src="TopologicalSort2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort2.png">
+<p>當然啦，也可以把圖上一條由A點連向B點的邊，想成是A必須排在B後方。不過一般來說我們習慣成自然地使用前者。</p>
+<p class="t">Topological Sort與Topological Order</p>
+<p>「拓樸排序」是排序一張有向圖的點的方式。把圖上一條由A點連向B點的邊，想成是A必須排在B前方（B必須排在A後方）。Topological Sort用來找出合理的排列順序，讓每一個點的先後順序，滿足每一條邊所規定的先後順序。</p>
+<p>「拓樸順序」是指一張有向圖經過「拓樸排序」後，每一個點的先後順序。</p>
+<img src="TopologicalSort3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort3.png">
+<p>一張圖經過Topological Sort的結果可以有很多種。只要不違背圖上每一條邊的先後規定，要怎麼排列圖上的點都行。</p>
+<p class="t">圖上不能有環</p>
+<p>當圖上有環時，便無法進行Topological Sort。因為環上每一個點都會有連向自己的邊，意味著環上每一個點必須排在其他點的後方，環上每一個點都不能在排列順序中拔得頭籌，所以合理的排列順序不存在。</p>
+<img src="TopologicalSort4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort4.png">
+
+</div></div><div class="a"><div class="h">
+<p class="b">Topological Sort: 很普通的演算法</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">觀察問題</p>
+<p>要找出合理的排列順序，首先得決定第一點！知道如何找出第一點，那麼就可以循序漸進的再找出第二點、第三點了。</p>
+<p>可以作為第一點的點，想必它不必排在其他點後方。也就是說，沒有被任何邊連向的點，就可以作為第一點。如果有很多個第一點，那麼找哪一點都行。</p>
+<img src="TopologicalSort5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort5.png">
+<p>決定第一點之後，那麼剩下所有點都會在第一點後方。也就是說，由第一點連出去的邊，其先後規定已經被滿足了，規定存不存在都無所謂。因此，決定第一點之後，就可以刪去此點，以及刪去由此點連出去的邊──原問題可以遞迴地縮小！</p>
+<img src="TopologicalSort6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort6.png">
+<p>只要反覆的尋找沒有被任何邊連向的點，然後刪去此點以及刪去由此點連出去的邊，就可以找出一個合理的排列順序了。</p>
+<p>附帶一提，要找出合理的排列順序，也可以由最後一點開始決定！無論要從第一點找到最後一點，或是從最後一點找到第一點，都是可以的。各位可以想想看該怎麼做。</p>
+<p class="t">找出一個合理的排列順序（adjacency matrix）</p>
+<p>儘管這個問題有Recursive的性質，可以用遞迴實作，但由於遞迴的分支只有一條，故亦可以用迴圈實做。我想大家都會選擇以比較簡單的迴圈方式來實做吧？</p>
+<p>實作時可以利用變數紀錄圖上每一個點目前仍被多少條邊連到。尋找沒有被任何邊連向的點，就直接看該變數是不是零；刪去由此點連出去的邊，就順便更新變數的值。</p>
+<img src="TopologicalSort7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort7.png">
+<textarea>
+bool adj[9][9];	// adjacency matrix
+int ref[9];		// 紀錄圖上每一個點目前仍被多少條邊連到
+
+void topological_sort()
+{
+	for (int i=0; i<9; ++i) ref[i] = 0;	// 初始化為0
+
+	// 累計圖上每一個點被幾條邊連到
+	for (int i=0; i<9; ++i)
+		for (int j=0; j<9; ++j)
+			if (adj[i][j])
+				ref[j]++;
+
+	// 開始找出一個合理的排列順序
+	for (int i=0; i<9; ++i)
+	{
+		// 尋找沒有被任何邊連向的點
+		int s = 0;
+		while (s < 9 && ref[s] != 0) ++s;
+
+		if (s == 9) break;	// 找不到。表示目前殘存的圖是個環。
+		ref[s] = -1;		// 設為已找過（刪去s點）
+
+		cout << s;			// 印出合理的排列順序的第i點
+
+		// 更新ref的值（刪去由s點連出去的邊）
+		for (int t=0; t<9; ++t)
+			if (adj[s][t])
+				ref[t]--;
+	}
+}
+</textarea>
+<p class="t">找出一個合理的排列順序（adjacency lists）</p>
+<textarea>
+int adj[9][9], size[9];	// adjacency lists
+int ref[9];		// 紀錄圖上每一個點目前仍被多少條邊連到
+
+void topological_sort()
+{
+	for (int i=0; i<9; ++i) ref[i] = 0;	// 初始化為0
+
+	// 累計圖上每一個點被幾條邊連到
+	for (int i=0; i<9; ++i)
+		for (int j=0; j<size[i]; ++j)
+			ref[adj[i][j]]++;
+
+	// 宣告一個queue來紀錄已經沒有被任何邊連向的點
+	queue<int> Q;
+	for (int i=0; i<9; ++i)
+		if (ref[i] == 0)
+			Q.push(i);
+
+	// 開始找出一個合理的排列順序
+	for (int i=0; i<9; ++i)
+	{
+		// 尋找沒有被任何邊連向的點
+		if (Q.empty()) break;		// 找不到。表示目前殘存的圖是個環。
+		int s = Q.front(); Q.pop();
+		ref[s] = -1;				// 設為已找過（刪去s點）
+
+		cout << s;					// 印出合理的排列順序的第i點
+
+		// 更新ref的值（刪去由s點連出去的邊）
+		for (int j=0; j<size[s]; ++j)
+		{
+			int t = adj[s][j];
+			ref[t]--;
+			if (!ref[t]) Q.push(t);	// 紀錄已經沒有被任何邊連向的點
+		}
+	}
+}
+</textarea>
+<p class="t">時間複雜度</p>
+<p>時間複雜度等於一次Graph Traversal的時間。圖的資料結構為adjacency matrix的話，便是O(V^2)；圖的資料結構為adjacency lists的話，便是O(V+E)。</p>
+<p class="e">UVa 10305 200</p>
+<p class="t">找出所有合理的排列順序</p>
+<p>請用backtracking。此處不詳述了，直接看練習題吧。</p>
+<p class="e">UVa 124</p>
+<p class="t">計算所有合理的排列順序個數</p>
+<p>需要使用Dynamic Programming解決，時間複雜度O(2^V * V^2)。</p>
+<p><a href="javascript:if(confirm('http://blog.csdn.net/tiaotiaoyly/article/details/2712349  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://blog.csdn.net/tiaotiaoyly/article/details/2712349'" tppabs="http://blog.csdn.net/tiaotiaoyly/article/details/2712349">http://blog.csdn.net/tiaotiaoyly/article/details/2712349</a></p>
+<p>小遊戲：<a href="javascript:if(confirm('http://www.newgrounds.com/portal/view/527022  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.newgrounds.com/portal/view/527022'" tppabs="http://www.newgrounds.com/portal/view/527022">http://www.newgrounds.com/portal/view/527022</a>。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Topological Sort: Depth-first Search</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Depth-first Search與Topological Sort的關係</p>
+<p>DFS離開點的順序，顛倒之後，正好是拓樸順序。</p>
+<p>DFS優先走到最深的點，直到不能再深為止。DFS也會優先找出所有最深的點，離開點的原則是最深的點先離開。最深的點當然就是拓樸順序最後的點。</p>
+<p class="t">找出一個合理的排列順序（adjacency matrix）</p>
+<textarea>
+bool adj[9][9];		// adjacency matrix
+int visit[9];		// 記錄DFS遍歷過的點
+int order[9], n;	// 儲存一個合理的排列順序
+
+bool cycle;			// 記錄DFS的過程中是否偵測到環
+
+void DFS(int s)
+{
+	// back edge，有環。
+	if (visit[s] == 1) cycle = true;
+	// forward edge、cross edge。
+	if (visit[s] == 2) return;
+
+	visit[s] = 1;
+	for (int t=0; t<9; ++t)
+		if (adj[s][t])
+			DFS(t);
+	visit[s] = 2;
+
+	order[n--] = s;		// 記錄合理的排列順序
+}
+
+void topological_sort()
+{
+	// 初始化
+	for (int i=0; i<9; i++) visit[i] = 0;
+	cycle = false;
+	n = 9-1;
+
+	// 進行DFS
+	for (int s=0; s<9; ++s)
+		if (!v[s])
+			DFS(s);
+
+	// 輸出結果
+	if (cycle)
+		cout << "圖上有環";
+	else
+		// 印出一個合理的排列順序
+		for (int i=0; i<9; ++i)
+			cout << order[i];
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Activity Network</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Activity on Vertex Network</p>
+<p>【待補文字】</p>
+<p class="e">UVa 452 10461</p>
+<p class="t">Activity on Edge Network</p>
+<p>【待補文字】</p>
+<p class="e">UVa 506</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Inhomogeneous Sorting</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Inhomogeneous Sorting</p>
+<p>1 2 3 ... N，一共N個數字由小到大排好。現在制定了一些兩兩相鄰交換的規則，例如規則「18 ≡ 81」就表示1和8相鄰時可以對調。</p>
+<p>問題：一、字典順序最大的排列？二、共有幾種不同排列？</p>
+<p>此問題等價於Topological Sorting！</p>
+<pre>
+一、把所有的兩兩相鄰交換規則建成一張無向圖。
+二、另外製作一張有向圖：
+　　如果無向圖沒有邊ab，且a < b，
+　　那麼就在有向圖增加一條有向邊ab。
+　　最後形成有向無環圖DAG。
+三、有向圖的一種拓樸排序，就對應到原問題的一種排列。
+</pre>
+<p>要怎麼証明呢？不要問，很恐怖。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,270 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Cycle</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Cycle</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Cycle</p>
+<p>一條路徑的起點和終點相同，就是一只「環」。</p>
+<img src="Cycle1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cycle1.png">
+<p>有向圖的環，可以特地稱作「有向環」；無向圖的環，可以特地稱作「無向環」。環上每個點都恰好連著兩條邊。</p>
+<p>無向環以另一種角度來看，就是兩條路徑，兩條路徑的起點相同、終點也相同。</p>
+<p>習慣規定一個環至少三個點。</p>
+<p class="t">Loop</p>
+<p>一個點連向自己的邊，稱做「自環」，有時候可以歸類為環。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Negative Weight Cycle</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Negative Weight Cycle</p>
+<p>權重為負值的環稱作「負環」。Bellman-Ford Algorithm可以求出其中一只負環。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum Weight Cycle</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Minimum Weight Cycle（Shortest Cycle）（Girth）</p>
+<p>「最小環」是一張圖上權重最小的環，可能有許多只。</p>
+<p>當圖上無負環時，得以多項式時間找出其中一個最小環，此時最小環是簡單環。當圖上有負環時，無法快速找出最小環，為NP-complete問題。</p>
+<p>求最小環如同求最短路徑；求最大環如同求最長路徑。</p>
+<p class="t">演算法</p>
+<pre>
+窮舉圖上每一個點：
+　甲、以該點為起點，以邊的連接關係進行backtracking。
+　乙、途中若形成環，則隨時紀錄最小環。
+　丙、可以bound。
+</pre>
+<p>時間複雜度是O(V!)，不過實際效率尚可接受。</p>
+<p class="t">演算法</p>
+<pre>
+窮舉所有圖上的邊ij：
+　甲、把邊ij暫時拿掉，權重改成無限大。
+　乙、求出i點到j點的最短路徑。
+　丙、放回邊ij，形成一只環，即是強制經過邊ij的最小環。
+　丁、過程中權重最小者即是最小環。
+</pre>
+<p>時間複雜度等同於求O(E)次兩點之間最短路徑的時間。</p>
+<p class="t">演算法</p>
+<p>藉由Floyd-Warshall Algorithm的過程，順手窮舉所有可能的最小環。有使用限制。</p>
+<p>時間複雜度為O(V^3)，空間複雜度為O(V^3)。</p>
+<pre>
+有向圖，正邊　　O(VVV)
+有向圖，無負環　O(VVV)
+有向圖，有負環　不行算
+
+無向圖，正邊　　O(VVV)
+無向圖，無負環　不行算
+無向圖，有負環　不行算
+</pre>
+<p class="t">計算最小環的權重</p>
+<textarea>
+int w[9][9];	// adjacency matrix
+int d[9][9];
+
+void minimum_cycle()
+{
+	memcpy(d, w, sizeof(w));
+
+	for (int i=0; i<9; ++i)
+		d[i][i] = INF;
+
+	int weight = INF;
+	for (int k=0; k<9; ++k)
+	{
+		// 趁著第k點還沒有加入到最短路徑的時候，
+		// 求出第0點到第k-1點，這些點可以形成的最小環。
+		// d[i][j]絕對不會包含k，一定可形成環。
+		for (int i=0; i<k; ++i)
+			for (int j=0; j<k; ++j)
+				if (i != j)
+//					if (w[k][i] 與 d[i][j] 與 w[j][k] != INF)
+					if (w[k][i] + d[i][j] + w[j][k] < weight)
+						weight = w[k][i] + d[i][j] + w[j][k];
+
+		// 將第k點加入到最短路徑當中
+		for (int i=0; i<9; ++i)
+			for (int j=0; j<9; ++j)
+//				if (d[i][k] 與 d[k][j] != INF)
+				if (d[i][k] + d[k][j] < d[i][j])
+					d[i][j] = d[i][k] + d[k][j];
+	}
+
+	if (weight == INF)
+		cout << "最小環不存在";
+	else
+		cout << "最小環的權重為" << weight;
+}
+</textarea>
+<p class="t">找出一只最小環</p>
+<p>若要維持時間複雜度為O(V^3)，則必須增廣陣列空間成為O(V^3)，紀錄整個計算過程；最後仿照求一條最短路徑的模式，以回溯方式求得一只最小環。</p>
+<p>O(V^3)的做法實際效率不佳。下面提供比較簡潔、效率較佳的實作方式，時間複雜度是O(V^4)，空間複雜度是O(V^2)。</p>
+<textarea>
+int w[9][9];	// adjacency matrix
+int d[9][9];
+int p[9][9];
+
+int cycle[9], c = 0;	// 紀錄最小環
+
+void trace(int i, int j)
+{
+	cycle[c++] = i;
+	if (i != j) trace(p[i][j], j);
+}
+
+void minimum_cycle()
+{
+	for (int i=0; i<9; ++i)
+		for (int j=0; j<9; ++j)
+		{
+			d[i][j] = w[i][j];
+			p[i][j] = j;
+		}
+
+	for (int i=0; i<9; ++i)
+		d[i][i] = INF;
+
+	int weight = 1e9;
+	for (int k=0; k<9; ++k)
+	{
+		for (int i=0; i<k; ++i)
+			for (int j=0; j<k; ++j)
+				if (i != j)
+//					if (w[k][i] 與 d[i][j] 與 w[j][k] != INF)
+					if (w[k][i] + d[i][j] + w[j][k] < weight)
+					{
+						weight = w[k][i] + d[i][j] + w[j][k];
+
+						// 紀錄目前的最小環。O(V)
+						c = 0;
+						trace(i, j);
+						cycle[c++] = k;
+					}
+
+		for (int i=0; i<9; ++i)
+			for (int j=0; j<9; ++j)
+//				if (d[i][k] 與 d[k][j] != INF)
+				if (d[i][k] + d[k][j] < d[i][j])
+				{
+					d[i][j] = d[i][k] + d[k][j];
+					p[i][j] = p[i][k];
+				}
+	}
+
+	if (weight == 1e9)
+		cout << "最小環不存在";
+	else
+	{
+		cout << "最小環是"
+		for (int i=0; i<c; ++i)
+			cout << cycle[i];
+	}
+}
+</textarea>
+<p class="e">Timus 1004</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum Ratio Cycle</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Minimum Ratio Cycle</p>
+<p>「最小比率環」。一張圖每條邊有兩組權重，第一組權重可為任意值，第二組權重不可為負值；於是一只環也有兩組權重。最小比率環是「第一組權重除以第二組權重」最小的環，可能有許多只。</p>
+<p>已被證明是NP-hard問題。</p>
+<p class="t">第一個想法：搜尋答案</p>
+<p>找出圖上所有的環，比較各個環的比率之後，就得到最小比率環了。然而，要找出圖上所有的環，是不容易的事情。</p>
+<p>逆向思考，直接搜尋比率，再來看圖上有哪些環符合比率吧！</p>
+<p class="t">第二個想法：除法化作減法</p>
+<p>令邊的兩組權重標記為w1和w2，環的兩組權重標記為Σw1和Σw2，環的比率標記為r = Σw1÷Σw2。</p>
+<p>我們想知道一只環的比率r是多少，也就是說我們想知道Σw1÷Σw2是多少，也就是說我們想知道Σw1會等於多少的r×Σw2──要是直接把Σw1與r×Σw2相減，亦可表示Σw1與r×Σw2的多寡關係：r太小就表示差值是正數，r剛剛好就表示差值是零，r太大就表示差值是負數。利用這種方式，原本難以分析的除法式子，就成了容易分析的減法式子了。</p>
+<p>為了湊出這道減法式子，把原來權重為w1和w2的一條邊，改為權重為w1 - r×w2的一條邊。如此一來，環的權重就變成了Σ(w1 - r×w2) = Σw1 - r×Σw2，這就成了我們所要的減法式子。</p>
+<p>現在只要設定好r，然後看看圖上有沒有零環，如果有零環就表示這個r是合理的比率值。新圖上的零環，就是原圖上比例為r的環。</p>
+<p class="t">新圖的權重 v.s. 原圖的比率</p>
+<p>設定好r之後，新圖上究竟有哪些環？</p>
+<p>一、如果新圖上有負環：這個負環的權重Σ(w1 - r×w2) = Σw1 - r×Σw2 < 0，可推得Σw1÷Σw2 < r。也就是說找到了一個負環，比率比r還小。</p>
+<p>二、如果新圖上沒有負環，但有零環：可推得Σw1÷Σw2 = r。由於圖上沒有負環，沒有比率比r小的環，所以這個零環就是最小比率環，r就是最小比率環的比率。</p>
+<p>三、新圖上沒有負環、沒有零環，但有正環：可推得Σw1÷Σw2 > r。也就是說圖上所有的環，比率都比r還大。</p>
+<p>四、新圖上沒有環：沒有環就不會有最小比率環。</p>
+<p>至此，這個問題已變成搜尋最小比率環的比率，並判斷圖上有沒有負環的問題了。要判斷圖上有沒有負環，可以利用各種偵測負環的演算法，例如Bellman-Ford Algorithm。</p>
+<p class="t">Binary Search</p>
+<p>比率太小就有負環，比率太大就沒有負環。所以可以用Binary Search找答案。</p>
+<p class="t">演算法</p>
+<pre>
+1. 搜尋最小比率環的比率r。
+2. 把圖上的邊的兩組權重w1和w2，改為只有一組權重w1-r×w2，
+
+X. 可使用Binary Search找出正確的比率r：
+   圖上有負環表示r太小，圖上沒負環表示r太大，
+   沒有負環只有零環表示r是正解。
+</pre>
+<p>時間複雜度等同於偵測負環O(logR)次的時間，R是可能的比率範圍。</p>
+<p class="t">計算最小比率環的比率</p>
+<p>【待補程式碼】</p>
+<p class="t">找出一只最小比率環</p>
+<p>【待補程式碼】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum Mean Cycle</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Minimum Mean Cycle</p>
+<p>尚無中譯，暫譯「最小平均值環」。一張圖上每條邊都有權重，最小平均值環是「權重除以邊數」最小的環，可能有許多只。</p>
+<p>最小平均值環也可以視作是最小比率環的特例，當每條邊的第二組權重都等於1的時候。</p>
+<p class="t">有向圖演算法（Karp's Algorithm）</p>
+<p>請參考CLRS在Bellman-Ford Algorithm章節的練習題，事實上也能求出最大平均值環。用到了兩個概念：</p>
+<p>一、圖上所有邊的權重，同時增減一數值，不影響最小平均值環的位置（但是會影響最小環的位置）。</p>
+<p>二、單源最短路徑往外延伸，一旦碰觸到最小平均值環（或者最小環），就會不斷繞行之，讓路徑長度增加最少。此演算法採用窮舉法，求出單源最短路徑進入最小平均值環的起點。</p>
+<pre>
+令V為圖上的所有點構成的集合，n為圖上的點數。
+圖上任意取一個點作為起點，d(k, i)為起點走k條邊到達i點的最短路徑。
+
+                      d(n, i) - d(k, i)
+平均權重 = min  max   ———————————————————
+          i∊V 0≤k≤n-1       n - k
+</pre>
+<p>如果圖不連通，可以使用Johnson's Algorithm提到的技巧，新增一個起點，新增起點到圖上各點的邊，權重皆設為相同數值（例如零）。如此一來，圖上每一點都可以由起點走到，而且不影響最小平均值環的位置。</p>
+<p>圖的資料結構為adjacency matrix，時間複雜度是O(V^3)；圖的資料結構為adjacency lists，時間複雜度是O(VE)。</p>
+<p class="t">計算最小平均值環的平均權重（adjacency matrix）</p>
+<textarea>
+const int V = 9;
+double w[9][9];		// adjacency matrix
+double d[9+1][9];	// d(k, i)
+
+void min_mean_cycle()
+{
+	for (int i=0; i<V+1; ++i)
+		for (int j=0; j<V; ++j)
+			d[i][j] = 1e9;
+
+	// 新增一個起點，連向圖上其他點，權重皆為零。
+	int s = V++;
+	for (int i=0; i<V-1; ++i)
+		w[s][i] = 0;
+
+	d[0][s] = 0;
+	for (int k=0; k<V; ++k)
+		for (int i=0; i<V; ++i)
+			for (int j=0; j<V; ++j)
+				if (d[k][i] + w[i][j] < d[k+1][j])
+					d[k+1][j] = d[k][i] + w[i][j];
+
+	double mean = 1e9;
+	for (int i=0; i<V-1; ++i)
+	{
+		if (d[V][i] == 1e9) continue;
+
+		double maxw = -1e9;
+		for (int k=0; k<V-1; ++k)
+			maxw = max(maxw, (d[V][i] - d[k][i]) / (V - k));
+		mean = min(mean, maxw);
+	}
+
+	if (mean == 1e9)
+		cout << "平均權重無限大";
+	else
+		cout << "平均權重為" << mean;
+}
+</textarea>
+<p class="t">找出一只最小平均值環</p>
+<p>【待補程式碼】</p>
+<p class="e">UVa 11090</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

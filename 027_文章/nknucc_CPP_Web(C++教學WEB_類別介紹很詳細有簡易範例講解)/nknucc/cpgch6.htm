@@ -1,0 +1,637 @@
+<!--- file name: recur.htm
+     √5 ＜ ＞ ℃ ℉   ≧ ≦ ≠ ∵ ∴
+--->
+<HTML>
+   <HEAD>
+    <TITLE>第 6 章 遞迴函數</TITLE>
+   </HEAD>
+   <BODY>
+<P>
+    <CENTER><B>第 6 章  遞迴函數</B></CENTER>
+<P>
+數學上 的 遞迴函數 與 電腦程式 的 遞迴函數 有 密切的關係，
+從 數學上 遞迴函數 的了解，
+對於 電腦程式中 遞迴函數 的了解 有 莫大的 幫助。
+同時 亦可 用 數學的 遞迴函數 來 估計
+一些 程式 執行的時間。
+
+<P>
+<A NAME="start">
+<P>
+     本 章 主 要 內 容 如 下 :
+<UL>
+  <LI>第 6.1 節 <A href="#first">數學上的遞迴函數</A>
+  <LI>第 6.2 節 <A href="#second">其相對應的 C 程式語言的遞迴函數</A>
+  <LI>第 6.3 節 <A href="#third">數學上的遞迴函數公式的求解</A>
+  <LI>第 6.4 節 <A href="#fourth">一些程式執行時間的估計</A>
+</UL>
+<P>
+<A href="cpgch5.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch5.htm">回第 5 章</A><BR>
+<A href="cpgch7.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch7.htm">至第 7 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<HR>
+<P>
+<!--------------------第 6.1 節--------------------------------------->
+<A NAME="first">
+<P>
+  <B>第 6.1 節   數學上的遞迴函數</B>
+<P>
+以下 所 討論的 函數 都是 定義於 N = {0,1,2,...} 或<BR>
+N<SUP>k</SUP> = N˙N˙...˙N 映至 N 的函數。
+<P>
+一函數 稱為 遞迴函數 (遞迴關係) 乃是 該函數 可用 自身 和 起始條件 來定義。
+由 下列 幾個 例子 即可 明白 其意義。
+<P>
+ <B>例 1: f<SUB>1</SUB>(n) = n!</B>
+<P>
+         由 n! 定義可知<BR>
+<PRE>
+              1, 當 n=0,
+        n! =｛
+              n˙(n-1)˙...˙1, 當 n &gt; 0.
+</PRE>
+<P>
+         當 n &gt; 0 時，<BR>
+<PRE>
+        f<SUB>1</SUB>(n) = n˙(n-1)˙...˙1
+              = n˙[(n-1)˙...˙1]
+              = n˙f<SUB>1</SUB>(n-1)
+</PRE>
+<P>
+         因此， f<SUB>1</SUB>(n) 可重新定義為
+<PRE>
+                 1, 當 n = 0,
+        f<SUB>1</SUB>(n) =｛
+                 n˙f<SUB>1</SUB>(n-1), 當 n &gt; 0.
+</PRE>
+<P>
+於例 1 中，``當  n = 0 時， f<SUB>1</SUB>(n) = 1'' 稱為起始條件。
+<P>
+欲求 f<SUB>1</SUB>(3) 值， 其 計算 過程 如下：
+<PRE>
+        f<SUB>1</SUB>(3) = 3˙f<SUB>1</SUB>(2)
+              = 3˙[2˙f<SUB>1</SUB>(1)]
+              = 3˙[2˙[1˙f<SUB>1</SUB>(0)]]
+              = 3˙[2˙[1˙1]]
+              = 3˙[2˙1]
+              = 3˙2
+              = 6
+</PRE>
+<P>
+<B>例 2: 月兔問題 與 費氏數列</B>
+<P>
+ 某人 飼養 一對 新生 兔子， 設 兔子 過了 一個月 後 長大 成熟，
+ 再 過 一個月 即 可 產下 一對 兔寶寶。 考慮 兔子 不死亡 的 條件下，
+ 試 問 過了 n 個月後， 會 有 幾對 兔子?
+<P>
+ 將 每個月 月底 的 兔子 總數 列成表， 其 表 如下：
+<P>
+<TABLE BORDER>
+  <TR ALIGN=right><TH>月數<TD>00<TD>01<TD>02<TD>03<TD>04<TD>05<TD>06<TD>07<TD>08<TD>09
+  <TR ALIGN=right><TH>新生兔<TD>0<TD>1<TD>0<TD>1<TD>1<TD>2<TD>3<TD>5<TD>8<TD>13
+  <TR ALIGN=right><TH>成熟兔<TD>0<TD>0<TD>1<TD>1<TD>2<TD>3<TD>5<TD>8<TD>13<TD>21
+  <TR ALIGN=right><TH>總數<TD>0<TD>1<TD>1<TD>2<TD>3<TD>5<TD>8<TD>13<TD>21<TD>34
+</TABLE>
+<P>
+ 由上表可得費氏數列：<BR>
+  0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ...
+<P>
+ 設 f<SUB>2</SUB>(n) 表第 n 個 月 兔子 的 總對數， 由 上表 可得
+<PRE>
+                  0, 當 n = 0,
+        f<SUB>2</SUB>(n) =｛ 1, 當 n = 1,
+                  f<SUB>2</SUB>(n-1)+f<SUB>2</SUB>(n-2), 當 n &gt; 1.
+</PRE>
+<P>
+<B>例 3: 搬圓盤問題</B>
+<P>
+ 設 有 A、 B、 C 三根 柱子， A 柱子 上 有 64 個 直徑 大小 不一 的 中空 圓盤，
+ 由大而小 疊放 在一起， 如 下圖 (3 個圓盤) 所示。
+<P>
+每次 搬一個 圓盤， 在 搬的 過程中， 直徑 大的 不可 放在 直徑 小的 上面，
+三根 柱子 都可 放 圓盤。 試問最少需要搬多少次，方能 將 這些 圓盤 從 A 柱
+搬到 C 柱？
+<P>
+<PRE>
+                  │                │              │
+                ┌┴┐              │              │
+              ┌┴─┴┐            │              │
+            ┌┴───┴┐          │              │
+      ───┴─────┴─────┴───────┴──────
+                 A 柱              B 柱            C 柱
+</PRE>
+<P>
+ 欲將 64 個 圓盤 從 A 柱 搬到 C 柱 之前， 必須 將 63 個 圓盤 從 A 柱 搬到 
+ B 柱，再 將 最大的 圓盤 從 A 柱 搬到 C 柱去， 再 將 63 個 圓盤 從 B 柱 搬到
+ C 柱。
+<P>
+ 依 此 方式， 設 f<SUB>3</SUB>(n) 為 將 n 個 圓盤
+         從 一柱 搬到 另一柱 的 總 搬數， 則有
+<PRE>
+                  0, 當 n = 0,
+        f<SUB>3</SUB>(n) =｛ 1, 當 n = 1,
+                  2˙f<SUB>3</SUB>(n-1)+1, 當 n &gt; 1.
+</PRE>
+<P>
+<B>例 4: 切義大利脆餅問題</B>
+<P>
+ 設有 一 16 吋 的 義大利 脆餅， 今 欲 以 刀 切餅， 每刀 均 以 直線 方式 切 
+ 於 餅面，第一刀 可 將 脆餅 切成 兩片， 二刀 至多 可分成 4 片， 
+ 三刀 至多 可分成 7 片， ( 參閱下圖 )，試問 n 刀 至多 可將 脆餅 分成 幾片？
+<P>
+<PRE>
+                   ╲ 1╱
+                   2 ╳ 4
+                   ╱3 ╲
+            ─────────
+             5 ╱    6     ╲ 7
+</PRE>
+<P>
+ 令 f<SUB>4</SUB>(n) 為 n 刀 可 將 脆餅 分成 的 片數， 則 
+ f<SUB>4</SUB>(0) = 1。 設 已 劃下 n-1 刀， 此 n-1 刀 劃下的 n-1 條 直線
+ 彼此 互 不平行， 又 任意 三條 直線 均 不共點， 則 第 n 條 直線 可 與 n-1
+ 條 直線 相交， 因此， 至多 可 經過 n 個 區間。
+ 我們 可得<BR>
+ f<SUB>4</SUB>(n) = f<SUB>4</SUB>(n-1) + n 當 n &gt; 0。
+<P>
+<B>例 5: 猶太人敢死隊問題</B>
+<P>
+ 於 第一 世紀 時， 猶太人 受制於 羅馬 帝國， 一批 愛國 志士 反叛 羅馬 帝國，
+ 最後 僅 剩下 41 人 受困於 山洞。 這 41 人 不想 受辱 於 羅馬 帝國， 又不想
+ 自殺， 因此 決定 圍成 一圓圈， 由 1 號 開始 將 2 號 殺掉； 3 號 將 
+ 4 號 殺掉， 依此 類推， 即 由 前一個 殺掉 下一個， 欲 將 全團 41 人
+ 全部 殉戰 而亡。 然而， 最後 必定 會 剩下 一人。 試問 那一號 最後
+ 得以 苟且偷生？ 如果 有 n 個人 圍成 一圓圈， 誰 得 以 殘留 餘命呢？
+<P>
+ 令 f<SUB>5</SUB>(n) 為 最後 留下 性命的 號數， 則 f<SUB>5</SUB>(1)=1。
+ 設有 2n 個人， 則 過了 第一圈 後 所有 偶數 號的 都要 被 去除， 剩下的
+ n 個人 圍成 一圈 如下圖：
+<P>
+<PRE>
+                  1                        1
+            2n-1      3                 n     2
+          2n-3          5             n-1       3
+              .       .                .        .
+               .     2i-1               .      i
+                 ...                       ...
+</PRE>
+<P>
+ 編號 為 1 至 n 圍成 一圈 與 上述 所 剩下的 n 個人
+ 其 號碼的 對應 方式為 <BR>
+    <TT>i → 2i - 1</TT>。
+ 因此，
+   f<SUB>5</SUB>(2n) = 2˙f<SUB>5</SUB>(n) - 1。
+<P>
+ 同理， f<SUB>5</SUB>(2n+1) = 2˙f<SUB>5</SUB>(n) + 1。
+<P>
+ 因此， 我們 有 下列的 遞迴 關係：
+<P>
+<PRE>
+          f<SUB>5</SUB>(0) = 0
+          f<SUB>5</SUB>(1) = 1
+         f<SUB>5</SUB>(2n) = 2˙f<SUB>5</SUB>(n) - 1, n &gt; 1
+       f<SUB>5</SUB>(2n+1) = 2˙f<SUB>5</SUB>(n) + 1, n &gt; 0.
+</PRE>
+<P>
+<B>例 6: 求兩個正整數的最大公因數</B>
+<P>
+ 這是 大家 所 熟悉的 問題， 該問題 於 公元前 300 年 左右 Euclid 已經 使用
+ 輾轉 相除法 來求 最大 公因數， 我們 在此 稍做 一點 修改。
+ 設 b 為 正整數， a 為 整數，以 a 除以 b 得 餘數 r， 即<BR>
+ <TT>a = bq + r,  0 &lt;= r &lt; b.</TT><BR>
+ 以 符號 a mod b 表 餘數 r。 可得<BR> 
+ <TT>gcd(a, b) = gcd(b, r) = gcd(b, a mod b)</TT>。
+<P>
+ 則 a 與 b 的 最大 公因數 可 由 函數 f<SUB>6</SUB> 表之：
+<P>
+<PRE>
+                     a, 當 b = 0 , a ≠ 0
+        f<SUB>6</SUB>(a, b) = ｛  
+                     f<SUB>6</SUB>(b, a mod b), 當 b &gt; 0, a ≠ 0.
+</PRE>
+<P>
+<B>問題</B>
+<P>
+<OL>
+ <LI> 假設 沒有 加法 運算，僅有 後繼 函數 s(n) = n+1 可以 使用，
+      試以 後繼 函數 來 定義 加法 遞迴 函數 add(n, m) = n + m。<P>
+ <LI> 試以 加法 函數 來 定義 乘法 遞迴 函數。<P>
+ <LI> 設有一 2  n 的 長方形 板子， 今 欲以 n 個 1 2 的 骨牌
+      (domino) 將之 舖滿。 試問 共有 多少種 不同的 擺法？
+      ( 以 遞迴 函數 表之 )<P>
+ <LI> 設有一 1  n 的 長方形 板子， 其上有 n 個 格子。
+      今 欲將 每個 格子 塗上紅、藍、綠 中 的 一種 顏色。 設 任意 兩個
+      連續的 格子 不可 均 塗上 紅色。 試問 共有 多少種 不同的 塗法？
+      ( 以 遞迴 函數 表之 )
+</OL>
+<HR>
+<P>
+<!--------------------第 6.2 節--------------------------------------->
+<A NAME="second">
+<P>
+  <B>第 6.2 節   程式中的遞迴函數</B>
+<P>
+電腦 程式 語言 的 架構中， 遞迴 函數 可說是 較 特殊的 一種，
+因 函數 可以 呼叫 函數 本身 自己。
+閱讀 遞迴 函數 有時 會 摸不著 頭緒， 一但 熟悉了 數學上 的 遞迴 函數，
+程式 語言的 遞迴 函數 就 很容易 掌握。
+<P>
+在 本節 中， 我們 經由 上一節 的 幾個 數學 遞迴 函數 來 看 其 相對應的
+ C 程式 的 遞迴 函數，
+對於 其它種 具有 遞迴 函數 功能 的 程式 語言
+其 遞迴 函數 則相仿。
+<P>
+下列 幾個 例子 均是 C 程式 的 遞迴 函數。
+
+<P>
+ <B>例 1: f<SUB>1</SUB>(n) = n!</B>
+<P>
+<PRE>
+       int f1(int n){
+           if ( n < 0 )
+	   { printf("輸入 %d 為一負值 \n", n); return n;}
+           else if ( n == 0 )
+                   return 1;
+           else return n * f1( n-1 );
+       }
+</PRE>
+<P>
+<B>例 2: 月兔問題 與 費氏數列</B>
+<P>
+<PRE>
+       int f2(int n){
+           if ( n < 0 )
+       	   { printf("輸入 %d 為一負值 \n", n); return n;}
+           else if ( n == 0 )
+                 return 0;
+           else if ( n == 1 )
+                 return 1;
+           else return f2( n-1 ) + f2( n-2 );
+       }
+</PRE>
+<P>
+<B>例 3: 搬圓盤問題</B>
+<P>
+<PRE>
+       int f3(int n){
+           if ( n < 0 )
+       	   { printf("輸入 %d 為一負值 \n", n); return n;}
+           else if ( n == 0 )
+                 return 0;
+           else if ( n == 1 )
+                 return 1;
+           else return 2 * f3( n-1 ) + 1;
+       }
+</PRE>
+<P>
+<B>例 4: 切義大利脆餅問題</B>
+<P>
+<PRE>
+       int f4(int n){
+           if ( n < 0 )
+       	   { printf("輸入 %d 為一負值 \n", n); return n;}
+           else if ( n == 0 )
+                 return 1;
+           else return n + f4( n-1 );
+       }
+</PRE>
+<P>
+<B>例 5: 猶太人敢死隊問題</B>
+<P>
+<PRE>
+       int f5(int n){
+           if ( n < 0 )
+       	   { printf("輸入 %d 為一負值 \n", n); return n;}
+           else if ( n == 0 )
+                return 0;
+           else if ( n == 1 )
+                return 1;
+           else if ( n % 2 == 0 )
+                return 2 * f5( n/2 ) - 1;
+           else return 2 * f5( n/1 ) + 1;
+       }
+</PRE>
+<P>
+<B>例 6: 求兩個正整數的最大公因數</B>
+<P>
+<PRE>
+       int f6(int u, int v){
+           if ( u == 0 && v == 0 ) 
+           { printf("輸入皆為 0.\n"); return -1;}
+           if ( u < 0 ) u = -u;
+           if ( v < 0 ) v = -v;
+           if ( v == 0 )
+                 return u;
+           else return f6( v, u % v );
+       }
+</PRE>
+<HR>
+<P>
+<!--------------------第 6.3 節--------------------------------------->
+<A NAME="third">
+<P>
+  <B>第 6.3 節   遞迴函數公式的求解</B>
+<P>
+於第 2 節 中 所談的 遞迴 函數， 這些 函數的 定義 僅 表明了 該函數的 特性，
+並 沒 有 將 函數的 封閉式 公式 表示 出來。 在 本 節中， 將 針對 這些 函數
+以 遞推法、 衍生 函數法 來求解。
+<P>
+首先， 以 遞推法 來 解決 下列 3 個 問題， 即 搬圓盤 問題、
+切 義大利 脆餅 問題 及 猶太人 敢死隊 問題。
+<P>
+ <B>例 1: 搬圓盤問題</B>
+<P>
+ 由 f<SUB>3</SUB>(n) = 2˙f<SUB>3</SUB>(n-1) + 1  得知
+<P>
+<PRE>
+        f<SUB>3</SUB>(n) = 2˙f<SUB>3</SUB>(n-1) + 1 
+              = 2˙[2˙f<SUB>3</SUB>(n-2) + 1] + 1
+              = 2<SUP>2</SUP>˙f<SUB>3</SUB>(n-2) + (2<SUP>1</SUP> + 2<SUP>0</SUP>) 
+              ... 
+              = 2<SUP>n</SUP>˙f<SUB>3</SUB>(0) + ( 2<SUP>n-1</SUP> + ... + 2<SUP>1</SUP> + 2<SUP>0</SUP> ) 
+              = 0 + 2<SUP>n-1</SUP> + ... + 2<SUP>1</SUP> + 2<SUP>0</SUP> 
+              = 2<SUP>n</SUP> - 1
+</PRE>
+ 因此， f<SUB>3</SUB>(n) = 2<SUP>n</SUP> - 1, n = 0,1,2,...。
+<P>
+ <B>例 2: 切義大利脆餅問題</B>
+<P>
+ 由 f<SUB>4</SUB>(n) = f<SUB>4</SUB>(n-1) + n 得知
+<P>
+<PRE>
+        f<SUB>4</SUB>(n) = f<SUB>4</SUB>(n-1) + n
+               = f<SUB>4</SUB>(n-2) + [n + (n-1)]
+               ...
+               = f<SUB>4</SUB>(0) + [n + (n-1) + ... + 2 + 1]
+               = 1 + [n(n-1) / 2]
+</PRE>
+<P>
+ 因此， f<SUB>4</SUB>(n) = (n<SUP>2</SUP> - n + 2) / 2, n = 0,1,2,...。
+<P>
+<B>例 3: 猶太人敢死隊問題</B>
+<P>
+ 由  f<SUB>5</SUB>(2n) = 2˙f<SUB>5</SUB>(n) - 1 得知
+<P>
+<PRE>
+        f<SUB>5</SUB>(2<SUP>m</SUP>) = 2˙f<SUB>5</SUB>(2<SUP>m-1</SUP>) - 1
+                 = 2˙[2˙f<SUB>5</SUB>(2<SUP>m-2</SUP>) - 1] - 1
+                 = 2<SUP>2</SUP>˙f<SUB>5</SUB>(2<SUP>m-2</SUP>)-(2<SUP>1</SUP> + 2<SUP>0</SUP>)
+                 ... 
+                 = 2<SUP>m</SUP>˙f<SUB>5</SUB>(2<SUP>0</SUP>)-(2<SUP>m-1</SUP> + ... + 2<SUP>1</SUP> + 2<SUP>0</SUP>)
+                 = 2<SUP>m</SUP> - (2<SUP>m</SUP> - 1)
+                 = 1, m &gt;= 0
+</PRE>
+ 由 f<SUB>5</SUB>(2n) = 2˙f<SUB>5</SUB>(n) - 1 及
+ f<SUB>5</SUB>(2n+1) = 2˙f<SUB>5</SUB>(n) + 1 得知<BR>
+ f<SUB>5</SUB>(2n+1) - f<SUB>5</SUB>(2n) = 2, 且
+ f<SUB>5</SUB>(2n) - f<SUB>5</SUB>(2m) = 2(f<SUB>5</SUB>(n) - f<SUB>5</SUB>(m))}。
+<P>
+ 對於 任意 一 正整數 n， 將之 表成 2 進位 時
+<BR>
+ n = 2<SUP>m</SUP> + a<SUB>m-1</SUB>˙2<SUP>m-1</SUP> + ... + a<SUB>1</SUB>˙2 + a<SUB>0</SUB>, 
+<BR>其中 m &gt;=0, 
+a<SUB>i</SUB> = 0 或 1, i = 0,1,2, ..., m-1.
+<P>
+ 因此，
+<P>
+<PRE>
+        f<SUB>5</SUB>(2<SUP>m</SUP> + 2<SUP>k</SUP> + ... + 2<SUP>j</SUP> + 2<SUP>i</SUP>) - 
+        f<SUB>5</SUB>(2<SUP>m</SUP> + 2<SUP>k</SUP> + ... + 2<SUP>j</SUP>)
+      = 2˙[f<SUB>5</SUB>(2<SUP>m-1</SUP> + 2<SUP>k-1</SUP> + ... + 2<SUP>j-1</SUP> + 2<SUP>i-1</SUP>) -
+         f<SUB>5</SUB>(2<SUP>m-1</SUP> + 2<SUP>k-1</SUP> + ... + 2<SUP>j-1</SUP>)]
+      ...
+      = 2<SUP>i</SUP>˙[f<SUB>5</SUB>(2<SUP>m-i</SUP> + 2<SUP>k-i</SUP> + ... + 2<SUP>j-i</SUP> + 2<SUP>0</SUP>) -
+        f<SUB>5</SUB>(2<SUP>m-i</SUP> + 2<SUP>k-i</SUP> + ... + 2<SUP>j-i</SUP>)]
+      = 2<SUP>i</SUP>˙2
+      = 2<SUP>i+1</SUP>
+</PRE>
+<P>
+     所以，
+<P>
+<PRE>
+     f<SUB>5</SUB>(2<SUP>m</SUP> + 2<SUP>l</SUP> + ... + 2<SUP>j</SUP> + 2<SUP>i</SUP>)
+     = f<SUB>5</SUB>(2<SUP>m</SUP>+2<SUP>l</SUP>+...+2<SUP>j</SUP>)+2<SUP>i+1</SUP>
+     = f<SUB>5</SUB>(2<SUP>m</SUP>+2<SUP>l</SUP>+...)+2<SUP>j+1</SUP>+2<SUP>i+1</SUP>
+     ...
+     = f<SUB>5</SUB>(2<SUP>m</SUP>)+2<SUP>l+1</SUP>+...+2<SUP>j+1</SUP>+2<SUP>i+1</SUP>
+     = 1+2(2<SUP>l</SUP>+...+2<SUP>j</SUP>+2<SUP>i</SUP>)
+     = 1+2(n-2<SUP>m</SUP>)
+</PRE>
+<P>
+ 因此， f<SUB>5</SUB>(41)=1+2(41-32)=1+18=19。
+<P>
+ 將 n 與 f<SUB>5</SUB>(n) 列成一表， 其 結果 如下：
+<P>
+<PRE>
+    n │0 │1 │2 │3 │4 │5 │6 │7 │8 │9 │10│11│12│13│14│15
+  ──┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─
+ f<SUB>5</SUB>(n)│0 │1 │1 │3 │1 │3 │5 │7 │1 │3 │5 │7 │9 │11│13│15
+</PRE>
+<P>
+ 下一個 例子 將 以 衍生函數法 來 解決 費氏 數列 問題 。
+<P>
+<B>例 4: 費氏數列</B>
+<P>
+ 令 f(x) = a<SUB>0</SUB> + a<SUB>1</SUB>x + a<SUB>2</SUB>x<SUP>2</SUP> + ..., 其中<BR>
+<PRE>
+            0, 當 n = 0 
+     a<SUB>n</SUB> =｛ 1, 當 n = 1
+            a<SUB>n-1</SUB> + a<SUB>n-2</SUB>, 當 n &gt; 1.
+</PRE>
+ 則
+<PRE>
+    f(x) = a<SUB>0</SUB> + a<SUB>1</SUB>x + a<SUB>2</SUB>x<SUP>2</SUP> + ...
+   xf(x) =      a<SUB>0</SUB>x + a<SUB>1</SUB>x<SUP>2</SUP> + a<SUB>2</SUB>x<SUP>3</SUP> + ...
+  x<SUP>2</SUP>f(x) =            a<SUB>0</SUB>x<SUP>2</SUP> + a<SUB>1</SUB>x<SUP>3</SUP> + a<SUB>2</SUB>x<SUP>4</SUP> + ...
+</PRE>
+ 因此， f(x) - xf(x) - x<SUP>2</SUP>f(x) = a<SUB>0</SUB> + a<SUB>1</SUB>x - a<SUB>0</SUB>x
+<BR>
+ 即
+<PRE>
+  (1-x-x<SUP>2</SUP>)f(x) = x
+
+  f(x) = x/(1-x-x<SUP>2</SUP>)
+       = 1/5<SUP>1/2</SUP>[1/(1-αx) - 1/(1-βx)]
+       = 1/5<SUP>1/2</SUP>[(1+αx+(αx)<SUP>2</SUP>+...)-(1+βx+(βx)<SUP>2</SUP>+...)]
+       = 1/5<SUP>1/2</SUP>[0+(α-β)x+(α<SUP>2</SUP>-β<SUP>2</SUP>)x<SUP>2</SUP>+...]
+</PRE>
+   所以， f<SUB>2</SUB>(n) = a<SUB>n</SUB> = 1/5<SUP>1/2</SUP>(α<SUP>n</SUP>-β<SUP>n</SUP>), <BR>
+ n = 0,1,2..., α = (1+5<SUP>1/2</SUP>)/2 (黃金分割數) , β = (1-5<SUP>1/2</SUP>)/2。
+<P>
+<HR>
+<P>
+<!--------------------第 6.4 節--------------------------------------->
+<A NAME="fourth">
+<P>
+  <B>第 6.4 節   一些程式執行時間的估計</B>
+<P>
+對於 電腦 程式 執行 時間的 估計， 經常 是以 近似的 方法 來 求解， 例如
+對於 求  gcd 的問題， 估計 執行 輾轉 相除法 的次數 即可，
+對於 排序的 問題， 主要 是在 估計 元素 比較的 次數。 有時 我們 可利用
+遞迴 函數 來 求得 一個 估計值。
+<P>
+ <B>例 1: gcd 中輾轉相除法次數的估計</B>
+<P>
+ 此問題 我們 不是以 遞迴 函數 來 估計， 而是 以 費氏數 來估計。
+ 由 下列 定理 我們 可 直接 得到 下列 結果：
+
+<BLOCKQUOTE>
+ 設 a ≧ b, f<SUB>2</SUB>(k+1) ≧ b ＞ f<SUB>2</SUB>(k)，
+ 其中 f<SUB>2</SUB>(k) 為第
+ k 個 費氏數， 則求 gcd(a, b) 至多 用了 k 次的 輾轉 相除法。
+</BLOCKQUOTE>
+
+<B>定理</B>   設 a &gt; b &gt;= 0， 若 求 gcd(a, b) 時用了
+k 次的 輾轉 相除法， 則<BR> a ≧ f<SUB>2</SUB>(k+1), b ≧ f<SUB>2</SUB>(k)。
+<P>
+<B>證明:</B>
+<P>
+<BLOCKQUOTE>
+以數學歸納法來證明<BR>
+<P>
+若求  gcd(a,  b) 時用了 0 次的輾轉相除法，
+則
+ gcd(a, b) = a, b = 0 ，
+<BR>所以
+ a ≧ 1 = f<SUB>2</SUB>(1),  b ≧ 0 = f<SUB>2</SUB>(0)。
+<P>
+ 設 ``求 gcd(a, b) 時用了 k 次的 輾轉 相除法， 則
+ a ≧ f<SUB>2</SUB>(k+1), b ≧ f<SUB>2</SUB>(k)'' 成立。
+<P>
+ 設以 a 除以 b 得餘數 r，在求  gcd(b, r) 時共用了 k 次的
+ 輾轉相除法， 依假設， 則有 b ≧ f<SUB>2</SUB>(k+1), r ≧ f<SUB>2</SUB>(k)，
+
+ 因此， a = bq + r ≧ f<SUB>2</SUB>(k+1)+f<SUB>2</SUB>(k) = f<SUB>2</SUB>(k+2)。
+
+ 由此可得， 求 gcd(a, b) 共用了 k+1 次的
+ 輾轉 相除法， 則有<BR> a ≧ f<SUB>2</SUB>(k+2), b ≧ f<SUB>2</SUB>(k+1)。
+</BLOCKQUOTE>
+ 由 0 ＜ (5<SUP>1/2</SUP> - 1)/ 2 ＜ 1 可知
+<PRE>
+      1/5<SUP>1/2</SUP>[((1+5<SUP>1/2</SUP>)/ 2)<SUP>k-1</SUP>]
+   ＜ f<SUB>2</SUB>(k)
+    = 1/5<SUP>1/2</SUP>[((1+5<SUP>1/2</SUP>)/ 2)<SUP>k</SUP> - ((1-5<SUP>1/2</SUP>)/ 2)<SUP>k</SUP>]
+   ＜ 1/5<SUP>1/2</SUP>[((1+5<SUP>1/2</SUP>)/ 2)<SUP>k+1</SUP>]
+</PRE>
+因此， f<SUB>2</SUB>(k) ～ 1/5<SUP>1/2</SUP>((1+5<SUP>1/2</SUP>)/ 2)<SUP>k</SUP>，<BR>
+所以
+ k ～ ln[5<SUP>1/2</SUP> f<SUB>2</SUB>(k)] / ln((1+5<SUP>1/2</SUP>)/ 2)。
+
+由上述結果，我們可歸納出下列結果：
+
+<BLOCKQUOTE>
+設 a &gt;= b &gt; 0， 則求 gcd(a, b) 時， 至多 用了 約<BR>
+ln(5<SUP>1/2</SUP> b) / ln((1+5<SUP>1/2</SUP>)/ 2) ～ 2 ln b 次的輾轉相除法。
+</BLOCKQUOTE>
+<P>
+ <B>例 2: 合併排序法 ( mergesort )排序時間的估計</B>
+<P>
+ 此問題 將以 遞迴 函數的 方式 來 估計。
+
+ 合併 排序法 的 程式 如下：
+<PRE>
+    void merge(int *a, int low, int high){
+       int b[MAXSIZE];
+       int i,j,k=-1;
+
+       for(i=low,j=(low+high)/2+1;i<=(low+high)/2||j<=high; ){
+           if(i>(low+high)/2)
+               b[++k]=a[j++];
+           else if (j>high)
+               b[++k]=a[i++];
+           else if (a[i]>=a[j])
+               b[++k]=a[j++];
+           else
+               b[++k]=a[i++];
+       }
+
+       k=0;
+       for(i=low;i<=high;i++)
+          a[i]=b[k++];
+   }
+
+   void mergesort(int a[], int left, int right){
+        if ( right > left ){
+          mergesort(a, left, (left+right)/2);
+          mergesort(a, 1+(left+right)/2, r);
+          merge(a, left, right);
+        }
+   }
+</PRE>
+
+該程式中 merge 的功能 是 將 陣列 中 已 排序好 的
+前半 與 後半 合併 為 一排序 的陣列。
+
+欲 估計 一陣列 a 含有 n 個數 其排序的 時間， 我們 可 估計 其 元素 比較 次數
+即可。
+於 副程式 merge 中， 若 陣列 a 中 有 k 個數 要 合併， 即 a 中 有 兩組 約為
+ k/2 個 元素 已 排序好， 則 副程式 merge 至多 比較了 k 次。 又
+陣列 a 中 有 k 個數 必須 抄至 陣列 b， 陣列 b 為 一 排序 陣列，
+再 將 陣列 b 抄回 陣列 a， 則 共需 2k 次 抄的 動作。
+
+令 T(n) 為 mergesort 將 n 個數 排序 至多 所需 比較 次數 或 抄的 動作，
+一個 較粗糙 的 估計 為:<BR>
+令 T(n) = 2T(n/2) + 2n, n  為實數。
+<P>
+設 n=2<SUP>m</SUP>, m &gt; 0 ，則
+<PRE>
+        T(2<SUP>m</SUP>) = 2T(2<SUP>m-1</SUP>) + 2<SUP>m+1</SUP>
+              = 2[2T(2<SUP>m-2</SUP>)+ 2<SUP>m</SUP>] + 2<SUP>m+1</SUP>
+              =  2<SUP>2</SUP>T(2<SUP>m-2</SUP>) + 2(2<SUP>m</SUP> + 2<SUP>m</SUP>)
+              ...
+              = 2<SUP>m</SUP>T(2<SUP>0</SUP>) + 2m2<SUP>m</SUP>
+              = 2<SUP>m</SUP> + 2m2<SUP>m</SUP>
+              = n + 2n log<SUB>2</SUB> n
+</PRE>
+於此， 我們 可設 T(n) = 2n log<SUB>2</SUB>n + n，
+其中 n  為實數。<BR>
+此 T(n) = 2n log<SUB>2</SUB>n + n
+滿足  T(n) = 2T(n/2) + n, n  為實數。
+<P>
+因此，合併 排序法 對於 含有 n 個 元素 陣列 所用的 比較 次數 或 抄的 動作
+至多 約為 
+ 2n log<SUB>2</SUB>n + n。
+<P>
+ <B>例 3: 搬圓盤問題</B>
+<P>
+於此，<A HREF="javascript:if(confirm('http://nknucc.nknu.edu.tw/~jwu/c/hanoi.c  \n\nThis file was not retrieved by Teleport Pro, because the server reports that this file cannot be found.  \n\nDo you want to open it from the server?'))window.location='http://nknucc.nknu.edu.tw/~jwu/c/hanoi.c'" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/hanoi.c">附上一 C 程式</A>，
+該程式 最多 僅能 處理 20 個 圓盤的 問題， 讀者 將該程式 於 Turbo C/C++
+執行, 將 可看到 圓盤 實際 搬動的 情行。
+於 PC 486/66 機器上執行，一秒鐘約可搬 1100 個圓盤。
+(註：該程式與倚天不相容)
+讀者可估計一下，依此速度欲搬 64 個圓盤大概需要多少年？
+若一秒鐘可搬一百萬個，又需要多少年？
+<P>
+ <B>例 4: 售貨員旅行問題</B>
+<P>
+ 設有 一 售貨員 經常 從 某鎮 出發， 欲至 其他 n 個 城鎮 去 推銷 產品，
+ 再回到 原處 (每次 所要 去的 城鎮 可能都 不相同)。 他 想 經過 
+ 這 n 個 城鎮的 每一個 城鎮  僅僅 一次，
+ 同時 總路徑 要為 最短。 試問 他應 如何 安排 他的 行程？
+<P>
+ 對於 這 問題， 如果 我們 考慮 這 n 個 城鎮的 所有 排列 組合，
+ 再 比較 每一種 組合的 總路徑， 如此 一來 就可 找到 最佳行程。
+ 事實上， 這種 程式很 容易 寫， 也很短。 問題 是 執行 程式 的 時間，
+ 如果 n = 23， 同時 電腦 一秒鐘 可算出 一千億 種 組合 中 每一組合 的 總路徑。
+ 對於 22! 種 排列 組合， 則需 22!/10<SUP>11</SUP> 秒 以 求得 最佳解。
+ 讀者 可 估計一下， 電腦 大概會 執行 多少 世紀。
+<P>
+ 這 問題 讀者 可利用 Stirling 公式 來 估計 執行 時間， 該 公式 為<BR>
+ n! ～ (2πn)<SUP>1/2</SUP>(n/e)<SUP>n</SUP>
+<P>
+對於 C 程式 遞迴 函數的 執行的 解說， 因 需要 堆疊 ( stack ) 的觀念，
+我們 省略 不提， 敬請 讀者 多多 包涵。
+
+程式 執行 時間的 估計， 經常 採用 最差情況 估計法， 或 平均情況 估計法，
+這 兩種 方法 經常 使用 遞迴函數 來 估計。
+對於 軟體的 設計，欲 估計 該軟體 執行時 所使用的 時間， 有時 利用 遞迴 函數
+來 估計 會有 很大的 幫助， 例如 對於 售貨員旅行問題， 
+要 執行 22!/10<SUP>11</SUP> 秒 約 350 年。
+的 程式 是不用 去做的， 因一輩子 也等 不到結果 。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A href="cpgch5.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch5.htm">回第 5 章</A><BR>
+<A href="cpgch7.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch7.htm">至第 7 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+  </BODY>
+</HTML>

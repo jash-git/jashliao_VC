@@ -1,0 +1,252 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Cluster</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Metric</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">距離（Distance）</p>
+<p>現實問題，考慮兩個東西有多相似；化為數學問題，就是考慮兩個東西的距離有多接近。</p>
+<pre>
+兩個數值的距離：用減法、絕對值計算距離。
+兩個向量的距離：用數學公式計算距離。
+兩串數列的距離：用「<a href="SequenceAlignment.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SequenceAlignment.html">Dynamic Time Warping</a>」計算距離。
+兩串字串的距離：字串類似數列，同上。
+兩串訊號的距離：以「<a href="Regression.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Regression.html">Linear Predictive Coding</a>」重新表示訊號，
+　　　　　　　　或者以「<a href="Wave.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave.html">Fourier Transform</a>」重新表示訊號，
+　　　　　　　　再用數學公式計算距離。 
+兩棵樹的距離：用相關演算法計算距離。
+　　　　　　　關鍵字是Tree Edit Distance。
+兩張圖的距離：不要問，很恐怖。
+</pre>
+<p class="t">距離函數（Metric）</p>
+<p>距離這個詞在數學中是有嚴謹定義的：</p>
+<pre>
+一、兩個一樣的東西，距離等於零，d(A,A) = 0。
+二、A到B的距離等於B到A的距離，d(A,B) = d(B,A)。
+三、三角不等式，ABC三個東西，兩邊和皆大於等於第三邊，
+　　d(A,B) + d(B,C) ≥ d(A,C)。
+</pre>
+<p>常見的距離函數：</p>
+<pre>
+Euclidean Distance（L<sub>2</sub>）：直線距離。
+Taxicab Distance（L<sub>1</sub>）：垂直、水平移動的距離。
+Hamming Distance：相對應維度，數值相異的維度個數。
+</pre>
+<img src="Metric1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Metric1.png">
+<p class="e">UVa 10508 11085 ICPC 5132</p>
+<p class="t">長度函數、絕對值函數（Norm）</p>
+<p>長度這個詞在數學中是有嚴謹定義的：</p>
+<pre>
+一、有些東西長度為零，p(A) = 0。
+二、一個東西均勻放大縮小，其長度也隨著放大縮小，p(k*A) = |k|*p(A)。
+三、三角不等式，p(A + B) ≤ p(A) + p(B)。
+</pre>
+<p>下面其實用不到長度函數，只是順便介紹。:p</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Cluster</p>
+<p class="r">程度★　難度★★</p>
+<p class="w">同聲相應，同氣相求；水流濕，火就燥，雲從龍，風從虎。《易傳》</p>
+</div><div class="c">
+<p class="t">Cluster（Vector Quantization）</p>
+<p>按照資料之間的差異性，將資料分組。一筆資料只屬於某一組，相似資料歸類於同一組。每一組稱作一個「群集」。</p>
+<p>群聚與隔離是一體兩面的。相似資料漸漸群聚，相異資料亦漸漸隔離。最後出現了群聚中心，同時也出現了分界線。</p>
+<p>群集演算法的基本原理，一類是不斷切割群集，表示成樹狀圖；另一類是近朱者赤、近墨者黑，不斷將資料重新分組。</p>
+<p>群集演算法是一種迴歸，迴歸標的是點集合而非函數。既是迴歸，當然也可以套用最佳化演算法，例如粒子演算法，只是效率太差罷了。</p>
+<p class="t">k-Means Clustering（Lloyd-Max Algorithm）</p>
+<img src="k-MeansClustering.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/k-MeansClustering.png">
+<p>一、設定群集數量為k，隨機散佈k個點作為群集中心（常用既有的點）。</p>
+<p>二、每一點分類到距離最近的群集中心（常用直線距離）。</p>
+<p>三、重新計算每一個群集中心（常用平均值）。</p>
+<p>重複二與三，直到群集不變、群集中心不動為止。最後形成「<a href="VoronoiDiagram.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram.html">Voronoi Diagram</a>」。</p>
+<p>時間複雜度為O(NKT)，N是資料量，K是群集數量，T是重複次數。</p>
+<p>缺點是群集之間不能重疊、群集分界是不能是曲線、極端值容易使群集中心偏移、群集數量與群集中心容易設得太差、資料分布呈甜甜圈時群集中心可能無法收斂。</p>
+<p>小遊戲：<a href="javascript:if(confirm('http://etrex.blogspot.com/2008/05/k-mean-clustering.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://etrex.blogspot.com/2008/05/k-mean-clustering.html'" tppabs="http://etrex.blogspot.com/2008/05/k-mean-clustering.html" class="l">http://etrex.blogspot.com/2008/05/k-mean-clustering.html</a></p>
+<p class="t">Linde-Buzo-Gray Clustering</p>
+<p>首先隨機設定一個群集中心（常用平均值）。不斷讓群集中心往反方向分裂成兩倍數量（常用少量移動、群集內最遠點對），並且重新實施k-Means Clustering。</p>
+<p>優點是不用煩惱群集中心的初始位置。</p>
+<p class="t">k-Nearest Neighbor Clustering</p>
+<p>每一點各自找到距離最近的k個點作為鄰居，採多數決歸類到群集。如果距離超過了threshold，找不足k個鄰居，就替該點創造一個新的群集。</p>
+<p class="t">Jarvis-Patrick Clustering</p>
+<p>每一點各自找到距離最近的k個點作為鄰居。當a和b彼此都是鄰居，或者a和b的鄰居至少有k'個都相同（k'是threshold，k'<=k），則a和b就歸類到同一個群集。</p>
+<p>優點是能找到不規則形狀的群集。</p>
+<p class="t">Minimum Spanning Tree</p>
+<p>詳見「<a href="javascript:if(confirm('http://www.csie.ntnu.edu.tw/~u91029/SapnngingTree.html  \n\nThis file was not retrieved by Teleport Pro, because the server reports that this file cannot be found.  \n\nDo you want to open it from the server?'))window.location='http://www.csie.ntnu.edu.tw/~u91029/SapnngingTree.html'" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SapnngingTree.html">Spanning Tree: Kruskal's Algorithm</a>」。</p>
+<p class="t">Minimum Cut Tree</p>
+<p>詳見「<a href="Cut.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cut.html">Minimum s-t Cut</a>」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Classification</p>
+<p class="r">程度★★　難度★★</p>
+<p class="w">師曠之聰，不以六律，不能正五音。《孟子》</p></div><div class="c">
+<p class="t">Classification</p>
+<p>Clustering是不知道群集（分類），嘗試找群集；Classification是已經知道群集（分類），嘗試找分界線。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Classification: Support Vector Machine（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+<p class="t">Support Vector Machine</p>
+<p><a href="javascript:if(confirm('http://www.cmlab.csie.ntu.edu.tw/~cyy/learning/tutorials/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cmlab.csie.ntu.edu.tw/~cyy/learning/tutorials/'" tppabs="http://www.cmlab.csie.ntu.edu.tw/~cyy/learning/tutorials/">http://www.cmlab.csie.ntu.edu.tw/~cyy/learning/tutorials/</a></p>
+<p>讓分界線到各類資料的最短距離相等、最短距離越大越好。其實就是「<a href="VoronoiDiagram.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram.html">Voronoi Diagram</a>」的推廣：每塊區域從一點變成多點。</p>
+<p>各類資料各自求凸包。分界線是凸包之間最近點對的中垂線，或者分界線平行於凸包上某一條邊。</p>
+<img src="SupportVectorMachine1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SupportVectorMachine1.png">
+<p>不同類別的資料稍微黏在一起，仍然可以找到大致的分隔線。如果不同類別的資料幾乎混在一起（例如太極圖案），那麼分隔線沒有任何意義，SVM完全無效！</p>
+<p>熟悉線性代數的讀者，也可以套用特別的基底呈現資料（研究SVM的人習慣叫做kernel trick），讓分界線成為曲線。</p>
+<p class="t">演算法（Sequential Minimal Optimization）</p>
+<p>雖然SVM可以視作計算幾何問題，但是當維度太高的時候，計算相當複雜，難以快速求得精確解。因此SVM的演算法採用了數值方法的套路，使用「<a href="Optimization.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Optimization.html">Lagrange Multiplier</a>」求得近似解。</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Sequential_minimal_optimization  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Sequential_minimal_optimization'" tppabs="http://en.wikipedia.org/wiki/Sequential_minimal_optimization">http://en.wikipedia.org/wiki/Sequential_minimal_optimization</a></p>
+<p class="t">Support Vector Regresssion</p>
+<p>分界線改為迴歸線。其實就是高維度的「<a href="Regression.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Regression.html">線性迴歸</a>」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Classification: Neural Network（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Perceptron</p>
+<img src="NeuralNetwork1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/NeuralNetwork1.png">
+<p>Perceptron的構造很簡單：數個輸入（附帶權重），一個函數，一個輸出。</p>
+<p>所有輸入乘上權重、相加起來，經過函數，輸出0或者1。</p>
+<textarea>
+const double rate = 1;
+const int A, B;
+int pA[200][3];
+int pB[200][3];
+int weight[3];
+
+int f(int input[3])
+{
+	int sum = 0;
+	for (int i=0; i<3; ++i)
+		sum += input[i] * w[i];
+	return sum > 0;
+}
+
+bool train(int input[3], int answer)
+{
+	int error = f(input) - answer;
+	for (int i=0; i<3; ++i)
+		weight[i] -= input[i] * error;
+	return error;
+}
+
+void neural_network()
+{
+	for (int i=0; i<A; ++i)
+	{
+		for (int j=0; j<2; ++j) cin >> pA[i][j];
+		pA[i][3] = 1;
+	}
+
+	while (true)
+	{
+		bool ans = true;
+		for (int i=0; i<A; ++i) if (train(pA[i], 0)) ans = false;
+		for (int i=0; i<B; ++i) if (train(pB[i], 1)) ans = false;
+		if (ans) break;
+	}
+
+	cout << weight[0] << weight[1];
+	cout << weight[2] << weight[3];
+}
+</textarea>
+<textarea>
+const double rate = 1;
+const int A, B;
+double pA[200][5];
+double pB[200][5];
+double weight[5];
+
+void init()
+{
+	for (int i=0; i<5; ++i)
+		weight[i] = 0;
+}
+
+int activate(double sum)
+{
+	return sum > 0;
+}
+
+int forward(int input[5])
+{
+	double sum = 0;
+	for (int i=0; i<4; ++i)
+		sum += input[i] * weight[i];
+	return activate(sum);
+}
+
+void train(int input[5], int answer)
+{
+	double error = forward(input) - answer;
+	for (int i=0; i<4; ++i)
+		weight[i] -= input[i] * error * rate;
+}
+
+bool test(int input[5], int answer)
+{
+	return forward(input) == answer;
+}
+
+void neural_network()
+{
+	for (int i=0; i<A; ++i)
+	{
+		for (int j=0; j<3; ++j)
+			cin >> pA[i][j];
+		pA[i][3] = 1;
+	}
+
+	init();
+	for (int k=0; k<100; ++k)
+	{
+		for (int i=0; i<A; ++i) train(pA[i], 0);
+		for (int i=0; i<B; ++i) train(pB[i], 1);
+	}
+
+	cout << weight[0] << weight[1];
+	cout << weight[2] << weight[3];
+}
+</textarea>
+<p>也可以套用Fuzzy Logic。</p>
+<p class="e">UVa 11289 ICPC 3581</p>
+<p class="t">Neural Network</p>
+<p>【待補程式碼】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Classification: Decision Tree（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<pre>
+http://www.autonlab.org/tutorials/
+http://blog.csdn.net/v_july_v/article/details/7577684
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Classification: Hidden Markov Model</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p>適用於前後項有密切關聯的數列、訊號。詳見本站文件「<a href="javascript:if(confirm('http://www.csie.ntnu.edu.tw/~u91029/Hidden Markov Model  \n\nThis file was not retrieved by Teleport Pro, because the server reports that this file cannot be found.  \n\nDo you want to open it from the server?'))window.location='http://www.csie.ntnu.edu.tw/~u91029/Hidden Markov Model'" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Hidden Markov Model">Hidden Markov Model</a>」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Association: Apriori Algorithm</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Apriori Algorithm</p>
+<p><a href="javascript:if(confirm('http://kuoe0.ch/1177/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://kuoe0.ch/1177/'" tppabs="http://kuoe0.ch/1177/">http://kuoe0.ch/1177/</a></p>
+<p class="e">UVa 12560</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Association: FP-Growth Algorithm</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<pre>
+http://csc.lsu.edu/~jianhua/FPGrowth.pdf
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Recommendation</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Item-based Recommendation</p>
+<p class="e">UVa 12420</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

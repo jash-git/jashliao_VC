@@ -1,0 +1,469 @@
+<!--- file: cpgchpt10.htm
+      symbols: ，、。．‧；：？！·
+--->
+<HTML>
+  <HEAD>
+   <TITLE>第 10 章  程式設計的方式</TITLE>
+  </HEAD>
+<BODY>
+<P>
+  <CENTER><B>第 10 章   程式設計的方式</B></CENTER>
+<P>
+<A NAME="start">
+
+     本 章 主 要 內 容 如 下：
+<UL>
+  <LI>第 10.1 節 <A href="#first">top-down 與 bottom-up 的設計方式</A>
+  <LI>第 10.2 節 <A href="#second">檔案指摽</A>
+  <LI>第 10.3 節 <A href="#third">argc 與 argv</A>
+  <LI>第 10.4 節 <A href="#fourth">函數的函數參數</A>
+  <LI>第 10.5 節 <A href="#fifth">函數指標陣列</A>
+</UL>
+<P>
+<A href="cpgch9.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch9.htm">回第 9 章</A><BR>
+<A href="cpgch11.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch11.htm">至第 11 章</A><BR>
+<A href="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式主目錄</A>
+<P>
+<A NAME="first">
+<HR>
+<!--------------------第 10.1 節--------------------------------------->
+<P>
+  <B>第 10.1 節  top-down 與 bottom-up 的設計方式</B>
+<P>
+一般而言，程式的設計有 top-down 方式及 bottom-up 的方式。
+top-down 的方式是先將程式的大綱擬定好，再一步一步的將 程式細節填上。
+而 bottom-up 的方式則是 將程式需要的工具 先設計
+好，再將 程式湊齊， 如同造房子， 先將所要建的各部份造好了， 再
+併裝成一棟房子。
+<P> 
+我們以下例來做說明。
+<P>
+<B>例 1：</B> 試設計一程式來檢驗 input 檔 的 第一行 是否 含有 標準格式的
+括號式，一個標準的括號式 其定義如下：
+<OL>
+ <LI>()為一標準的括號式 (empty string 也算是)。
+ <LI>如果 E<SUB>1</SUB> 及 E<SUB>2</SUB> 皆為標準括號式則 (E<SUB>1</SUB>) 及 E<SUB>1</SUB>E<SUB>2</SUB> 皆為標準括號式。
+ <LI>括號之間不可夾其它字元 連空白亦不可以。
+ <LI>第一行的第一個字元也必須是左括號。
+</OL>
+<B>方法 1：</B> 對於這問題，我們可以利用一變數 count 來計算目前所讀到左
+       括號個數 減去 右括號的個數， 在讀至一行的結束或一個空白
+       之前 count 不能為負，又讀完了 input 之後， count 必須為 0。
+       因此，程式大約為
+<TABLE>      
+<TR><TD VALIGN=TOP><B>step 1:</B><TD><TT>count=0</TT>
+<TR><TD VALIGN=TOP><B>step 2:</B><TD>如果 not end of line, <BR><TT>c=getchar();</TT><BR>
+        不然跳至 step4
+<TR><TD VALIGN=TOP><B>step 3:</B><TD>如果 c 為左括號，則 <TT>count++</TT>;<BR>
+        如果 c 為右括號，則 <TT>count--</TT>， 又如果 count 為負，則列印錯誤訊息; return;<BR>
+        如果 c 為其它符號，則列印錯誤訊息; return;<BR>
+        跳至 step2
+<TR><TD VALIGN=TOP><B>step4:</B><TD>如果 <TT>count=0</TT>，則列印正確訊息;
+</TABLE> 
+<P>       
+       再將上述 類程式碼 (pseudo code) 轉變成下列程式碼：
+<PRE>       
+       main()
+       {  int count=0;
+          char c;
+          while( (c=getchar())!='\n')
+          {  if ( c=='(' )  count++;
+             else if( c == ')')
+             {    count--;
+                  if (count < 0)
+                  { printf("error input!\n");
+                    return;
+                  }
+             }
+             else { printf("error input!\n"); return;}
+          }
+          if (count == 0) printf("correct format\n");
+          else printf("error input!\n");
+       }
+</PRE>
+
+<B>方法 2：</B> 我們以 堆疊 的資料結構 來處理該問題， 一個 堆疊 的資料
+結構 基本上有 isEmpty， isFull， push 及 pop 的功能， 一個 堆疊 可以將之
+想像成 一堆盤子， 一個 push 的動作就是將 一個盤子 放到 堆疊 最上面，
+一個 pop 的動作 即從那堆盤子拿走 最上面的 一個盤子。 
+<P>
+以類似 bottom-up 的方式 先將一個 stack 及其 operations 先設計好，
+此 stack 不是要 存放盤子 而是要 存放字元。
+<P>
+於檔案 stack.h 中存放函數的宣告如下：
+<TT><PRE>
+       int isStackEmpty();
+       int isStackFull();
+       void push(char c);
+       char pop();
+       void initalizeStack();
+</PRE></TT>
+檔案 stack.c 為 stack 的資料結構，其內容如下：
+<TT><PRE>
+       #define MAXSIZE 100
+       static char s[MAXSIZE];
+       static int tos;
+      
+       void initalizeStack(){ tos=0;}
+ 
+       int isStackEmpty(){ return tos==0;}
+    
+       int isStackFull(){ return tos==MAXSIZE;}
+ 
+       void push(char c){ s[tos++]=c;}
+        
+       char pop(){ return s[--tos];}
+</PRE></TT>
+如此一來，利用 stack 來處理上述問題， 就可以 用下列 的方式 來解決：
+<P>
+<TABLE>
+<TR><TD VALIGN=TOP><B>step1：</B><TD>如果目前是 end of line， goto step4
+<TR><TD VALIGN=TOP><B>step2：</B><TD><TT>c=getchar();</TT>
+<TR><TD VALIGN=TOP><B>step3：</B><TD>如果 <TT>c</TT> 為左括號，
+    則 <TT>push('(');</TT>， goto step1<BR>
+    如果 <TT>c</TT> 為右括號，又堆疊不為空，則 <TT>pop();</TT>，
+    goto step1， 不然 input 不為正確格式<BR>
+    如果 <TT>c</TT> 是其它符號，則 input 不為正確符號<BR>
+    goto step1
+<TR><TD VALIGN=TOP><B>step4：</B><TD>如果堆疊是空的，則 input 為正確格式
+</TABLE>
+<P>
+所以主程式 main.c 的內容如下：
+<TT><PRE>
+    #include &lt;stdio.h>
+    #include "stack.h"
+    main()
+    { char c;
+      while( (c=getchar()) != '\n')
+      { if ( c == ')') push(c);
+        else if ( c == ')')
+             { if (isStackEmpty())
+               { printf("Error input!\n"); return;}
+               else  pop();
+             }
+        else
+        {  printf("Error input!\n"); return;}
+      }
+      if(isStackEmpty()) printf("Correct input!\n");
+      else printf("Error input!\n");
+    }
+</PRE></TT>
+<P>
+註：
+<OL>
+ <LI>於檔案 stack.c 中全域變數 s 與 tos 定義為 static 變數，
+    如此一來變數 s 與 tos 僅能在 檔案 stack.c 中被引用，
+    而其它檔案，如 main.c 中，則無法引用變 s 及 tos。 如此 一來
+    堆疊的資料結構 才能保持一致性，不致於被濫用 以致於 程式難懂且難維修。
+<LI>我們僅能以 stack.h 中所提供的 函數 來使用 stack 資料結構。
+<LI>如果 stack.c 中的資料結構改變如 例 2，對於引用 stack
+    的函數並沒有改變，即 stack.h， main.c 都無需改變，
+    即整個設計分成兩種層次，修改 下一層 的架構，並不影響 上一層 的設計。
+    這也是 C++ class 設計的基本精神之一，即 data encapsulated
+    資料的封包 或 資料的抽象化。
+</OL>
+<B>例 2：</B> 以 linked-list 的 資料結構 來建立 stack， 則檔案 stack.c 可改為
+<TT><PRE>
+      #include &lt;stdio.h>
+      #include &lt;stdlib.h>
+
+      struct node{ char c; struct node *pn;};
+
+      static struct node *s;
+
+      void initializeStack() {s = NULL;}
+
+      int isStackEmpty() {return s == NULL;}
+
+      void push(char c) 
+      {    struct node *p;
+
+           p=(struct node *) malloc (sizeof(struct node));
+           if (p == NULL)
+           { printf("No avilable space for malloc\n"); exit(1);}
+           else
+           { p->c  = c;
+             p->pn = s;
+             s = p;
+           }
+       }
+
+       char pop()
+       {   char c;
+           struct node *p;
+
+           if( isStackEmpty())
+           { printf("Try to pop an empty stack.\n"); exit(2);}
+           else
+           { c = s->c; p = s; s = s->pn; free(p); return c;}
+       }    
+</PRE></TT>
+註： 以 free() 指令將 記憶體空間 釋放出來， 以供下次使用。
+free(void *) 的 參數 為一 記憶體 指標。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="second">
+<HR>
+<!--------------------第 10.2 節--------------------------------------->
+<P>
+  <B>第 10.2 節  檔案指摽</B>
+<P>
+雖然 我們可以利用 printf、 scanf、 getchar、 putchar 等指令
+來執行 標準檔 stdin 與 stdout 的輸入與輸出 指令，當 輸入資料
+存於一檔案時， 我們 亦可 利用 輸入轉向 的方式以 scanf 及 getchar
+的指令來輸入。
+<P>
+我們可以利用 檔案指標 方式 來達到 更有彈性的做法。其方法如下：<br>
+於 <stdio.h> 中 含有 檔案指標 的 資料結構 的設定。因此， 可以宣告
+檔案指標如下：<P>
+<TT><PRE>
+      FILE *fp;
+</PRE></TT>
+欲使用一檔案 必須 呼叫 fopen， 使用結束時 必須呼叫 fclose。
+函數 fopen() 的宣告如下：
+<TT><PRE>
+        FILE *fopen(char *name, char *mode);
+</PRE></TT>
+其中 name 為欲使用 檔案的 路徑及名稱， mode 為檔案 使用的方式，
+當 mode = "r" 時， 表示 該檔 僅做輸入用； mode 為 "w" 時， 表示輸出用；
+mode 為 "a" 時， 則 表示 可附加在檔案後。
+<p>
+其相關 輸入輸出 函數的 宣告如下：
+<tt><pre>
+        int getc(FILE *fp)
+        int putc(int c, FILE *fp)                   
+        int fscanf(FILE *fp, char *format,...)
+        int fprintf(FILE *fp, char *format,...)
+</PRE></TT>
+這些 函數 (亦可能為 macro 指令) 類似 getchar、 putchar、 scanf 與 printf，
+只不過多了一個 FILE* 的引數。
+<P>
+檔案結尾的 函數 fclose 其宣告為
+<TT><PRE>
+    int fclose(FILE *fp)
+</PRE></TT>
+<P>
+<B>例 3：</B> 試設計一程式 如同 1.8 節的程式， 來 copy 一檔案 file1.txt 至另一檔案。
+<tt><pre>
+   #include &lt;stdio.h>
+   void main()
+   {   char c;
+       FILE *fpin, *fpout;
+
+       fpin = fopen("file1.txt", "r");
+       if( !fpin )
+       {
+           printf("The file: file1.txt is not found!\n");
+           return;
+       }
+
+       fpout = fopen("file2.txt", "w");
+       if( !fpout )
+       {
+           printf("The file: file2.txt is not found, or no available space!\n");
+           return;
+       }
+
+       while( (c=getc(fpin)) != EOF)
+           putc(c, fpout);
+
+       fclose(fpin);
+       fclose(fpout);
+   }
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="third">
+<HR>
+<!--------------------第 10.3 節--------------------------------------->
+<P>
+  <B>第 10.3 節  argc 與 argv</B>
+<P>
+主程式 main() 有兩個引數 argc 與 argv，即函數 main 標題的定義為
+<TT><PRE>
+        main( int argc, char *argv[] )
+</PRE></TT>
+其作用是 執行該檔 及 所相隨的 option。
+<p>
+如果將一程式 file.c 編譯完之後， 產生一 執行檔 file.exe。 當執行
+file.exe 如
+<TT><PRE>
+        c:> file option1 option2 option3
+</PRE></TT>
+則執行 file.exe 時， argc 的值為 4， argv 則 含 4 個字串，即<BR>
+argv[0]="file"、 argv[1]="option1"、 argv[2]="option2"、 argv[3]="option3"。
+<BR>
+如此一來 程式的設計， 可以有 較多的彈性。
+<P>
+例如， 於 DOS 下的指令 dir，我們就 可以有 多種選擇，例如
+<TT><PRE>
+     dir *.*/w
+     dir *.c/w /p
+</PRE></TT>
+等。
+<P>
+檔案的 輸入 與 輸出 亦可不需 hardcoding， 於
+例 3 中， 將檔案名稱 file1.txt 及 file2.txt 放在程式裡面， 如此一來，
+檔案一改 程式 也要 跟著改，程式 變的 非常 沒有彈性。 因此，程式改成 例 4，
+就比較 有彈性。
+<P>
+<B>例 4：</B> 試設計一程式，其檔名為 copyFile.c， 如同 例 3， 
+用來 copy 一檔案 至 另一檔案。
+<tt><pre>
+   #include &lt;stdio.h>
+   void main(int argc, char *argv[])
+   {   char c;
+       int toScreen = 1;
+       FILE *fpin, *fpout;
+
+       if(argc < 2 || argc > 3)
+       {  printf("The correct format is: copyFile file1 file2\n");
+          exit(1);
+       }
+
+       fpin = fopen(argv[1], "r");
+       if( !fpin )
+       {   printf("The file: %s is not found!\n", argv[1]);
+           return;
+       }
+       if(argc == 3)
+       {  fpout = fopen(argv[2], "w");
+          if( !fpout )
+          {   printf("The file: %s is not found, or no available space!\n", argv[2]);
+              return;
+          }
+          toScreen = 0;
+       }
+
+       while( (c=getc(fpin)) != EOF)
+       {   if( toScreen )
+              putchar(c);
+           else
+              putc(c, fpout);
+       }
+
+       fclose(fpin);
+       if( !toScreen)
+          fclose(fpout);
+   }
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="fourth">
+<HR>
+<!--------------------第 10.4 節--------------------------------------->
+<P>
+  <B>第 10.4 節  函數的函數參數</B>
+<P>
+函數 亦可 當作 另一個函數 的引數， 其說明 如下。<BR>
+設 一 rectangle 資料型態 如第 7 章所宣告的
+<TT><PRE>
+        struct rectangle{
+             struct point topLeft, bottomRight;
+        };
+</PRE></TT>
+    設有一函數用以計算一長方形面頂積和下：
+<TT><PRE>
+        int RectArea( struct rectangle *R)
+        { return (R->bottomRight.x-R->topLeft.x)*
+                 (R->bottomRight.y-R->topLeft.y);
+        }
+</PRE></TT>
+    又有一函數 ComputeArea 用以計算不同圖形的面積，其定義如下：
+<TT><PRE>
+        int ComputeArea ( void *R, int(*fp)( void*))
+        { return fp(R);}
+</PRE></TT>
+其中 R 為一指標，可用來指向一圖形，<BR>
+fp 為一 函數 指標，用來 代表 一函數， fp 有一 指標參數 void * 且 return 
+int。
+<P>
+註： 函數名稱 如同 陣列名稱， 可用來表一地址。
+<P>
+設一主程式如下：
+<TT><PRE>
+    main()
+    { struct rectangle R={(0,0),(5,6)};
+     
+      printf("The area of a rectangle R with top left point (%d,%d)
+              and bottom right point (%d,%d) is %d\n",
+              R.topLeft.x, R.topLeft.y, R.bottomRight.x, R.bottomRight.y,
+              ComputeArea(&R, RectArea));
+    }
+</PRE></TT>    
+    執行該程式的結應為
+<TT><PRE>
+      The area of a rectangle R with top left point (0,0) and 
+      bottom right point (5,6) is 30
+</PRE></TT>
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<A NAME="fifth">
+<HR>
+<!--------------------第 10.5 節--------------------------------------->
+<P>
+  <B>第 10.5 節  函數指標陣列</B>
+<P>
+如果 計算 圖形面積 的函數 均有相同的架構如：
+<TT><PRE>
+      int LineArea(struct linesegment *L);
+      int TriangleArea(struct triangle *T);
+      int RectArea(struct rectangle *R);
+      int EllipseArea(struct ellipse *E);
+      int DiskArea(struct circle *C);
+      int PolygonArea(struct polygon *P);
+</PRE></TT>
+我們可 設計 一函數 指標陣列 如下：
+<TT><PRE>
+      int (*fparray[FIGURESIZE])( void *);
+</PRE></TT>
+註：
+<UL>
+  <LI>假設 <TT>FIGURESIZE</TT> 為 6。
+  <LI>由 <TT>int (*fp)( void *)</TT> 知 <TT>fp</TT> 為一函數指標，<BR>
+      因此， <TT>int( *fparray[6])( void *);</TT> 其中 <TT>fparray[6]</TT> 為
+      一陣列含 6 個分量， 每個 分量 都是 一函數 指標， 其 型態 即
+      為 <TT>fp</TT> 函數指標 的型態。
+</UL>
+再由第 7.5 節的 Figure 與 node 的 資料型態，設 nodeList 表
+一 node 指向一平面 圖形， 今欲 計算 這些 圖形總面積， 我們可
+利用 下列 方法來計算。 令
+<TT><PRE>
+        fparray[0] = LineArea;
+        fparray[1] = TriangleArea;
+        fparray[2] = RectArea;
+        fparray[3] = DiskArea;
+        fparray[4] = EllipseArea;
+        fparray[5] = PolygonArea;
+</PRE></TT>
+定義一 變數 pNode 及 totalArea 為
+<TT><PRE>
+        struct node *pNode;
+        int totalArea=0
+</PRE></TT>
+再以 迴圈的方式 traverse 整個 linked-list nodeList，
+分別 取得圖形 並 呼叫 ComputeArea 以 取得 其面積。
+<TT><PRE>
+        pNode=nodeList;
+
+        while ( pNode != NULL)
+        {   totalArea = totalArea + 
+               ComputeArea(&(pNode->aLine), fparray[ pNode->figure]);
+            pNode=pNode->next;
+        }           
+</PRE></TT>
+註 1： 由 <TT>pNode->figure</TT> 而知 圖形的 種類， 至於是 <TT>pNode->aLine</TT>
+或是 <TT>pNode->aTriangle</TT> 或是其他， 我們只要取得其地址即可， 因此，
+由 <TT>&(pNode->aLine)</TT> 統一取其地址即可。 (Why?)
+<P>
+註 2： 由呼叫 函數 ComputeArea 傳 函數參數 TriangleArea 等， 主要是要避免
+使用 <TT>switch</TT> 指令，  或許 程式可以變短， 但可能變得 較難懂。
+<P>
+<A HREF="#start">回本章主目錄</A><BR>
+<HR>
+<P>
+<A HREF="cpgch9.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch9.htm">回第 9 章</A><BR>
+<A HREF="cpgch11.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpgch11.htm">至第 11 章</A><BR>
+<A HREF="cpg.htm" tppabs="http://nknucc.nknu.edu.tw/~jwu/c/cpg.htm">回 C 程式 主目錄</A>
+</BODY>
+</html>
