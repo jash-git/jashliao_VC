@@ -1,0 +1,228 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Image</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Image（Under Construction!）</p>
+</div><div class="c">
+<p class="t">Pixel</p>
+<img src="Image1.jpg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Image1.jpg">
+<p>一張圖片、一幅螢幕畫面、一臺電子跑馬燈，都是由許多小光點組成，一個小光點就是一個「像素」、「畫素」。</p>
+<p>電腦當中的圖片檔案，是以0到255的整數數值，表示小光點的亮度。0是最暗，255是最亮。</p>
+<p>黑白圖片當中，一個像素只有一個數值。0是無光、呈現黑色；255是白光、呈現白色；其餘數值則依照比重呈現各種深淺的灰色。</p>
+<div class="i"><canvas id="Image2" width="513" height="65"></canvas></div>
+<script>
+Image2();
+function Image2() {
+	var ctx = document.getElementById('Image2').getContext('2d');
+	var imageData = ctx.getImageData(0, 0, 513, 65);
+	var d = imageData.data;
+	var k = 0;
+
+	for (var i=0; i<65; ++i)
+		for (var j=0; j<513; ++j) {
+			if (i % 16 == 0 || j % 8 == 0) {
+				// border
+				d[k] = d[k+1] = d[k+2] = 0;
+				d[k+3] = 255;
+			} else {
+				var gray = Math.floor(i / 16) * 64 + Math.floor(j / 8);
+				d[k] = d[k+1] = d[k+2] = gray;
+				d[k+3] = 255;
+			}
+			k += 4;
+		}
+	ctx.putImageData(imageData, 0, 0);
+}
+</script>
+<p>彩色圖片當中，一個像素擁有三個數值，依序分別代表紅光、綠光、藍光。這三個數值我們習慣簡稱RGB，RGB分別是紅、綠、藍的第一個英文字母。</p>
+<p>彩色圖片當中，三種光的數值都是255，疊合之後就是白光、呈現白色。三種光的數值都是0，就是無光、呈現黑色。三種光的數值都一樣時，則呈現各種深淺的灰色。三種光的數值不一樣，則呈現變化多端的彩色。</p>
+<img src="Image3.jpg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Image3.jpg">
+<p>有些圖片還會額外增加一個數值，紀錄透明程度。0是透明、呈現背景底色；255是不透明、呈現圖片原色；其餘數值則是依照比重混合背景底色與圖片原色。</p>
+<img src="Image4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Image4.png"><!--- 兩張圖片、一張半透明一張不透明-->
+<p class="t">Image</p>
+<img src="Image5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Image5.png">
+<p>大量的小光點排列整齊，宛如棋盤方格，構成一張圖片。因此二維陣列相當適合作為圖片的資料結構。</p>
+<textarea>
+struct Pixel {int r, g, b;};
+Pixel image[1024][768];
+</textarea>
+<p>注意到：存取矩陣元素、存取圖片像素，行列順序剛好顛倒。矩陣先橫後直，圖片先直後橫。套用圖片函式庫時，要尤其小心。</p>
+<p>電視機與相機經常強調畫素很高，意思是小光點很多；解析度很高，意思是小光點很密，使得圖片清晰不模糊。</p>
+<img src="Image6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Image6.png"><!--- 畫素圖、解析度圖 -->
+<p class="t">延伸閱讀：Pixel Art</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Pixel_art  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Pixel_art'" tppabs="http://en.wikipedia.org/wiki/Pixel_art">http://en.wikipedia.org/wiki/Pixel_art</a></p>
+<div class="seq"><img src="Image7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Image7.png"><img src="Image8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Image8.png"></div>
+<p class="t">延伸閱讀：Color Vision</p>
+<p><a href="javascript:if(confirm('http://www.fotobeginner.com/1430/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.fotobeginner.com/1430/'" tppabs="http://www.fotobeginner.com/1430/">http://www.fotobeginner.com/1430/</a></p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Color_vision  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Color_vision'" tppabs="http://en.wikipedia.org/wiki/Color_vision">http://en.wikipedia.org/wiki/Color_vision</a></p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Color_model  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Color_model'" tppabs="http://en.wikipedia.org/wiki/Color_model">http://en.wikipedia.org/wiki/Color_model<a></p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Color_space  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Color_space'" tppabs="http://en.wikipedia.org/wiki/Color_space">http://en.wikipedia.org/wiki/Color_space</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Cellular Automaton（Under Construction!）</p>
+</div><div class="c">
+<p class="t">Cellular Automaton</p>
+<img src="CellularAutomaton1.jpg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/CellularAutomaton1.jpg">
+<p class="e">UVa 457</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Color Quantization</p>
+</div><div class="c">
+<p class="t">Color Quantization</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Color_quantization  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Color_quantization'" tppabs="http://en.wikipedia.org/wiki/Color_quantization">http://en.wikipedia.org/wiki/Color_quantization</a></p>
+<p>降低顏色數量、甚至降低位元深度（bit depth）的方法。儘管圖片會失真，但還是儘量讓圖片的觀感與原先相仿。</p>
+<p>這個問題可想做是：把圖片上的每一種顏色，分別重新設定成新顏色。</p>
+<p class="t">Median Cut Algorithm</p>
+<img src="MedianCutAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MedianCutAlgorithm1.png">
+<img src="MedianCutAlgorithm2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MedianCutAlgorithm2.png">
+<img src="MedianCutAlgorithm3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MedianCutAlgorithm3.png">
+<img src="MedianCutAlgorithm4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MedianCutAlgorithm4.png">
+<img src="MedianCutAlgorithm5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MedianCutAlgorithm5.png">
+<p>讀取圖中所有的像素，置於RGB構成的三維空間當中，然後反覆分割空間，以釐清像素們所聚集的區塊，為Divide and Conquer策略。</p>
+<p>分割區塊時，以最長的邊來進行切割，切割點位於該邊方向上、像素們的中位數。確立像素們聚集的區塊後，以每個區塊所含的像素平均值作為該區塊所有像素的新顏色值。</p>
+<p>若要降低圖片位元深度成為8，那麼圖片中將會有2^8=256種顏色，切割時就必須切成256種區塊，以獲得256種顏色。</p>
+<p>每一次要切割時，都選擇目前所有區塊中最大的區塊，大的定義是：區塊中最長的邊長，其越長者越大。各位也可試著從體積最大者、抑或像素最多者的區塊開始切，看看結果有何不同。</p>
+<textarea>
+// 一張 100x100 大小的圖片。
+struct Pixel {int rgb[3];} image[100][100];
+
+// RGB空間上的像素們，儲存在p[]當中。x y 為該像素在圖片上的位置。
+struct RGBPoint {int rgb[3], x, y;} p[10000];
+
+// 對不同維度排序的函式。為了讓版面整齊，故簡寫RGBPoint為P。
+typedef RGBPoint P;
+bool cmpR(const P& i, const P& j) {return i.rgb[0] < j.rgb[0];}
+bool cmpG(const P& i, const P& j) {return i.rgb[1] < j.rgb[1];}
+bool cmpB(const P& i, const P& j) {return i.rgb[2] < j.rgb[2];}
+bool (*cmp[3])(const P&, const P&) = {cmpR, cmpG, cmpB};
+
+// 將圖片上所有像素描繪於RGB所構成的三維空間中。
+void readImage()
+{
+	for (int x=0; x<100; ++x)
+		for (int y=0; y<100; ++y)
+		{
+			int i = x * 100 + y;
+			for (int j=0; j<3; ++j)
+				p[i].rgb[j] = image[x][y].rgb[j];
+		}
+}
+
+// 將RGB三維空間中的像素們塗回圖片上。
+void redrawImage()
+{
+	for (int i=0; i<10000; ++i)
+	{
+		int x = p[i].x, y = p[i].y;
+		for (int j=0; j<3; ++j)
+			image[x][y].rgb[j] = p[i].rgb[j];
+	}
+}
+
+// 區塊。該區塊所含的像素為 p[s]～p[t]。
+struct Box
+{ 
+	int s, t;
+	int longest_side_length, longest_dimension;
+
+	bool operator<(const Box& b) const
+	{
+		return longest_side_length < b.longest_side_length;
+	}
+};
+
+// 找到區塊內像素的界限
+void findBound(Box& b)
+{
+	int mini[3] = {255, 255, 255};
+	int maxi[3] = {0, 0, 0};
+
+	for (int i=b.s; i<b.t; ++i)
+		for (int j=0; j<3; ++j)
+		{
+			mini[j] = min(mini[j], p[i].rgb[j]);
+			maxi[j] = max(maxi[j], p[i].rgb[j]);
+		}
+
+	b.longest_side_length = 0;
+	b.longest_dimension = 0;
+
+	for (int j=0; j<3; ++j)
+	{
+		int length = maxi[j] - mini[j];
+		if (length > b.longest_side_length)
+		{
+			b.longest_side_length = length;
+			b.longest_dimension = j;
+		}
+	}
+}
+
+// 將區塊內的像素們取平均值後，再將所有像素重設為平均值。
+void setNewColor(Box& b)
+{
+	int rgb[3] = {0};
+
+	for (int i=b.s; i<b.t; ++i)
+		for (int j=0; j<3; ++j)
+			rgb[j] += p[i].rgb[j];
+
+	for (int j=0; j<3; ++j)
+		rgb[i] /= (b.t - b.s);
+
+	for (int i=b.s; i<b.t; ++i)
+		for (int j=0; j<3; ++j)
+			p[i].rgb[j] = rgb[j];
+}
+
+// Median Cut Algorithm
+void MedianCut()
+{
+	Box b, b1, b2;
+
+	// 將圖片上所有像素描繪於RGB所構成的三維空間中。
+	readImage();
+
+	// 一開始的區塊
+	b.s = 0; b.t = 10000;
+	findBound(b);
+
+	// 放入 Priority Queue 中，
+	// 每一次都可得到目前最大的區塊。
+	priority_queue<Box> PQ;
+	PQ.push(b);
+
+	// 反覆切成256個區塊。
+	for (int i=0; i<256-1; ++i)
+	{
+		b = PQ.top(); PQ.pop();
+
+		// 對範圍最大的維度排序，以求得中位數。
+		sort(p+b.s, p+b.t, cmp[b.longest_dimension]);
+
+		// 設定兩個新區塊所含的像素是哪些，
+		// 並找出正確的界限。
+		b1.s = b.s; b2.t = b.t;
+		b1.t = b2.s = (b.s+b.t)/2;
+		findBound(b1);
+		findBound(b2);
+
+		// 放入 Priority Queue 排序。
+		PQ.push(b1);
+		PQ.push(b2);
+	}
+
+	// 已切出256個區塊，開始設定新顏色值。
+	for (int i=0; i<256; ++i)
+	{
+		b = PQ.top(); PQ.pop();
+		setNewColor(b);
+	}
+
+	// 將RGB三維空間中的像素們塗回圖片上。
+	redrawImage();
+}
+</textarea>
+<p>這支程式有點小瑕疵，就是當區塊中的像素少到無法再分割時還會繼續分割。</p>
+<p class="t">結果</p>
+<p>左圖是24bit原圖，中圖是轉換後的8bit圖，右圖是選中的256種顏色。左圖圖片來源：<a href="javascript:if(confirm('http://www.csie.nctu.edu.tw/~zlxuan/lena/lenna.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.csie.nctu.edu.tw/~zlxuan/lena/lenna.html'" tppabs="http://www.csie.nctu.edu.tw/~zlxuan/lena/lenna.html" class="l">http://www.csie.nctu.edu.tw/~zlxuan/lena/lenna.html</a>。</p><div class="seq"><img src="lenna512.bmp" tppabs="http://www.csie.ntnu.edu.tw/~u91029/lenna512.bmp" width="128" height="128"><img src="MedianCutAlgorithm1.bmp" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MedianCutAlgorithm1.bmp" width="128" height="128"><img src="MedianCutAlgorithm2.bmp" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MedianCutAlgorithm2.bmp" width="128" height="128"></div>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

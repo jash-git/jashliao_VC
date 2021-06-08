@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <title>Shaker 排序法 - 改良的氣泡排序</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;Shaker 排序法 - 改良的氣泡排序</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+
+
+      <h2>說明</h2>
+      <small>
+
+請看看之前介紹過的氣泡排序法：<br>
+      </small>
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp; for(i = 0; i &lt; MAX-1 &amp;&amp; flag == 1; i++) { </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; flag = 0; </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(j = 0; j &lt; MAX-i-1; j++) { </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(number[j+1] &lt; number[j]) { </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SWAP(number[j+1], number[j]); </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; flag = 1; </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp; } </span><br>
+
+
+      </small></div>
+      <small>
+
+&nbsp;<br>
+      <br>
+
+
+事實上這個氣泡排序法已經不是單純的氣泡排序了，它使用了旗標與右端左移兩個方法來改進排序的效能，而Shaker排序法使用到後面這個觀念進一步改良氣泡排序法。</small>
+
+      <br>
+
+
+      <h2>解法</h2>
+      <small>
+
+在上面的氣泡排序法中，交換的動作並不會一直進行至陣列的最後一個，而是會進行至MAX-i-1，所以排序的過程中，陣列右方排序好的元素會一直增加，使得左邊排序的次數逐漸減少，如我們的例子所示：<br>
+      <br>
+
+
+排序前：95 27 90 49 80 58 6 9 18 50<br>
+      <br>
+      </small>
+
+
+
+
+
+      <ol>
+        <li><small>27 90 49 80 58 6 9 18 50 [95] 95浮出</small></li>
+        <li><small>27 49 80 58 6 9 18 50 [90 95] 90浮出</small></li>
+        <li><small>27 49 58 6 9 18 50 [80 90 95] 80浮出</small></li>
+        <li><small>27 49 6 9 18 50 [58 80 90 95] ......</small></li>
+        <li><small>27 6 9 18 49 [50 58 80 90 95] ......</small></li>
+        <li><small>6 9 18 27 [49 50 58 80 90 95] ......</small></li>
+        <li><small>6 9 18 [27 49 50 58 80 90 95]</small></li>
+      </ol>
+
+
+      <small><br>
+
+
+方括號括住的部份表示已排序完畢，Shaker排序使用了這個概念，如果讓左邊的元素也具有這樣的性質，讓左右兩邊的元素都能先排序完成，如此未排序的元素會集中在中間，由於左右兩邊同時排序，中間未排序的部份將會很快的減少。<br>
+      <br>
+
+
+方法就在於氣泡排序的雙向進行，先讓氣泡排序由左向右進行，再來讓氣泡排序由右往左進行，如此完成一次排序的動作，而您必須使用left與right兩個旗標來記錄左右兩端已排序的元素位置。<br>
+      <br>
+
+
+一個排序的例子如下所示：<br>
+      <br>
+
+
+排序前：45 19 77 81 13 28 18 19 77 11<br>
+      <br>
+      </small>
+
+
+
+
+
+
+
+
+
+      <div style="margin-left: 40px;"><small>往右排序：19 45 77 13 28 18 19 77 11 [81]<br>
+
+
+向左排序：[11] 19 45 77 13 28 18 19 77 [81]<br>
+
+
+      <br>
+
+
+往右排序：[11] 19 45 13 28 18 19 [77 77 81]<br>
+
+
+向左排序：[11 13] 19 45 18 28 19 [77 77 81]<br>
+
+
+      <br>
+
+
+往右排序：[11 13] 19 18 28 19 [45 77 77 81]<br>
+
+
+向左排序：[11 13 18] 19 19 28 [45 77 77 81]<br>
+
+
+      <br>
+
+
+往右排序：[11 13 18] 19 19 [28 45 77 77 81]<br>
+
+
+向左排序：[11 13 18 19 19] [28 45 77 77 81]<br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+如上所示，括號中表示左右兩邊已排序完成的部份，當left &gt; right時，則排序完成。 </small><br>
+
+
+
+
+      <br>
+
+
+      <h2> 實作</h2>
+
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br>#include &lt;time.h&gt; <br>#define MAX 10 <br>#define SWAP(x,y) {int t; t = x; x = y; y = t;} <br><br>void shakersort(int[]); <br><br>int main(void) { <br>    int number[MAX] = {0}; <br>    int i;  <br><br>    srand(time(NULL)); <br><br>    printf("排序前："); <br>    for(i = 0; i &lt; MAX; i++) { <br>        number[i] = rand() % 100; <br>        printf("%d ", number[i]); <br>    } <br><br>    shakersort(number); <br><br>    printf("\n"); <br><br>    return 0; <br>} <br><br>void shakersort(int number[]) { <br>    int i, left = 0, right = MAX - 1, shift = 0; <br><br>    while(left &lt; right) { <br>        // 向右進行氣泡排序 <br>        for(i = left; i &lt; right; i++) { <br>            if(number[i] &gt; number[i+1]) { <br>                SWAP(number[i], number[i+1]); <br>                shift = i; <br>            } <br>        } <br>        right = shift; <br><br>        printf("\n往右排序："); <br>        for(i = 0; i &lt; MAX; i++) <br>            printf("%d ", number[i]); <br><br>        // 向左進行氣泡排序 <br>        for(i = right; i &gt; left; i--) { <br>            if(number[i] &lt; number[i-1]) { <br>                SWAP(number[i], number[i-1]); <br>                shift = i; <br>            } <br>        } <br>        left = shift; <br><br>        printf("\n向左排序："); <br>        for(i = 0; i &lt; MAX; i++) <br>            printf("%d ", number[i]); <br>    } <br>} <br></pre>
+
+
+
+      <br>
+
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+
+      <pre>public class ShakerSort {<br>    public static void sort(int[] number) {<br>        int i, left = 0, <br>               right = number.length - 1, <br>               shift = 0; <br><br>        while(left &lt; right) { <br>            // 向右進行氣泡排序 <br>            for(i = left; i &lt; right; i++) { <br>                if(number[i] &gt; number[i+1]) { <br>                    swap(number, i, i+1); <br>                    shift = i; <br>                } <br>            } <br>            right = shift; <br><br>            // 向左進行氣泡排序 <br>            for(i = right; i &gt; left; i--) { <br>                if(number[i] &lt; number[i-1]) { <br>                    swap(number, i ,i-1); <br>                    shift = i; <br>                } <br>            } <br>            left = shift; <br>        } <br>    }<br><br>    private static void swap(int[] number, int i, int j) {<br>        int t; <br>        t = number[i]; <br>        number[i] = number[j]; <br>        number[j] = t;<br>    }<br>} </pre>
+
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+
+<br>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,460 @@
+<html>
+
+<head>
+<title>11.4 与设备无关的位图(DIB)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><b><font FACE="Times New Roman" SIZE="3"><p ALIGN="CENTER"></font></b><font color="#3973DE" FACE="Times New Roman" size="4">11.4 </font><font color="#3973DE" size="4">与设备无关的位图</font><font color="#3973DE" FACE="Times New Roman" size="4">(DIB)</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DIB(Device-indepentent bitmap)</font><font SIZE="3">的与设备无关性主要体现在以下两个方面：</p>
+    <ul>
+      <li><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DIB</font>的颜色模式与设备无关。例如，一个<font FACE="Times New Roman" SIZE="3">256</font>色的<font FACE="Times New Roman" SIZE="3">DIB</font>即可以在真彩色显示模式下使用，也可以在<font FACE="Times New Roman" SIZE="3">16</font>色模式下使用。</p>
+      </li>
+      <li><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">256</font>色以下<font FACE="Times New Roman" SIZE="3">(</font>包括<font FACE="Times New Roman" SIZE="3">256</font>色<font FACE="Times New Roman" SIZE="3">)</font>的<font FACE="Times New Roman" SIZE="3">DIB</font>拥有自己的颜色表，像素的颜色独立于系统调色板。</font></p>
+      </li>
+    </ul>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">由于</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">不依赖于具体设备，因此可以用来永久性地保存图象。</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">一般是以</font><font FACE="Times New Roman" SIZE="3">*.BMP</font><font SIZE="3">文件的形式保存在磁盘中的，有时也会保存在</font><font FACE="Times New Roman" SIZE="3">*.DIB</font><font SIZE="3">文件中。运行在不同输出设备下的应用程序可以通过</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">来交换图象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DIB</font><font SIZE="3">还可以用一种</font><font FACE="Times New Roman" SIZE="3">RLE</font><font SIZE="3">算法来压缩图像数据，但一般来说</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">是不压缩的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.4.1 
+    DIB</font><font SIZE="3" color="#3973DE">的结构</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">与</font><font FACE="Times New Roman" SIZE="3">Borland 
+    C++</font><font SIZE="3">下的框架类库</font><font FACE="Times New Roman" SIZE="3">OWL</font><font SIZE="3">不同，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">未提供现成的类来封装</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">。尽管</font><font FACE="Times New Roman" SIZE="3">Microsoft</font><font SIZE="3">列出了一些理由，但没有</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">类确实给</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">用户带来很多不便。用户要想使用</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">，首先应该了解</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的结构。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在内存中，一个完整的</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">由两部分组成：一个</font><font FACE="Times New Roman" SIZE="3">BITMAPINFO</font><font SIZE="3">结构和一个存储像素阵列的数组。</font><font FACE="Times New Roman" SIZE="3">BITMAPINFO</font><font SIZE="3">描述了位图的大小，颜色模式和调色板等各种属性，其定义为</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">typedef struct 
+      tagBITMAPINFO { </p>
+      <p ALIGN="JUSTIFY">BITMAPINFOHEADER bmiHeader; </p>
+      <p ALIGN="JUSTIFY">RGBQUAD bmiColors[1]; //</font><font SIZE="3">颜色表</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">} BITMAPINFO;</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY">RGBQUAD</font><font SIZE="3">结构用来描述颜色，其定义为</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">typedef struct tagRGBQUAD 
+      {</p>
+      <p ALIGN="JUSTIFY">BYTE rgbBlue; //</font><font SIZE="3">蓝色的强度</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BYTE rgbGreen; //</font><font SIZE="3">绿色的强度</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BYTE rgbRed; //</font><font SIZE="3">红色的强度</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BYTE rgbReserved; //</font><font SIZE="3">保留字节，为</font><font FACE="Times New Roman" SIZE="3">0</p>
+      <p ALIGN="JUSTIFY">} RGBQUAD;</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">注意，</font><font FACE="Times New Roman" SIZE="3">RGBQUAD</font><font SIZE="3">结构中的颜色顺序是</font><font FACE="Times New Roman" SIZE="3">BGR</font><font SIZE="3">，而不是平常的</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BITMAPINFOHEADER</font><font SIZE="3">结构包含了</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的各种信息，其定义为</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">typedef struct 
+      tagBITMAPINFOHEADER{ </p>
+      <p ALIGN="JUSTIFY">DWORD biSize; //</font><font SIZE="3">该结构的大小</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LONG biWidth; //</font><font SIZE="3">位图的宽度</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">以像素为单位</font><font FACE="Times New Roman" SIZE="3">)</p>
+      <p ALIGN="JUSTIFY">LONG biHeight; //</font><font SIZE="3">位图的高度</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">以像素为单位</font><font FACE="Times New Roman" SIZE="3">)</p>
+      <p ALIGN="JUSTIFY">WORD biPlanes; //</font><font SIZE="3">必须为</font><font FACE="Times New Roman" SIZE="3">1</p>
+      <p ALIGN="JUSTIFY">WORD biBitCount //</font><font SIZE="3">每个像素的位数</font><font FACE="Times New Roman" SIZE="3">(1</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">4</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">8</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">24</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">32)</p>
+      <p ALIGN="JUSTIFY">DWORD biCompression; //</font><font SIZE="3">压缩方式，一般为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">BI_RGB (</font><font SIZE="3">未压缩</font><font FACE="Times New Roman" SIZE="3">)</p>
+      <p ALIGN="JUSTIFY">DWORD biSizeImage; //</font><font SIZE="3">以字节为单位的图象大小</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">仅用于压缩位图</font><font FACE="Times New Roman" SIZE="3">)</p>
+      <p ALIGN="JUSTIFY">LONG biXPelsPerMeter; //</font><font SIZE="3">以目标设备每米的像素数来说明位图的水平分辨率</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LONG biYPelsPerMeter; //</font><font SIZE="3">以目标设备每米的像素数来说明位图的垂直分辨率</p>
+      <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD biClrUsed; /*</font>颜色表的颜色数，若为<font FACE="Times New Roman" SIZE="3">0</font>则位图使用由<font FACE="Times New Roman" SIZE="3">biBitCount</font>指定的最大颜色数<font FACE="Times New Roman" SIZE="3">*/</p>
+      <p ALIGN="JUSTIFY">DWORD biClrImportant; //</font>重要颜色的数目，若该值为<font FACE="Times New Roman" SIZE="3">0</font>则所有颜色都重要</p>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">} BITMAPINFOHEADER;</p>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">与</font><font FACE="Times New Roman" SIZE="3">DDB</font><font SIZE="3">不同，</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的字节数组是从图象的最下面一行开始的逐行向上存储的，也即等于把图象倒过来然后在逐行扫描。另外，字节数组中每个扫描行的字节数必需是</font><font FACE="Times New Roman" SIZE="3">4</font><font SIZE="3">的倍数，如果不足要用</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">补齐。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DIB</font><font SIZE="3">可以存储在</font><font FACE="Times New Roman" SIZE="3">*.BMP</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">*.DIB</font><font SIZE="3">文件中。</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">文件是以</font><font FACE="Times New Roman" SIZE="3">BITMAPFILEHEADER</font><font SIZE="3">结构开头的，该结构的定义为</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">typedef struct 
+      tagBITMAPFILEHEADER { </p>
+      <p ALIGN="JUSTIFY">WORD bfType; //</font><font SIZE="3">文件类型，必须为“</font><font FACE="Times New Roman" SIZE="3">BM</font><font SIZE="3">”</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD bfSize; //</font><font SIZE="3">文件的大小</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WORD bfReserved1; //</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">0</p>
+      <p ALIGN="JUSTIFY">WORD bfReserved2; //</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">0</p>
+      <p ALIGN="JUSTIFY">DWORD bfOffBits; //</font><font SIZE="3">存储的像素阵列相对于文件头的偏移量</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">} BITMAPFILEHEADER;</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">紧随该结构的是一个</font><font FACE="Times New Roman" SIZE="3">BITMAPINFOHEADER</font><font SIZE="3">结构，然后是</font><font FACE="Times New Roman" SIZE="3">RGBQUAD</font><font SIZE="3">结构组成的颜色表</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">如果有的话</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">，文件最后存储的是</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的像素阵列。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DIB</font><font SIZE="3">的颜色信息储存在自己的颜色表中，程序一般要根据颜色表为</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">创建逻辑调色板。在输出一幅</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">之前，程序应该将其逻辑调色板选入到相关的设备上下文中并实现到系统调色板中，然后再调用相关的</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">如</font><font FACE="Times New Roman" SIZE="3">::SetDIBitsToDevice</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">::StretchDIBits)</font><font SIZE="3">输出</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">。在输出过程中，</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">函数会把</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">转换成</font><font FACE="Times New Roman" SIZE="3">DDB</font><font SIZE="3">，这项工作主要包括以下两步：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">将</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的颜色格式转换成与输出设备相同的颜色格式。例如，在真彩色的显示模式下要显示一个</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">色的</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">，则应该将其转换成</font><font FACE="Times New Roman" SIZE="3">24</font><font SIZE="3">位的颜色格式。</p>
+        <p ALIGN="JUSTIFY">将</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">像素的逻辑颜色索引转换成系统调色板索引。</p>
+        </font><font FACE="Times New Roman" SIZE="3">
+      </blockquote>
+    </blockquote>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.4.2 
+    </font><font color="#3973DE"><font SIZE="3">编写</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">类</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">由于</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">未提供</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">类，用户在使用</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">时将面临繁重的</font><font FACE="Times New Roman" SIZE="3">Windows API</font><font SIZE="3">编程任务。幸运的是，</font><font FACE="Times New Roman" SIZE="3">Visual 
+    C++</font><font SIZE="3">提供了一个较高层次的</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">，简化了</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的使用。这些</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">函数实际上是由</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">DibLook</font><font SIZE="3">例程提供的，它们位于</font><font FACE="Times New Roman" SIZE="3">DibLook</font><font SIZE="3">目录下的</font><font FACE="Times New Roman" SIZE="3">dibapi.cpp</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">myfile.cpp</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">dibapi.h</font><font SIZE="3">文件中，主要包括：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ReadDIBFile //</font><font SIZE="3">把</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">文件读入内存</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SaveDIB //</font><font SIZE="3">把</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">保存到文件中</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CreateDIBPalette //</font><font SIZE="3">从</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">中创建一个逻辑调色板</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">PaintDIB //</font><font SIZE="3">显示</font><font FACE="Times New Roman" SIZE="3">DIB</p>
+        <p ALIGN="JUSTIFY">DIBWidth //</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的宽度</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DIBHeight //</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的高度</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果读者对这些函数的内部细节感兴趣，那么可以研究一下</font><font FACE="Times New Roman" SIZE="3">dibapi.cpp</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">myfile.cpp</font><font SIZE="3">文件，但要做好吃苦的准备。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">即使利用上述</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">，编写使用</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的程序仍然不是很轻松。为了满足读者的要求，笔者编写了一个名为</font><font FACE="Times New Roman" SIZE="3">CDib</font><font SIZE="3">的较简单的</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">类，该类是基于上述</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">的，它的主要成员函数包括：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Load(LPCTSTR 
+        lpszFileName);<br>
+        </font><font SIZE="3">该函数从文件中载入</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">，参数</font><font FACE="Times New Roman" SIZE="3">lpszFileName</font><font SIZE="3">说明了文件名。若成功载入则函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL LoadFromResource(UINT 
+        nID);<br>
+        </font><font SIZE="3">该函数从资源中载入位图，参数</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">是资源位图的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。若成功载入则函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CPalette* GetPalette()<br>
+        </font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的逻辑调色板。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Draw(CDC *pDC, int x, 
+        int y, int cx=0, int cy=0);<br>
+        </font><font SIZE="3">该函数在指定的矩形区域内显示</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">，它具有缩放位图的功能。参数</font><font FACE="Times New Roman" SIZE="3">pDC</font><font SIZE="3">指向用于绘图的设备上下文，参数</font><font FACE="Times New Roman" SIZE="3">x</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">y</font><font SIZE="3">说明了目的矩形的左上角坐标，</font><font FACE="Times New Roman" SIZE="3">cx</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">cy</font><font SIZE="3">说明了目的矩形的尺寸，</font><font FACE="Times New Roman" SIZE="3">cx</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">cy</font><font SIZE="3">若有一个为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">则该函数按</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的实际大小绘制位图，</font><font FACE="Times New Roman" SIZE="3">cx</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">cy</font><font SIZE="3">的缺省值是</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">。若成功则函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int Width(); //</font><font SIZE="3">以像素为单位返回</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的宽度</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int Height(); //</font><font SIZE="3">以像素为单位返回</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的高度</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CDib</font><font SIZE="3">类的源代码在清单</font><font FACE="Times New Roman" SIZE="3">11.3</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">11.4</font><font SIZE="3">列出，</font><font FACE="Times New Roman" SIZE="3">CDib</font><font SIZE="3">类的定义位于</font><font FACE="Times New Roman" SIZE="3">CDib.h</font><font SIZE="3">中，</font><font FACE="Times New Roman" SIZE="3">CDib</font><font SIZE="3">类的成员函数代码位于</font><font FACE="Times New Roman" SIZE="3">CDib.cpp</font><font SIZE="3">中。对于</font><font FACE="Times New Roman" SIZE="3">CDib</font><font SIZE="3">类的代码这里就不作具体解释了，读者只要会用就行。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">11.3 CDib.h</b></p>
+    <p ALIGN="JUSTIFY">#if !defined MYDIB</p>
+    <p ALIGN="JUSTIFY">#define MYDIB</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include &quot;dibapi.h&quot;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">class CDib</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p ALIGN="JUSTIFY">CDib();</p>
+    <p ALIGN="JUSTIFY">~CDib();</p>
+    <p ALIGN="JUSTIFY">protected:</p>
+    <p ALIGN="JUSTIFY">HDIB m_hDIB;</p>
+    <p ALIGN="JUSTIFY">CPalette* m_palDIB;</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p ALIGN="JUSTIFY">BOOL Load(LPCTSTR lpszFileName);</p>
+    <p ALIGN="JUSTIFY">BOOL LoadFromResource(UINT nID);</p>
+    <p ALIGN="JUSTIFY">CPalette* GetPalette() const</p>
+    <p ALIGN="JUSTIFY">{ return m_palDIB; }</p>
+    <p ALIGN="JUSTIFY">BOOL Draw(CDC *pDC, int x, int y, int cx=0, int cy=0);</p>
+    <p ALIGN="JUSTIFY">int Width();</p>
+    <p ALIGN="JUSTIFY">int Height();</p>
+    <p ALIGN="JUSTIFY">void DeleteDIB();</p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#endif</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">11.4 Cdib.cpp</b></p>
+    <p ALIGN="JUSTIFY">#include &lt;stdafx.h&gt;</p>
+    <p ALIGN="JUSTIFY">#include &quot;CDib.h&quot;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#ifdef _DEBUG</p>
+    <p ALIGN="JUSTIFY">#undef THIS_FILE</p>
+    <p ALIGN="JUSTIFY">static char BASED_CODE THIS_FILE[] = __FILE__;</p>
+    <p ALIGN="JUSTIFY">#endif</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CDib::CDib()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_palDIB=NULL;</p>
+    <p ALIGN="JUSTIFY">m_hDIB=NULL;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CDib::~CDib()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">DeleteDIB();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CDib::DeleteDIB()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if (m_hDIB != NULL)</p>
+    <p ALIGN="JUSTIFY">::GlobalFree((HGLOBAL) m_hDIB);</p>
+    <p ALIGN="JUSTIFY">if (m_palDIB != NULL)</p>
+    <p ALIGN="JUSTIFY">delete m_palDIB;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">从文件中载入</font><font FACE="Times New Roman" SIZE="3">DIB</p>
+    <p ALIGN="JUSTIFY">BOOL CDib::Load(LPCTSTR lpszFileName)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">HDIB hDIB;</p>
+    <p ALIGN="JUSTIFY">CFile file;</p>
+    <p ALIGN="JUSTIFY">CFileException fe;</p>
+    <p ALIGN="JUSTIFY">if (!file.Open(lpszFileName, CFile::modeRead|CFile::shareDenyWrite, 
+    &amp;fe))</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(fe.m_cause);</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">TRY</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">hDIB = ::ReadDIBFile(file);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">CATCH (CFileException, eLoad)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">file.Abort(); </p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">END_CATCH</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DeleteDIB(); //</font><font SIZE="3">清除旧位图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_hDIB=hDIB;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_palDIB = new CPalette;</p>
+    <p ALIGN="JUSTIFY">if (::CreateDIBPalette(m_hDIB, m_palDIB) == NULL)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// DIB</font><font SIZE="3">有可能没有调色板</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">delete m_palDIB;</p>
+    <p ALIGN="JUSTIFY">m_palDIB = NULL;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">从资源中载入</font><font FACE="Times New Roman" SIZE="3">DIB</p>
+    <p ALIGN="JUSTIFY">BOOL CDib::LoadFromResource(UINT nID)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">HINSTANCE hResInst = AfxGetResourceHandle();</p>
+    <p ALIGN="JUSTIFY">HRSRC hFindRes;</p>
+    <p ALIGN="JUSTIFY">HDIB hDIB;</p>
+    <p ALIGN="JUSTIFY">LPSTR pDIB;</p>
+    <p ALIGN="JUSTIFY">LPSTR pRes;</p>
+    <p ALIGN="JUSTIFY">HGLOBAL hRes;</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">搜寻指定的资源</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">hFindRes = ::FindResource(hResInst, MAKEINTRESOURCE(nID), RT_BITMAP);</p>
+    <p ALIGN="JUSTIFY">if (hFindRes == NULL) return FALSE;</p>
+    <p ALIGN="JUSTIFY">hRes = ::LoadResource(hResInst, hFindRes); //</font><font SIZE="3">载入位图资源</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (hRes == NULL) return FALSE;</p>
+    <p ALIGN="JUSTIFY">DWORD dwSize=::SizeofResource(hResInst,hFindRes);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">hDIB = (HDIB) ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, dwSize);</p>
+    <p ALIGN="JUSTIFY">if (hDIB == NULL) return FALSE;</p>
+    <p ALIGN="JUSTIFY">pDIB = (LPSTR)::GlobalLock((HGLOBAL)hDIB);</p>
+    <p ALIGN="JUSTIFY">pRes = (LPSTR) ::LockResource(hRes);</p>
+    <p ALIGN="JUSTIFY">memcpy(pDIB, pRes, dwSize); //</font><font SIZE="3">把</font><font FACE="Times New Roman" SIZE="3">hRes</font><font SIZE="3">中的内容复制</font><font FACE="Times New Roman" SIZE="3">hDIB</font><font SIZE="3">中</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">::GlobalUnlock((HGLOBAL) hDIB);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DeleteDIB();</p>
+    <p ALIGN="JUSTIFY">m_hDIB=hDIB;</p>
+    <p ALIGN="JUSTIFY">m_palDIB = new CPalette;</p>
+    <p ALIGN="JUSTIFY">if (::CreateDIBPalette(m_hDIB, m_palDIB) == NULL)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// DIB</font><font SIZE="3">有可能没有调色板</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">delete m_palDIB;</p>
+    <p ALIGN="JUSTIFY">m_palDIB = NULL;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int CDib::Width()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if(m_hDIB==NULL) return 0;</p>
+    <p ALIGN="JUSTIFY">LPSTR lpDIB = (LPSTR) ::GlobalLock((HGLOBAL) m_hDIB);</p>
+    <p ALIGN="JUSTIFY">int cxDIB = (int) ::DIBWidth(lpDIB); // Size of DIB - x</p>
+    <p ALIGN="JUSTIFY">::GlobalUnlock((HGLOBAL) m_hDIB);</p>
+    <p ALIGN="JUSTIFY">return cxDIB;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int CDib::Height()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if(m_hDIB==NULL) return 0;</p>
+    <p ALIGN="JUSTIFY">LPSTR lpDIB = (LPSTR) ::GlobalLock((HGLOBAL) m_hDIB);</p>
+    <p ALIGN="JUSTIFY">int cyDIB = (int) ::DIBHeight(lpDIB); // Size of DIB - y</p>
+    <p ALIGN="JUSTIFY">::GlobalUnlock((HGLOBAL) m_hDIB);</p>
+    <p ALIGN="JUSTIFY">return cyDIB;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">显示</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">，该函数具有缩放功能</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">x</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">y</font><font SIZE="3">说明了目的矩形的左上角坐标，</font><font FACE="Times New Roman" SIZE="3">cx</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">cy</font><font SIZE="3">说明了目的矩形的尺寸</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//cx</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">cy</font><font SIZE="3">若有一个为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">则该函数按</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的实际大小绘制，</font><font FACE="Times New Roman" SIZE="3">cx</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">cy</font><font SIZE="3">的缺省值是</font><font FACE="Times New Roman" SIZE="3">0</p>
+    <p ALIGN="JUSTIFY">BOOL CDib::Draw(CDC *pDC, int x, int y, int cx, int cy)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if(m_hDIB==NULL) return FALSE;</p>
+    <p ALIGN="JUSTIFY">CRect rDIB,rDest;</p>
+    <p ALIGN="JUSTIFY">rDest.left=x;</p>
+    <p ALIGN="JUSTIFY">rDest.top=x;</p>
+    <p ALIGN="JUSTIFY">if(cx==0||cy==0)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">cx=Width();</p>
+    <p ALIGN="JUSTIFY">cy=Height();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">rDest.right=rDest.left+cx;</p>
+    <p ALIGN="JUSTIFY">rDest.bottom=rDest.top+cy;</p>
+    <p ALIGN="JUSTIFY">rDIB.left=rDIB.top=0;</p>
+    <p ALIGN="JUSTIFY">rDIB.right=Width();</p>
+    <p ALIGN="JUSTIFY">rDIB.bottom=Height();</p>
+    <p ALIGN="JUSTIFY">return 
+    ::PaintDIB(pDC-&gt;GetSafeHdc(),&amp;rDest,m_hDIB,&amp;rDIB,m_palDIB);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.4.3 
+    </font><font color="#3973DE"><font SIZE="3">使用</font><font FACE="Times New Roman" SIZE="3">CDib</font><font SIZE="3">类的例子</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在让我们来看一个使用</font><font FACE="Times New Roman" SIZE="3">CDib</font><font SIZE="3">类的例子。如图</font><font FACE="Times New Roman" SIZE="3">11.4</font><font SIZE="3">所示，程序名为</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">，是一个多文档应用程序，它的功能与</font><font FACE="Times New Roman" SIZE="3">VC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">DibLook</font><font SIZE="3">例程有些类似，可同时打开和显示多个位图。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"><img src="T11_4.jpg" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/T11_4.jpg" alt="T11_4.jpg (24220 bytes)" WIDTH="447" HEIGHT="337"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">11.4 
+    </font><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">来显示位图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">请读者用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">建立一个名为</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">工程。程序应该用滚动视图来显示较大的位图，所以在</font><font FACE="Times New Roman" SIZE="3">MFC AppWizard</font><font SIZE="3">的第</font><font FACE="Times New Roman" SIZE="3">6</font><font SIZE="3">步应把</font><font FACE="Times New Roman" SIZE="3">CShowDibView</font><font SIZE="3">的基类改为</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">由于</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">程序要用到</font><font FACE="Times New Roman" SIZE="3">CDib</font><font SIZE="3">类，所以应该把</font><font FACE="Times New Roman" SIZE="3">dibapi.cpp</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">myfile.cpp</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">dibapi.h</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">CDib.cpp</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CDib.h</font><font SIZE="3">文件拷贝到</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">目录下，并选择</font><font FACE="Times New Roman" SIZE="3">Project-&gt;Add to Project-&gt;Files</font><font SIZE="3">命令把这些文件加到</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">工程中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">ShowDib.h</font><font SIZE="3">文件中</font><font FACE="Times New Roman" SIZE="3">CShowDibApp</font><font SIZE="3">类的定义之前加入下面一行：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">#define WM_DOREALIZE WM_USER+200</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当收到调色板消息时，主框架窗口会发送用户定义的</font><font FACE="Times New Roman" SIZE="3">WM_DOREALIZE</font><font SIZE="3">消息通知视图。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接下来，需要用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">加入</font><font FACE="Times New Roman" SIZE="3">WM_QUERYNEWPALETTE</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">消息的处理函数，为</font><font FACE="Times New Roman" SIZE="3">CShowDibDoc</font><font SIZE="3">类加入</font><font FACE="Times New Roman" SIZE="3">OnOpenDocument</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">最后，请读者按清单</font><font FACE="Times New Roman" SIZE="3">11.5</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">11.6</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">11.7</font><font SIZE="3">修改程序。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">11.5 CMainFrame</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// MainFrm.cpp : implementation of the CMainFrame class</p>
+    <p ALIGN="JUSTIFY">void CMainFrame::OnPaletteChanged(CWnd* pFocusWnd) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CMDIFrameWnd::OnPaletteChanged(pFocusWnd);</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your message handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SendMessageToDescendants(WM_DOREALIZE, 1); //</font><font SIZE="3">通知所有的子窗口</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CMainFrame::OnQueryNewPalette() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your message handler code here and/or call default</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CMDIChildWnd* pMDIChildWnd = MDIGetActive();</p>
+    <p ALIGN="JUSTIFY">if (pMDIChildWnd == NULL)</p>
+    <p ALIGN="JUSTIFY">return FALSE; // </font><font SIZE="3">没有活动的</font><font FACE="Times New Roman" SIZE="3">MDI</font><font SIZE="3">子框架窗口</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CView* pView = pMDIChildWnd-&gt;GetActiveView();</p>
+    <p ALIGN="JUSTIFY">pView-&gt;SendMessage(WM_DOREALIZE,0); //</font><font SIZE="3">只通知活动视图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return TRUE; //</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">表明实现了逻辑调色板</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">11.6 CShowDibDoc</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// ShowDibDoc.h : interface of the CShowDibDoc class</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include &quot;CDib.h&quot;</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">class CShowDibDoc : public CDocument</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY"><b>. . .</b></p>
+    <p ALIGN="JUSTIFY">// Attributes</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CDib m_Dib; </b></p>
+    <p ALIGN="JUSTIFY"><b>. . .</b></p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// ShowDibDoc.cpp : implementation of the CShowDibDoc class</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CShowDibDoc::OnOpenDocument(LPCTSTR lpszPathName) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if (!CDocument::OnOpenDocument(lpszPathName))</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your specialized creation code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BeginWaitCursor();</p>
+    <p ALIGN="JUSTIFY">BOOL bSuccess=m_Dib.Load(lpszPathName); //</font><font SIZE="3">载入</font><font FACE="Times New Roman" SIZE="3">DIB</p>
+    <p ALIGN="JUSTIFY">EndWaitCursor();</p>
+    <p ALIGN="JUSTIFY">return bSuccess;</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">11.7 CShowDibView</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// ShowDibView.h : interface of the CShowDibView class</p>
+    <p ALIGN="JUSTIFY">class CShowDibView : public CScrollView</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY"><b>. . .</p>
+    <p ALIGN="JUSTIFY">afx_msg LRESULT OnDoRealize(WPARAM wParam, LPARAM lParam);</b></p>
+    <p ALIGN="JUSTIFY">DECLARE_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// ShowDibView.cpp : implementation of the CShowDibView class</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BEGIN_MESSAGE_MAP(CShowDibView, CScrollView)</p>
+    <p ALIGN="JUSTIFY"><b>. . .</p>
+    <p ALIGN="JUSTIFY">ON_MESSAGE(WM_DOREALIZE, OnDoRealize)</b></p>
+    <p ALIGN="JUSTIFY">END_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CShowDibView::OnInitialUpdate()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CScrollView::OnInitialUpdate();</p>
+    <p ALIGN="JUSTIFY">CSize sizeTotal;</p>
+    <p ALIGN="JUSTIFY">// TODO: calculate the total size of this view</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CShowDibDoc* pDoc = GetDocument();</p>
+    <p ALIGN="JUSTIFY">sizeTotal.cx = pDoc-&gt;m_Dib.Width();</p>
+    <p ALIGN="JUSTIFY">sizeTotal.cy = pDoc-&gt;m_Dib.Height();</p>
+    <p ALIGN="JUSTIFY">SetScrollSizes(MM_TEXT, sizeTotal); //</font><font SIZE="3">设置视图的滚动范围</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CShowDibView::OnActivateView(BOOL bActivate, CView* pActivateView, 
+    CView* pDeactiveView) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your specialized code here and/or call the base class</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(bActivate)</p>
+    <p ALIGN="JUSTIFY">OnDoRealize(0,0); //</font><font SIZE="3">刷新视图</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CScrollView::OnActivateView(bActivate, pActivateView, pDeactiveView);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">LRESULT CShowDibView::OnDoRealize(WPARAM wParam, LPARAM)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CClientDC dc(this);</p>
+    <p ALIGN="JUSTIFY">//wParam</font><font SIZE="3">参数决定了该视图是否实现前景调色板</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">dc.SelectPalette(GetDocument()-&gt;m_Dib.GetPalette(),wParam);</p>
+    <p ALIGN="JUSTIFY">if(dc.RealizePalette())</p>
+    <p ALIGN="JUSTIFY">GetDocument()-&gt;UpdateAllViews(NULL);</p>
+    <p ALIGN="JUSTIFY">return 0L;</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CShowDibView::OnDraw(CDC* pDC)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CShowDibDoc* pDoc = GetDocument();</p>
+    <p ALIGN="JUSTIFY">ASSERT_VALID(pDoc);</p>
+    <p ALIGN="JUSTIFY">// TODO: add draw code for native data here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pDoc-&gt;m_Dib.Draw(pDC,0,0); //</font><font SIZE="3">输出</font><font FACE="Times New Roman" SIZE="3">DIB</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在程序中使用</font><font FACE="Times New Roman" SIZE="3">CDib</font><font SIZE="3">对象的代码很简单。当用户在</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">程序中选择</font><font FACE="Times New Roman" SIZE="3">File-&gt;Open</font><font SIZE="3">命令并从打开文件对话框中选择了一个</font><font FACE="Times New Roman" SIZE="3">BMP</font><font SIZE="3">文件后，</font><font FACE="Times New Roman" SIZE="3">CShowDibDoc::OnOpenDocument</font><font SIZE="3">函数被调用，该函数调用</font><font FACE="Times New Roman" SIZE="3">CDib::Load</font><font SIZE="3">载入位图。在</font><font FACE="Times New Roman" SIZE="3">CShowDibView::OnDraw</font><font SIZE="3">中，调用</font><font FACE="Times New Roman" SIZE="3">CDib::Draw</font><font SIZE="3">输出位图。在</font><font FACE="Times New Roman" SIZE="3">CShowDibView::OnInitialUpdate</font><font SIZE="3">中，根据</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">的尺寸来确定视图的滚动范围。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">需要重点研究的是</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">如何处理调色板问题的。</font><font FACE="Times New Roman" SIZE="3">ShowDib</font><font SIZE="3">是一个多文档应用程序，可以同时显示多幅位图。由于每个位图一般都有不同的调色板，这样就产生了共享系统调色板的问题。程序必须采取措施来保证只有一个视图的逻辑调色板作为前景调色板使用。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当主框架窗口收到</font><font FACE="Times New Roman" SIZE="3">WM_QUERYNEWPALETTE</font><font SIZE="3">消息时，主框架窗口向具有输入焦点的视图发送</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">参数为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">WM_DOREALIZE</font><font SIZE="3">消息，该视图的消息处理函数</font><font FACE="Times New Roman" SIZE="3">CShowDibView::OnDoRealize</font><font SIZE="3">为视图实现前景调色板并在必要时重绘视图，这样活动视图中的位图就具有最佳颜色显示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果活动视图在实现其前景调色板时改变了系统调色板，或是别的应用程序的前景调色板改变了系统调色板，那么</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">会向所有顶层窗口和重叠窗口发送</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">消息，</font><font FACE="Times New Roman" SIZE="3">DibLook</font><font SIZE="3">的主框架窗口也会收到该消息。主框架窗口对该消息的处理是向所有的视图发送</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">参数为</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">WM_DOREALIZE</font><font SIZE="3">消息，通知它们实现各自的背景调色板并在必要时重绘，这样所有的位图都能显示令人满意的颜色。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当某一视图被激活时，需要调用</font><font FACE="Times New Roman" SIZE="3">OnDoRealize</font><font SIZE="3">来实现其前景调色板，这一任务由</font><font FACE="Times New Roman" SIZE="3">CShowDibView:: OnActivateView</font><font SIZE="3">函数来完成。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap11_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/chap11_3.htm">上一页</a></td>
+        <td><p align="right"><a href="chap11_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/chap11_5.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

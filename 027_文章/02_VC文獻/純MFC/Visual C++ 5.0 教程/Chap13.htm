@@ -1,0 +1,494 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb_2312-80">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>第五章 使用Windows标准控件</TITLE>
+<META NAME="Template" CONTENT="E:\Office95\Template\Manuscripts\16 开图书模板.dot">
+</HEAD>
+<BODY>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=5><P ALIGN="CENTER"><A NAME="_Toc425699305"><A NAME="_Toc425699513">第十三章</FONT><FONT FACE="Arial" SIZE=5> </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=5>动态链接库</A></A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序中使用动态链接库有很多的好处。最主要的一点说是它可以使得多个应用程序共享一段代码，从而可以大幅度的降低应用程序的资源开销，同时很缩小了应用程序的最终执行代码的大小。此外，通过使用动态链接库，我们可以把一些常规的例程独立出来，有效的避免了不必要的重复开发，并且，由于应用程序使用了动态链接的方式，还可以在不需重新改写甚至编译应用程序的基础上更新应用程序的某些组件。</P>
+<P ALIGN="JUSTIFY">本章介绍</FONT><FONT SIZE=3>Visual C++ 5.0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的动态链接库的创建和使用。这些内容包括</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>为什么要使用</FONT><FONT SIZE=3>DLL</LI></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>不同的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型之间的选择</LI></P>
+<P ALIGN="JUSTIFY"><LI>在程序中创建和使用</FONT><FONT SIZE=3>DLL</LI></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>MFC</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">本章的重点在讲述</FONT><FONT SIZE=3>Win32 DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和基于</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，对于</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>仅给了一个很简单的例子，更深入的资料请参阅</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的联机文档。</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425699306"><A NAME="_Toc425699514">第一节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>概述</A></A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">动态链接库（</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>Dynamic-Link Library</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）也是一种可执行文件，只不过它不能象普通的</FONT><FONT SIZE=3>EXE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件那样可以直接运行，而是用来为其它可执行文件（包括</FONT><FONT SIZE=3>EXE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件和其它</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）提供共享函数库。使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的应用程序可以调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数（</FONT><FONT SIZE=3>imported function</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>），不过在应用程序本身的执行代码中并不包含这些函数的执行代码，它们经过编译和链接之后，独立的保存在</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中。这是一种和过去常用的静态链接不同的方式，使用静态链接库（</FONT><FONT SIZE=3>static link library</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）的应用程序从函数库得到所引用的函数的执行代码，然后把执行代码放进自身的执行文件中，这样，应用程序在运行时就可以不再需要静态函数库的支持。而使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的应用程序只包括了用于从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中定位所引用的函数的信息，而没有函数具体实现，要等到程序运行时才从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中获得函数的实现代码。显然，使用了</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的应用程序在运行时必须要有相应的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的支持。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>编程中得到了广泛的应用。</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序的基础：</FONT><FONT SIZE=3>Windows API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中的相当部分就是由一组</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所提供的，这些</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>从安装</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>起就存在于系统中了。尽管在前面的几章中我们没有明确的提到，但事实上我们早就在使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>进行编程了，只不过，所使用的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>都是现成的，并且所有调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的操作都由</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的编译和链接程序替我们完成了。</P>
+<P ALIGN="JUSTIFY">本章将详细的介绍如何创建自己的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和如何使用自己创建的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>进行编程。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">为什么要使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>呢？这当然是因为与传统的静态链库相比，使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>有着更多的优势：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供了一种共享数据和代码的方便途径。并且，由于多个应用程序可以共享同一个</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的函数，因此，使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以显著的节省磁盘空间。尤其对于</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序，有很多的操作都是“标准化”了的，如果使用传统的静态链接，每一个需要完成这些操作的应用程序都必须在自己的执行文件中包括相同的执行代码，这不但使单个的应用程序变得更长，也浪费了磁盘空间。</LI></P>
+<P ALIGN="JUSTIFY"><LI>由于相同的原因，多个应用程序还可以同时共享</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在内存中的同一份拷贝，这样就有效的节省了应用程序所占用的内存资源，减少了频繁的内存交换，从而提高了应用程序的执行效率。</LI></P>
+<P ALIGN="JUSTIFY"><LI>由于</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是独立于可执行文件的，因此，如果需要向</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中增加新的函数或是增强现有函数的功能，只要原有函数的参数和返回值等属性不变，那么，所有使用该</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的原有应用程序都可以在升级后的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的支持下运行，而不需要重新编译。这就极大的方便了应用程序的升级和售后支持。</LI></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>除了包括函数的执行代码以外，还可以只包括如图标、位图、字符串和对话框之类的资源，因此可以把应用程序所使用的资源独立出来做成</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。对于一些常用的资源，把它们做到</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中后，就可为多个应用程序所共享。</LI></P>
+<P ALIGN="JUSTIFY"><LI>便于建立多语言的应用程序。我们可以把多语言应用程序中所使用的与语言相关的函数做到</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中，只要不同语言的应用程序所调用的函数都具有相同的接口，这样就可以通过简单地更换</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来实现多语言支持。</LI></P></UL>
+
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">然而，使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>也有其不足之处。最典型的就是应用程序在运行时必须要有相应的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的支持。另外，使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>也增大了程序运行的开销，好在这种额外的开销对于大多数应用程序的影响并不明显，我们也只是在某些对运行速度要求苛刻的特殊场合，才不得不考虑这一点。</P>
+<P ALIGN="JUSTIFY"></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Visual C++ 5.0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>支持多种</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，包括：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>非</FONT><FONT SIZE=3>MFC DLL</LI></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>静态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</LI></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>动态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</LI></P>
+<P ALIGN="JUSTIFY"><LI>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">其中非</FONT><FONT SIZE=3>MFC DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（</FONT><FONT SIZE=3>non-MFC DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）内部不使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，调用非</FONT><FONT SIZE=3>MFC DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供的导出函数的可执行程序可以使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，也可以不使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。一般来说，非</FONT><FONT SIZE=3>MFC DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的导出函数都使用标准的</FONT><FONT SIZE=3>C</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>接口（</FONT><FONT SIZE=3>standard C interface</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）。</P>
+<P ALIGN="JUSTIFY">其余三种</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的内部都使用了</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。顾名思义，静态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（</FONT><FONT SIZE=3>regular DLL statically linking to MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）和动态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（</FONT><FONT SIZE=3>regular DLL dynamically linking to MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）的区别在于一个使用的是</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的静态链接库，而另一个使用的是</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。这和一般的</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序的情况是很类似的。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>一般用来提供派生于</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的可重用的类，以扩展已有的</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类库的功能。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的动态链接版本。只有使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>动态链接的可执行程序（无论是</FONT><FONT SIZE=3>EXE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>还是</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）才能访问</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的另一个有用的功能是它可以在应用程序和它所加载的</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间传递</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>派生对象的指针。在其它情况下，这样做是可能导致问题的。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>只有</FONT><FONT SIZE=3>Visual C++ 5.0</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的专业版和企业版才支持到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的静态链接。</LI></P>
+<P ALIGN="JUSTIFY"><LI>静态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>过去的</FONT><FONT SIZE=3>USRDLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>有着相同的特性，同样的，</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>和过去的</FONT><FONT SIZE=3>AFXDLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>有着相同的特性。在</FONT><FONT SIZE=3>Visual C++ 5.0</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中已不再使用</FONT><FONT SIZE=3>USRDLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>AFXDLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>这两个术语。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">如何选择所应该使用的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的类型呢？我们可以从以下几个方面来考虑：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>相比使用了</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>而言，非</FONT><FONT SIZE=3>MFC DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>显得更为短小精悍。因此，如果</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不需要使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，那么使用非</FONT><FONT SIZE=3>MFC DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是一个很好的选择，它将显著地节省磁盘和内存空间。同时，无论应用程序是否使用了</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，都可以调用非</FONT><FONT SIZE=3>MFC DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中所导出的函数。</LI></P>
+<P ALIGN="JUSTIFY"><LI>如果需要创建使用了</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并希望</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和非</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序都能使用所创建的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，那么可以选择的范围包括静态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和动态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。动态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比较短小，因此可以节省磁盘和内存，但是，在分发动态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时，必须同时分发</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的支持</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，如</FONT><FONT SIZE=3>MFCx0.DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>MSVCRT.DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>等。而使用静态链接到</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的常规</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>则不存在这种问题。</LI></P>
+<P ALIGN="JUSTIFY"><LI>如果希望在</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中实现从</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>派生的可重用的类，或者是希望在应用程序和</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间传递</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的派生对象时，必须选择</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</LI></P></UL>
+
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425699307"><A NAME="_Toc425699515">第二节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>创建和使用动态链接库</A></A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">本节以非</FONT><FONT SIZE=3>MFC DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为例来讲解</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的结构和导出方法，并介绍创建和使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的方法和步骤。</P>
+</FONT><FONT FACE="Arial"><P>13.2.1 DLL</FONT><FONT FACE="黑体" LANG="ZH-CN">的结构和导出方式</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件和</FONT><FONT SIZE=3>EXE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件都属于可执行文件，不同的是</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件包括了一个导出表，导出表中给出了可以从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中导出的所有函数的名字。外部可执行程序只能访问包括在</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的导出表中的函数，</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的其它函数是私有的，不能为外部可执行程序所访问。</P>
+<P ALIGN="JUSTIFY">可以使用</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供的</FONT><FONT SIZE=3>DUMPBIN</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>实用程序（可以在</FONT><FONT SIZE=3>DevStudio\VC\bin</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>目录下找到这个工具）来查看一个</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件的结构。举一个例子，如果需要查看</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件</FONT><FONT SIZE=3>msgbox.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（我们将在本小节的后续内容中创建该</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）的导出表，可以在命令提示符下键入下面的命令：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>&gt;dumpbin /exports msgbox.dll</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">运行结果如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>Microsoft (R) COFF Binary File Dumper Version 5.00.7022</P>
+<P>Copyright (C) Microsoft Corp 1992-1997. All rights reserved.</P>
+
+<P>Dump of file msgbox.dll</P>
+
+<P>File Type: DLL</P>
+
+<P>         Section contains the following Exports for MSGBOX.dll</P>
+
+<P>                   0 characteristics</P>
+<P>            351643C3 time date stamp Mon Mar 23 19:13:07 1998</P>
+<P>                0.00 version</P>
+<P>                   1 ordinal base</P>
+<P>                   1 number of functions</P>
+<P>                   1 number of names</P>
+
+<P>            ordinal hint   name</P>
+
+<P>                  1    0   MsgBox  (00001000)</P>
+
+<P>     Summary</P>
+
+<P>        7000 .data</P>
+<P>        1000 .idata</P>
+<P>        2000 .rdata</P>
+<P>        2000 .reloc</P>
+<P>       17000 .text</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">由上面的结果得知，</FONT><FONT SIZE=3>msgbox.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中仅包括了一个导出函数</FONT><FONT SIZE=3>MsgBox()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>仅仅知道导出函数的名称并不足以从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中导出该函数。若在应用程序中使用显式链接（</FONT><FONT SIZE=3>link explicitly</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>），至少还应该知道导出函数的返回值的类型以及所传递给导出函数的参数的个数、顺序和类型；若使用隐含链接（</FONT><FONT SIZE=3>link implicitly</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>），必须有包括导出函数（或类）的定义的头文件（</FONT><FONT SIZE=3>.H</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>文件）和引入库（</FONT><FONT SIZE=3>import library</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>.LIB</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>文件），这些文件是由</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的创建者所提供的。关于显式链接和隐含链接，将在本章的“</FONT><FONT SIZE=3>13.2.2 </FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>链接应用程序到</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>”小节中讲述。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中导出函数有两种方法：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>在创建</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时使用模块定义（</FONT><FONT SIZE=3>module DEFinition</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>.DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）文件。</LI></P>
+<P ALIGN="JUSTIFY"><LI>在定义函数时使用关键字</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</LI></P></UL>
+
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面我们通过一个简单的例子来分别说明两种方法的使用。在这个例子中，我们将创建一个只包括一个函数</FONT><FONT SIZE=3>MsgBox()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，函数</FONT><FONT SIZE=3>MsgBox()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用来显示一个消息框，它和</FONT><FONT SIZE=3>Win32 API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>MessageBox()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的功能是一样，只不过在函数</FONT><FONT SIZE=3>MsgBox()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中，不需要指定消息的父窗口，而且可以缺省其它所有的参数。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(1)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用模块定义文件</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">模块定义文件是一个文本文件，它包括了一系列的模块语句，这些语句用来描述</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的各种属性，典型的，模块语句定义了</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中所导出的函数的名称和顺序值。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在讲解模块定义文件之前，我们先创建一个</FONT><FONT SIZE=3>Win32 Dynamic-Link Library</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>工程。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>Microsoft Developer Studio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中选择</FONT><FONT SIZE=3>File</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>菜单下的</FONT><FONT SIZE=3>New</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>命令，在</FONT><FONT SIZE=3>Projects</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选项卡中选择</FONT><FONT SIZE=3>Win32 Dynamic-Link Library</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并为工程取一个名字，如</FONT><FONT SIZE=3>msgbox</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。单击</FONT><FONT SIZE=3>OK</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>后，</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个</FONT><FONT SIZE=3>Win32 DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的空白工程，必须手动的将所需要的文件添加到工程中。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>单击</FONT><FONT SIZE=3>Project</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>菜单下的</FONT><FONT SIZE=3>Add To Project</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>子菜单下的</FONT><FONT SIZE=3>New</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>命令，在</FONT><FONT SIZE=3>Files</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选项卡中选择</FONT><FONT SIZE=3>Text File</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在</FONT><FONT SIZE=3>File</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文本框中输入</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件名，如</FONT><FONT SIZE=3>msgbox.def</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>双击</FONT><FONT SIZE=3>Workspace</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>窗口的</FONT><FONT SIZE=3>FileView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选项卡中的</FONT><FONT SIZE=3>msgbox.def</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>节点，在</FONT><FONT SIZE=3>msgbox.def</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件中输入下面的内容：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>LIBRARY MSGBOX</P>
+<P>DESCRIPTION "一个DLL的简单例子"</P>
+<P>EXPORTS</P>
+<P>&#9;MsgBox&#9;@1</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件中的第一条语句必须是</FONT><FONT SIZE=3>LIBRARY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句，该语句表明该</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件属于一个</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在</FONT><FONT SIZE=3>LIBRARY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之后是</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的名称，这个名称在链接时将放到</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的引入库中。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">EXPORTS</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句下列出了</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的所有导出函数以及它们的顺序值。函数的顺序值不是必须的，在指定导出函数的顺序值时，我们在函数名后跟上一个</FONT><FONT SIZE=3>@</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>符号和一个数字，该数字即导出函数的顺序值。如果在</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中指定了顺序值，它必须不小于</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，且不大于</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中所有导出函数的数目。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">DESCRIPTION</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句是可选的，它简单的说明了</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的用途。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>下一步是向工程中添加一个头文件，它定义了</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的函数的返回值的类型和参数的个数、顺序和类型。</P>
+<P ALIGN="JUSTIFY">单击菜单项</FONT><FONT SIZE=3>Project|Add To Project|New...</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在</FONT><FONT SIZE=3>Files</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选项卡下选择</FONT><FONT SIZE=3>C/C++ Header File</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在</FONT><FONT SIZE=3>File</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文本框中指定头文件名，如</FONT><FONT SIZE=3>msgbox.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（可以省略后缀名</FONT><FONT SIZE=3>.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）。</P>
+<P ALIGN="JUSTIFY">在头文件中输入如下的内容：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;windows.h&gt;</P>
+
+<P>extern "C" int MsgBox(</P>
+<P>&#9;// 消息框的文本</P>
+<P>&#9;LPCTSTR lpText="虽然这个例子有一些幼稚，但它工作得非常的好！",</P>
+<P>&#9;// 消息框的标题</P>
+<P>&#9;LPCTSTR lpCaption="一个简单的例子",</P>
+<P>&#9;// 消息框的样式</P>
+<P>&#9;UINT uType=MB_OK);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">请注意函数定义前的关键字</FONT><FONT SIZE=3>extern "C"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，这是由于我们使用了</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语言来开发</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，为了使</FONT><FONT SIZE=3>C</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语言模块能够访问该导出函数，我们应该使用</FONT><FONT SIZE=3>C</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>链接来代替</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>链接。否则，</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>编译器将使用</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的类型安全命名和调用协议，这在使用</FONT><FONT SIZE=3>C</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>调用该函数时就会遇上问题。在本例中并不需要考虑到这个问题，因为我们在开发</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和应用程序时都是使用</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，但我们仍然强烈建议使用</FONT><FONT SIZE=3>extern "C"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，以保证在使用</FONT><FONT SIZE=3>C</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>编写的程序调用该</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的导出函数不会遇上麻烦，在本章后面的内容中我们还会讨论到这个问题。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>下面要做的事是向工程中添加一个</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>源文件，在该文件中实现函数</FONT><FONT SIZE=3>MsgBox()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">仿照上面的过程，单击菜单项</FONT><FONT SIZE=3>Project|Add To Project|New...</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在</FONT><FONT SIZE=3>Files</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选项卡下选择</FONT><FONT SIZE=3>C++ Source File</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在</FONT><FONT SIZE=3>File</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文本框中指定源文件名，如</FONT><FONT SIZE=3>msgbox.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>msgbox.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件中添加如下的代码：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "test1.h"</P>
+
+<P>int MsgBox(LPCTSTR lpText,</P>
+<P>&#9;       LPCTSTR lpCaption,</P>
+<P>           UINT uType)</P>
+<P>{</P>
+<P>&#9;return MessageBox(NULL,lpText,lpCaption,uType);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">编译该工程，在</FONT><FONT SIZE=3>Debug</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>目录下生成文件</FONT><FONT SIZE=3>msgbox.lib</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>msgbox.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">在“</FONT><FONT SIZE=3>13.2.2 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>链接应用程序到</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>”小节中将讲述如何使用在本节中所创建的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT><FONT SIZE=3>msgbox.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(2)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用关键字</FONT><FONT FACE="Arial" SIZE=3>__declspec(dllexport)</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中导出文件的另一种方法是在定义函数时使用</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>关键字。这种方法不需要使用</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件。</P>
+<P ALIGN="JUSTIFY">仍使用前面的例子，在工程中删除</FONT><FONT SIZE=3>msgbox.def</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件，将</FONT><FONT SIZE=3>msgbox.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件修改如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;windows.h&gt;</P>
+
+<P>extern "C" __declspec(dllexport) int MsgBox(</P>
+<P>&#9;// 消息框的文本</P>
+<P>&#9;LPCTSTR lpText="虽然这个例子有一些幼稚，但它工作得非常的好！",</P>
+<P>&#9;// 消息框的标题</P>
+<P>&#9;LPCTSTR lpCaption="一个简单的例子",</P>
+<P>&#9;// 消息框的样式</P>
+<P>&#9;UINT uType=MB_OK);</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">msgbox.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件并不需要做任何修改，重新编译该工程，在</FONT><FONT SIZE=3>Debug</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>目录下仍生成两个文件</FONT><FONT SIZE=3>msgbox.lib</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>msgbox.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">在下一小节“</FONT><FONT SIZE=3>13.2.2 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>链接应用程序到</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>”中讲述了如何在应用程序中使用所创建的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT><FONT SIZE=3>msgbox.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的导出函数</FONT><FONT SIZE=3>MsgBox()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">使用</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中导出类的语法如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>class __declspec(dllexport) CDemoClass</P>
+<P>{</P>
+<P>&#9;...</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">　</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>如果在使用</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的同时指定了调用协议关键字，则必须将</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>关键字放在调用协议关键字的左边。如：</LI></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY"><LI>int __declspec(dllexport) __cdacl MyFunc();</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>在</FONT><FONT SIZE=3>32</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>位版本的</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中，</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>__declspec(dllimport)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>代替了</FONT><FONT SIZE=3>16</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>版本中使用的</FONT><FONT SIZE=3>__export</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>关键字。因此，在将</FONT><FONT SIZE=3>16</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>位的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>源代码移植到</FONT><FONT SIZE=3>Win32</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>平台时，需要把每一处</FONT><FONT SIZE=3>__export</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>替换为</FONT><FONT SIZE=3>__declsped(dllexport)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">如何从这两种导出函数的方法中作出选择，可以从下面的几个方面考虑：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>如果需要使用导出顺序值（</FONT><FONT SIZE=3>export ordinal value</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>），那么应该使用</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件来导出函数。只在使用</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件导出函数才能指定导出函数的顺序值。使用顺序值的一个好处是当向</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加新的函数时，只要新的导出函数的顺序值大于原有的导出函数，就没有必要重新链接使用隐含链接的应用程序。相反，如果使用</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来导出函数，如果向</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加了新的函数，使用隐含链接的应用程序有可以需要重新编译和链接。</LI></P>
+<P ALIGN="JUSTIFY"><LI>使用</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件来导出函数，可以创建具有</FONT><FONT SIZE=3>NONAME</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>属性的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。具有</FONT><FONT SIZE=3>NONAME</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>属性的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在导出表中仅包含了导出函数的顺序值，这种类型的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在包括有大量的导出函数时，其文件长度要小于通常的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</LI></P>
+<P ALIGN="JUSTIFY"><LI>使用</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件从</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件导出函数，应该在定义函数时使用</FONT><FONT SIZE=3>extern "C"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或者在</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件中指定导出函数的</FONT><FONT SIZE=3>decorated name</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。否则，由于编译器所产生的</FONT><FONT SIZE=3>decorated name</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是基于特定编译器的，链接到该</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的应用程序也必须使用创建</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的同一版本的</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来编译和链接。</LI></P>
+<P ALIGN="JUSTIFY"><LI>由于使用</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>关键字导出函数不需要编写</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件，因此，如果编写的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>只供自己使用，使用</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>较为简单。</LI></P></UL>
+
+<P ALIGN="JUSTIFY">　</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>MFC</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>本身使用了</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>文件从</FONT><FONT SIZE=3>MFCx0.DLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中导出函数和类。</LI></P></UL>
+
+</FONT><FONT FACE="Arial"><P>13.2.2 </FONT><FONT FACE="黑体" LANG="ZH-CN">链接应用程序到</FONT><FONT FACE="Arial">DLL</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">同样，链接应用程序到</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>也有两种方法：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>隐含链接</LI></P>
+<P ALIGN="JUSTIFY"><LI>显式链接</LI></P></UL>
+
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">隐含链接有时又称为静态加载。如果应用程序使用了隐含链接，操作系统在加载应用程序的同时加载应用程序所使用的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。显式链接有时又称为动态加载。使用动态加载的应用程序必须在代码中明确的加载所使用的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并使用指针来调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数，在使用完毕之后，应用程序必须卸载所使用的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">同一个</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以被应用程序隐含链接，也可以被显式链接，这取决于应用程序的目的和实现。</P>
+<P ALIGN="JUSTIFY">下面我们在分别讲述两种不同的链接方式之后再作对比。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(1)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用隐含链接</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在使用隐含链接除了需要相应的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件外，还必须具备如下的条件：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>一个包括导出的函数或</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的头文件</LI></P>
+<P ALIGN="JUSTIFY"><LI>一个输入库文件（</FONT><FONT SIZE=3>.LIB</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件）</LI></P></UL>
+
+<P ALIGN="JUSTIFY">通常情况下，我们需要从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的提供者那里得到上面的文件。输入库文件是在</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件被链接时由链接程序生成的。</P>
+<P ALIGN="JUSTIFY">在“</FONT><FONT SIZE=3>13.2.1 DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的结构和导出方式”中所创建的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT><FONT SIZE=3>msgbox.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所对应的头文件</FONT><FONT SIZE=3>msgbox.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;windows.h&gt;</P>
+
+<P>extern "C" __declspec(dllimport) int MsgBox(</P>
+<P>&#9;// 消息框的文本</P>
+<P>&#9;LPCTSTR lpText="虽然这个例子有一些幼稚，但它工作得非常的好！",</P>
+<P>&#9;// 消息框的标题</P>
+<P>&#9;LPCTSTR lpCaption="一个简单的例子",</P>
+<P>&#9;// 消息框的样式</P>
+<P>&#9;UINT uType=MB_OK);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">需要注意的是，这个</FONT><FONT SIZE=3>msgbox.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件和创建</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时所使用</FONT><FONT SIZE=3>msgbox.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是不同的，唯一的差别在于，创建</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时的</FONT><FONT SIZE=3>msgbox.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中使用的是</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>关键字，而供应用程序所使用的</FONT><FONT SIZE=3>msgbox.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中使用的是</FONT><FONT SIZE=3>__declspec(dllimport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>关键字。无论创建</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时使用的是</FONT><FONT SIZE=3>DEF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件还是</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>关键字，均可使用</FONT><FONT SIZE=3>__declspec(dllimport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>关键字从</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中引入函数。引入函数时也可以省略</FONT><FONT SIZE=3>__declspec(dllimport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>关键字，但是使用它可以使编译器生成效率更高的代码。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>如果需要引入的是</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中的公用数据和对象，则必须使用</FONT><FONT SIZE=3>__declspec(dllimport)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>关键字。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">现在使用</FONT><FONT SIZE=3>Microsoft Developer Studio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个</FONT><FONT SIZE=3>Win32 Application</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>工程，命名为</FONT><FONT SIZE=3>tester</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。向工程中添加一个</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>源文件，如</FONT><FONT SIZE=3>tester.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。在</FONT><FONT SIZE=3>tester.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件中输入下面的代码：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "msgbox.h"&#9;&#9;// 应将msgbox.h文件拷贝到工程tester的目录下。</P>
+
+<P>int WINAPI WinMain(HINSTANCE hInstance,</P>
+<P>&#9;&#9;&#9;&#9;   HINSTANCE hPrevInstance,</P>
+<P>&#9;&#9;&#9;&#9;   LPSTR lpCmdLine,</P>
+<P>&#9;&#9;&#9;&#9;   int nCmdShow)</P>
+<P>{</P>
+<P>&#9;return MsgBox();</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在上面的代码中，</FONT><FONT SIZE=3>MsgBox()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数的所有参数都使用了缺省值。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>在编译之前，将上一步生成的</FONT><FONT SIZE=3>msgbox.lib</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>文件拷贝到</FONT><FONT SIZE=3>tester</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>工程所在的目录下。然后单击菜单项</FONT><FONT SIZE=3>Project|Settings...</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>，将</FONT><FONT SIZE=3>msgbox.lib</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>添加到</FONT><FONT SIZE=3>Link</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>选项卡下的</FONT><FONT SIZE=3>Object/library modules</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>文本框中。如果忽略这一步，链接时将会导致错误。完成之后创建该应用程序。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">如果现在运行该程序，将出现如图</FONT><FONT SIZE=3>13.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image447.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image447.gif" WIDTH=321 HEIGHT=89></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>13.1 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>未找到</FONT><FONT SIZE=1>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>时出现的错误</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">上面的对话框说明程序没有在指定的路径未找到所需要的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">一般情况下，程序在运行时，系统将按如下的顺序查找程序所使用的动态链接库：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>系统预安装的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，如</FONT><FONT SIZE=3>KERNEL32.DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>USER32.DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>等</LI></P>
+<P ALIGN="JUSTIFY"><LI>当前目录</LI></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的系统的目录，如</FONT><FONT SIZE=3>WINNT\system32</LI></P>
+<P ALIGN="JUSTIFY"><LI>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所在的目录，如</FONT><FONT SIZE=3>WINNT</LI></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>环境变量</FONT><FONT SIZE=3>PATH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中所指定的目录</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image448.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image448.gif" WIDTH=190 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>13.2 tester</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>应用程序的运行结果</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">如果</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在上面的目录中未找到所需要的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则弹出如图</FONT><FONT SIZE=3>13.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框。这里，我们把</FONT><FONT SIZE=3>msgbox.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件拷贝到</FONT><FONT SIZE=3>tester\Debug</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>目录下，再运行应用程序，则出现如图</FONT><FONT SIZE=3>13.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P> (2)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用显式链接</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">如果没有与</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>相关联的</FONT><FONT SIZE=3>LIB</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件，则必须使用显式链接。使用显式链接同样必须知道函数返回值的类型和所传递的参数个数、类型和顺序。与使用隐含链接不同的是，使用显式链接的应用程序在调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数前，必须使用</FONT><FONT SIZE=3>LoadLibrary()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数加载</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>并得到一个模块句柄。然后使用该句柄调用</FONT><FONT SIZE=3>GetProcAddress()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数获得所需调用的导出函数的指针，并通过该指针调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数，这种模式使用显式链接到</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的应用程序不再需要相应的</FONT><FONT SIZE=3>LIB</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件。在使用完毕之后，还需调用</FONT><FONT SIZE=3>FreeLibrary()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数释放加载的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面我们使用显式链接的方式来实现前面的例子。</P>
+<P ALIGN="JUSTIFY">由于使用指针来调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数，所以本例中不再需要</FONT><FONT SIZE=3>msgbox.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>tester.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加的代码如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;windows.h&gt;</P>
+
+<P>typedef int (CALLBACK* DLLFUNC)(</P>
+<P>&#9;LPCTSTR lpText="虽然这个例子有一些简单，但它工作得非常的好！",</P>
+<P>&#9;LPCTSTR lpCaption="一个简单的例子",</P>
+<P>&#9;UINT=MB_OK);</P>
+
+<P>int WINAPI WinMain(HINSTANCE hInstance,</P>
+<P>&#9;&#9;&#9;&#9;   HINSTANCE hPrevInstance,</P>
+<P>&#9;&#9;&#9;&#9;   LPSTR lpCmdLine,</P>
+<P>&#9;&#9;&#9;&#9;   int nCmdShow)</P>
+<P>{</P>
+<P>&#9;HINSTANCE hDLL;</P>
+<P>&#9;DLLFUNC MsgBox;</P>
+<P>&#9;hDLL = LoadLibrary("msgbox");</P>
+<P>&#9;if (hDLL != NULL)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;MsgBox = </P>
+<P>&#9;&#9;   (DLLFUNC)GetProcAddress(hDLL,"MsgBox");</P>
+<P>&#9;&#9;return MsgBox();</P>
+<P>&#9;}</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">LoadLibrary()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数的参数是所调用的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的名字，这个名字不是放入输入库文件中的名字，而是</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的文件名。如果文件的扩展名为</FONT><FONT SIZE=3>.DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则可以省略。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">这个程序的运行结果同使用隐含链接的前一个程序一样，但它的内部实现是很不相同的。使用显式链接的应用程序加载时，所调用的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>并不加载，只有当应用程序调用</FONT><FONT SIZE=3>LoadLibray()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时系统才加载相应的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并在应用程序调用</FONT><FONT SIZE=3>FreeLibrary()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时卸载该</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。使用隐含链接的应用程序调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数时，方法同调用一般的函数一样，而使用显式链接的应用程序必须使用指针来调用。由于使用了指针，因此在编译时不能验证参数的合法性，通过指针使用不合法的参数来调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数将会导致不可预料的后果。</P>
+<P ALIGN="JUSTIFY">很明显，使用隐含链接的方式调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数要比使用显式链接方便得多。但在某些情况下我们必须使用显式链接。事实上，使用显式链接调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供了更大的灵活性。尤其在没有与</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>相对应的</FONT><FONT SIZE=3>LIB</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件时，我们只能使用显式链接来调用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数，并且，只要我们使用函数名作参数来调用</FONT><FONT SIZE=3>GetProcAddress()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在更新</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时，就没有必要重新链接应用程序。另外，使用隐含链接的方式的应用程序加载</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时如果发生错误（如</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件未找到或是</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>DllMain()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数初始化失败）时，应用程序将被终止，而使用显式链接的应用程序则可以使用如上面的例子中所给出的方法来避免出现这种情况（可以使用所创建的两个不同版本的</FONT><FONT SIZE=3>tester</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序来验证这一点）。</P>
+<P ALIGN="JUSTIFY">由于应用程序调用</FONT><FONT SIZE=3>LoadLibrary()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数时才加载</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，因此使用显式链接的应用程序的加载速度要比使用隐含链接的应用程序快。使用显式链接的另一个好处是，应用程序可以在运行时决定所加载的</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">但是要记住，由于使用了指针来传递应用程序的参数，因此编译器在编译时无法确认应用程序所传递的参数类型是否合法。传递不合法的参数给</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的导出函数的一件危险的事。在程序调试的过程中我们一定需要注意这一点。</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425699308"><A NAME="_Toc425699516">第三节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>使用动态链接连库扩展</FONT><FONT SIZE=4>MFC</A></A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">我们还可以使用</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来实现从</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>派生的一些可重用类，这种动态链接库一般称作</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展动态链接库</FONT><FONT SIZE=3>(MFC Extension DLL)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。正如这个名称所暗示的那样，通过这种方式我们可以扩展</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所包括的内容，使得使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>编程更加的方便。此外，如果需要在应用程序和</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间传递</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或者由</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>派生的对象的指针的话，我们也必须使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">在本节中，我们使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来创建一个输入通用对话框，如图</FONT><FONT SIZE=3>13.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。该对话框很象</FONT><FONT SIZE=3>Visual Basic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>InputBox</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数所产生的对话框，使用过</FONT><FONT SIZE=3>Visual Basic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的程序员都有印象，函数</FONT><FONT SIZE=3>InputBox</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>非常之好用，这里，我们来使用动态链接库在</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中也创建这么一个好用的类。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image449.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image449.gif" WIDTH=184 HEIGHT=74></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>13. 3 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>输入通用对话框</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">输入通用对话框由类</FONT><FONT SIZE=3>CInputDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>封装，类</FONT><FONT SIZE=3>CInputDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供了一个公有成员函数</FONT><FONT SIZE=3>GetInput</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，该成员函数的原型如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CString GetInput(CString Title, CString Prompt)</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">第一个参数</FONT><FONT SIZE=3>Title</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>表示输入对话框的标题，在图</FONT><FONT SIZE=3>13.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中为“输入”；第二个参数</FONT><FONT SIZE=3>Prompt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代表在输入对话框中显示的简短提示文本，在图</FONT><FONT SIZE=3>13.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中为“请输入对话框的标题：”。函数的返回值为用户在对话框的文本框中输入的字符串。如果用户没有输入任何字符串或者单击了“取消”按钮，返回值为空串</FONT><FONT SIZE=3>""</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面我们来介绍该对话框的创建和使用。首先讲述</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>工程</FONT><FONT SIZE=3>ExtDllDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的创建。该工程实现了类</FONT><FONT SIZE=3>CInputDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的导出。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>AppWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>扩展</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>工程，将工程取名为</FONT><FONT SIZE=3>ExtDllDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>向工程中添加一个对话框资源</FONT><FONT SIZE=3>IDD_INPUT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，按图</FONT><FONT SIZE=3>13.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>绘制对话框中的各控件。这些控件的资源</FONT><FONT SIZE=3>ID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>如表所示。</P>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">表</FONT><FONT FACE="Arial" SIZE=1>13. 1 </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>对话框资源</FONT><FONT FACE="Arial" SIZE=1>IDD_INPUT</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>中的控件属性</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=202>
+<TR><TD WIDTH="49%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">控件</FONT></TD>
+<TD WIDTH="51%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">资源</FONT><FONT SIZE=1>ID</FONT></TD>
+</TR>
+<TR><TD WIDTH="49%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">提示文本标签</FONT></TD>
+<TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IDC_PROMPT</FONT></TD>
+</TR>
+<TR><TD WIDTH="49%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">输入文本框</FONT></TD>
+<TD WIDTH="51%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IDC_EDIT</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>ClassWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为对话框资源</FONT><FONT SIZE=3>IDD_INPUT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建新的对话框类</FONT><FONT SIZE=3>CInputDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，该类直接派生于</FONT><FONT SIZE=3>CDialog</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。按下面的代码修改类</FONT><FONT SIZE=3>CInputDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的头文件和实现文件。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#if !defined(AFX_INPUTDLG_H__02DB98CF_1F76_11D2_971A_0000B4810A31__INCLUDED_)</P>
+<P>#define AFX_INPUTDLG_H__02DB98CF_1F76_11D2_971A_0000B4810A31__INCLUDED_</P>
+
+<P>#if _MSC_VER &gt;= 1000</P>
+<P>#pragma once</P>
+<P>#endif // _MSC_VER &gt;= 1000</P>
+<P>// InputDlg.h : 头文件</P>
+<P>//</P>
+
+<P>// 以下对话框 ID 常量需要手动添加</P>
+<P>#define IDC_EDIT 1000</P>
+<P>#define IDC_PROMPT 1001</P>
+<P>#define IDD_INPUT 129</P>
+
+<P>/////////////////////////////////////////////////////////////////////////////</P>
+<P>// CInputDlg 对话框</P>
+
+<P>class __declspec(dllexport) CInputDlg : public CDialog</P>
+<P>{</P>
+<P>// 构造</P>
+<P>public:</P>
+<P>&#9;CString GetInput(CString Title, CString Prompt);</P>
+<P>&#9;CInputDlg(CWnd* pParent = NULL);   // 标准构造函数</P>
+
+<P>// 对话框数据</P>
+<P>&#9;//{{AFX_DATA(CInputDlg)</P>
+<P>&#9;enum { IDD = IDD_INPUT };</P>
+<P>&#9;CString m_strTitle;</P>
+<P>&#9;CString&#9;m_strPrompt;</P>
+<P>&#9;CString m_strInput;</P>
+<P>&#9;//}}AFX_DATA</P>
+
+<P>　</P>
+<P>// 重载</P>
+<P>&#9;// 由 ClassWizard 生成的虚函数重载</P>
+<P>&#9;//{{AFX_VIRTUAL(CInputDlg)</P>
+<P>&#9;protected:</P>
+<P>&#9;virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持</P>
+<P>&#9;//}}AFX_VIRTUAL</P>
+
+<P>// 实现</P>
+<P>protected:</P>
+
+<P>&#9;// 生成的消息映射函数</P>
+<P>&#9;//{{AFX_MSG(CInputDlg)</P>
+<P>&#9;virtual BOOL OnInitDialog();</P>
+<P>&#9;//}}AFX_MSG</P>
+<P>&#9;DECLARE_MESSAGE_MAP()</P>
+<P>};</P>
+
+<P>//{{AFX_INSERT_LOCATION}}</P>
+<P>// Microsoft Developer Studio 将在紧贴上一行之前的位置添加附加的声明</P>
+
+<P>#endif // !defined(AFX_INPUTDLG_H__02DB98CF_1F76_11D2_971A_0000B4810A31__INCLUDED_)</P>
+
+<P>// InputDlg.cpp : 实现文件</P>
+<P>//</P>
+
+<P>#include "stdafx.h"</P>
+<P>#include "InputDlg.h"</P>
+
+<P>#ifdef _DEBUG</P>
+<P>#define new DEBUG_NEW</P>
+<P>#undef THIS_FILE</P>
+<P>static char THIS_FILE[] = __FILE__;</P>
+<P>#endif</P>
+
+<P>/////////////////////////////////////////////////////////////////////////////</P>
+<P>// CInputDlg dialog</P>
+
+<P>　</P>
+<P>CInputDlg::CInputDlg(CWnd* pParent /*=NULL*/)</P>
+<P>&#9;: CDialog(CInputDlg::IDD, pParent)</P>
+<P>{</P>
+<P>&#9;//{{AFX_DATA_INIT(CInputDlg)</P>
+<P>&#9;m_strInput = _T("");</P>
+<P>&#9;//}}AFX_DATA_INIT</P>
+<P>}</P>
+
+<P>　</P>
+<P>void CInputDlg::DoDataExchange(CDataExchange* pDX)</P>
+<P>{</P>
+<P>&#9;CDialog::DoDataExchange(pDX);</P>
+<P>&#9;//{{AFX_DATA_MAP(CInputDlg)</P>
+<P>&#9;DDX_Text(pDX, IDC_EDIT, m_strInput);</P>
+<P>&#9;//}}AFX_DATA_MAP</P>
+<P>}</P>
+
+<P>　</P>
+<P>BEGIN_MESSAGE_MAP(CInputDlg, CDialog)</P>
+<P>&#9;//{{AFX_MSG_MAP(CInputDlg)</P>
+<P>&#9;//}}AFX_MSG_MAP</P>
+<P>END_MESSAGE_MAP()</P>
+
+<P>/////////////////////////////////////////////////////////////////////////////</P>
+<P>// CInputDlg message handlers</P>
+
+<P>CString CInputDlg::GetInput(CString Title, CString Prompt)</P>
+<P>{</P>
+<P>&#9;CString str("");&#9;// 注意：这里对 CString 对象 str 的初始化是必要，否则</P>
+<P>&#9;&#9;&#9;&#9;&#9;&#9;// 在后面的过程将会出错</P>
+<P>&#9;// 对标题条和提示文本的实际的更新将在消息处理函数 OnInitDialog 中进行</P>
+<P>&#9;m_strTitle=Title;</P>
+<P>&#9;m_strPrompt=Prompt;</P>
+<P>&#9;if (DoModal()==IDOK)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;// 如果用户单击了确定，则返回所输入的字符串</P>
+<P>&#9;&#9;str=m_strInput;</P>
+<P>&#9;}</P>
+<P>&#9;return str;</P>
+<P>}</P>
+
+<P>BOOL CInputDlg::OnInitDialog() </P>
+<P>{</P>
+<P>&#9;CDialog::OnInitDialog();</P>
+<P>&#9;</P>
+<P>&#9;// 使用用户指定的标题字符串</P>
+<P>&#9;SetWindowText(m_strTitle);</P>
+<P>&#9;// 设置提示文本</P>
+<P>&#9;GetDlgItem(IDC_PROMPT)-&gt;SetWindowText(m_strPrompt);</P>
+<P>&#9;// 将输入焦点设置为 IDC_EDIT 控件</P>
+<P>&#9;GetDlgItem(IDC_EDIT)-&gt;SetFocus();</P>
+<P>&#9;</P>
+<P>&#9;// 由于将输入焦点设置为 IDC_EDIT 控件，因此 OnInitDialog 成员函数应该返回假值</P>
+<P>&#9;return FALSE;</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在示例程序中，我们使用了</FONT><FONT SIZE=3>__declspec(dllexport)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来导出类</FONT><FONT SIZE=3>CInputDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，最主要的原因是因为这种方法相对比较简单一些。</P>
+<P ALIGN="JUSTIFY">编译</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>工程</FONT><FONT SIZE=3>ExtDllDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在</FONT><FONT SIZE=3>Debug</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>目录下生成了动态链接库</FONT><FONT SIZE=3>ExtDllDemo.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的导入库</FONT><FONT SIZE=3>ExtDllDemo.lib</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面我们创建动态链接库</FONT><FONT SIZE=3>ExtDllDemo.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的测试工程</FONT><FONT SIZE=3>ExtDllTest</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>AppWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建基于对话框的</FONT><FONT SIZE=3>EXE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>工程</FONT><FONT SIZE=3>ExtDllTest</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，工程</FONT><FONT SIZE=3>ExtDllTest</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用了动态</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>链接</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>这是必须的</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。将在前一步中生成的</FONT><FONT SIZE=3>ExtDllDemo.lib</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>拷贝到工程</FONT><FONT SIZE=3>ExtDllTest</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所在的目录下。完成这一步之后，从</FONT><FONT SIZE=3>Project</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>菜单下选择</FONT><FONT SIZE=3>Settings</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>命令，在工程的设置对话框中选择</FONT><FONT SIZE=3>Link</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选项卡，在</FONT><FONT SIZE=3>Object/Library Modules</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>框中输入</FONT><FONT SIZE=3>ExtDllDemo.lib</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在实现文件</FONT><FONT SIZE=3>ExtDllDemoDlg.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的最前面输入下面的代码：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>/////////////////////////////////////////////////////////////////////////////</P>
+<P>// CInputDlg dialog</P>
+
+<P>class __declspec(dllimport) CInputDlg : public CDialog</P>
+<P>{</P>
+<P>public:</P>
+<P>&#9;CString GetInput(CString Title, CString Prompt);</P>
+<P>&#9;CInputDlg(CWnd* pParent = NULL);</P>
+<P>};</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">上面的代码在工程中定义了类</FONT><FONT SIZE=3>CInputDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，以便于在以后的代码中使用该类。这里需要注意的是，我们只需给出对我们有意义的那些成员的声明即可，而没有必须在上面的定义中给出完全的成员声明。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>OnInitDialog</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数的</FONT><FONT SIZE=3>// TODO</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>注释下输入下面的代码。该代码在应用程序的主对话框弹出之前询问主对话框的标题文本。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CInputDlg dlg;</P>
+<P>CString str=dlg.GetInput("输入", "请输入对话框的标题：");</P>
+<P>SetWindowText(str);</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>如果在</FONT><FONT SIZE=3>CInputDlg::GetInput</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>成员函数中没有对对象变量</FONT><FONT SIZE=3>str</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>进行正确的初始化</FONT><FONT SIZE=3>(</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>如直接使用</FONT><FONT SIZE=3>return m_strInput</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>等</FONT><FONT SIZE=3>)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>，那么上面的代码的</FONT><FONT SIZE=3>Debug</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>版本在运行时将会出现</FONT><FONT SIZE=3>Assertion</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>失败。这种现象的根源在于</FONT><FONT SIZE=3>CString</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>内部所使用的内存分配方式。由于</FONT><FONT SIZE=3>CString</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>所使用的内存分配方式相当的复杂，因此，我们不在这里深入的讨论这一现象，仅仅指出存在这种问题而已。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">编译并生成应用程序</FONT><FONT SIZE=3>ExtDllTest</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，然后将动态链接库</FONT><FONT SIZE=3>ExtDllDemo.dll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>拷贝到应用程序</FONT><FONT SIZE=3>ExtDllTest</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的目录或系统目录中，再运行</FONT><FONT SIZE=3>ExtDllTest</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，已检验动态链接库</FONT><FONT SIZE=3>ExtDllTest</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的工作是否正确。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">关于</FONT><FONT SIZE=3>DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>还有很多课题可以研究，但是由于篇幅所限，我们在这里仅给出一些最基本的概念和方法，更详细的参考资料可以查阅</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的联机文档。</P></FONT></BODY>
+</HTML>

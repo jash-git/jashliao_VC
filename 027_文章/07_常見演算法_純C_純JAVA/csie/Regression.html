@@ -1,0 +1,236 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Regression</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Regression</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Regression</p>
+<p>「迴歸」就是找一個函數，盡量符合手邊的一堆數據。此函數稱作「迴歸函數」。</p>
+<img src="Regression1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Regression1.png">
+<p>這裡談的是用函數符合數據們，主角是函數，所以會把數據對應到函數的格式。</p>
+<img src="Regression2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Regression2.png">
+<p>也許讀者很好奇，為什麼主角是函數呢？私以為函數有著優美的性質，函數也是眾人從小到大接觸、非常熟悉的數學元件，因此大家第一個直覺就是使用函數。另一方面，使用函數，就能多少發現一些輸入、輸出之間的關係，例如成正比、成反比等等。</p>
+<p>也許讀者很好奇，能不能用隨意曲線、隨意幾何圖形符合數據們呢？也許是可以的。我想這是個新學問，該由讀者們來開創。在圖形辨識領域，已經存在一些方法，有志者不妨先從這裡下手。</p>
+<img src="Regression3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Regression3.png">
+<p class="t">Error</p>
+<p>強硬地用函數符合數據們，就會有「誤差」。</p>
+<p>單一數據的誤差，有許多種衡量方式，一般是用數據與函數值的平方差（平方誤差），其他還有數據與函數值的差的絕對值（絕對值誤差）、數據與函數曲線的最短距離等等。</p>
+<img src="Regression4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Regression4.png">
+<p>人腦考慮的「最符合」，放到了電腦就被設定成「所有數據的誤差總和最小」。把所有數據的誤差總和寫成一個函數，迴歸問題就變成了最佳化問題！</p>
+<pre>
+例如用函數 f(x) = y = ax<sup>2</sup> + bx + c
+
+符合數據 (2,3) ... (7,8)
+用代數符號標記成 (x<sub>1</sub>,y<sub>1</sub>) ... (x<sub>N</sub>,y<sub>N</sub>)
+
+每個數據的平方誤差分別是
+[(a*2<sup>2</sup> + b*2 + c) - 3]<sup>2</sup> ... [(a*7<sup>2</sup> + b*7 + c) - 8]<sup>2</sup>
+用代數符號標記成
+[f(x<sub>1</sub>) - y<sub>1</sub>]<sup>2</sup> ... [f(x<sub>N</sub>) - y<sub>N</sub>]<sup>2</sup>
+[(ax<sub>1</sub><sup>2</sup> + bx<sub>1</sub> + c) - y<sub>1</sub>]<sup>2</sup> ... [(ax<sub>N</sub><sup>2</sup> + bx<sub>N</sub> + c) - y<sub>N</sub>]<sup>2</sup>
+
+所有數據的誤差總和是
+ [(a*2<sup>2</sup> + b*2 + c) - 3]<sup>2</sup> + ... + [(a*7<sup>2</sup> + b*7 + c) - 8]<sup>2</sup>
+用代數符號標記成 
+e(a,b,c) = [(ax<sub>1</sub><sup>2</sup> + bx<sub>1</sub> + c) - y<sub>1</sub>]<sup>2</sup> + ... + [(ax<sub>N</sub><sup>2</sup> + bx<sub>N</sub> + c) - y<sub>N</sub>]<sup>2</sup>
+
+目標是令e(a,b,c)越小越好。
+選定一個最佳化演算法，
+求出e(a,b,c)的最小值，求出此時abc的實際數值，
+就得到迴歸函數f(x)。
+</pre>
+<p class="t">Underfitting / Overfitting</p>
+<p>用單純的函數去符合複雜的數據們，顯然符合的不太完美。</p>
+<p>用複雜的函數去符合單純的數據們，顯然事情被搞複雜了。</p>
+<img src="Regression5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Regression5.png">
+<p>如果我們不清楚數據的性質，也就無法抉擇函數了。那麼，該如何了解數據的性質呢？這屬於統計學的範疇，就此打住。</p>
+<p>下面討論一些簡易的迴歸方式，尚不需要用到最佳化演算法。</p>
+<p class="e">UVa 10691</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Linear Regression</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>線性代數課程有教，可以表示成矩陣乘法，此處就不贅述了。</p>
+<pre>
+solve Ax = b
+
+       T    -1  T
+x = ( A  A )   A  b
+
+     -1  T
+x = R   Q  b
+</pre>
+<p class="e">Timus 1668</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Linear Prediction</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Linear Prediction</p>
+<p>Linear Regression是用線性函數符合資料，Linear Prediction是用線性遞迴函數符合資料。</p>
+<p>一串數列，推定每一個數值，皆是用前面緊鄰的N個數值計算而得──因此就用遞迴函數符合此串數列。使用線性的遞迴函數時，此函數稱作「線性預測函數」，此行為稱作「線性預測」。</p>
+<p>訊號學領域則稱作Linear Predictive Coding。把一串長長的數列，壓縮成一個線性遞迴函數，只需儲存N個係數。只要反覆套用函數、代入訊號最後N個數值，就能預測下一個即將出現的數值。</p>
+<pre>
+f(n) = cN * a[n-N] + ... + c2 * a[n-2] + c1 * a[n-1]
+
+a[n]：數列，可以非常長
+f(n)：線性預測函數
+c1...cN：線性預測係數
+</pre>
+<p class="t">演算法</p>
+<p>想讓平方誤差總和最小，等價於解Yule-Walker Equations，其矩陣是Toeplitz Matrix，解聯立線性方程式僅需時O(N^2)。</p>
+<pre>
+[ ac(0)   ac(1)   ... ac(N-1) ] [ c1   ] = [ ac(1)   ]
+[ ac(1)   ac(0)   ... ac(N-2) ] [ c2   ] = [ ac(2)   ]
+[    .       .           .    ] [  .   ] = [    .    ]
+[    .       .           .    ] [  .   ] = [    .    ]
+[ ac(N-2) ac(N-1) ... ac(1)   ] [ cN-1 ] = [ ac(N-1) ]
+[ ac(N-1) ac(N-2) ... ac(0)   ] [ cN   ] = [ ac(N)   ]
+
+ac：原本數列的自相關函數（autocorrection）
+</pre>
+<p>自相關函數的定義非常簡單，就只是各種位移量的內積：ac(i)等於原本訊號、原本訊號往後挪移i項，兩者的內積。</p>
+<textarea>
+float a[100];		// 一串數列
+
+const int N = 10;	// 線性預測函數的次方數
+float lpc[N];		// 線性預測係數
+float ac[N + 1];	// 自相關函數
+
+void autocorrelation()
+{
+	for (int i=0; i<=N; i++)
+	{
+		ac[i] = 0;
+		for (int j=0; j+i<100; j++)
+			ac[i] += a[j] * a[j + i];
+	}
+}
+
+// 較佳的寫法
+void autocorrelation()
+{
+	for (int i=0; i<=N; i++)
+	{
+		ac[i] = 0;
+		for (int j=i; j<100; j++)
+			ac[i] += a[j] * a[j - i];
+	}
+}
+
+float linear_predictive_coding()
+{
+	// 預先計算自相關函數
+	autocorrelation();
+
+	float error = ac[0];
+	for (int i=0; i<N; i++)
+	{
+		// 計算倍率（reflection coefficient）
+		float scale = ac[i + 1];
+		for (int j=0; j<i; j++)
+			scale -= lpc[j] * ac[i - j];
+		scale /= error;
+
+		// 計算這個階段的lpc。
+		lpc[i] = scale;
+		for (int j=0; j<i/2; j++)
+		{
+			float d1 = lpc[j] - scale * lpc[i-1 - j];
+			float d2 = lpc[i-1 - j] - scale * lpc[j];
+			lpc[j] = d1;
+			lpc[i-1 - j] = d2;
+		}
+		if (i % 2) lpc[i / 2] -= scale * lpc[i / 2];
+
+		error *= (1.0 - scale * scale);
+	}
+	return error;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Parameter Estimation（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Parameter Estimation</p>
+<p>「參數估計」是替一個機率分布函數，找到恰當的平均值、變異數，盡量符合手邊的一堆數據。</p>
+<p>「參數估計」也是迴歸，主角是一種特定的機率分布函數，但是不知道確切的平均值、變異數。例如常態分布、二項式分布。</p>
+<img src="ParameterEstimation1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ParameterEstimation1.png">
+<p>使用函數進行迴歸，所謂最符合就是誤差最小，例如讓平方誤差最小。使用機率分布函數進行迴歸，所謂最符合，除了誤差最小以外，尚有其他方式，例如最常用的就是ML，再來是MAP。</p>
+<pre>
+一、已知一堆數據X = {x1, ..., xN}。
+　　已知特定的機率分布函數f(x, θ, σ)。
+　　不知此機率分布函數的平均值θ、變異數σ。
+
+二、統計學者習慣將這件事寫成條件機率。
+　　p( θ, σ | x1, ..., xN, f )
+
+三、所謂最符合，就是機率越大越好。
+　　max p( θ, σ | x1, ..., xN, f )
+
+四、找到此時平均值θ、變異數σ是多少。
+　　argmax p( θ, σ | x1, ..., xN, f )
+　　 θ, σ
+
+五、雖然我們知道一定存在p函數，
+　　但是我們不知道p函數實際上長什麼樣。
+　　上式根本無法計算。只好改用ML或者MAP。
+</pre>
+<pre>
+一、Maximum Likelihood Estimation是計算
+　　argmax f(X, θ)
+　　  θ
+
+二、推定數據之間互相獨立、不互相影響，就可以套用乘法定理。
+　　argmax f(X, θ)
+　　  θ
+　= argmax [ f(x1, θ) * ... * f(xN, θ) ]
+　　  θ
+
+二、取 log 最大值不會改變。取 log 將連乘化作連加。
+　　argmax log f(X, θ)
+　　  θ
+　= argmax log [ f(x1, θ) * ... * f(xN, θ) ]
+　　  θ
+　= argmax     [ log f(x1, θ) + ... + log f(xN, θ) ]
+　　  θ
+
+三、對於常見的分布，例如常態分布、二項式分布，
+　　可以拿log f(X, θ)進行微分，求得最大值。
+</pre>
+<pre>
+Maximum Likelihood Estimation, ML:
+
+   arg max log p(X|θ)
+    θ
+
+Maximum a Posteriori Estimation, MAP:
+
+   arg max log p(X,θ) = arg max [log p(X|θ) + log p(θ)]
+    θ                    θ
+</pre>
+<img src="ParameterEstimation2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ParameterEstimation2.png">
+<p class="t">Bias</p>
+<p class="t">演算法（Expectation-Maximization Algorithm）</p>
+<p>專為ML與MAP所設計的最佳化演算法。</p>
+<p><a href="javascript:if(confirm('http://www.seanborman.com/publications/EM_algorithm.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.seanborman.com/publications/EM_algorithm.pdf'" tppabs="http://www.seanborman.com/publications/EM_algorithm.pdf">http://www.seanborman.com/publications/EM_algorithm.pdf</a></p>
+<p><a href="javascript:if(confirm('http://www.cs.cmu.edu/~awm/10701/assignments/EM.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cs.cmu.edu/~awm/10701/assignments/EM.pdf'" tppabs="http://www.cs.cmu.edu/~awm/10701/assignments/EM.pdf">http://www.cs.cmu.edu/~awm/10701/assignments/EM.pdf</a></p>
+<pre>
+一、凹（凸）函數定義可以寫成內插。
+　　內插之後函數值必然上升（下降）。
+　　註：凹函數的外觀是隨時向上凸，定義不太直覺。
+二、機率函數的期望值就是一種內插！
+　　如果機率函數是凹（凸）函數，
+　　想求極值，那就好辦，不斷求期望值即可！
+三、改變ML函數、移動log位置，變成一個凹函數。
+　　證明此凹函數小於等於原式，是ML函數的下界。
+四、凹函數往上爬：求期望值，函數值嚴格上升。
+　　ML函數的函數值必然同時跟著上升。
+五、根據現在位置，
+　　不斷求一個新的凹函數、不斷往上爬。
+　　最後就會得到區域極值，類似Hill Climbing演算法。
+</pre>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,494 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>7.5不使用串行化的文档视结构程序</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="4">7.5</font><font SIZE="4" color="#3973DE">不使用串行化的文档视结构程序</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">例子中有一个</font><font FACE="Times New Roman" SIZE="3">DIBLOOK</font><font SIZE="3">（见</font><font FACE="Times New Roman" SIZE="3">SAMPLES\MFC\GENERAL\DIBLOOK</font><font SIZE="3">目录），它是一个位图显示程序，演示了在不使用串行化的情况下实现文档的输入输出功能。有关位图、调色板的使用在第十一章有详细介绍，这里只讨论与文档视结构相关的内容。我们先看</font><font FACE="Times New Roman" SIZE="3">DIBLOOK</font><font SIZE="3">的文档声明和定义。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">7-16 CDibDoc</font><font SIZE="3">的类声明文件</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// dibdoc.h : interface of the CDibDoc class</p>
+    <p>#include &quot;dibapi.h&quot;</p>
+    <p>class CDibDoc : public CDocument</p>
+    <p>{</p>
+    <p>protected: // create from serialization only</p>
+    <p>CDibDoc();</p>
+    <p>DECLARE_DYNCREATE(CDibDoc)</p>
+    <p>// Attributes</p>
+    <p>public:</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>HDIB GetHDIB() const</p>
+    <p>{ return m_hDIB; }</p>
+    <p>CPalette* GetDocPalette() const</p>
+    <p>{ return m_palDIB; }</p>
+    <p>CSize GetDocSize() const</p>
+    <p>{ return m_sizeDoc; }</p>
+    <p>// Operations</p>
+    <p>public:</p>
+    <p>void ReplaceHDIB(HDIB hDIB);</p>
+    <p>void InitDIBData();</b></p>
+    <p>// Implementation</p>
+    <p>protected:</p>
+    <p>virtual ~CDibDoc();</p>
+    <p>virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);</p>
+    <p>virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);</p>
+    <p>protected:</p>
+    <p>HDIB m_hDIB;</p>
+    <p>CPalette* m_palDIB;</p>
+    <p>CSize m_sizeDoc;</p>
+    <p>#ifdef _DEBUG</p>
+    <p>virtual void AssertValid() const;</p>
+    <p>virtual void Dump(CDumpContext&amp; dc) const;</p>
+    <p>#endif</p>
+    <p>protected:</p>
+    <p>virtual BOOL OnNewDocument();</p>
+    <p>// Generated message map functions</p>
+    <p>protected:</p>
+    <p>//{{AFX_MSG(CDibDoc)</p>
+    <p>//}}AFX_MSG</p>
+    <p>DECLARE_MESSAGE_MAP()</p>
+    <p>};</p>
+    <p>/////////////////////////////////////////////////////////////////////////////</font><b><font SIZE="3"></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">7-17 CDibDoc</font><font SIZE="3">类的实现文件</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// dibdoc.cpp : implementation of the CDibDoc class</p>
+    <p>#include &quot;stdafx.h&quot;</p>
+    <p>#include &quot;diblook.h&quot;</p>
+    <p>#include &lt;limits.h&gt;</p>
+    <p>#include &quot;dibdoc.h&quot;</p>
+    <p>#ifdef _DEBUG</p>
+    <p>#undef THIS_FILE</p>
+    <p>static char BASED_CODE THIS_FILE[] = __FILE__;</p>
+    <p>#endif</p>
+    <p>/////////////////////////////////////////////////////////////////////////////</p>
+    <p>// CDibDoc</p>
+    <p>IMPLEMENT_DYNCREATE(CDibDoc, CDocument)</p>
+    <p>BEGIN_MESSAGE_MAP(CDibDoc, CDocument)</p>
+    <p>//{{AFX_MSG_MAP(CDibDoc)</p>
+    <p>//}}AFX_MSG_MAP</p>
+    <p>END_MESSAGE_MAP()</p>
+    <p>/////////////////////////////////////////////////////////////////////////////</p>
+    <p>// CDibDoc construction/destruction</p>
+    <p>CDibDoc::CDibDoc()</p>
+    <p>{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>//</font><font SIZE="3">初始化文档的</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">句柄和调色板</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_hDIB = NULL;</p>
+    <p>m_palDIB = NULL;</p>
+    <p>m_sizeDoc = CSize(1,1); // dummy value to make CScrollView happy</b></p>
+    <p>}</p>
+    <p>CDibDoc::~CDibDoc()</p>
+    <p>{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>if (m_hDIB != NULL)</p>
+    <p>{</p>
+    <p>::GlobalFree((HGLOBAL) m_hDIB);</p>
+    <p>}</p>
+    <p>if (m_palDIB != NULL)</p>
+    <p>{</p>
+    <p>delete m_palDIB;</p>
+    <p>}</b></p>
+    <p>}</p>
+    <p>BOOL CDibDoc::OnNewDocument()</p>
+    <p>{</p>
+    <p>if (!CDocument::OnNewDocument())</p>
+    <p>return FALSE;</p>
+    <p>return TRUE;</p>
+    <p>}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CDibDoc::InitDIBData()</p>
+    <p>{</p>
+    <p>if (m_palDIB != NULL)</p>
+    <p>{</p>
+    <p>delete m_palDIB;</p>
+    <p>m_palDIB = NULL;</p>
+    <p>}</p>
+    <p>if (m_hDIB == NULL)</p>
+    <p>{</p>
+    <p>return;</p>
+    <p>}</p>
+    <p>// Set up document size</p>
+    <p>LPSTR lpDIB = (LPSTR) ::GlobalLock((HGLOBAL) m_hDIB);</p>
+    <p>if (::DIBWidth(lpDIB) &gt; INT_MAX ||::DIBHeight(lpDIB) &gt; INT_MAX)</p>
+    <p>{</p>
+    <p>::GlobalUnlock((HGLOBAL) m_hDIB);</p>
+    <p>::GlobalFree((HGLOBAL) m_hDIB);</p>
+    <p>m_hDIB = NULL;</p>
+    <p>CString strMsg;</p>
+    <p>strMsg.LoadString(IDS_DIB_TOO_BIG);</p>
+    <p>MessageBox(NULL, strMsg, NULL, MB_ICONINFORMATION | MB_OK);</p>
+    <p>return;</p>
+    <p>}</p>
+    <p>m_sizeDoc = CSize((int) ::DIBWidth(lpDIB), (int) ::DIBHeight(lpDIB));</p>
+    <p>::GlobalUnlock((HGLOBAL) m_hDIB);</p>
+    <p>// Create copy of palette</p>
+    <p>m_palDIB = new CPalette;</p>
+    <p>if (m_palDIB == NULL)</p>
+    <p>{</p>
+    <p>// we must be really low on memory</p>
+    <p>::GlobalFree((HGLOBAL) m_hDIB);</p>
+    <p>m_hDIB = NULL;</p>
+    <p>return;</p>
+    <p>}</p>
+    <p>if (::CreateDIBPalette(m_hDIB, m_palDIB) == NULL)</p>
+    <p>{</p>
+    <p>// DIB may not have a palette</p>
+    <p>delete m_palDIB;</p>
+    <p>m_palDIB = NULL;</p>
+    <p>return;</p>
+    <p>}</p>
+    <p>}</b></p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BOOL CDibDoc::OnOpenDocument(LPCTSTR lpszPathName)</p>
+    <p>{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile file;</p>
+    <p>CFileException fe;</p>
+    <p>if (!file.Open(lpszPathName, CFile::modeRead | CFile::shareDenyWrite, &amp;fe))</p>
+    <p>{</p>
+    <p>ReportSaveLoadException(lpszPathName, &amp;fe,</p>
+    <p>FALSE, AFX_IDP_FAILED_TO_OPEN_DOC);</p>
+    <p>return FALSE;</p>
+    <p>}</p>
+    <p>DeleteContents();</p>
+    <p>BeginWaitCursor();</p>
+    <p>// replace calls to Serialize with ReadDIBFile function</p>
+    <p>TRY</p>
+    <p>{</p>
+    <p>m_hDIB = ::ReadDIBFile(file);</p>
+    <p>}</p>
+    <p>CATCH (CFileException, eLoad)</p>
+    <p>{</p>
+    <p>file.Abort(); // will not throw an exception</p>
+    <p>EndWaitCursor();</p>
+    <p>ReportSaveLoadException(lpszPathName, eLoad,</p>
+    <p>FALSE, AFX_IDP_FAILED_TO_OPEN_DOC);</p>
+    <p>m_hDIB = NULL;</p>
+    <p>return FALSE;</p>
+    <p>}</p>
+    <p>END_CATCH</p>
+    <p>InitDIBData();</p>
+    <p>EndWaitCursor();</p>
+    <p>if (m_hDIB == NULL)</p>
+    <p>{</p>
+    <p>// may not be DIB format</p>
+    <p>CString strMsg;</p>
+    <p>strMsg.LoadString(IDS_CANNOT_LOAD_DIB);</p>
+    <p>MessageBox(NULL, strMsg, NULL, MB_ICONINFORMATION | MB_OK);</p>
+    <p>return FALSE;</p>
+    <p>}</p>
+    <p>SetPathName(lpszPathName);</p>
+    <p>SetModifiedFlag(FALSE); // start off with unmodified</b></p>
+    <p>return TRUE;</p>
+    <p>}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BOOL CDibDoc::OnSaveDocument(LPCTSTR lpszPathName)</p>
+    <p>{</p>
+    <p>CFile file;</p>
+    <p>CFileException fe;</p>
+    <p>if (!file.Open(lpszPathName, CFile::modeCreate |</p>
+    <p>CFile::modeReadWrite | CFile::shareExclusive, &amp;fe))</p>
+    <p>{</p>
+    <p>ReportSaveLoadException(lpszPathName, &amp;fe,</p>
+    <p>TRUE, AFX_IDP_INVALID_FILENAME);</p>
+    <p>return FALSE;</p>
+    <p>}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// replace calls to Serialize with SaveDIB function</p>
+    <p>BOOL bSuccess = FALSE;</p>
+    <p>TRY</p>
+    <p>{</p>
+    <p>BeginWaitCursor();</p>
+    <p>bSuccess = ::SaveDIB(m_hDIB, file);</p>
+    <p>file.Close();</p>
+    <p>}</p>
+    <p>CATCH (CException, eSave)</p>
+    <p>{</p>
+    <p>file.Abort(); // will not throw an exception</p>
+    <p>EndWaitCursor();</p>
+    <p>ReportSaveLoadException(lpszPathName, eSave,</p>
+    <p>TRUE, AFX_IDP_FAILED_TO_SAVE_DOC);</p>
+    <p>return FALSE;</p>
+    <p>}</p>
+    <p>END_CATCH</p>
+    <p>EndWaitCursor();</p>
+    <p>SetModifiedFlag(FALSE); // back to unmodified</p>
+    <p>if (!bSuccess)</p>
+    <p>{</p>
+    <p>// may be other-style DIB (load supported but not save)</p>
+    <p>// or other problem in SaveDIB</p>
+    <p>CString strMsg;</p>
+    <p>strMsg.LoadString(IDS_CANNOT_SAVE_DIB);</p>
+    <p>MessageBox(NULL, strMsg, NULL, MB_ICONINFORMATION | MB_OK);</p>
+    <p>}</p>
+    <p>return bSuccess;</b></p>
+    <p>}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CDibDoc::ReplaceHDIB(HDIB hDIB)</p>
+    <p>{</p>
+    <p>if (m_hDIB != NULL)</p>
+    <p>{</p>
+    <p>::GlobalFree((HGLOBAL) m_hDIB);</p>
+    <p>}</p>
+    <p>m_hDIB = hDIB;</p>
+    <p>}</b></p>
+    <p>/////////////////////////////////////////////////////////////////////////////</p>
+    <p>// CDibDoc diagnostics</p>
+    <p>#ifdef _DEBUG</p>
+    <p>void CDibDoc::AssertValid() const</p>
+    <p>{</p>
+    <p>CDocument::AssertValid();</p>
+    <p>}</p>
+    <p>void CDibDoc::Dump(CDumpContext&amp; dc) const</p>
+    <p>{</p>
+    <p>CDocument::Dump(dc);</p>
+    <p>}</p>
+    <p>#endif //_DEBUG</p>
+    <p>/////////////////////////////////////////////////////////////////////////////</p>
+    <p>// CDibDoc commands</p>
+    <p>DIBLOOK</font><font SIZE="3">读入和保存标准的</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">设备无关位图。在内存中，位图以一个</font><font FACE="Times New Roman" SIZE="3">HDIB</font><font SIZE="3">句柄表示。</font><font FACE="Times New Roman" SIZE="3">DIBLOOK</font><font SIZE="3">没有重载</font><font FACE="Times New Roman" SIZE="3">CDocument::Serialize()</font><font SIZE="3">函数，而是重载了</font><font FACE="Times New Roman" SIZE="3">CDocument::OnOpenDocument</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CDocument::OnSaveDocument</font><font SIZE="3">函数。这两个函数使用框架传过来得文件路径名</font><font FACE="Times New Roman" SIZE="3">pszPathName</font><font SIZE="3">，打开一个文件对象，读入或保存</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">数据。这就是说，</font><font FACE="Times New Roman" SIZE="3">DIBLOOK</font><font SIZE="3">把本来在</font><font FACE="Times New Roman" SIZE="3">Serialize()</font><font SIZE="3">中完成的对象保存和载入两个任务分别交与</font><font FACE="Times New Roman" SIZE="3">OnSaveDocument()</font><font SIZE="3">函数和</font><font FACE="Times New Roman" SIZE="3">OnOpenDocument()</font><font SIZE="3">函数去完成。如果读者希望绕过文档的串行化提供文档数据的保存和载入，也只需要重载这两个成员函数：</font><font FACE="Times New Roman" SIZE="3">OnOpenDocument()</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OnSaveDocument()</font><font SIZE="3">，通过文件路径参数打开文件，从中读取应用程序数据或向文件里写入应用程序数据。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">OnOpenDocument()</font><font SIZE="3">中，还必需自己调用</font><font FACE="Times New Roman" SIZE="3">DeleteContents()</font><font SIZE="3">清除原来文档的数据，并调用</font><font FACE="Times New Roman" SIZE="3">SetModifiedFlag(FALSE)</font><font SIZE="3">。在</font><font FACE="Times New Roman" SIZE="3">OnSaveDocument()</font><font SIZE="3">中也要调用</font><font FACE="Times New Roman" SIZE="3">SetModifiedFlag(FALSE)</font><font SIZE="3">将文档修改标志改为</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">OnOpenDocument()</font><font SIZE="3">函数开始处（见清单</font><font FACE="Times New Roman" SIZE="3">7.18</font><font SIZE="3">），有一些地方需要解释一下。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">7.18 OnOpenDocument()</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BOOL CDibDoc::OnOpenDocument(LPCTSTR lpszPathName)</p>
+    <p>{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile file;</p>
+    <p>CFileException fe;</p>
+    <p>if (!file.Open(lpszPathName, CFile::modeRead | CFile::shareDenyWrite, &amp;fe))</p>
+    <p>{</p>
+    <p>ReportSaveLoadException(lpszPathName, &amp;fe,</p>
+    <p>FALSE, AFX_IDP_FAILED_TO_OPEN_DOC);</p>
+    <p>return FALSE;</p>
+    <p>}</b></p>
+    <p>......</p>
+    <p>}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">7.5.1 </font><font SIZE="3" color="#3973DE">文件操作</font><font SIZE="3"></p>
+    <p><font color="#3973DE">文件读写</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>OnOpenDocument</font><font SIZE="3">首先声明一个</font><font FACE="Times New Roman" SIZE="3">CFile</font><font SIZE="3">类的对象。</font><font FACE="Times New Roman" SIZE="3">CFile</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">提供的一个类，它提供了访问二进制文件的接口。可以使用带参数的</font><font FACE="Times New Roman" SIZE="3">CFile</font><font SIZE="3">构造函数创建对象，在构造函数中指定了文件名和打开文件的模式，这样在对象创建的同时也就打开了这个文件；也可以象本例那样使用不带参数的</font><font FACE="Times New Roman" SIZE="3">CFile</font><font SIZE="3">构造函数构造一个</font><font FACE="Times New Roman" SIZE="3">CFile</font><font SIZE="3">对象，然后调用</font><font FACE="Times New Roman" SIZE="3">CFile::Open()</font><font SIZE="3">打开一个文件。</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><b><p>BOOL</b> <b>CFile::Open(</b> <b>LPCTSTR</b> 
+        <i>lpszFileName</i><b>,</b> <b>UINT</b> <i>nOpenFlags</i><b>,</b> <b>CFileException*</b> <i>pError</i> 
+        <b>=</b> <b>NULL</b> <b>);</b></p>
+      </blockquote>
+    </blockquote>
+    <p>CFile::Open</font><font SIZE="3">成员函数带三个参数，第一个参数指定了要打开的文件的完整路径名，如“</font><font FACE="Times New Roman" SIZE="3">c:\hello\hello.cpp</font><font SIZE="3">”；第二个参数指定打开文件的模式。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">常见的文件打开模式有以下几种：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile::modeCreate</font><font SIZE="3">：创建一个新文件，如果该文件已经存在，则把该文件长度置为零</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile::modeNoTruncate</font><font SIZE="3">：与</font><font FACE="Times New Roman" SIZE="3">modeCreate</font><font SIZE="3">一起使用。告诉</font><font FACE="Times New Roman" SIZE="3">CFile</font><font SIZE="3">，如果要创建的文件已经存在，则不再将文件长度设置为零。这对于系统设置文件、日志文件等特别有用，因为第一次启动系统时，这些文件通常不存在，需要创建，而下次则只需要修改文件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile::modeRead</font><font SIZE="3">：打开文件用于读</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile::modeWrite</font><font SIZE="3">：打开文件用于写</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile::modeReadWrite</font><font SIZE="3">：打开文件且对文件可读可写</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">可以使用比特位或“</font><font FACE="Times New Roman" SIZE="3">|</font><font SIZE="3">”对上述操作进行组合。比如，要打开文件写，可以用以下方式打开：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile file;</p>
+    <p>file.Open(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">c:\\readme.txt</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">,CFile::modeCreate|CFile::modeWrite); 
+    </font><font SIZE="3"><b></p>
+    <p></b><font color="#3973DE">读文件</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">既然已经打开了文件，就可以对文件进行读写操作了。要读取文件内容到内存，可以调用</font><font FACE="Times New Roman" SIZE="3">CFile::Read()</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">CFile::Read()</font><font SIZE="3">函数原型如下：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font FACE="Arial" SIZE="2"><b>UINT</b> <b>Read(</b> <b>void*</b> <i>lpBuf</i><b>,</b> 
+    <b>UINT</b> <i>nCount</i> <b>);</b></font><br>
+    Read函数包含两个参数，第一个参数是一个缓冲区指针，该缓冲区用于存放从文件读进来的内容。第二个参数是要读取的字节数。Read函数返回实际读入的字节数。例如：</p>
+    <p>CFile file;</p>
+    <p>char buf[100];</p>
+    <p>int nBytesRead;</p>
+    <p>nBytesRead=file.Read(buf,100);</p>
+    <p><font SIZE="3"><b>　</p>
+    <p></b><font color="#3973DE">写文件</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">写文件与读文件操作方式类似，通过调用</font><font FACE="Times New Roman" SIZE="3">CFile::Write</font><font SIZE="3">函数来完成。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void Write( const void* lpBuf, UINT nCount );</font><font FACE="Arial" SIZE="2"><b></p>
+    <p></b></font><font FACE="Times New Roman" SIZE="3">Write</font><font SIZE="3">函数第一个参数是指向要写入到文件中的缓冲区的指针，第二个参数是要写入到文件中的字节数。例如：</p>
+    <p>CFile file;</p>
+    <p>CString str(“This is a string.”);</p>
+    <p>file.Write(str,str.GetLength());</font></p>
+    <p><br>
+    <font SIZE="3" color="#3973DE">关闭文件</font></p>
+    <p><font SIZE="3">在完成文件读写操作后，要调用CFile::Close成员函数及时将文件关闭。</p>
+    <p>CFile file;</p>
+    <p>//一些读写操作.....</p>
+    <p>file.Close();</p>
+    </font><p><b>　</p>
+    <p></b><font color="#3973DE">7.5.2异常处理</font><font SIZE="3"></p>
+    <p>在打开和保存文件时，我们并未作传统的错误检查，而是采用一种异常机制来处理错误。</p>
+    <p>异常处理为异常事件提供了结构化、规范化的服务。它一般是指处理错误状态。</p>
+    <p>我们先回顾一下传统的错误处理方式。传统的错误处理方式通常有两种：</p>
+    <p>1.返回错误值</p>
+    <p>2.使用goto,setjmp/longjmp协助报告错误</p>
+    <p>对于第一种技术，要求程序员记住各种错误代码，并且加入大量的检查情况。由于大多数错误是很少会发生，这样处理的结果是代码冗余性很大，效率不高。</p>
+    <p>第二种技术不但使程序可读性降低，更严重的是，使得函数里的对象不能释放、删除。比如：</p>
+    <p>void SomeOperation()</p>
+    <p>{</p>
+    <p>CMyClass obj1;</p>
+    <p>if(error)goto errHandler;</p>
+    <p>...</p>
+    <p>}</p>
+    <p>...</p>
+    <p>errHandler:</p>
+    <p>//handler error</p>
+    <p>在上面的程序片断中，由于goto跳转，无法调用obj的析构函数在退出</p>
+    <p>SomeOperation()函数时释放其所占的内存，造成内存泄漏。</p>
+    <p>而且，以上两种错误处理方法都无法考虑到不可预见的错误。C++引入异常处理这一重要概念很好的解决了上述问题。异常处理在处理异常事件时会自动调用已经超出范围的局部对象的析构函数，这样就可以防止内存泄漏。 
+    </p>
+    <p>下面是OnSaveDocument()函数中的异常处理代码：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CFile file;</p>
+    <p>CFileException fe;</p>
+    <p>if (!file.Open(lpszPathName, CFile::modeCreate |</p>
+    <p>CFile::modeReadWrite | CFile::shareExclusive, &amp;fe))</p>
+    <p>{</p>
+    <p>ReportSaveLoadException(lpszPathName, &amp;fe,</p>
+    <p>TRUE, AFX_IDP_INVALID_FILENAME);</p>
+    <p>return FALSE;</p>
+    <p>}</font><font SIZE="3"></p>
+    <p></font><font FACE="Times New Roman" SIZE="3">// replace calls to Serialize with SaveDIB 
+    function</p>
+    <p>BOOL bSuccess = FALSE;</p>
+    <p>TRY</p>
+    <p>{</p>
+    <p>BeginWaitCursor();</p>
+    <p>bSuccess = ::SaveDIB(m_hDIB, file);</p>
+    <p>file.Close();</p>
+    <p>}</p>
+    <p>CATCH (CException, eSave)</p>
+    <p>{</p>
+    <p>file.Abort(); // will not throw an exception</p>
+    <p>EndWaitCursor();</p>
+    <p>ReportSaveLoadException(lpszPathName, eSave,</p>
+    <p>TRUE, AFX_IDP_FAILED_TO_SAVE_DOC);</p>
+    <p>return FALSE;</p>
+    <p>}</p>
+    <p>END_CATCH</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">异常处理由一个</font><font FACE="Times New Roman" SIZE="3">TRY-CATCH-END_CATCH</font><font SIZE="3">结构组成。</font><font FACE="Times New Roman" SIZE="3">TRY{ }</font><font SIZE="3">语句块中包含可能发生错误的代码，可以理解为“试运行”这一语句块。</font><font FACE="Times New Roman" SIZE="3">CATCH{} END_CATCH</font><font SIZE="3">子块包含了错误处理代码。如果发生错误，就转入</font><font FACE="Times New Roman" SIZE="3">CATCH{} END_CATCH</font><font SIZE="3">子块执行。该子块可以根据</font><font FACE="Times New Roman" SIZE="3">CATCH</font><font SIZE="3">中的参数分析产生错误的原因，报告错误或做出相应处理。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CATCH()</font><font SIZE="3">包含两个参数，第一个参数是异常类。</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的异常有下列几种：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font>　</p>
+    <div align="center"><center><table BORDER="1" CELLSPACING="2" BORDERCOLOR="#7F7F7F" CELLPADDING="1" WIDTH="473">
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="CENTER">MFC</font><font SIZE="3">异常类</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="CENTER">处理的异常</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3">CMemoryException</font></td>
+        <td WIDTH="67%"><font SIZE="3">内存异常</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3">CNotSupportedException</font></td>
+        <td WIDTH="67%"><font SIZE="3">设备不支持</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3">CArchiveException</font></td>
+        <td WIDTH="67%"><font SIZE="3">档案</font><font FACE="Times New Roman" SIZE="3">(archive)</font><font SIZE="3">异常</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3">CFileException</font></td>
+        <td WIDTH="67%"><font SIZE="3">文件异常</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3">OsErrorException</font></td>
+        <td WIDTH="67%"><font SIZE="3">把</font><font FACE="Times New Roman" SIZE="3">DOS</font><font SIZE="3">错误转换为异常</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3">ErrnoToException</font></td>
+        <td WIDTH="67%"><font SIZE="3">把错误号转换为异常</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3">CResourceException</font></td>
+        <td WIDTH="67%"><font SIZE="3">资源异常</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3">COleException</font></td>
+        <td WIDTH="67%"><font FACE="Times New Roman" SIZE="3">OLE</font><font SIZE="3">异常</font></td>
+      </tr>
+    </table>
+    </center></div><p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">用户还可以从</font><font FACE="Times New Roman" SIZE="3">CException</font><font SIZE="3">类派生出自己的异常类，用以处理特定类型的错误。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CATCH</font><font SIZE="3">的第二个参数是产生的异常的名字。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">引起异常的原因存放在异常的数据成员</font><font FACE="Times New Roman" SIZE="3">m_cause</font><font SIZE="3">中。</font><font FACE="Times New Roman" SIZE="3">OnSaveDocument()</font><font SIZE="3">只是简单的处理文件保存错误，并没有指出引起错误的原因。我们可以对它进行一些修改，使它能够报告引起错误的原因。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>... </p>
+    <p>TRY</p>
+    <p>{</p>
+    <p>...</p>
+    <p>}</p>
+    <p>CATCH(CFileException,e)</p>
+    <p>{</p>
+    <p>switch(e-&gt;m_cause)</p>
+    <p>{</p>
+    <p>case CFileException::accessDenied:</p>
+    <p>AfxMessageBox(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">Access 
+    denied!</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">); </p>
+    <p>break;</p>
+    <p>case CFileException::badPath: </p>
+    <p>AfxMessageBox(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">Invalid 
+    path name</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">); </p>
+    <p>break;</p>
+    <p>case CFileException::diskFull:</p>
+    <p>AfxMessageBox(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">Disk 
+    is full</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">);</p>
+    <p>break;</p>
+    <p>case CFileException::hardIO:</p>
+    <p>AfxMessageBox(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">Hardware 
+    error</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">);</p>
+    <p>break;</p>
+    <p>}</p>
+    <p>}</p>
+    <p>END_CATCH</p>
+    <p>...</p>
+    <p>}</p>
+    <p></font><font SIZE="3">用户也可以不必直接处理异常，而通过调用</font><font FACE="Times New Roman" SIZE="3">THROW_LAST()</font><font SIZE="3">，把异常交给上一级</font><font FACE="Times New Roman" SIZE="3">TRY-CATCH</font><font SIZE="3">结构来处理。其实，在</font><font FACE="Times New Roman" SIZE="3">DIBLOOK</font><font SIZE="3">中，就是这么做的，请看</font><font FACE="Times New Roman" SIZE="3">OnSaveDocument()</font><font SIZE="3">函数调用的</font><font FACE="Times New Roman" SIZE="3">SaveDIB</font><font SIZE="3">函数的片段：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BOOL WINAPI SaveDIB(HDIB hDib, CFile&amp; file)</p>
+    <p>{</p>
+    <p>//...</p>
+    <p>TRY</p>
+    <p>{</p>
+    <p>//...</p>
+    <p>}</p>
+    <p>CATCH (CFileException, e)</p>
+    <p>{</p>
+    <p>//...</p>
+    <p>::GlobalUnlock((HGLOBAL) hDib);</p>
+    <p>THROW_LAST();</p>
+    <p>}</p>
+    <p>END_CATCH</p>
+    <p>//...</p>
+    <p>}</p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">SaveDIB</font><font SIZE="3">中，并没有直接处理异常，而是通过调用</font><font FACE="Times New Roman" SIZE="3">THROW_LAST()</font><font SIZE="3">，把异常交由调用它的上一级函数</font><font FACE="Times New Roman" SIZE="3">OnSaveDocument()</font><font SIZE="3">去处理。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">异常并不仅仅用于错误处理。比如，在文本编辑器的</font><font FACE="Times New Roman" SIZE="3">CEditorDoc::Serialize()</font><font SIZE="3">成员函数中，我们就利用读取文件引起的异常判断是否已经到了文件尾部。读者请回顾一下该函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">异常处理给程序的错误处理带来许多便利。但是，必需意识到异常处理并不是万能的。在加入异常处理后，程序员仍然有许多工作要做。更不可以滥用异常，因为异常会带来一些开销。应用程序应当尽可能排除可能出现的错误。</font><b></p>
+    <p>　</p>
+    </b><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap7_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/chap7_4.htm">上一页</a></td>
+        <td><p align="right"><a href="chap7_6.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/chap7_6.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

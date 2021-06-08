@@ -1,0 +1,720 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Wave</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Wave</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">振動、振盪</p>
+<p>這個世界天天都在振動。地面、空氣、海水、機械、人體等等，都是不斷振動。</p>
+<div class="i"><canvas id="Wave1" width="110" height="142"></canvas></div>
+<script type="application/javascript">
+var img = new Image();
+img.onload = function(){setInterval(function(){Wave1();}, 50);};
+img.src = "Wave1.png"/*tpa=http://www.csie.ntnu.edu.tw/~u91029/Wave1.png*/;
+function Wave1() {
+	var canvas = document.getElementById("Wave1");
+	var ctx = canvas.getContext("2d");
+	var x = Math.random() * 4;
+	var y = Math.random() * 4;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.drawImage(img, x, y);
+}
+</script>
+<p>振動、振盪是物理學名詞，振動（Vibration）是來回運動，振盪（Oscillation）是來回變化。</p>
+<p>震動、震盪是自古以來就有的詞彙。</p>
+<p class="t">振動可以用函數表示</p>
+<p>每個時間點的振動高低，可以描繪成函數圖形，橫向是時間軸，縱向是每個時刻的振動高低位置。</p>
+<img src="Wave2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave2.png">
+<p class="t">平穩的振動</p>
+<p>最平穩的振動，就是高中物理教的簡諧運動，是等速圓周運動在座標軸上的投影，呈現sin函數。sin函數和cos函數長相一樣，只是起點不同而已。</p>
+<div class="i"><canvas id="Wave2" width="200" height="100"></canvas></div>
+<script type="application/javascript">
+var t = 0;
+setInterval(function(){Wave2();}, 20);
+function Wave2() {
+	var canvas = document.getElementById("Wave2");
+	var ctx = canvas.getContext("2d");
+	var w = canvas.width >> 1, h = canvas.height >> 1;
+	var r = 3, amp = 20;
+	var x = Math.cos(t * Math.PI / 45);
+	var y = Math.sin(t * Math.PI / 45);
+	x *= amp; x += w;
+	y *= -1; y *= amp; y += (amp + 5);
+//	var x = 10, y = Math.random(), r = 3;
+//	y -= .5; y *= amp; y += (amp + 5);
+	ctx.clearRect(w-(amp+5), 0, (amp+5)*2, h);
+	ctx.clearRect(0, h, w*2, h);
+	// upper cycle
+	ctx.beginPath();
+	ctx.arc(w, amp+5, amp, 0, 2.0 * Math.PI);
+	ctx.strokeStyle = "black"; ctx.stroke();
+	ctx.beginPath();
+	ctx.arc(x, y, r, 0, 2.0 * Math.PI);
+	ctx.fillStyle = "black"; ctx.fill();
+	// lower sine wave
+	for (var sx=0; sx<canvas.width; ++sx) {
+		var sy = Math.sin((t - w + sx) * Math.PI / 45);
+		sy *= -1; sy *= amp; sy += (amp + 5);
+		ctx.fillRect(sx, h+sy, 1, 1);
+	}
+	// upper shm
+	ctx.beginPath();
+	ctx.arc(w, y, r, 0, 2.0 * Math.PI);
+	ctx.fillStyle = "red"; ctx.fill(); ctx.stroke();
+	// lower shm
+	ctx.beginPath();
+	ctx.arc(w, h+y, r, 0, 2.0 * Math.PI);
+	ctx.fill(); ctx.stroke();
+	t = (t+1) % 360;
+}
+</script>
+<img src="Wave3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave3.png">
+<p>舉例來說，敲打音叉產生的振動，就非常接近平穩的振動。</p>
+<p class="t">振動的快慢：頻率</p>
+<p>單位時間振動的次數，稱做「頻率（Frequency）」。</p>
+<p>一秒振動的次數，單位是赫茲Hz。</p>
+<img src="Wave4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave4.png">
+<p>人類能感知頻率：耳朵能聽到20Hz至20000Hz的空氣振動，低頻低沉、高頻尖銳；眼睛能看到4×10^14Hz至8×10^14Hz的電磁振盪，低頻至高頻分別呈現紅橙黃綠藍靛紫。</p>
+<p class="t">振動的高低：振幅</p>
+<p>振動的最高（低）距離，稱做「振幅（Amplitude）」。</p>
+<img src="Wave5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave5.png">
+<p>人類能感知振幅，受頻率大小影響。就聽覺而言，振幅高則大聲、振幅低則小聲；就視覺而言，振幅高則亮、振幅低則暗。</p>
+<p>題外話，人類對於頻率與振幅的區分能力，大略等於取log。</p>
+<p class="t">振動的起點：相位</p>
+<p>振動的起點，稱做「相位（Phase）」。</p>
+<p>注意到，相位是圓周運動cos函數的角度，而不是振動高低位置。物理學家喜歡用相位。</p>
+<img src="Wave6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave6.png">
+<p>人類幾乎分辨不出相位的差異。</p>
+<p class="t">振動有疊加效果</p>
+<p>現實世界當中，多個振動時常融合成一個振動，等於各個振動高低位置相加。相同方向則增益、相反方向則抵銷。</p>
+<img src="Wave7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave7.png">
+<p>寫成數學式子，就是多個函數相加。</p>
+<p class="t">振動有傳遞效果：波</p>
+<p>一個粒子振動，就會導致隔壁粒子振動，一傳十、十傳百。宏觀之下，形成「波（Wave）」。</p>
+<p>傳遞速度取決於粒子之間的作用力、粒子的質量。作用力強、質量小，則傳遞速度快。</p>
+<p>均勻分佈的粒子之中，某個粒子振動所產生的波，剛好也呈現sin函數，英文稱做Sine Wave或者Sinusoid。</p>
+<p><a href="javascript:if(confirm('http://140.111.56.210/file/ph/phy_6-1-1-1_2/1.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://140.111.56.210/file/ph/phy_6-1-1-1_2/1.html'" tppabs="http://140.111.56.210/file/ph/phy_6-1-1-1_2/1.html">http://140.111.56.210/file/ph/phy_6-1-1-1_2/1.html</a></p>
+<p>水的高低起伏，就是水波。空氣的疏密，就是聲波。地的高低起伏與左右晃動，就是地震波。電場與磁場的交互作用，就是電磁波。光波經實驗證明是電磁波。原子的振動，也許是熱。有人覺得氣功也許是波，就叫做氣功波。</p>
+<img src="Wave8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Wave8.png">
+<p>觀察波上任意一點，都是在振動。許多情況下，民眾喜歡用波來指稱振動。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Complex Number</p>
+<p class="r">程度★　難度★★★</p>
+<p class="w">有物混成，先天地生，寂兮寥兮，　　　　　　　　</p>
+<p class="w">獨立而不改，周行而不殆，可以為天下母。《老子》</p>
+</div><div class="c">
+<p class="t">Complex Number</p>
+<p>快速複習一下複數吧。實數，再額外考慮i = √-1，就是複數。例如2 + 3i、(1 - √2) + (1/3)i、1 / (-2i - 4)、∛i、sin(i)。</p>
+<p>只要是複數，都可以重新整理成左邊實數不乘i、右邊實數有乘i，兩個部分相加的格式，證明省略之；其中不乘i的部分叫做實部（real part），有乘i的部分叫做虛部（imaginary part）。例如1 / (-2i - 4)可以重新整理成-0.2 + 0.1i，其中實部是-0.2，虛部是0.1i。</p>
+<p>複數亦可以用圖形表示。</p>
+<img src="ComplexNumber1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ComplexNumber1.png">
+<p>複數平面、二維平面、極座標平面是不同的事情，不要搞混了。</p>
+<img src="ComplexNumber2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ComplexNumber2.png">
+<p>兩個複數相加，就是實部加實部、虛部加虛部。在複數平面上，外觀宛如向量相加。</p>
+<img src="ComplexNumber3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ComplexNumber3.png">
+<p>兩個複數相乘，就是實乘實、虛乘虛、實乘虛、虛乘實，再累加這四個乘積。在複數平面上，外觀宛如長度相乘、角度相加。</p>
+<img src="ComplexNumber4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ComplexNumber4.png">
+<p>一個複數可以重新表示成一個長度與一個角度，叫做極座標表示法。長度可以用畢氏定理求得，角度可以用arctan函數求得。</p>
+<p>一個長度與一個角度也可以還原成一個複數。實部可以用cos函數求得，虛部可以用sin函數求得。</p>
+<p>附帶一提，長度也有人稱作強度（magnitude），角度也有人稱作相位（phase）。</p>
+<img src="ComplexNumber5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ComplexNumber5.png">
+<p class="t">Euler's Formula</p>
+<p>強者歐拉發現這世界上有一個神奇數字e，e的純虛數次方竟然在複數平面上繞圈兒。這真是一個超乎常理的發現！</p>
+<p>寫成數學公式是：e<sup>iθ</sup> = cosθ + i * sinθ，複數的長度是常數1，複數的角度是變數θ。等式右邊，是將長度與角度，還原成一個複數，外觀很複雜但是本質很簡單。</p>
+<img src="Euler'sFormula1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Euler'sFormula1.png">
+<p>有了歐拉公式，一個複數也可以重新表示成e的次方、另乘上倍率。次方值即是角度乘i，倍率即是長度。</p>
+<img src="Euler'sFormula2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Euler'sFormula2.png">
+<p>歐拉公式，定量增加θ，在複數平面上，外觀宛如「等速圓周運動」，逆時針繞圈；只看實部或者只看虛部，外觀宛如「簡諧運動」，先上後下。</p>
+<img src="Euler'sFormula3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Euler'sFormula3.png">
+<p>繞360°是一圈，剛好回到+1；繞180°是半圈，剛好是-1。因此有了e<sup>iπ</sup> + 1 = 0這條著名等式，π就是180°。</p>
+<p>這個e，大約是2.71828183，是自然對數的底數e，是1/x積分後所出現的e。離題了。</p>
+<p class="t">Wave</p>
+<p>e<sup>iθ</sup>運算簡單，考慮長度與角度即可。e<sup>iθ</sup>性質優美，每轉90°剛好是±1與±i。也許你會漸漸愛上它。</p>
+<p>現在有了神奇數字e，就改用e<sup>iθ</sup>來表示波。</p>
+<p>要把e<sup>iθ</sup>還原成sin波、cos波，有兩種方式。觀察e<sup>iθ</sup> = cosθ + i * sinθ這道式子：</p>
+<p>一種是取實部得到cos波、取虛部得到sin波。</p>
+<p>一種是用e<sup>iθ</sup>與e<sup>-iθ</sup>，相加除以二得到cos波，相減除以二得到sin波。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Fourier Transform</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Fourier Transform</p>
+<p>傅立葉轉換的輸出入都是一串複數，是一對一函數。</p>
+<p>輸入可以是連續函數或者離散數列，輸出亦如是。根據連續與離散的差異，傅立葉轉換有著不同的名稱。混淆視聽罷了。</p>
+<pre>
+輸入　輸出　名稱
+連續　連續　Fourier Transform
+連續　離散　Discrete Fourier Transform
+離散　連續　Continuous Fourier Transform
+離散　離散　Discrete-time Fourier Transform
+</pre>
+<p>電腦做運算，數值皆離散，最常用到離散到離散的傅立葉轉換。公式如下：</p>
+<pre>
+傅立葉轉換：
+       <sub>N-1</sub>
+y[n] =  Σ { x[k] ÷ e<sup>i*2π*(n/N)*k</sup> } ÷ sqrt(N)
+       <sup>k=0</sup>
+
+傅立葉轉換的反函數，稱做逆向傅立葉轉換：
+       <sub>N-1</sub>
+x[n] =  Σ { y[k] * e<sup>i*2π*(n/N)*k</sup> } ÷ sqrt(N)
+       <sup>k=0</sup>
+</pre>
+<p>為了加快計算速度，正向傅立葉轉換經常改成不除以sqrt(N)，逆向傅立葉轉換經常改成多除以sqrt(N)。</p>
+<pre>
+       <sub>N-1</sub>
+y[n] =  Σ { x[k] ÷ e<sup>i*2π*(n/N)*k</sup> }
+       <sup>k=0</sup>
+       <sub>N-1</sub>
+x[n] =  Σ { y[k] * e<sup>i*2π*(n/N)*k</sup> } ÷ N
+       <sup>k=0</sup>
+</pre>
+<p>傅立葉轉換是線性變換，其矩陣恰是正交基底。</p>
+<pre>
+W = e^(i*2π*/N)
+
+[  y0  ]   [ W<sup>-0*0    </sup> W<sup>-0*1    </sup> W<sup>-0*2    </sup> ... W<sup>-0*(N-1)    </sup> ]   [  x0  ]
+[  y1  ]   [ W<sup>-1*0    </sup> W<sup>-1*1    </sup> W<sup>-1*2    </sup> ... W<sup>-1*(N-1)    </sup> ]   [  x1  ]
+[   .  ] = [ .       .       .            .          ] * [   .  ]
+[   .  ]   [ .       .       .            .          ]   [   .  ]
+[ yN-1 ]   [ W<sup>-(N-1)*0</sup> W<sup>-(N-1)*1</sup> W<sup>-(N-1)*2</sup> ... W<sup>-(N-1)*(N-1)</sup> ]   [ xN-1 ]
+
+[  x0  ]       [ W<sup>0*0    </sup> W<sup>0*1    </sup> W<sup>0*2    </sup> ... W<sup>0*(N-1)    </sup> ]   [  y0  ]
+[  x1  ]    1  [ W<sup>1*0    </sup> W<sup>1*1    </sup> W<sup>1*2    </sup> ... W<sup>1*(N-1)    </sup> ]   [  y1  ]
+[   .  ] = --- [ .      .       .           .         ] * [   .  ]
+[   .  ]    N  [ .      .       .           .         ]   [   .  ]
+[ xN-1 ]       [ W<sup>(N-1)*0</sup> W<sup>(N-1)*1</sup> W<sup>(N-1)*2</sup> ... W<sup>(N-1)*(N-1)</sup> ]   [ yN-1 ]
+</pre>
+<p>傅立葉轉換可以推廣到高維度。舉例來說，二維的傅立葉轉換，輸出入都是一個複數矩陣，轉換過程是：橫向每一條先各自傅立葉轉換，然後直向每一條再各自傅立葉轉換。</p>
+<p class="t">Fourier Transform</p>
+<p>只給數學公式，讀者應該是霧裡看花。</p>
+<p>N個波，頻率是n=0倍到n=N-1倍，分別是e<sup>i*2π*(n/N)</sup>。</p>
+<div class="i"><canvas id="FourierTransform1" width="200" height="200"></canvas></div>
+<script type="application/javascript">
+FourierTransform1();
+function FourierTransform1() {
+	var canvas = document.getElementById("FourierTransform1");
+	var ctx = canvas.getContext("2d");
+	ctx.fillStyle = "brown";
+	//ctx.strokeStyle = "brown";
+	//ctx.lineWidth = 1;
+	var h = 25, amp = 10;
+	for (var n = 0; n < 8; ++n) {
+		//ctx.moveTo(0, k*h+s);
+		for (var x = 0; x < 180; ++x) {
+			var y = Math.sin(n * x * Math.PI / 90);
+			y *= -1; y += 1; y *= amp;
+			//ctx.lineTo(x, k*h+y);
+			ctx.fillRect(x, n*h+y, 2, 2);
+		}
+		//ctx.stroke();
+	}
+}
+</script>
+<p>輸入數列與一個波，N個對應位置點對點相除、再求總和，得到一個輸出數值。可以簡單想做：輸入數列除以波，求比例。</p>
+<p>（學過線性代數的讀者，也可以想做內積、投影。）</p>
+<p>輸入數列分別除以N個波，得到N個輸出數值。這就是傅立葉轉換。</p>
+<img src="FourierTransform2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FourierTransform2.png">
+<p>正向傅立葉轉換，是把一個複雜的波，拆解成N個平穩的波，頻率是0倍到N-1倍，振幅與相位是N個輸出數值。</p>
+<p>逆向傅立葉轉換，是把N個平穩的波，頻率是0倍到N-1倍，分別乘上振幅、加上相位，再疊加成一個複雜的波，</p>
+<img src="FourierTransform3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FourierTransform3.png">
+<p class="t">Frequency Spectrum</p>
+<p>傅立葉轉換輸出數列有N個複數，可以畫成函數──一般不畫實部與虛部，而是畫長度與角度，具備物理意義。</p>
+<p>這N個複數的長度（振幅）畫成函數，稱為「振幅頻譜」。</p>
+<p>這N個複數的角度（相位）畫成函數，稱為「相位頻譜」。</p>
+<p>兩者合稱為「頻譜」。</p>
+<img src="FourierTransform4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FourierTransform4.png">
+<p>輸入數列是一串實數時，輸出數列會前後對稱並且共軛（長度相等、角度負號）。此時頻譜可以只畫一半。</p>
+<p>我們得以運用傅立葉轉換分解一個波，運用逆向傅立葉轉換合成一個波。運用「頻譜」，就能解讀波的詳細內容。</p>
+<p class="t">演算法</p>
+<p>按照公式實作，時間複雜度是O(N^2)。</p>
+<textarea>
+const double π = 2.0 * acos(0);
+const int N = 10;
+complex<double> x[N], y[N];
+
+// cos()和sin()並不是O(1)。
+// 內部迴圈不斷呼叫cos()與sin()，因此整體不是O(N^2)。
+void fourier_transform()
+{
+	double ω = 2.0 * π / N;
+	for (int i=0; i<N; i++)
+	{
+		y[i] = 0;
+		for (int j=0; j<N; j++)
+			y[i] += x[j] / complex<double>(cos(ω*i*j), sin(ω*i*j));
+	}
+}
+</textarea>
+<textarea>
+const int N = 10;
+complex<double> x[N], y[N];
+
+void fourier_transform()
+{
+	double ω = -2.0 * 2.0 * acos(0) / N;
+	complex<double> eω(cos(ω), sin(ω)), edθ(1, 0);
+	for (int i=0; i<N; i++, edθ *= eω)
+	{
+		complex<double> eθ(1, 0);
+		y[i] = 0;
+		for (int j=0; j<N; ++j, eθ *= edθ)
+			y[i] += x[j] * eθ;
+	}
+}
+</textarea>
+<textarea>
+const int N = 10;
+double xR[N], xI[N];	// 輸入，實部與虛部。
+double yR[N], yI[N];	// 輸出，實部與虛部。
+
+// 三角函數和角公式，求得 θ += dθ 之後的三角函數值。
+void add(double& cosθ, double& sinθ, double sindθ, double cosdθ)
+{
+	double temp_cosθ = cosθ;
+	cosθ = cosθ      * cosdθ - sinθ * sindθ;
+	sinθ = temp_cosθ * sindθ + sinθ * cosdθ;
+}
+
+void fourier_transform()
+{
+	double ω = -2.0 * 2.0 * acos(0) / N;
+	double cosω = cos(ω), sinω = sin(ω);
+
+	double cosdθ = 1, sindθ = 0;
+	for (int i=0; i<N; i++)
+	{
+		double cosθ = 1, sinθ = 0;
+		yR[i] = yI[i] = 0;
+		for (int j=0; j<N; ++j)
+		{
+			yR[j] += xR[j] * cosθ - xI[j] * sinθ;
+			yI[j] += xR[j] * sinθ + xI[j] * cosθ;
+			add(cosθ, sinθ, cosdθ, sindθ);
+		}
+		add(cosdθ, sindθ, cosω, sinω);
+	}
+}
+</textarea>
+<p class="t">演算法（Cooley-Tukey Algorithm）</p>
+<p>時間複雜度優於O(N^2)的傅立葉轉換演算法，老人家就直接稱做「快速傅立葉轉換（Fast Fourier Transform, FFT）」。</p>
+<p>這裡介紹最經典的快速傅立葉轉換，把公式的偶數項與奇數項分開整理，用Divide and Conquer解決，時間複雜度是O(NlogN)。由於必須剛好對半分，所以N必須剛好是2的次方。</p>
+<pre>
+  y[n]
+  <sub>N-1</sub>
+=  Σ { x[k]   ÷ e<sup>i*2π*(n/N)*k </sup>   }            傅立葉轉換公式
+  <sup>k=0</sup>
+  <sub>N-1</sub>                             <sub>N-1</sub>       拆成偶數項與奇數項
+=  Σ { x[k]   ÷ e<sup>i*2π*(n/N)*k </sup>   } + Σ { x[k]   ÷ e<sup>i*2π*(n/N)*k </sup>   }
+  <sup>k=0,2,4,...</sup>                       <sup>k=1,3,5,...</sup>
+  <sub>N-1</sub>                             <sub>N-1</sub>       奇數項全部左移一項，然後提出常數
+=  Σ { x[k]   ÷ e<sup>i*2π*(n/N)*k </sup>   } + Σ { x<sub>«1</sub>[k] ÷ e<sup>i*2π*(n/N)*k </sup>   } ÷ e<sup>i*2π*(n/N)*1</sup>
+  <sup>k=0,2,4,...</sup>                       <sup>k=0,2,4,...</sup>
+  <sub>N/2-1</sub>                           <sub>N/2-1</sub>      索引值調成連續，點數減半了
+=  Σ { x<sub>偶</sub>[k] ÷ e<sup>i*2π*(n/N)*2k</sup>   } + Σ { x<sub>奇</sub>[k] ÷ e<sup>i*2π*(n/N)*2k</sup>   } ÷ e<sup>i*2π*(n/N)*1</sup>
+  <sup>k=0,1,2,...</sup>                       <sup>k=0,1,2,...</sup>
+  <sub>N/2-1</sub>                           <sub>N/2-1</sub>      可視作頻率減半、波長變兩倍
+=  Σ { x<sub>偶</sub>[k] ÷ e<sup>i*2π*(n/(N/2))*k</sup> } + Σ { x<sub>奇</sub>[k] ÷ e<sup>i*2π*(n/(N/2))*k</sup> } ÷ e<sup>i*2π*(n/N)*1</sup>
+  <sup>k=0,1,2,...</sup>                       <sup>k=0,1,2,...</sup>
+
+= y<sub>偶</sub>[n] + y<sub>奇</sub>[n] ÷ e<sup>i*2π*(n/N)*1</sup>          剛好是偶數項FFT與奇數項FFT
+</pre>
+<pre>
+e.g. N = 4
+y[0] = y<sub>偶</sub>[0] + y<sub>奇</sub>[0] ÷ e<sup>i*2π*(0/N)</sup>
+y[1] = y<sub>偶</sub>[1] + y<sub>奇</sub>[1] ÷ e<sup>i*2π*(1/N)</sup>
+y[2] = y<sub>偶</sub>[0] + y<sub>奇</sub>[0] ÷ e<sup>i*2π*(2/N)</sup>
+y[3] = y<sub>偶</sub>[1] + y<sub>奇</sub>[1] ÷ e<sup>i*2π*(3/N)</sup>
+</pre>
+<img src="FourierTransform5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FourierTransform5.png">
+<p>計算原理並不難解釋，反而是實作比較複雜。資料結構採用陣列，偶數點和奇數點並不是連續的元素──該如何整理成連續的元素，然後遞迴地解決問題呢？</p>
+<p>最常見的方式，是觀察分治法的分割順序與合併順序，然後一開始就重新排列每個元素至定位，配合分治法的順序。</p>
+<textarea>
+const double π = 2.0 * acos(0);
+const int N = 8;
+complex<double> x[N];
+
+void FFT()
+{
+	// reverse bit and replace
+	for (int i=1, j=0; i<N; ++i)
+	{
+		for (int k=N>>1; !((j^=k)&k); k>>=1) ;
+//		for (int k=N>>1; k>(j^=k); k>>=1) ;
+		if (i>j) swap(x[i], x[j]);
+//		if (i<j) swap(x[i], x[j]);
+	}
+
+	for (int k=2; k<=N; k<<=1)
+	{
+		double ω = -2.0 * π / k;
+		complex<double> dθ(cos(ω), sin(ω));
+
+		// 每k個做一次FFT
+		for (int j=0; j<N; j+=k)
+		{
+			// 前k/2個與後k/2的三角函數值恰好對稱，
+			// 因此兩兩對稱的一起做。
+			complex<double> θ(1, 0);
+			for (int i=j; i<j+k/2; i++)
+			{
+				complex<double> a = x[i];
+				complex<double> b = x[i + k/2] * θ;
+				x[i]       = a + b;
+				x[i + k/2] = a - b;
+				θ *= dθ;
+			}
+		}
+	}
+}
+</textarea>
+<textarea>
+void FFT()
+{
+	// reverse bit and replace
+	......
+
+	for (int k=2; k<=N; k<<=1)
+	{
+		double ω = -2.0 * π / k;
+		complex<double> dθ(cos(ω), sin(ω));
+
+		// 對調內外迴圈，讓θ少乘幾次。
+		// 缺點則是索引值更容易跳動，更容易產生cache miss。
+		complex<double> θ(1, 0);
+		for (int i=0; i<k/2; i++)
+		{
+			for (int j=i; j<N; j+=k)
+			{
+				complex<double> a = x[j];
+				complex<double> b = x[j + k/2] * θ;
+				x[j]       = a + b;
+				x[j + k/2] = a - b;
+			}
+			θ *= dθ;
+		}
+	}
+}
+</textarea>
+<textarea>
+void FFT()
+{
+	// 整個反過來算
+	for (int k=N; k>=2; k>>=1)
+	{
+		double ω = -2.0 * π / k;
+		complex<double> dθ(cos(ω), sin(ω));
+		complex<double> θ(1, 0);
+		for (int i=0; i<k/2; i++)
+		{
+			for (int j=i; j<N; j+=k)
+			{
+				// θ變成相減後才乘上。
+				complex<double> a = x[j];
+				complex<double> b = x[j + k/2];
+				x[j]       = a + b;
+				x[j + k/2] = (a - b) * θ;
+			}
+			θ *= dθ;
+		}
+	}
+
+	// reverse bit and replace
+	......
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Hartley Transform</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Hartley Transform</p>
+<p>哈特利轉換的輸出入都是一串實數，是一對一函數。</p>
+<p>哈特利轉換與傅立葉轉換如出一轍，只少了虛數i而已。</p>
+<pre>
+傅立葉轉換的基底：
+    2πnk           2πnk    -i2πnk/N
+cos ———— - i * sin ———— = e
+     N              N
+哈特利轉換的基底：
+    2πnk           2πnk       2πnk
+cos ———— +     sin ———— = cas ————
+     N              N          N  
+另一個哈特利轉換的基底，比較沒人用：
+    2πnk           2πnk
+cos ———— -     sin ————
+     N              N  
+</pre>
+<pre>
+傅立葉轉換：
+       <sub>N-1</sub>
+y[n] =  Σ { x[k] ÷ e<sup>i*2π*(n/N)*k</sup> } ÷ sqrt(N)
+       <sup>k=0</sup>
+       <sub>N-1</sub>
+     =  Σ { x[k] * e<sup>-i*2π*(n/N)*k</sup> } ÷ sqrt(N)
+       <sup>k=0</sup>
+       <sub>N-1</sub>
+     =  Σ { x[k] * ( cos(2π*(n/N)*k) - i * sin(2π*(n/N)*k) ) } ÷ sqrt(N)
+       <sup>k=0</sup>
+哈特利轉換：
+       <sub>N-1</sub>
+y[n] =  Σ { x[k] * ( cos(2π*(n/N)*k) +     sin(2π*(n/N)*k) ) } ÷ sqrt(N)
+       <sup>k=0</sup>
+       <sub>N-1</sub>
+     =  Σ { x[k] * cas(2π*(n/N)*k) } ÷ sqrt(N)
+       <sup>k=0</sup>
+</pre>
+<p>哈特利轉換的輸出，可以調整成傅立葉轉換的輸出，O(N)：</p>
+<p><a href="javascript:if(confirm('http://mathworld.wolfram.com/HartleyTransform.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathworld.wolfram.com/HartleyTransform.html'" tppabs="http://mathworld.wolfram.com/HartleyTransform.html">http://mathworld.wolfram.com/HartleyTransform.html</a></p>
+<p>實數運算比複數運算還要簡單，所以哈特利轉換比傅立葉轉換還要快速。聲音處理、影像處理時，訊號都是實數、甚至是整數，剛好也符合哈特利轉換的輸入格式。因此一般都是套用哈特利轉換進行計算，再把結果調整成傅立葉轉換。</p>
+<p class="t">演算法（Bracewell's Algorithm）</p>
+<p>由於哈特利轉換與傅立葉轉換的公式幾乎相同，所以兩者的演算法也是一一對應。這裡介紹的也是運用Divide and Conquer的方法。不一樣的是奇數項的處理方式，提出常數的步驟變複雜了。</p>
+<pre>
+  <sub>N-1</sub>
+   Σ { x[k] * cas(2π*(n/N)*k) }
+  <sup>k=1,3,5,...</sup>
+  <sub>N/2-1</sub>
+=  Σ { x[2k+1] * cas(2π*(n/N)*(2k+1)) }
+  <sup>k=0,1,2,...</sup>
+  <sub>N/2-1</sub>
+=  Σ { x[2k+1] * ( cas(2π*(n/N)*2k) * cos(2π*(n/N)*1)
+  <sup>k=0,1,2,...</sup>       + cas(-2π*(n/N)*2k) * sin(2π*(n/N)*1) ) }
+  <sub>N/2-1</sub>
+=  Σ { x[2k+1] * ( cas(2π*(n/(N/2))*k) * cos(2π*(n/N)*1)
+  <sup>k=0,1,2,...</sup>       + cas(-2π*(n/(N/2))*k) * sin(2π*(n/N)*1) ) }
+  <sub>N/2-1</sub>
+=  Σ { x[2k+1] * cas( 2π*(n/(N/2))*k) } * cos(2π*(n/N)*1)
+  <sup>k=0,1,2,...</sup>
+  <sub>N/2-1</sub>
++  Σ { x[2k+1] * cas(-2π*(n/(N/2))*k) } * sin(2π*(n/N)*1)
+  <sup>k=0,1,2,...</sup>
+
+= y<sub>奇</sub>[n] * cos(2π*(n/N)*1) + y<sub>奇</sub>[-n] * sin(2π*(n/N)*1)
+</pre>
+<pre>
+e.g. N = 8, θ = 2π / N
+y[0] = y<sub>偶</sub>[0] + y<sub>奇</sub>[0] * cos0θ + y<sub>奇</sub>[0] * sin0θ
+y[1] = y<sub>偶</sub>[1] + y<sub>奇</sub>[1] * cos1θ + y<sub>奇</sub>[3] * sin1θ
+y[2] = y<sub>偶</sub>[2] + y<sub>奇</sub>[2] * cos2θ + y<sub>奇</sub>[2] * sin2θ
+y[3] = y<sub>偶</sub>[3] + y<sub>奇</sub>[3] * cos3θ + y<sub>奇</sub>[1] * sin3θ
+y[4] = y<sub>偶</sub>[0] + y<sub>奇</sub>[0] * cos4θ + y<sub>奇</sub>[0] * sin4θ
+y[5] = y<sub>偶</sub>[1] + y<sub>奇</sub>[1] * cos5θ + y<sub>奇</sub>[3] * sin5θ
+y[6] = y<sub>偶</sub>[2] + y<sub>奇</sub>[2] * cos6θ + y<sub>奇</sub>[2] * sin6θ
+y[7] = y<sub>偶</sub>[3] + y<sub>奇</sub>[3] * cos7θ + y<sub>奇</sub>[1] * sin7θ
+</pre>
+<p>下面是筆者所能找到的效率最好的實作程式碼：</p>
+<p><a href="javascript:if(confirm('http://home.iae.nl/users/mhx/fft.c  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://home.iae.nl/users/mhx/fft.c'" tppabs="http://home.iae.nl/users/mhx/fft.c">http://home.iae.nl/users/mhx/fft.c</a></p>
+<p><a href="javascript:if(confirm('http://reocities.com/ResearchTriangle/8869/fft_summary.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://reocities.com/ResearchTriangle/8869/fft_summary.html'" tppabs="http://reocities.com/ResearchTriangle/8869/fft_summary.html">http://reocities.com/ResearchTriangle/8869/fft_summary.html</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Number Theoretic Transform</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Number Theoretic Transform</p>
+<p>數論轉換的輸出入都是一串餘數，是一對一函數。</p>
+<p>e的純虛數次方會不斷繞圈，餘數的次方也會不斷繞圈。於是有人把傅立葉轉換的基底，從e<sup>i*2π*(n/N)</sup>改成原根的次方。</p>
+<p><a href="javascript:if(confirm('http://www.apfloat.org/prim.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.apfloat.org/prim.html'" tppabs="http://www.apfloat.org/prim.html">http://www.apfloat.org/prim.html</a></p>
+<p>輸出入每個數值都是餘數，皆大於等於零、小於模數。當輸入數值很大，那麼模數也必須足夠大。</p>
+<textarea>
+// 預先算好的，支援到n = 1<<18。
+const long long m = 50000000001507329LL;	// 質數 k*n+1
+const long long primitive_root = 3;
+
+// 快速數論轉換
+void FNT(long long* z, long long n, long long ω)
+{
+	for (int k=n; k>=2; k>>=1)
+	{
+		long long θ = 1;
+		for (int i=0; i<k/2; i++)
+		{
+			for (int j=i; j<n; j+=k)
+			{
+				long long a = z[j];
+				long long b = z[j + k/2];
+				z[j] = (a + b) % m;
+				z[j + k/2] = mul((a - b + m) % m, θ, m);
+			}
+			θ = mul(θ, ω, m);
+		}
+		ω = mul(ω, ω, m);
+	}
+
+	for (int i=1, j=0; i<n; ++i)
+	{
+		for (int k=n>>1; k<(j^=k); k>>=1) ;
+		if (i > j) swap(z[i], z[j]);
+	}
+}
+
+void demo()
+{
+	long long z[1024];
+	long long n = 1024;
+	long long r = pow(primitive_root, m/n, m);
+	long long invr = pow(r, m-2, m);
+	long long invn = pow(n, m-2, m);
+
+	// 正向轉換
+	FNT(z,n,r);
+
+	// 逆向轉換
+	FNT(z,n,invr);
+	for (int i=0; i<n; ++i)
+		z[i] = mul(z[i], invn, m);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Convolution</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Multiplication</p>
+<p>兩串數列做乘法運算，得到一個數列：對應項相乘。</p>
+<pre>
+                                       a0   a1      aN-1
+(a0,a1,...,aN-1) × (b0,b1,...,bN-1) = ( × ,  × ,..., ×  )
+                                       b0   b1      bN-1
+</pre>
+<pre>
+                                                  a-1  a0   a1
+(...,a-1,a0,a1,...) × (...,b-1,b0,b1,...) = (...,  × ,  × ,  × ,...)
+                                                  b-1  b0   b1
+</pre>
+<p class="t">Dot Product</p>
+<p>兩串數列做內積運算，得到一個值：對應項相乘後再求和。</p>
+<p>橫著寫叫數列，直著寫叫向量。數列內積就是向量內積。</p>
+<pre>
+                                        a0    a1          aN-1
+(a0,a1,...,aN-1) dot (b0,b1,...,bN-1) =  ×  +  ×  + ... +  ×
+                                        b0    b1          bN-1
+</pre>
+<pre>
+                                                    a-1   a0    a1
+(...,a-1,a0,a1,...) dot (...,b-1,b0,b1,...) = ... +  ×  +  ×  +  ×  + ...
+                                                    b-1   b0    b1
+</pre>
+<p>內積是線性變換！有限長數列的內積，對應的矩陣，是橫的一條；無限長數列的內積，對應的矩陣，是無限大的矩陣。</p>
+<pre>
+                    [a0  ]
+                    [a1  ]   a0    a1          aN-1
+[b0 b1 b2 ⋯ bN-1] * [a2  ] =  ×  +  ×  + ... +  ×
+                    [⋮   ]   b0    b1          bN-1
+                    [aN-1]
+</pre>
+<pre>
+                  [⋮  ]
+                  [a-1]         a-1   a0    a1
+[⋯ b-1 b0 b1 ⋯] * [a0 ] = ... +  ×  +  ×  +  ×  + ...
+                  [a1 ]         b-1   b0    b1
+                  [⋮  ]
+</pre>
+<p class="t">Cross Product</p>
+<p>外積，本篇用不到，略過。</p>
+<p class="t">Convolution</p>
+<p>兩串數列做摺積運算，得到一串數列：一次內積算得一項，第一個數列保持不變，第二個數列頭尾顛倒，並且由第0項到第N-1項輪流作為首項。</p>
+<p>有限長數列的摺積，第二個數列會頭尾循環，因而也有人特別稱做循環摺積（circular convolution）。</p>
+<pre>
+(a0,a1,...,aN-1) convolution (b0,b1,...,bN-1) = (c0,c1,...,cN-1)
+
+c0   = (a0,a1,a2,...,aN-1) dot (b0  ,bN-1,bN-2,...,b1)
+c1   = (a0,a1,a2,...,aN-1) dot (b1  ,b0  ,bN-1,...,b2)
+c2   = (a0,a1,a2,...,aN-1) dot (b2  ,b1  ,b0  ,...,b3)
+⋮
+cN-1 = (a0,a1,a2,...,aN-1) dot (bN-1,bN-2,bN-3,...,b0)
+</pre>
+<pre>
+(...,a-1,a0,a1,...) convolution (...,b-1,b0,b1,...) = (...,c-1,c0,c1,...)
+
+⋮
+c-1 = (...,a-1,a0,a1,...) dot (...,b0 ,b-1,b-2,...)
+c0  = (...,a-1,a0,a1,...) dot (...,b1 ,b0 ,b-1,...)
+c1  = (...,a-1,a0,a1,...) dot (...,b2 ,b1 ,b0 ,...)
+⋮
+</pre>
+<p>摺積是線性變換！有限長數列的（循環）摺積，對應的矩陣，正好是循環的Toeplitz Matrix；無限長數列的摺積，對應的矩陣，是無限大的矩陣。</p>
+<pre>
+(a0,a1,...,aN-1) convolution (b0,b1,...,bN-1) = (c0,c1,...,cN-1)
+
+[b0   b-1  b-2  ⋯ bN-1]   [a0  ]   [c0  ]
+[b1   b0   b-1  ⋯ bN-2]   [a1  ]   [c1  ]
+[b2   b1   b0   ⋯ bN-3] * [a2  ] = [c2  ]
+[⋮    ⋮    ⋮      ⋮   ]   [⋮   ]   [⋮   ]
+[bN-1 bN-2 bN-3 ⋯ b0  ]   [aN-1]   [cN-1]
+</pre>
+<pre>
+(...,a-1,a0,a1,...) convolution (...,b-1,b0,b1,...) = (...,c-1,c0,c1,...)
+
+[  ⋮   ⋮   ⋮    ]   [⋮  ]   [⋮  ]
+[⋯ b0  b-1 b-2 ⋯]   [a-1]   [c-1]
+[⋯ b1  b0  b-1 ⋯] * [a0 ] = [c0 ]
+[⋯ b2  b1  b0  ⋯]   [a1 ]   [c1 ]
+[  ⋮   ⋮   ⋮    ]   [⋮  ]   [⋮  ]
+</pre>
+<p>摺積運算的單位元素是脈衝函數。摺積運算擁有交換律、結合律、加法分配律、線性。Linear Time-Invariant System皆可寫成摺積。不懂沒關係，本篇用不到。</p>
+<p class="t">Z-transform</p>
+<p>一串數列做Z-transform，得到一個複數多項式：數列每一項乘上複數z的次方，次方值是負的索引值，最後全部加起來。可以看作是一串數列與一串複數數列進行內積。</p>
+<p>z是一個複數，可以代入數值；不過一般都是維持原本外貌，以代數z示人。</p>
+<pre>
+Z-transform of (a<sub>0</sub>,a<sub>1</sub>,...,a<sub>N-1</sub>) = a<sub>0</sub>z<sup>0</sup> + a<sub>1</sub>z<sup>-1</sup> + ... + a<sub>N-1</sub>z<sup>-(N-1)</sup>
+</pre>
+<pre>
+Z-transform of (...,a<sub>-1</sub>,a<sub>0</sub>,a<sub>1</sub>,...) = ... + a<sub>-1</sub>z<sup>1</sup> + a<sub>0</sub>z<sup>0</sup> + a<sub>1</sub>z<sup>-1</sup> + ...
+</pre>
+<p class="t">數列摺積與多項式乘法（普通的演算法）</p>
+<p>因為電腦無法處理無限長數列，所以此處只討論有限長數列。</p>
+<p>兩串數列做Z-transform，變成多項式，然後相乘一下。因為是有限長數列，我們特意讓次方循環。</p>
+<pre>
+    <sub> </sub> <sub> </sub>    <sup>  </sup>    <sub> </sub> <sub> </sub>    <sup>  </sup>    <sub> </sub>a<sub>0</sub> * z<sup>0 </sup> +  <sub> </sub>a<sub>1</sub> * z<sup>-1</sup> +  <sub> </sub>a<sub>2</sub> * z<sup>-2</sup>
+×)  <sub> </sub> <sub> </sub>    <sup>  </sup>    <sub> </sub> <sub> </sub>    <sup>  </sup>    <sub> </sub>b<sub>0</sub> * z<sup>0 </sup> +  <sub> </sub>b<sub>1</sub> * z<sup>-1</sup> +  <sub> </sub>b<sub>2</sub> * z<sup>-2</sup>
+——————————————————————————————————————————————————————————————————
+    <sub> </sub> <sub> </sub>    <sup>  </sup>    <sub> </sub> <sub> </sub>    <sup>  </sup>   a<sub>0</sub>b<sub>2</sub> * z<sup>-2</sup> + a<sub>1</sub>b<sub>2</sub> * z<sup>-3</sup> + a<sub>2</sub>b<sub>2</sub> * z<sup>-4</sup>
+    <sub> </sub> <sub> </sub>    <sup>  </sup>   a<sub>0</sub>b<sub>1</sub> * z<sup>-1</sup> + a<sub>1</sub>b<sub>1</sub> * z<sup>-2</sup> + a<sub>2</sub>b<sub>1</sub> * z<sup>-3</sup>
+   a<sub>0</sub>b<sub>0</sub> * z<sup>0 </sup> + a<sub>1</sub>b<sub>0</sub> * z<sup>-1</sup> + a<sub>2</sub>b<sub>0</sub> * z<sup>-2</sup>
+——————————————————————————————————————————————————————————————————
+   a<sub>1</sub>b<sub>2</sub> * z<sup>0 </sup> + a<sub>2</sub>b<sub>2</sub> * z<sup>-1</sup> + a<sub>0</sub>b<sub>2</sub> * z<sup>-2</sup>
+   a<sub>2</sub>b<sub>1</sub> * z<sup>0 </sup> + a<sub>0</sub>b<sub>1</sub> * z<sup>-1</sup> + a<sub>1</sub>b<sub>1</sub> * z<sup>-2</sup>
+   a<sub>0</sub>b<sub>0</sub> * z<sup>0 </sup> + a<sub>1</sub>b<sub>0</sub> * z<sup>-1</sup> + a<sub>2</sub>b<sub>0</sub> * z<sup>-2</sup>
+——————————————————————————————————————————————————————————————————
+   (a<sub>0</sub>,a<sub>1</sub>,a<sub>2</sub>)       (a<sub>0</sub>,a<sub>1</sub>,a<sub>2</sub>)       (a<sub>0</sub>,a<sub>1</sub>,a<sub>2</sub>)
+      dot     * z<sup>0</sup> +    dot    * z<sup>-1</sup> +    dot    * z<sup>-2</sup>
+   (b<sub>0</sub>,b<sub>2</sub>,b<sub>1</sub>)       (b<sub>1</sub>,b<sub>0</sub>,b<sub>2</sub>)       (b<sub>2</sub>,b<sub>1</sub>,b<sub>0</sub>)
+</pre>
+<p>把相乘結果做逆向Z-transform，竟是原本兩串數列的摺積！</p>
+<p>數列摺積就是多項式乘法、多項式乘法就是數列摺積，藉由Z-transform改變計算順序罷了（遮住z不看，就很明顯了）。</p>
+<p>數列摺積與多項式乘法的時間複雜度都是O(N^2)。</p>
+<img src="Convolution1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Convolution1.png">
+<p>【註：計算學家重視計算，數列摺積與多項式乘法是主角，Z-transform只是輔助；數學家重視性質，Z-transform才是主角，數列摺積與多項式乘法只是應用。坊間書籍行文風格傾向數學家；書讀不通的時候，不妨揣摩一下數學家的觀點吧。】</p>
+<p class="t">數列摺積與多項式乘法（Fourier Transform）</p>
+<p>傅立葉轉換其實就是一串數列進行Z-transform，變成複數多項式，z分別代入e<sup>i*2π*(0/N)</sup>、e<sup>i*2π*(1/N)</sup>、……、e<sup>i*2π*((N-1)/N)</sup>，求得N個實際數值。</p>
+<p>兩個多項式相乘，可以簡化成這2N個數值點對點相乘！</p>
+<p>正向與逆向傅立葉轉換需時O(NlogN)，N個數值兩兩對應相乘需時O(N)，總時間複雜度為O(NlogN)。</p>
+<img src="Convolution2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Convolution2.png">
+<p>證明過程猜測如下：線性變換的本質，是在eigenvector上面進行倍率縮放，摺積也不例外。傅立葉轉換的矩陣，恰好是orthogonal eigenbasis，所以每個維度就可以各自縮放了。</p>
+<p>數論轉換也有著相同的性質，哈特利轉換則有著類似的性質。</p>
+<p class="e">UVa 12298 ICPC 4671 5705</p>
+<p class="t">數列摺積與多項式乘法──循環的Toeplitz Matrix的乘法</p>
+<p>循環的Toeplitz Matrix乘以向量，就是循環摺積。得運用傅立葉轉換、數論轉換。</p>
+<p>一般的Toeplitz Matrix乘以向量，只要填充一下元素，也能變成循環的Toeplitz Matrix乘以向量。</p>
+<p class="t">數列摺積與多項式乘法──大數乘法</p>
+<p>大數乘法是直式乘法，效果同多項式乘法、同數列摺積。得運用傅立葉轉換、數論轉換。</p>
+<p>大數乘法的演算法有Schönhage-Strassen Algorithm與Fürer's Algorithm，事實上只是套用不同的數論轉換演算法而已。</p>
+<p>注意到，此處談論的多項式乘法，次方是循環的；然而大數乘法，位數並不會循環。解決方式是：被乘數陣列與乘數陣列，預先增加長度，務必大於等於乘積陣列，如此就不受循環影響。</p>
+<p class="t">時域摺積等於頻域乘法，頻域摺積等於時域乘法。</p>
+<p>傅立葉轉換的輸入稱做「時域」、輸出稱作「頻域」，呼應傅立葉轉換的功能──把波（時間軸）表示成頻譜（頻率軸）。</p>
+<p>前面段落所講的是時域摺積等於頻域乘法，事實上頻域摺積也等於時域乘法。</p>
+<img src="Convolution3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Convolution3.png">
+
+</div></div><div class="a"><div class="h">
+<p class="b">Wavelet（Under Construction!）</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+
+</div></div><div class="a"><div class="h">
+<p class="b">Wavelet Transform（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,389 @@
+<html>
+
+<head>
+<title>5.5 标签式对话框</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="4">5.5 </font><font color="#3973DE" size="4">标签式对话框</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在设计较为复杂的对话框时，常常会遇到这种情况：对某一事物的设置或选项需要用到大量的控件，以至于一个对话框放不下，而这些控件描述的是类似的属性，不能分开。用普通的对话框技术，这一问题很难解决。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">提供了对标签式对话框的支持，可以很好的解决上述问题。标签式对话框实际上是一个包含了多个子对话框的对话框，这些子对话框通常被称为页</font><font FACE="Times New Roman" SIZE="3">(Page)</font><font SIZE="3">。每次只有一个页是可见的，在对话框的顶端有一行标签，用户通过单击这些标签可切换到不同的页。显然，标签式对话框可以容纳大量的控件。在象</font><font FACE="Times New Roman" SIZE="3">Word</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Developer Studio</font><font SIZE="3">这样复杂的软件中，用户会接触到较多的标签式对话框，一个典型的标签式对话框如图</font><font FACE="Times New Roman" SIZE="3">5.10</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T5_10.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/T5_10.gif" alt="T5_10.tif (119141 bytes)" WIDTH="447" HEIGHT="247"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font size="2">图<font FACE="Times New Roman">5.10 </font>典型的标签式对话框<font FACE="Times New Roman"></p>
+    </font></font><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.5.1 </font><font SIZE="3" color="#3973DE">标签式对话框的创建</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">为了支持标签式对话框，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">提供了</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">类和</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">类。前者代表对话框的框架，后者代表对话框中的某一页。</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CDialog</font><font SIZE="3">类的派生类，而</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的派生类。虽然</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">不是</font><font FACE="Times New Roman" SIZE="3">CDialog</font><font SIZE="3">类的派生类，但使用</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">对象的方法与使用</font><font FACE="Times New Roman" SIZE="3">CDialog</font><font SIZE="3">对象是类似的。标签式对话框是一种特殊的对话框，因此，和普通对话框相比，它的设计与实现既有许多相似之处，又有一些不同的特点。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">创建一个标签式对话框一般包括以下几个步骤：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">分别为各个页创建对话框模板，去掉缺省的</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">按钮。每页的模板最好具有相同的尺寸，如果尺寸不统一，则框架将根据最大的页来确定标签对话框的大小。在创建模板时，需要在模板属性对话框中指定下列属性：</p>
+        <blockquote>
+          <blockquote>
+            <p ALIGN="JUSTIFY">指定标题</font><font FACE="Times New Roman" SIZE="3">(Caption)</font><font SIZE="3">的内容。标题的内容将显示在该页对应的标签中。</p>
+            <p ALIGN="JUSTIFY">选择</font><font FACE="Times New Roman" SIZE="3">TitleBar</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">Child</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">ThinBorder</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Disable</font><font SIZE="3">属性。</p>
+          </blockquote>
+        </blockquote>
+        <p ALIGN="JUSTIFY">根据各个页的模板，用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">分别为每个页创建</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">类的派生类。这一过程与创建普通对话框类的过程类似，不同的是在创建新类对话框中应在</font><font FACE="Times New Roman" SIZE="3">Base class</font><font SIZE="3">一栏中选择</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">而不是</font><font FACE="Times New Roman" SIZE="3">CDialog</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为每页加入与控件对应的成员变量，这个过程与为普通对话框类加入成员变量类似。</p>
+        <p ALIGN="JUSTIFY">程序员可直接使用</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">类，也可以从该类派生一个新类。除非要创建一个非模态对话框，或要在框架对话框中加入控件，否则没有必要派生一个新类。如果直接使用</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">类，则一个典型的标签式对话框的创建代码如清单</font><font FACE="Times New Roman" SIZE="3">5.12</font><font SIZE="3">所示，该段代码也演示了标签式对话框与外界的数据交换。这些代码通常是放在显示对话框的命令处理函数中。可以看出，对话框框架的创建过程及对话框与外界的数据交换机制与普通对话框是一样的，不同之处是还需将页对象加入到</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">对象中。如果要创建的是模态对话框，应调用</font><font FACE="Times New Roman" SIZE="3">CPropertySheet::DoModal</font><font SIZE="3">，如果想创建非模态对话框，则应该调用</font><font FACE="Times New Roman" SIZE="3">CPropertySheet::Create</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">若从</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">类派生了一个新类，则应该将所有的页对象以成员变量的形式嵌入到派生类中，并在派生类的构造函数中调用</font><font FACE="Times New Roman" SIZE="3">CPropertySheet::AddPage</font><font SIZE="3">函数来把各个页添加到对话框中。这样，在创建标签式对话框时就不用做添加页的工作了。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.12 </font><font SIZE="3">典型的标签式对话框创建代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CMyView::DoModalPropertySheet()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CPropertySheet propsheet;</p>
+    <p ALIGN="JUSTIFY">CMyFirstPage pageFirst; // derived from CPropertyPage</p>
+    <p ALIGN="JUSTIFY">CMySecondPage pageSecond; // derived from CPropertyPage</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Move member data from the view (or from the currently</p>
+    <p ALIGN="JUSTIFY">// selected object in the view, for example).</p>
+    <p ALIGN="JUSTIFY">pageFirst.m_nMember1 = m_nMember1; </p>
+    <p ALIGN="JUSTIFY">pageFirst.m_nMember2 = m_nMember2;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pageSecond.m_strMember3 = m_strMember3;</p>
+    <p ALIGN="JUSTIFY">pageSecond.m_strMember4 = m_strMember4;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">propsheet.AddPage(&amp;pageFirst);</p>
+    <p ALIGN="JUSTIFY">propsheet.AddPage(&amp;pageSecond);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (propsheet.DoModal() == IDOK)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_nMember1 = pageFirst.m_nMember1;</p>
+    <p ALIGN="JUSTIFY">m_nMember2 = pageFirst.m_nMember2;</p>
+    <p ALIGN="JUSTIFY">m_strMember3 = pageSecond.m_strMember3;</p>
+    <p ALIGN="JUSTIFY">m_strMember4 = pageSecond.m_strMember4; </p>
+    <p ALIGN="JUSTIFY"><b>. . . </b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">.5.2 
+    </font><font SIZE="3" color="#3973DE">标签式对话框的运行机制</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">标签式对话框的初始化包括框架对话框的初始化和页的初始化。页的初始化工作可在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">函数中进行，而框架对话框的初始化应该在</font><font FACE="Times New Roman" SIZE="3">OnCreate</font><font SIZE="3">函数中完成。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">根据</font><font FACE="Times New Roman" SIZE="3">CPropertySheet::DoModal</font><font SIZE="3">返回的是</font><font FACE="Times New Roman" SIZE="3">IDOK</font><font SIZE="3">还是</font><font FACE="Times New Roman" SIZE="3">IDCANCEL</font><font SIZE="3">，程序可判断出关闭对话框时按的是</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">还是</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">按钮，这与普通对话框是一样的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果标签式对话框是模态对话框，在其底部会有三个按钮，依次为</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">（应用）按钮，如果对话框是非模态的，则没有这些按钮。</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">按钮的意义与普通对话框没什么两样，</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮则是标签对话框所特有的。普通的模态对话框只有在用户按下了</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮返回后，对话框的设置才能生效，而设计</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮的意图是让用户能在不关闭对话框的情况下使对话框中的设置生效。由此可见，</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">的作用与前面例子中登录数据的“添加”按钮类似，用户不必退出对话框，就可以反复进行设置，这在某些应用场合下是很有用的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">为了对上述三个按钮作出响应，</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">类提供了</font><font FACE="Times New Roman" SIZE="3">OnOK</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">OnCancel</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OnApply</font><font SIZE="3">函数，用户可覆盖这三个函数以完成所需的工作。需要指出的是这三个函数并不是直接响应按钮的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息的，但在按钮按下后它们会被间接调用。这些函数的说明如下：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual void OnOK( );<br>
+        </font><font SIZE="3">在按下</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮后，该函数将被调用。缺省的</font><font FACE="Times New Roman" SIZE="3">OnOK</font><font SIZE="3">函数几乎什么也不干，象数据交换和关闭对话框这样的工作是在别的地方完成的，这与普通对话框的</font><font FACE="Times New Roman" SIZE="3">OnOK</font><font SIZE="3">函数是不同的。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual void OnCancel( );<br>
+        </font><font SIZE="3">在按下</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">按钮后，该函数将被调用。缺省的</font><font FACE="Times New Roman" SIZE="3">OnCancel</font><font SIZE="3">函数也是几乎什么都不干。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual BOOL OnApply( );<br>
+        </font><font SIZE="3">在按下</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮后，该函数将被调用。缺省的</font><font FACE="Times New Roman" SIZE="3">OnApply</font><font SIZE="3">会调用</font><font FACE="Times New Roman" SIZE="3">OnOK</font><font SIZE="3">函数。函数的返回值如果是</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，则对话框中的设置将生效，否则无效。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">按理说，</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">类也应该提供上述函数，特别是</font><font FACE="Times New Roman" SIZE="3">OnApply</font><font SIZE="3">。但奇怪的是，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">并未考虑</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">类的按钮响应问题。读者不要指望能通过</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">来自动创建按钮的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息处理函数，如果需要用到这类函数，那么只好手工创建了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">下列几个</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">类的成员函数也与标签对话框的运行机制相关。</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void SetModified( BOOL 
+        bChanged = TRUE );<br>
+        </font><font SIZE="3">该函数用来设置修改标志。若参数</font><font FACE="Times New Roman" SIZE="3">bChanged</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，则表明对话框中的设置已改动，否则说明设置未改动。该函数的一个主要用途是允许或禁止</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮。在缺省情况下，</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮是禁止的。只要一调用</font><font FACE="Times New Roman" SIZE="3">SetModified(TRUE)</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮就被允许，而调用</font><font FACE="Times New Roman" SIZE="3">SetModified(FALSE)</font><font SIZE="3">并不一定能使</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮禁止，只有在所有被标为改动过的页都调用了</font><font FACE="Times New Roman" SIZE="3">SetModified(FALSE)</font><font SIZE="3">后，</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮才会被禁止。另外，该函数对</font><font FACE="Times New Roman" SIZE="3">OnApply</font><font SIZE="3">的调用也有影响，当</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮被按下后，只有那些被标为改动过的页的</font><font FACE="Times New Roman" SIZE="3">OnApply</font><font SIZE="3">函数才会被调用。在调用该函数之前，程序需要判断页中的内容是否已被修改，可以通过处理诸如</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">EN_CHANG</font><font SIZE="3">这样的控件通知消息来感知页的内容的改变。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual BOOL OnSetActive( 
+        );<br>
+        </font><font SIZE="3">当页被激活或被创建时，都会调用该函数。该函数的缺省行为是若页还未创建，就创建之，若页已经创建，则将其激活，并调用</font><font FACE="Times New Roman" SIZE="3">UpdateData(FALSE)</font><font SIZE="3">更新控件。用户可覆盖该函数完成一些刷新方面的工作。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual BOOL OnKillActive( 
+        );<br>
+        </font><font SIZE="3">当原来可见的页被覆盖或被删除时，都会调用该函数。该函数的缺省行为是调用</font><font FACE="Times New Roman" SIZE="3">UpdateData(TRUE)</font><font SIZE="3">更新数据。用户可覆盖该函数完成一些特殊数据的有效性检查工作。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">需要说明的是，标签对话框中的所有页不一定都会被创建。实际上，那些从未打开过的页及其控件是不会被创建的。因此，在</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">类的派生类中，只有在确定了页已存在后，才能调用与对话框及控件相关的函数（如</font><font FACE="Times New Roman" SIZE="3">UpdateData</font><font SIZE="3">）。如果收到控件通知消息，或</font><font FACE="Times New Roman" SIZE="3">OnSetActive</font><font SIZE="3">函数被调用，则说明页已经存在。正是由于上述原因，使得标签式对话框的内部数据交换只能在</font><font FACE="Times New Roman" SIZE="3">OnSetActive</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OnKillActive</font><font SIZE="3">函数中进行。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.5.3 
+    </font><font SIZE="3" color="#3973DE">标签式对话框的具体实例</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">通过上面的分析，读者对标签式对话框已经比较了解了。现在，让我们在前面做过的</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">程序中加入一个标签式对话框来试验一下其功能。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">程序的登录数据对话框中有“个人情况”和“单位情况”两组控件，显然，我们可以创建一个标签式对话框并把两组控件分别放到两个页中。为了简单起见，我们仅要求输入姓名和单位名，简化后的标签式对话框如图</font><font FACE="Times New Roman" SIZE="3">5.11</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><img src="T5_11.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/T5_11.gif" alt="T5_11.tif (172776 bytes)" WIDTH="556" HEIGHT="189"><font SIZE="3"></p>
+    <p ALIGN="center">图</font><font FACE="Times New Roman" SIZE="3">5.11 </font><font SIZE="3">简化后的标签式对话框</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY"></b></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">通过对标签式对话框的分析，读者已经知道</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">类未对</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮的控件通知消息进行处理，这是一个不足之处。</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">的新版本将向读者演示如何在</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">类的派生类中手工加入</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息处理函数。另外，新版本还演示了对话框与外部对象交流的一种较好办法，即通过发送用户定义消息来向外部对象传递信息。在登录数据对话框中，与外界交流的方法是在对话框内部直接访问派生的视图对象，这样做的优点是方便快捷，缺点则是对外界依赖较大，不利于移植。而用发送用户定义消息的方法则可以避免这个缺点。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">具体工作请按下面几步进行：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">在菜单资源中的</font><font FACE="Times New Roman" SIZE="3">Edit</font><font SIZE="3">菜单的“登录数据</font><font FACE="Times New Roman" SIZE="3">...</font><font SIZE="3">”项的后面插入一个名为“标签式对话框</font><font FACE="Times New Roman" SIZE="3">...</font><font SIZE="3">”的菜单项，并指定其</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">ID_EDIT_PROPDLG</font><font SIZE="3">。然后用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">类内为该菜单命令创建命令处理函数</font><font FACE="Times New Roman" SIZE="3">OnEditPropdlg</font><font SIZE="3">，该函数将用来显示标签式对话框。</p>
+        <p ALIGN="JUSTIFY">为标签式对话框的第一页创建对话框模板。去掉缺省的</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">按钮。注意应选择中文语种和宋体字体。在属性对话框中，指定对话框的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDD_PERSONAL</font><font SIZE="3">，标题为“个人情况”，在</font><font FACE="Times New Roman" SIZE="3">Styles</font><font SIZE="3">页中，选中</font><font FACE="Times New Roman" SIZE="3">TitleBar</font><font SIZE="3">项，并在</font><font FACE="Times New Roman" SIZE="3">Style</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">Child</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Border</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">ThinBorder</font><font SIZE="3">。在</font><font FACE="Times New Roman" SIZE="3">More Styles</font><font SIZE="3">页中，选中</font><font FACE="Times New Roman" SIZE="3">Disable</font><font SIZE="3">。然后，在模板中加入控件，如图</font><font FACE="Times New Roman" SIZE="3">5.11</font><font SIZE="3">和表</font><font FACE="Times New Roman" SIZE="3">5.6</font><font SIZE="3">所示。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">5.6</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件类型</b></font></td>
+        <td WIDTH="33%"><b><font SIZE="3"><p ALIGN="JUSTIFY">控件</font><font FACE="Times New Roman" SIZE="3">ID</font></b></td>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件标题</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">静态正文</font></td>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">姓名：</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">编辑框</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_NAME</font></td>
+        <td WIDTH="33%">　</td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为模板</font><font FACE="Times New Roman" SIZE="3">IDD_PERSONAL</font><font SIZE="3">创建</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">类的派生类，类名为</font><font FACE="Times New Roman" SIZE="3">CPersonalPage</font><font SIZE="3">。在该类中为控件</font><font FACE="Times New Roman" SIZE="3">IDC_NAME</font><font SIZE="3">加入对应的成员变量，变量名为</font><font FACE="Times New Roman" SIZE="3">m_strName</font><font SIZE="3">，类型为</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">。为控件</font><font FACE="Times New Roman" SIZE="3">IDC_NAME</font><font SIZE="3">加入</font><font FACE="Times New Roman" SIZE="3">EN_CHANGE</font><font SIZE="3">消息处理函数</font><font FACE="Times New Roman" SIZE="3">OnChangeName</font><font SIZE="3">，当编辑框的内容被改变时，控件会向对话框发出</font><font FACE="Times New Roman" SIZE="3">EN_CHANGE</font><font SIZE="3">消息。在</font><font FACE="Times New Roman" SIZE="3">OnChangeName</font><font SIZE="3">中，应该使</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮允许。</p>
+        <p ALIGN="JUSTIFY">仿照步</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">，为标签式对话框的第二页创建对话框模板。指定其</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDD_UNIT</font><font SIZE="3">，标题为“单位情况”。在模板中加入的控件如图</font><font FACE="Times New Roman" SIZE="3">5.11</font><font SIZE="3">和表</font><font FACE="Times New Roman" SIZE="3">5.7</font><font SIZE="3">所示。</p>
+        </font><b>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">5.7</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件类型</b></font></td>
+        <td WIDTH="33%"><b><font SIZE="3"><p ALIGN="JUSTIFY">控件</font><font FACE="Times New Roman" SIZE="3">ID</font></b></td>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件标题</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">静态正文</font></td>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">工作单位：</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">编辑框</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_UNIT</font></td>
+        <td WIDTH="33%">　</td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为模板</font><font FACE="Times New Roman" SIZE="3">IDD_UNIT</font><font SIZE="3">创建</font><font FACE="Times New Roman" SIZE="3">CPropertyPage</font><font SIZE="3">类的派生类，类名为</font><font FACE="Times New Roman" SIZE="3">CUnitPage</font><font SIZE="3">。在该类中为控件</font><font FACE="Times New Roman" SIZE="3">IDC_UNIT</font><font SIZE="3">加入对应的成员变量，变量名为</font><font FACE="Times New Roman" SIZE="3">m_strUnit</font><font SIZE="3">，类型为</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">。为控件</font><font FACE="Times New Roman" SIZE="3">IDC_UNIT</font><font SIZE="3">加入</font><font FACE="Times New Roman" SIZE="3">EN_CHANGE</font><font SIZE="3">消息处理函数</font><font FACE="Times New Roman" SIZE="3">OnChangeUnit</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">创建一个</font><font FACE="Times New Roman" SIZE="3">CPropertySheet</font><font SIZE="3">的派生类，类名为</font><font FACE="Times New Roman" SIZE="3">CRegisterSheet</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">CRegisterApp</font><font SIZE="3">类的头文件的开头加入下面一行<br>
+        </font><font FACE="Times New Roman" SIZE="3"><b>#define WM_USER_OUTPUT (WM_USER+200)<br>
+        </b>WM_USER_OUTPUT</font><font SIZE="3">不是标准的</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">消息，而是一个用户定义消息。在本例中，当标签式对话框的</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮被按下后，程序会向编辑视图发送该消息，编辑视图对应的消息处理函数应该输出对话框的数据。用户定义消息的编码范围是</font><font FACE="Times New Roman" SIZE="3">WM_USER</font><font SIZE="3">—</font><font FACE="Times New Roman" SIZE="3">0x7FFF</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">请读者按清单</font><font FACE="Times New Roman" SIZE="3">5.13</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">5.14</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">5.15</font><font SIZE="3">修改程序，限于篇幅，这里仅列出了需要修改的部分源代码。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.13 CPersonalPage</font><font SIZE="3">类和</font><font FACE="Times New Roman" SIZE="3">CUnitPage</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CPersonalPage::OnChangeName() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your control notification handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetModified(TRUE); //</font><font SIZE="3">使</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮允许</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">UpdateData(TRUE);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CUnitPage::OnChangeUnit() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your control notification handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetModified(TRUE); //</font><font SIZE="3">使</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮允许</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">UpdateData(TRUE);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当页中的编辑框的内容被改变时，页会收到</font><font FACE="Times New Roman" SIZE="3">EN_CHANGE</font><font SIZE="3">消息，这将导致</font><font FACE="Times New Roman" SIZE="3">OnChangeName</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">OnChangeUnit</font><font SIZE="3">被调用。对该消息的处理是使</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮允许并调用</font><font FACE="Times New Roman" SIZE="3">UpdateData(TRUE)</font><font SIZE="3">更新数据。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.14 CRegisterSheet</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">文件</font><font FACE="Times New Roman" SIZE="3">RegisterSheet.h</p>
+    <p ALIGN="JUSTIFY">class CRegisterSheet : public CPropertySheet</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">// Construction</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p ALIGN="JUSTIFY">CRegisterSheet(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT 
+    iSelectPage = 0);</p>
+    <p ALIGN="JUSTIFY">CRegisterSheet(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT 
+    iSelectPage = 0);</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p ALIGN="JUSTIFY">CPersonalPage m_PersonalPage;</p>
+    <p ALIGN="JUSTIFY">CUnitPage m_UnitPage;</p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">protected:</p>
+    <p ALIGN="JUSTIFY">//{{AFX_MSG(CRegisterSheet)</p>
+    <p ALIGN="JUSTIFY">// NOTE - the ClassWizard will add and remove member functions here.</p>
+    <p ALIGN="JUSTIFY">//}}AFX_MSG</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">afx_msg void OnApplyNow();</b></p>
+    <p ALIGN="JUSTIFY">DECLARE_MESSAGE_MAP() </p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">文件</font><font FACE="Times New Roman" SIZE="3">RegisterSheet.cpp</p>
+    <p ALIGN="JUSTIFY">#include &quot;stdafx.h&quot;</p>
+    <p ALIGN="JUSTIFY">#include &quot;Register.h&quot;</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include &quot;PersonalPage.h&quot;</p>
+    <p ALIGN="JUSTIFY">#include &quot;UnitPage.h&quot;</b></p>
+    <p ALIGN="JUSTIFY">#include &quot;RegisterSheet.h&quot;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterSheet::CRegisterSheet(LPCTSTR pszCaption, CWnd* pParentWnd, 
+    UINT iSelectPage)</p>
+    <p ALIGN="JUSTIFY">:CPropertySheet(pszCaption, pParentWnd, iSelectPage)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">AddPage(&amp;m_PersonalPage); //</font><font SIZE="3">向标签对话框中添加页</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">AddPage(&amp;m_UnitPage);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BEGIN_MESSAGE_MAP(CRegisterSheet, CPropertySheet)</p>
+    <p ALIGN="JUSTIFY">//{{AFX_MSG_MAP(CRegisterSheet)</p>
+    <p ALIGN="JUSTIFY">// NOTE - the ClassWizard will add and remove mapping macros here.</p>
+    <p ALIGN="JUSTIFY">//}}AFX_MSG_MAP</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ON_BN_CLICKED(ID_APPLY_NOW, OnApplyNow)</b></p>
+    <p ALIGN="JUSTIFY">END_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterSheet::OnApplyNow()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CFrameWnd* pFrameWnd = (CFrameWnd*) AfxGetMainWnd();</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">获取指向视图的指针</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CView* pView = pFrameWnd-&gt;GetActiveFrame()-&gt;GetActiveView();</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">发送用户定义消息，在视图中输出信息</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pView-&gt;SendMessage(WM_USER_OUTPUT, (WPARAM)this);</p>
+    <p ALIGN="JUSTIFY">m_PersonalPage.SetModified(FALSE);</p>
+    <p ALIGN="JUSTIFY">m_UnitPage.SetModified(FALSE); //</font><font SIZE="3">使</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮禁止</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CRegisterSheet</font><font SIZE="3">类内嵌入了</font><font FACE="Times New Roman" SIZE="3">CPersonalPage</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CUnitPage</font><font SIZE="3">对象，在该类的构造函数中调用</font><font FACE="Times New Roman" SIZE="3">CPropertySheet::AddPage</font><font SIZE="3">将两个页添加到对话框中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">标签式对话框的</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">分别是</font><font FACE="Times New Roman" SIZE="3">IDOK</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">IDCANCEL</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ID_APPLY_NOW</font><font SIZE="3">。在按下</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮后，</font><font FACE="Times New Roman" SIZE="3">CRegisterSheet</font><font SIZE="3">对象应该作出响应，由于</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">不能为</font><font FACE="Times New Roman" SIZE="3">CRegisterSheet</font><font SIZE="3">类提供</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息处理函数，故必须手工声明和定义消息处理函数</font><font FACE="Times New Roman" SIZE="3">OnApplyNow</font><font SIZE="3">，并在消息映射表中手工加入</font><font FACE="Times New Roman" SIZE="3">ID_APPLY_NOW</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息映射，该映射是通过</font><font FACE="Times New Roman" SIZE="3">ON_BN_CLICKED</font><font SIZE="3">宏实现的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">OnApplyNow</font><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">CWnd::SendMessage</font><font SIZE="3">向视图发送用户定义消息</font><font FACE="Times New Roman" SIZE="3">WM_USER_OUTPUT</font><font SIZE="3">，并调用</font><font FACE="Times New Roman" SIZE="3">CPropertyPage::SetModified(FALSE)</font><font SIZE="3">来禁止</font><font FACE="Times New Roman" SIZE="3">Apply</font><font SIZE="3">按钮。在发送消息时，将</font><font FACE="Times New Roman" SIZE="3">this</font><font SIZE="3">指针作为</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">参数一并发送，这是因为视图对象需要指向</font><font FACE="Times New Roman" SIZE="3">CRegisterSheet</font><font SIZE="3">对象的指针来访问该对象。该函数演示了如何在程序的任意地方获得当前活动视图的方法：首先，调用</font><font FACE="Times New Roman" SIZE="3">AfxGetMainWnd()</font><font SIZE="3">返回程序主窗口的</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类指针，然后将该指针强制转换成</font><font FACE="Times New Roman" SIZE="3">CFrameWnd</font><font SIZE="3">类型，接着调用</font><font FACE="Times New Roman" SIZE="3">CFrameWnd::GetActiveFrame</font><font SIZE="3">返回当前活动的框架窗口的一个</font><font FACE="Times New Roman" SIZE="3">CFrameWnd</font><font SIZE="3">型指针，最后调用</font><font FACE="Times New Roman" SIZE="3">CFrameWnd::GetActiveView</font><font SIZE="3">返回当前活动视图的一个</font><font FACE="Times New Roman" SIZE="3">Cview</font><font SIZE="3">型指针。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在函数</font><font FACE="Times New Roman" SIZE="3">OnApplyNow</font><font SIZE="3">中主要调用了下列函数：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd* AfxGetMainWnd( );<br>
+        </font><font SIZE="3">该函数返回一个指向程序的主窗口</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">指针。程序的主窗口可以是一个框架窗口，也可以是一个对话框。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual CFrameWnd* 
+        GetActiveFrame( );<br>
+        </font><font SIZE="3">函数返回一个</font><font FACE="Times New Roman" SIZE="3">CFrameWnd</font><font SIZE="3">型的指针。如果是</font><font FACE="Times New Roman" SIZE="3">MDI</font><font SIZE="3">（多文档界面）程序，则该函数将返回当前活动的子框架窗口，如果是</font><font FACE="Times New Roman" SIZE="3">SDI</font><font SIZE="3">（单文档界面）程序，该函数将返回主框架窗口本身。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CView* GetActiveView( ) 
+        const;<br>
+        </font><font SIZE="3">返回一个指向当前活动视图的</font><font FACE="Times New Roman" SIZE="3">Cview</font><font SIZE="3">型指针。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LRESULT SendMessage( UINT 
+        message, WPARAM wParam = 0, LPARAM lParam = 0 );<br>
+        </font><font SIZE="3">用于向本窗口发送消息。</font><font FACE="Times New Roman" SIZE="3">SendMessage</font><font SIZE="3">会直接调用发送消息的处理函数，直到发送消息被处理完后该函数才返回。参数</font><font FACE="Times New Roman" SIZE="3">message</font><font SIZE="3">说明了要发送的消息，</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">lParam</font><font SIZE="3">则提供了消息的附加信息。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.15 CRegisterView</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">文件</font><font FACE="Times New Roman" SIZE="3">RegisterView.h</p>
+    <p ALIGN="JUSTIFY">class CRegisterView : public CEditView</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">// Generated message map functions</p>
+    <p ALIGN="JUSTIFY">protected:</p>
+    <p ALIGN="JUSTIFY">//{{AFX_MSG(CRegisterView)</p>
+    <p ALIGN="JUSTIFY">afx_msg void OnEditRegister();</p>
+    <p ALIGN="JUSTIFY">afx_msg void OnEditPropdlg();</p>
+    <p ALIGN="JUSTIFY">//}}AFX_MSG</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">afx_msg LRESULT OnOutput(WPARAM wParam, LPARAM lParam);</b></p>
+    <p ALIGN="JUSTIFY">DECLARE_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">文件</font><font FACE="Times New Roman" SIZE="3">RegisterView.cpp</p>
+    <p ALIGN="JUSTIFY">#include &quot;stdafx.h&quot;</p>
+    <p ALIGN="JUSTIFY">#include &quot;Register.h&quot;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include &quot;RegisterDoc.h&quot;</p>
+    <p ALIGN="JUSTIFY">#include &quot;RegisterView.h&quot;</p>
+    <p ALIGN="JUSTIFY">#include &quot;RegisterDialog.h&quot;</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include &quot;PersonalPage.h&quot;</p>
+    <p ALIGN="JUSTIFY">#include &quot;UnitPage.h&quot;</p>
+    <p ALIGN="JUSTIFY">#include &quot;RegisterSheet.h&quot;</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BEGIN_MESSAGE_MAP(CRegisterView, CEditView)</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</p>
+    <p ALIGN="JUSTIFY">ON_MESSAGE(WM_USER_OUTPUT, OnOutput)</b></p>
+    <p ALIGN="JUSTIFY">END_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterView::OnEditPropdlg() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterSheet RegisterSheet(&quot;</font><font SIZE="3">登录</font><font FACE="Times New Roman" SIZE="3">&quot;); </p>
+    <p ALIGN="JUSTIFY">RegisterSheet.m_PersonalPage.m_strName=&quot;</font><font SIZE="3">张颖峰</font><font FACE="Times New Roman" SIZE="3">&quot;;</p>
+    <p ALIGN="JUSTIFY">RegisterSheet.m_UnitPage.m_strUnit=&quot;</font><font SIZE="3">南京邮电学院</font><font FACE="Times New Roman" SIZE="3">&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(RegisterSheet.DoModal()==IDOK)</p>
+    <p ALIGN="JUSTIFY">OnOutput((WPARAM)&amp;RegisterSheet,0);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">用户定义消息</font><font FACE="Times New Roman" SIZE="3">WM_USER_OUTPUT</font><font SIZE="3">的处理函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">LRESULT CRegisterView::OnOutput(WPARAM wParam, LPARAM lParam)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CRegisterSheet *pSheet=(CRegisterSheet*)wParam;</p>
+    <p ALIGN="JUSTIFY">CString str;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetWindowText(str);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">姓名</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=pSheet-&gt;m_PersonalPage.m_strName;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">工作单位</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=pSheet-&gt;m_UnitPage.m_strUnit;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetWindowText(str);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return 0;</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY">OnEditPropdlg</font><font SIZE="3">函数负责初始化和创建标签式对话框，这一过程与创建普通对话框差不多。如果用户是按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮返回的，则调用</font><font FACE="Times New Roman" SIZE="3">OnOutput</font><font SIZE="3">函数输出数据。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterView</font><font SIZE="3">类的</font><font FACE="Times New Roman" SIZE="3">OnOutput</font><font SIZE="3">函数负责处理标签对话框发来的用户定义消息</font><font FACE="Times New Roman" SIZE="3">WM_USER_OUTPUT</font><font SIZE="3">。用户定义消息的处理函数只能用手工的方法加入。用户定义消息的消息映射是用</font><font FACE="Times New Roman" SIZE="3">ON_MESSAGE</font><font SIZE="3">宏来完成的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">OnOutput</font><font SIZE="3">的两个参数</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">lParam</font><font SIZE="3">分别对应消息的</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">lParam</font><font SIZE="3">值。该函数从</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">参数中获得指向</font><font FACE="Times New Roman" SIZE="3">CRegisterSheet</font><font SIZE="3">对象的指针，然后将该对象中的数据输出到视图中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">，试一试自己设计的标签式对话框。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap5_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/chap5_4.htm">上一页</a></td>
+        <td><p align="right"><a href="chap5_6.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/chap5_6.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

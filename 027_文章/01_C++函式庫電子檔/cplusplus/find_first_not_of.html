@@ -1,0 +1,362 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>string::find_first_not_of - C++ Reference</title>
+<link rel="shortcut icon" href="javascript:if(confirm('http://www.cplusplus.com/favicon.ico  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/favicon.ico'" tppabs="http://www.cplusplus.com/favicon.ico">
+<style type="text/css">
+<!--
+BODY, TABLE, INPUT, SELECT, TEXTAREA {font-family:verdana,arial,helvetica,sans-serif; font-size:12px; color:black}
+BODY, FORM, PRE {margin:0; padding:0}
+DT {font-weight:bold} DD, UL {margin-bottom:12px} UL {margin-top:4px} LI {margin-bottom:4px}
+A:link, A:visited, A:active {text-decoration: none; color:#000070} A:hover {text-decoration: underline; color:#0000A0}
+
+.imgbox {line-height:1px;} /* for FF */
+
+.bar {color:white; background:url("/img/headbg.gif"); line-height:20px; vertical-align:top}
+.bar TABLE {color:white;font-size:9px; line-height:16px;}
+.bar A:link, .bar A:visited, .bar A:active {color:white} .bar A:hover {text-decoration:none; color:yellow}
+.bar .txt {height:14px; background-color:#C0C0FF; border: 1px inset}
+.bar .btn {height:18px; background-color:#C0C0FF; font-size:9px; border:1px outset}
+
+.left {border-right:1px solid black}
+.left TABLE {border:#00007F 1px solid; margin-top:5px; width:160px; background:white; border-collapse:collapse;}
+.left TD {color:#000070; text-align:left;font-family:verdana,arial,helvetica,sans-serif; font-size:x-small;}
+.left TH {height:14px; color:#FFFFFF; background:blue url("/img/blue.gif"); font-family:verdana,arial,helvetica,sans-serif; font-size:xx-small;}
+.left TH A:link, .left TH A:visited, .left TH A:active {text-decoration: none;color:#FFFFFF;} .left TH A:hover {text-decoration: none;color:yellow}
+
+.content {padding: 5px}
+.list {width:98%} .list TD {border:silver 1px solid; position:relative; left:2%} .list .tit {width:160px}
+.boxed {border-collapse: collapse;} .boxed TH {background:#E0E0E0; border:1px solid black;} .boxed TD {border:1px solid black}
+
+.code {background:#EFEFFF; border: 1px solid #C0C0D0;}
+.code A:link, .code A:visited, .code A:active {text-decoration: none; color:black} .code A:hover {text-decoration: none; color:black; background:yellow}
+.codebox {width:100%;margin:0px; padding:0px; border:none}
+.kw, A.kw:hover, A.kw:link, A.kw:visited, A.kw:active {color:#0000B0}
+.prep {color:#500070} .comm {color:#007000} .str {color:#600030}
+
+.snippet {margin-left:20px}
+.result {width:50%; background:#E7E7E7; border: 1px solid #C0C0C0; vertical-align:top}
+
+.warning {background:#FFC000;border:2px solid red}
+.selected {background:#F0F0F0;}
+
+.stdform, .stdform TH {border:#00007F 1px solid} .stdform TD {border:#707080 1px solid; text-align:left}
+.stdform TH {color:#FFFFFF; background:blue url("/img/blue.gif"); } .stdform TH A:link, .stdform TH A:visited, .stdform TH A:active {color: white} .stdform TH A:hover {color:yellow}
+.stdform TR TD {background: #F0F0FF} .stdform TR.odd TD {background: #E0E0FF}
+.stdform TEXTAREA, .stdform .value {font-family:courier,monospace} .stdform .field {text-align:right;font-weight:bold} .stdform .description {font-size:80%;} .stdform .number {text-align:center}
+.stdform .txt, .stdform SELECT, .stdform TEXTAREA {border:black 1px solid; background-color:#FFFFF0;} .stdform .buttons {text-align:center; padding:5px}
+.stdform TR.separator TD {background: white; font-weight:bold }
+
+.errors, .errors TH {border:#7F0000 1px solid;} .errors TH {color:#FFFFFF; background:red; } .errors TD {border:#807070 1px solid; background: #FFE0E0; text-align:left}
+
+.hierarchy DIV {width:100px; height:24px; text-align:center; padding-top:8px; border:black 1px solid} 
+-->
+</style>
+
+<script type="text/javascript">
+<!--
+function GetCookie(name) {
+  var dc = document.cookie;
+  var prefix = name + '=';
+  var begin = dc.indexOf('; ' + prefix);
+  if (begin == -1) {
+    begin = dc.indexOf(prefix);
+    if (begin != 0) return null;
+  } else
+    begin += 2;
+  var end = document.cookie.indexOf(';', begin);
+  if (end == -1)
+    end = dc.length;
+  var sret=unescape(dc.substring(begin + prefix.length, end));
+  var aret=sret.split('+'); sret=aret.join(' ');
+  return sret;
+}
+
+var user=GetCookie ('codehq_user');
+
+var mo = new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+
+function When(ts) {
+ var dt = new Date(ts*1000);
+ document.write(mo[dt.getMonth()]+" "+dt.getDate()+", "+(dt.getYear()+(dt.getYear()<1900?1900:0)));
+ document.write(" at "+((dt.getHours()%12)==0?12:dt.getHours()%12)+":"+(dt.getMinutes()<10?"0":"")+dt.getMinutes()+(dt.getHours()<12?"am":"pm"));
+}
+
+function LoginBox() {
+if (!user)
+{
+	document.write ('<table cellspacing=2 cellpadding="0" valign="top">');
+	document.write ('<tr><td align="center"><b>user<\/b><\/td><td align="center"><b>pass<\/b><\/td><td align="center">[<a href="http://www.cplusplus.com/member/signup.form">register<\/a>]<\/td><\/tr>');
+	document.write ('<tr><td align="center"><input class="txt" name="l" size="4" type="text"><\/td>');
+	document.write (' <td align="center"><input class="txt" name="p" size="4" type="password"><\/td>');
+	document.write (' <td align="center"><input class="btn" value="sign in" type="submit"><\/td><\/tr>');
+	document.write ('<\/table>');
+}
+else
+{
+	document.write ('<table width="150" cellspacing="2" cellpadding="0" valign="top">');
+	document.write ('<tr><td colspan="2" align="center">Logged in as: <b>'+user+'<\/b><\/td><\/tr>');	
+	document.write ('<tr><td align="right"><input class="btn" value="log out" type="submit"><input type="hidden" name="redirectto" value="find_first_not_of.html"/*tpa=http://www.cplusplus.com/reference/string/string/find_first_not_of.html*/><input type="hidden" name="logout" value="sign out"><\/td>');
+	document.write ('<td align="left">[<b><a href="http://www.cplusplus.com/member/">profile<\/a><\/b>]');
+	document.write ('<\/td><\/tr>');
+	document.write ('<\/table>');
+}
+}
+
+var lowuser; if (user) lowuser=user.toLowerCase();
+var faaccess=new Boolean (( GetCookie('codehq_access') & 256 )==256 )
+function SuOptions() {
+	if ((faaccess==true)||(lowuser=='juan soulie'))
+	{
+		document.write(' [<a href="http://www.cplusplus.com/admin/publish.form?what=edit&itemid=535">Edit this document<\/a>] ');
+	}	}
+//-->
+</script>
+
+</head>
+
+<body bgcolor="#D7D7D7" >
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td rowspan="2" valign="top" bgcolor="#B0C0D0" class="imgbox"><a href="javascript:if(confirm('http://www.cplusplus.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/'" tppabs="http://www.cplusplus.com/"><img src="headlogo1.gif" tppabs="http://www.cplusplus.com/img/headlogo1.gif" alt="cplusplus.com" width="165" height="75" border="0"></a></td>
+<td valign="top" bgcolor="#FFFFFF" class="imgbox"><a href="javascript:if(confirm('http://www.cplusplus.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/'" tppabs="http://www.cplusplus.com/"><img src="headlogo2.gif" tppabs="http://www.cplusplus.com/img/headlogo2.gif" alt="cplusplus.com" width="33" height="18" border="0"></a></td>
+<td width="95%" bgcolor="#D7D7D7"></td><td bgcolor="#D7D7D7"></td></tr>
+<tr><td valign="top" bgcolor="#FFFFFF" class="imgbox"><a href="javascript:if(confirm('http://www.cplusplus.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/'" tppabs="http://www.cplusplus.com/"><img src="headlogo3.gif" tppabs="http://www.cplusplus.com/img/headlogo3.gif" alt="cplusplus.com" width="33" height="57" border="0"></a></td>
+<td width="95%" valign="top" class="bar">
+   &nbsp; <b>
+<a href="javascript:if(confirm('http://www.cplusplus.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/'" tppabs="http://www.cplusplus.com/">C++</a> : <a href="index.htm" tppabs="http://www.cplusplus.com/reference/">Reference</a> : <a href="index-3.htm" tppabs="http://www.cplusplus.com/reference/string/">Strings library</a> : <a href="index-33.htm" tppabs="http://www.cplusplus.com/reference/string/string/">string</a> : find_first_not_of  </b>
+<br>
+   <form name="search" action="javascript:if(confirm('http://www.cplusplus.com/query/search.cgi?q=Search  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/query/search.cgi?q=Search'" tppabs="http://www.cplusplus.com/query/search.cgi?q=Search" method="get">
+   &nbsp; Search: <input name="q" size="13" class="txt"> <input type="submit" value="Search" class="btn">
+   </form></td>
+
+
+
+<td class="bar" valign="top">
+<form name="login" action="javascript:if(confirm('http://www.cplusplus.com/member/login.form?login=1&redirectto=/reference/string/string/find_first_not_of.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/member/login.form?login=1&redirectto=/reference/string/string/find_first_not_of.html'" tppabs="http://www.cplusplus.com/member/login.form?login=1&redirectto=/reference/string/string/find_first_not_of.html" method="post"><input type="hidden" name="login" value="1"><input type="hidden" name="redirectto" value="/reference/string/string/find_first_not_of.html">
+
+<script type="text/javascript">
+<!--
+LoginBox();
+// -->
+</script>
+</form>
+<noscript><center>javascript and cookies required</center></noscript>
+
+</td></tr>
+
+</table>
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
+<td width="165" bgcolor="#B0C0D0" style="border-right:1px solid black; line-height:1px;"><img src="165x1.gif" tppabs="http://www.cplusplus.com/img/165x1.gif" alt="-" width="165" height="1"></td>
+<td width="99%" bgcolor="white" class="imgbox"><img src="165x1.gif" tppabs="http://www.cplusplus.com/img/165x1.gif" alt="-" width="165" height="1"></td>
+</tr>
+<tr>
+
+<!-- left -->
+<td width="165" align="center" valign="top" bgcolor="#B0C0D0" class="left">
+<table class="box">
+	<tr><th><a href="javascript:if(confirm('http://www.cplusplus.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/'" tppabs="http://www.cplusplus.com/">C++</a></th></tr>
+	<tr><td><a href="javascript:if(confirm('http://www.cplusplus.com/info/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/info/'" tppabs="http://www.cplusplus.com/info/"><b>Information</b></a></td></tr>
+	<tr><td><a href="javascript:if(confirm('http://www.cplusplus.com/doc/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/doc/'" tppabs="http://www.cplusplus.com/doc/"><b>Documentation</b></a></td></tr>
+	<tr><td><span class="selected"><a href="index.htm" tppabs="http://www.cplusplus.com/reference/"><b>Reference</b></a></span></td></tr>
+	<tr><td><a href="javascript:if(confirm('http://www.cplusplus.com/articles/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/articles/'" tppabs="http://www.cplusplus.com/articles/"><b>Articles</b></a></td></tr>
+	<tr><td><a href="javascript:if(confirm('http://www.cplusplus.com/src/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/src/'" tppabs="http://www.cplusplus.com/src/"><b>Sourcecode</b></a></td></tr>
+	<tr><td><a href="javascript:if(confirm('http://www.cplusplus.com/forum/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/forum/'" tppabs="http://www.cplusplus.com/forum/"><b>Forum</b></a></td></tr>
+</table>
+<table class="box">
+	<tr><th><a href="index.htm" tppabs="http://www.cplusplus.com/reference/">Reference</a></th></tr>
+	<tr><td><a href="index-1.htm" tppabs="http://www.cplusplus.com/reference/clibrary/"><b>C Library</b></a></td></tr>
+	<tr><td><a href="index-2.htm" tppabs="http://www.cplusplus.com/reference/iostream/"><b>IOstream Library</b></a></td></tr>
+	<tr><td><span class="selected"><a href="index-3.htm" tppabs="http://www.cplusplus.com/reference/string/"><b>Strings library</b></a></span></td></tr>
+</table>
+<table class="box">
+	<tr><th><a href="index-3.htm" tppabs="http://www.cplusplus.com/reference/string/">Strings library</a></th></tr>
+	<tr><td><a href="index-35.htm" tppabs="http://www.cplusplus.com/reference/string/char_traits/"><b>char_traits</b></a></td></tr>
+	<tr><td><b>classes:</b></td></tr>
+	<tr><td>· <span class="selected"><a href="index-33.htm" tppabs="http://www.cplusplus.com/reference/string/string/"><b>string</b></a></span></td></tr>
+	<tr><td><b>global functions:</b></td></tr>
+	<tr><td>· <a href="getline.html" tppabs="http://www.cplusplus.com/reference/string/getline.html">getline</a></td></tr>
+	<tr><td>· <a href="operator+.html" tppabs="http://www.cplusplus.com/reference/string/operator+.html">operator+</a></td></tr>
+	<tr><td>· <a href="operator--.html" tppabs="http://www.cplusplus.com/reference/string/operator<<.html">operator&lt;&lt;</a></td></tr>
+	<tr><td>· <a href="operator---1.html" tppabs="http://www.cplusplus.com/reference/string/operator>>.html">operator&gt;&gt;</a></td></tr>
+	<tr><td>· <a href="operators.html" tppabs="http://www.cplusplus.com/reference/string/operators.html">comparison operators</a></td></tr>
+	<tr><td>· <a href="swap.html" tppabs="http://www.cplusplus.com/reference/string/swap.html">swap</a></td></tr>
+</table>
+<table class="box">
+	<tr><th><a href="index-33.htm" tppabs="http://www.cplusplus.com/reference/string/string/">string</a></th></tr>
+	<tr><td>· <a href="string.html" tppabs="http://www.cplusplus.com/reference/string/string/string.html">string::string</a></td></tr>
+	<tr><td><b>member constants:</b></td></tr>
+	<tr><td>· <a href="npos.html" tppabs="http://www.cplusplus.com/reference/string/string/npos.html">string::npos</a></td></tr>
+	<tr><td><b>member functions:</b></td></tr>
+	<tr><td>· <a href="append.html" tppabs="http://www.cplusplus.com/reference/string/string/append.html">string::append</a></td></tr>
+	<tr><td>· <a href="assign.html" tppabs="http://www.cplusplus.com/reference/string/string/assign.html">string::assign</a></td></tr>
+	<tr><td>· <a href="at.html" tppabs="http://www.cplusplus.com/reference/string/string/at.html">string::at</a></td></tr>
+	<tr><td>· <a href="begin.html" tppabs="http://www.cplusplus.com/reference/string/string/begin.html">string::begin</a></td></tr>
+	<tr><td>· <a href="capacity.html" tppabs="http://www.cplusplus.com/reference/string/string/capacity.html">string::capacity</a></td></tr>
+	<tr><td>· <a href="clear-1.html" tppabs="http://www.cplusplus.com/reference/string/string/clear.html">string::clear</a></td></tr>
+	<tr><td>· <a href="compare.html" tppabs="http://www.cplusplus.com/reference/string/string/compare.html">string::compare</a></td></tr>
+	<tr><td>· <a href="copy.html" tppabs="http://www.cplusplus.com/reference/string/string/copy.html">string::copy</a></td></tr>
+	<tr><td>· <a href="c_str.html" tppabs="http://www.cplusplus.com/reference/string/string/c_str.html">string::c_str</a></td></tr>
+	<tr><td>· <a href="data.html" tppabs="http://www.cplusplus.com/reference/string/string/data.html">string::data</a></td></tr>
+	<tr><td>· <a href="empty.html" tppabs="http://www.cplusplus.com/reference/string/string/empty.html">string::empty</a></td></tr>
+	<tr><td>· <a href="end.html" tppabs="http://www.cplusplus.com/reference/string/string/end.html">string::end</a></td></tr>
+	<tr><td>· <a href="erase.html" tppabs="http://www.cplusplus.com/reference/string/string/erase.html">string::erase</a></td></tr>
+	<tr><td>· <a href="find.html" tppabs="http://www.cplusplus.com/reference/string/string/find.html">string::find</a></td></tr>
+	<tr><td>· <span class="selected">string::find_first_not_of</span></td></tr>
+	<tr><td>· <a href="find_first_of.html" tppabs="http://www.cplusplus.com/reference/string/string/find_first_of.html">string::find_first_of</a></td></tr>
+	<tr><td>· <a href="find_last_not_of.html" tppabs="http://www.cplusplus.com/reference/string/string/find_last_not_of.html">string::find_last_not_of</a></td></tr>
+	<tr><td>· <a href="find_last_of.html" tppabs="http://www.cplusplus.com/reference/string/string/find_last_of.html">string::find_last_of</a></td></tr>
+	<tr><td>· <a href="get_allocator.html" tppabs="http://www.cplusplus.com/reference/string/string/get_allocator.html">string::get_allocator</a></td></tr>
+	<tr><td>· <a href="insert.html" tppabs="http://www.cplusplus.com/reference/string/string/insert.html">string::insert</a></td></tr>
+	<tr><td>· <a href="length.html" tppabs="http://www.cplusplus.com/reference/string/string/length.html">string::length</a></td></tr>
+	<tr><td>· <a href="max_size.html" tppabs="http://www.cplusplus.com/reference/string/string/max_size.html">string::max_size</a></td></tr>
+	<tr><td>· <a href="operator+=.html" tppabs="http://www.cplusplus.com/reference/string/string/operator+=.html">string::operator+=</a></td></tr>
+	<tr><td>· <a href="operator=.html" tppabs="http://www.cplusplus.com/reference/string/string/operator=.html">string::operator=</a></td></tr>
+	<tr><td>· <a href="operator[].html" tppabs="http://www.cplusplus.com/reference/string/string/operator[].html">string::operator[]</a></td></tr>
+	<tr><td>· <a href="push_back.html" tppabs="http://www.cplusplus.com/reference/string/string/push_back.html">string::push_back</a></td></tr>
+	<tr><td>· <a href="rbegin.html" tppabs="http://www.cplusplus.com/reference/string/string/rbegin.html">string::rbegin</a></td></tr>
+	<tr><td>· <a href="rend.html" tppabs="http://www.cplusplus.com/reference/string/string/rend.html">string::rend</a></td></tr>
+	<tr><td>· <a href="replace.html" tppabs="http://www.cplusplus.com/reference/string/string/replace.html">string::replace</a></td></tr>
+	<tr><td>· <a href="reserve.html" tppabs="http://www.cplusplus.com/reference/string/string/reserve.html">string::reserve</a></td></tr>
+	<tr><td>· <a href="resize.html" tppabs="http://www.cplusplus.com/reference/string/string/resize.html">string::resize</a></td></tr>
+	<tr><td>· <a href="rfind.html" tppabs="http://www.cplusplus.com/reference/string/string/rfind.html">string::rfind</a></td></tr>
+	<tr><td>· <a href="size.html" tppabs="http://www.cplusplus.com/reference/string/string/size.html">string::size</a></td></tr>
+	<tr><td>· <a href="substr.html" tppabs="http://www.cplusplus.com/reference/string/string/substr.html">string::substr</a></td></tr>
+	<tr><td>· <a href="swap-1.html" tppabs="http://www.cplusplus.com/reference/string/string/swap.html">string::swap</a></td></tr>
+</table>
+
+
+<br>
+
+<img src="165x1.gif" tppabs="http://www.cplusplus.com/img/165x1.gif" alt="-" width="165" height="1">
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-5777024789006368";
+google_ad_width = 125;
+google_ad_height = 125;
+google_ad_format = "125x125_as";
+google_ad_type = "text_image";
+google_ad_channel ="7339079091";
+google_color_border = "1020FF";
+google_color_bg = "FFFFFF";
+google_color_link = "000070";
+google_color_url = "000070";
+google_color_text = "000070";
+//--></script>
+<script language="javascript" src="show_ads.js" tppabs="http://media.fastclick.net/w/get.media?sid=4636&m=3&tp=7&d=j&t=s"></script>
+<noscript><a href="javascript:if(confirm('http://media.fastclick.net/w/click.here?sid=4636&m=3&c=1  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://media.fastclick.net/w/click.here?sid=4636&m=3&c=1'" tppabs="http://media.fastclick.net/w/click.here?sid=4636&m=3&c=1" target="_top">
+<img src="1x1.gif" tppabs="http://media.fastclick.net/w/get.media?sid=4636&m=3&tp=7&d=s&c=1"
+width=160 height=600 border=1></a></noscript>
+
+<img src="165x1.gif" tppabs="http://www.cplusplus.com/img/165x1.gif" alt="-" width="165" height="1">
+
+</td>
+<!-- /left -->
+<td width="99%" valign="top" bgcolor="white">
+<div class="content">
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-5777024789006368";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text_image";
+google_ad_channel ="1922709837";
+google_color_border = ["FFFFFF","FFFFFF","336699","CCCCCC"];
+google_color_bg = ["FFFFFF","FFFFFF","FFFFFF","CCCCCC"];
+google_color_link = ["3333CC","0000FF","0000FF","000000"];
+google_color_text = ["000000","000000","000000","333333"];
+google_color_url = ["000000","008000","008000","666666"];
+//--></script>
+<script language="javascript" src="show_ads.js" tppabs="http://media.fastclick.net/w/get.media?sid=4636&m=1&tp=5&d=j&t=s"></script>
+<noscript><a href="javascript:if(confirm('http://media.fastclick.net/w/click.here?sid=4636&m=1&c=1  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://media.fastclick.net/w/click.here?sid=4636&m=1&c=1'" tppabs="http://media.fastclick.net/w/click.here?sid=4636&m=1&c=1" target="_top">
+<img src="1x1.gif" tppabs="http://media.fastclick.net/w/get.media?sid=4636&m=1&tp=5&d=s&c=1"
+width=728 height=90 border=1></a></noscript>
+<p>
+<table width="100%" style="border-bottom:solid 2px #000000"><tr><td><span style="font-size:xx-large"><b>string::find_first_not_of</b></span></td>
+<td align="right" valign="bottom"></td></tr>
+</table><table width="100%"><tr><td><tt><font color="#008000"><pre>size_t find_first_not_of ( const string&amp; str, size_t pos = 0 ) const;
+size_t find_first_not_of ( const char* s, size_t pos, size_t n ) const;
+size_t find_first_not_of ( const char* s, size_t pos = 0 ) const;
+size_t find_first_not_of ( char c, size_t pos = 0 ) const;</pre></font></tt></td>
+<td align="right"><tt><font color="#000080"><pre></pre></font></tt></td></tr></table>
+<p><b>Find absence of character in string</b></p>
+<p>
+Searches for the first character in the object which is not part of either <i>str</i>, <i>s</i> or <i>c</i>, and returns its position.<p>When <i>pos</i> is specified the search only includes characters on or after position <i>pos</i>, ignoring any content in the previous character positions.<p><h3>Parameters</h3>
+<dl>
+<dt>str</dt>
+<dd><a href="javascript:if(confirm('http://www.cplusplus.com/string  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/string'" tppabs="http://www.cplusplus.com/string">string</a> containing the characters to match against in the object.</dd>
+<dt>s</dt>
+<dd>Array with a sequence of characters. The position of first character in the string that does not compare equal to any of the characters in this sequence is returned.<br>In the second member function version, the number of characters in the sequence of characters to match against is only determined by parameter <i>n</i>.<br>In the third version, a null-terminated sequence (c-string) is expected, and the amount of characters to match against is determined by its length, which is indicated by a null-character after the last character.</dd>
+<dt>n</dt>
+<dd>Length of the sequence of characters <i>s</i>.</dd>
+<dt>c</dt>
+<dd>Individual character. The function returns the position of the first character in the object that is not <i>c</i>.</dd>
+<dt>pos</dt>
+<dd>Position of the first character in the string to be taken into consideration for matches. A value of <tt>0</tt> means that the entire string is considered.</dd>
+</dl><p><h3>Return Value</h3>
+The position of the first character in the object that is not part of characters it is being matched against.<br>If no such position is found, the member value <a href="javascript:if(confirm('http://www.cplusplus.com/string::npos  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/string::npos'" tppabs="http://www.cplusplus.com/string::npos">npos</a> is returned.<p><h3>Example</h3>
+<table class="snippet"><tr><td class="code"><pre>
+<span class="comm">// string::find_first_not_of</span>
+<span class="prep">#include &lt;iostream&gt;</span>
+<span class="prep">#include &lt;string&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">int</span> main ()
+{
+  string str (<span class="str">"look for non-alphabetic characters..."</span>);
+  size_t found;
+
+  found=str.find_first_not_of(<span class="str">"abcdefghijklmnopqrstuvwxyz "</span>);
+  <span class="kw">if</span> (found!=string::npos)
+  {
+    cout &lt;&lt; <span class="str">"First non-alphabetic character is "</span> &lt;&lt; str[found];
+    cout &lt;&lt; <span class="str">" at position "</span> &lt;&lt; <span class="kw">int</span>(found) &lt;&lt; endl;
+  }
+
+  <span class="kw">return</span> 0;
+}
+</pre></td></tr></table><p><table class="snippet"><tr><td class="result"><pre><tt>First non-alphabetic character is - at position 12</tt></pre></td></tr></table><p><h3>Basic template member declarations</h3>
+( basic_string&lt;charT,traits,Allocator&gt; )<br><table class="snippet"><tr><td class="code"><pre>
+<span class="kw">typedef</span> <span class="kw">typename</span> Allocator::size_type size_type;
+size_type find_first_not_of ( <span class="kw">const</span> basic_string&amp; str,
+                           size_type pos = 0 ) <span class="kw">const</span>;
+size_type find_first_not_of ( <span class="kw">const</span> charT* s, size_type pos,
+                           size_type n ) <span class="kw">const</span>;
+size_type find_first_not_of ( <span class="kw">const</span> charT* s,
+                           size_type pos = 0 ) <span class="kw">const</span>;
+size_type find_first_not_of ( charT c, size_type pos = 0 ) <span class="kw">const</span>;
+</pre></td></tr></table><p><h3>See also</h3>
+<table class="list"><tr><td class="tit"><a href= "find.html" tppabs="http://www.cplusplus.com/reference/string/string/find.html"><b>string::find</b></a></td><td class="des"> Find content in string <small><font color="green">(public member function)</font></small></td></tr></table>
+<table class="list"><tr><td class="tit"><a href= "find_first_of.html" tppabs="http://www.cplusplus.com/reference/string/string/find_first_of.html"><b>string::find_first_of</b></a></td><td class="des"> Find character in string <small><font color="green">(public member function)</font></small></td></tr></table>
+<table class="list"><tr><td class="tit"><a href= "find_last_not_of.html" tppabs="http://www.cplusplus.com/reference/string/string/find_last_not_of.html"><b>string::find_last_not_of</b></a></td><td class="des"> Find absence of character in string from the end <small><font color="green">(public member function)</font></small></td></tr></table>
+<table class="list"><tr><td class="tit"><a href= "replace.html" tppabs="http://www.cplusplus.com/reference/string/string/replace.html"><b>string::replace</b></a></td><td class="des"> Replace part of string <small><font color="green">(public member function)</font></small></td></tr></table>
+<table class="list"><tr><td class="tit"><a href= "substr.html" tppabs="http://www.cplusplus.com/reference/string/string/substr.html"><b>string::substr</b></a></td><td class="des"> Generate substring <small><font color="green">(public member function)</font></small></td></tr></table>
+<p>
+<script type="text/javascript">
+<!--
+SuOptions()
+//-->
+</script></p>
+</div>
+</td>
+
+
+
+
+</tr>
+<tr><td colspan="2" style="border-top:black 1px solid; padding-bottom:5px; background:#D7D7D7" align="center"><small>&copy; The C++ Resources Network, 2000-2007 - All rights reserved<br><a href="javascript:if(confirm('http://www.cplusplus.com/member/contact.form  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/member/contact.form'" tppabs="http://www.cplusplus.com/member/contact.form">Spotted an error?</a> &nbsp;<a href="javascript:if(confirm('http://www.cplusplus.com/member/contact.form  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cplusplus.com/member/contact.form'" tppabs="http://www.cplusplus.com/member/contact.form">contact us</a></small></td></tr>
+</table>
+
+<script src="urchin.js" tppabs="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-521783-1";
+urchinTracker();
+</script>
+</body>
+</html>

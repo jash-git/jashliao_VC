@@ -1,0 +1,265 @@
+//<script language="javascript" src="/jsclient/subcatalog.js"></script>
+
+asubCatalogNameIdx  = new Array;
+asubCatalogValueIdx = new Array;
+asubCatalogNameIdx [0] = new Array;
+asubCatalogValueIdx[0] = new Array;
+asubCatalogNameIdx [0][0] = '台式机';
+asubCatalogValueIdx[0][0] = '114';
+asubCatalogNameIdx [0][1] = '笔记本';
+asubCatalogValueIdx[0][1] = '122';
+asubCatalogNameIdx [0][2] = '工作站';
+asubCatalogValueIdx[0][2] = '967';
+asubCatalogNameIdx [0][3] = '移动PC';
+asubCatalogValueIdx[0][3] = '1102';
+asubCatalogNameIdx [0][4] = '服务器';
+asubCatalogValueIdx[0][4] = '850';
+
+asubCatalogNameIdx [1] = new Array;
+asubCatalogValueIdx[1] = new Array;
+asubCatalogNameIdx [1][0] = '激光打印机';
+asubCatalogValueIdx[1][0] = '821';
+asubCatalogNameIdx [1][1] = '喷墨打印机';
+asubCatalogValueIdx[1][1] = '842';
+asubCatalogNameIdx [1][2] = '扫描仪';
+asubCatalogValueIdx[1][2] = '478';
+asubCatalogNameIdx [1][3] = '投影机';
+asubCatalogValueIdx[1][3] = '118';
+asubCatalogNameIdx [1][4] = '展示台';
+asubCatalogValueIdx[1][4] = '888';
+asubCatalogNameIdx [1][5] = 'UPS';
+asubCatalogValueIdx[1][5] = '1323';
+asubCatalogNameIdx [1][6] = '复印机';
+asubCatalogValueIdx[1][6] = '1318';
+asubCatalogNameIdx [1][7] = '多功能一体机';
+asubCatalogValueIdx[1][7] = '1192';
+asubCatalogNameIdx [1][8] = '考勤－收费系统';
+asubCatalogValueIdx[1][8] = '1360';
+asubCatalogNameIdx [1][9] = '条码打印机';
+asubCatalogValueIdx[1][9] = '1421';
+asubCatalogNameIdx [1][10] = '条码设备';
+asubCatalogValueIdx[1][10] = '1423';
+asubCatalogNameIdx [1][11] = '传真机';
+asubCatalogValueIdx[1][11] = '1467';
+asubCatalogNameIdx [1][12] = '针式打印机';
+asubCatalogValueIdx[1][12] = '1865';
+asubCatalogNameIdx [1][13] = '稳压电源';
+asubCatalogValueIdx[1][13] = '2126';
+asubCatalogNameIdx [1][14] = '幕布';
+asubCatalogValueIdx[1][14] = '2138';
+asubCatalogNameIdx [1][15] = '大幅打印机';
+asubCatalogValueIdx[1][15] = '1480';
+asubCatalogNameIdx [1][16] = '投影机灯泡';
+asubCatalogValueIdx[1][16] = '2610';
+asubCatalogNameIdx [1][17] = '打印服务器';
+asubCatalogValueIdx[1][17] = '1003';
+asubCatalogNameIdx [1][18] = '电子白板';
+asubCatalogValueIdx[1][18] = '2724';
+
+
+
+
+asubCatalogNameIdx [2] = new Array;
+asubCatalogValueIdx[2] = new Array;
+asubCatalogNameIdx [2][0] = '服务器';
+asubCatalogValueIdx[2][0] = '850';
+asubCatalogNameIdx [2][1] = '交换机';
+asubCatalogValueIdx[2][1] = '159';
+asubCatalogNameIdx [2][2] = '路由器';
+asubCatalogValueIdx[2][2] = '865';
+asubCatalogNameIdx [2][3] = '网卡';
+asubCatalogValueIdx[2][3] = '976';
+asubCatalogNameIdx [2][4] = '集线器';
+asubCatalogValueIdx[2][4] = '1287';
+asubCatalogNameIdx [2][5] = '硬件防火墙';
+asubCatalogValueIdx[2][5] = '1237';
+asubCatalogNameIdx [2][6] = '磁带机';
+asubCatalogValueIdx[2][6] = '1389';
+asubCatalogNameIdx [2][7] = '硬件防火墙';
+asubCatalogValueIdx[2][7] = '1237';
+asubCatalogNameIdx [2][8] = 'NAS网络存储器';
+asubCatalogValueIdx[2][8] = '1428';
+asubCatalogNameIdx [2][9] = '磁盘阵列';
+asubCatalogValueIdx[2][9] = '1427';
+asubCatalogNameIdx [2][10] = '打印服务器';
+asubCatalogValueIdx[2][10] = '1003';
+asubCatalogNameIdx [2][11] = 'RAID控制卡';
+asubCatalogValueIdx[2][11] = '1577';
+asubCatalogNameIdx [2][12] = 'SCSI控制卡';
+asubCatalogValueIdx[2][12] = '1579';
+asubCatalogNameIdx [2][13] = 'SCSI硬盘';
+asubCatalogValueIdx[2][13] = '1578';
+asubCatalogNameIdx [2][14] = '调制解调器';
+asubCatalogValueIdx[2][14] = '2225';
+asubCatalogNameIdx [2][15] = '服务器配件';
+asubCatalogValueIdx[2][15] = '2146';
+asubCatalogNameIdx [2][16] = '综合布线产品';
+asubCatalogValueIdx[2][16] = '2231';
+asubCatalogNameIdx [2][17] = '模块接口卡';
+asubCatalogValueIdx[2][17] = '2997';
+
+
+
+
+asubCatalogNameIdx [3] = new Array;
+asubCatalogValueIdx[3] = new Array;
+asubCatalogNameIdx [3][0] = 'CD-ROM';
+asubCatalogValueIdx[3][0] = '400';
+asubCatalogNameIdx [3][1] = 'CD-RW刻录机';
+asubCatalogValueIdx[3][1] = '632';
+asubCatalogNameIdx [3][2] = 'COMBO';
+asubCatalogValueIdx[3][2] = '439';
+asubCatalogNameIdx [3][3] = 'CPU';
+asubCatalogValueIdx[3][3] = '215';
+asubCatalogNameIdx [3][4] = 'CRT显示器';
+asubCatalogValueIdx[3][4] = '640';
+asubCatalogNameIdx [3][5] = 'DVD-ROM';
+asubCatalogValueIdx[3][5] = '454';
+asubCatalogNameIdx [3][6] = '机箱';
+asubCatalogValueIdx[3][6] = '221';
+asubCatalogNameIdx [3][7] = '键盘';
+asubCatalogValueIdx[3][7] = '217';
+asubCatalogNameIdx [3][8] = '内存';
+asubCatalogValueIdx[3][8] = '219';
+asubCatalogNameIdx [3][9] = '鼠标';
+asubCatalogValueIdx[3][9] = '212';
+asubCatalogNameIdx [3][10] = '显卡';
+asubCatalogValueIdx[3][10] = '860';
+asubCatalogNameIdx [3][11] = '视频卡';
+asubCatalogValueIdx[3][11] = '1099';
+asubCatalogNameIdx [3][12] = '硬盘';
+asubCatalogValueIdx[3][12] = '223';
+asubCatalogNameIdx [3][13] = '主板';
+asubCatalogValueIdx[3][13] = '288';
+asubCatalogNameIdx [3][14] = '液晶显示器';
+asubCatalogValueIdx[3][14] = '345';
+asubCatalogNameIdx [3][15] = '音箱 ';
+asubCatalogValueIdx[3][15] = '818';
+asubCatalogNameIdx [3][16] = '触摸屏 ';
+asubCatalogValueIdx[3][16] = '1346';
+asubCatalogNameIdx [3][17] = 'DVD刻录机';
+asubCatalogValueIdx[3][17] = '1710';
+asubCatalogNameIdx [3][18] = '电源';
+asubCatalogValueIdx[3][18] = '3089';
+asubCatalogNameIdx [3][19] = '散热器';
+asubCatalogValueIdx[3][19] = '3138';
+asubCatalogNameIdx [3][19] = '声卡';
+asubCatalogValueIdx[3][19] = '3137';
+
+asubCatalogNameIdx [4] = new Array;
+asubCatalogValueIdx[4] = new Array;
+asubCatalogNameIdx [4][0] = 'MP3播放器';
+asubCatalogValueIdx[4][0] = '407';
+asubCatalogNameIdx [4][1] = '数码摄像机';
+asubCatalogValueIdx[4][1] = '758';
+asubCatalogNameIdx [4][2] = '数码相机';
+asubCatalogValueIdx[4][2] = '753';
+asubCatalogNameIdx [4][3] = '掌上电脑';
+asubCatalogValueIdx[4][3] = '254';
+asubCatalogNameIdx [4][4] = '数码录音笔';
+asubCatalogValueIdx[4][4] = '1104';
+asubCatalogNameIdx [4][5] = '数码摄像头';
+asubCatalogValueIdx[4][5] = '1358';
+asubCatalogNameIdx [4][6] = '电子词典';
+asubCatalogValueIdx[4][6] = '1649';
+asubCatalogNameIdx [4][7] = 'MP4播放器';
+asubCatalogValueIdx[4][7] = '2825';
+
+asubCatalogNameIdx [5] = new Array;
+asubCatalogValueIdx[5] = new Array;
+asubCatalogNameIdx [5][0] = '手机';
+asubCatalogValueIdx[5][0] = '291';
+asubCatalogNameIdx [5][1] = 'GPS';
+asubCatalogValueIdx[5][1] = '2093';
+asubCatalogNameIdx [5][2] = '集团电话';
+asubCatalogValueIdx[5][2] = '2667';
+asubCatalogNameIdx [5][2] = '视频会议';
+asubCatalogValueIdx[5][2] = '2753';
+
+
+asubCatalogNameIdx [6] = new Array;
+asubCatalogValueIdx[6] = new Array;
+asubCatalogNameIdx [6][0] = '闪存盘';
+asubCatalogValueIdx[6][0] = '591';
+asubCatalogNameIdx [6][1] = '移动硬盘';
+asubCatalogValueIdx[6][1] = '701';
+asubCatalogNameIdx [6][2] = '数码相机伴侣';
+asubCatalogValueIdx[6][2] = '1231';
+asubCatalogNameIdx [6][3] = '闪存卡';
+asubCatalogValueIdx[6][3] = '2227';
+
+
+asubCatalogNameIdx [7] = new Array;
+asubCatalogValueIdx[7] = new Array;
+asubCatalogNameIdx [7][0] = '无线接入点';
+asubCatalogValueIdx[7][0] = '721';
+asubCatalogNameIdx [7][1] = '无线路由器';
+asubCatalogValueIdx[7][1] = '720';
+asubCatalogNameIdx [7][2] = '无线上网卡';
+asubCatalogValueIdx[7][2] = '719';
+asubCatalogNameIdx [7][3] = '无线网卡';
+asubCatalogValueIdx[7][3] = '718';
+asubCatalogNameIdx [7][4] = '无线网关';
+asubCatalogValueIdx[7][4] = '1144';
+asubCatalogNameIdx [7][5] = '无线网桥';
+asubCatalogValueIdx[7][5] = '1145';
+asubCatalogNameIdx [7][6] = '蓝牙适配器';
+asubCatalogValueIdx[7][6] = '2267';
+
+
+
+asubCatalogNameIdx [8] = new Array;
+asubCatalogValueIdx[8] = new Array;
+asubCatalogNameIdx [8][0] = '碳粉';
+asubCatalogValueIdx[8][0] = '1096';
+asubCatalogNameIdx [8][1] = '硒鼓';
+asubCatalogValueIdx[8][1] = '1185';
+asubCatalogNameIdx [8][2] = '墨盒';
+asubCatalogValueIdx[8][2] = '1645';
+asubCatalogNameIdx [8][3] = '色带';
+asubCatalogValueIdx[8][3] = '2925';
+
+
+asubCatalogNameIdx [9] = new Array;
+asubCatalogValueIdx[9] = new Array;
+asubCatalogNameIdx [9][0] = '游戏机';
+asubCatalogValueIdx[9][0] = '1491';
+
+asubCatalogNameIdx [10] = new Array;
+asubCatalogValueIdx[10] = new Array;
+asubCatalogNameIdx [10][0] = '操作系统';
+asubCatalogValueIdx[10][0] = '1567';
+asubCatalogNameIdx [10][1] = '安防杀毒';
+asubCatalogValueIdx[10][1] = '1565';
+asubCatalogNameIdx [10][2] = '办公软件';
+asubCatalogValueIdx[10][2] = '1566';
+asubCatalogNameIdx [10][3] = '开发软件';
+asubCatalogValueIdx[10][3] = '1569';
+asubCatalogNameIdx [10][4] = '数据库';
+asubCatalogValueIdx[10][4] = '1570';
+asubCatalogNameIdx [10][5] = '财务及管理软件';
+asubCatalogValueIdx[10][5] = '2114';
+asubCatalogNameIdx [10][6] = '图像软件';
+asubCatalogValueIdx[10][6] = '2006';
+asubCatalogNameIdx [10][7] = '排版软件';
+asubCatalogValueIdx[10][7] = '2007';
+
+asubCatalogNameIdx [11] = new Array;
+asubCatalogValueIdx[11] = new Array;
+asubCatalogNameIdx [11][0] = '机房布线';
+asubCatalogValueIdx[11][0] = '2501';
+
+asubCatalogNameIdx [12] = new Array;
+asubCatalogValueIdx[12] = new Array;
+asubCatalogNameIdx [12][0] = '中央控制系统';
+asubCatalogValueIdx[12][0] = '2737';
+asubCatalogNameIdx [12][1] = '多媒体视频';
+asubCatalogValueIdx[12][1] = '2741';
+asubCatalogNameIdx [12][2] = '电教设备';
+asubCatalogValueIdx[12][2] = '2751';
+asubCatalogNameIdx [12][3] = '分配器';
+asubCatalogValueIdx[12][3] = '2846';
+asubCatalogNameIdx [12][4] = '矩阵切换器';
+asubCatalogValueIdx[12][4] = '2870';
+asubCatalogNameIdx [12][4] = '网络摄像机';
+asubCatalogValueIdx[12][4] = '2886';

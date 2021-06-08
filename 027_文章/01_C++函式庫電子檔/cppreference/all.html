@@ -1,0 +1,432 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+
+  <title>C/C++ Pre-processor Commands</title>
+  <link href="cppreference.css" tppabs="http://www.cppreference.com/cppreference.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<table>
+  <tr>
+  <td>
+  <div class="body-content">
+
+  <div class="header-box">
+    <a href="index.html" tppabs="http://www.cppreference.com/index.html">cppreference.com</a> &gt; <a href=
+    "index-1.html" tppabs="http://www.cppreference.com/preprocessor/index.html">C/C++ Pre-processor Commands</a>
+  </div>
+
+  <div class="name-format">
+    #define
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #define macro-name replacement-string
+</pre>
+
+  <p>The #define command is used to make substitutions throughout the
+  file in which it is located. In other words, #define causes the
+  compiler to go through the file, replacing every occurrence of
+  <em>macro-name</em> with <em>replacement-string</em>. The replacement
+  string stops at the end of the line.</p>
+
+  <div class="related-examples-format">
+    Example code:
+  </div>
+
+  <div class="related-examples">
+    <p>Here&#39;s a typical use for a #define (at least in C):</p>
+    <pre class="example-code">
+   #define TRUE 1
+   #define FALSE 0
+   ...
+   int done = 0;
+   while( done != TRUE ) {
+      ...
+   }            
+</pre>
+
+    <p>Another feature of the #define command is that it can take
+    arguments, making it rather useful as a pseudo-function creator.
+    Consider the following code:</p>
+    <pre class="example-code">
+   #define absolute_value( x ) ( ((x) &lt; 0) ? -(x) : (x) )
+   ...
+   int x = -1;
+   while( absolute_value( x ) ) {
+      ...
+   }            
+</pre>
+
+    <p>It&#39;s generally a good idea to use extra parentheses when
+    using complex macros. Notice that in the above example, the
+    variable &quot;x&quot; is always within it&#39;s own set of
+    parentheses. This way, it will be evaluated in whole, before being
+    compared to 0 or multiplied by -1. Also, the entire macro is
+    surrounded by parentheses, to prevent it from being contaminated by
+    other code. If you&#39;re not careful, you run the risk of having
+    the compiler misinterpret your code.</p>
+
+    <p>Here is an example of how to use the #define command to create a
+    general purpose incrementing for loop that prints out the integers
+    1 through 20:</p>
+    <pre class="example-code">
+ #define count_up( v, low, high ) \
+   for( (v) = (low); (v) &lt;= (high); (v)++ )          
+
+ ...            
+
+ int i;
+ count_up( i, 1, 20 ) {
+   printf( &quot;i is %d\n&quot;, i );
+ }              
+</pre>
+  </div>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="sharp.html" tppabs="http://www.cppreference.com/preprocessor/sharp.html">#, ##</a><br>
+    <a href="preprocessor_if.html" tppabs="http://www.cppreference.com/preprocessor/preprocessor_if.html">#if, #ifdef, #ifndef, #else, #elif,
+    #endif</a><br>
+    <a href="undef.html" tppabs="http://www.cppreference.com/preprocessor/undef.html">#undef</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    #if, #ifdef, #ifndef, #else, #elif, #endif
+  </div>
+
+  <p>These commands give simple logic control to the compiler. As a
+  file is being compiled, you can use these commands to cause certain
+  lines of code to be included or not included.</p>
+  <pre class="example-code">
+   #if expression               
+</pre>
+
+  <p>If the value of expression is true, then the code that immediately
+  follows the command will be compiled.</p>
+  <pre class="example-code">
+   #ifdef macro         
+</pre>
+
+  <p>If the <em>macro</em> has been defined by a <a href=
+  "define.html" tppabs="http://www.cppreference.com/preprocessor/define.html">#define</a> statement, then the code immediately
+  following the command will be compiled.</p>
+  <pre class="example-code">
+   #ifndef macro                
+</pre>
+
+  <p>If the <em>macro</em> has not been defined by a <a href=
+  "define.html" tppabs="http://www.cppreference.com/preprocessor/define.html">#define</a> statement, then the code immediately
+  following the command will be compiled.</p>
+
+  <p>A few side notes: The command #elif is simply a horribly truncated
+  way to say &quot;elseif&quot; and works like you think it would. You
+  can also throw in a &quot;defined&quot; or &quot;!defined&quot; after
+  an #if to get added functionality.</p>
+
+  <div class="related-examples-format">
+    Example code:
+  </div>
+
+  <div class="related-examples">
+    <p>Here&#39;s an example of all these:</p>
+    <pre class="example-code">
+   #ifdef DEBUG
+     cout &lt;&lt; &quot;This is the test version, i=&quot; &lt;&lt; i &lt;&lt; endl;
+   #else
+     cout &lt;&lt; &quot;This is the production version!&quot; &lt;&lt; endl;
+   #endif               
+</pre>
+
+    <p>You might notice how that second example could make debugging a
+    lot easier than inserting and removing a million &quot;cout&quot;s
+    in your code.</p>
+  </div>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="define.html" tppabs="http://www.cppreference.com/preprocessor/define.html">#define</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    #error
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #error message
+</pre>
+
+  <p>The #error command simply causes the compiler to stop when it is
+  encountered. When an #error is encountered, the compiler spits out
+  the line number and whatever <em>message</em> is. This command is
+  mostly used for debugging.</p>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    #include
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;filename&gt;
+  #include &quot;filename&quot;
+</pre>
+
+  <p>This command slurps in a file and inserts it at the current
+  location. The main difference between the syntax of the two items is
+  that if <em>filename</em> is enclosed in angled brackets, then the
+  compiler searches for it somehow. If it is enclosed in quotes, then
+  the compiler doesn&#39;t search very hard for the file.</p>
+
+  <p>While the behavior of these two searches is up to the compiler,
+  usually the angled brackets means to search through the standard
+  library directories, while the quotes indicate a search in the
+  current directory. The spiffy new C++ #include commands don&#39;t
+  need to map directly to filenames, at least not for the standard
+  libraries. That&#39;s why you can get away with</p>
+  <pre class="example-code">
+   #include &lt;iostream&gt;            
+</pre>
+
+  <p>and not have the compiler choke on you.</p>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    #line
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #line line_number &quot;filename&quot;
+</pre>
+
+  <p>The #line command is simply used to change the value of the
+  __LINE__ and __FILE__ variables. The filename is optional. The
+  __LINE__ and __FILE__ variables represent the current file and which
+  line is being read. The command</p>
+  <pre class="example-code">
+   #line 10 &quot;main.cpp&quot;                
+</pre>
+
+  <p>changes the current line number to 10, and the current file to
+  &quot;main.cpp&quot;.</p>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    #pragma
+  </div>
+
+  <p>The #pragma command gives the programmer the ability to tell the
+  compiler to do certain things. Since the #pragma command is
+  implementation specific, uses vary from compiler to compiler. One
+  option might be to trace program execution.</p>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    Predefined preprocessor variables
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  __LINE__
+  __FILE__
+  __DATE__
+  __TIME__
+  _cplusplus
+  __STDC__
+</pre>
+
+  <p>The following variables can vary by compiler, but generally
+  work:</p>
+
+  <ul>
+    <li>The __LINE__ and __FILE__ variables represent the current line
+    and current file being processed.</li>
+
+    <li>The __DATE__ variable contains the current date, in the form
+    month/day/year.</li>
+
+    <li>The __TIME__ variable represents the current time, in the form
+    hour:minute:second.</li>
+
+    <li>The _cplusplus variable is only defined when compiling a C++
+    program.</li>
+
+    <li>The __STDC__ variable is defined when compiling a C program,
+    and may also be defined when compiling C++.</li>
+  </ul>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    #, ##
+  </div>
+
+  <p>The # and ## operators are used with the <a href=
+  "define.html" tppabs="http://www.cppreference.com/preprocessor/define.html">#define</a> macro. Using # causes the first argument
+  after the # to be returned as a string in quotes. Using ##
+  concatenates what&#39;s before the ## with what&#39;s after it.</p>
+
+  <div class="related-examples-format">
+    Example code:
+  </div>
+
+  <div class="related-examples">
+    <p>For example, the command</p>
+    <pre class="example-code">
+   #define to_string( s ) # s           
+</pre>
+
+    <p>will make the compiler turn this command</p>
+    <pre class="example-code">
+   cout &lt;&lt; to_string( Hello World! ) &lt;&lt; endl;               
+</pre>
+
+    <p>into</p>
+    <pre class="example-code">
+   cout &lt;&lt; &quot;Hello World!&quot; &lt;&lt; endl;                
+</pre>
+
+    <p>Here is an example of the ## command:</p>
+    <pre class="example-code">
+   #define concatenate( x, y ) x ## y
+   ...
+   int xy = 10;
+   ...          
+</pre>
+
+    <p>This code will make the compiler turn</p>
+    <pre class="example-code">
+   cout &lt;&lt; concatenate( x, y ) &lt;&lt; endl;             
+</pre>
+
+    <p>into</p>
+    <pre class="example-code">
+   cout &lt;&lt; xy &lt;&lt; endl;              
+</pre>
+
+    <p>which will, of course, display &#39;10&#39; to standard
+    output.</p>
+  </div>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="define.html" tppabs="http://www.cppreference.com/preprocessor/define.html">#define</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    #undef
+  </div>
+
+  <p>The #undef command undefines a previously defined macro variable,
+  such as a variable defined by a <a href=
+  "define.html" tppabs="http://www.cppreference.com/preprocessor/define.html">#define</a>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="define.html" tppabs="http://www.cppreference.com/preprocessor/define.html">#define</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+</body></html>

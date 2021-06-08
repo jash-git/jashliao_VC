@@ -1,0 +1,469 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Graph</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Graph</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Graph</p>
+<img src="Graph1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph1.png">
+<p>Graph中文翻做「圖」。此處談及的「圖」並不是指圖片或者圖形。「圖」是一種用來記錄關聯、關係的東西。</p>
+<img src="Graph2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph2.png">
+<p>一張圖由數個點（vertex）以及數條邊（edge）所構成。點與點之間，得以邊相連接，表示這兩點有關聯、關係。</p>
+<img src="Graph3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph3.png">
+<p>點的大小形狀和線的粗細長短是無所謂的，我們只在乎它們如何連接。只要連接的關係對了，要怎麼畫都行，簡約、雅觀、平易近人即可！</p>
+<img src="Graph4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph4.png">
+<p>兩點之間也可以有很多條邊，甚至有自己連到自己的邊。兩點之間有很多條邊，代表這兩點有很多項關聯。一個點有自己連到自己的邊，表示自己和自己有項關聯。</p>
+<p class="t">Isomorphism / Isomorphic</p>
+<p>Isomorphism中文譯作「同構」，Isomorphic中文譯作「同構的」。如果兩張圖的連接方式一模一樣時，則稱做「同構」。</p>
+<img src="Graph5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph5.png">
+<p>圖上的邊可以是直的，也可以是彎彎曲曲的，也可以是交錯的。不論邊的形狀如何，都不會改變點與點之間的關聯、關係，終究都會是同構的圖。</p>
+<img src="Graph6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph6.png">
+<p>圖上的點可以任意移動位置。不論點的位置如何，都不會改變點與點之間的關聯、關係，終究都會是同構的圖。</p>
+<p>同構的圖擁有相同的資訊，所以不管選擇哪一張圖都是可以的，只要清楚易懂就可以了！</p>
+<p class="t">Directed Graph（Digraph）</p>
+<img src="Graph7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph7.png">
+<p>邊甚至可以擁有方向性，用來表示兩點間的關係是單向的，並非雙向的。無向邊代表雙向關係，有向邊代表單向關係。</p>
+<p>一張圖若都是沒有方向性的邊，稱做「無向圖」；一張圖若都是有方向性的邊，則稱做「有向圖」。如果圖上有一些邊是單向的，有一些邊是雙向的，那我就不知道那該叫做什麼圖了。</p>
+<p class="t">替點和邊加上權重</p>
+<img src="Graph8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph8.png">
+<p>圖上的點可以擁有權重，可做其他用途。</p>
+<img src="Graph9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph9.png">
+<p>圖上的邊可以擁有權重，可做其他用途。</p>
+<p class="t">替點和邊取名字、代號</p>
+<img src="Graph10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph10.png">
+<p>點和邊上面可以取名字、代號，方便辨認。名字、代號可以寫在點和邊的旁邊，也可以寫在點的裡面、邊的上面，只要能表達清楚就好。</p>
+<img src="Graph11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph11.png">
+<p>名字可以隨便取，簡單明瞭就好。書上通常是用英文字母及數字居多。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Graph資料結構</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Edge List</p>
+<p>來談談如何利用程式語言來儲存一張圖吧！</p>
+<img src="GraphDS1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GraphDS1.png">
+<p>最簡單的方式，莫過於用個陣列，來記錄所有點與點之間的邊了。這種方式相當直觀，也非常節省空間，但是卻不適合用於計算（請各位讀過圖論其他主題後，再來思考看看）。所以這裡要介紹其他類型的方法。</p>
+<p>儲存一張圖的方式有許多種，這裡要介紹其中兩種最常見的方法：adjacency matrix、adjacency lists。adjacency為「相鄰」之意，以邊相連接的兩個點，則稱這兩個點「相鄰」。</p>
+<p class="t">Adjacency Matrix</p>
+<img src="GraphDS2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GraphDS2.png">
+<p>把一張圖上的點依序標示編號，然後建立一個方陣，來記錄連接資訊。方陣中的每一個元素都代表著某兩點的連接資訊。例如元素(0,1)記錄著第0點到第1點的連接資訊、元素(4, 2)記錄著第4點到第2點的連接資訊。如此一來，任一兩個點之間的資訊，都有對應的地方可用於記錄，纖悉無遺。</p>
+<img src="GraphDS3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GraphDS3.png">
+<p>連接資訊可以是邊的數目，也可以是邊的權重，也可以儲存其他的資訊。</p>
+<img src="GraphDS4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GraphDS4.png">
+<p>值得一提的是，adjacency matrix可以用來記錄邊的權重。但是它卻沒辦法記錄點的權重，它也沒辦法同時記錄點和邊的權重。不過，要記錄點的權重，其實只要另外開一條陣列就行了，也不是什麼難事。</p>
+<img src="GraphDS5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GraphDS5.png">
+<p>另外，當兩點之間的邊超過一條的時候，adjacency matrix沒辦法記錄權重，因為adjacency matrix的一個格子只能存入一個數字，沒辦法同時間存入多個數字。我們可以修改adjacency matrix的構造以存入更多數字，只是這不在討論範圍之內，各位可自行研究。</p>
+<p>程式碼可以寫成這樣：</p>
+<textarea>
+int graph[5][5];
+</textarea>
+<textarea>
+int main()
+{
+	for (int i=0; i<5; ++i)
+		for (int j=0; j<5; ++j)
+			graph[i][j] = 0;
+
+	int a, b, c;	// 一條邊的端點、另一個端點、以及邊的權重
+	while (cin >> a >> b >> c)
+		graph[a][b] = c;
+}
+</textarea>
+<p>或者是這樣：</p>
+<textarea>
+typedef int Graph[5][5];
+Graph graph;
+</textarea>
+<textarea>
+int main()
+{
+	for (int i=0; i<5; ++i)
+		for (int j=0; j<5; ++j)
+			graph[i][j] = 0;
+
+	int a, b, c;	// 一條邊的端點、另一個端點、以及邊的權重
+	while (cin >> a >> b >> c)
+		graph[a][b] = c;
+}
+</textarea>
+<p class="t">Adjacency Lists</p>
+<img src="GraphDS6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GraphDS6.png">
+<p>把一張圖上的點依序標示編號，然後針對每一個點，串連、表列其相鄰的點。例如第4列之中所列的數字，即是與第4點相鄰的點。</p>
+<p>第一種，是標準的實作方式，使用linked list：</p>
+<textarea>
+struct Element
+{
+	int v;
+	Element* next;
+};
+
+// 製造五個Linked List，作為Adjacency Lists。
+Element* list[5];
+
+void add_edge(int a, int b)
+{
+	Element* e = new Element();
+	e->v = b;
+	e->next = list[a]->next;
+	list[a]->next = e;
+}
+</textarea>
+<textarea>
+int main()
+{
+	for (int i=0; i<5; ++i)
+	{
+		recursive_delete(list[i]);
+		list[i] = 0;
+	}
+
+	int a, b;	// 一條邊的端點、另一個端點
+	while (cin >> a >> b)
+		add_edge(a, b);
+}
+
+void recursive_delete(Element* e)
+{
+	if (!e) return;
+	recursive_delete(e->next);
+	delete e;
+}
+</textarea>
+<p>第二種，是簡潔的實作方式，利用動態陣列取代linked list：</p>
+<textarea>
+// 製造五個動態陣列，作為Adjacency Lists。
+vector<int> list[5];
+</textarea>
+<textarea>
+int main()
+{
+	for (int i=0; i<5; ++i)
+		list[i].clear();
+
+	int a, b;	// 一條邊的端點、另一個端點
+	while (cin >> a >> b)
+		list[a].push_back(e);
+}
+</textarea>
+<p>第三種，是效率很好的實作方式，適用於邊數不多時：</p>
+<textarea>
+int list[5][50];	// 邊數上限是50。
+int size[5];		// 記錄每一個列表的元素有多少個
+</textarea>
+<textarea>
+int main()
+{
+	for (int i=0; i<5; ++i)
+		size[i] = 0;
+
+	int a, b;	// 一條邊的端點、另一個端點
+	while (cin >> a >> b)
+		list[a][size[a]++] = b;
+}
+</textarea>
+<p>第四種，有人會把邊依序放入陣列，是相當高竿的手法：</p>
+<textarea>
+int adj[5];
+int next[50], from[50], to[50];
+int e = 0;	// 邊數
+
+void add_edge(int a, int b)
+{
+	// 設定這條邊的端點
+//	from[e] = a;	// 事實上不需要
+	to[e] = b;
+
+	// 把邊插入到linked list開頭
+	next[e] = adj[a];
+	adj[a] = e;
+	e++;
+}
+</textarea>
+<textarea>
+int main()
+{
+	e = 0;
+	for (int i=0; i<5; ++i)
+		adj[i] = -1;
+
+	int a, b;	// 一條邊的端點、另一個端點
+	while (cin >> a >> b)
+		add_edge(a, b);
+}
+</textarea>
+<p>如果還要記錄邊的權重的話，就變成這樣：</p>
+<textarea>
+struct Element
+{
+	int v, w;	// 同時記錄邊的權重
+	Element* next;
+};
+
+Element* list[5];
+</textarea>
+<textarea>
+struct Element {int v, w;}; // 同時記錄邊的權重
+vector<Element> list[5];
+</textarea>
+<textarea>
+vector< pair<int,int> > list[5]; // 用pair來代替兩個變數的struct
+</textarea>
+<textarea>
+int list[5][5];
+int weight[5][5]; // 再開一個陣列來記錄邊的權重
+int size[5];
+</textarea>
+<textarea>
+const int V = 10;
+const int E = 1000;
+// 再開一個陣列來記錄邊的權重
+int adj[V], next[E], to[E], weight[E];
+int e = 0;
+</textarea>
+<p>但是如果還要記錄點的權重，那就另外再開一條陣列吧。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Graph Traversal</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Graph Traversal</p>
+<img src="GraphTraversal1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GraphTraversal1.png">
+<p>給你一張圖，要怎麼讀出它的資訊呢？</p>
+<p>用人眼來觀察一張圖，很快的就能看出點和線，一點一點釐清關係。要是一張圖能夠畫得漂亮一點，上個鮮明的顏色，那就更好了。</p>
+<img src="GraphTraversal2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GraphTraversal2.png">
+<p>電腦則不然。要以電腦來讀取一張圖的資訊（這資訊想必會以圖的資料結構來妥善儲存），唯一的方法就是透過程式語言，以及良好的演算法囉！</p>
+<p>Traversal中文稱做「遍歷」。圖的遍歷，也就是指通盤地讀取圖的資訊：決定好從哪裡開始讀，依照什麼順序讀，要讀到哪裡為止。詳細地設計好流程，始能通盤地讀取圖的資訊；如果設計得漂亮，在解決圖的問題時，還可以一邊讀取圖的資訊，一邊順手解決問題呢！</p>
+<p>利用最簡單的資料結構queue和stack，就能製造不同的遍歷順序，得到兩種遍歷演算法：Breadth-first Search和Depth-first Search。這兩個演算法充分了利用程式語言的特性，是非常簡約而美麗的演算法。由於它們的簡約與美麗，使得它們能夠適用在許多問題當中、融入到各種概念當中；使得它們除了讀取資訊，還能用以解決難題。因此，Breadth-first Search和Depth-first Search成為資訊領域不可不知的演算法。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Graph Traversal: Breadth-first Traversal</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Breadth-first Traversal（Breadth-first Search）（BFS）</p>
+<pre>
+（依照編號順序）不斷找出尚未遍歷的點當作起點，進行下述行為：
+　一、把起點放入queue。
+　二、重複下述兩步驟，直到queue裡面沒有東西為止：
+　　甲、從queue當中取出一點。
+　　乙、找出跟此點相鄰的點，並且尚未遍歷的點，
+　　　　通通（依照編號順序）放入queue。
+</pre>
+<img src="BFS1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BFS1.png">
+<p>運用BFS遍歷整張圖，最後得到許多棵樹。單一的樹稱作BFS Tree，所有的樹稱作BFS Forest。</p>
+<p>選擇不同的起點，就會形成不同的BFS Forest。一般來說，我們習慣按照編號順序選擇起點、選擇下一個要拜訪的點，如此一來可以得到唯一一種BFS Forest。</p>
+<p class="t">遍歷順序示意圖：每個點進入與離開queue的時刻</p>
+<img src="BFS2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BFS2.png">
+<p>每個點進入queue的時刻以左上深色數字表示，每個點離開queue的時刻以右下淺色數字表示。每個點都會進入queue一次、離開queue一次，不會再有第二次。</p>
+<p class="t">遍歷順序示意圖：每個點離開queue的時刻</p>
+<img src="BFS3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BFS3.png">
+<p>只觀察離開queue的時刻，可以發現BFS優先走遍距離起點最近之處，優先讓BFS Tree變得寬廣，因而得名Breadth-first Search。這個遍歷順序能夠解決許多圖論問題！</p>
+<p class="t">時間複雜度</p>
+<p>使用的資料結構為adjacency matrix的話，可以以O(V^2)時間遍歷整張圖；使用adjacency lists的話，可以以O(V+E)時間遍歷整張圖。V是圖上的點數，E是圖上的邊數。</p>
+<p class="t">程式碼（adjacency matrix）</p>
+<textarea>
+bool adj[9][9];	// 一張圖，資料結構為adjacency matrix。
+bool visit[9];	// 紀錄圖上的點是否遍歷過，有遍歷過為true。
+
+void BFS()
+{
+	// 建立一個queue。
+	queue<int> q;
+
+	// 全部的點都初始化為尚未遍歷
+	for (int i=0; i<9; i++)
+		visit[i] = false;
+
+	for (int k=0; k<9; k++)
+		if (visit[k])
+		{
+			// 一、把起點放入queue。
+			q.push(k);
+			visit[k] = true;
+
+			// 二、重複下述兩點，直到queue裡面沒有東西為止：
+			while (!q.empty())
+			{
+				// 甲、從queue當中取出一點。
+				int i = q.pop();
+
+				// 乙、找出跟此點相鄰的點，並且尚未遍歷的點，
+				//     依照編號順序通通放入queue。
+				for (int j=0; j<9; j++)
+					if (adj[i][j] && !visit[j])
+					{
+						q.push(j);
+						visit[j] = true;
+					}
+			}
+		}
+}
+</textarea>
+<textarea>
+// 很差的寫法，點從queue彈出來之後才設定遍歷過了。
+bool adj[9][9];
+bool visit[9];
+
+void BFS()
+{
+	queue<int> q;
+
+	for (int i=0; i<9; i++)
+		visit[i] = false;
+
+	for (int k=0; k<9; k++)
+		if (!visit[k])
+		{
+			q.push(k);
+
+			while (!q.empty())
+			{
+				int i = q.pop();
+
+				if (!visit[i])
+				{
+					visit[i] = true;
+
+					for (int j=0; j<9; j++)
+						if (adj[i][j] && !visit[j])
+							q.push(j);
+				}
+			}
+		}
+}
+</textarea>
+<p class="e">UVa 627</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Graph Traversal: Depth-first Traversal</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Depth-first Traversal（Depth-first Search）（DFS）</p>
+<p>DFS與BFS大同小異，只是把queue換成了stack而已。</p>
+<img src="DFS1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DFS1.png">
+<p class="t">遍歷順序示意圖：每個點進入與離開stack的時刻</p>
+<img src="DFS2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DFS2.png">
+<p>每個點進入stack的時刻以左上深色數字表示，每個點離開stack的時刻以右下淺色數字表示。每個點都會進入stack一次、離開stack一次，不會再有第二次。</p>
+<p class="t">遍歷順序示意圖：每個點離開stack的時刻</p>
+<img src="DFS3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DFS3.png">
+<p>只觀察離開stack的時刻，可以發現DFS優先走遍距離起點最遠之處，優先讓DFS Tree變得深遠，因而得名Depth-first Search。這個遍歷順序能夠解決許多圖論問題！</p>
+<p class="t">遍歷順序示意圖：每個點進入遞迴與離開遞迴的時刻</p>
+<img src="DFS4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DFS4.png">
+<p>程式語言中的遞迴，其實就是利用stack來實做的。由於DFS操作stack的方式，就跟遞迴在操作stack的方式相同，所以DFS的程式碼也可以寫成遞迴形式。</p>
+<p>請對照後面的「遞迴版本程式碼」小節。進入遞迴的時刻以左上深色數字表示，離開遞迴的時刻以右下淺色數字表示。這個順序用於解決一些特別的圖論問題。</p>
+<p>製圖時，DFS Tree高度至少是三、分枝數目至少是三，比較容易觀察出遍歷順序。建議讀者也自己畫個圖、寫段程式研究一下。</p>
+<p class="t">邊的分類</p>
+<img src="DFS5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DFS5.png">
+<p>藉由一叢DFS Forest，一張有向圖的邊可以分成四類：</p>
+<pre>
+Tree Edge：樹上的邊。
+Back Edge：連向祖先的邊。（形成環）
+Forward Edge：連向子孫的邊。
+Cross Edge：枝葉之間的邊、樹之間的邊。（可能形成環）
+</pre>
+<p>藉由一叢DFS Forest，一張無向圖的邊可以分成兩類：</p>
+<pre>
+Tree Edge：樹上的邊。
+Back Edge：連向祖先的邊。（形成環）
+</pre>
+<p>這些邊的分類，可以協助我們解決複雜的圖論問題。</p>
+<p class="t">遞迴版本程式碼（adjacency matrix）</p>
+<textarea>
+bool adj[9][9];	// 一張圖，資料結構為adjacency matrix。
+bool visit[9];	// 紀錄圖上的點是否遍歷過，有遍歷過為true。
+
+void DFS(int i)
+{
+	for (int j=0; j<9; j++)
+		if (adj[i][j] && !visit[j])
+		{
+			visit[j] = true;	// 標記為已遍歷
+			DFS(j);
+		}
+}
+
+void traversal()
+{
+	// 全部的點都初始化為尚未遍歷
+	for (int i=0; i<9; i++)
+		visit[i] = false;
+
+	for (int i=0; i<9; i++)
+		if (!visit[i])
+		{
+			visit[i] = true;
+			DFS(i);
+		}
+}
+</textarea>
+<textarea>
+bool adj[9][9];
+bool visit[9];
+
+void DFS(int i)
+{
+	visit[i] = true;
+
+	for (int j=0; j<9; j++)
+		if (adj[i][j] && !visit[j])
+			DFS(j);
+}
+
+void traversal()
+{
+	for (int i=0; i<9; i++)
+		visit[i] = false;
+
+	for (int i=0; i<9; i++)
+		if (!visit[i])
+			DFS(i);
+}
+</textarea>
+<textarea>
+bool adj[9][9];
+bool visit[9];
+
+void DFS(int i)
+{
+	if (visit[i]) return;
+	visit[i] = true;
+
+	for (int j=0; j<9; j++)
+		if (adj[i][j])
+			DFS(j);
+}
+
+void traversal()
+{
+	for (int i=0; i<9; i++)
+		visit[i] = false;
+
+	for (int i=0; i<9; i++)
+		DFS(i);
+}
+</textarea>
+<p class="e">UVa 599 676 705 10004 10308 10505 10672 10938</p>
+<p class="t">延伸閱讀：其他Traversal方式</p>
+<pre>
+BFS：
+不考慮邊的權重，先往「離第一點最近」的點
+
+DFS：
+不考慮邊的權重，先往「離第一點最遠」的點
+
+無名：
+先往「離第一點最近」的點
+得到Shortest Path Tree
+
+無名：
+先往「離已走過的點最近」的點
+得到Minimum Spanning Tree
+
+Maximum Adjacency Search：
+先往「離已走過的點的距離總和最少」的點
+得到Minimum s-t Cut
+
+Maximum Cardinality Search：
+先往「離已走過的點的連接邊數總和最少」的點
+為Maximum Adjacency Search的特例
+</pre>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

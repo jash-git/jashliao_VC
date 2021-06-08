@@ -1,0 +1,196 @@
+<html>
+
+<head>
+<title>3.4 应用程序执行机制</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="4">3.4 </font><font SIZE="4" color="#3973DE">应用程序执行机制</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">3.4.1 
+    WinMain</font><font SIZE="3" color="#3973DE">函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">DOS</font><font SIZE="3">下，程序的执行是从</font><font FACE="Times New Roman" SIZE="3">main</font><font SIZE="3">函数开始的。在</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">下，对应的函数是</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">。但是，如果浏览</font><font FACE="Times New Roman" SIZE="3">Hello</font><font SIZE="3">程序的所有的方法和全局函数，是找不到</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">函数的。</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">考虑到典型的</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">程序需要的大部分初始化工作都是标准化的，因此把</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">函数隐藏在应用程序的框架中，编译时会自动将该函数链接到可执行文件中。程序员可以重写</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">函数，但一般不需要这么做。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">下面的程序清单</font><font FACE="Times New Roman" SIZE="3">3-1</font><font SIZE="3">给出了</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">函数的代码。其中，</font><font FACE="Times New Roman" SIZE="3">_tWinMain</font><font SIZE="3">函数在</font><font FACE="Times New Roman" SIZE="3">\DevStudio\Vc\Mfc\src\AppModul.cpp</font><font SIZE="3">中定义，它所调用的</font><font FACE="Times New Roman" SIZE="3">AfxWinMain</font><font SIZE="3">函数在同一目录下的</font><font FACE="Times New Roman" SIZE="3">WinMain.cpp</font><font SIZE="3">中定义。名字是</font><font FACE="Times New Roman" SIZE="3">_tWinMain</font><font SIZE="3">函数而不是</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">，是考虑到对不同字符集的支持，在</font><font FACE="Times New Roman" SIZE="3">tchar.h</font><font SIZE="3">中有</font><font FACE="Times New Roman" SIZE="3">_tWinMain</font><font SIZE="3">的宏定义。在</font><font FACE="Times New Roman" SIZE="3">ANSI</font><font SIZE="3">字符集下编译时，</font><font FACE="Times New Roman" SIZE="3">_tWinMain</font><font SIZE="3">就变成</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Unicode</font><font SIZE="3">下编译时，</font><font FACE="Times New Roman" SIZE="3">_tWinMain</font><font SIZE="3">就变成</font><font FACE="Times New Roman" SIZE="3">wWinMain</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3"><b>　</p>
+    <p ALIGN="JUSTIFY">提示</b>：</font><font FACE="Times New Roman" SIZE="3">Unicode</font><font SIZE="3">是具有固定宽度、统一的文本和字符的编码标准。由于</font><font FACE="Times New Roman" SIZE="3">Unicode</font><font SIZE="3">采用的是</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">位编码，因此可以包含世界各地的书写系统的字符和技术符号（如中文也在</font><font FACE="Times New Roman" SIZE="3">Unicode</font><font SIZE="3">之中），从而克服了</font><font FACE="Times New Roman" SIZE="3">ASCII</font><font SIZE="3">码在表示多语言文本上的不足之处，扩大了</font><font FACE="Times New Roman" SIZE="3">ASCII</font><font SIZE="3">码</font><font FACE="Times New Roman" SIZE="3">7</font><font SIZE="3">位编码方案的好处。</font><font FACE="Times New Roman" SIZE="3">Unicode</font><font SIZE="3">同等地对待所有的字符，并且在表示各种语言的任何字符时既不需要换码序列（</font><font FACE="Times New Roman" SIZE="3">escape</font><font SIZE="3">）也不需要控制代码。</font><font FACE="Times New Roman" SIZE="3">Win32</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">很好的支持</font><font FACE="Times New Roman" SIZE="3">Unicode</font><font SIZE="3">字符集。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">3-1 _tWinMain</font><font SIZE="3">函数定义</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// export WinMain to force linkage to this module</p>
+    <p ALIGN="JUSTIFY">extern int AFXAPI AfxWinMain(HINSTANCE hInstance, HINSTANCE 
+    hPrevInstance,</p>
+    <p ALIGN="JUSTIFY">LPTSTR lpCmdLine, int nCmdShow);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#ifdef _MAC</p>
+    <p ALIGN="JUSTIFY">extern &quot;C&quot; int PASCAL</p>
+    <p ALIGN="JUSTIFY">#else</p>
+    <p ALIGN="JUSTIFY">extern &quot;C&quot; int WINAPI</p>
+    <p ALIGN="JUSTIFY">#endif</p>
+    <p ALIGN="JUSTIFY">_tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,</p>
+    <p ALIGN="JUSTIFY">LPTSTR lpCmdLine, int nCmdShow)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// call shared/exported WinMain</p>
+    <p ALIGN="JUSTIFY">return AfxWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">AfxWinMain</font><font SIZE="3">函数定义：</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">/////////////////////////////////////////////////////////////////////////////</p>
+    <p ALIGN="JUSTIFY">// Standard WinMain implementation</p>
+    <p ALIGN="JUSTIFY">// Can be replaced as long as 'AfxWinInit' is called first</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int AFXAPI AfxWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,</p>
+    <p ALIGN="JUSTIFY">LPTSTR lpCmdLine, int nCmdShow)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">ASSERT(hPrevInstance == NULL);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int nReturnCode = -1;</p>
+    <p ALIGN="JUSTIFY">CWinApp* pApp = AfxGetApp();</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// AFX internal initialization</p>
+    <p ALIGN="JUSTIFY">if (!AfxWinInit(hInstance, hPrevInstance, lpCmdLine, nCmdShow))</p>
+    <p ALIGN="JUSTIFY">goto InitFailure;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// App global initializations (rare)</p>
+    <p ALIGN="JUSTIFY">ASSERT_VALID(pApp);</p>
+    <p ALIGN="JUSTIFY">if (!pApp-&gt;InitApplication())</p>
+    <p ALIGN="JUSTIFY">goto InitFailure;</p>
+    <p ALIGN="JUSTIFY">ASSERT_VALID(pApp);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Perform specific initializations</p>
+    <p ALIGN="JUSTIFY">if (!pApp-&gt;InitInstance())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if (pApp-&gt;m_pMainWnd != NULL)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">TRACE0(&quot;Warning: Destroying non-NULL m_pMainWnd\n&quot;);</p>
+    <p ALIGN="JUSTIFY">pApp-&gt;m_pMainWnd-&gt;DestroyWindow();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">nReturnCode = pApp-&gt;ExitInstance();</p>
+    <p ALIGN="JUSTIFY">goto InitFailure;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">ASSERT_VALID(pApp);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">nReturnCode = pApp-&gt;Run();</p>
+    <p ALIGN="JUSTIFY">ASSERT_VALID(pApp);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">InitFailure:</p>
+    <p ALIGN="JUSTIFY">#ifdef _DEBUG</p>
+    <p ALIGN="JUSTIFY">// Check for missing AfxLockTempMap calls</p>
+    <p ALIGN="JUSTIFY">if (AfxGetModuleThreadState()-&gt;m_nTempMapLock != 0)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">TRACE1(&quot;Warning: Temp map lock count non-zero (%ld).\n&quot;,</p>
+    <p ALIGN="JUSTIFY">AfxGetModuleThreadState()-&gt;m_nTempMapLock);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">AfxLockTempMaps();</p>
+    <p ALIGN="JUSTIFY">AfxUnlockTempMaps(-1);</p>
+    <p ALIGN="JUSTIFY">#endif</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">AfxWinTerm();</p>
+    <p ALIGN="JUSTIFY">return nReturnCode;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">应用程序执行时，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">自动调用应用程序框架内部的</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">函数。如清单</font><font FACE="Times New Roman" SIZE="3">3-1</font><font SIZE="3">所示，</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">函数会查找该应用程序的一个全局构造对象，这个对象是由</font><font FACE="Times New Roman" SIZE="3">CWinApp</font><font SIZE="3">派生类构造的，有且只有一个。它是一个全局对象，因此在程序启动时，它就已经被构造好了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">随后，</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">将调用这个对象的</font><font FACE="Times New Roman" SIZE="3">InitApplication</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">InitInstance</font><font SIZE="3">成员函数，完成应用程序实例的初始化工作。随后，</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">调用</font><font FACE="Times New Roman" SIZE="3">Run</font><font SIZE="3">成员函数，运行应用程序的消息循环。在程序结束时，</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">调用</font><font FACE="Times New Roman" SIZE="3">AfxWinTerm</font><font SIZE="3">函数，做一些清理工作。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">3.4.2 
+    </font><font SIZE="3" color="#3973DE">应用程序类</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font SIZE="3">每个应用程序必须从</font><font FACE="Times New Roman" SIZE="3">CWinApp</font><font SIZE="3">派生出自己的应用程序类，并定义一个全局的对象。该应用程序类包含了</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">下应用程序的初始化、运行和结束过程。基于框架建立的应用程序必须有一个（且只能有一个）从</font><font FACE="Times New Roman" SIZE="3">CWinApp</font><font SIZE="3">派生的类的对象。在</font><font FACE="Times New Roman" SIZE="3">Hello</font><font SIZE="3">程序中，我们从</font><font FACE="Times New Roman" SIZE="3">CWinApp</font><font SIZE="3">中派生出一个</font><font FACE="Times New Roman" SIZE="3">CHelloApp</font><font SIZE="3">类，并定义了一个全局对象</font><font FACE="Times New Roman" SIZE="3">theApp</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">CHelloApp</font><font SIZE="3">类在</font><font FACE="Times New Roman" SIZE="3">hello.cpp</font><font SIZE="3">中定义。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要访问应用程序类构造的对象，可以调用全局函数</font><font FACE="Times New Roman" SIZE="3">AfxGetApp()</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">AfxGetApp()</font><font SIZE="3">返回一个指向全局对象的指针。可以通过对它进行强制类型转换，转换为我们派生的应用程序类。</p>
+    <p ALIGN="JUSTIFY">比如：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CHelloApp* pApp=(CHelloApp*)AfxGetApp()</font><font SIZE="3">；</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CHelloApp</font><font SIZE="3">应用程序类中，我们还重载了</font><font FACE="Times New Roman" SIZE="3">CWinApp</font><font SIZE="3">的成员函数</font><font FACE="Times New Roman" SIZE="3">InitInstance</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">InitInstance</font><font SIZE="3">函数主要完成以下工作：设置注册数据库，载入标准设置（最近打开文件列表等）、注册文档模板。其中注册文档模板过程中隐含地创建了主窗口。接着，处理命令行参数，显示窗口，然后返回、进入消息循环。下面的程序清单</font><font FACE="Times New Roman" SIZE="3">3.2</font><font SIZE="3">给出了</font><font FACE="Times New Roman" SIZE="3">Hello</font><font SIZE="3">程序的</font><font FACE="Times New Roman" SIZE="3">InitInstance</font><font SIZE="3">函数代码。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">3.2 InitInstance</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// CHelloApp initialization</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CHelloApp::InitInstance()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxEnableControlContainer();</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Standard initialization</p>
+    <p ALIGN="JUSTIFY">// If you are not using these features and wish to reduce the size</p>
+    <p ALIGN="JUSTIFY">// of your final executable, you should remove from the following</p>
+    <p ALIGN="JUSTIFY">// the specific initialization routines you do not need.</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#ifdef _AFXDLL</p>
+    <p ALIGN="JUSTIFY">Enable3dControls(); // Call this when using MFC in a shared DLL</p>
+    <p ALIGN="JUSTIFY">#else</p>
+    <p ALIGN="JUSTIFY">Enable3dControlsStatic(); // Call this when linking to MFC statically</p>
+    <p ALIGN="JUSTIFY">#endif</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Change the registry key under which our settings are stored.</p>
+    <p ALIGN="JUSTIFY">// You should modify this string to be something appropriate</p>
+    <p ALIGN="JUSTIFY">// such as the name of your company or organization.</p>
+    <p ALIGN="JUSTIFY">SetRegistryKey(_T(&quot;Local AppWizard-Generated Applications&quot;));</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">LoadStdProfileSettings(); // Load standard INI file options (including 
+    MRU)</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Register the application's document templates. Document templates</p>
+    <p ALIGN="JUSTIFY">// serve as the connection between documents, frame windows and views.</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSingleDocTemplate* pDocTemplate;</p>
+    <p ALIGN="JUSTIFY">pDocTemplate = new CSingleDocTemplate(</p>
+    <p ALIGN="JUSTIFY">IDR_MAINFRAME,</p>
+    <p ALIGN="JUSTIFY">RUNTIME_CLASS(CHelloDoc),</p>
+    <p ALIGN="JUSTIFY">RUNTIME_CLASS(CMainFrame), // main SDI frame window</p>
+    <p ALIGN="JUSTIFY">RUNTIME_CLASS(CHelloView));</p>
+    <p ALIGN="JUSTIFY">AddDocTemplate(pDocTemplate);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Parse command line for standard shell commands, DDE, file open</p>
+    <p ALIGN="JUSTIFY">CCommandLineInfo cmdInfo;</p>
+    <p ALIGN="JUSTIFY">ParseCommandLine(cmdInfo);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Dispatch commands specified on the command line</p>
+    <p ALIGN="JUSTIFY">if (!ProcessShellCommand(cmdInfo))</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// The one and only window has been initialized, so show and update it.</p>
+    <p ALIGN="JUSTIFY">m_pMainWnd-&gt;ShowWindow(SW_SHOW);</p>
+    <p ALIGN="JUSTIFY">m_pMainWnd-&gt;UpdateWindow();</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CWinApp</font><font SIZE="3">的派生类中，必须重载</font><font FACE="Times New Roman" SIZE="3">InitInstance</font><font SIZE="3">函数，因为</font><font FACE="Times New Roman" SIZE="3">CWinApp</font><font SIZE="3">并不知道应用程序需要什么样的窗口，它可以多文档窗口、单文档窗口，也可以是基于对话框的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY">Run</font><font SIZE="3">成员函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></b>WinMain</font><font SIZE="3">在初始化应用程序实例后，就调用</font><font FACE="Times New Roman" SIZE="3">Run</font><font SIZE="3">函数来处理消息循环。</font><font FACE="Times New Roman" SIZE="3">Run</font><font SIZE="3">成员函数不断执行消息循环，检查消息队列中有没有消息。如果有消息，</font><font FACE="Times New Roman" SIZE="3">Run</font><font SIZE="3">将其派遣，交由框架去处理，然后返回继续消息循环。如果没有消息，</font><font FACE="Times New Roman" SIZE="3">Run</font><font SIZE="3">将调用</font><font FACE="Times New Roman" SIZE="3">OnIdle</font><font SIZE="3">来做用户或框架可能需要在空闲时才做的工作，象后面我们讲到的用户接口更新消息处理等。如果既没有消息要处理，也没有空闲时的处理工作要做，则应用程序将一直等待，直到有事件发生。当应用程序结束时，</font><font FACE="Times New Roman" SIZE="3">Run</font><font SIZE="3">将调用</font><font FACE="Times New Roman" SIZE="3">ExitInstance</font><font SIZE="3">。消息循环的流程图如图</font><font FACE="Times New Roman" SIZE="3">3-10</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><img src="T3_10.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap3/T3_10.gif" alt="T3_10.tif (197232 bytes)" WIDTH="338" HEIGHT="436"><font SIZE="3"></p>
+    <p ALIGN="CENTER">图</font><font FACE="Times New Roman" SIZE="3">3-10 Run</font><font SIZE="3">成员函数的消息循环</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><b><font SIZE="3">　</p>
+    <p>关闭应用程序</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font></b><font SIZE="3">用户可以通过选择</font><font FACE="Times New Roman" SIZE="3">File-Exit</font><font SIZE="3">菜单或点主窗口的关闭按钮，关闭主框架窗口，来终止应用程序。此时，应用程序类首先删除</font><font FACE="Times New Roman" SIZE="3">m_pMainWnd</font><font SIZE="3">主框架窗口对象，然后退出</font><font FACE="Times New Roman" SIZE="3">Run</font><font SIZE="3">函数，进而退出</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">，在退出</font><font FACE="Times New Roman" SIZE="3">WinMain</font><font SIZE="3">后删除</font><font FACE="Times New Roman" SIZE="3">TheApp</font><font SIZE="3">对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap3_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap3/chap3_3.htm">上一页</a></td>
+        <td><p align="right"><a href="chap3_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap3/chap3_5.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

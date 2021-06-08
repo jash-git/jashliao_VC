@@ -1,0 +1,264 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Number</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Search Tree</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Binary Search Tree</p>
+<p>請先參考「<a href="Tree.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree.html">Binary Tree</a>」。</p>
+<img src="SearchTree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SearchTree1.png">
+<p>二元搜尋樹。置放大量數字並且進行排序的資料結構。原理是Divide and Conquer，樹根居中，左子樹較小或相等，右子樹較大，然後遞迴分割下去。</p>
+<p>插入、刪除、搜尋的時間複雜度等同於二元搜尋樹的高度。資料可以動態增加和減少，二元搜尋樹的高度亦會變動，因此時間複雜度最差為O(N)，最佳為O(logN)。所有節點連成一線的時候是最差的，所有節點形成full tree是最佳的。</p>
+<p>空間複雜度等同於節點數目，空間複雜度是O(N)。</p>
+<img src="SearchTree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SearchTree2.png">
+<p>尋找極小值、極大值，從樹根開始往左小孩走到底、往右小孩走到底就可以了。時間複雜度等同於二元搜尋樹的高度。</p>
+<p>樹葉可以額外建立線索（Thread），左小孩連往次小節點，右小孩連往次大節點，如此就能依照大小順序走訪元素。建立線索不影響時間複雜度與空間複雜度。</p>
+<p class="t">最佳二元搜尋樹（Optimal Binary Search Tree）</p>
+<!--<img src="SearchTree3.png">-->
+<p>如果二元搜尋樹的資料不會變動，則可以依照每個節點被搜尋到的頻率，使用Dynamic Programming求得結構最佳的二元搜尋樹，藉此加快搜尋速度。建立時間為O(N^2)。</p>
+<p class="e">UVa 10304</p>
+<p class="t">擴充資訊（Augmented Tree）</p>
+<img src="SearchTree4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SearchTree4.png">
+<p>二元搜尋樹的每個節點，可以擴充資訊，例如子樹的高度、節點總數、權重和、權重最大值、權重最小值、……</p>
+<p class="t">排名（Ranking）</p>
+<p>二元搜尋樹雖然有排序的功效，但是卻沒有排名的功效。想知道資料的排名，就要在每個節點新增一個變數，記錄其子樹的節點個數，如此便可以用Divide and Conquer的方式求得每筆資料的排名。不影響時間複雜度與空間複雜度。</p>
+<p class="e">UVa 10909</p>
+<p class="t">二進位數字表示法</p>
+<img src="SearchTree5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SearchTree5.png">
+<p>二進位數字一一對應到二元搜尋樹的節點。</p>
+<p>如此就能以陣列實作二元搜尋樹。優點是程式碼簡潔，效率高，缺點是浪費記憶體空間、樹的高度受限制。</p>
+<textarea>
+int left_child(int index) {return index * 2;}
+int right_child(int index) {return index * 2 + 1;}
+
+void binary_tree()
+{
+	int tree[5 + 1];	// tree[0]不使用，只有五個節點。
+	cout << "根為" << tree[1];
+	cout << "根的左邊小孩是" << tree[left_child(1)];
+	cout << "根的右邊小孩是" << tree[right_child(1)];
+}
+</textarea>
+<p class="e">UVa 712</p>
+<p class="t">AVL Tree</p>
+<p><a href="javascript:if(confirm('http://www.qmatica.com/DataStructures/Trees/AVL/AVLTree.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.qmatica.com/DataStructures/Trees/AVL/AVLTree.html'" tppabs="http://www.qmatica.com/DataStructures/Trees/AVL/AVLTree.html" class="l">http://www.qmatica.com/DataStructures/Trees/AVL/AVLTree.html</a></p>
+<p>平衡二元搜尋樹。樹上每個節點（每棵子樹），其左右兩子樹的高度差最多為一。此舉造成整棵樹的高度為O(logN)，讓各項操作穩定運行，不會產生忽快忽慢的極端現象。</p>
+<img src="SearchTree6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SearchTree6.png">
+<p>每當插入節點，高度差超過一，就馬上運用右旋轉或左旋轉調整高度；旋轉一至兩次，就使整棵樹平衡。旋轉不影響排序。</p>
+<p>找到最深、高度差超過一的節點（子樹），依據插入節點的路線，可分為四類情況。左左/右右：旋轉子樹樹根，立即平衡。左右/右左：先旋轉子樹樹根的左/右小孩，成為左左/右右，後續同前。</p>
+<p>刪除節點則是反過來做。</p>
+<img src="SearchTree7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SearchTree7.png">
+<p>插入、刪除、搜尋的時間複雜度為O(logN)。旋轉、平衡的時間複雜度是O(1)，至於空間複雜度仍是O(N)。</p>
+<textarea>
+struct Node
+{
+	Node* l, *r;
+	int h, c, key;
+	Node(int key): l(0), r(0), h(1), c(1), key(key) {}
+
+	void update()
+	{
+		h = 1 + max(l?l->h:0, r?r->h:0);
+		c = (l?l->c:0) + 1 + (r?r->c:0);
+	}
+} *root;
+
+Node* rL(Node* x)	// 左旋轉
+{
+	Node* y = x->r;
+	x->r = y->l; y->l = x;
+	x->update(); y->update();
+	return y;
+}
+
+Node* rR(Node* x)	// 右旋轉
+{
+	Node* y = x->l;
+	x->l = y->r; y->r = x;
+	x->update(); y->update();
+	return y;
+}
+
+// 忘了做nil檢查，會當機。
+Node* balance(Node* x)
+{
+	x->update();
+	if (x->l->h > 1 + x->r->h)
+	{
+		if (x->l->l->h < x->l->r->h) x->l = rL(x->l);
+		x = rR(x);
+	}
+	else if (x->r->h > 1 + x->l->h)
+	{
+		if (x->r->r->h < x->r->l->h) x->r = rR(x->r);
+		x = rL(x);
+	}
+	return x;
+}
+
+Node* insert(Node* x, int key)
+{
+	if (x == 0) return new Node(key);
+
+	if (key < x->key)
+		x->l = insert(x->l, key);
+	else
+		x->r = insert(x->r, key);
+
+	return balance(x);
+}
+</textarea>
+<p class="e">UVa 11688</p>
+<p class="t">Red-Black Tree</p>
+<p>紅黑樹的功效等同平衡二元搜尋樹，但是效率更勝一籌。</p>
+<p><a href="javascript:if(confirm('http://www.cs.princeton.edu/~rs/talks/LLRB/RedBlack.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cs.princeton.edu/~rs/talks/LLRB/RedBlack.pdf'" tppabs="http://www.cs.princeton.edu/~rs/talks/LLRB/RedBlack.pdf">http://www.cs.princeton.edu/~rs/talks/LLRB/RedBlack.pdf</a></p>
+<p>可以直接使用STL的set、map，但是沒有排名功能。</p>
+<p>可以直接使用GNU extension的rb_tree，order_of_key和find_by_order為排名功能。</p>
+<p><a href="javascript:if(confirm('http://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/index.html'" tppabs="http://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/index.html" class="l">http://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/index.html</a></p>
+<p><a href="javascript:if(confirm('http://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/assoc_examples.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/assoc_examples.html'" tppabs="http://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/assoc_examples.html" class="l">http://gcc.gnu.org/onlinedocs/libstdc++/ext/pb_ds/assoc_examples.html</a></p>
+<p class="t">Skip Lists</p>
+<p>置放大量數字並進行排序的資料結構。不用樹狀結構，而改用高度不同的Linked List來連接資料。資料結構在概念上可以表示成Left Child-Right Sibling Binary Tree的模式。時間複雜度與空間複雜度與Binary Search Tree皆相同，但是實際運作效率比Binary Search Tree還要好。</p>
+<p class="t">Splay Tree</p>
+<img src="SearchTree8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SearchTree8.png">
+<p>splay是按照規則，把一個節點不斷雙旋至根。插入、刪除之後立即splay，儘管樹沒有完全平衡，插入、刪除的均攤時間複雜度是O(logN)。</p>
+<p>splay改為單旋，均攤時間複雜度並非O(logN)，卻是個不錯的偷懶方式。</p>
+<p>運用splay拆接子樹，時間複雜度是O(logN)，是主要特色。</p>
+<textarea t="不支援刪除的實作方式">
+const int V = 10000+1;		// 第零格做為nil
+int value[V];
+int parent[V], child[V][2];	// 父親、左右小孩
+int height[V], size[V];		// 子樹高度、子樹大小
+int T = 0, root = 0;		// 節點數、根
+
+#define l(i) child[i][0]
+#define r(i) child[i][1]
+
+void update(int i)
+{
+	height[i] = 1 + max(height[l(i)], height[r(i)]);
+	size[i] = 1 + size[l(i)] + size[r(i)];
+}
+
+// 判斷自己是左小孩或右小孩
+int side(int i)
+{
+	return r(parent[i]) == i;
+}
+
+// 轉吧轉吧
+void rotate(int x, int r)
+{
+	int y = parent[x];
+
+	if (parent[y]) child[parent[y]][side(y)] = x;
+	child[y][r] = child[x][!r];
+	child[x][!r] = y;
+
+	parent[x] = parent[y];
+	if (child[y][r]) parent[child[y][r]] = y;
+	parent[y] = x;
+
+	update(y);
+}
+
+void splay(int x)
+{
+	while (int y = parent[x])
+	{
+		int rx = side(x), ry = side(y);
+		if (!parent[y]) rotate(x, rx);
+		else if (rx == ry) rotate(y, ry), rotate(x, rx);
+		else rotate(x, rx), rotate(x, ry);
+	}
+	update(x);
+}
+
+// 建立節點
+int create(int n)
+{
+	int i = ++T;
+	l(i) = r(i) = 0;
+	height[i] = size[i] = 1;
+	value[i] = n;
+	return i;
+}
+
+// 插入
+void insert(int n)
+{
+	if (!root) {root = create(n); return;}
+
+	int i = root;
+	while (int j = child[i][n > value[i]]) i = j;
+
+	int j = create(n);
+	parent[j] = i;
+	child[i][n > value[i]] = j;
+
+	splay(j);
+	root = j;
+}
+
+void splay_tree()
+{
+	int n;
+	while (cin >> n)
+		insert(n);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Heap</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Binary Heap</p>
+<p>常簡稱Heap，置放大量數字，並且可以隨時求最大（小）值的資料結構。插入、刪除、求極值的時間複雜度為O(logN)，資料可以動態增加和減少。</p>
+<p>可以直接使用STL的priority_queue。</p>
+<p class="e">UVa 501 10587 11997</p>
+<p class="t">Binomial Heap</p>
+<p>置放大量數字，並且可以隨時求最大（小）值的資料結構。遞迴結合多個高度不同的Binomial Tree，所構成的一個資料結構，以抽象化的角度來看像是一個二進位系統。兩個Binomial Heap在結合的時候，原理就像是在做二進位加法一樣，因而得此名。</p>
+<p class="t">Fibonacci Heap</p>
+<p>置放大量數字，並且可以隨時求最大（小）值的資料結構。一個規則極其詭異的結構，重點在於他有一個特殊功能叫做decrease key，可以搜尋數字，並且還可以減少該數字，時間複雜度均攤之後僅有O(1)。另外，插入的時間複雜度均攤之後僅有O(1)。</p>
+<p class="t">Quake Heap</p>
+<p>置放大量數字，並且可以隨時求最大（小）值的資料結構。與Fibonacci Heap功能相同，但是據說簡單很多。</p>
+<p><a href="javascript:if(confirm('http://www.cs.uwaterloo.ca/~tmchan/pub.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cs.uwaterloo.ca/~tmchan/pub.html'" tppabs="http://www.cs.uwaterloo.ca/~tmchan/pub.html">http://www.cs.uwaterloo.ca/~tmchan/pub.html</a></p>
+<p class="t">Binary Search Tree</p>
+<p>BST也可以當作Heap使用。</p>
+<pre>
+Heap::push  = BST::insert
+Heap::pop   = BST::get_extremum + BST::delete
+Heap::peek  = BST::get_extremum
+Heap::merge = BST::merge
+</pre>
+<p>Heap的每一項操作，都可以用BST兜出來，時間複雜度完全一樣，唯一的例外是：Heap可以預先偷看將要彈出來的元素，僅需O(1)時間；BST要偷看，就等同於需要花費O(logN)時間搜尋最小值或最大值。</p>
+<p class="t">Treap</p>
+<p>Binary Search Tree與Binary Heap進行合體術變成的東西。</p>
+<p>令數字有額外的優先次序，同時具有「排序優先次序」的功能與「求最大（小）值」的功能。</p>
+<p class="t">Cartesian Tree</p>
+<p>令數字具有額外的索引值。Cartesian Tree是二元樹，根的數值大（小）於左右子樹，根的索引值區隔左右子樹。</p>
+<p>Cartesian Tree可以看作是一種Treap。</p>
+<p>Cartesian Tree是以online方式建立，由左到右讀取陣列元素，每讀取一個元素就建立一個節點，整棵樹剛好會來回遍歷一次。可使用stack來實作，確保stack的元素是照順序排好的。</p>
+<img src="CartesianTree.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/CartesianTree.png">
+<p class="t">van Emde Boas Tree（vEB Tree）</p>
+<p>置放大量正整數（與零）的資料結構，並且可以作為Double Ended Priority Queue。利用Divide and Conquer，將0到K-1的整數分為sqrt(K)個區塊，每個區塊的範圍大小為sqrt(K)，接著各區塊各自遞迴下去。</p>
+<p>以另一個角度來看，就是把一個整數從中間切開，成為高位數字部份和低位數字部份，把高位數字抽取出來，作為索引值，找出對應的陣列格子，並遞迴下去以儲存低位數字。跟Trie有點像。</p>
+<p>每次搜尋、插入、刪除為O(loglogK)，總時間複雜度為O(NloglogK)，其中N為正整數個數，K為這些正整數的最大值。
+<p>速度是快了那麼一點，然而缺點是記憶體用很兇，空間複雜度為O(K)。【待補分析】</p>
+<p>其實我們也可以使用Counting Sort來紀錄正整數，速度還比vEB Tree快，只不過Counting Sort不能動態排序罷了。</p>
+<textarea>
+struct vEB_Tree	// [0, K-1] have m digits in binary
+{
+	int digit;	// store m。或者紀錄陣列有多大（遞迴有多深）。
+	vEB_Tree* lower[possibility of m/2 digits];
+};
+</textarea>
+<p>若要作為Double Ended Priority Queue，則在每個節點加上兩個變數，紀錄該子樹目前擁有的數字的大小範圍。</p>
+<textarea>
+struct vEB_Tree
+{
+	int digit;
+	vEB_Tree* lower[possibility of m/2 digits];
+	int min, max;	// 子樹目前擁有的數字們，最大值與最小值。
+};
+</textarea>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

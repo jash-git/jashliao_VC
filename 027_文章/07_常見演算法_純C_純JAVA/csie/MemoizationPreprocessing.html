@@ -1,0 +1,116 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Memoization / Preprocessing</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Memoization / Preprocessing</p>
+<p class="r">程度★　難度★</p>
+<p class="w">惟事事，乃其有備，有備無患。《書經》</p>
+</div><div class="c">
+<p class="t">Memoization（Tabulation）</p>
+<p>在演算法執行過程中，將計算過的數值，儲存在記憶體裡面。下次若又需要相同的數值，就不必再重新計算一遍，只要使用記憶體裡面的資料就可以了。</p>
+<p class="t">Preprocessing（Precalculation）</p>
+<p>在演算法開始之時，將常用到的數值先行計算好，儲存在記憶體裡面，如此就不必在演算法執行過程中，花時間去反覆計算這些數值。例如圓周率、字串的長度、常用的質數。</p>
+<p class="t">Lookup Table</p>
+<p>在上述兩個方法當中，當有大量的、同性質的數值需要儲存的時候，通常我們會將這些數值有系統的整理成一個表（通常是陣列），以方便查閱──這個表即稱作Lookup Table。例如質數表便是一個Lookup Table。</p>
+<p class="t">舉例：求1到n的全部整數的立方和，n的範圍由1到10。</p>
+<p>以直接的方式，累加每個立方數。（這個問題也有公式解，但是為了方便舉例，故這裡不採用公式。）</p>
+<textarea>
+int sum_of_cubes(int n)
+{
+	int v = 0;
+	for (int i=1; i<=n; i++) v += i * i * i;
+	return v;
+}
+</textarea>
+<p>使用Memoization。</p>
+<textarea>
+int memo[10 + 1];	// 其值為 0 時設定為沒有存入過答案
+
+int sum_of_cubes(int n)
+{
+	// 如果已經有算過，就回傳答案
+	if (memo[n] != 0) return memo[n];
+
+	// 如果沒有算過，就計算一遍，並儲存起來
+	int v = 0;
+	for (int i=1; i<=n; i++) v += i * i * i;
+	return memo[n] = v;
+}
+
+int main()
+{
+	int n;
+	while (cin >> n) cout << sum_of_cubes(n);
+	return 0;
+}
+</textarea>
+<p>使用Preprocessing。</p>
+<textarea>
+int table[10 + 1];	// 建立立方數表格，方便計算
+
+void build_table()
+{
+	for (int i=1; i<=10; ++i)
+		table[i] = i * i * i;
+}
+
+int sum_of_cubes(int n)
+{
+	// 立方數已經計算過了，便不用再次計算立方數
+	int v = 0;
+	for (int i=1; i<=n; ++i) v += table[i];
+	return v;
+}
+
+int main()
+{
+	build_table();
+	
+	int n;
+	while (cin >> n) cout << sum_of_cubes(n);
+	return 0;
+}
+</textarea>
+<p>Preprocessing當然也可以直接算答案啦。</p>
+<textarea>
+// 最一開始的解法
+int sum_of_cubes(int n)
+{
+	int v = 0;
+	for (int i=1; i<=n; i++) v += i * i * i;
+	return v;
+}
+
+int table[10 + 1];	// 建立立方數表格，方便計算
+
+void build_table()
+{
+	// 把答案都算一算
+	for (int i=1; i<=10; ++i)
+		table[i] = sum_of_cubes(i);
+}
+
+int main()
+{
+	build_table();
+	
+	// 直接印表格內的答案即可
+	int n;
+	while (cin >> n) cout << table[n];
+	return 0;
+}
+</textarea>
+<p>最後是Preprocessing的極致。</p>
+<textarea>
+// 答案先算好之後寫死在程式裡面
+int table[10 + 1] = {0, 1, 9, 36, 100, 225, 441, 784, 1296, 2025, 3025};
+
+int main()
+{
+	// 直接印表格內的答案即可
+	int n;
+	while (cin >> n) cout << table[n];
+	return 0;
+}
+</textarea>
+<p class="e">UVa 141 10260 10082 10222 10738 417 10894 759 105 10415</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

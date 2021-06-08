@@ -1,0 +1,156 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>12.1 多任务、进程和线程</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="4">12.1 </font><font color="#3973DE" size="4">多任务、进程和线程</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="CENTER"></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">12.1.1 
+    Windows 3.x</font><font SIZE="3" color="#3973DE">的协同多任务</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">位的</font><font FACE="Times New Roman" SIZE="3">Windows 3.x</font><font SIZE="3">中，应用程序具有对</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">的控制权。只有在调用了</font><font FACE="Times New Roman" SIZE="3">GetMessage</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">PeekMessage</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WaitMessage</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Yield</font><font SIZE="3">后，程序才有可能把</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">控制权交给系统，系统再把控制权转交给别的应用程序。如果应用程序在长时间内无法调用上述四个函数之一，那么程序就一直独占</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">，系统会被挂起而无法接受用户的输入。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">因此，在设计</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">位的应用程序时，程序员必须合理地设计消息处理函数，以使程序能够尽快返回到消息循环中。如果程序需要进行费时的操作，那么必须保证程序在进行操作时能周期性的调用上述四个函数中的一个。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">Windows 
+    3.x</font><font SIZE="3">环境下，要想设计一个既能执行实时的后台工作（如对通信端口的实时监测和读写），又能保证所有界面响应用户输入的单独的应用程序几乎是不可能的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">有人可能会想到用</font><font FACE="Times New Roman" SIZE="3">CWinApp::OnIdle</font><font SIZE="3">函数来执行后台工作，因为该函数是程序主消息循环在空闲时调用的。但</font><font FACE="Times New Roman" SIZE="3">OnIdle</font><font SIZE="3">的执行并不可靠，例如，如果用户在程序中打开了一个菜单或模态对话框，那么</font><font FACE="Times New Roman" SIZE="3">OnIdle</font><font SIZE="3">将停止调用，因为此时程序不能返回到主消息循环中！在实时任务代码中调用</font><font FACE="Times New Roman" SIZE="3">PeekMessage</font><font SIZE="3">也会遇到同样的问题，除非程序能保证用户不会选择菜单或弹出模态对话框，否则程序将不能返回到</font><font FACE="Times New Roman" SIZE="3">PeekMessage</font><font SIZE="3">的调用处，这将导致后台实时处理的中断。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">折衷的办法是在执行长期工作时弹出一个非模态对话框并禁止主窗口，在消息循环内分批执行后台操作。对话框中可以显示工作的进度，也可以包含一个取消按钮以让用户有机会中断一个长期的工作。典型的代码如清单</font><font FACE="Times New Roman" SIZE="3">12.1</font><font SIZE="3">所示。这样做既可以保证工作实时进行，又可以使程序能有限地响应用户输入，但此时程序实际上已不能再为用户干别的事情了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">12.1 </font><font SIZE="3">在协同多任务环境下防止程序被挂起的一种方法</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">bAbort=FALSE;</p>
+    <p ALIGN="JUSTIFY">lpMyDlgProc=MakeProcInstance(MyDlgProc, hInst);</p>
+    <p ALIGN="JUSTIFY">hMyDlg=CreateDialog(hInst, </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">Abort</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">, hwnd, lpMyDlgProc); //</font><font SIZE="3">创建一个非模态对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ShowWindow(hMyDlg, SW_NORMAL);</p>
+    <p ALIGN="JUSTIFY">UpdateWindow(hMyDlg);</p>
+    <p ALIGN="JUSTIFY">EnableWindow(hwnd, FALSE); //</font><font SIZE="3">禁止主窗口</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">. . .</b></p>
+    <p ALIGN="JUSTIFY">while(!bAbort)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY"><b>. . .</b> //</font><font SIZE="3">执行一次后台操作</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"><b>. . .</b></p>
+    <p ALIGN="JUSTIFY">while(PeekMessage(&amp;msg, NULL, NULL, NULL, PM_REMOVE))</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if(!IsDialogMessage(hMyDlg, &amp;msg))</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">TranslateMessage(&amp;msg);</p>
+    <p ALIGN="JUSTIFY">DispatchMessage(&amp;msg);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">EnableWindow(hwnd, TRUE); //</font><font SIZE="3">允许主窗口</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DestroyWindow(hMyDlg);</p>
+    <p ALIGN="JUSTIFY">FreeProcInstance(lpMyDlgProc);</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">12.1.2 
+    Windows 95/NT</font><font SIZE="3" color="#3973DE">的抢先式多任务</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">位的</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">系统中，采用的是抢先式多任务，这意味着程序对</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">的占用时间是由系统决定的。系统为每个程序分配一定的</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">时间，当程序的运行超过规定时间后，系统就会中断该程序并把</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">控制权转交给别的程序。与协同式多任务不同，这种中断是汇编语言级的。程序不必调用象</font><font FACE="Times New Roman" SIZE="3">PeekMessage</font><font SIZE="3">这样的函数来放弃对</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">的控制权，就可以进行费时的工作，而且不会导致系统的挂起。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">例如，在</font><font FACE="Times New Roman" SIZE="3">Windows3.x </font><font SIZE="3">中，如果某一个应用程序陷入了死循环，那么整个系统都会瘫痪，这时唯一的解决办法就是重新启动机器。而在</font><font FACE="Times New Roman" SIZE="3">Windows 95/NT</font><font SIZE="3">中，一个程序的崩溃一般不会造成死机，其它程序仍然可以运行，用户可以按</font><font FACE="Times New Roman" SIZE="3">Ctrl+Alt+Del</font><font SIZE="3">键来打开任务列表并关闭没有响应的程序。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"><font color="#3973DE" FACE="Times New Roman" SIZE="3">12.1.3 </font></font><font SIZE="3" color="#3973DE">进程与线程</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">位的</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">系统中，术语多任务是指系统可以同时运行多个进程，而每个进程也可以同时执行多个线程。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">进程就是应用程序的运行实例。每个进程都有自己私有的虚拟地址空间。每个进程都有一个主线程，但可以建立另外的线程。进程中的线程是并行执行的，每个线程占用</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">的时间由系统来划分。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以把线程看成是操作系统分配</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">时间的基本实体。系统不停地在各个线程之间切换，它对线程的中断是汇编语言级的。系统为每一个线程分配一个</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">时间片，某个线程只有在分配的时间片内才有对</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">的控制权。实际上，在</font><font FACE="Times New Roman" SIZE="3">PC</font><font SIZE="3">机中，同一时间只有一个线程在运行。由于系统为每个线程划分的时间片很小（</font><font FACE="Times New Roman" SIZE="3">20</font><font SIZE="3">毫秒左右），所以看上去好象是多个线程在同时运行。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">进程中的所有线程共享进程的虚拟地址空间，这意味着所有线程都可以访问进程的全局变量和资源。这一方面为编程带来了方便，但另一方面也容易造成冲突。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">虽然在进程中进行费时的工作不会导致系统的挂起，但这会导致进程本身的挂起。所以，如果进程既要进行长期的工作，又要响应用户的输入，那么它可以启动一个线程来专门负责费时的工作，而主线程仍然可以与用户进行交互。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">12.1.4 
+    </font><font SIZE="3" color="#3973DE">线程的创建和终止</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">线程分用户界面线程和工作者线程两种。用户界面线程拥有自己的消息泵来处理界面消息，可以与用户进行交互。工作者线程没有消息泵，一般用来完成后台工作。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">应用程序的线程由对象</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">表示。在多数情况下，程序不需要自己创建</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">对象。调用</font><font FACE="Times New Roman" SIZE="3">AfxBeginThread</font><font SIZE="3">函数时会自动创建一个</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">例如，清单</font><font FACE="Times New Roman" SIZE="3">12.2</font><font SIZE="3">中的代码演示了工作者线程的创建。</font><font FACE="Times New Roman" SIZE="3">AfxBeginThread</font><font SIZE="3">函数负责创建新线程，它的第一个参数是代表线程的函数的地址，在本例中是</font><font FACE="Times New Roman" SIZE="3">MyThreadProc</font><font SIZE="3">。第二个参数是传递给线程函数的参数，这里假定线程要用到</font><font FACE="Times New Roman" SIZE="3">CMyObject</font><font SIZE="3">对象，所以把</font><font FACE="Times New Roman" SIZE="3">pNewObject</font><font SIZE="3">指针传给了新线程。线程函数</font><font FACE="Times New Roman" SIZE="3">MyThreadProc</font><font SIZE="3">用来执行线程，请注意该函数的声明。线程函数有一个</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">位的</font><font FACE="Times New Roman" SIZE="3">pParam</font><font SIZE="3">参数可用来接收必要的参数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">12.2 </font><font SIZE="3">创建一个工作者线程</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">主线程</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pNewObject = new CMyObject;</p>
+    <p ALIGN="JUSTIFY">AfxBeginThread(MyThreadProc, pNewObject);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">新线程</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">UINT MyThreadProc( LPVOID pParam )</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CMyObject* pObject = (CMyObject*)pParam;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (pObject == NULL ||</p>
+    <p ALIGN="JUSTIFY">!pObject-&gt;IsKindOf(RUNTIME_CLASS(CMyObject)))</p>
+    <p ALIGN="JUSTIFY">return -1; // </font><font SIZE="3">非法参数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">pObject</font><font SIZE="3">对象来完成某项工作</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return 0; // </font><font SIZE="3">线程正常结束</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">AfxBeginThread</font><font SIZE="3">的声明为：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWinThread* 
+          AfxBeginThread( AFX_THREADPROC pfnThreadProc, LPVOID pParam, int nPriority = 
+          THREAD_PRIORITY_NORMAL, UINT nStackSize = 0, DWORD dwCreateFlags = 0, 
+          LPSECURITY_ATTRIBUTES lpSecurityAttrs = NULL );</font></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">pfnThreadProc</font><font SIZE="3">是工作线程函数的地址。</font><font FACE="Times New Roman" SIZE="3">pParam</font><font SIZE="3">是传递给线程函数的参数。</font><font FACE="Times New Roman" SIZE="3">nPriority</font><font SIZE="3">是线程的优先级，一般是</font><font FACE="Times New Roman" SIZE="3">THREAD_PRIORITY_NORMAL</font><font SIZE="3">，若为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，则使用创建线程的优先级。</font><font FACE="Times New Roman" SIZE="3">nStackSize</font><font SIZE="3">说明了线程的堆栈尺寸，若为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">则堆栈尺寸与创建线程相同。</font><font FACE="Times New Roman" SIZE="3">dwCreateFlags</font><font SIZE="3">指定了线程的初始状态，如果为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，那么线程在创建后立即执行，如果为</font><font FACE="Times New Roman" SIZE="3">CREATE_SUSPENDED</font><font SIZE="3">，则线程在创建后就被挂起。参数</font><font FACE="Times New Roman" SIZE="3">lpSecurityAttrs</font><font SIZE="3">用来说明保密属性，一般为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">。函数返回新建的</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">对象的指针。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">程序应该把</font><font FACE="Times New Roman" SIZE="3">AfxBeginThread</font><font SIZE="3">返回的</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">指针保存起来，以便对创建的线程进行控制。例如，可以调用</font><font FACE="Times New Roman" SIZE="3">CWinThread::SetThreadPriority</font><font SIZE="3">来设置线程的优先级，用</font><font FACE="Times New Roman" SIZE="3">CWinThread::SuspendThread</font><font SIZE="3">来挂起线程。如果线程被挂起，那么直到调用</font><font FACE="Times New Roman" SIZE="3">CWinThread::ResumeThread</font><font SIZE="3">后线程才开始运行。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果要创建用户界面线程，那么必须从</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">派生一个新类。事实上，代表进程主线程的</font><font FACE="Times New Roman" SIZE="3">CWinApp</font><font SIZE="3">类就是</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">的派生类。派生类必须用</font><font FACE="Times New Roman" SIZE="3">DECLARE_DYNCREATE</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">IMPLEMENT_DYNCREATE</font><font SIZE="3">宏来声明和实现。需要重写派生类的</font><font FACE="Times New Roman" SIZE="3">InitInstance</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">ExitInstance</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">Run</font><font SIZE="3">等函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以使用</font><font FACE="Times New Roman" SIZE="3">AfxBeginThread</font><font SIZE="3">函数的另一个版本来创建用户界面线程。函数的声明为：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWinThread* 
+          AfxBeginThread( CRuntimeClass* pThreadClass, int nPriority = THREAD_PRIORITY_NORMAL, UINT 
+          nStackSize = 0, DWORD dwCreateFlags = 0, LPSECURITY_ATTRIBUTES lpSecurityAttrs = NULL );</font></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">pThreadClass</font><font SIZE="3">指向一个</font><font FACE="Times New Roman" SIZE="3">CRuntimeClass</font><font SIZE="3">对象，该对象是用</font><font FACE="Times New Roman" SIZE="3">RUNTIME_CLASS</font><font SIZE="3">宏从</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">的派生类创建的。其它参数以及函数的返回值与第一个版本的</font><font FACE="Times New Roman" SIZE="3">AfxBeginThread</font><font SIZE="3">是一样的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当发生下列事件之一时，线程被终止：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">线程调用</font><font FACE="Times New Roman" SIZE="3">ExitThread</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">线程函数返回，即线程隐含调用了</font><font FACE="Times New Roman" SIZE="3">ExitThread</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ExitProcess</font><font SIZE="3">被进程的任一线程显示或隐含调用。</p>
+        <p ALIGN="JUSTIFY">用线程的句柄调用</font><font FACE="Times New Roman" SIZE="3">TerminateThread</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">用进程句柄调用</font><font FACE="Times New Roman" SIZE="3">TerminateProcess</font><font SIZE="3">。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap12.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap12/chap12.htm">上一页</a></td>
+        <td><p align="right"><a href="chap12_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap12/chap12_2.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

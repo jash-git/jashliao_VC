@@ -1,0 +1,240 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb_2312-80">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>第三章 异常处理和诊断</TITLE>
+</HEAD>
+<BODY>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=5><P ALIGN="CENTER"><A NAME="_Toc425698921">第十一章</FONT><FONT FACE="Arial" SIZE=5> </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=5>异常处理和诊断</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">编写程序时出一些错误是难免的，在</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中称在软件或硬件中发生的不期望或不需要的事件为异常（</FONT><FONT SIZE=3>Exception</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供了两种异常处理机制：</P>
+
+<UL>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>异常，在</FONT><FONT SIZE=3>MFC 3.0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和更高版本中可以使用</LI></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>异常，在</FONT><FONT SIZE=3>MFC 1.0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和更高版本中可以使用</LI></P></UL>
+
+<P ALIGN="JUSTIFY">在程序出错误后需要调试程序，</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供了许多诊断服务，可以让用户轻松的调试程序，这些诊断服务大多以特定宏和全局函数形式出现。</P>
+<P ALIGN="JUSTIFY">本章将向读者介绍以下内容：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>处理</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>异常</LI></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>异常</LI></P>
+<P ALIGN="JUSTIFY"><LI>诊断服务</LI></P></UL>
+
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698922">第一节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>处理</FONT><FONT SIZE=4>C++</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>异常</A></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>try</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>catch</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>throw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>三个关键字来实现异常处理。使用</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的异常处理能够使你的程序从异常状态中恢复。这些异常由处于正常控制流之外的代码来处理。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>新的</FONT><FONT SIZE=3>32</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>位的异常处理机制支持</FONT><FONT SIZE=3>C</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>C++</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>。但是，它并非为</FONT><FONT SIZE=3>C++</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>专门设计的。你应当保证你的代码非常适合于</FONT><FONT SIZE=3>C++</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的异常处理，并且</FONT><FONT SIZE=3>C++</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的异常处理是相当灵活的，它可以处理任何类型的异常。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">异常处理机制允许程序对严重的和没有预料到的问题做出响应。一个异常块由下列三个部分组成：</P>
+
+<UL>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>try</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块</LI></P></UL>
+
+<P ALIGN="JUSTIFY">标志你认为可能会出现异常的代码。</P>
+
+<UL>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>catch</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块</LI></P></UL>
+
+<P ALIGN="JUSTIFY">紧跟着</FONT><FONT SIZE=3>try</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块，里面包含了处理异常的代码。</P>
+
+<UL>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"><LI>throw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块</LI></P></UL>
+
+<P ALIGN="JUSTIFY">抛出一个异常，激活</FONT><FONT SIZE=3>catch</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块中的相应的异常处理代码。</P>
+<P ALIGN="JUSTIFY">异常处理的机制比较简单，首先你将有可能出现问题的代码放在</FONT><FONT SIZE=3>try</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块中，然后在</FONT><FONT SIZE=3>catch</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块中放进用来处理异常的代码。如果在</FONT><FONT SIZE=3>try</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块中的代码抛出一个异常，</FONT><FONT SIZE=3>try</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块迅速退出执行，程序将转入</FONT><FONT SIZE=3>catch</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>块中执行相应的异常处理代码。</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698923">第二节</FONT><FONT SIZE=4> MFC</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>异常</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中</FONT><FONT SIZE=3>CException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类是所有异常类的基类，它是一个抽象类，你不能使用它的对象，只能创建它的派生类的对象。它有两个公用方法：</FONT><FONT SIZE=3>GetErrorMessage</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）和</FONT><FONT SIZE=3>ReportError</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（），分别用于查找描述异常的信息和为用户显示一个错误信息的信息对话框。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类包含以下基类（如图</FONT><FONT SIZE=3>11.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示），并提供了</FONT><FONT SIZE=3>THROW</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>THROW_LAST</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>TRY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CATC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3> AND_CATCH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3> END_CATCH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>这些宏用来处理异常。</P>
+<P ALIGN="CENTER"><IMG SRC="Image443.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image443.gif" WIDTH=167 HEIGHT=292></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>11. 1 CException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>的基类</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(1)&#9;CArchiveException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CArchiveException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用来描述序列化异常状态。它包含了一个数据成员</FONT><FONT SIZE=3>m_cause</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用来表现异常的原因。它可能为以下值：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">none </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：没有错误发生</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">generic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：未指定的错误</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">readOnly</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：试图写入一个为载入而打开的文档</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">endOfFile</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：当读取一个文档时到达文档尾部</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">writeOnly</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：试图读取一个为存储而打开的文档</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">badIndex</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：非法文件格式</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">badClass</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：试图读一个对象到一个错误类型对象中</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">badSchema</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：试图读一个对象，它带有不同的类的版本</P>
+<P ALIGN="JUSTIFY">另外</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>还提供</FONT><FONT SIZE=3>AfxThrowArchiveException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数来抛出一个存档文件异常，形式如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AfxThrowArchiveException( int cause, LPCTSTR lpszArchiveName );</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(2)&#9;CDaoException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CDaoException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类对象用来表示基于数据访问对象（</FONT><FONT SIZE=3>DAO,data access objects</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）的</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>数据库类的异常。这个异常类包含三个决定异常原因的成员变量，这三个成员变量是：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_scode:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>描述与异常相关的</FONT><FONT SIZE=3>SCODE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代码</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_pErrorInfo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：包含用于所有</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>DAO</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的所有异常的扩展错误代码</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_nAfxDaoError</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：包含</FONT><FONT SIZE=3>DAO</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>错误对象的指向</FONT><FONT SIZE=3>CDaoErrorInfo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构的指针</P>
+<P ALIGN="JUSTIFY">这个类有下列两个操作：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetErrorCount</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</FONT><FONT SIZE=3> </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获取在数据库引擎异常集合中的异常数目</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetErrorInfo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</FONT><FONT SIZE=3> </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获取在异常集合中相似对象的错误信息</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowDaoException()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数抛出一个</FONT><FONT SIZE=3>CDaoException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AFXAPI AfxThrowDaoException( int nAfxDaoError = NO_AFX_DAO_ERROR, SCODE scode = S_OK );</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(3)&#9;CDBException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CDBExceptio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象表示</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>数据库中的一种异常情况。这个类包含两个用来决定异常原因的成员变量：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_nRetCode:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>一个</FONT><FONT SIZE=3>ODBC(Open Database Connectivity)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>返回的</FONT><FONT SIZE=3>RETCODE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的代码</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_strError:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>包含一个描述错误信息的字符串</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_strStateNativeOrigin:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>包含描述带有</FONT><FONT SIZE=3>ODBC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>错误代码的错误的字符串</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowDBException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数抛出一个</FONT><FONT SIZE=3>CDBException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AfxThrowDBException( RETCODE nRetCode, CDatabase* pdb, HSTMT hstmt );</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(3)&#9;CFileException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CFileException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象描述一个与文件相关的异常状态。这个类包含三个描述异常原因的成员变量：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_cause:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>包含与错误原因对应的代码。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_lOsError:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>包含相关的操作系统错误数</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_strFileName:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>包含出现例外的文件名</P>
+<P ALIGN="JUSTIFY">成员变量</FONT><FONT SIZE=3>m_cause</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可能为以下值：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">none:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>没有错误发生</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">generic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：未指定的错误</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">fileNotFound </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：文件不能定位错误</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">badPath </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：全部或部分路径无效</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">tooManyOpenFiles</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：达到允许打开的文件数目</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">accessDenied </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：不能访问文件</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">invalidFile  </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：试图访问一个无效的文件</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">removeCurrentDir</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：删除正在操作中的目录</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">directoryFull</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：目录个数已满</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">badSeek </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：试图设置文件指针出错</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">hardIO   </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：硬件出错</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">sharingViolation </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：共享出错</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">lockViolation </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：试图锁定已锁定的区域</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">diskFull </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：磁盘空间已满</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">endOfFile  </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：到达文件结尾</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowFileException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数抛出一个</FONT><FONT SIZE=3>CFileException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AfxThrowFileException( int cause, LONG lOsError = </FONT><FONT FACE="Courier New" SIZE=1>–</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>1, LPCTSTR lpszFileName = NULL ); </P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(4)&#9;CInternetException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CInternetException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表一个和</FONT><FONT SIZE=3>Internet</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>操作有关的异常状态。它包含两个成员变量：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_dwError:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>表示导致异常的错误</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_dwContext:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和引起错误的操作有关的上下文变量</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(5)&#9;CMemoryException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CMemoryException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象描述一个内存溢出异常。内存异常自动的被</FONT><FONT SIZE=3>new</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>操作符抛出。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowMemoryException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数抛出一个</FONT><FONT SIZE=3>CMemoryException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AfxThrowMemoryException( );</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(6)&#9;CNotSupportedException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CNotSupportedException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象表示当不支持的特性被请求时发生的异常，没有其它必要或可能的限制。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowNotSupportedException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数抛出一个</FONT><FONT SIZE=3>CNotSupportedException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AfxThrowNotSupportedException( );</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(7)&#9;COleException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>COleException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象表示和</FONT><FONT SIZE=3>OLE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>操作有关的异常。它包含一个成员变量</FONT><FONT SIZE=3>m_sc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来容纳异常原因的状态码。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowOleException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数抛出一个</FONT><FONT SIZE=3>COleException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AFXAPI AfxThrowOleException( SCODE sc );</P>
+<P>void AFXAPI AfxThrowOleException( HRESULT hr );</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(8)&#9;COleDispatchException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>COleDispatchException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象表现为</FONT><FONT SIZE=3>OLE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>自动化的关键部分所特有的异常。它包含</FONT><FONT SIZE=3>5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个成员变量：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_wCode: IDispatch</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>特有的错误代码</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_strDescription:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>一个描述性错误</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_dwHelpContext:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用于错误的</FONT><FONT SIZE=3>Help</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>上下文</FONT><FONT SIZE=3>ID</P>
+<P ALIGN="JUSTIFY">m_strHelpFile:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>m_dwHelpContext</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>Help</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">m_strSource:</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>产生异常的应用程序</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowOleDispatchException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数抛出一个</FONT><FONT SIZE=3>COleDispatchException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AFXAPI AfxThrowOleDispatchException( WORD wCode, LPCSTR lpszDescription, </P>
+<P>&#9;UINT nHelpID = 0 );</P>
+<P>void AFXAPI AfxThrowOleDispatchException( WORD wCode, UINT nDescriptionID, </P>
+<P>&#9;UINT nHelpID = </FONT><FONT FACE="Courier New" SIZE=1>–</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>1 );</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(9)&#9;CResourceException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CResourceException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象表示当</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不能定位或分配需要的资源时抛出的异常。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowOleDispatchException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数抛出一个</FONT><FONT SIZE=3>CResourceException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AfxThrowResourceException( );</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(10)&#9;CUserException</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CUserException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象表示停止终端用户操作时抛出的异常。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>AfxThrowUserException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数抛出一个</FONT><FONT SIZE=3>CUserException</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的异常，使用如下形式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void AfxThrowUserException( );</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698924">第三节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>诊断服务</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">上节讲述了使用异常处理来捕获程序中的错误，然而并非程序中所有的错误都是可以捕获的，还会出现很多无法预知的错误，这些错误需要在调试程序中发现并更正。MFC提供了许多诊断服务，供程序员调试程序使用。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供的用于诊断程序的宏有：</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>ASSERT_KINDOF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>ASSERT_VALID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>DEBUG_NEW</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>TRACE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>TRACE0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>TRACE1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>TRACE2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>TRACE3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>VARIFY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。本节将详细介绍</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>VERIFY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>TRACE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(1)&#9;ASSERT</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这个宏的用法如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>ASSERT( booleanExpression )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">其中的参数</FONT><FONT SIZE=3>booleanExpression</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是一个表达式或指针。</P>
+<P ALIGN="JUSTIFY">这个宏用来测试它的参数是否为真。如果参数不为真，这个宏就显示一个诊断信息对话框，并终止程序的运行。如果参数为真，它不做任何事情。诊断信息按照下面的形式显示</FONT><FONT SIZE=3>:</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>Debug Assertion Failed!</P>
+<P>Program:&lt;Program Name&gt;</P>
+<P>File:&lt;File Name&gt;</P>
+<P>Line:&lt;num&gt;</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">其中</FONT><FONT SIZE=3>Program Name</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是程序的的名称，</FONT><FONT SIZE=3>File Names</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是出错的文件名，</FONT><FONT SIZE=3>num</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是出问题的诊断语句所在的行数。</P>
+<P ALIGN="JUSTIFY">诊断信息对话框如图</FONT><FONT SIZE=3>11.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+<P ALIGN="CENTER"><IMG SRC="Image444.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image444.gif" WIDTH=275 HEIGHT=144></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>11. 2 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>诊断输出信息</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">值得注意的是，</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>仅在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的调试（</FONT><FONT SIZE=3>Debug</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）版本中有效，在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的发布（</FONT><FONT SIZE=3>Release</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）版本中，</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句不再有效，它不对参数进行真假检测。</P>
+<P ALIGN="JUSTIFY">下面的代码中</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>作用是检查一个指向用户自定义的类</FONT><FONT SIZE=3>CMyClass</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的指针是否为空</FONT><FONT SIZE=3>,</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CMyClass* m_pMyClass=new CMyClass;</P>
+<P>ASSERT(m_pMyClass);</P>
+<P>// ......</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(2)&#9;VERIFY</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这个宏和</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>差不多，它的用法如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>VERIFY( booleanExpression )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">其中的参数</FONT><FONT SIZE=3>booleanExpression</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是一个表达式或指针。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的调试版本中，</FONT><FONT SIZE=3>VERIFY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>宏检测它的参数，如果参数不为真，弹出如图</FONT><FONT SIZE=3>1.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的诊断信息对话框。如果参数为真，它不做任何事情。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的发布版本中，它仍对参数进行测试，但是当参数为假时，不弹出诊断信息对话框。</P>
+<P ALIGN="JUSTIFY">下面这段代码可以让用户对</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>VERIFFY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>两个宏之间的差别有更深入的了解，这段代码是在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的发布版本中编译的，之所以选择发布版本是因为在这段代码中两个宏后面的参数都为假，使用发布版本编译可以忽略这些错误。但是</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不检测参数的真假，而</FONT><FONT SIZE=3>VERIFY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>检测参数的真假，所以只能弹出一个对话框。</P>
+<P ALIGN="JUSTIFY">在一个</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的多文档应用程序</FONT><FONT SIZE=3>Test</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数中</FONT><FONT SIZE=3>ToDo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句后面添加下面的代码：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>bool m_bValue=false;</P>
+<P>ASSERT(m_bValue &amp; ASSERTMessage());</P>
+<P>VERIFY(m_bValue &amp; VERIFYMessage());</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">为</FONT><FONT SIZE=3>CTestView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类添加两个成员函数</FONT><FONT SIZE=3>ASSERTMessage()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>VERIFYMessage():</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>bool CTestView::ASSERTMessage()</P>
+<P>{</P>
+<P>&#9;MessageBox("经过ASSERT检验");</P>
+<P>&#9;return true;</P>
+<P>}</P>
+
+<P>bool CTestView::VERIFYMessage()</P>
+<P>{</P>
+<P>&#9;MessageBox("经过VERIFY检验");</P>
+<P>&#9;return true;</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的发布版本中编译并运行该程序，弹出如图</FONT><FONT SIZE=3>11.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的消息框，显示“经过</FONT><FONT SIZE=3>VERIFY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>检验”，说明</FONT><FONT SIZE=3>VERIFY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>检测了它的参数，而</FONT><FONT SIZE=3>ASSERT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>没有检测其参数。</P>
+<P ALIGN="CENTER"><IMG SRC="Image445.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image445.gif" WIDTH=73 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>11. 3 VERIFY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>示例</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(3)&#9;TRACE</P></DIR>
+
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">TRACE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>宏的用法如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>TRACE( exp )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">其中的参数</FONT><FONT SIZE=3>exp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>定义了一组数量可变的参数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">TRACE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是一个在程序运行时跟踪变量数值的便捷的方法，它的用法和</FONT><FONT SIZE=3>Printf</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>完全相同。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>使用</FONT><FONT SIZE=3>TRACE</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>一次最多可以显示</FONT><FONT SIZE=3>512</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>个字符，而且这个宏也只在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的调试版本中有效。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面的例子使用</FONT><FONT SIZE=3>TRACE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>宏在程序运行时跟踪变量</FONT><FONT SIZE=3>m_value</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的值。</P>
+<P ALIGN="JUSTIFY">代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>int m_value=100;</P>
+<P>for(int i=0;i&lt;5;i++)</P>
+<P>{</P>
+<P>&#9;m_value++;</P>
+<P>&#9;TRACE("m_value = %d",m_value);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="CENTER"><IMG SRC="Image446.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image446.gif" WIDTH=347 HEIGHT=98></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>11. 4 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>查看</FONT><FONT SIZE=1>TRACE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>信息</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以调试方式运行该应用程序的调试版本，即可从</FONT><FONT SIZE=3>Developer Studio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>Output</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>窗口在检查到</FONT><FONT SIZE=3>TRACE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>宏输出的诊断信息。</P></FONT></BODY>
+</HTML>

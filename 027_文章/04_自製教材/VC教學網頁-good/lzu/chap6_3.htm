@@ -1,0 +1,139 @@
+<html>
+
+<head>
+<title>6.3 技术总结</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="4">6.3 </font><font color="#3973DE" size="4">技术总结</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在上一章和本章中，读者已经接触和使用了各种控件．这些控件虽然五花八门，但它们却具有一些共同的特点．本节的目的就是讨论这些共同点，以使读者能在概念上更好地理解控件．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.3.1 
+    </font><font SIZE="3" color="#3973DE">所有的控件都是窗口</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">确切地说，所有的控件都是子窗口．控件窗口都具有</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">风格，它们总是依附于某一个父窗口．所有</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的控件类都是基本窗口类</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">的直接或间接派生类，这意味着可以调用</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的某些成员函数来查询和设置控件．常用于控件的</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">成员函数在表</font><font FACE="Times New Roman" SIZE="3">6.34</font><font SIZE="3">列出，这些函数对所有的控件均适用．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><p ALIGN="CENTER"></b>表</font><font FACE="Times New Roman" SIZE="3">6.34<b> </b></font><font SIZE="3">常用于控件的</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">成员函数</font></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="24%"><font SIZE="3"><p ALIGN="JUSTIFY">函数名</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">用途</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ShowWindow</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">ShowWindow(SW_SHOW)</font><font SIZE="3">显示窗口，调用</font><font FACE="Times New Roman" SIZE="3">ShowWindow(SW_HIDE)</font><font SIZE="3">则隐藏窗口．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EnableWindow</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">EnableWindow(TRUE)</font><font SIZE="3">允许窗口，调用</font><font FACE="Times New Roman" SIZE="3">EnableWindow(FALSE)</font><font SIZE="3">则禁止窗口．一个禁止的窗口呈灰色显示且不能接受用户输入．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DestroyWindow</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">删除窗口．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MoveWindow</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">改变窗口的位置和尺寸．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetFocus</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">使窗口具有输入焦点．</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">例如，如果想把一个编辑框控件隐藏起来，可以用下面这行代码完成．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_MyEdit.ShowWindow(SW_HIDE);</p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.3.2 
+    </font><font SIZE="3" color="#3973DE">控件的创建方法</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">控件的创建有自动和手工两种常用方法．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">控件的自动创建是通过向对话框模板中添加控件实现的．到目前为止，读者所使用的控件都是用这种方法创建的．当调用对话框类的</font><font FACE="Times New Roman" SIZE="3">DoModal</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">显示对话框时，框架会根据对话框模板资源提供的控件信息自动地创建控件．这种方法的优点是方便直观，用户可以在对话框模板编辑器的控件面板中选择控件，可以在对话框模板中调整控件的位置和大小，还可以通过属性对话框设置控件的风格．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">手工创建控件是一种比较专业的方法，包括下面两步：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">构建一个控件对象．通常的做法是把控件对象嵌入到父窗口（如对话框）对象中，即以成员变量的形式定义一个控件对象．这样，在构建父窗口对象时，控件对象会被自动构建．程序也可以用</font><font FACE="Times New Roman" SIZE="3">new</font><font SIZE="3">操作符创建控件对象，但要注意</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的控件对象不具有自动清除的功能，因此需要在关闭父窗口时用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">操作符删除控件对象（参见</font><font FACE="Times New Roman" SIZE="3">5.4.2</font><font SIZE="3">）．</p>
+        <p ALIGN="JUSTIFY">调用控件对象的</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">成员函数创建控件．一般来说，如果要在对话框中创建控件，那么应该在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">函数中调用</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">，如果要在非对话框窗口中创建控件，则应该在</font><font FACE="Times New Roman" SIZE="3">OnCreate</font><font SIZE="3">函数中调用</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">清单</font><font FACE="Times New Roman" SIZE="3">6.3</font><font SIZE="3">是一个手工创建控件的实例．</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">6.3 </font><font SIZE="3">控件的手工创建</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#define ID_EXTRA_EDIT 100</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">class CMyDialog : public CDialog</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">protected:</p>
+    <p ALIGN="JUSTIFY">CEdit m_edit; // Embedded edit object</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p ALIGN="JUSTIFY">virtual BOOL OnInitDialog();</p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CMyDialog::OnInitDialog()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CDialog::OnInitDialog();</p>
+    <p ALIGN="JUSTIFY">CRect rect(85, 110, 180, 210);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_edit.Create(WS_CHILD | WS_VISIBLE | WS_TABSTOP |</p>
+    <p ALIGN="JUSTIFY">ES_AUTOHSCROLL | WS_BORDER, rect, this, ID_EXTRA_EDIT);</p>
+    <p ALIGN="JUSTIFY">m_edit.SetFocus();</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">不难看出，控件的手工创建是在程序中通过控件对象完成的，与对话框模板无关．在</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">函数中，需要提供控件的风格，控件的尺寸和位置，控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">等信息．手工创建实际上是一种动态创建过程，程序可以在任何时侯根据需要来创建，不一定非要在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">中进行．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">控件并不是对话框所专有的，某些非对话框窗口也可以拥有控件．如果要在象工具条或状态栏这样的非对话框窗口中创建控件，就必需用手工创建方法．自动创建由于要依赖对话框模板，因此只适用于对话框．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.3.3 
+    </font><font SIZE="3" color="#3973DE">访问控件的方法</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">控件是一种交互的工具，应用程序需要通过某种方法来访问控件以对其进行查询和设置．访问控件有四种方法：</p>
+    <ol>
+      <li><p ALIGN="JUSTIFY">利用对话框的数据交换功能访问控件．这种方法适用于自动创建的控件．先用<font FACE="Times New Roman" SIZE="3">ClassWizard</font>为对话框类加入与控件对应的数据成员变量，然后在适当的时侯调用<font FACE="Times New Roman" SIZE="3">UpdateData</font>，就可以实现对话框和控件的数据交换．这种方法只能交换数据，不能对控件进行全面的查询和设置，而且该方法不是针对某个控件，而是针对所有参与数据交换的控件．另外，对于新型的<font FACE="Times New Roman" SIZE="3">Win32</font>控件，不能用<font FACE="Times New Roman" SIZE="3">ClassWizard</font>创建数据成员变量．因此，该方法有较大的局限性．</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">通过控件对象来访问控件．控件对象对控件进行了封装，它拥有功能齐全的成员函数，用来查询和设置控件的各种属性．通过控件对象来访问控件无疑是最能发挥控件功能的一种方法，但这要求程序必需创建控件对象并使该对象与某一控件相连．对于自动创建的控件，可利用<font FACE="Times New Roman" SIZE="3">ClassWizard</font>方便地创建与控件对应的控件对象．对于手工创建的控件，因为控件本身就是通过控件对象创建的，所以不存在这一问题．</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">利用<font FACE="Times New Roman" SIZE="3">CWnd</font>类的一些用于管理控件的成员函数来访问控件．这些函数已在表<font FACE="Times New Roman" SIZE="3">5.5</font>列出．只要向这些函数提供控件的<font FACE="Times New Roman" SIZE="3">ID</font>，就可以对该控件进行访问．使用这些函数的好处是无需创建控件对象，就可以对控件的某些常用属性进行查询和设置．该方法对自动和手工创建的控件均适用．</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">用<font FACE="Times New Roman" SIZE="3">CWnd::GetDlgItem</font>访问控件．该函数根据参数说明的控件<font FACE="Times New Roman" SIZE="3">ID</font>，返回指定控件的一个<font FACE="Times New Roman" SIZE="3">CWnd</font>型指针，程序可以把该指针强制转换成相应的控件类指针，然后通过该指针来访问控件．该方法对自动和手工创建的控件均适用．在上一章中就曾经使用过这种方法，读者可参见<font FACE="Times New Roman" SIZE="3">5.3.6</font>．其实该方法与通过控件对象来访问控件的方法在本质上是一样的，在表<font FACE="Times New Roman" SIZE="3">5.5</font>中亦包括<font FACE="Times New Roman" SIZE="3">GetDlgItem</font>函数，但为了强调其重要性，这里把它单独列为一种方法．</font></p>
+      </li>
+    </ol>
+    <font FACE="Times New Roman" SIZE="3"><p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.3.4 </font><font SIZE="3" color="#3973DE">控件及控件对象的删除</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当关闭父窗口时，控件会被自动删除，因此在一般情况下不必操心删除问题．如果由于某种需要想手工删除控件，可以调用</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">来完成．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对于控件对象的删除，有两种情况．若控件对象是以成员变量的形式创建的，那么该对象将会随着父窗口对象的删除而被删除，因此在程序中无需操心．若控件对象是用</font><font FACE="Times New Roman" SIZE="3">new</font><font SIZE="3">操作符在堆中创建的，则必需在关闭父窗口时用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">操作符删除对象，这是因为所有</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的控件类都是非自动清除的（参见</font><font FACE="Times New Roman" SIZE="3">5.4.2</font><font SIZE="3">）．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.3.5 
+    </font><font SIZE="3" color="#3973DE">控件通知消息</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">传统控件和</font><font FACE="Times New Roman" SIZE="3">Win32 </font><font SIZE="3">控件采用了不同的通知消息机制，请参见</font><font FACE="Times New Roman" SIZE="3">6.1.1</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">6.2.1</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap6_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_2.htm">上一页</a></td>
+        <td><p align="right"><a href="chap6_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_4.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

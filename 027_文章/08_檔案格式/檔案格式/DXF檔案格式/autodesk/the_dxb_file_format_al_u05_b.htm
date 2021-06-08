@@ -1,0 +1,160 @@
+<html>
+<head>
+<meta name=ID content="The_DXB_File_Format_al_u05_b">
+<title>The DXB File Format  [ACG]</title>
+<meta name=KEYWORDS content="DXB files,  format;file extensions,  .dxb; file formats;line extension items;scale factor;blocks,  base items;polylines;bulge items;width items;number mode items;DXB files,  new color group">
+<meta name=BROWSE content="BROWSE1:000">
+<meta name=WINDOW content="main">
+</head>
+<body bgcolor=#ffffff link=#003399 vlink=#003399>
+
+<table width=100% cellpadding=5 cellspacing=0 border=0><tr><td>
+<font face=Arial color=#003399 size=3><b> <a href="drawing_interchange_file_formats.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/drawing_interchange_file_formats.htm">Drawing Interchange File Formats</a>
+</b></font>
+<hr size=1>
+<font face=Arial color=#003399 size=3><b><a href="dxb_files_al_u05_b.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/dxb_files_al_u05_b.htm"><img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> DXB Files</a> 
+</b></font><br>
+</td></tr><tr><td>
+<font face=Arial color=#003399 size=3><b><img src="bk_space.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/bk_space.gif" border=0> <img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> The DXB File Format
+</b></font>
+<hr size=1>
+</td></tr></table>
+
+<p><font face="MS Sans Serif,Arial" size=2>This information is for experienced programmers and is subject to change without notice.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The format of a DXB file is as follows:
+</font></p>
+<font face="Courier New,Courier" size=2>Header: "AutoCAD DXB 1.0" CR LF ^Z NUL &nbsp;&nbsp;&nbsp;<font face=Arial><i>(19 bytes)</i></font> 
+</font><br>
+<font face="Courier New,Courier" size=2><tt>Data:</tt> &nbsp;&nbsp;&nbsp;<font face=Arial><i>...Zero or more data records...</i></font> 
+</font><br><tt>
+</tt><p><font face="Courier New,Courier" size=2><tt>Terminator: NUL &nbsp;&nbsp;&nbsp;</tt><font face=Arial><i>(1 byte)</i></font> 
+</font></p><tt>
+</tt><p><font face="MS Sans Serif,Arial" size=2>Each data record begins with a single byte identifying the record type, followed by data items. The data items have various forms of representation and encoding. In the following descriptions of the letter codes, each data item is prefixed with a letter and a hyphen. 
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><b>w-
+</b></font><br>
+<p><font face="MS Sans Serif,Arial" size=2><UL>16-bit integer, byte reversed in the standard 80x86 style the least significant byte first, and the most significant byte second).
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><b></UL> f- 
+</b></font><br>
+<p><font face="MS Sans Serif,Arial" size=2><UL>IEEE 64-bit floating-point value stored with LSB first, MSB last (as stored by an 80x87).
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><b></UL> l- 
+</b></font><br>
+<p><font face="MS Sans Serif,Arial" size=2><UL>32-bit integer with the bytes reversed 80x86 style.
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><b></UL> n- 
+</b></font><br>
+<p><font face="MS Sans Serif,Arial" size=2><UL>Either a 16-bit integer or a floating-point number, depending on the most recent setting of the number mode data item. The number mode defaults to 0, signifying integers. If set to 1, all n- items will be read as floating point.
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><b></UL> u-
+</b></font><br>
+<p><font face="MS Sans Serif,Arial" size=2><UL>Either a 32-bit integer or a floating-point number, depending on the most recent number mode setting. If a 32-bit integer, the value is scaled by multiplying it by 65,536 (216). If a floating-point value, no scaling is applied.
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><b></UL> a- 
+</b></font><br>
+<p><font face="MS Sans Serif,Arial" size=2><UL>An angle. If number mode is integer, this is a 32-bit integer representing an angle in units of millionths of a degree (range 0 to 360,000,000). If a floating-point number, it represents degrees.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2></UL> In the following table, the lengths include the item-type byte and assume that the number mode is set to 0 (integer mode). If number mode is floating point, add 6 bytes to the length for each n- item present and 4 bytes for each a- or u- item present.
+</font></p>
+<font face=Arial size=2><i>Byte length for item types
+</i></font>
+<TABLE border=0 cellpadding=2 cellspacing=4><TR VALIGN=TOP><TD bgcolor=#F9F6ED><font face="MS Sans Serif,Arial" size=2><b><br>Item type</b></font></td>
+<TD bgcolor=#F9F6ED><font face="MS Sans Serif,Arial" size=2><b>Code<br>(decimal)</b></font></td>
+<TD bgcolor=#F9F6ED><font face="MS Sans Serif,Arial" size=2><b><br>Data items</b></font></td>
+<TD bgcolor=#F9F6ED><font face="MS Sans Serif,Arial" size=2><b>Length <br>(bytes)</b></font></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Line</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>1</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-fromx n-fromy<br>n-tox n-toy<br>n-fromx n-fromy n-fromz<br>n-tox n-toy n-toz</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>13</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Point</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>2</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-x n-y</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>5</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Circle</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>3</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-ctrx n-ctry n-rad</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>7</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Arc</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>8</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-ctrx n-ctry n-rad<br>a-starta a-enda</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>19</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Trace</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>9</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-x1 n-y1 n-x2 n-y2<br>n-x3 n-y3 n-x4 n-y4</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>17</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Solid</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>11</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-x1 n-y1 n-x2 n-y2<br>n-x3 n-y3 n-x4 n-y4</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>17</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Seqend</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>17</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>(none)</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>1</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Polyline</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>19</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>w-closureflag</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>3</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Vertex</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>20</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-x n-y</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>5</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>3Dface</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>22</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-x1 n-y1 n-z1<br>n-x2 n-y2 n-z2<br>n-x3 n-y3 n-z3<br>n-x4 n-y4 n-z4</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>25</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Scale factor</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>128</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>f-scalefac</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>9</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>New layer</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>129</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>"layername" NUL</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>layername<br>length + 2</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Line extension</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>130</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-tox n-toy</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>5</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Trace extension</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>131</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-x3 n-y3 n-x4 n-y4</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>9</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Block base</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>132</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-bx n-by</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>5</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Bulge</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>133</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>u-2h/d</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>5</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Width</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>134</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>n-startw n-endw</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>5</font></p></td></TR>
+</TABLE>
+
+<p><font face="MS Sans Serif,Arial" size=2>The line extension item extends the last line or line extension from its To point to a new To point. The trace extension item extends the last trace solid, or trace extension from its x3,y3-x4,y4 ending line to a new x3,y3--x4,y4 line.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The scale factor is a floating-point value by which all integer coordinates are multiplied to obtain the floating-point coordinates used by the entities. The initial scale factor when a file is read is 1.0. The new layer item creates a layer if none exists, giving the new layer the same defaults as the LAYER New command, and sets that layer as the current layer for subsequent entities. At the end of the DXB file load, the layer in effect before the command is restored.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The block base item specifies the base (origin) point of a created block. The block base must be defined before the first entity record is encountered. If DXB does not define a block, this specification is ignored.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>A polyline consists of straight segments of fixed width connecting the vertices, except as overridden by the bulge and width items. The closure flag should be 0 or 1; if it is 1, there is an implicit segment from the last vertex (immediately before the Seqend) to the first vertex.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>A bulge item, encountered between two vertex items (or after the last vertex of a closed polyline), indicates that the two vertices are connected by an arc rather by than a straight segment. If the distance between the vertices has length <font face=Arial><i>d</i></font>, and the perpendicular distance from the midpoint of that segment to the arc is <font face=Arial><i>h</i></font>, then the magnitude of the bulge is (2 * <font face=Arial><i>h / d</i></font>). The sign is negative if the arc from the first vertex to the second is clockwise. A semicircle thus has a bulge of 1 (or -1). If the number mode is 0 (integer), bulge items are scaled by 2 16. If the number mode has been set to floating point, then the floating-point value supplied is 2*h/d (not scaled).
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The width item indicates the starting and ending widths of the segment (straight or curved) connecting two vertices. This width stays in effect until the next width item or the seqend. If there is a width item between the polyline item and the first vertex, it is stored as a default width for the polyline. This saves considerable database space if the polyline has several segments of this width.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The number mode item controls the mode of items with types given in the preceding table as n-, a-, or u-. If the value supplied is 0, these values will be integers; otherwise, they are floating point.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>To remember the last to-point, lines share the same cells, so do <font face=Arial><i>not</i></font> mix extension groups for the two entities without an initial group before the extension. There is no extension group for 3D faces, because there is no obvious edge to extend from.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The new color group specifies the color for subsequent entities in the DXB file. The w-colornum word argument is in the range from 0 to 256. 0 means color by block, 1-255 are the standard AutoCAD colors, and 256 means color by layer. A color outside the range from 0 to 256 sets the color back to the current entity color (you can do this deliberately, and it can be quite useful). The initial entity color of material added by DXBIN is the current entity color.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>All points specified in the DXB file are interpreted in terms of the current UCS at the time that the DXBIN command is executed. 
+</font></p>
+
+</body>
+</html>
+

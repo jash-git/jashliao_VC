@@ -1,0 +1,311 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>11.1调色板</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font FACE="Times New Roman" size="4" color="#3973DE">11.1</font><font size="4" color="#3973DE">调色板</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="CENTER"></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.1.1 
+    </font><font SIZE="3" color="#3973DE">调色板的原理</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">PC</font><font SIZE="3">机上显示的图象是由一个个像素组成的，每个像素都有自己的颜色属性。在</font><font FACE="Times New Roman" SIZE="3">PC</font><font SIZE="3">的显示系统中，像素的颜色是基于</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">模型的，每一个像素的颜色由红</font><font FACE="Times New Roman" SIZE="3">(B)</font><font SIZE="3">、绿</font><font FACE="Times New Roman" SIZE="3">(G)</font><font SIZE="3">、蓝</font><font FACE="Times New Roman" SIZE="3">(B)</font><font SIZE="3">三原色组合而成。每种原色用</font><font FACE="Times New Roman" SIZE="3">8</font><font SIZE="3">位表示，这样一个的颜色就是</font><font FACE="Times New Roman" SIZE="3">24</font><font SIZE="3">位的。以此推算，</font><font FACE="Times New Roman" SIZE="3">PC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">SVGA</font><font SIZE="3">适配器可以同时显示</font><font FACE="Times New Roman" SIZE="3">2<sup>24</sup></font><font SIZE="3">约一千六百多万种颜色。</font><font FACE="Times New Roman" SIZE="3">24</font><font SIZE="3">位的颜色通常被称作真彩色，用真彩色显示的图象可达到十分逼真的效果。</p>
+    <p ALIGN="JUSTIFY">但是，真彩色的显示需要大量的视频内存，一幅</font><font FACE="Times New Roman" SIZE="3">640</font><font SIZE="3">×</font><font FACE="Times New Roman" SIZE="3">480</font><font SIZE="3">的真彩色图象需要约</font><font FACE="Times New Roman" SIZE="3">1MB</font><font SIZE="3">的视频内存。由于数据量大增，显示真彩色会使系统的整体性能迅速下降。为了解决这个问题，计算机使用调色板来限制颜色的数目。调色板实际上是一个有</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">个表项的</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">颜色表，颜色表的每项是一个</font><font FACE="Times New Roman" SIZE="3">24</font><font SIZE="3">位的</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">颜色值。使用调色板时，在视频内存中存储的不是的</font><font FACE="Times New Roman" SIZE="3">24</font><font SIZE="3">位颜色值，而是调色板的</font><font FACE="Times New Roman" SIZE="3">4</font><font SIZE="3">位或</font><font FACE="Times New Roman" SIZE="3">8</font><font SIZE="3">位的索引。这样一来，显示器可同时显示的颜色被限制在</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">色以内，对系统资源的耗费大大降低了。</p>
+    <p ALIGN="JUSTIFY">显示器可以被设置成</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">64K</font><font SIZE="3">、真彩色等显示模式，前两种模式需要调色板。在</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">色模式下，程序必须将想要显示的颜色正确地设置到调色板中，这样才能显示出预期的颜色。图</font><font FACE="Times New Roman" SIZE="3">11.1</font><font SIZE="3">显示了调色板的工作原理。使用调色板的一个好处是不必改变视频内存中的值，只需改变调色板的颜色项就可快速地改变一幅图象的颜色或灰度。</p>
+    <p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">DOS</font><font SIZE="3">中，调色板的使用不会有什么问题。由于</font><font FACE="Times New Roman" SIZE="3">DOS</font><font SIZE="3">是一个单任务操作系统，一次只能运行一个程序，因此程序可以独占调色板。在</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">环境下，情况就不那么简单了。</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">是一个多任务操作系统，可以同时运行多个程序。如果有几个程序都要设置调色板，就有可能产生冲突。为了避免这种冲突，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">使用逻辑调色板来作为使用颜色的应用程序和系统调色板（物理调色板）之间的缓冲。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><img src="T11_1.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/T11_1.gif" alt="T11_1.tif (194188 bytes)" WIDTH="520" HEIGHT="282"><font SIZE="3"></p>
+    <p ALIGN="center">图</font><font FACE="Times New Roman" SIZE="3">11.1 </font><font SIZE="3">调色板工作原理</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">中，应用程序是通过一个或多个逻辑调色板来使用系统调色板（物理调色板）。在</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">色系统调色板中，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">保留了</font><font FACE="Times New Roman" SIZE="3">20</font><font SIZE="3">种颜色作为静态颜色，这些颜色用作显示</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">界面，应用程序一般不能改变。缺省的系统调色板只包含这</font><font FACE="Times New Roman" SIZE="3">20</font><font SIZE="3">种静态颜色，调色板的其它项为空。应用程序要想使用新的颜色，必须将包含有所需颜色的逻辑调色板实现到系统调色板中。在实现过程中，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">首先将逻辑调色板中的项与系统调色板中的项作完全匹配，对于逻辑调色板中不能完全匹配的项，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">将其加入到系统调色板的空白项中，系统调色板总共有</font><font FACE="Times New Roman" SIZE="3">236</font><font SIZE="3">个空白项可供使用，若系统调色板已满，则</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">将逻辑调色板的剩余项匹配到系统调色板中尽可能接近的颜色上。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">每个设备上下文都拥有一个逻辑调色板，缺省的逻辑调色板只有</font><font FACE="Times New Roman" SIZE="3">20</font><font SIZE="3">种保留颜色，如果要使用新的颜色，则应该创建一个新的逻辑调色板并将其选入到设备上下文中。但光这样还不能使用新颜色，程序只有把设备上下文中的逻辑调色板实现到系统调色板中，新的颜色才能实现。在逻辑调色板被实现到系统调色板时，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">会建立一个调色板映射表。当设备上下文用逻辑调色板中的颜色绘图时，</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">绘图函数会查询调色板映射表以把像素值从逻辑调色板的索引转换成系统调色板的索引，这样当像素被输出到视频内存中时就具有了正确的颜色值。图</font><font FACE="Times New Roman" SIZE="3">11.2</font><font SIZE="3">说明了这种映射关系，从图中读者可以体会到逻辑调色板的缓冲作用。在该图中，</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">绘图函数使用逻辑调色板的索引</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">中的颜色来绘图，通过查询调色板映射表，得知系统调色板中的第</font><font FACE="Times New Roman" SIZE="3">23</font><font SIZE="3">号索引与其完全匹配，这样实际输出到视频内存中的像素值是</font><font FACE="Times New Roman" SIZE="3">23</font><font SIZE="3">。注意图中还演示了颜色的不完全匹配，即逻辑调色板中的索引</font><font FACE="Times New Roman" SIZE="3">15</font><font SIZE="3">和系统调色板中的索引</font><font FACE="Times New Roman" SIZE="3">46</font><font SIZE="3">。</p>
+    <p ALIGN="JUSTIFY">每个要使用额外颜色的窗口都会实现自己的逻辑调色板，逻辑调色板中的每种颜色在系统调色板中都有相同或相近的匹配。调色板的实现优先权越高，匹配的精度也就越高。</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">规定，活动窗口的逻辑调色板</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">如果有的话</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">具有最高的实现优先权。这是因为活动窗口是当前与用户交互的窗口，应该保证其有最佳的颜色显示。非活动窗口的优先权是按</font><font FACE="Times New Roman" SIZE="3">Z</font><font SIZE="3">顺序自上到下确定的</font><font FACE="Times New Roman" SIZE="3">(Z</font><font SIZE="3">顺序就是重叠窗口的重叠顺序</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">。活动窗口有权将其逻辑调色板作为前景调色板实现，非活动窗口则只能实现背景调色板。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#55C8FF">
+      <tr>
+        <td width="100%"></b>提示：术语活动窗口</font><font FACE="Times New Roman" SIZE="3">(Active window)</font><font SIZE="3">或前台窗口</font><font FACE="Times New Roman" SIZE="3">(Foreground window)</font><font SIZE="3">是指当前与用户交互的窗口，活动窗口的顶端的标题条呈高亮显示，而非活动窗口的标题条则是灰色的。活动窗口肯定是一个顶层窗口</font><font FACE="Times New Roman" SIZE="3">(Top-level window)</font><font SIZE="3">，顶层窗口是指没有父窗口或父窗口是桌面窗口的窗口，这种窗口一般都有标题和边框，主要包括框架窗口和对话框。术语重叠窗口是指作为应用程序主窗口的窗口，我们可以把对话框看成是一种特殊的重叠式窗口。</font></td>
+      </tr>
+    </table>
+    </center></div><p ALIGN="JUSTIFY"><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font></b><font SIZE="3"><img src="T11_2.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/T11_2.gif" alt="T11_2.tif (192888 bytes)" WIDTH="520" HEIGHT="303"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">11.2 
+    </font><font SIZE="3">调色板的映射关系</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.1.2 
+    </font><font SIZE="3" color="#3973DE">调色板的创建和实现</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CPalette</font><font SIZE="3">类对逻辑调色板进行了封装。该类的成员函数</font><font FACE="Times New Roman" SIZE="3">CreatePalette</font><font SIZE="3">负责创建逻辑调色板，该函数的声明为：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL CreatePalette( 
+          LPLOGPALETTE lpLogPalette ); //</font><font SIZE="3">成功则返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">。</p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">lpLogPalette</font><font SIZE="3">是一个指向</font><font FACE="Times New Roman" SIZE="3">LPLOGPALETTE</font><font SIZE="3">结构的指针，</font><font FACE="Times New Roman" SIZE="3">LPLOGPALETTE</font><font SIZE="3">结构描述了逻辑调色板的内容，该结构的定义为：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">typedef struct 
+      tagLOGPALETTE { </p>
+      <p ALIGN="JUSTIFY">WORD palVersion; //Windows</font><font SIZE="3">版本号，一般是</font><font FACE="Times New Roman" SIZE="3">0x300</p>
+      <p ALIGN="JUSTIFY">WORD palNumEntries; //</font><font SIZE="3">调色板中颜色表项的数目</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">PALETTEENTRY 
+      palPalEntry[1]; //</font><font SIZE="3">每个表项的颜色和使用方法</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">} LOGPALETTE;</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">结构中最重要的成员是</font><font FACE="Times New Roman" SIZE="3">PALETTEENTRY</font><font SIZE="3">数组，数组项的数目由</font><font FACE="Times New Roman" SIZE="3">palNumEntries</font><font SIZE="3">成员指定。</font><font FACE="Times New Roman" SIZE="3">PALETTEENTRY</font><font SIZE="3">结构对调色板的某一个颜色表项进行了描述，该结构的定义为：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">typedef struct 
+      tagPALETTEENTRY {</p>
+      <p ALIGN="JUSTIFY">BYTE peRed; //</font><font SIZE="3">红色的强度</font><font FACE="Times New Roman" SIZE="3">(0~255</font><font SIZE="3">，下同</font><font FACE="Times New Roman" SIZE="3">)</p>
+      <p ALIGN="JUSTIFY">BYTE peGreen; //</font><font SIZE="3">绿色的强度</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BYTE peBlue; //</font><font SIZE="3">蓝色的强度</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BYTE peFlags; </p>
+      <p ALIGN="JUSTIFY">} PALETTEENTRY;</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">成员</font><font FACE="Times New Roman" SIZE="3">peFlags</font><font SIZE="3">说明了颜色表项的使用方法，在一般应用时为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">，若读者对</font><font FACE="Times New Roman" SIZE="3">peFlags</font><font SIZE="3">的详细说明感兴趣，可以查看</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">的联机帮助。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以看出，创建调色板的关键是在</font><font FACE="Times New Roman" SIZE="3">PALETTEENTRY</font><font SIZE="3">数组中指定要使用的颜色。这些颜色可以是程序自己指定的特殊颜色，也可以从</font><font FACE="Times New Roman" SIZE="3">DIB</font><font SIZE="3">位图中载入。逻辑调色板的大小可根据用户使用的颜色数来定，一般不能超过</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">个颜色表项。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CreatePalette</font><font SIZE="3">只是创建了逻辑调色板，此时调色板只是一张孤立的颜色表，还不能对系统产生影响。程序必需调用</font><font FACE="Times New Roman" SIZE="3">CDC::SelectPalette</font><font SIZE="3">把逻辑调色板选入到要使用它的设备上下文中，然后调用</font><font FACE="Times New Roman" SIZE="3">CDC::RealizePalette</font><font SIZE="3">把逻辑调色板实现到系统调色板中。函数的声明为：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CPalette* SelectPalette( 
+        CPalette* pPalette, BOOL bForceBackground );<br>
+        </font><font SIZE="3">该函数把指定的调色板选择到设备上下文中。参数</font><font FACE="Times New Roman" SIZE="3">pPalette</font><font SIZE="3">指向一个</font><font FACE="Times New Roman" SIZE="3">CPalette</font><font SIZE="3">对象。参数</font><font FACE="Times New Roman" SIZE="3">bForceBackground</font><font SIZE="3">如果是</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，那么被选择的调色板总是作为背景调色板使用，如果</font><font FACE="Times New Roman" SIZE="3">bForceBackground</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">并且设备上下文是附属于某个窗口的，那么当窗口是活动窗口或活动窗口的子窗口时，被选择的调色板将作为前景调色板实现，否则作为背景调色板实现。如果使用调色板的是一个内存设备上下文，则该参数被忽略。函数返回设备上下文原来使用的调色板，若出错则返回</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">UINT RealizePalette( );<br>
+        </font><font SIZE="3">该函数把设备上下文中的逻辑调色板实现到系统调色板中。函数的返回值表明调色板映射表中有多少项被改变了。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果某一个窗口要显示特殊的颜色，那么一般应该在处理</font><font FACE="Times New Roman" SIZE="3">WM_PAINT</font><font SIZE="3">消息时实现自己的逻辑调色板。也就是说，在</font><font FACE="Times New Roman" SIZE="3">OnPaint</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">OnDraw</font><font SIZE="3">函数中重绘以前，要调用</font><font FACE="Times New Roman" SIZE="3">SelectPalette</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">RealizePalette</font><font SIZE="3">。如果窗口显示的颜色比较重要，则在调用</font><font FACE="Times New Roman" SIZE="3">SelectPalette</font><font SIZE="3">时应该指定</font><font FACE="Times New Roman" SIZE="3">bForceBackground</font><font SIZE="3">参数为</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">前景调色板具有使用颜色的最高优先级，它有无条件占用系统调色板</font><font FACE="Times New Roman" SIZE="3">(20</font><font SIZE="3">种保留颜色除外</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">的权力，也就是说，如果需要，前景调色板将覆盖系统调色板的</font><font FACE="Times New Roman" SIZE="3">236</font><font SIZE="3">个表项，而不管这些表项是否正被别的窗口使用。背景调色板则无权破坏系统调色板中的已使用项。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">请读者注意，前景调色板应该是唯一。如果一个活动窗口同时要实现几个逻辑调色板，那么只能有一个调色板作为前景调色板实现，也即在调用</font><font FACE="Times New Roman" SIZE="3">CDC::SelectPalette</font><font SIZE="3">时只能有一个</font><font FACE="Times New Roman" SIZE="3">bForceBackground</font><font SIZE="3">被指定为</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，其它的</font><font FACE="Times New Roman" SIZE="3">bForceBackground</font><font SIZE="3">必需为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">。通常是把具有输入焦点的窗口的调色板作为前景调色板实现，其它窗口只能使用背景调色板。如果活动窗口的子窗口全都使用前景调色板，则会导致程序的死循环。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#71D0FF">
+      <tr>
+        <td width="100%"></b>提示</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">请读者注意区分活动窗口和有输入焦点的窗口。有输入焦点的窗口要么是活动窗口本身，要么是活动窗口的子窗口。也就是说，活动窗口不一定具有输入焦点，当活动窗口的子窗口获得输入焦点时，活动窗口就会失去输入焦点。</font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.1.3 
+    </font><font SIZE="3" color="#3973DE">使用颜色的三种方法</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在调用</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">函数绘图时，可以用不同的方法来选择颜色。</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">COLORREF</font><font SIZE="3">数据类型来表示颜色，</font><font FACE="Times New Roman" SIZE="3">COLORREF</font><font SIZE="3">型值的长度是</font><font FACE="Times New Roman" SIZE="3">4</font><font SIZE="3">字节，其中最高位字节可以取三种不同的值，分别对应三种使用颜色的方法。表</font><font FACE="Times New Roman" SIZE="3">11.1</font><font SIZE="3">列出了这些不同的取值及其含义。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">11.1 </b>COLORREF</font><font SIZE="3">型值的最高位字节的含义</font></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="16%"><font SIZE="3"><b><p ALIGN="JUSTIFY">取值</b></font></td>
+        <td WIDTH="84%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="16%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x00</font></td>
+        <td WIDTH="84%"><font SIZE="3"><p ALIGN="JUSTIFY">指定</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">引用。此时三个低位字节含有红、绿、蓝色的强度，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">将抖动</font><font FACE="Times New Roman" SIZE="3">20</font><font SIZE="3">种保留的颜色来匹配指定的颜色，而不管程序是否实现了自己的调色板。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="16%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x01</font></td>
+        <td WIDTH="84%"><font SIZE="3"><p ALIGN="JUSTIFY">指定调色板索引引用。此时最低位字节含有逻辑调色板的索引，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">根据该索引在逻辑调色板中找到所需的颜色。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="16%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x02</font></td>
+        <td WIDTH="84%"><font SIZE="3"><p ALIGN="JUSTIFY">指定调色板</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">引用。此时三个低位字节含有红、绿、蓝色的强度，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">会在逻辑调色板中找到最匹配的颜色。</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">为了方便用户的使用，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">提供了三个宏来构建三种不同的</font><font FACE="Times New Roman" SIZE="3">COLORREF</font><font SIZE="3">数据，它们是：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">COLORREF RGB(BYTE 
+        bRed,BYTE bGreen,BYTE bBlue); //RGB</font><font SIZE="3">引用</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">COLORREF PALETTEINDEX(WORD 
+        wPaletteIndex); //</font><font SIZE="3">调色板索引引用</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">COLORREF PALETTERGB(BYTE 
+        bRed,BYTE bGreen, //</font><font SIZE="3">调色板</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">引用<br>
+        </font><font FACE="Times New Roman" SIZE="3">BYTE bBlue); </p>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">例如，我们可以用上述三种方法来指定刷子的颜色。下面的代码用系统调色板中的红色建立一个刷子：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBrush brush;</p>
+      <p ALIGN="JUSTIFY">brush.CreateSolidBrush(RGB(255,0,0));</p>
+      <p ALIGN="JUSTIFY">pDC-&gt;SelectObject(&amp;brush);</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">下面的代码用逻辑调色板的索引</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">中的颜色来创建一个刷子：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">pDC-&gt;SelectPalette(&amp;m_Palette,FALSE);</p>
+      <p ALIGN="JUSTIFY">pDC-&gt;RealizePalette( );</p>
+      <p ALIGN="JUSTIFY">CBrush brush;</p>
+      <p ALIGN="JUSTIFY">brush.CreateSolidBrush(PALETTEINDEX(2));</p>
+      <p ALIGN="JUSTIFY">pDC-&gt;SelectObject(&amp;brush);</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">下面的代码用逻辑调色板中最匹配的深灰色来创建一个刷子：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">pDC-&gt;SelectPalette(&amp;m_Palette,FALSE);</p>
+      <p ALIGN="JUSTIFY">pDC-&gt;RealizePalette( );</p>
+      <p ALIGN="JUSTIFY">CBrush brush;</p>
+      <p ALIGN="JUSTIFY">brush.CreateSolidBrush(PALETTERGB(20,20,20));</p>
+      <p ALIGN="JUSTIFY">pDC-&gt;SelectObject(&amp;brush);</p>
+    </blockquote>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.1.4 
+    </font><font SIZE="3" color="#3973DE">与系统调色板有关的消息</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">为了协调各个窗口对系统调色板的使用，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">在必要的时侯会向顶层窗口和重叠窗口发送消息</font><font FACE="Times New Roman" SIZE="3">WM_QUERYNEWPALETTE</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当某一顶层或重叠窗口</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">如主框架窗口</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">被激活时，会收到</font><font FACE="Times New Roman" SIZE="3">WM_QUERYNEWPALETTE</font><font SIZE="3">消息，在窗口创建之初也会收到该消息，该消息先于</font><font FACE="Times New Roman" SIZE="3">WM_PAINT</font><font SIZE="3">消息到达窗口。如果活动窗口要使用特殊的颜色，则在收到该消息时应该实现自己的逻辑调色板并重绘窗口。如果窗口实现了逻辑调色板，那么</font><font FACE="Times New Roman" SIZE="3">WM_QUERYNEWPALETTE</font><font SIZE="3">消息的处理函数应返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">。通常窗口在收到该消息后应该为有输入焦点的窗口</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">如视图</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">实现前景调色板，但如果程序觉得它显示的颜色并不重要，那么在收到该消息后可以把逻辑调色板作为背景调色板实现</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">指定</font><font FACE="Times New Roman" SIZE="3">CDC::SelectPalette</font><font SIZE="3">函数的</font><font FACE="Times New Roman" SIZE="3">bForceBackground</font><font SIZE="3">参数为</font><font FACE="Times New Roman" SIZE="3">TRUE)</font><font SIZE="3">，这样程序就失去了使用系统调色板的最高优先权。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当活动窗口实现其前景调色板并改变了系统调色板时，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">会向包括活动窗口在内的所有的顶层窗口和重叠窗口发送</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">消息，在该消息的</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">参数中包含了改变系统调色板的窗口的句柄。其它窗口如果使用了自己的逻辑调色板，那么应该重新实现其逻辑调色板，并重绘窗口。这是因为系统调色板已经被改变了，必需重新建立调色板映射表并重绘，否则可能会显示错误的颜色。当然，非活动窗口只能使用背景调色板，所以显示的颜色肯定没有在前台的时侯好。要注意只有在活动窗口实现了前景调色板且改变了系统调色板时，才会产生</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">消息。也就是说，如果窗口在调用</font><font FACE="Times New Roman" SIZE="3">CDC::SelectPalette</font><font SIZE="3">时指定</font><font FACE="Times New Roman" SIZE="3">bForceBackground</font><font SIZE="3">参数为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，那么是不会产生</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">消息。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">总之，</font><font FACE="Times New Roman" SIZE="3">WM_QUERYNEWPALETTE</font><font SIZE="3">消息为活动窗口提供了实现前景调色板的机会，而</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">消息为窗口提供了适应系统调色板变化的机会。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">需要指出的是，子窗口是收不到与调色板有关的消息的。因此，如果子窗口</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">如视图</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">要使用自己的逻辑调色板，那么顶层窗口或重叠窗口应该及时通知子窗口与调色板有关的消息。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.1.5 
+    </font><font SIZE="3" color="#3973DE">具体实例</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在让我们来看一个使用调色板的演示程序。该程序名为</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">，如图</font><font FACE="Times New Roman" SIZE="3">11.3</font><font SIZE="3">所示，该程序显示了两组红色方块，每组方块都是</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">×</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">共</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">个。左边的这组方块是用逻辑调色板画的，红色的强度从</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">到</font><font FACE="Times New Roman" SIZE="3">255</font><font SIZE="3">递增，作为对比，在右边用</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">引用画出了</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">个递增的红色方块。读者可以对比这两组方块的颜色质量，以体会调色板索引引用和</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">引用的区别。该程序也着重向读者演示了处理调色板消息的方法。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T11_3.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/T11_3.gif" alt="T11_3.tif (237628 bytes)" WIDTH="466" HEIGHT="295"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">11.3 
+    TestPal</font><font SIZE="3">程序</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">首先，请读者用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">建立一个名为</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">单文挡应用程序。然后，用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类加入</font><font FACE="Times New Roman" SIZE="3">WM_QUERYNEWPALETTE</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">消息的处理函数，使用缺省的函数名。接着，在</font><font FACE="Times New Roman" SIZE="3">TestPal.h</font><font SIZE="3">文件中类</font><font FACE="Times New Roman" SIZE="3">CTestPalApp</font><font SIZE="3">的定义前加入下面一行：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">#define WM_DOREALIZE WM_USER+200</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当收到调色板消息时，主框架窗口会发送用户定义的</font><font FACE="Times New Roman" SIZE="3">WM_DOREALIZE</font><font SIZE="3">消息通知视图。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">最后，请读者按清单</font><font FACE="Times New Roman" SIZE="3">11.1</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">11.2</font><font SIZE="3">修改程序。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">11.1 CMainFrame</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CMainFrame::OnQueryNewPalette() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your message handler code here and/or call default</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetActiveView()-&gt;SendMessage(WM_DOREALIZE);</p>
+    <p ALIGN="JUSTIFY">return TRUE; //</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">表明实现了逻辑调色板</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CMainFrame::OnPaletteChanged(CWnd* pFocusWnd) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CFrameWnd::OnPaletteChanged(pFocusWnd);</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your message handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(GetActiveView()!=pFocusWnd)</p>
+    <p ALIGN="JUSTIFY">GetActiveView()-&gt;SendMessage(WM_DOREALIZE);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">11.2 CTestPalView</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TestPalView.h : interface of the CTestPalView class</p>
+    <p ALIGN="JUSTIFY">class CTestPalView : public CView</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . .</b></p>
+    <p ALIGN="JUSTIFY">protected:</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CPalette m_Palette;</b></p>
+    <p ALIGN="JUSTIFY"><b>. . .</p>
+    <p ALIGN="JUSTIFY">afx_msg LRESULT OnDoRealize(WPARAM wParam, LPARAM lParam); </b></p>
+    <p ALIGN="JUSTIFY">DECLARE_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TestPalView.cpp : implementation of the CTestPalView class</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BEGIN_MESSAGE_MAP(CTestPalView, CView)</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . .</p>
+    <p ALIGN="JUSTIFY">ON_MESSAGE(WM_DOREALIZE, OnDoRealize)</b></p>
+    <p ALIGN="JUSTIFY">END_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CTestPalView::CTestPalView()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: add construction code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">LPLOGPALETTE pLogPal;</p>
+    <p ALIGN="JUSTIFY">pLogPal=(LPLOGPALETTE)malloc(sizeof(LOGPALETTE)+</p>
+    <p ALIGN="JUSTIFY">sizeof(PALETTEENTRY)*256);</p>
+    <p ALIGN="JUSTIFY">pLogPal-&gt;palVersion=0x300;</p>
+    <p ALIGN="JUSTIFY">pLogPal-&gt;palNumEntries=256;</p>
+    <p ALIGN="JUSTIFY">for(int i=0;i&lt;256;i++)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">pLogPal-&gt;palPalEntry[i].peRed=i; //</font><font SIZE="3">初始化为红色</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pLogPal-&gt;palPalEntry[i].peGreen=0;</p>
+    <p ALIGN="JUSTIFY">pLogPal-&gt;palPalEntry[i].peBlue=0;</p>
+    <p ALIGN="JUSTIFY">pLogPal-&gt;palPalEntry[i].peFlags=0;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">if(!m_Palette.CreatePalette(pLogPal))</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(&quot;Can't create palette!&quot;);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CTestPalView::OnDraw(CDC* pDC)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CTestPalDoc* pDoc = GetDocument();</p>
+    <p ALIGN="JUSTIFY">ASSERT_VALID(pDoc);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TODO: add draw code for native data here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CBrush brush,*pOldBrush;</p>
+    <p ALIGN="JUSTIFY">int x,y,i;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pDC-&gt;SelectPalette(&amp;m_Palette,FALSE);</p>
+    <p ALIGN="JUSTIFY">pDC-&gt;RealizePalette();</p>
+    <p ALIGN="JUSTIFY">pDC-&gt;SelectStockObject(BLACK_PEN);</p>
+    <p ALIGN="JUSTIFY">for(i=0;i&lt;256;i++)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">x=(i%16)*16;</p>
+    <p ALIGN="JUSTIFY">y=(i/16)*16;</p>
+    <p ALIGN="JUSTIFY">brush.CreateSolidBrush(PALETTEINDEX(i)); //</font><font SIZE="3">调色板索引引用</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pOldBrush=pDC-&gt;SelectObject(&amp;brush);</p>
+    <p ALIGN="JUSTIFY">pDC-&gt;Rectangle(x,y,x+16,y+16);</p>
+    <p ALIGN="JUSTIFY">pDC-&gt;SelectObject(pOldBrush);</p>
+    <p ALIGN="JUSTIFY">brush.DeleteObject();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">for(i=0;i&lt;256;i++)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">x=(i%16)*16+300;</p>
+    <p ALIGN="JUSTIFY">y=(i/16)*16;</p>
+    <p ALIGN="JUSTIFY">brush.CreateSolidBrush(RGB(i,0,0)); //RGB</font><font SIZE="3">引用</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pOldBrush=pDC-&gt;SelectObject(&amp;brush);</p>
+    <p ALIGN="JUSTIFY">pDC-&gt;Rectangle(x,y,x+16,y+16);</p>
+    <p ALIGN="JUSTIFY">pDC-&gt;SelectObject(pOldBrush);</p>
+    <p ALIGN="JUSTIFY">brush.DeleteObject();</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">LRESULT CTestPalView::OnDoRealize(WPARAM wParam, LPARAM)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CClientDC dc(this);</p>
+    <p ALIGN="JUSTIFY">dc.SelectPalette(&amp;m_Palette,FALSE);</p>
+    <p ALIGN="JUSTIFY">if(dc.RealizePalette()) //</font><font SIZE="3">若调色板映射被改变则刷新视图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetDocument()-&gt;UpdateAllViews(NULL);</p>
+    <p ALIGN="JUSTIFY">return 0L;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CTestPalView</font><font SIZE="3">的构造函数中创建了一个含有</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">个递增红色的逻辑调色板。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当变为活动窗口以及窗口创建时，</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">程序的主框架窗口都会收到</font><font FACE="Times New Roman" SIZE="3">WM_QUERYNEWPALETTE</font><font SIZE="3">消息，该消息的处理函数</font><font FACE="Times New Roman" SIZE="3">OnQueryNewPalette</font><font SIZE="3">负责发送</font><font FACE="Times New Roman" SIZE="3">WM_DOREALIZE</font><font SIZE="3">消息通知视图</font><font FACE="Times New Roman" SIZE="3">, </font><font SIZE="3">并返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">以表明活动窗口实现了逻辑调色板。</font><font FACE="Times New Roman" SIZE="3">WM_DOREALIZE</font><font SIZE="3">消息的处理函数</font><font FACE="Times New Roman" SIZE="3">CTestPalView::OnDoRealize</font><font SIZE="3">为视图实现一个前景调色板，该函数中有一个判断语句可提高程序运行的效率：如果</font><font FACE="Times New Roman" SIZE="3">CDC::RealizePalette</font><font SIZE="3">返回值大于零，则说明调色板映射表发生了变化，此时必须刷新视图，否则制图中的颜色将失真。如果</font><font FACE="Times New Roman" SIZE="3">RealizePalette</font><font SIZE="3">返回零则说明调色板映射没有变化，这时就没有必要刷新视图。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">无论是</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">还是别的应用程序在实现前景调色板并改变了系统调色板时，</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">程序的主框架窗口都会收到</font><font FACE="Times New Roman" SIZE="3">WM_PALETTECHANGED</font><font SIZE="3">消息。请注意该消息的处理函数</font><font FACE="Times New Roman" SIZE="3">CMainFrame::OnPaletteChanged</font><font SIZE="3">有一个</font><font FACE="Times New Roman" SIZE="3">pFocusWnd</font><font SIZE="3">参数，该参数表明是哪一个窗口改变了系统调色板。函数用</font><font FACE="Times New Roman" SIZE="3">pFocusWnd</font><font SIZE="3">来判断，如果是别的应用程序实现了前景调色板，则通知视图调用</font><font FACE="Times New Roman" SIZE="3">OnDoRealize</font><font SIZE="3">实现其逻辑调色板，注意虽然</font><font FACE="Times New Roman" SIZE="3">CDC::SelectPalette</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">bForceBackground</font><font SIZE="3">参数是</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，但这时视图的逻辑调色板是作为背景调色板实现的。如果是</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">自己的视图实现了前景调色板，则没有必要调用</font><font FACE="Times New Roman" SIZE="3">OnDoRealize</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">请读者将</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">当前的显示模式设置为</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">色，然后编译并运行</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">，对比一下</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">引用与调色板索引引用的效果，读者不难发现左边用调色板索引引用输出的颜色比右边好的多。通过该程序我们可以看出，即使在系统调色板中已实现了丰富的红色的情况下，</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">引用得到的红色仍然是</font><font FACE="Times New Roman" SIZE="3">20</font><font SIZE="3">种保留颜色的抖动色。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者可以打开</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">的画笔程序，并在该程序中打开一幅</font><font FACE="Times New Roman" SIZE="3">256</font><font SIZE="3">色的位图</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">如</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">目录下的</font><font FACE="Times New Roman" SIZE="3">Forest.bmp)</font><font SIZE="3">。在画笔和</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">程序之间来回切换，读者可以看到，由于两个应用程序都正确的处理了调色板消息，在前台的应用程序总是具有最好的颜色显示，而后台程序的颜色虽然有些失真，但还比较令人满意。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">需要指出的是，</font><font FACE="Times New Roman" SIZE="3">TestPal</font><font SIZE="3">程序只使用了一个逻辑调色板，所以它处理调色板消息的方法比较简单。如果程序要用到多个逻辑调色板，那么就需要采取一些新措施来保证只有一个逻辑调色板作为前景调色板使用。在</font><font FACE="Times New Roman" SIZE="3">11.4</font><font SIZE="3">节读者可以看到使用多个逻辑调色板时的处理方法。</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    </b></font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap11.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/chap11.htm">上一页</a></td>
+        <td><p align="right"><a href="chap11_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/chap11_2.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

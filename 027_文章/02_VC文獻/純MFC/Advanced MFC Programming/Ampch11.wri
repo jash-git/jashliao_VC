@@ -1,0 +1,739 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab720{\fonttbl{\f0\fswiss MS Sans Serif;}{\f1\froman\fcharset2 Symbol;}{\f2\fmodern Courier New;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033\pard\plain\f2\fs20 Chapter 11 Sample: Simple Paint
+\par 
+\par This chapter introduces a series of samples imitating standard "Paint" application, using the knowledge from previous chapters. Also, some very useful concepts such as region, path are discussed. By the end of this chapter, we will be able to build simple graphic editor applications.
+\par 
+\par Samples in this chapter are specially designed to work on 256-color palette device. To customize them for non-palette devices, we can just eleminate logical palette creation and realization procedure.
+\par 
+\par 11.0\tab Preparation
+\par 
+\par With the knowledge we already have, it is possible for us to built a simple graphic editor now. So lets start to build an application similar to "Paint". Sample 11.0\\GDI is a starting application whose structure is similar to what we have implemented in previous chapters. The application has the following functionalities: 1) Device independent bitmap loading and saving. 2) DIB to DDB conversion (implemented through DIB section). 3) Displaying DDB using function CDC::BitBlt(...). Lets first take a look at class CGDIDoc:
+\par 
+\par (Code omitted)
+\par 
+\par We will support only 256 color device, so in the constructor, a logical palette with size of 256 is created, the first 20 entries are filled with predefined colors. Later when we implement the application, colors contained in the first 20 entries of this logical palette will be displayed on a color bar that could be used by the user for interactive drawing. In the sample, variable CGDIDoc::m_palDraw implements a logical palette, which will be used throughout the application's lifetime. In the constructor, a default palette is created and the current colors in the system palette are used to initialize the logical palette (Of course, we can also initialize the logical palette with user-defined colors). When a new bitmap is loaded, colors contained in the color table of the bitmap will be used to fill the logical palette.
+\par 
+\par After the DIB is loaded, its handle will be stored in variable CGDIDoc::m_hDIB, which is initialized to NULL in the constructor. In function CGDIDoc::Serialize(...), the bitmap is loaded into memory and stored to disk.
+\par 
+\par Function CGDIDoc::GetHDib() and CGDIDoc::GetPalette() let us access the DIB and logical palette outside class CGDIDoc.
+\par 
+\par The following is a portion of class CGDIView:
+\par 
+\par (Code omitted)
+\par 
+\par Here variable m_bmpDraw is used to store the device dependent bitmap, variable m_dcMem is the memory DC that will be used to select this bitmap. Other two pointers m_pBmpOld and m_pPalOld will be used to resume m_dcMem's original state.
+\par 
+\par Function CGDIView::LoadBitmap(...) will be called from function CGDIView::OnInitialUpdate(), when a new bitmap is loaded by the application. In this function a DIB section will be created, and the returned HBITMAP handle will be attached to variable CGDIView::m_bmpDraw. So any operation on the DDB will be reflected to DIB bit values. Also if we modify DIB bits, the DDB will be affected automatically. In the function, the color table contained in the DIB is extracted, and the entries of the logical palette (implemented in the document) are updated with the colors contained in the bitmap file by calling function CPalette::SetPaletteEntries(...).
+\par 
+\par After a bitmap is loaded, it will be painted to the client window by calling CDC::BitBlt(...) in function CGDIView::OnDraw(...). Every time before the bitmap is painted, the logical palette contained in the document is selected into the target DC and realized. By doing this, we can avoid color distortion.
+\par 
+\par Function CGDIView::CleanUp() selects the palette and bitmap out of the DC, then deletes the memory DC and DIB. It is called from the following two functions: 1) In CGDIView::OnDestroy() when the application is about to exit. 2) In CGDIView::LoadBitamp() before new DDB is created.
+\par 
+\par That's all the features included in sample 11.0\\GDI. The application can load a DIB file from the disk and display it.
+\par 
+\par 11.1\tab Ratio and Grid
+\par 
+\par Sample 11.1\\GDI is based on sample 11.0\\GDI, it implements zoom in and zoom out commands. Also, when the image is displayed with an enlarged size, the grid can be turned on.
+\par 
+\par For a graphic editor, it is desirable that the image can be displayed with different ratios. Also, When the image is zoomed in, we need to add grid to let the user have a better view of pixels. These two features are included in almost all the graphic editors.
+\par 
+\par We know it is easy to display an image in different ratios. In order to do this, we need to call function CDC::StretchBlt(...) instead of CDC::BitBlt(...). The only concern here is that we should let the user select different ratios with mouse clicking, and whenever the ratio changes, the effect should be shown in the client window at once.
+\par 
+\par Zoom In & Zoom Out
+\par 
+\par So we need to add a new variable that can be used to store the current image ratio. The bitmap image should be drawn in the client window according to the value of this variable, and the user can change it through mouse clicking. Although this variable can be included in any of the four classes (Any of CGDIApp, CFrameWnd, CGDIDoc or CGDIView derived classes), generally we'd like to put the data in document because this will make the application document centered. For the application that has only one document and view it doesn't make much difference where we put this variable. But if an application has more than one document or view, we should consider this more carefully. For example, suppose we have two documents opened at the same time, if both documents need to share a same feature (for example, the ratio change will affect both documents), the variable needs to be put in the frame window class. If we don't want to affect the other document when changing the feature of one document (for example, the ratio change for one document should not affect the ratio of another document), we should let each document have its own variable.
+\par 
+\par In the sample application, we use an integer type variable m_nRatio to record the current ratio. This variable is initialized to 1 in the constructor. A member function CGDIDoc::GetRatio() is added to let this value be accessible from other classes. To let the user be able to change the ratio of the image, two buttons are added to toolbar IDR_MAINFRAME. The IDs of the two buttons are ID_ZOOM_IN and ID_ZOOM_OUT, one of them lets the user zoom in and the other let the user zoom out the image.
+\par 
+\par Both of the two commands have WM_COMMAND and UPDATE_COMMAND_UI message handlers. The message handlers allow the user to change the current ratio, which are relatively easy to implement. Within the function, we need to judge if the current value of ratio will reach the upper or lower limit, if not, we should increment or decrement the value, and update the client window. For example, function CGDIDoc::OnZoomIn() is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The lower limit of the ratio value is 1 and the upper limit is 16. Another concern is that we must also change the scroll sizes of the client window whenever the ratio has changed (In sample 11.0\\GDI, since the image does not change after it is displayed in the client window, it is enough to just set the scroll sizes according to the image size after the bitmap is loaded).
+\par 
+\par To let the scroll sizes be set dynamically, a new member function CGDIView::UpdateScrollSizes() is added to the application. In this function, the current ratio value is retrieved and the scroll sizes are set to the zoomed bitmap size. In the sample, this newly added function is also called in function CGDIView::OnInitialUpdate() to set the scroll sizes according to the image size whenever a new bitmap is loaded (The old implementation is elemenated).
+\par 
+\par Functions CGDIDoc::OnUpdateZoomIn(...) and CGDIDoc::OnUpdateZoomOut(...) are used to set the state of zoom in and zoom out buttons. We should disable both commands when there is no bitmap loaded. Besides this, upper and lower limits are also factors to judge if we should disable either zoom in or zoom out command. For example, CGDIDoc::OnUpdateZoomIn(...) is implemented as follows:
+\par 
+\par void CGDIDoc::OnUpdateZoomIn(CCmdUI* pCmdUI) 
+\par \{
+\par     pCmdUI->Enable(m_nRatio < 16 && m_hDIB != NULL);\tab 
+\par \}
+\par 
+\par Grid
+\par 
+\par Grid implementation is similar. Since grid has only two states (it is either on or off), a Boolean type variable is enough for representing its current state. In the sample, a Boolean type variable m_bGridOn is added to class CGDIDoc, which is initialized to FALSE in the constructor. Besides this, an associate function CGDIDoc::GetGridOn() is added to allow its value be retrieved outside the document. Also, a new button (whose command ID is ID_GRID) is added to tool bar IDR_MAINFRAME, whose message handlers are also added through using Class Wizard. The value of m_bGridOn is toggled between TRUE and FALSE in function CGDIDoc::OnGrid(). Within function CGDIDoc::OnUpdateGrid(...), the button's state (checked or unchecked) is set to represent the current state of grid:
+\par 
+\par void CGDIDoc::OnUpdateGrid(CCmdUI* pCmdUI)
+\par \{
+\par     pCmdUI->SetCheck(m_bGridOn == TRUE);
+\par \}
+\par 
+\par We must modify function CGDIView::OnDraw(...) to implement grid. First we need to check the current value of CGDIDoc::m_bGridOn. If it is TRUE, we should draw both the image and the grid; if it is FALSE, we need to draw only the image.
+\par 
+\par We can draw various types of grids, for example, the simplest way to implement grid would be just drawing parallel horizontal and vertical lines. However, there is a disadvantage of implementing grid with solid lines. If the image happens to have the same color with grid lines, the grid will become unable to be seen. An alternate solution is to draw grid lines using image's complement colors, this can be easily implemented by calling function CDC::SetROP2(...) and passing R2_NOT to its parameter before the grid is drawn. However, this type of grid does not have a uniform color, this makes the image looks a little awkward.
+\par 
+\par Pattern Brush and Its Origin
+\par 
+\par The best grid is implemented with alternate colors (for example, black and white), thus at any time one of the two contiguous grid pixels will always have a different color with the image pixels under them (When an image is enlarged, one pixel of the image will become several pixels). We might want to use dashed or dotted lines to implement this type of grid. However, the alternating frequency of dotted or dashed lines is not one pixel.
+\par 
+\par In the sample a pattern brush is used to implement grid. Remember we can use pattern brush to fill a rectangle with a bitmap pattern. If we limit width and height of the pattern brush to 1 unit, the filling result will become a straight line (vertical or horizontal). We can prepare a bitmap with the pattern that any two adjacent pixels (not diagnal) have different colors, and use it to create the pattern brush (Figure 11-1).
+\par 
+\par If we write program for Windows 95, the size of the bitmap for making pattern brush must be 8(8. In the sample, this image is included in the application as a bitmap resource, whose ID is IDB_BITMAP_GRID. The variable used for creating pattern brush is CGDIView::m_brGrid, and the pattern brush will be created in the constructor of class CGDIView.
+\par 
+\par In function CGDIView::OnDraw(...), after drawing the bitmap, we must obtain the value of CGDIDoc::m_bGridOn. If it is true, we will use the pattern brush to draw the grid. When using pattern brush, we must pay special attention to its origin. By default, the brush's origin will always be set to (0, 0). This will not cause problem so long as the client window is not scrolled. However, if scrolled position (either horizontal or vertical, but not both) happens not to be an even number, we need to adjust the origin of the pattern brush to let the pattern be drawn started from 1 (horizontal or vertical coordinate). This is because our pattern repeats every other pixel.
+\par 
+\par Figure 11-2 demonstrates the two situations.  In the left picture, the logical coordinates of the upper-left pixel of the visible client window are (2, 2). If we draw the grid starting from the pixel located at the logical coordinates (0, 0), the grid pixel at (2, 2) should be drawn using dark color (See Figure 11-1). If the client window is further scrolled one pixel leftward (the right picture of Figure 11-2), the logical coordinates of the upper-left pixel of the visible client window become (3, 2). In this situation, it should be drawn using the light color. However, if we do not adjust the origin of the pattern brush, the system will treat the upper-left visible pixel in the client window as the origin and draw it using the dark color.
+\par 
+\par To set pattern brush's origins, we need to call the following two functions before selecting brush into the DC:
+\par 
+\par BOOL CGDIObject::UnrealizeObject();
+\par CPoint CDC::SetBrushOrg(int x, int y);
+\par 
+\par In the second function, x and y specify the new origin of the pattern brush.
+\par 
+\par In the sample, the brush origin is set according to the current scrolled positions. The following code fragment shows how the origin is adjusted in function CGDIView::OnDraw(...):
+\par 
+\par (Code omitted)
+\par 
+\par Here m_brGrid is a CBrush type variable that is used to implement the pattern brush, pt is a POINT type variable whose value is retrieved by calling function CScrollView::GetScrollPosition().
+\par 
+\par Drawing horizontal grid lines and vertical grid lines are implemented separately. We use two loops to draw different types of lines. Within each loop, function CDC::PatBlt(...) is called to draw one grid line. The following code fragment shows how the horizontal grid lines are drawn in the sample application:
+\par 
+\par (Code omitted)
+\par 
+\par The height of line is set to 1, so the actual result will be a pattern line.
+\par 
+\par 11.2\tab Color Selection
+\par 
+\par Sample 11.2\\GDI is based on sample 11.1\\GDI. In this sample, a "Color Bar" is implemented, it allows the user to select current color from a series of colors (Figure 11-3).
+\par 
+\par When the user is editing the image, both foreground and background color need to be set. The foreground color will be used to draw line, curve, arc, or the border of rectangle, ellipse, polygon, etc. The background color will be used to fill the interior of rectangle, ellipse and polygon. In the sample, the user can left click on any color contained in the color bar to select a foreground color, and right click on any color to select a background color.
+\par 
+\par We know that this feature is similar to that of standard graphic editor "Paint". In "Paint" application, color bar is docked to the top or bottom border of the mainframe window. There are two rows of colors that can be selected for drawing. The user can use left and right mouse buttons to select foreground and background colors, double click on any color to customize it.
+\par 
+\par We need to recollect some old knowledge from chapter 1 through chapter 4 in order to implement the color bar. 
+\par 
+\par Color Selection Control
+\par 
+\par First, the color bar should be implemented by dialog bar. This will allow it to be docked or floated, and we can include any type of common controls very easily. Second, we need to decide what type of control is needed for implementing the color selection controls.
+\par 
+\par The color selection control should have the following features: 1) It can respond to mouse clicking events (Left and right clicking, also, the double clicking). 2) The surface of the control should be painted with the color it represents. 
+\par 
+\par There are many ways to implement this control. One solution is to use owner-draw button. Remember if we set a button's style to "Owner draw", when the button needs to be updated, its parent window will call function CBitmapButton::DrawItem(...). We can override this member function and paint the surface of the button with the color it is representing. The advantage of this method is that by doing this, all the buttons will be instances of the same class, and the same member function will be called to draw every button. In this case, it is relatively easy to add or delete such type of buttons without having to rewrite the code for drawing every single button. Imagine if we handle button drawing in the parent window, we have to calculate the position and size of each button whenever it needs to be redrawn.
+\par 
+\par In the sample, a dialog box template with ID of IDD_DIALOG_COLORBAR is added to the application. There are altogether twenty-one owner-draw buttons. Among them, one button will be used to display currently selected foreground and background colors, the rest buttons will be used for displaying colors contained in the logical palette.
+\par 
+\par We must create new classes for the controls contained in the dialog bar. In the sample, class CColorButton and CFBButton are added for this purpose. Both of them are derived from the class CBitmapButton, also, both of them override function CBitmapButton::DrawItem(...). Please note that instead of handling message WM_DRAWITEM in the derived classes, we must override CBitmapButton::DrawItem(...) to customize the appearance of button. This is because message WM_DRAWITEM will not be routed to derived classes (Only the base class will receive this message, in which case default function CBitmapButton::DrawItem(...) will be called). If we do not override this function, we will not be notified when buttons need to be updated.
+\par 
+\par Since this sample is supposed to be used for palette device (Of course, it can be run on a non-palette device), we will let each button display a color contained in a different entry of the logical palette. In order to do this, we should let different button have a different index that represents a different entry of the logical palette. For this purpose, a variable m_nPalIndex and two functions (GetPaletteIndex() and SetPaletteIndex(...)) are added to class CColorButton. In function CColorButton::DrawItem(...), this value is used as the index to the application's logical palette for button drawing:
+\par 
+\par (Code omitted)
+\par 
+\par We use macro PALETTEINDEX to retrieve the actual color contained in the palette entry. As usual, before doing any drawing, we have to select the logical palette into the DC and realize it.
+\par 
+\par Class CFBButton is similar. Two variables m_BgdIndex and m_FgdIndex are added to class CGDIDoc representing the currently selected foreground and background colors. Their values can be retrieved and set through calling functions CGDIDoc::GetBgdIndex(), CGDIDoc::GetFgdIndex(), CGDIDoc:: SetBgdIndex(...), CGDIDoc::SetFgdIndex(...). Two variables are declared in the document class instead of color bar class because their values may need to be accessed from the view. Since the document is the center of the application, we should put the variables in the document so that they can be easily accessed from other classes.
+\par 
+\par Function CFBButton::Drawitem(...) implements drawing a rectangle filled with current background color overlapped by another rectangle filled with current foreground color. Like class CColorButton, the color is retrieved from the logical palette contained in the document. The following code fragment shows how the background rectangle is drawn:
+\par 
+\par (Code omitted)
+\par 
+\par Variable nBgdIndex is an index to the logical palette, the whole area that needs to be painted is specified by lpDrawItemStruct->rcItem (lpDrawItemStruct is the pointer passed to function DrawItem(...)). When drawing the rectangle, we see that a margin of 2 is left first (This is done through calling function CRect:: InflateRect(...)), then the width and height of the rectangle are set to 3/4 of their original values. The foreground rectangle has the same dimension, but overlaps the background rectangle. To add more fluff to the application, the border of both rectangles has a 3D effect, which is implemented by calling function CDC::DrawEdge(...).
+\par 
+\par Color Bar
+\par 
+\par To implement color bar, a new class derived from CDialogBar is added to the application. This class is named CColorBar. To let the buttons act as color selection controls, we need to implement subclass for all the owner-draw buttons. In the sample, function CColorBar::InitButtons() is added to initialize the indices of all the buttons and implement subclass. Also, function CDialogBar::Create(...) is overridden, within which CColorBar::InitButtons() is called to change the default properties of the buttons. The following is the implementation of function CColorBar::InitButtons():
+\par 
+\par (Code omitted)
+\par 
+\par Please note that in the sample, the first color button's ID is IDC_BUTTON_COLOR1, and the IDs of all the color buttons are consecutive. This may simplify message mapping.
+\par 
+\par Color Selection
+\par 
+\par Another feature implemented in the sample application is that the user may set foreground and background colors by left/right mouse clicking on a color selection control. Also, the color of the color selection control may be customized by double clicking on the button. Since the messages related to mouse events will not be routed to the child window of dialog box (We can treat dialog bar as a dialog box), they are handled in base class CColorBar. In the sample, functions CColorBar::OnLButtonDown(...), CColorBar::OnRButtonDown(...) and CColorBar::OnLButtonDblClk(...) are implemented to handle mouse clicking messages. In the first two functions, first the foreground or background palette index contained in the document is set to a new value according to which button is clicked, then the button being clicked is updated. In the third function, a color dialog box is implemented, if the user selects a new color, we will use it to fill the corresponding entry of the logical palette, then update all the color buttons.
+\par 
+\par Integrate the Color Bar into the Program
+\par 
+\par Finally, the color bar is created in function CMainFrame::OnCreate(...). The variable that is used to implement the color bar is CMainFrame::m_wndColorBar. Within this function, CColorBar::Create(...) is called to create the color bar and CControlBar::EnableDocking(...) is called to dock the color bar. The color bar can be either floated or docked to any border of the mainframe window.
+\par 
+\par 11.3\tab Simple Drawing
+\par 
+\par Sample 11.3\\GDI is based on sample 11.2\\GDI.
+\par 
+\par The new application implemented in this section supports two most basic editing functions: dot drawing and line drawing. Remember we have implemented some basic interactive drawings in chapter 9, but the implementation here is slightly different. As the user draw a dot or line, besides updating the client window, we also need to update the new drawings to the bitmap, so when it is saved to the disk, the data will always be up-to-date. Also, since the bitmap image can be displayed in different ratios in a scrolled window, we must map the mouse position from the coordinate system of the client window to the coordinate system of the bitmap image (1:1 ratio) in order to update the new pixel. Still, we also need to support cursor shape changing: when the mouse is within the bitmap area, it is more desirable to change the shape of the cursor to represent the current drawing tool.
+\par 
+\par New Tool Bar
+\par 
+\par A new tool bar is implemented in the sample that allows the user to select drawing tool. The ID of the tool bar is IDR_DRAWTOOLBAR, and there are two buttons included in the tool bar: ID_BUTTON_PEN and ID_BUTTON_LINE. The two tools can be used for drawing dot and line respectively.
+\par 
+\par A new variable m_nCurrentTool is declared in class CGDIDoc. It will be used to indicate the current drawing tool. In the sample, WM_COMMAND and UPDATE_COMMAND_UI messages for both ID_BUTTON_PEN and ID_BUTTON_LINE  are handled in the following two functions respectively (New drawing tools added in the following sections will also be handled here):
+\par 
+\par void CGDIDoc::OnDrawTool(UINT nID) 
+\par \{
+\par     m_nCurrentTool=nID-ID_BUTTON_PEN;
+\par \}
+\par 
+\par void CGDIDoc::OnUpdateDrawTool(CCmdUI *pCmdUI)
+\par \{
+\par     pCmdUI->SetCheck((UINT)m_nCurrentTool+ID_BUTTON_PEN == pCmdUI->m_nID);\tab 
+\par \}
+\par 
+\par With this implementation, at any time, only one tool can be selected. The currently selected tool is indicated by variable CGDIDoc::m_nCurrentTool.
+\par 
+\par New Functions
+\par 
+\par The implementation of drawing is complex. We must handle different mouse events, do the coordinates conversion, update the bitmap image according to mouse activity and current drawing tool, and update the client window. It is important to break this whole procedure down into small modules, so the entire drawing task can be implemented by calling just several module functions.
+\par 
+\par It is obvious that both dot drawing and line drawing should be implemented by handling three mouse related messages: WM_LBUTTONDOWN, WM_RBUTTONDOWN and WM_MOUSEMOVE. There is one thing that must be done before doing any dot or line drawing: converting the current mouse position from the coordinate system of the client window to the coordinate system of the bitmap image (The current ratio and scrolled position must also be taken into consideration). For dot drawing, we need a function that can draw a dot on the bitmap using current foreground color. This function will also be called for line drawing because after the left button is pressed and the mouse has not been moved, we need to draw a dot first. Also, we need a function that can draw a straight line on the bitmap image using the current foreground color if the starting and ending points are known.
+\par 
+\par There are some concerns with the line drawing. When the user clicks the left button, we need to draw a dot at this position and set the beginning point of the line to it. As the user moves the mouse (with left button held down), we should draw temporary lines until the left button is released. Before the button is released, every time the mouse is moved, we need to erase the previous line and draw a new one. Although this can be easily implemented by using XOR drawing mode, it is not the only solution. An alternate way is to back up the current bitmap image before drawing any temporary line. If we want to erase the temporary drawings, we can just restore the bitmap image backed up before.
+\par 
+\par In the sample application of this section, several new functions are added to implement dot and line drawings. These functions are listed as follows:
+\par 
+\par CPoint CGDIView::NormalizePtPosition(CPoint pt);
+\par 
+\par The parameter of this function is the mouse cursor position that is measured in the coordinate system of the client window. It will be normalized to the coordinate system of the bitmap image. If the current ratio is greater than 1, the position will be divided by the current ratio. If any of the scroll bars is scrolled, the scrolled position will also be deducted.
+\par 
+\par void CGDIView::DrawPoint(CPoint pt);
+\par 
+\par This function draws a dot on the bitmap with current foreground color, which is stored in the document. The input parameter must be a normalized point.
+\par 
+\par void CGDIView::DrawLine(CPoint ptStart, CPoint ptEnd);
+\par 
+\par This function draws a line on the bitmap from point ptStart to ptend using the current foreground color, which is stored in the document. The input parameters must be normalized points.
+\par 
+\par void CGDIView::BackupCurrentBmp();
+\par 
+\par For the purpose of backing up the current bitmap, a new CBitmap type variable m_bmpBackup is declared in class CGDIView. When function CGDIView::BackupCurrentBmp() is called, we create a new bitmap and attaches it to m_bmpBackup then initialize the bitmap with the current bitmap image (CGDIView:: m_bmpDraw).
+\par 
+\par void CGDIView::ResumeBackupBmp();
+\par 
+\par This function does the opposite of the previous function, it copies the bitmap stored in CGDIView:: m_bmpBackup to CGDIView::m_bmpDraw.
+\par 
+\par With the above new functions, we are able to implement dot and line drawing. To implement interactive line drawing, another new variable m_ptMouseDown is declared in class CGDIView. This variable is used to record the position of mouse cursor when its left button is being pressed down. As the mouse moves or the left button is released, we can use it along with the new mouse position to draw a straight line. The following is the implementation of  WM_LBUTTONDOWN message handler:
+\par 
+\par (Code omitted)
+\par 
+\par After left button of the mouse is pressed down, we must set window capture in order to receive mouse messages even when the cursor is not within the client window. The window capture is released when the left button is released. If the current drawing object is dot, we need to call function CGDIView:: DrawPoint(...) to draw the dot at the current mouse position; if the current drawing object is line, we need to first backup the current bitmap then draw a dot at the current mouse position.
+\par 
+\par For WM_MOUSEMOVE message, first we must check if the left button is being held down. If so, we can further proceed to implement drawing. For dot drawing, we need to draw a new dot at the current mouse position by calling function CGDIView::DrawPoint(...); for line drawing, we need to first erase the old drawings by copying the backup bitmap to CGDIView::m_bmpDraw, then draw a new line:
+\par 
+\par (Code omitted)
+\par 
+\par The implementation of WM_LBUTTONUP message handler is almost the same with that of WM_MOUSEMOVE message handler: for dot drawing, a new dot is drawn at the current mouse position by calling function CGDIView::DrawPoint(...). For line drawing, the backup bitmap is first resumed to CGDIView::m_bmpdraw. Then a new line is drawn between points represented by CGDIView::m_ptMouseDown and current mouse position.
+\par 
+\par Mouse Cursor
+\par 
+\par It is desirable to change the shape of mouse cursor when it is within the bitmap image. We can either choose a standard mouse cursor or design our own cursor. A standard cursor can be loaded by calling function CWinApp::LoadStandardCursor(...). There are many standard cursors that can be used in the application, which include beam cursor (IDC_IBEAM), cross cursor (IDC_CROSS), etc. The mouse cursor can be changed by handling WM_SETCURSOR message. In this message handler, we can call ::SetCursor(...) to change the current cursor shape if we do not want the default arrow cursor.
+\par 
+\par We need another function to judge if the current mouse cursor is within the bitmap image contained in the client window. In the sample, function CGDIView::MouseWithinBitmap() is added for this purpose. The current image ratio and scrolled positions are all taken into consideration when doing the calculation. The following is the implementation of this function:
+\par 
+\par (Code omitted)
+\par 
+\par First we retrieve the current image ratio, horizontal and vertical scrolled positions of the client window. Then function ::GetCursorPos(...) is called to obtain the current position of mouse cursor. Because the returned value of this function (a POINT type value) is measured in the coordinate system of the desktop window (whole screen), we need to convert it to the coordinate system of the client window before judging if the cursor is within the bitmap image. Next, the image rectangle is stored in variable rectBmp, and function CRect::PtInRect(...) is called to make the judgment.
+\par 
+\par This function is called in WM_SETCURSOR message handler. The following is the implementation of the corresponding function:
+\par 
+\par (Code omitted)
+\par 
+\par If the cursor is within the bitmap image and is over neither the horizontal scroll bar nor the vertical scroll bar, we set the cursor to IDC_CROSS (a standard cursor). Otherwise by calling the default implementation of function OnSetCursor(...), the cursor will be set to the default arrow cursor.
+\par 
+\par 11.4\tab Tracker
+\par 
+\par Sample 11.4\\GDI is based on sample 11.3\\GDI.
+\par 
+\par Tracker can be implemented to let the user select a rectangular area very easily, and is widely used in applications supporting OLE to provide a graphical interface that lets the user interact with OLE client items. When implementing a tracker, we can select different styles. This can let the tracker be displayed with a variety of visual effects such as hatched borders, resize handles, etc.
+\par 
+\par Tracker can also be applied to any normal application. In a graphic editor, tracker can be used to select a rectangular region, move and drop it anywhere within the image. It can also be used to indicate the selected rectangular area when we implement cut, copy and paste commands (Figure 11-4).
+\par 
+\par Implementing Tracker
+\par 
+\par Tracker is supported by MFC class CRectTracker. To enable a rectangular tracker, we need to first use this class to declare a variable, then set its style. When the window owns the tracker is being painted, we need to call a member function of CRectTracker to draw the tracker.
+\par 
+\par We can set the tracker to different styles. The style of tracker is specified by variable CRectTracker:: m_nStyle. The following values are defined in class CRectTracker and can be used to specify the border styles of a tracker: CRectTracker::solidLine, CRectTracker::dottedLine, CRectTracker:: hatchedBorder. The following values can also be assigned to CRectTracker::m_nStyle to specify how the tracker can be resized: CRectTracker::resizeInside, CRectTracker::resizeOutside. Finally, CRectTracker::hatchInside can be assigned to CRectTracker::m_nStyle to specify if the hatched border should be drawn outside or inside the rectangle. All the above styles can be combined together using bit-wise OR operation.
+\par 
+\par Moving and Resizing Tracker
+\par 
+\par The tracker's position and dimension are stored in variable CRectTracker::m_rect. We can modify it at any time to move the tracker or resize it. If this variable specifies a valid rectangle, we can draw the tracker by calling function CRectTracker::Draw(...) and display it in a window.
+\par 
+\par To let user resize the tracker through clicking and dragging tracker's resizing buttons (See Figure 11-4), we need to handle WM_LBUTTONDOWN message and call function CRectTracker::HitTest(...) to find out if the current mouse cursor hits any portion of the tracker. The following is the format of this function:
+\par 
+\par int CRectTracker::HitTest(CPoint point);
+\par 
+\par The following is a list of values that can be returned from this function along their meanings:
+\par 
+\par (Table omitted)
+\par 
+\par If mouse cursor hits any of the resize buttons, we can call CRectTracker::Track() to track the mouse moving activities from now on until the left button is released. With this function, there is no need for us to handle other two messages WM_MOUSEMOVE and WM_LBUTTONUP, because once it is called, the function will not return until the left button is released. Of course, we can also write code to implement right button tracking. When we call function CRectTrack::Track(), the tracker's owner window should not set window capture, otherwise the mouse message will not be routed to the tracker.
+\par 
+\par Customizing Cursor Shape
+\par 
+\par To let the mouse cursor shape change automatically when it is over tracker's region, we need to call function CRectTracker::SetCursor(...) inside window's CWnd::OnSetCursor(...) function (in the window that contains the tracker).  If the function returns TRUE, it means that the cursor shape has already been customized (The cursor is over tracker's region). In this case we can exit and return a TRUE value. Otherwise we must call function CWnd::OnSetCursor(...) to let the cursor's shape be set to the default one.
+\par 
+\par New Tool
+\par 
+\par In the new sample application, a new tool "Rectangular Selection" is implemented in tool bar IDR_DRAWTOOLBAR (Figure 11-5). If it is selected as the current tool, the user can drag the mouse to create a tracker over the image, resize or move it to change the selection. The cursor will be automatically changed if the mouse cursor is within the tracker's region.
+\par 
+\par First, a new command ID_BUTTON_RECSEL is added to IDR_DRAWTOOL tool bar. Each time a new tool command is added to the tool bar, we must make sure that the IDs of all the commands contained in the tool bar are consecutive. Otherwise the macros ON_COMMAND_RANGE and ON_UPDATE_COMMAND_UI_RANGE will not work correctly. In the sample, two macros TOOL_HEAD_ID and TOOL_TAIL_ID are defined, and they represent the first and last IDs of the commands contained in the drawing tool bar. We use the above two macros to do the message mapping. By doing this, if we add a new tool next time, all we need to do is redefining the macros.
+\par 
+\par In class CGDIView, a CRectTracker type variable m_trackerSel is declared to implement the tracker. The tracker's styles are initialized in the constructor as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The tracker's border is formed by dotted line and the resize buttons are located outside the rectangle.
+\par 
+\par The tracker is drawn in function CGDIView::OnDraw(...) if the tracker rectangle is not empty:
+\par 
+\par (Code omitted)
+\par 
+\par As we will see, the tracker's size and position will be recorded in the zoomed bitmap image's coordinate system. This is for the convenience of coordinate conversion. Since the DC will draw the tracker in client window's coordinate system, we must add some offset to the tracker rectangle before it is drawn. Also we need to resume rectangle's original state after the drawing is completed.
+\par 
+\par Function CGDIView::OnSetCursor(...) is modified as follows so that the cursor will be automatically changed if it is over the tracker region:
+\par 
+\par (Code omitted)
+\par 
+\par Here we first check if the cursor can be set automatically. If CRectTracker::SetCursor(...) returns TRUE, we can exit and return a TRUE value (If this function returns TRUE, it means currently the mouse cursor is within the tracker region, and the cursor is customized by the tracker). If not, we check if the mouse is over the bitmap image, if so, the cursor's shape is set to IDC_CROSS and the function exits (We need to return TRUE every time the cursor has been customized). If all these fail, we need to call function CWnd::SetCursor(...) to set the cursor to the default shape.
+\par 
+\par If Mouse Clicking Doesn't Hit the Tracker
+\par 
+\par We must implement a way of letting the user create tracker interactively. Like line drawing implementations, we need to handle WM_LBUTTONDOWN, WM_RBUTTONDOWN and WM_MOUSEMOVE messages in order to let the user create tracker by mouse clicking. This procedure is similar to rectangle drawing: when left button is pressed down, we need to record the current mouse position as the starting point; as the mouse is dragged around, we draw a series of temporary rectangles; when the left button is released, we use the current mouse position as the ending point and use it along with the starting point to draw the tracker.
+\par 
+\par For the tracker, there are two possibilities when the mouse button is pressed down. If currently there is an existing tracker and the mouse hits the tracker, we should let the tracker be moved or resized instead of creating a new tracker. If there is no tracker currently implemented or the mouse did not hit the existing tracker, we should start creating a new tracker.
+\par 
+\par This situation can be judged by calling function CTracker::HitTest(...), whose input parameter should be set to the current position of mouse cursor that is measured in the client window's coordinate system. If the function returns CRectTracker::hitNothing, either there is no existing tracker or the mouse didn't hit any portion of the tracker. In the sample, this situation is handled as follows:
+\par 
+\par (Code omitted)
+\par 
+\par We record the starting position in the upper-left point of the tracker rectangle. As the mouse moves, the rectangle's bottom-right point is updated with the current mouse position, and temporary rectangles are drawn and erased before the tracker is finally fixed.
+\par 
+\par Temporary rectangles are drawn by calling function CDC::DrawFocusRect(...). Because this function uses XOR drawing mode, it is easy to erase the previous rectangle by simply calling the function twice.
+\par 
+\par When the left button is released, we erase the previous temporary rectangle if necessary, update the tracker rectangle, and call function CWnd::InValidate() to let the tracker be updated (along with the client window).
+\par 
+\par Because we must keep track of mouse cursor position after its left button is pressed down, the window capture must be set when a new tracker is being created. Since we share the code implemented for dot and line drawing here, there is no need to add extra code to set window capture for the client window here.
+\par 
+\par If Mouse Clicking Hits the Tracker
+\par 
+\par If mouse clicking hits the tracker (any of the resize buttons, or the middle of the tracker), we must implement tracking to let the user resize or move the existing tracker. This can be easily implemented by calling function CRectTracker::Track():
+\par 
+\par (Code omitted)
+\par 
+\par Because the window capture is set when a new tracker is being created (also, when a dot or a line is being drawn), we must first release the capture before trackering mouse movement (Otherwise the tracker will not be able to receive messages related to mouse moving events). There is no need for us to handle WM_MOUSEMOVE and WM_LBUTTONUP messages here because after function CRectTracker::Track() is called, mouse moving events will all be routed to the tracker. After this function exits, variable CRectTracker::m_rect will be automatically updated to represent the new size and position of the tracker. So after calling this function, we can update the client window directly to redraw the tracker.
+\par 
+\par 11.5\tab Moving the Selected Image
+\par 
+\par Sample 11.5\\GDI is based on sample 11.4\\GDI. It is implemented with a new feature: when a portion of the bitmap is selected by the tracker, the user can move the selected image by dragging the tracker to another place; if the user resizes the tracker, the selected image will also be stretched.
+\par 
+\par Normalizing Tracker
+\par 
+\par Since the tracker rectangle is recorded in the zoomed image's coordinate system, we must first convert it back to the original bitmap's own coordinate system (the image with 1:1 ratio) in order to find out which part of the image is being selected. In the sample, function CGDIView::NormalizeTrackerRect(...) is added for this purpose. In this function, the current image ratio is retrieved from the document, and the four points of the tracker rectangle is divided by this ratio. The tracker can be created in two different ways. For example, the user may click and hold the left mouse button and drag it right-and-downward; also, the mouse may be dragged up-and-leftward. For the first situation, a normal rectangle will be formed, in which case member CRectTracker.m_rect.left is always less than member CRectTracker.m_rect.right, and CRectTracker.m_rect.top is less than CRectTracker::m_rect.bottom. However, in the second situation, CRectTracker.m_rect.left and CRectTracker.m_rect.top are all grater than their corresponding variables. So before using variable CRectTracker::m_rect, we must normalize the rectangle.
+\par 
+\par We can call function CRect::NormalizeRect() to normalize a rectangle implemented by class CRect. In function CGDIView::NormailizeTrackerRect(...), before the four points of the tracker rectangle are divided by the ratio, this function is called to first normalize the rectangle.
+\par 
+\par Moving and Resizing the Selected Image
+\par 
+\par The easiest way to move or resize the selected image is to back up the image that is under the current tracker, as the user resizes the tracker, copy the backup image back and let it fit within the new tracker. When doing this copy, we can call function CDC::StretchBlt(...) to resize the copied image.
+\par 
+\par The procedure of backing up the selected image is similar to backing up the whole image as we did in function CGDIView::BackupCurrentBmp(). The size of the backup image must be the same with the size of tracker rectangle. One thing we need to pay attention to is that since we allow the user to resize and move the tracker freely, it is possible that after moving or resizing, some part of the tracker is outside the image. In this case, we must recalculate the backup area so that only the intersection of the tracker and the image will be copied. The non-intersection part should be left blank. For this purpose, before copying the selected image, we need to fill all the backup bitmap with the current background color.
+\par 
+\par Variable CGDIView::m_bmpSelBackup is declared in the application to backup the selected area.
+\par 
+\par Besides backing up the selected area, we need another function to copy the backup image back to the original bitmap. In the sample, function CGDIView::StretchCopySelection() is added for this purpose. Within it, function CDC::StretchBlt(...) is called to copy the selection back to the bitmap, the position and dimension of the current tracker rectangle are used to specify the target image. Whenever we want to move or resize the selected image, we can first move or resize the tracker rectangle then call this function.
+\par 
+\par When Left Button is Up
+\par 
+\par We need to back up the selected image after the tracker is created. This corresponds to the left button release event (Also, the current drawing tool must be "Rectangular Selection"). Besides the selected region, we also need to backup the whole bitmap. This is because when the user moves the tracker, we must copy the backup image back to the original bitmap (before the selection is moved) instead of the current one. Otherwise as the selection is moved around, it will leave a trail on the image. So within WM_LBUTTONUP message handler, both CGDIView::BackupCurrentBmp() and CGDIView::BackupSelection() are called to implement the backup:
+\par 
+\par (Code omitted)
+\par 
+\par The selection should be copied back within WM_LBUTTONDOWN message handler after function CRectTracker::Track() is called. By using this function, the tracker rectangle can be automatically updated when the mouse button is released. In the sample, functions CGDIView::ResumeBackupBmp() and CGDIView::StretchCopySelection() are called to copy the selected image back to the original bitmap:
+\par 
+\par (Code omitted)
+\par 
+\par With the above implementations, we are able to select the image using "Rectangular Selection" tool, then move or resize it.
+\par 
+\par 11.6\tab Region
+\par 
+\par Before implementing new drawing tools, we need to introduce some new concepts. In this and following sections, we will discuss region and path, both of which are GDI objects. The implementation of simple "Paint" will be resumed in section 11.8.
+\par 
+\par Basics
+\par 
+\par Region is another very useful GDI object. We can use region to confine DC drawings within a specified area no matter where the DC actually outputs. After a specified region is specified, all DC's outputs (dot and line drawing, brush fill, bitmap copy) will be confined within the region area. By using the region, it is very easy for us to draw objects with irregular shapes.
+\par 
+\par A region can have any type of shapes. It can be rectangular, elliptical, polygonal or any irregular closed shape. Moreover, a region can be created by combining two existing regions, the result can be the union, the intersection or difference of the two regions. With these operations, we can create regions with a wide variety of shapes.
+\par 
+\par Region Creation
+\par 
+\par In MFC, region is implemented by class CRgn. Like other GID objects, this class is derived from CGDIObject, which means a valid region must be associated with a valid handle. Standard regions can be created by calling one of the following functions:
+\par 
+\par BOOL CRgn::CreateRectRgn(int x1, int y1, int x2, int y2);
+\par BOOL CRgn::CreateRectRgnIndirect(LPCRECT lpRect);
+\par BOOL CRgn::CreateEllipticRgn(int x1, int y1, int x2, int y2);
+\par BOOL CRgn::CreateEllipticRgnIndirect(LPCRECT lpRect);
+\par BOOL CRgn::CreatePolygonRgn(LPPOINT lpPoints, int nCount, int nMode);
+\par BOOL CRgn::CreatePolyPolygonRgn
+\par (
+\par     LPPOINT lpPoints, LPINT lpPolyCounts, int nCount, int nPolyFillMode
+\par );
+\par BOOL CRgn::CreateRoundRectRgn(int x1, int y1, int x2, int y2, int x3, int y3);
+\par 
+\par As we can see, a region may have different shapes: rectangular, elliptical, polygonal. We can even create a region that is composed of a series of polygons by calling function CRgn:: CreatePolyPolygonRgn(...). As we will see later, a region can also have an irregular shape.
+\par 
+\par Existing regions can be combined together to form a new region. The combining operation mode can be logical AND, OR, XOR, the union or the difference of the two regions. The function that can be used to combine two existing regions is:
+\par 
+\par int CRgn::CombineRgn(CRgn* pRgn1, CRgn* pRgn2, int nCombineMode);
+\par 
+\par Please note that CRgn type pointers passed to this function must point to region objects that have been initialized by one of the functions mentioned above, or by other indirect region creating functions. Parameter nCombineMode can be set to any of RGN_AND, RGN_COPY, RGN_DIFF, RGN_OR and RGN_XOR, which specify how to combine the two regions.
+\par 
+\par Using Region
+\par 
+\par Like any other GDI object, before using the region, we must first select it into the DC. The difference between using region and other GDI objects is that we need to call function CDC::SelectClipRgn(...) to select the region instead of calling function CDC::SelectObject(...).
+\par 
+\par Function CDC::SelectClipRgn(...) has two versions:
+\par 
+\par virtual int CRgn::SelectClipRgn(CRgn* pRgn);
+\par int CRgn::SelectClipRgn(CRgn* pRgn, int nMode);
+\par 
+\par For the second version of this function, parameter nMode specifies how to combine the new region with the region being currently selected by the DC. Again, it can be set to any of the following flags: RGN_AND, RGN_COPY, RGN_DIFF, RGN_OR and RGN_XOR.
+\par 
+\par After using the region, we must select it out of the DC before deleting it. To select a region out of the DC, we can call function CDC::SelectClipRgn(...) and pass a NULL pointer to it. For example, the following statement selects the region out of DC (pointed by pDC):
+\par 
+\par pDC->SelectClipRgn(NULL);
+\par 
+\par A region can be deleted by calling function CGDIObject::DeleteObject(). Also, the destructor of CRgn will call this function automatically, so usually there is no need to delete the region unless we want to reinitialize it.
+\par 
+\par Sample
+\par 
+\par Sample 11.6\\GDI is a standard SDI application generated by Application Wizard. In the sample, two variables are declared in class CGDIView: CGDIView::m_rgnRect and CGDIView::m_rgnEllipse. They will be used to create two regions, one is rectangular and one is elliptical. The two regions will be combined together to create a new region that is the difference of the two. We will select this region into the client window's DC, and output text to the whole window. As we will see, only the area that is within the region will have the text output.
+\par 
+\par The regions are created in the constructor of class CGDIView:
+\par 
+\par (Code omitted)
+\par 
+\par The final region will look like the shaded area shown in Figure 11-6.
+\par 
+\par In function CGDIView::OnDraw(...), string "Clip Region" is output repeatedly until all the client window is covered by this text:
+\par 
+\par (Code omitted)
+\par 
+\par The output result is shown in Figure 11-7.
+\par 
+\par 11.7\tab Path
+\par 
+\par Basics
+\par 
+\par Path is another type of powerful GDI object that can be used together with device context. A path can be seen as a closed figure that is formed by drawing trails. For example, Figure 11-8 shows a path that is made up of alternative lines and curves.
+\par 
+\par A path can record almost all types of outputs to the device context. Like other GDI objects, it must be first selected into a DC before being used. However, there is no class such as CPath that lets us declare a path type variable. Therefore, we can not select a path into DC by calling function CDC:: SelectObject(...). To use path, we must call function CDC::BeginPath() to start path recording and call CDC::EndPath() to end it.
+\par 
+\par Between the above two functions, we can call any of the drawing functions such as CDC::LineTo(...), CDC::Rectangle(...), and CDC::TextOut(...). The trace of the output will be recorded in the path and can be rendered later. When rendering the recorded path, we can either draw only the outline of the path using the selected pen or fill the interior with the selected brush, or we can do both.
+\par 
+\par The following functions can be used to implement these path drawing:
+\par 
+\par BOOL CDC::StrokePath();
+\par BOOL CDC::FillPath();
+\par BOOL CDC::StrokeAndFillPath();
+\par 
+\par Function CDC::StrokePath() will render a specific path using the currently selected pen. This will draw outline of the closed figure. Function CDC::FillPath() will close any open figures in the path and fill its interior using the currently selected brush. After the interior is filled, the path will be discarded from the device context. Function CDC::StrokeAndFillPath() implements both: it will stroke the outline of the path and fill the interior.
+\par 
+\par Please note that the last function can not be replaced by calling the first two functions consecutively. After function CDC::StrokePath() is called, the path will be discarded, so further calling CDC::FillPath() will not have any effect.
+\par 
+\par Path & Region
+\par 
+\par Region can also be created from path. One straightforward method is to call function CDC:: SelectClipPath(...) to create a region from the current path then select it into the DC. If we create region this way, there is no need for us to use CRgn type variable. Also, we can explicitly create a region from the path by calling function CRgn::CreateFromPath(...). The parameter we need to pass to this function is a pointer to the DC that contains the path. This is a very powerful method: by creating an irregular-shaped path, we can use it to create a region that can be used to confine the output of DC.
+\par 
+\par Sample 11.7-1\\GDI
+\par 
+\par Sample 11.7-1\\GDI demonstrates path implementation. It is a standard SDI application generated by Application Wizard. No new variable is declared. In function CGDIView::OnDraw(...), we begin path recording and output four characters 'P', 'a', 't', 'h' to the client window. Then we stroke the outlines of the four characters and fill the path with a hatched brush.
+\par 
+\par In the sample, the font used to output the text is "Times New Roman", and its height is 400. The brush used to fill the interior of the path is a hatched brush whose pattern is cross hatch at 45 degrees. Between function CDC::BeginPath() and CDC::EndPath(), there is only one statement that calls function CDC::TextOut(...) to output the four characters. Please note that while path recording is undergoing, no output will be generated to the target device. So this will not output anything to the client window. Finally function CDC::StrokeAndFillPath() is called to stroke the text outline and fill the path's interior using hatched brush. The following is the implementation of function CGDIView::OnDraw(...):
+\par 
+\par (Code omitted)
+\par 
+\par Figure 11-9 shows the output result.
+\par 
+\par (Figure 11-9 omitted)
+\par 
+\par Obtaining Path
+\par 
+\par A path can be retrieved by calling function CDC::GetPath(...). This function has three parameters, first two of which are pointers that will be used to receive path data, and the final parameter specifies how many points are included in the path:
+\par 
+\par int CDC::GetPath(LPPOINT lpPoints, LPBYTE lpTypes, int nCount);
+\par 
+\par A path is formed by a series of points and different type of curves. The points are stored in the buffers pointed by lpPoints, and curve types are stored in the buffers pointed by lpTypes, which can be any of the following: PT_MOVETO, PT_LINETO, PT_BEZIERTO or PT_CLOSEFIGURE.
+\par 
+\par To receive path information, we must first allocate enough buffers for storing point and type information. Since the buffer size depends on the number of points included in the path, when calling function CDC::GetPath(...), we can first pass NULL pointer to lpPoints and lpTypes parameters and 0 to nCount. This will cause the function to return the number of points included in the path. After enough buffers are allocated for storing both point and type information, we can call CDC::GetPath(...) again to get the path.
+\par 
+\par Since path stores drawing trace in the form of vectors, we can change the shape of a path by moving the control points without losing quality of the image. We can change the positions of the points using certain algorithm. For example, if we multiply the vertical coordinate of all points with a constant factor, the result will be an enlarged image scaled from the original path.
+\par 
+\par Sample 11.7-2\\GDI
+\par 
+\par Sample 11.7-2\\GDI demonstrates how to obtain and modify a path. It is based on sample 11.7-1\\GDI. In the sample, after text "Path" is output to the device context (which is recorded into path), function CDC::GetPath(...) is called to retrieve the points and curve types into the allocated buffers. Then, we change the y coordinates of all points by linearly moving them upward. The following code fragment of function CGDIView::OnDraw(...) shows how the buffers are allocated and path is obtained:
+\par 
+\par (Code omitted)
+\par 
+\par The total number of points is stored in variable nNumPts. Because we need to use a POINT type array to receive the points, the buffer size for storing points is calculated as follows:
+\par 
+\par (number of points) * (size of structure POINT)
+\par 
+\par Since a curve type uses only one byte, the buffer size for storing curve types is nNumPts.
+\par 
+\par The following portion of function CGDIView::OnDraw(...) shows how the points are moved:
+\par 
+\par (Code omitted)
+\par 
+\par The following formulae is used to move a point upward:
+\par 
+\par new vertical coordinate =
+\par  (original vertical coordinate) ( 
+\par 
+\par Then a new path is created from new points:
+\par 
+\par (Code omitted)
+\par 
+\par For a different type of curves, we call the corresponding CDC member function. Please note that since Bezier curve uses three points, after drawing the Bezier curve, we need to advance the loop index by 2.
+\par 
+\par After this, function CDC::StrokeAndFillPath(...) is called to stroke the path's outline and fill the interior. Figure 11-10 shows the effect.
+\par 
+\par 11.8\tab Freeform Selection
+\par 
+\par Now its time to go back to our simple graphic editor. If we are familiar with the actual "Paint" application, we know that it allows the user to select an irregular part of the image, move it, and resize it. This freeform selection tool can be implemented by using path and region together.
+\par 
+\par Implementation
+\par 
+\par The freeform selection tool has a lot in common with the rectangular selection tool: both need to respond to mouse events for specifying a selected region; both need to implement a tracker to allow the user to move and resize the selected image; both need to back up the selected portion of the bitmap. The only difference is that for the freeform selection, the selected region may not be rectangular.
+\par 
+\par However, we can still make use of functions CGDIView::BackupSelection() and CGDIView:: StretchCopySelection(). Since we can store the irregular selection in a CRgn type variable, it doesn't matter if the backup area is rectangular or not. If we select the region into the DC before copying the rectangular backup image, only the pixels within the region will be copied.
+\par 
+\par The region can be created from path. As the user presses the left button, if the current drawing tool is freeform selection, we will start path recording. After the left button is released, the path recording will be stopped and the irregular region will be created from the path. To allow the user to resize or move this region, we must enable tracker and backup the selected area at this point.
+\par 
+\par Although the selection can be an irregular area, the tracker must be rectangular. We can set the tracker rectangle to the bounding rectangle of the region, which can be obtained by calling function CRgn:: GetRgnBox(...). If the user changes the tracker, we must copy this region to a new position and resize it to let the region fit within the rectangle which is indicated by the new tracker.
+\par 
+\par Scaling Region
+\par 
+\par There is a problem here: the recorded region was created when the user first made the selection. After the tracker is moved or resized, we must offset and scale the original region to let it fit within the new tracker rectangle before selecting it into the target DC. Please note that in order to confine DC drawings within a region, we must use the target DC to select the region. Thus the problem is how to offset and scale the region to let it fit within another rectangle without losing its original shape.
+\par 
+\par Unlike path, region is not recorded using vectors. Instead, it is made up of a number of rectangles. We need to resize every rectangle in order to resize the whole region (Figure 11-11).
+\par 
+\par Just like we can retrieve path data by calling function CDC::GetPath(...), for region, we can also retrieve its data by calling function CRgn::GetRegionData(...). This function has two parameters:
+\par 
+\par int CRgn::GetRegionData(LPRGNDATA lpRgnData, int nCount);
+\par 
+\par Here lpRgnData is a pointer that will be used to receive the region data, and nCount specifies the size of buffers that are pointed by lpRgnData. Of course it is not possible to know the size of region data before we know its detail. To find out the necessary buffer size, we can first pass NULL to lpRgnData parameter and 0 to nCount parameter, which will cause the function to return the size needed for storing all the region data. Using this size, we can allocate enough buffers and call the function again to actually retrieve the region data.
+\par Region data is stored in a RGNDATA type structure:
+\par 
+\par typedef struct _RGNDATA \{
+\par     RGNDATAHEADER rdh;
+\par     char          Buffer[1];
+\par \} RGNDATA;
+\par 
+\par It contains two members, rdh is of RGNDATAHEADER type, which is the region data header. Member Buffer is the first element of a char type array that contains a series of rectangles. The information of the region is stored in its header structure:
+\par 
+\par typedef struct _RGNDATAHEADER \{
+\par     DWORD dwSize; 
+\par     DWORD iType; 
+\par     DWORD nCount; 
+\par     DWORD nRgnSize; 
+\par     RECT  rcBound; 
+\par \} RGNDATAHEADER;
+\par 
+\par Member dwSize specifies the size of this header, and the iType specifies the region type, whose value must be RDH_RECTANGLES, which means that the region is made up of a number of rectangles. Member nCount specifies the number of rectangles contained in this region, and rcBound specifies the bounding rectangle. In order to scale the region, we need to implement a loop, and scale the corresponding rectangle whose data is contained in the data buffer within each loop.
+\par 
+\par If we simply want to offset the region, there is a member function of CRgn that can be used to offset the whole region just like we can offset a rectangle:
+\par 
+\par int CDC::OffsetClipRgn(int x, int y);
+\par int CDC::OffsetClipRgn(SIZE size);
+\par 
+\par The region must be selected into a DC in order to call the above member functions.
+\par 
+\par New Tool
+\par 
+\par Sample 11.8\\GDI is based on sample 11.6\\GDI that implements freeform selection. In the sample, first a new command is added to toolbar IDR_DRAWTOOLBAR, whose ID is ID_BUTTON_FREESEL (Figure 11-12). Macro TOOL_HEAD_ID is redefined (it represents ID_BUTTON_FREESEL now) to allow this new tool be automatically considered for message mapping. In order to use old message handlers, the ID of the freeform selection tool is set to have the following relationship with other IDs:
+\par 
+\par ID_BUTTON_FREESEL = ID_BUTTON_RECTSEL+1
+\par 
+\par In class CGDIView, like rectangular selection command, we need to handle WM_LBUTTONDOWN, WM_LBUTTONUP and WM_MOUSEMOVE messages to implement freeform selection tool. In the sample, a new case is added to the switch statement within each message handler.
+\par 
+\par Drawing rectangular outline and freeform outline is different. For rectangular selection, whenever mouse is moving, we erase the old rectangular outline and draw a new one using old mouse position (recorded when mouse left button was first pressed down) and current mouse position. For freeform selection, we do not need to erase the old outline: each time the mouse is moving, we just draw a line between the previous mouse position (recorded when WM_MOUSEMOVE was received last time) and the current mouse position. For this purpose, a new variable CGDIView::m_ptPrevious is declared, which will be used to record the previous mouse position. The current mouse position will be passed to the mouse message handler as a parameter. Since the outline is drawn in the client window, it needs to have a same ratio with the current displayed bitmap. However, to make it easy for copying and moving the selection, the path must be recorded with a ratio of 1:1 no matter what the current image ratio is. So for each mouse move, we must do the following two things: draw a line between the old mouse position and the current mouse position in the client window, then draw the same thing on the memory bitmap (CGDIView:: m_bmpDraw) for path recording.
+\par 
+\par To simplify outline drawing, a CPen type variable is declared in class CGDIView and is initialized in the constructor as follows:
+\par 
+\par ......
+\par m_penDot.CreatePen(PS_DOT, 1, RGB(0, 0, 0));
+\par ......
+\par 
+\par We will use dotted line to draw the outline of irregular selection while the mouse is moving.
+\par 
+\par To record the selected region, a CRgn type variable is declared in class CGDIView. The following portion shows how freeform selection is handled after WM_LBUTTONDOWN message is received:
+\par 
+\par (Code omitted)
+\par 
+\par For WM_MOUSEMOVE message, we need to draw the freeform outline in the client window and do the same thing to CGDIView::m_bmpDraw. Note since the current image ratio may not be 1:1, we must use normalized points when recording path:
+\par 
+\par (Code omitted)
+\par 
+\par For WM_LBUTTONUP message, we need to draw the last segment of outline, close the figure, and end the path. Then we need to create the region from path, and set the dimension of the tracker to the dimension of the bounding box of the selected region. Again we must consider ratio conversion here: since the path is recorded with a ratio of 1:1, we must scale its bounding box to the current image ratio. In the sample, function CGDIView::UnnormalizeTrackerRect(...) is added to scale a normalized rectangle to the current image ratio. The rest thing needs to be done is the same with that of rectangular selection: we need to back up the whole image as well as the selected area:
+\par 
+\par (Code omitted)
+\par 
+\par Resizing and Moving the Freeform Selection
+\par 
+\par Resizing and moving the freeform selection is almost the same with that of rectangular selection, except that before copying the selected area, we must offset or resize the region and select it into the target DC. The following portion of function CGDIView::OnLButtonDown(...) shows how the region is resized and selected into the target memory DC, and how the selected image is copied back:
+\par 
+\par (Code omitted)
+\par 
+\par With the above implementation, the application will support freeform selection.
+\par 
+\par 11.9\tab Cut, Copy and Paste
+\par 
+\par Sample 11.9\\GDI is based on sample 11.8\\GDI.
+\par 
+\par Clipboard DIB Format
+\par 
+\par Like what we did for one line editor in chapter 9, here we will also implement copy, cut and paste commands for our simple graphic editor. As we know, if we want to put data to the clipboard, first we must open and empty it, then we must put data with standard format to the clipboard so that it can be shared by other applications. There are a lot of standard clipboard formats. Also, we can define and register our own clipboard formats.
+\par 
+\par The format for device independent bitmaps is CF_DIB, we need to prepare image data with standard DIB format. Because there exists many different DIB formats, it is desirable if the application supports format conversion for cut, copy and paste commands. For example, if the image being edited by our application is 16-color format, and the DIB contained in the clipboard is 256-color format, it is not convenient if we can not paste the data just because of the difference on data format.
+\par 
+\par Just for the demonstration purpose, in our sample we will implement DIB copy, cut and paste for only 256-color format. With the knowledge of previous chapters, it is easy to extend the application to let it support multiple image formats.
+\par 
+\par Preparing DIB Data
+\par 
+\par We already know how to prepare DIB data: allocate enough buffers, stuff them with bitmap information header, color table, and DIB bit values. Because the image being edited (the whole bitmap) and the image that will be put to the clipboard (bitmap portion under the tracker) has the same bitmap information header (except for members biWidth, biHeight and biImageSize) and color table, but different dimension and bit values, we can first copy the current bitmap information header and color table into the buffers, then we need to obtain the image bit values from the area that is selected by the tracker.
+\par 
+\par Both cut and copy commands can share one function to prepare DIB data and put it to the clipboard. For cut command, besides image copying, we also need to fill all the selected area with the current background color.
+\par 
+\par We need to calculate the values of the following members for the new bitmap information header: biWidth, biHeight and biImageSize. Here the dimension of the new image (biWidth, biHeight) can be decided from the size of the tracker, and the image size can be calculated from member biBitCout along with the new image dimension. In the sample, function CGDIDoc::CreateCopyCutDIB()creates a DIB that is exactly the same with the image contained in the selected area. The following portion of this function shows how the buffers are allocated and how the bitmap information header is created:
+\par 
+\par (Code omitted)
+\par 
+\par The buffer size of new DIB data is calculated and stored in variable dwDIBSize. Here rect stores the normalized dimension of the current tracker. The current image's bitmap information header is stored in variable bi. After copying it into the new buffers, we change members biWidth, biHeight and biImageSize to new values.
+\par 
+\par Then, we need to copy the current color table to the newly allocated buffers. Although we could retrieve the palette from the original DIB data, it may not be up-to-date because the user may change any entry of the palette by double clicking on the color bar. In the sample, function CPalette::GetPaletteEntries(...) is called to retrieve the current palette, and is used to create the new image:
+\par 
+\par (Code omitted)
+\par 
+\par Because there is no restriction on the dimension of the tracker, the user can actually select an area that some portion of it is outside the current image. In order to copy only the valid image, we need to adjust the rectangle before doing the copy. In the sample, only the intersection between the tracker and the image is copied, and the rest part of the target image will be filled with the current background color. In function CGDIDoc::CreateCopyCutDIB(...), the actual rectangle that will be used to obtain the image bit values from the source bitmap is stored in variable rectSrc, and sizeTgtOffset is used to specify the position where the image will be copied to the target image. This variable is necessary because the tracker's upper-left corner may resides outside the image. The whole image is copied using a loop. Within each loop, one raster line is copied to the target bitmap. In the function, two pointers are used to implement this copy: before copying the actual pixels, lpRowSrc is pointed to the source image buffers and lpRowTgt is pointed to the target image buffers. Their addresses are calculated by adding the bitmap information header size and the color table size to starting addresses of the DIB buffer. Since one raster line must use multiple of 4 bytes, we need to use WIDTHBYTES macro to calculate the actual bytes that are used by one raster line. The following shows how the selected rectangular area of the bitmap is copied to the target bitmap:
+\par 
+\par (Code omitted)
+\par 
+\par Cut & Copy
+\par 
+\par With function CGDIDoc::CreateCopyCutDIB(...), it is much easier to implement cut and copy commands. For copy command, we need to open the clipboard, empty it, set clipboard data, and close the clipboard. For the cut command, we also need to fill the selected area with the current background color. The following shows how the cut command is implemented:
+\par 
+\par (Code omitted)
+\par 
+\par Paste
+\par 
+\par Paste command is the reverse of cut or copy command: we need to obtain DIB data from the clipboard and copy it back to the bitmap image that is being edited. To let the user place pasted image everywhere, we need to implement tracker again to select the pasted image. With this implementation, the user can move or resize the image surrounded by the tracker just like using the rectangular selection tool.
+\par 
+\par So instead of copying DIB data from the clipboard directly to the bitmap being edited, we can first create and copy it to the backup bitmap image (CGDIView::m_bmpSelBackup), then change the current  drawing tool to rectangular selection (if it is not). By doing this, everything will go on as if we just selected a portion of image using the rectangular selection tool.
+\par 
+\par When the user executes Edit | Paste command, function CGDIDoc::OnEditPaste()will be called. The DIB data in the clipboard will be replicated and passed to function CGDIView::PasteDIB(...). Within the function, a new bitmap will be created using variable m_bmpSelBackup, and the DIB data contained in the clipboard will be copied to it. Please note we must replicate the clipboard data instead of using it directly because the data may be used by other applications later. The following is the implementation of function CGDIDoc::OnEditPaste():
+\par 
+\par (Code omitted)
+\par 
+\par The following portion of function CGDIView::PasteDIB(...) shows how to copy the clipboard DIB data to the backup DIB image by calling function ::SetDIBits(...) (the clipboard data is passed through parameter hData):
+\par 
+\par (Code omitted)
+\par 
+\par When calling function ::SetDIBits(...), we need to provide the handle of client window (to its first parameter). This is because the image will finally be put to the client window. Also we need to provide the handle of target bitmap image (to the second parameter). The third and fourth parameters of this function specify the first raster line and total number of raster lines in the target bitmap respectively. The fifth parameter is a pointer to the source DIB bit values (stored as an array of bytes). The sixth parameter is a pointer to bitmap header, and final parameter specifis how to use the palette. Since we want the DIB bits to indicate the color table contained in the DIB data, we should choose DIB_RGB_COLORS flag.
+\par 
+\par After copying the image, we need to enable the tracker, backup the current bitmap, copy the new bitmap to the area specified by tracker rectangle, and set the current drawing tool to rectangular selection. Then, we need to update the client window. The following portion of function CGDIView::PasteDIB(...) shows how these are implemented:
+\par 
+\par (Code omitted)
+\par 
+\par Because the rectangular selection button is not actually pressed by the user, we need to generate a WM_COMMAND message in the program and send it to the mainframe window. When doing this, WPARAM parameter of the message is set to the ID of rectangle selection command. This will have the same effect with clicking the rectangular selection button using the mouse.
+\par 
+\par With the above implementation, we can execute cut, copy and paste commands now. Please note that these commands work correctly only if the currently loaded image is 256-color format. For the other formats, error message may be generated.
+\par 
+\par 11.10\tab Palette Change & Flickering
+\par 
+\par Sample 11.10\\GDI is based on sample 11.9\\GDI.
+\par 
+\par Problems
+\par 
+\par Now we have a very basic graphic editor. Before the editor becomes perfect, we still have a lot of things to do: we need to add new tools for drawing curves, rectangles, ellipses, and so on; also we need to support more bitmap formats, for example: 16-color DIB format, 24-bit DIB format. We can even add image processing commands to adjust color balance, brightness and contrast to make it like a commercial graphic editor.
+\par 
+\par Besides these, there are still two problems remained to be solved. One is that after loading an image with this simple editor, if we switch to another graphic editor and load a colorful image then switch back, the color of the image contained in our editor may change. Another problem is the unpleasant flickering effect when we draw lines with the grid on.
+\par 
+\par Message WM_PALETTECHANGED
+\par 
+\par The first problem is caused by the change on the system palette. Because each application has its own logical palette, and the system has only one physical palette, obviously the system palette can not be occupied by only one application all the time. Since the operating system always tries to first satisfy the needs of the application that has the current focus, if we switch to another graphic editor and leave our editor working in the background, most entries of the system palette will be occupied by that application and very few entries are left for our application. In this case, the system palette represents the logical palette of another application rather than ours, so if we still keep the original logical-to-system palette mapping, most colors will not be implemented correctly. This situation remains unchanged until we realize the logical palette again, which will cause the logical palette to be mapped to the system palette.
+\par 
+\par Under Windows(, there is a message associated with system palette changing. When the system palette is mapped to certain logical palette and this causes its contents to change, a WM_PALETTECHANGED message will be sent out. All the applications that implement logical palette should handle this message and re-map the logical palette to the system palette whenever necessary to avoid color distortion.
+\par 
+\par In the sample, whenever we draw the image in CGDIView::OnDraw(...), function CDC:: RealizePalette() is always called to update the logical palette. So when receiving message WM_PALETTECHANGED, we can just update the client window to cause the palette to be mapped again.
+\par 
+\par Usually message WM_PALETTECHANGED is handled in the mainframe window. This is because an application may have several views attached to a single document. By handing this message in the mainframe window, it is relatively easy to update all views. The following is the message handler CMainFarme::OnPaletteChanged(...) that is implemented in the sample for handling the above message:
+\par 
+\par void CMainFrame::OnPaletteChanged(CWnd* pFocusWnd) 
+\par \{
+\par     CFrameWnd::OnPaletteChanged(pFocusWnd);
+\par     GetActiveDocument()->UpdateAllViews(NULL);
+\par \}
+\par 
+\par This function is quite simple. With the above implementation, the first problem is solved.
+\par 
+\par Flickering
+\par 
+\par The second problem will be present only if the grid is on. This is because the grid is drawn directly to the client window: whenever the image needs to be updated, we must first draw the bitmap, and this operation will erase the grid. The user will see a quick flickering effect when the grid appears again. If we keep on updating the client window, this flickering will become very frequent and the user will experience very unpleasant effect.
+\par 
+\par We already know that one way to get rid of flickering is to prepare everything in the memory and output the final result in one stroke. This is somehow similar to that of drawing bitmap image with transparency (See Chapter 10). To solve the flickering problem, we can prepare a memory bitmap whose size is the same with the zoomed source image, before updating the client window, we can output everything (image + grid) to the memory bitmap, then copy the image from the memory bitmap to the client window.
+\par 
+\par However, the problem is not that simple. Because the image size can be different from time to time, also the image could be displayed in various zoomed ratio, it is difficult to decide the dimension of the memory bitmap. To avoid creating and destroying memory bitmaps whenever the size (or ratio) of the output image changes, we can create a bitmap with fixed size for painting the client window. If the actual output needs a larger area, we can use a loop to update the whole client area bit by bit: within any loop we can copy a portion of the source image to the memory bitmap, add the grid, then output it to the client window. Because CDC::BitBlt(...) is a relatively fast function, and the bitmap drawing will be implemented directly by the hardware, calling this function several times will not cause obvious delay.
+\par 
+\par In the sample application, some new variables are added for this purpose. We know that in order to prepare a memory bitmap, we also need to prepare a memory DC that will be used to select the bitmap. In class CGDIView, a CBitmap type variable m_bmpBKStore and a CDC type variable m_dcBKMem are declared. Also, since the DC will select the bitmap and logical palette, two other pointers CGDIView::m_pBmpBKOld and CGDIView::m_pPalBKOld are also declared. The two pointers are initialized to NULL in the constructor, and the memory bitmap CGDIView::m_bmpBKStore is created in function CGDIView::OnInitialUpdate()when an image is first loaded. The reverse procedure is done in function CDC::OnDestroy(), where the memory bitmap and the palette are selected out of the memory DC.
+\par 
+\par In function CGDIView::OnDraw(...), the drawing procedure is modified. First the zoomed image is divided horizontally and vertically into small portions, all of which can fit into the memory bitmap. Then each portion of the image is copied to the memory bitmap, and the grid is added if necessary. Next the image contained in the memory bitmap is copied to the client window at the corresponding position. Here we need to calculate the origin and dimension of the output image within each loop. The following portion of function CGDIView::OnDraw(...) shows how the zoomed source image is divided into several portions and copied to the memory bitmap:
+\par 
+\par (Code omitted)
+\par 
+\par The values of macros BMP_BKSTORE_SIZE_X and BMP_BKSTORE_SIZE_Y must be multiple of the maximum ratio (In the sample, the maximum ratio is 16 and the values of BMP_BKSTORE_SIZE_X and BMP_BKSTORE_SIZE_Y are both 256). When doing the copy, we must provide the dimension and the origin for both source and target images, whose values are explained in the following table:
+\par 
+\par (Table omitted)
+\par 
+\par The actual dimension of the source image that we can display in one loop is stored in variable size (with 1:1 ratio). For the memory bitmap, for each loop the image is copied to its upper-left origin (0, 0); for the source bitmap, the origin depends on the values of i and j.
+\par 
+\par When we copy the image from the memory bitmap to the client window, we must calculate if the whole bitmap contains valid image. If not, we should draw only the valid part:
+\par 
+\par (Code omitted)
+\par 
+\par The grid drawing becomes very easy now. The brush origin can always be set to (0, 0) because both the horizontal and vertical dimensions of the memory bitmap are even. Before the image contained in the memory bitmap is copied to the client window, the grid is added if the current ratio is greater than 2 and the value of CGDIDoc::m_bGridOn is TRUE:
+\par 
+\par (Code omitted)
+\par 
+\par With the above implementation, there will be no more flickering when we draw lines with grid on.
+\par 
+\par Summary
+\par 
+\par 1)  Tracker can be implemented by using class CRectTracker. To add tracker to any window, first we need to use CRectTracker to declare a variable, then set its style. To display the tracker, we need to override the function derived from CWnd::OnDraw(...)and call CRectTracker::Draw(...) within it.
+\par 
+\par 2)  The style of a tracker can be specified by enabling or disabling flags for member CRectTracker::m_nStyle. The following flags are predefined values that can be used: CRectTracker::solidLine, CRectTracker::dottedLine, CRectTracker::hatchedBorder, CRectTracker::resizeInside, CRectTracker::resizeOutside, CRectTracker::hatchInside.
+\par 
+\par 3)  When the mouse left button is pressed, we can call function CRectTracker::HitTest(...) to check if the mouse cursor is over the tracker object. If so, we can call function CRectTracker::Track(...) to track the activities of the mouse. By doing this, there is no need to handle WM_MOUSEMOVE and WM_LBUTTONUP messages.
+\par 
+\par 4)  Region can be used to confine the DC output within a specified area. The shape of a region can be rectangular, elliptical, polygonal, or irregular. A new region can be created from existing regions by combining them using logical AND, OR, and other operations.
+\par 
+\par 5)  A region must be selected into DC before being used. The function that can be used to select a region is CDC::SelectClipRgn(...). To select the region out of the DC, we can simply call this function again and pass NULL to its parameter.
+\par 
+\par 6)  Path can be used to record outputs to the device context. To start path recording, we need to call function CDC::BeginPath(). To end path recording, we can call function CDC::EndPath(). All the drawings between the two function calls will be recorded in the path. The output will not appear on the DC when the recording is undergoing.
+\par 
+\par 7)  Function CDC::StrokePath() can be called to stroke the outline of a path. Function CDC::FillPath(...) can be used to fill the interior of the path. Function CDC::StrokeAndFillPath() can be used to implement both.
+\par 
+\par 8)  Region can be created from an existing path by calling function CRgn::CreateFromPath(...).
+\par 
+\par 9)  A region is made up of a series of rectangles. By resizing all the rectangles, we can resize the region.
+\par 
+\par 10)  A path is made up of a series of vectors. To resize a path, we can scale all the control points. We can also change the position of some control points to generate special effects.
+\par 
+\par 11)  The standard DIB format that can be used in the clipboard is CF_DIB. To put DIB data to the clipboard, we need to prepare DIB data with standard DIB format, open the clipboard, empty the clipboard, call function ::SetClipboardData(...) and pass CF_DIB flag along with the data handle to it. After all these operations, we must close the clipboard.
+\par 
+\par 12)  To obtain DIB data from the clipboard, we can use CF_DIB flag to call function ::GetClipboardData(...).
+\par 
+\par 13) Message WM_PALETTECHANGED is used to notify the applications that the system palette has changed. Applications that implement logical palettes should realize the logical palette again after receiving this message to achieve least color distortion.
+\par 
+\par 14) Outputting directly to window may cause flickering sometimes. This is because usually the old drawings must be erased before the window is updated. To avoid flickering, we can prepare everything in a memory bitmap, then output the patterns contained in the memory bitmap to the window in one stroke.
+\par 
+\par }
+ 

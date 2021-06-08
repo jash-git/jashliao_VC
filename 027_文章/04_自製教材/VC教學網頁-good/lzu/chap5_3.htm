@@ -1,0 +1,622 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>5.3 对话框类的设计</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="4">5.3 </font><font color="#3973DE" size="4">对话框类的设计</font><font FACE="Times New Roman" size="4"></p>
+    </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">完成对话框模板的设计后，就需要设计一个对话框类以实现对话框的功能。设计对话框类主要包括下面几步：</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">创建对话框类。该类应从<font FACE="Times New Roman" SIZE="3">CDialog</font>类派生。</p>
+      <p ALIGN="JUSTIFY">为对话框类加入与控件相对应的成员变量。</p>
+      <p ALIGN="JUSTIFY">为对话框进行初始化工作。</p>
+      <p ALIGN="JUSTIFY">增加对控件通知消息的处理</p>
+      </font><font FACE="Times New Roman" SIZE="3">
+    </blockquote>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.3.1</font><font SIZE="3" color="#3973DE">对话框类的创建</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">，程序员可以十分方便的创建</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">窗口类的派生类，对话框类也不例外。请读者按以下几步操作：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">打开</font><font FACE="Times New Roman" SIZE="3">IDD_REGISTER</font><font SIZE="3">对话框模板，然后按</font><font FACE="Times New Roman" SIZE="3">Ctrl+W</font><font SIZE="3">进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">后，</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">发现</font><font FACE="Times New Roman" SIZE="3">IDD_REGISTER</font><font SIZE="3">是一个新的对话框模板，于是它会询问是否要为</font><font FACE="Times New Roman" SIZE="3">IDD_REGISTER</font><font SIZE="3">创建一个对话框类。按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">键确认。</p>
+        <p ALIGN="JUSTIFY">如图</font><font FACE="Times New Roman" SIZE="3">5.6</font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">Create New Class</font><font SIZE="3">对话框中，在</font><font FACE="Times New Roman" SIZE="3">Name</font><font SIZE="3">栏中输入</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Base class</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CDialog</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Dialog ID</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">IDD_REGISTER</font><font SIZE="3">。按</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">按钮后，对话框类</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">即被创建。</p>
+        </font><font FACE="Times New Roman" SIZE="3">
+      </blockquote>
+    </blockquote>
+    <p ALIGN="center"></font><img src="T5_6.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/T5_6.gif" alt="T5_6.tif (248014 bytes)" WIDTH="534" HEIGHT="443"><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">5.6 
+    Create New Class</font><font SIZE="3">对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ClassWizard</font><font SIZE="3">自动使类</font><font FACE="Times New Roman" SIZE="3">CRegesterDialog</font><font SIZE="3">与</font><font FACE="Times New Roman" SIZE="3">IDD_REGISTER</font><font SIZE="3">模板联系起来。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#BDD0F4">
+      <tr>
+        <td width="100%"></b>提示：只要想创建的类是某一</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">窗口类的派生类，一般都可以利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">来自动完成创建。创建的一般方法是：打开</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">，选择</font><font FACE="Times New Roman" SIZE="3">Add Class-&gt;New</font><font SIZE="3">，然后在</font><font FACE="Times New Roman" SIZE="3">Create New Class</font><font SIZE="3">对话框中输入新类的类名，选择其</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">基类，如果是对话框类，则还要选择对话框的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。</font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.3.2</font><font SIZE="3" color="#3973DE">为对话框类加入成员变量</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3"><font SIZE="3" color="#3973DE">　</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3"> 
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对话框的主要功能是输出和输入数据，例子中的登录数据对话框的任务就是输入数据。对话框需要有一组成员变量来存储数据。在对话框中，控件用来表示或输入数据，因此，存储数据的成员变量应该与控件相对应。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">与控件对应的成员变量即可以是一个数据，也可以是一个控件对象，这将由具体需要来确定。例如，可以为一个编辑框控件指定一个数据变量，这样就可以很方便地取得或设置编辑框控件所代表的数据，如果想对编辑框控件进行控制，则应该为编辑框指定一个</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">对象，通过</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">对象，程序员可以控制控件的行为。需要指出的是，不同类的控件对应的数据变量的类型往往是不一样的，而且一个控件对应的数据变量的类型也可能有多种。表</font><font FACE="Times New Roman" SIZE="3">5.3</font><font SIZE="3">说明了控件的数据变量的类型。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">5.3</font></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="42%"><font SIZE="3">控件</font></td>
+        <td WIDTH="58%"><font SIZE="3">数据变量的类型</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="42%"><font SIZE="3">编辑框</font></td>
+        <td WIDTH="58%"><font FACE="Times New Roman" SIZE="2">CString, int, UINT, long, DWORD, 
+        float, double, short, BOOL, COleDateTime, COleCurrency</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="42%"><font SIZE="3">普通检查框</font></td>
+        <td WIDTH="58%"><font FACE="Times New Roman" SIZE="3">BOOL</font><font SIZE="3">（真表示被选中，假表示未选中）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="42%"><font SIZE="3">三态检查框</font></td>
+        <td WIDTH="58%"><font FACE="Times New Roman" SIZE="3">int</font><font SIZE="3">（</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">表示未选中，</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">表示选中，</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">表示不确定状态）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="42%"><font SIZE="3">单选按钮（组中的第一个按钮）</font></td>
+        <td WIDTH="58%"><font FACE="Times New Roman" SIZE="3">int</font><font SIZE="3">（</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">表示选择了组中第一个单选按钮，</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">表示选择了第二个</font><font FACE="Times New Roman" SIZE="3">...</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">表示没有一个被选中）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="42%"><font SIZE="3">不排序的列表框</font></td>
+        <td WIDTH="58%"><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">（为空则表示没有一个列表项被选中）</font><font FACE="Times New Roman" SIZE="3">, <p>int</font><font SIZE="3">（</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">表示选择了第一项，</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">表示选了第二项，</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">表示没有一项被选中）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="42%"><font SIZE="3">下拉式组合框</font></td>
+        <td WIDTH="58%"><font FACE="Times New Roman" SIZE="3">CString, int</font><font SIZE="3">（含义同上）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="42%"><font SIZE="3">其它列表框和组合框</font></td>
+        <td WIDTH="58%"><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">（含义同上）</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">可以很方便地为对话框类</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">加入成员变量。请读者按下列步骤操作。</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">按</font><font FACE="Times New Roman" SIZE="3">Ctrl+W</font><font SIZE="3">进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">选择</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">上部的</font><font FACE="Times New Roman" SIZE="3">Member Variables</font><font SIZE="3">标签，然后在</font><font FACE="Times New Roman" SIZE="3">Class name</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">。这时，在下面的变量列表中会出现对话框控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，如图</font><font FACE="Times New Roman" SIZE="3">5.7</font><font SIZE="3">所示。</p>
+        <p ALIGN="center"><img src="T5_7.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/T5_7.gif" alt="T5_7.tif (368576 bytes)" WIDTH="516" HEIGHT="337"></p>
+        <p ALIGN="center">图<font FACE="Times New Roman" SIZE="3">5.7 ClassWizard</font>对话框</p>
+        <p ALIGN="JUSTIFY">双击列表中的</font><font FACE="Times New Roman" SIZE="3">ID_AGE</font><font SIZE="3">会弹出</font><font FACE="Times New Roman" SIZE="3">Add Member Variable</font><font SIZE="3">对话框，如图</font><font FACE="Times New Roman" SIZE="3">5.8</font><font SIZE="3">所示。在</font><font FACE="Times New Roman" SIZE="3">Member variable name</font><font SIZE="3">栏中输入</font><font FACE="Times New Roman" SIZE="3">m_nAge</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Category</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">Value</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Variable type</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">UINT</font><font SIZE="3">。按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮后，数据变量</font><font FACE="Times New Roman" SIZE="3">m_nAge</font><font SIZE="3">就会被加入到变量列表中。</p>
+        <p ALIGN="center"><img src="T5_8.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/T5_8.gif" alt="T5_8.tif (157626 bytes)" WIDTH="423" HEIGHT="346"></p>
+        <p ALIGN="center">图<font FACE="Times New Roman" SIZE="3">5.8 Add Member Variable</font>对话框</p>
+        <p ALIGN="JUSTIFY">仿照第</font><font FACE="Times New Roman" SIZE="3">3</font><font SIZE="3">步和表</font><font FACE="Times New Roman" SIZE="3">5.4</font><font SIZE="3">，为各个控件加入相应的成员变量。</p>
+        <p ALIGN="JUSTIFY">将</font><font FACE="Times New Roman" SIZE="3">m_nAge</font><font SIZE="3">的值限制在</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">到</font><font FACE="Times New Roman" SIZE="3">65</font><font SIZE="3">之间。方法是先选择</font><font FACE="Times New Roman" SIZE="3">m_nAge</font><font SIZE="3">，然后在</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">对话框的左下角输入最大和最小值。</font><font FACE="Times New Roman" SIZE="3">m_nAge</font><font SIZE="3">代表年龄，这里规定被调查的人的年龄应在</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">岁以上，</font><font FACE="Times New Roman" SIZE="3">64</font><font SIZE="3">岁以下。有了这个限制后，对话框会对输入的年龄值进行有效性检查，若输入的值不在限制范围内，则对话框会提示用户输入有效的值。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">5.4</font></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">控件</font><font FACE="Times New Roman" SIZE="3">ID</font></td>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">变量类型</font></td>
+        <td WIDTH="33%"><font SIZE="3"><p ALIGN="JUSTIFY">变量名</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_AGE</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">UINT</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_nAge</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_INCOME</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CString</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_strIncome</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_INCOME</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CListBox</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_ctrlIncome</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_KIND</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CString</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_strKind</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_MARRIED</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_bMarried</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_NAME</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CString</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_strName</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_SEX</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_nSex</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_UNIT</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CString</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_strUnit</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_WORK</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_nWork</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者会注意到控件</font><font FACE="Times New Roman" SIZE="3">IDC_INCOME</font><font SIZE="3">居然有两个变量，一个是</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">型的，一个是</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">型的，这是完全合法的，不会引起任何冲突。之所以要加入</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">型的变量，是因为列表框的初始化要通过</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">对象进行。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#A6C0F0">
+      <tr>
+        <td width="100%">提示</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">中可分别为一个控件指定一个数据变量和一个控件对象，这样做的好处是即能方便地获得数据，又能方便地控制控件。</font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.3.3</font><font SIZE="3" color="#3973DE">对话框的初始化</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对话框的初始化工作一般在构造函数和</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">函数中完成。在构造函数中的初始化主要是针对对话框的数据成员。读者可以找到</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">的构造函数，如清单</font><font FACE="Times New Roman" SIZE="3">5.1</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.1 CRegisterDialog</font><font SIZE="3">的构造函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterDialog::CRegisterDialog(CWnd* pParent /*=NULL*/)</p>
+    <p ALIGN="JUSTIFY">: CDialog(CRegisterDialog::IDD, pParent)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">//{{AFX_DATA_INIT(CRegisterDialog)</p>
+    <p ALIGN="JUSTIFY">m_nAge = 0;</p>
+    <p ALIGN="JUSTIFY">m_strIncome = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_strKind = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_bMarried = FALSE;</p>
+    <p ALIGN="JUSTIFY">m_strName = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_nSex = -1;</p>
+    <p ALIGN="JUSTIFY">m_strUnit = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_nWork = -1;</p>
+    <p ALIGN="JUSTIFY">//}}AFX_DATA_INIT</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以看出，对数据成员的初始化是由</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">自动完成的。若读者对初值的含义还不太清楚，请参看表</font><font FACE="Times New Roman" SIZE="3">5.3</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在对话框创建时，会收到</font><font FACE="Times New Roman" SIZE="3">WM_INITDIALOG</font><font SIZE="3">消息，对话框对该消息的处理函数是</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">。调用</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">时，对话框已初步创建，对话框的窗口句柄也已有效，但对话框还未被显示出来。因此，可以在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">中做一些影响对话框外观的初始化工作。</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">对对话框的作用与</font><font FACE="Times New Roman" SIZE="3">OnCreate</font><font SIZE="3">对</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">的作用类似。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#A6C0F0">
+      <tr>
+        <td width="100%">提示</font><font FACE="Times New Roman" SIZE="3">:MFC</font><font SIZE="3">窗口的初始化工作一般在</font><font FACE="Times New Roman" SIZE="3">OnCreate</font><font SIZE="3">成员函数中进行，但对话框的初始化工作最好在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">中进行。</font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">OnInitDialog</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">WM_INITDIALOG</font><font SIZE="3">消息的处理函数，所以要用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">RegisteritDialog</font><font SIZE="3">类增加一个</font><font FACE="Times New Roman" SIZE="3">WM_INITDIALOG</font><font SIZE="3">消息的处理函数，增加的方法是进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">后，先选中</font><font FACE="Times New Roman" SIZE="3">MessageMaps</font><font SIZE="3">标签，然后在</font><font FACE="Times New Roman" SIZE="3">Class name</font><font SIZE="3">中选择</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Object IDs</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Messages</font><font SIZE="3">栏中找到</font><font FACE="Times New Roman" SIZE="3">WM_INITDIALOG</font><font SIZE="3">并双击之，最后按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮退出</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">请读者按清单</font><font FACE="Times New Roman" SIZE="3">5.2</font><font SIZE="3">修改</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.2 OnInitDialog</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CRegisterDialog::OnInitDialog() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CDialog::OnInitDialog();</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TODO: Add extra initialization here</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_ctrlIncome.AddString(&quot;500</font><font SIZE="3">元以下</font><font FACE="Times New Roman" SIZE="3">&quot;);</p>
+    <p ALIGN="JUSTIFY">m_ctrlIncome.AddString(&quot;500-1000</font><font SIZE="3">元</font><font FACE="Times New Roman" SIZE="3">&quot;);</p>
+    <p ALIGN="JUSTIFY">m_ctrlIncome.AddString(&quot;1000-2000</font><font SIZE="3">元</font><font FACE="Times New Roman" SIZE="3">&quot;);</p>
+    <p ALIGN="JUSTIFY">m_ctrlIncome.AddString(&quot;2000</font><font SIZE="3">元以上</font><font FACE="Times New Roman" SIZE="3">&quot;);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return TRUE; // return TRUE unless you set the focus to a control</p>
+    <p ALIGN="JUSTIFY">// EXCEPTION: OCX Property Pages should return FALSE</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterDialog::OnInitDialog()</font><font SIZE="3">的主要任务是对工资收入列表框的列表项进行初始化。调用</font><font FACE="Times New Roman" SIZE="3">CListBox::AddString</font><font SIZE="3">可将指定的字符串加入到列表框中。由于该列表是不自动排序的，因此</font><font FACE="Times New Roman" SIZE="3">AddString</font><font SIZE="3">将表项加在列表框的末尾。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.3.4</font><font SIZE="3" color="#3973DE">对话框的数据交换机制</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对话框的数据成员变量存储了与控件相对应的数据。数据变量需要和控件交换数据，以完成输入或输出功能。例如，一个编辑框即可以用来输入，也可以用来输出：用作输入时，用户在其中输入了字符后，对应的数据成员应该更新；用作输出时，应及时刷新编辑框的内容以反映相应数据成员的变化。对话框需要一种机制来实现这种数据交换功能，这对对话框来说是至关重要的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">提供了类</font><font FACE="Times New Roman" SIZE="3">CDataExchange</font><font SIZE="3">来实现对话框类与控件之间的数据交换</font><font FACE="Times New Roman" SIZE="3">(DDX)</font><font SIZE="3">，该类还提供了数据有效机制</font><font FACE="Times New Roman" SIZE="3">(DDV)</font><font SIZE="3">。数据交换和数据有效机制适用于编辑框、检查框、单选按钮、列表框和组合框。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">数据交换的工作由</font><font FACE="Times New Roman" SIZE="3">CDialog::DoDataExchange</font><font SIZE="3">来完成。读者可以找到</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog::DoDataExchange</font><font SIZE="3">函数，如清单</font><font FACE="Times New Roman" SIZE="3">5.3</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.3 DoDataExchange</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterDialog::DoDataExchange(CDataExchange* pDX)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CDialog::DoDataExchange(pDX);</p>
+    <p ALIGN="JUSTIFY">//{{AFX_DATA_MAP(CRegisterDialog)</p>
+    <p ALIGN="JUSTIFY">DDX_Control(pDX, IDC_INCOME, m_ctrlIncome);</p>
+    <p ALIGN="JUSTIFY">DDX_LBString(pDX, IDC_INCOME, m_strIncome);</p>
+    <p ALIGN="JUSTIFY">DDX_CBString(pDX, IDC_KIND, m_strKind);</p>
+    <p ALIGN="JUSTIFY">DDX_Check(pDX, IDC_MARRIED, m_bMarried);</p>
+    <p ALIGN="JUSTIFY">DDX_Text(pDX, IDC_NAME, m_strName);</p>
+    <p ALIGN="JUSTIFY">DDX_Radio(pDX, IDC_SEX, m_nSex);</p>
+    <p ALIGN="JUSTIFY">DDX_Text(pDX, IDC_UNIT, m_strUnit);</p>
+    <p ALIGN="JUSTIFY">DDX_Radio(pDX, IDC_WORK, m_nWork);</p>
+    <p ALIGN="JUSTIFY">DDX_Text(pDX, IDC_AGE, m_nAge);</p>
+    <p ALIGN="JUSTIFY">DDV_MinMaxUInt(pDX, m_nAge, 16, 65);</p>
+    <p ALIGN="JUSTIFY">//}}AFX_DATA_MAP</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者可以看出，该函数中的代码是由</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">自动加入的。</font><font FACE="Times New Roman" SIZE="3">DoDataExchange</font><font SIZE="3">只有一个参数，即一个</font><font FACE="Times New Roman" SIZE="3">CDataExchange</font><font SIZE="3">对象的指针</font><font FACE="Times New Roman" SIZE="3">pDX</font><font SIZE="3">。在该函数中调用了</font><font FACE="Times New Roman" SIZE="3">DDX</font><font SIZE="3">函数来完成数据交换，调用</font><font FACE="Times New Roman" SIZE="3">DDV</font><font SIZE="3">函数来进行数据有效检查。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当程序需要交换数据时，不要直接调用</font><font FACE="Times New Roman" SIZE="3">DoDataExchange</font><font SIZE="3">函数，而应该调用</font><font FACE="Times New Roman" SIZE="3">CWnd::UpdateData</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">UpdataData</font><font SIZE="3">函数内部调用了</font><font FACE="Times New Roman" SIZE="3">DoDataExchange</font><font SIZE="3">。该函数只有一个布尔型参数，它决定了数据传送的方向。调用</font><font FACE="Times New Roman" SIZE="3">UpdateData(TRUE)</font><font SIZE="3">将数据从对话框的控件中传送到对应的数据成员中，调用</font><font FACE="Times New Roman" SIZE="3">UpdateData(FALSE)</font><font SIZE="3">则将数据从数据成员中传送给对应的控件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在缺省的</font><font FACE="Times New Roman" SIZE="3">CDialog::OnInitDialog</font><font SIZE="3">中调用了</font><font FACE="Times New Roman" SIZE="3">UpdateData(FALSE)</font><font SIZE="3">，这样，在对话框创建时，数据成员的初值就会反映到相应的控件上。若用户是按了</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">（确定）按钮退出对话框，则对话框认为输入有效，就会调用</font><font FACE="Times New Roman" SIZE="3">UpdataData(TRUE)</font><font SIZE="3">将控件中的数据传给数据成员。图</font><font FACE="Times New Roman" SIZE="3">5.9</font><font SIZE="3">描绘了对话框的这种数据交换机制。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3"><img src="T5_9.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/T5_9.gif" alt="T5_9.tif (186424 bytes)" WIDTH="547" HEIGHT="324"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">5.9 
+    </font><font SIZE="3">对话框的数据交换</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.3.5</font><font SIZE="3" color="#3973DE">对话框的运行机制</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在程序中运行模态对话框有两个步骤：</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">在堆栈上以变量的形式构建一个对话框对象。</p>
+      <p ALIGN="JUSTIFY">调用<font FACE="Times New Roman" SIZE="3">CDialog::DoModal ( )</font>。</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DoModal</font><font SIZE="3">负责对模态话框的创建和撤销。在创建对话框时，</font><font FACE="Times New Roman" SIZE="3">DoModal</font><font SIZE="3">的任务包括载入对话框模板资源、调用</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">初始化对话框和将对话框显示在屏幕上。完成对话框的创建后，</font><font FACE="Times New Roman" SIZE="3">DoModal</font><font SIZE="3">启动一个消息循环，以响应用户的输入。由于该消息循环截获了几乎所有的输入消息，使主消息循环收不到对对话框的输入，致使用户只能与模态对话框进行交互，而其它用户界面对象收不到输入信息。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">若用户在对话框内点击了</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDOK</font><font SIZE="3">的按钮（通常该按钮的标题是“确定”或“</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">”），或按了回车键，则</font><font FACE="Times New Roman" SIZE="3">CDialog::OnOK</font><font SIZE="3">将被调用。</font><font FACE="Times New Roman" SIZE="3">OnOK</font><font SIZE="3">首先调用</font><font FACE="Times New Roman" SIZE="3">UpdateData(TRUE)</font><font SIZE="3">将数据从控件传给对话框成员变量，然后调用</font><font FACE="Times New Roman" SIZE="3">CDialog::EndDialog</font><font SIZE="3">关闭对话框。关闭对话框后，</font><font FACE="Times New Roman" SIZE="3">DoModal</font><font SIZE="3">会返回值</font><font FACE="Times New Roman" SIZE="3">IDOK</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">若用户点击了</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDCANCEL</font><font SIZE="3">的按钮（通常其标题为“取消”或“</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">”），或按了</font><font FACE="Times New Roman" SIZE="3">ESC</font><font SIZE="3">键，则会导致</font><font FACE="Times New Roman" SIZE="3">CDialog::OnCancel</font><font SIZE="3">的调用。该函数只调用</font><font FACE="Times New Roman" SIZE="3">CDialog::EndDialog</font><font SIZE="3">关闭对话框。关闭对话框后，</font><font FACE="Times New Roman" SIZE="3">DoModal</font><font SIZE="3">会返回值</font><font FACE="Times New Roman" SIZE="3">IDCANCEL</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">程序根据</font><font FACE="Times New Roman" SIZE="3">DoModal</font><font SIZE="3">的返回值是</font><font FACE="Times New Roman" SIZE="3">IDOK</font><font SIZE="3">还是</font><font FACE="Times New Roman" SIZE="3">IDCANCEL</font><font SIZE="3">就可以判断出用户是确定还是取消了对对话框的操作。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在弄清了对话框的运行机制后，下面让我们来就可以实现</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">程序登录数据的功能。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">首先，将</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">工程的工作区切换至资源视图。打开</font><font FACE="Times New Roman" SIZE="3">IDR_MAINFRAME</font><font SIZE="3">菜单资源，在</font><font FACE="Times New Roman" SIZE="3">Edit</font><font SIZE="3">菜单的底端加入一个名为“登录数据”的新菜单项，并令其</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">ID_EDIT_REGISTER</font><font SIZE="3">（最好在该项之前加一条分隔线，以便和前面的菜单项分开）。注意不要忘了把菜单资源的语种设置成中文，否则菜单中将显示不出中文来。设置的方法是先在工作区资源视图中选择</font><font FACE="Times New Roman" SIZE="3">IDR_MAINFRAME</font><font SIZE="3">菜单资源，然后按</font><font FACE="Times New Roman" SIZE="3">Alt+Enter</font><font SIZE="3">键，并在弹出的属性对话框中的</font><font FACE="Times New Roman" SIZE="3">Language</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">Chinese(P.R.C.)</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接着，用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为该菜单命令创建命令处理函数</font><font FACE="Times New Roman" SIZE="3">CRegisterView::OnEditRegister</font><font SIZE="3">。注意，</font><font FACE="Times New Roman" SIZE="3">OnEditRegister</font><font SIZE="3">是类</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">的成员函数，这是因为</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">要负责打开和关闭登录数据对话框，并将从对话框中输入的数据在视图中输出。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">然后，请读者在</font><font FACE="Times New Roman" SIZE="3">RegisterView.cpp</font><font SIZE="3">文件的开头加入下面一行</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include &quot;RegisterDialog.h&quot;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">最后，按清单</font><font FACE="Times New Roman" SIZE="3">5.4</font><font SIZE="3">修改程序。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.4 OnEditRegister</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterView::OnEditRegister() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command handler code here</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterDialog dlg;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(dlg.DoModal()==IDOK)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CString str;</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">获取编辑正文</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetWindowText(str);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">换行</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">姓名</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=dlg.m_strName;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">性别</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=dlg.m_nSex?&quot;</font><font SIZE="3">女</font><font FACE="Times New Roman" SIZE="3">&quot;:&quot;</font><font SIZE="3">男</font><font FACE="Times New Roman" SIZE="3">&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">年龄</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">CString str1;</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">将数据格式输出到字符串对象中</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str1.Format(&quot;%d&quot;,dlg.m_nAge);</p>
+    <p ALIGN="JUSTIFY">str+=str1;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">婚否</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=dlg.m_bMarried?&quot;</font><font SIZE="3">已婚</font><font FACE="Times New Roman" SIZE="3">&quot;:&quot;</font><font SIZE="3">未婚</font><font FACE="Times New Roman" SIZE="3">&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">就业状况</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=dlg.m_nWork?&quot;</font><font SIZE="3">下岗</font><font FACE="Times New Roman" SIZE="3">&quot;:&quot;</font><font SIZE="3">在职</font><font FACE="Times New Roman" SIZE="3">&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">工作单位</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=dlg.m_strUnit;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">单位性质</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=dlg.m_strKind;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">工资收入</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=dlg.m_strIncome;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">更新编辑视图中的正文</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetWindowText(str);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">OnEditRegister</font><font SIZE="3">函数中，首先构建了一个</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">对象，然后调用</font><font FACE="Times New Roman" SIZE="3">CDialog::DoModal</font><font SIZE="3">来实现模态对话框。如果</font><font FACE="Times New Roman" SIZE="3">DoModal</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">IDOK</font><font SIZE="3">，则说明用户确认了登录数据的操作，程序需要将录入的数据在编辑视图中输出。程序用一个</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">对象来作为编辑正文的缓冲区，</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">是一个功能强大的字符串类，它的最大特点在于可以存储动态改变大小的字符串，这样，用户不必担心字符串的长度超过缓冲区的大小</font><font FACE="Times New Roman" SIZE="3">, </font><font SIZE="3">使用十分方便。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在输出数据时，程序首先调用</font><font FACE="Times New Roman" SIZE="3">CWnd::GetWindowText</font><font SIZE="3">获得编辑正文，这是一个多行的编辑正文。</font><font FACE="Times New Roman" SIZE="3">CWnd::GetWindowText</font><font SIZE="3">用来获取窗口的标题，若该窗口是一个控件，则获取的是控件内的正文。</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CEditView</font><font SIZE="3">的继承类，而</font><font FACE="Times New Roman" SIZE="3">CEditView</font><font SIZE="3">实际上包含了一个编辑控件，因此在</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">中调用</font><font FACE="Times New Roman" SIZE="3">GetWindowText</font><font SIZE="3">获得的是编辑正文。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">然后，程序在该编辑正文的末尾加入新的数据。在程序中大量使用了</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">类的重载操作符“＋＝”，该操作符的功能是将操作符右侧字符串添加到操作符左侧的字符串的末尾。注意在多行编辑控件中每行末尾都有一对回车和换行符。在程序中还调用了</font><font FACE="Times New Roman" SIZE="3">CString::Format</font><font SIZE="3">来将数据格式化输出到字符串中，</font><font FACE="Times New Roman" SIZE="3">Format</font><font SIZE="3">的功能与</font><font FACE="Times New Roman" SIZE="3">sprintf</font><font SIZE="3">类似。最后，调用</font><font FACE="Times New Roman" SIZE="3">CWnd::SetWindowText</font><font SIZE="3">来更新编辑视图中的正文。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">，打开登录数据对话框，输入一些数据试试。现在，</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">已经是一个简易的数据库应用程序了，它可以将与就业情况有关的数据输出到一个编辑视图中。用户可以编辑视图中的正文，并将结果保存在文本文件中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.3.6</font><font SIZE="3" color="#3973DE">处理控件通知消息</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">虽然</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">已经可以登录数据了，但读者会很快会发现该程序还有一些不完善的地方：</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">登录完一个人的数据后，对话框就关闭了，若用户有很多人的数据要输入，则必须频繁地打开对话框，很不方便。在登录数据时，应该使对话框一直处于打开状态。</p>
+      <p ALIGN="JUSTIFY">登录数据对话框分个人情况和单位情况两组，若被调查人是下岗职工，则不必输入单位情况。程序应该能够对用户的输入及时地作出反应，即当用户选择了“下岗”单选按钮时，应使单位情况组中的控件禁止。一个禁止的控件呈灰色示，并且不能接收用户的输入。</p>
+      </font>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要解决上述问题，就必须对控件通知消息进行处理。当控件的状态因为输入等原因而发生变化时，控件会向其父窗口发出控件通知消息。例如，如果用户在登录数据对话框中的某一按钮（包括普通按钮、检查框和单选按钮）上单击鼠标，则该按钮会向对话框发送</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息。对话框根据按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">激活相应的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息处理函数，以对单击按钮这一事件作出反应。通过对按钮的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息的处理，我们可以使登录数据对话框的功能达到上述要求。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">首先，让我们来解决第一个问题。我们的设想是修改原来的“确定</font><font FACE="Times New Roman" SIZE="3">(Y)</font><font SIZE="3">”按钮，使得当用户点击该按钮后，将数据输出到视图中，并且对话框不关闭，以便用户输入下一个数据。请读者按下面几步进行修改。</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">修改登录数据对话框的“确定<font FACE="Times New Roman" SIZE="3">(Y)</font>”按钮，使该按钮的标题变为“添加<font FACE="Times New Roman" SIZE="3">(&amp;A)</font>”，<font FACE="Times New Roman" SIZE="3">ID</font>变为<font FACE="Times New Roman" SIZE="3">IDC_ADD</font>。这样，当用户点击该按钮后，对话框会收到<font FACE="Times New Roman" SIZE="3">BN_CLICKED</font>消息。由于这个<font FACE="Times New Roman" SIZE="3">BN_CLICKED</font>消息对应的按钮<font FACE="Times New Roman" SIZE="3">ID</font>不是<font FACE="Times New Roman" SIZE="3">IDOK</font>，不会触发<font FACE="Times New Roman" SIZE="3">OnOK</font>消息处理函数，因此不会关闭对话框。</p>
+      <p ALIGN="JUSTIFY">为按钮<font FACE="Times New Roman" SIZE="3">IDC_ADD</font>的<font FACE="Times New Roman" SIZE="3">BN_CLICKED</font>消息创建消息处理函数。创建的方法是进入<font FACE="Times New Roman" SIZE="3">ClassWizard</font>后，选<font FACE="Times New Roman" SIZE="3">Message Maps</font>页并在<font FACE="Times New Roman" SIZE="3">Class name</font>栏中选择<font FACE="Times New Roman" SIZE="3">CRegisterDialog</font>，然后在<font FACE="Times New Roman" SIZE="3">Object IDs</font>栏中选择<font FACE="Times New Roman" SIZE="3">IDC_ADD</font>，在<font FACE="Times New Roman" SIZE="3">Messages</font>栏中双击<font FACE="Times New Roman" SIZE="3">BN_CLICKED</font>。在确认使用缺省的消息处理函数名<font FACE="Times New Roman" SIZE="3">OnAdd</font>后，按回车键退出<font FACE="Times New Roman" SIZE="3">ClassWizard</font>。</p>
+      <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">OnAdd</font>要向编辑视图输出正文，就必须获得一个指向<font FACE="Times New Roman" SIZE="3">CRegisterView</font>对象的指针以访问该对象。为此，请在<font FACE="Times New Roman" SIZE="3">CRegisterDialog</font>类的说明中加入下面一行<font SIZE="3"><br>
+      </font><font FACE="Times New Roman" SIZE="3">Cwnd* m_pParent;<br>
+      </font>注意不要加在<font FACE="Times New Roman" SIZE="3">AFX</font>注释对中。</p>
+      <p ALIGN="JUSTIFY">为实现<font FACE="Times New Roman" SIZE="3">IDC_ADD</font>按钮的功能，请按清单<font FACE="Times New Roman" SIZE="3">5.5</font>和清单<font FACE="Times New Roman" SIZE="3">5.6</font>修改程序。主要的改动是把原来由<font FACE="Times New Roman" SIZE="3">CRegiserView::OnEditRegister</font>完成的在视图中输出数据的任务交给<font FACE="Times New Roman" SIZE="3">CRegisterDialog::OnAdd</font>来完成。</p>
+      </font>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.5 
+    CRegisterView::OnEditRegister</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterView::OnEditRegister() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command handler code here</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterDialog dlg(this);</p>
+    <p ALIGN="JUSTIFY">dlg.DoModal();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.6 CRegisterDialog</font><font SIZE="3">类的部分源代码</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterDialog::CRegisterDialog(CWnd* pParent /*=NULL*/)</p>
+    <p ALIGN="JUSTIFY">: CDialog(CRegisterDialog::IDD, pParent)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">//{{AFX_DATA_INIT(CRegisterDialog)</p>
+    <p ALIGN="JUSTIFY">. . . . . .</p>
+    <p ALIGN="JUSTIFY">//}}AFX_DATA_INIT</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pParent=pParent;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterDialog::OnAdd() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your control notification handler code here</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">更新数据</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">UpdateData(TRUE);</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">检查数据是否有效</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(m_strName==&quot;&quot; || m_nSex&lt;0 || m_nWork&lt;0 || 
+    m_strUnit==&quot;&quot; </p>
+    <p ALIGN="JUSTIFY">|| m_strKind==&quot;&quot; || m_strIncome==&quot;&quot;)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(&quot;</font><font SIZE="3">请输入有效数据</font><font FACE="Times New Roman" SIZE="3">&quot;);</p>
+    <p ALIGN="JUSTIFY">return;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CString str;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">获取编辑正文</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pParent-&gt;GetWindowText(str);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">换行</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">姓名</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=m_strName;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">性别</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=m_nSex?&quot;</font><font SIZE="3">女</font><font FACE="Times New Roman" SIZE="3">&quot;:&quot;</font><font SIZE="3">男</font><font FACE="Times New Roman" SIZE="3">&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">年龄</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">CString str1;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">将数据格式输出到字符串对象中</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str1.Format(&quot;%d&quot;,m_nAge);</p>
+    <p ALIGN="JUSTIFY">str+=str1;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">婚否</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=m_bMarried?&quot;</font><font SIZE="3">已婚</font><font FACE="Times New Roman" SIZE="3">&quot;:&quot;</font><font SIZE="3">未婚</font><font FACE="Times New Roman" SIZE="3">&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">就业状况</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=m_nWork?&quot;</font><font SIZE="3">下岗</font><font FACE="Times New Roman" SIZE="3">&quot;:&quot;</font><font SIZE="3">在职</font><font FACE="Times New Roman" SIZE="3">&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">工作单位</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=m_strUnit;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">单位性质</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=m_strKind;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;</font><font SIZE="3">工资收入</font><font FACE="Times New Roman" SIZE="3">:&quot;;</p>
+    <p ALIGN="JUSTIFY">str+=m_strIncome;</p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">更新编辑视图中的正文</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pParent-&gt;SetWindowText(str);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterDialog</font><font SIZE="3">的构造函数有一个参数</font><font FACE="Times New Roman" SIZE="3">pParent</font><font SIZE="3">，该参数是一个指向</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">对象的指针，用于指定对话框的父窗口或拥有者窗口。在</font><font FACE="Times New Roman" SIZE="3">CRegisterView:: OnEditRegister</font><font SIZE="3">函数中，在构建</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">对象时指定了</font><font FACE="Times New Roman" SIZE="3">this</font><font SIZE="3">参数，</font><font FACE="Times New Roman" SIZE="3">this</font><font SIZE="3">指针指向</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">对象本身。这样在调用</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">的构造函数时，</font><font FACE="Times New Roman" SIZE="3">this</font><font SIZE="3">指针值被赋给了</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">的成员</font><font FACE="Times New Roman" SIZE="3">m_pParent</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">OnAdd</font><font SIZE="3">函数可利用</font><font FACE="Times New Roman" SIZE="3">m_pParent</font><font SIZE="3">来访问对话框的拥有者即</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#99B7EE">
+      <tr>
+        <td width="100%">提示：术语父窗口</font><font FACE="Times New Roman" SIZE="3">(Parent)</font><font SIZE="3">是相对于子窗口而言。若某一个窗口拥有一个子窗口</font><font FACE="Times New Roman" SIZE="3">(Child)</font><font SIZE="3">，则该窗口就被称为子窗口的父窗口。子窗口就是具有</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">风格的窗口，子窗口依赖于父窗口且完全被限制在父窗口内部。拥有者窗口</font><font FACE="Times New Roman" SIZE="3">(owner)</font><font SIZE="3">相对于被拥有者窗口而言。若某一个窗口拥有一个非子窗口，则该窗口被称为拥有者窗口。被拥有窗口</font><font FACE="Times New Roman" SIZE="3">(owned)</font><font SIZE="3">不具有</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">风格，可在屏幕上任意移动。</font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">当用户用鼠标点击</font><font FACE="Times New Roman" SIZE="3">IDC_ADD</font><font SIZE="3">按钮时，该按钮的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息处理函数</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog::OnAdd</font><font SIZE="3">将被调用。在</font><font FACE="Times New Roman" SIZE="3">OnAdd</font><font SIZE="3">中，首先调用了</font><font FACE="Times New Roman" SIZE="3">UpdateData(TRUE)</font><font SIZE="3">以把数据从控件传给对话框的数据成员变量。然后，程序要对数据的有效性进行检查，如果输入的数据不完全有效，则会显示一个消息对话框，提示用户输入有效的数据。接下来进行的工作是在视图中输出数据，这部分代码与清单</font><font FACE="Times New Roman" SIZE="3">5.4</font><font SIZE="3">类似，读者应该比较熟悉了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">完成上述工作后，登录数据对话框就变得较为实用了。打开对话框后，用户可以方便地输入多人的数据，只有按了取消按钮后，对话框才会关闭。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接下来让我们来解决第二个问题。解决该问题的关键在于当用户点击“在职”或“下岗”单选按钮时，程序要对收到的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息作出响应。有些读者可能会想到为两个单选按钮分别创建</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息处理函数，这在只有两个单选按钮的情况下是可以的，但如果一组内有多个单选按钮，则分别创建消息处理函数就比较麻烦了。利用</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">提供的消息映射宏</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</font><font SIZE="3">可以避免这种麻烦，该映射宏把多个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">连续的控件发出的消息映射到同一个处理函数上。这样，我们只要编写一个消息处理函数，就可以对“在职”和“下岗”两个单选按钮的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息作出响应。</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">不支持</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</font><font SIZE="3">宏，所以我们必须手工创建单选按钮的消息映射和消息处理函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">首先，在</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类的头文件中加入消息处理函数的声明，该函数名为</font><font FACE="Times New Roman" SIZE="3">OnWorkClicked</font><font SIZE="3">，如清单</font><font FACE="Times New Roman" SIZE="3">5.7</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.7 BN_CLICKED</font><font SIZE="3">消息处理函数</font><font FACE="Times New Roman" SIZE="3">OnWorkClicked</font><font SIZE="3">的声明</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . . </p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">protected:</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void OnWorkClicked(UINT nCmdID);</p>
+    <p ALIGN="JUSTIFY">// Generated message map functions</p>
+    <p ALIGN="JUSTIFY">//{{AFX_MSG(CRegisterDialog)</p>
+    <p ALIGN="JUSTIFY">virtual BOOL OnInitDialog();</p>
+    <p ALIGN="JUSTIFY">afx_msg void OnAdd();</p>
+    <p ALIGN="JUSTIFY">//}}AFX_MSG</p>
+    <p ALIGN="JUSTIFY">. . . . . .</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">然后，在</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类的消息映射中加入</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</font><font SIZE="3">映射，如清单</font><font FACE="Times New Roman" SIZE="3">5.8</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</font><font SIZE="3">映射的形式是</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.8 </font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类的消息映射中加入</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</font><font SIZE="3">映射</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BEGIN_MESSAGE_MAP(CRegisterDialog, CDialog)</p>
+    <p ALIGN="JUSTIFY">//{{AFX_MSG_MAP(CRegisterDialog)</p>
+    <p ALIGN="JUSTIFY">ON_BN_CLICKED(IDC_ADD, OnAdd)</p>
+    <p ALIGN="JUSTIFY">//}}AFX_MSG_MAP</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ON_CONTROL_RANGE(BN_CLICKED, IDC_WORK, IDC_WORK1, OnWorkClicked)</p>
+    <p ALIGN="JUSTIFY">END_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY">ON_CONTROL_RANGE</font><font SIZE="3">消息映射宏的第一个参数是控件消息码，第二和第三个参数分别指明了一组连续的控件</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">中的头一个和最后一个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，最后一个参数是消息处理函数名。如果读者是按表</font><font FACE="Times New Roman" SIZE="3">5.2</font><font SIZE="3">的顺序放置控件的则</font><font FACE="Times New Roman" SIZE="3">IDC_WORK</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">IDC_WORK1</font><font SIZE="3">应该是连续的。这样，无论用户是在</font><font FACE="Times New Roman" SIZE="3">IDC_WORK</font><font SIZE="3">还是在</font><font FACE="Times New Roman" SIZE="3">IDC_WORK1</font><font SIZE="3">单选按钮上单击，都会调用</font><font FACE="Times New Roman" SIZE="3">OnWorkClicked</font><font SIZE="3">消息处理函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">提示：如果不能确定两个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">是否是连续的，请用</font><font FACE="Times New Roman" SIZE="3">File-&gt;Open</font><font SIZE="3">命令打开</font><font FACE="Times New Roman" SIZE="3">resource.h</font><font SIZE="3">文件，在该文件中有对控件</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">值的定义。如果发现两个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">是不连续的，读者可以改变对</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">的定义值使之连续，但要注意改动后的值不要与别的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">值发生冲突。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">最后，在</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类所在</font><font FACE="Times New Roman" SIZE="3">CPP</font><font SIZE="3">文件的最后插入消息处理函数</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog::OnWorkClicked</font><font SIZE="3">，如清单</font><font FACE="Times New Roman" SIZE="3">5.9</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.9 
+    CRegisterDialog::OnWorkClicked</font><font SIZE="3">消息处理函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterDialog::OnWorkClicked(UINT nCmdID) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">判断“在职”单选按钮是否被选中</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(IsDlgButtonChecked(IDC_WORK))</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">使控件允许</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetDlgItem(IDC_UNIT)-&gt;EnableWindow(TRUE);</p>
+    <p ALIGN="JUSTIFY">GetDlgItem(IDC_KIND)-&gt;EnableWindow(TRUE);</p>
+    <p ALIGN="JUSTIFY">GetDlgItem(IDC_INCOME)-&gt;EnableWindow(TRUE);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">else</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">清除编辑框的内容并使之禁止</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetDlgItem(IDC_UNIT)-&gt;SetWindowText(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">GetDlgItem(IDC_UNIT)-&gt;EnableWindow(FALSE);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">使组合框处于未选择状态并使之禁止</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CComboBox *pComboBox=(CComboBox *)GetDlgItem(IDC_KIND);</p>
+    <p ALIGN="JUSTIFY">pComboBox-&gt;SetCurSel(-1);</p>
+    <p ALIGN="JUSTIFY">pComboBox-&gt;EnableWindow(FALSE);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">使列表框处于未选择状态并使之禁止</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_ctrlIncome.SetCurSel(-1);</p>
+    <p ALIGN="JUSTIFY">m_ctrlIncome.EnableWindow(FALSE);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">OnWorkClicked</font><font SIZE="3">函数判断“在职”单选按钮是否被选中。若该按钮被选中，则使单位情况组中的控件允许，若该按钮未被选中，则说明“下岗”按钮被选中，这时应使控件禁止，清除编辑框中的正文， 
+    并且使组合框和列表框处于未选中状态。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">OnWorkClicked</font><font SIZE="3">函数中主要调用了下列函数：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::IsDlgButtonChecked</font><font SIZE="3">函数，用来判断单选按钮或检查框是否被选择，该函数的声明为<br>
+        </font><font FACE="Times New Roman" SIZE="3">UINT IsDlgButtonChecked(int nIDButton) const;<br>
+        </font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nIDButton</font><font SIZE="3">为按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。若按钮被选择，则函数返回</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，若按钮处于不确定状态，则返回值为</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::GetDlgItem</font><font SIZE="3">函数，用来获得指向某一控件的指针，该函数的声明为<br>
+        </font><font FACE="Times New Roman" SIZE="3">CWnd* GetDlgItem(int nID) const;<br>
+        </font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">为控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。该函数返回一个指定控件的</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">对象指针，通过该指针，程序可以对控件进行控制。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::EnableWindow</font><font SIZE="3">函数，该函数使窗口允许或禁止，禁止的窗口呈灰色显示，不能接收键盘和鼠标的输入。该函数的声明是<br>
+        </font><font FACE="Times New Roman" SIZE="3">BOOL EnableWindow( BOOL bEnable = TRUE );<br>
+        </font><font SIZE="3">若参数</font><font FACE="Times New Roman" SIZE="3">bEnable</font><font SIZE="3">的值为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，则窗口被允许，若</font><font FACE="Times New Roman" SIZE="3">bEnable</font><font SIZE="3">的值为</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，则窗口被禁止。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CListBox::SetCurSel</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CComboBox::SetCurSel</font><font SIZE="3">函数功能类似，用来使列表中的某一项被选中，选中的项呈高亮度显示。函数的声明是<br>
+        </font><font FACE="Times New Roman" SIZE="3">int SetCurSel(int nSelect);<br>
+        </font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nSelect</font><font SIZE="3">指定了新选项的索引，第一项的索引值为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，若</font><font FACE="Times New Roman" SIZE="3">nSelect</font><font SIZE="3">的值为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，那么函数将清除以前的选择，使列表处于未选择状态。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">有时，需要将</font><font FACE="Times New Roman" SIZE="3">GetDlgItem</font><font SIZE="3">返回的</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">指针强制转换成控件对象的指针，以便调用控件对象专有的成员函数对控件进行控制。例如，在程序中</font><font FACE="Times New Roman" SIZE="3">GetDlgItem(IDC_KIND)</font><font SIZE="3">返回的指针被强制转换成</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">类型，只有这样，才能调用</font><font FACE="Times New Roman" SIZE="3">CComboBox::SetCurSel</font><font SIZE="3">成员函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">为了对控件进行查询和控制，在程序中采用了两种访问控件的方法。一种方法是直接利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">提供的控件对象，例如</font><font FACE="Times New Roman" SIZE="3">m_ctrlIncome</font><font SIZE="3">列表框对象。另一种方法是利用</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类提供的一组管理对话框控件的成员函数，例如程序中用到的</font><font FACE="Times New Roman" SIZE="3">GetDlgItem</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">IsDlgButtonChecked</font><font SIZE="3">。这两种方法是在对话框内访问控件的常用方法，读者都应该掌握。表</font><font FACE="Times New Roman" SIZE="3">5.5</font><font SIZE="3">列出了管理对话框控件的</font><font FACE="Times New Roman" SIZE="3">Cwnd</font><font SIZE="3">成员函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">5.5 </font><font SIZE="3">用来管理对话框控件的</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">成员函数</font></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="31%"><font SIZE="3"><p ALIGN="JUSTIFY">函数名</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">功能</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CheckDlgButton</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">选中或不选中按钮控件。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CheckRadioButton</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">选择一个指定的单选按钮并使同组内的其它单选按钮不被选择。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DlgDirList</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">往一个列表框中添加文件、目录或驱动器的列表。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DlgDirListComboBox</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">往一个组合框中的列表框内添加文件、目录或驱动器的列表。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DlgDirSelect</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">从一个列表框中获得当前选择的文件、目录或驱动器。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DlgDirSelectBomboBox</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">从一个组合框中获得当前选择的文件、目录或驱动器。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetCheckedRadioButton</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">返回指定的单选按钮组中被选择的单选按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetDlgItem</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">返回一个指向一给定的控件的临时对象的指针。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetDlgItemInt</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">返回在一个指定的控件中由正文表示的数字值。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetDlgItemText</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">获得在一个控件内显示的正文。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetNextDlgGroupItem</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">返回一个指向一组控件内的下一个或上一个控件的临时对象的指针。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetNextDlgTabItem</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">返回下一个</font><font FACE="Times New Roman" SIZE="3">tab</font><font SIZE="3">顺序的控件的临时对象的指针。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IsDlgButtonChecked</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">返回一个按钮控件的状态。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SendDlgItemMessage</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">把一个消息传送给一个控件。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetDlgItemInt</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">将一个整数转换为正文，并将此正文赋给控件。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetDlgItemText</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">设置一个控件显示的正文。</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">看看，现在的登录数据对话框已经比较令人满意了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap5_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/chap5_2.htm">上一页</a></td>
+        <td><p align="right"><a href="chap5_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/chap5_4.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

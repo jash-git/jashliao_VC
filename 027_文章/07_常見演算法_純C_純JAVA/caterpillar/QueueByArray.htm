@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <title>佇列 - 使用陣列實作</title>
+</head>
+
+
+<body>
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;佇列 - 使用陣列實作</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+      <h2>說明</h2>
+      <small>
+佇列是一種先進先出的資料結構，想像您在管子中放入球，最先放入的球在另一端會最先跑出來，在這邊介紹如何使用陣列來實作佇列。</small><br>
+
+      <h2>解法</h2>
+      <small>
+使用陣列來實作佇列，我們必須保留兩個旗標，假設front指向佇列的前端，rear向佇列的後端，我們每次從佇列後端加入一個資料，rear就加1指向最後一個資料，每次從佇列前端取出一個資料，front就加1指向佇列的最前端，如下圖所示：<br>
+      </small>
+      <div style="text-align: center;"><small><img style="width: 401px; height: 97px;" alt="Quene" title="Quene" src="queneByArray-1.jpg" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/images/queneByArray-1.jpg"><br>
+
+      </small></div>
+
+      <small><br>
+
+這是最簡單的佇列實作，但是由於陣列的大小必須先決定，所以這種線性的結構有個問題，front與rear會到達陣列的後端，而這個陣列就不能再使用了，
+為了解決這個問題，將陣列當作環狀來使用，當front或rear到達陣列後端時，就重新從陣列前端再循環，也就是形成環狀佇列，如下圖所示：<br>
+      </small>
+      <div style="text-align: center;"><small><img style="width: 207px; height: 164px;" alt="Quene" title="Quene" src="queneByArray-2.jpg" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/images/queneByArray-2.jpg"><br>
+
+      </small></div>
+
+      <small><br>
+      <br>
+
+不過陣列的容量還是受限制，所以這個陣列還是會滿的，當front = rear時，佇列就滿了；佇列的基本操作有五項：新增佇列、加入資料、顯示前端資料、取出前端資料、顯示所有的佇列元素。 </small>
+      <br>
+
+
+      <br>
+
+      <h2> 實作</h2>
+
+
+      <ul>
+        <li> C </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br>#define N 10 <br><br>void createq(int[], int*, int*); <br>void showfront(int[], int, int); <br>void add(int[], int*, int*, int); <br>void del(int[], int*, int*); <br>void showqueue(int[], int, int); <br><br>int main(void) { <br>    int queue[N]; <br>    int front, rear; <br>    int input, select; <br><br>    createq(queue, &amp;front, &amp;rear); <br><br>    while(1) { <br>        printf("\n\n請輸入選項(-1結束)："); <br>        printf("\n(1)插入值至佇列"); <br>        printf("\n(2)顯示佇列前端"); <br>        printf("\n(3)刪除前端值"); <br>        printf("\n(4)顯示所有內容"); <br>        printf("\n$c&gt;"); <br>        scanf("%d", &amp;select); <br>        <br>        if(select == -1) <br>            break; <br><br>        switch(select) { <br>            case 1: <br>                printf("\n輸入值："); <br>                scanf("%d", &amp;input); <br>                add(queue, &amp;front, &amp;rear, input); <br>                break; <br>            case 2: <br>                showfront(queue, front, rear); <br>                break; <br>            case 3: <br>                del(queue, &amp;front, &amp;rear); <br>                break; <br>            case 4: <br>                showqueue(queue, front, rear); <br>                break; <br>            default: <br>                printf("\n選項錯誤！"); <br>        } <br>    } <br><br>    printf("\n"); <br><br>    return 0; <br>} <br><br>void createq(int queue[], int* front, int* rear) { <br>    int i; <br><br>    for(i = 0; i &lt; N; i++) <br>        queue[i] = 0; <br><br>    *front = *rear = 0; <br>} <br><br>void showfront(int queue[], int front, int rear) { <br>    if(front == rear) <br>        printf("\n佇列為空！"); <br>    else <br>        printf("%d", queue[(front+1) % N]); <br>} <br><br>void add(int queue[], int* front, int* rear, int data) { <br>    int f, r; <br>    f = *front; <br>    r = *rear; <br>    r = (r+1) % N; <br><br>    if(f == r) { <br>        printf("\n佇列已滿！"); <br>        return; <br>    } <br><br>    queue[r] = data; <br>    *rear = r; <br>} <br><br>void del(int queue[], int* front, int* rear) { <br>    int f, r; <br>    f = *front; <br>    r = *rear; <br><br>    if(f == r) { <br>        printf("\n佇列為空！"); <br>        return; <br>    } <br><br>    f = (f+1) % N; <br>    *front = f; <br>} <br><br>void showqueue(int queue[], int front, int rear) { <br>    int i; <br><br>    printf("\n佇列內容："); <br>    for(i = (front+1) % N; i &lt;= rear; i++) <br>        printf("%d ", queue[i]); <br>} <br></pre>
+
+
+      <br>
+
+
+      <h2> 補充</h2>
+      <small>
+
+您如果仔細演算過上面的環狀佇列，您會發現有一個空間會被浪費掉，這是因為判斷佇列已滿或已空的條件都是front =
+rear，浪費一個空間對現在的電腦記憶體如此足夠來說，並不是個大問題，如果您一定要解決這個問題，可以多使用一個flag來判斷，如果flag設定為
+1且front = rear，則表示佇列已滿，如果flag設定為0則front =
+rear，則表示佇列已空，這樣就不會浪費一個佇列空間了，提供改良後的虛擬碼如下： </small><br>
+
+
+      <pre>Procedure add(queue, n, front, rear, flag, data) <br>    if(front = rear and flag = 1) <br>        then call QUEUE_FULL <br>    queue(rear) &lt;- data <br>    if(front = rear) <br>       then flag &lt;- 1 <br>end add <br><br>Procedure del(queue, n, front, rear, flag, data) <br>    if(front = rear and flag = 0) <br>        then call QUEUE_EMPTY <br>    front &lt;- (front+1) mod n <br>    if(front = rear) <br>        then flag &lt;- 1 <br>end del</pre>
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+
+
+
+
+</body>
+</html>

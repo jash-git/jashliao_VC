@@ -1,0 +1,449 @@
+{\rtf1\ansi\deff0\deftab720{\fonttbl{\f0\fnil MS Sans Serif;}{\f1\fnil\fcharset2 Symbol;}{\f2\fswiss\fprq2 System;}{\f3\fnil\fcharset134 \'cb\'ce\'cc\'e5;}{\f4\fnil Courier New;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033{\info{\horzdoc }{\*\fchars !),.:\'3b?\}]\'a1\'a2\'a1\'a3\'a1\'a4\'a1\'a5\'a1\'a6\'a1\'a7\'a1\'a8\'a1\'a9\'a1\'aa\'a1\'ab\'a1\'ac\'a1\'ad\'a1\'af\'a1\'b1\'a1\'b3\'a1\'b5\'a1\'b7\'a1\'b9\'a1\'bb\'a1\'bd\'a1\'bf\'a1\'c3\'a3\'a1\'a3\'a2\'a3\'a7\'a3\'a9\'a3\'ac\'a3\'ae\'a3\'ba\'a3\'bb\'a3\'bf\'a3\'dd\'a3\'e0}{\*\lchars ([\{\'a1\'ae\'a1\'b0\'a1\'b2\'a1\'b4\'a1\'b6\'a1\'b8\'a1\'ba\'a1\'bc\'a1\'be\'a3\'a8\'a3\'db\'a3\'fb\'a3\'ae\'a1\'a4}}
+\pard\qc\nowwrap\nooverflow\plain\f4\fs24\b\ul 
+\par 
+\par General RIFF File Background
+\par \plain\f4\fs20\i 
+\par 
+\par General RIFF description provided by
+\par Robert Shuler <rlshuler@aol.com>
+\par 
+\par \pard\nowwrap\nooverflow\plain\f4\fs20\b\ul General RIFF File Format\plain\f4\fs20\i 
+\par 
+\par \plain\f4\fs20 \tab RIFF is a Windows file format for storing chunks of multi-media data, associated descriptions, formats, playlists, etc.  The \plain\f4\fs20\i Waveform Audio File Format\plain\f4\fs20  (.WAV) description below provides a precise description of the data unique to .WAV files, but does not describe the RIFF file structure within which the .WAV data is stored, so I have added this section to describe general RIFF files.
+\par 
+\par \tab If you read the raw file data you will need to process the structures described in this section.  If you use RIFF access functions within windows, they will strip this information off and you will not see it.
+\par 
+\par \plain\f4\fs20\ul RIFF Header\plain\f4\fs20 
+\par 
+\par \tab A RIFF file has an \plain\f4\fs20\b 8-byte RIFF header\plain\f4\fs20 , identifying the file, and giving the residual length after the header (i.e. file_length - 8):
+\par 
+\par \tab \tab struct \{     
+\par \tab \tab    char  id[4];  \tab // identifier string = "RIFF"
+\par \tab \tab    DWORD len;    \tab // remaining length after this header
+\par \tab \tab \} riff_hdr;
+\par 
+\par \tab The riff_hdr is immediately followed by a \plain\f4\fs20\b 4-byte data type\plain\f4\fs20  identifier.  For .WAV files this is "WAVE" as follows:
+\par 
+\par \tab \tab char wave_id[4];\tab // WAVE file identifier = "WAVE"
+\par 
+\par \plain\f4\fs20\ul RIFF Chunks\plain\f4\fs20 
+\par 
+\par \tab The entire remainder of the RIFF file is "chunks".  Each chunk has an \plain\f4\fs20\b 8-byte chunk header\plain\f4\fs20  identifying the type of chunk, and giving the length in bytes of the data following the chunk header, as follows:
+\par   
+\par \tab \tab struct \{\tab \tab // CHUNK 8-byte header
+\par \tab \tab    char  id[4];\tab // identifier, e.g. "fmt " or "data"
+\par \tab \tab    DWORD len; \tab // remaining chunk length after header
+\par \tab \tab \} chunk_hdr;
+\par \tab \tab \tab \tab \tab // data bytes follow chunk header
+\par 
+\par \tab This concludes the general RIFF file description.  The types of chunks to expect for .WAV files (unexpected chunks should be allowed for in processing RIFF files) and the format of the content data of each chunk type are described in the sections that follow.
+\par 
+\par 
+\par \plain\f4\fs20\i 
+\par 
+\par 
+\par 
+\par \pard\qc\nowwrap\nooverflow\plain\f4\fs24\b\ul RIFF WAVE (.WAV) file format\plain\f4\fs20\i 
+\par 
+\par From: Rob Ryan <ST802200@brownvm.brown.edu>
+\par Organization: Brown University
+\par \pard\nowwrap\nooverflow\plain\f4\fs20\i 
+\par \plain\f4\fs20 \tab I found the following lengthy excerpt in a document rmrtf.zrt (it is actually a .zip file) in the vendor/microsoft/multimedia subdirectory at the ftp.uu.net ftp site.  It is presumably beyond the scope (in terms of the amount of detail) of your document, but nevertheless, I thought that it may help you in including references to the Windows .WAV format in the future.
+\par 
+\par \tab Let me know if you have any questions/comments.  Again, thank you for your helpful summary.  Keep it up!
+\par 
+\par \tab The following is taken from RIFFMCI.RTF, "Multimedia Programming Interface and Data Specification v1.0", a Windows RTF (Rich Text Format) file contained in the .zip file, RMRTF.ZRT.  The original document is quite long and this constitutes pages 83-95 of the text format version (starting on roughly page 58 of the RTF version).  If you would like a PostScript version, let me know and I can make one up for you.
+\par 
+\par \plain\f4\fs20\b\ul Waveform Audio File Format (WAVE)
+\par 
+\par \plain\f4\fs20 \tab This section describes the Waveform format, which is used to represent digitized sound.
+\par 
+\par \tab The WAVE form is defined as follows. Programs must expect(and ignore) any unknown chunks encountered, as with all RIFF forms. However, \plain\f4\fs20\i <fmt-ck>\plain\f4\fs20  must always occur before \plain\f4\fs20\i <wave-data>\plain\f4\fs20 , and both of these chunks are mandatory in a WAVE file.<
+\par 
+\par WAVE-form> ->
+\par \tab RIFF( 'WAVE'
+\par \tab <fmt-ck>     \tab \tab // Format
+\par \tab [<fact-ck>]  \tab \tab // Fact chunk
+\par \tab [<cue-ck>]  \tab \tab // Cue points
+\par \tab [<playlist-ck>] \tab \tab // Playlist
+\par \tab [<assoc-data-list>] \tab // Associated data list
+\par \tab <wave-data>   ) \tab \tab // Wave data
+\par 
+\par WAVE chunks are described in the following sections.
+\par 
+\par \plain\f4\fs20\b\ul WAVE Format Chunk
+\par 
+\par \plain\f4\fs20 \tab The WAVE format chunk \plain\f4\fs20\b\i <fmt-ck>\plain\f4\fs20  specifies the format of the \plain\f4\fs20\i <wave-data>\plain\f4\fs20 . The \plain\f4\fs20\i <fmt-ck>\plain\f4\fs20  is defined as follows:
+\par 
+\par <fmt-ck> ->   fmt( <common-fields> <format-specific-fields> )
+\par 
+\par <common-fields> ->
+\par \tab struct
+\par \tab \{
+\par \tab \tab WORD wFormatTag;         // Format category
+\par \tab \tab WORD wChannels;          // Number of channels
+\par \tab \tab DWORDdwSamplesPerSec;    // Sampling rate
+\par \tab \tab DWORDdwAvgBytesPerSec;   // For buffer estimation
+\par \tab \tab WORD wBlockAlign;        // Data block size
+\par \tab \}
+\par 
+\par \plain\f4\fs20\b\ul Common Fields Chunk
+\par \plain\f4\fs20 
+\par \tab The fields in the \plain\f4\fs20\b\i <common-fields>\plain\f4\fs20  chunk are as follows:
+\par 
+\par \tab \plain\f4\fs20\ul Field \tab \tab Description\plain\f4\fs20\b\ul 
+\par \plain\f4\fs20 \tab wFormatTag \tab \tab A number indicating the WAVE format category of
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 the file. The content of the \plain\f4\fs20\i <format-specific-fields>\plain\f4\fs20  portion of the `fmt' chunk, and the interpretation of the waveform data,on this value. must register any new WAVE format categories. See ``Registering Multimedia Formats'' in Chapter 1, ``Overview of Multimedia,'' for information on registering WAVE format categories. ``Wave Format Categories,'' following this section, lists the currently defined WAVE format categories.
+\par 
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab wChannels\tab \tab The number of channels represented in the
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 waveform data, such as 1 for mono or 2 for stereo.
+\par 
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab dwSamplesPerSec\tab The sampling rate (in samples per second)
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 at which each channel should be played.
+\par 
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab dwAvgBytesPerSec\tab The average number of bytes per second
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 at which the waveform data should be transferred. Playback software can estimate the buffer size using this value.
+\par 
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab wBlockAlign\tab \tab The block alignment (in bytes) of the waveform
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 data.  Playback software needs to process a multiple of wBlockAlign bytes of data at a time, so the value of wBlockAlign can be used for buffer alignment.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \plain\f4\fs20\b\ul Format Specific Fields Chunk
+\par 
+\par \plain\f4\fs20 \tab The \plain\f4\fs20\b\i <format-specific-fields>\plain\f4\fs20  consists of zero or more bytes of parameters. Which parameters occur depends on the WAVE format category-see the following section for details. Playback software should be written to allow for (and ignore) any unknown \plain\f4\fs20\i <format-specific-fields>\plain\f4\fs20  parameters that occur at the end of this field.
+\par 
+\par \plain\f4\fs20\b\ul WAVE Format Categories
+\par 
+\par \plain\f4\fs20 \tab The format category of a WAVE file is specified by the value of the wFormatTag field of the \plain\f4\fs20\b `fmt'\plain\f4\fs20  chunk. The representation of data in <wave-data>, and the content of the <format-specific-fields> of the `fmt' chunk, depend on the format category.
+\par 
+\par \tab The currently defined open non-proprietary WAVE format categories are as follows:
+\par 
+\par \plain\f4\fs20\ul wFormatTag Value\tab \tab \tab Format Category\plain\f4\fs20 _
+\par 
+\par WAVE_FORMAT_PCM\tab (0x0001) \tab Microsoft Pulse Code Modulation (PCM)
+\par 
+\par \tab The following are the registered proprietary WAVE format categories:
+\par 
+\par \plain\f4\fs20\ul wFormatTag Value\tab \tab \tab Format Category\plain\f4\fs20 _
+\par 
+\par FORMAT_MULAW\tab (0x0101)\tab IBM mu-law format
+\par IBM_FORMAT_ALAW\tab (0x0102)\tab IBM a-law format
+\par IBM_FORMAT_ADPCM\tab (0x0103)\tab IBM AVC Adaptive Differential PCM format
+\par 
+\par \plain\f4\fs20\b\ul Microsoft WAVE_FORMAT_PCM format\plain\f4\fs20 
+\par 
+\par \tab The following sections describe the Microsoft WAVE_FORMAT_PCM format.  If the \plain\f4\fs20\i wFormatTag\plain\f4\fs20  field of the \plain\f4\fs20\i <fmt-ck>\plain\f4\fs20  is set to WAVE_FORMAT_PCM, then the waveform data consists of samples represented in pulse code modulation (PCM) format. For PCM waveform data, the \plain\f4\fs20\i <format-specific-fields>\plain\f4\fs20  is defined as follows:
+\par 
+\par <PCM-format-specific> ->
+\par \tab struct
+\par \tab \{
+\par \tab \tab WORD wBitsPerSample;\tab // Sample size
+\par \tab \}
+\par 
+\par \tab The \plain\f4\fs20\b\i wBitsPerSample\plain\f4\fs20  field specifies the number of bits of data used to represent each sample of each channel. If there are multiple channels, the sample size is the same for each channel.
+\par 
+\par \tab For PCM data, the \plain\f4\fs20\b\i wAvgBytesPerSec\plain\f4\fs20  field of the `fmt' chunk should be equal to the following formula rounded up to the next whole number:
+\par 
+\par \tab                              wBitsPerSample
+\par \tab wChannels x wBitsPerSecond x --------------
+\par \tab                                    8
+\par 
+\par \tab The \plain\f4\fs20\b\i wBlockAlign\plain\f4\fs20  field should be equal to the following formula, rounded to the next whole number:
+\par 
+\par \tab             wBitsPerSample
+\par \tab wChannels x --------------
+\par \tab                   8
+\par 
+\par \plain\f4\fs20\b\ul Data Packing for PCM WAVE Files
+\par 
+\par \plain\f4\fs20 \tab In a single-channel WAVE file, samples are stored consecutively. For stereo WAVE files, channel 0 represents the left channel, and channel 1 represents the right channel. The speaker position mapping for more than two channels is currently undefined. In multiple-channel WAVE files, samples are interleaved.
+\par 
+\par \tab The following diagrams show the data packing for a \plain\f4\fs20\b\ul 8-bit\plain\f4\fs20  mono and stereo WAVE files:
+\par 
+\par \plain\f4\fs20\ul Data Packing for 8-Bit Mono PCM:
+\par \plain\f4\fs20 
+\par \tab \tab Sample 1\tab Sample 2\tab Sample 3\tab Sample 4
+\par \tab \tab ---------\tab ---------\tab ---------\tab ---------
+\par \tab \tab Channel 0\tab Channel 0\tab Channel 0\tab Channel 0
+\par 
+\par \plain\f4\fs20\ul Data Packing for 8-Bit Stereo PCM:\plain\f4\fs20 
+\par 
+\par \tab \tab \tab Sample 1\tab \tab \tab Sample 2
+\par \tab \tab ---------------------\tab ---------------------
+\par \tab \tab Channel 0\tab Channel 1\tab Channel 0\tab Channel 0
+\par \tab \tab  (left)\tab  (right)\tab  (left)\tab  (right)
+\par 
+\par \tab The following diagrams show the data packing for \plain\f4\fs20\b\ul 16-bit\plain\f4\fs20  mono and stereo WAVE files:
+\par 
+\par \plain\f4\fs20\ul Data Packing for 16-Bit Mono PCM:
+\par \plain\f4\fs20 
+\par \tab \tab \tab Sample 1\tab \tab \tab Sample 2
+\par \tab \tab ----------------------\tab ----------------------
+\par \tab \tab Channel 0\tab Channel 0\tab Channel 0\tab Channel 0
+\par \tab \tab low-order\tab high-order\tab low-order\tab high-order
+\par \tab \tab byte \tab \tab byte\tab \tab byte\tab \tab byte
+\par 
+\par \plain\f4\fs20\ul Data Packing for 16-Bit Stereo PCM:
+\par \plain\f4\fs20 
+\par \tab \tab \tab \tab \tab Sample 1
+\par \tab \tab ---------------------------------------------
+\par \tab \tab Channel 0\tab Channel 0\tab Channel 1\tab Channel 1
+\par \tab \tab (left)\tab (left)\tab (right)\tab (right)
+\par \tab \tab low-order\tab high-order\tab low-order \tab high-order
+\par \tab \tab byte \tab \tab byte \tab \tab byte\tab \tab byte
+\par 
+\par \plain\f4\fs20\b\ul Data Format of the Samples
+\par 
+\par \plain\f4\fs20 \tab Each sample is contained in an integer i. The size of i is the smallest number of bytes required to contain the specified sample size. The least significant byte is stored first. The bits that represent the sample amplitude are stored in the most significant bits of i, and the remaining bits are set to zero.
+\par 
+\par \tab For example, if the sample size (recorded in nBitsPerSample) is 12 bits, then each sample is stored in a two-byte integer. The least significant four bits of the first (least significant) byte is set to zero.\tab The data format and maximum and minimums values for PCM waveform samples of various sizes are as follows:
+\par 
+\par \tab \tab \plain\f4\fs20\ul SampleSize\tab DataFormat\tab Max.Value\tab MinimumValue
+\par \plain\f4\fs20 \tab \tab One to \tab Unsigned\tab 255 (0xFF)\tab 0
+\par \tab \tab eight bits\tab integer
+\par 
+\par \tab \tab Nine or\tab Signed\tab Largest\tab Most negative
+\par \tab \tab more bits\tab integer i\tab positive\tab value of i
+\par \tab \tab \tab \tab \tab \tab value of i
+\par 
+\par \tab For example, the maximum, minimum, and midpoint values for 8-bit and 16-bit PCM waveform data are as follows:
+\par 
+\par \tab \tab \plain\f4\fs20\ul Format\tab Max.Value\tab Min.Value\tab MidpointValue
+\par \plain\f4\fs20 \tab \tab 8-bit PCM\tab 255 (0xFF)\tab 0\tab \tab 128 (0x80)
+\par \tab \tab 16-bit PCM\tab 32767 \tab -32768 \tab 0
+\par \tab \tab \tab \tab (0x7FFF)\tab (-0x8000)
+\par 
+\par \plain\f4\fs20\b\ul Examples of PCM WAVE Files
+\par 
+\par \plain\f4\fs20 \tab Example of a PCM WAVE file with 11.025 kHz sampling rate, mono, 8 bits per sample:
+\par 
+\par \plain\f4\fs20\i \tab \tab RIFF( 'WAVE'\tab fmt(1, 1, 11025, 11025, 1, 8)
+\par \tab \tab \tab \tab \tab data( <wave-data> ) )
+\par 
+\par \plain\f4\fs20 \tab Example of a PCM WAVE file with 22.05 kHz sampling rate, stereo, 8 bits per sample:
+\par 
+\par \plain\f4\fs20\i \tab \tab RIFF( 'WAVE'\tab fmt(1, 2, 22050, 44100, 2, 8)
+\par \tab \tab \tab \tab \tab data( <wave-data> ) )
+\par 
+\par \tab \plain\f4\fs20 Example of a PCM WAVE file with 44.1 kHz sampling rate, mono, 20 bits per sample:
+\par 
+\par \plain\f4\fs20\i \tab \tab RIFF( 'WAVE'     INFO(INAM("O Canada"Z))
+\par \tab \tab \tab \tab \tab fmt(1, 1, 44100, 132300, 3, 20)
+\par \tab \tab \tab \tab \tab data( <wave-data> ) )
+\par 
+\par \plain\f4\fs20\b\ul Storage of WAVE Data
+\par 
+\par \plain\f4\fs20 \tab The \plain\f4\fs20\i <wave-data>\plain\f4\fs20  contains the waveform data. It is defined as follows:
+\par 
+\par \tab <wave-data> ->   \{ <data-ck> : <data-list> \}
+\par \tab <data-ck>   ->   data( <wave-data> )
+\par \tab <wave-list> ->   LIST( 'wavl' \{ <data-ck> :\tab // Wave samples
+\par \tab \tab \tab \tab \tab <silence-ck> \}... )\tab // Silence
+\par \tab <silence-ck> ->  slnt( <dwSamples:DWORD> ) \tab // Count of
+\par \tab \tab \tab \tab \tab \tab \tab \tab \tab // silent samples
+\par 
+\par \tab Note:  The `slnt' chunk represents silence, not necessarily a repeated zero volume or baseline sample. In 16-bit PCM data, if the last sample value played before the silence section is a 10000, then if data is still output to the D to A converter, it must maintain the 10000 value. If a zero value is used, a click may be heard at the start and end of the silence section.  If play begins at a silence section, then a zero value might be used since no other information is available. A click might be created if the data following the silent section starts with a nonzero value.
+\par 
+\par \plain\f4\fs20\b\ul FACT Chunk
+\par 
+\par \plain\f4\fs20 \tab The <fact-ck> fact chunk stores important information about the contents of the WAVE file. This chunk is defined as follows:
+\par 
+\par \tab <fact-ck> -> fact( <dwFileSize:DWORD> )\tab // Number of samples
+\par 
+\par \tab The `fact'' chunk is required if the waveform data is contained in a \plain\f4\fs20\b `wavl''\plain\f4\fs20  LIST chunk and for all compressed audio formats. The chunk is not required for PCM files using the \plain\f4\fs20\b `data''\plain\f4\fs20  chunk format.
+\par 
+\par \tab The "fact" chunk will be expanded to include any other information required by future WAVE formats. Added fields will appear following the \plain\f4\fs20\i <dwFileSize>\plain\f4\fs20  field. Applications can use the chunk size field to determine which fields are present.
+\par 
+\par \plain\f4\fs20\b\ul Cue-Points Chunk
+\par 
+\par \plain\f4\fs20 \tab The \plain\f4\fs20\i <cue-ck>\plain\f4\fs20  cue-points chunk identifies a series of positions in the waveform data stream. The <cue-ck> is defined as follows:
+\par 
+\par \tab <cue-ck> ->   cue( <dwCuePoints:DWORD>\tab // Count of cue points
+\par \tab \tab \tab \tab <cue-point>... )\tab \tab // Cue-point table
+\par \tab <cue-point> ->\tab struct 
+\par \tab \tab \tab \tab \{
+\par \tab \tab \tab \tab \tab DWORD  dwName;
+\par \tab \tab \tab \tab \tab DWORD  dwPosition;
+\par \tab \tab \tab \tab \tab FOURCC fccChunk;
+\par \tab \tab \tab \tab \tab DWORD  dwChunkStart;
+\par \tab \tab \tab \tab \tab DWORD  dwBlockStart;
+\par \tab \tab \tab \tab \tab DWORD  dwSampleOffset;
+\par \tab \tab \tab \tab \}
+\par 
+\par \tab The \plain\f4\fs20\i <cue-point>\plain\f4\fs20  fields are as follows:
+\par 
+\par \tab \plain\f4\fs20\ul Field\tab \tab \tab Description\plain\f4\fs20 
+\par \tab dwName \tab \tab Specifies the cue point name. Each
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20\i <cue-point>\plain\f4\fs20  record must have a unique dwName field.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab dwPosition\tab \tab Specifies the sample position of the cue
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 point.This is the sequential sample number within the play order. See ``Playlist Chunk,'' later in this document, for a discussion of the play order.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab fccChunk\tab \tab Specifies the name or chunk ID of thechunk
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 containing the cue point.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab dwChunkStart\tab Specifies the file position of the start of
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 the chunk containing the cue point. This is a byte offset relative to the start of the data section of the `wavl' LIST chunk.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab dwBlockStart\tab Specifies the file position of the start of
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 the block containing the position. This is a byte offset relative to the start of the data section of the `wavl' LIST chunk.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab dwSampleOffset\tab Specifies the sample offset of the cuepoint
+\par \pard\li2880\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the block.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \plain\f4\fs20\b\ul Examples of File Position Values
+\par 
+\par \plain\f4\fs20 \tab The following table describes the <cue-point> field values for a WAVE file containing multiple `data' and `slnt' chunks enclosed in a `wavl' LIST chunk:
+\par 
+\par \plain\f4\fs20\ul CuePointLoc.\tab Field\tab \tab \tab Value
+\par \plain\f4\fs20 a `slnt'\tab \tab fccChunk \tab \tab FOURCC value `slnt'.
+\par 
+\par \tab \tab \tab dwChunkStart  \tab File position of the`slnt' chunk
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the data section in the `wavl' LIST chunk.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab \tab dwBlockStart  \tab File position of the datasection of
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 the `slnt' chunk relative to the start of the data section of the `wavl' LIST chunk.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab \tab \tab dwSampleOffset  \tab Sample position of the cuepoint
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the `slnt' chunk.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par In a PCM\tab \tab fccChunk\tab \tab FOURCC value `data'.
+\par `data' chunk
+\par \tab \tab \tab dwChunkStart  \tab File position of the`data' chunk
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the data section in the `wavl' LIST chunk.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab \tab dwBlockStart  \tab File position of the cuepoint
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the data section of the `wavl' LIST chunk.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab \tab dwSampleOffset  \tab Zero value.
+\par 
+\par In a \tab \tab \tab fccChunk      \tab FOURCC value `data'.
+\par compressed
+\par `data' chunk
+\par \tab \tab \tab dwChunkStart  \tab File position of the startof the
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 `data' chunk relative to the start of the data section of the `wavl' LIST chunk.
+\par 
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 \tab \tab \tab dwBlockStart \tab File position of theenclosing block
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the data section of the `wavl' LIST chunk. The software can begin the decompression at this point.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab \tab dwSampleOffset  \tab Sample position of the cuepoint
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the block.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab The following table describes the <cue-point> field values for a WAVE file containing a single `data' chunk:
+\par 
+\par \plain\f4\fs20\ul CuePointLoc.\tab Field\tab \tab \tab Value
+\par \plain\f4\fs20 Within PCM\tab \tab fccChunk\tab \tab FOURCC value `data'.
+\par data
+\par \tab \tab \tab dwChunkStart\tab Zero value.
+\par 
+\par \tab \tab \tab dwBlockStart\tab Zero value.
+\par 
+\par \tab \tab \tab dwSampleOffset\tab Sample position of the cuepoint
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the `data' chunk.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par In a\tab \tab \tab fccChunk \tab \tab FOURCC value `data'.
+\par compressed
+\par `data' chunk
+\par \tab \tab \tab dwChunkStart\tab Zero value.
+\par 
+\par \tab \tab \tab dwBlockStart\tab File position of theenclosing block
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the `data' chunk. The software can begin the decompression at this point.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab \tab dwSampleOffset\tab Sample position of the cuepoint
+\par \pard\li4320\nowwrap\nooverflow\plain\f4\fs20 relative to the start of the block.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \plain\f4\fs20\b\ul Playlist Chunk
+\par 
+\par \plain\f4\fs20 \tab The \plain\f4\fs20\i <playlist-ck>\plain\f4\fs20  playlist chunk specifies a play order for a series of cue points. The <playlist-ck> is defined as follows:
+\par 
+\par <playlist-ck> -> plst( \tab <dwSegments:DWORD>   // Count of play segments
+\par \tab \tab \tab \tab <play-segment>... )  // Play-segment table
+\par 
+\par <play-segment> ->  struct \{
+\par \tab \tab \tab \tab \tab DWORD dwName;
+\par \tab \tab \tab \tab \tab DWORD dwLength;
+\par \tab \tab \tab \tab \tab DWORD dwLoops;
+\par \tab \tab \tab \tab    \}
+\par 
+\par \tab The \plain\f4\fs20\i <play-segment>\plain\f4\fs20  fields are as follows:
+\par 
+\par \tab \tab \plain\f4\fs20\ul Field\tab \tab \tab Description
+\par \plain\f4\fs20 \tab \tab dwName  \tab \tab Specifies the cue point name. This value
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 must match one of the names listed in the <cue-ck> cue-point table.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab dwLength\tab \tab Specifies the length of the section
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 in samples.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab dwLoops \tab \tab Specifies the number of times to play
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 the section.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \plain\f4\fs20\b\ul Associated Data Chunk
+\par 
+\par \plain\f4\fs20 \tab The \plain\f4\fs20\i <assoc-data-list>\plain\f4\fs20  associated data list provides the ability to attach information like labels to sections of the waveform data stream. The \plain\f4\fs20\i <assoc-data-list>\plain\f4\fs20  is defined as follows:
+\par 
+\par <assoc-data-list> ->  LIST('adtl'
+\par \tab \tab \tab \tab \tab <labl-ck> \tab \tab // Label
+\par \tab \tab \tab \tab \tab <note-ck>\tab \tab // Note
+\par \tab \tab \tab \tab \tab <ltxt-ck>\tab \tab // Text with data length
+\par \tab \tab \tab \tab \tab <file-ck> ) \tab // Media file
+\par 
+\par <labl-ck> -> \tab labl(\tab <dwName:DWORD> <data:ZSTR> )
+\par 
+\par <note-ck> -> \tab note(\tab <dwName:DWORD> <data:ZSTR> )
+\par 
+\par <ltxt-ck> -> \tab ltxt(\tab <dwName:DWORD>
+\par \tab \tab \tab \tab <dwSampleLength:DWORD>
+\par \tab \tab \tab \tab <dwPurpose:DWORD>
+\par \tab \tab \tab \tab <wCountry:WORD>
+\par \tab \tab \tab \tab <wLanguage:WORD>
+\par \tab \tab \tab \tab <wDialect:WORD>
+\par \tab \tab \tab \tab <wCodePage:WORD>
+\par \tab \tab \tab \tab <data:BYTE>... )
+\par 
+\par <file-ck> ->\tab file(\tab <dwName:DWORD>
+\par \tab \tab \tab \tab <dwMedType:DWORD>
+\par \tab \tab \tab \tab <fileData:BYTE>...)
+\par 
+\par \plain\f4\fs20\b\ul Label and Note Information
+\par 
+\par \plain\f4\fs20 \tab The `labl' and `note' chunks have similar fields. The `labl' chunk contains a label, or title, to associate with a cue point. The `note' chunk contains comment text for a cue point. The fields are as follows:
+\par 
+\par \tab \tab \plain\f4\fs20\ul Field\tab \tab \tab Description
+\par \plain\f4\fs20 \tab \tab dwName\tab \tab Specifies the cue point name.  This
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 value must match one of the names listed in the \plain\f4\fs20\i <cue-ck>\plain\f4\fs20  cue-point                             table.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab data\tab \tab \tab Specifies a NULL-terminated string
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 containing a text label (for the \plain\f4\fs20\i `labl'\plain\f4\fs20  chunk) or comment text (for the                             \plain\f4\fs20\i `note'\plain\f4\fs20  chunk).
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \plain\f4\fs20\b\ul Text with Data Length Information
+\par 
+\par \plain\f4\fs20 \tab The `ltxt'' chunk contains text that is associated with a data segment of specific length. The chunk fields are as follows:
+\par 
+\par \tab \tab \plain\f4\fs20\ul Field\tab \tab \tab Description\plain\f4\fs20 
+\par \tab \tab dwName\tab \tab Specifies the cue point name.  This
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 value must match one of the names listed in the \plain\f4\fs20\i <cue-ck>\plain\f4\fs20  cue-point                             table.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab dwSampleLength\tab Specifies the number of samples in the
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 segment of waveform data.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab dwPurpose\tab \tab Specifies the type or purpose of the
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 text. For example, dwPurpose can specify a FOURCC code like \plain\f4\fs20\i `scrp'\plain\f4\fs20  for                             script text or \plain\f4\fs20\i `capt'\plain\f4\fs20  for close-caption text.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab wCountry\tab \tab Specifies the country code for the
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 text. See `\plain\f4\fs20\i `Country Codes''\plain\f4\fs20  in Chapter 2, `\plain\f4\fs20\i `Resource Interchange File                             Format,''\plain\f4\fs20  for a current list of country codes.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab wLanguage,\tab \tab Specify the language and dialect codes
+\par \tab \tab wDialect\tab \tab for the text. See ``Language and Dialect
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 Codes'' in Chapter 2, ``Resource Interchange File Format,'' for a current list of language and dialect codes. 
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab wCodePage\tab \tab Specifies the code page for the text.
+\par 
+\par \plain\f4\fs20\b\ul Embedded File Information
+\par 
+\par \plain\f4\fs20 \tab The `file' chunk contains information described in other file formats (for example, an `RDIB' file or an ASCII text file). The chunk fields are as follows:
+\par 
+\par \tab \tab \plain\f4\fs20\ul Field\tab \tab \tab Description\plain\f4\fs20  
+\par \tab \tab dwName\tab \tab Specifies the cue point name.  This value
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 must match one of the names listed in the \plain\f4\fs20\i <cue-ck> \plain\f4\fs20 cue-point table.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab dwMedType\tab \tab Specifies the file type contained in the
+\par \pard\li3600\nowwrap\nooverflow\plain\f4\fs20 fileData field. If the fileData section contains a RIFF form, the \plain\f4\fs20\i dwMedType\plain\f4\fs20  field is the same as the RIFF form type for the file.  This field can contain a zero value.
+\par \pard\nowwrap\nooverflow\plain\f4\fs20 
+\par \tab \tab fileData\tab \tab Contains the media file.
+\par }
+ 

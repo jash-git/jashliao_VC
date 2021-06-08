@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<title>10.6 CRecordView类</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="CENTER"></font><font FACE="Times New Roman" size="4" color="#3973DE">10.6 CRecordView</font><font size="4" color="#3973DE">类</font><font FACE="Times New Roman" size="4"></p>
+    </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordView</font><font SIZE="3">（记录视图）是</font><font FACE="Times New Roman" SIZE="3">CFormView</font><font SIZE="3">的派生类，它提供了一个表单视图（参见</font><font FACE="Times New Roman" SIZE="3">6.4.1</font><font SIZE="3">）来显示当前记录．一个典型的记录视图如图</font><font FACE="Times New Roman" SIZE="3">10.3</font><font SIZE="3">所示，用户可以通过表单视图显示当前记录．通过记录视图，可以修改、添加和删除数据．用户一般需要创建一个</font><font FACE="Times New Roman" SIZE="3">CRecordView</font><font SIZE="3">的派生类并在其对应的对话框模板中加入控件．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T10_3.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/T10_3.gif" alt="T10_3.tif (174388 bytes)" WIDTH="480" HEIGHT="342"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">10.3 
+    </font><font SIZE="3">典型的记录视图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">记录视图使用</font><font FACE="Times New Roman" SIZE="3">DDX</font><font SIZE="3">数据交换机制在表单中的控件和记录集之间交换数据。在前面介绍的</font><font FACE="Times New Roman" SIZE="3">DDX</font><font SIZE="3">都是在控件和控件父窗口的数据成员之间交换数据，而记录视图则是在控件和一个外部对象（</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">的派生类对象）之间交换数据．清单</font><font FACE="Times New Roman" SIZE="3">10.3</font><font SIZE="3">显示了一个</font><font FACE="Times New Roman" SIZE="3">CRecordView</font><font SIZE="3">的派生类的</font><font FACE="Times New Roman" SIZE="3">DoDataExchange</font><font SIZE="3">函数，读者可以看出，该函数是与</font><font FACE="Times New Roman" SIZE="3">m_pSet</font><font SIZE="3">指针指向的记录集对象的域数据成员交换数据的，而且，交换数据的代码是</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">自动加入的．在后面的例子中，将向读者介绍用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">连接记录视图与记录集对象的方法．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.3 </font><font SIZE="3">用来与记录集对象的域数据成员交换数据的</font><font FACE="Times New Roman" SIZE="3">DoDataExchange</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionForm::DoDataExchange(CDataExchange* pDX)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CRecordView::DoDataExchange(pDX);</p>
+    <p ALIGN="JUSTIFY">//{{AFX_DATA_MAP(CSectionForm)</p>
+    <p ALIGN="JUSTIFY">DDX_FieldText(pDX, IDC_COURSE, m_pSet-&gt;m_CourseID, m_pSet);</p>
+    <p ALIGN="JUSTIFY">DDX_FieldText(pDX, IDC_SECTION, m_pSet-&gt;m_SectionNo, m_pSet);</p>
+    <p ALIGN="JUSTIFY">DDX_FieldText(pDX, IDC_INSTRUCTOR, m_pSet-&gt;m_InstructorID, m_pSet);</p>
+    <p ALIGN="JUSTIFY">DDX_FieldText(pDX, IDC_ROOM, m_pSet-&gt;m_RoomNo, m_pSet);</p>
+    <p ALIGN="JUSTIFY">DDX_FieldText(pDX, IDC_SCHEDULE, m_pSet-&gt;m_Schedule, m_pSet);</p>
+    <p ALIGN="JUSTIFY">DDX_FieldText(pDX, IDC_CAPACITY, m_pSet-&gt;m_Capacity, m_pSet);</p>
+    <p ALIGN="JUSTIFY">//}}AFX_DATA_MAP</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">作为总结，图</font><font FACE="Times New Roman" SIZE="3">10.4</font><font SIZE="3">显示了</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">应用程序中的</font><font FACE="Times New Roman" SIZE="3">DDX</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">数据交换．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T10_4.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/T10_4.gif" alt="T10_4.tif (148413 bytes)" WIDTH="512" HEIGHT="215"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">10.4 
+    DDX</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">数据交换机制</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRecordView</font><font SIZE="3">本身提供了对下面四个命令的支持：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_RECORD_FIRST //</font><font SIZE="3">滚动到记录集的第一个记录</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_RECORD_LAST //</font><font SIZE="3">滚动到记录集的最后一个记录</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_RECORD_NEXT //</font><font SIZE="3">前进一个记录</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_RECORD_PREV //</font><font SIZE="3">后退一个记录</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRecordView</font><font SIZE="3">提供了</font><font FACE="Times New Roman" SIZE="3">OnMove</font><font SIZE="3">成员函数处理这四个命令消息，</font><font FACE="Times New Roman" SIZE="3">OnMove</font><font SIZE="3">函数对用户是透明的，清单</font><font FACE="Times New Roman" SIZE="3">10.4</font><font SIZE="3">列出了</font><font FACE="Times New Roman" SIZE="3">OnMove</font><font SIZE="3">的源代码．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.4 OnMove</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CRecordView::OnMove(UINT nIDMoveCommand)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CRecordset* pSet = OnGetRecordset();</p>
+    <p ALIGN="JUSTIFY">if (pSet-&gt;CanUpdate())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">pSet-&gt;Edit();</p>
+    <p ALIGN="JUSTIFY">if (!UpdateData())</p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pSet-&gt;Update();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">switch (nIDMoveCommand)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">case ID_RECORD_PREV:</p>
+    <p ALIGN="JUSTIFY">pSet-&gt;MovePrev();</p>
+    <p ALIGN="JUSTIFY">if (!pSet-&gt;IsBOF())</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">case ID_RECORD_FIRST:</p>
+    <p ALIGN="JUSTIFY">pSet-&gt;MoveFirst();</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">case ID_RECORD_NEXT:</p>
+    <p ALIGN="JUSTIFY">pSet-&gt;MoveNext();</p>
+    <p ALIGN="JUSTIFY">if (!pSet-&gt;IsEOF())</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">if (!pSet-&gt;CanScroll())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// clear out screen since we're sitting on EOF</p>
+    <p ALIGN="JUSTIFY">pSet-&gt;SetFieldNull(NULL);</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">case ID_RECORD_LAST:</p>
+    <p ALIGN="JUSTIFY">pSet-&gt;MoveLast();</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">default:</p>
+    <p ALIGN="JUSTIFY">// Unexpected case value</p>
+    <p ALIGN="JUSTIFY">ASSERT(FALSE);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Show results of move operation</p>
+    <p ALIGN="JUSTIFY">UpdateData(FALSE);</p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在函数的开头先调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Edit</font><font SIZE="3">进入编辑模式，接着调用</font><font FACE="Times New Roman" SIZE="3">UpdateData</font><font SIZE="3">将控件中的数据更新到记录集对象的域数据成员中，然后调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Update</font><font SIZE="3">将域数据成员的值写入数据源．这说明</font><font FACE="Times New Roman" SIZE="3">OnMove</font><font SIZE="3">在滚动记录的同时会完成对原来记录的修改．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在函数的中间有一个分支语句用来处理四个不同的命令，在这个分支语句中调用了</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">的各种用于滚动记录的成员函数，这些函数在滚动到一个新的记录时会把该记录的内容设置到域数据成员中．在函数的末尾调用</font><font FACE="Times New Roman" SIZE="3">UpdateData(FALSE)</font><font SIZE="3">把新的当前记录的内容设置到表单的控件中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">由此可见，</font><font FACE="Times New Roman" SIZE="3">OnMove</font><font SIZE="3">一来一回完成了两次表单控件和数据源的数据交换过程．通过分析该函数，读者可以学会在浏览记录时如何控制</font><font FACE="Times New Roman" SIZE="3">DDX</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">DFX</font><font SIZE="3">数据交换．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap10_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/chap10_5.htm">上一页</a></td>
+        <td><p align="right"><a href="chap10_7.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/chap10_7.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

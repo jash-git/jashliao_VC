@@ -1,0 +1,725 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab720{\fonttbl{\f0\fswiss MS Sans Serif;}{\f1\froman\fcharset2 Symbol;}{\f2\fmodern Courier New;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033\pard\plain\f2\fs20 Chapter 8 DC, Pen, Brush and Palette
+\par 
+\par 8.0\tab Device Context & GDI Objects
+\par 
+\par Starting from this chapter, we are going to study topics on GDI (Graphics Device Interface) programming.
+\par 
+\par Situation
+\par 
+\par GDI is a standard interface between the programmer and physical devices. It provides many functions that can be used to output various objects to the hardware (e.g. a display or a printer). GDI is very important because, as a programmer, we may want our applications to be compatible with as many peripherals as possible. For example, almost every application need to write to display, and many applications also support printer output. The problem here is that since a program should be able to run on different types of devices (low resolution displays, high resolution displays with different color depth, etc.), it is impossible to let the programmer know the details of every device and write code to support it beforehand.
+\par 
+\par The solution is to introduce GDI between the hardware and the programmer. Because it is a standard interface, the programmer doesn't have to have any knowledge on the hardware in order to operate it. As long as the hardware supports standard GDI, the application should be able to execute correctly.
+\par 
+\par Device Context
+\par 
+\par As a programmer, we do not output directly to hardware such as display or printer. Instead, we output to an object that will further realize our intention. This object is called device context (DC), it is a Windows( object that contains the detailed information about hardware. When we call a standard GDI function, the DC implements it according to hardware attributes and configuration.
+\par 
+\par Suppose we want to put a pixel at specific logical coordinates on the display. If we do not have GDI, we need the following information of the display in order to implement this simple operation:
+\par 
+\par 1)  Video memory configuration. We need this information in order to convert logical coordinates to physical buffer address.
+\par 2)  Device type. If the device is a palette device, we need to convert a RGB combination to an index to the color table and use it to specify a color. If the device is a non-palette device, we can use the RGB combination directly to specify a color.
+\par 
+\par Because the actual devices are different form one type to another, it is impossible for us to gather  enough information to support all the devices in the world. So instead of handling it by the programmer, GDI functions let us use logical coordinates and RGB color directly, the conversion will be implemented by the device driver.
+\par 
+\par GDI Objects
+\par 
+\par In Windows(, GDI objects are tools that can be used together with device context to perform various drawings. They are designed for the convenience of programmers. The following is a list of some commonly used GDI objects:
+\par 
+\par (Table omitted)
+\par 
+\par The above GDI objects, along with device context, are all managed through handles. We can use the handle of an object to identify or access it. Besides the handles, every GDI object has a corresponding MFC class. The following is a list of their handle types and classes:
+\par 
+\par (Table omitted)
+\par 
+\par As a programmer, most of the time we need to output to a specific window rather than the whole screen. A DC can be obtained from any window in the system, and can be used to call GDI functions. There are many ways to obtain DC from a window, the following is an incomplete list:
+\par 
+\par 1)  Call function CWnd::GetDC(). This function will return a CDC type pointer that can be used to perform drawing operations within the window.
+\par 
+\par 2)  Declare CClientDC type variable and pass a CWnd type pointer to its constructor. Class CClientDC is designed to perform drawing operations in the client area of a window.
+\par 
+\par 3)  Declare CWndowDC type variable and pass a CWnd type pointer to its constructor. Class CWindowDC is designed to perform drawing operations in the whole window (including client area and non-client area).
+\par 
+\par 4)  In MFC, certain member functions are designed to update application's interface (i.e. CView:: OnDraw(...)). These functions will automatically be called when a window needs to be updated. For this kind of functions, the device context will be passed through one of function's parameters.
+\par 
+\par 5)  If we know all the information, we can create a DC by ourselves.
+\par 
+\par Using DC with GDI Objects
+\par 
+\par Before calling any function to perform drawing, we must make sure that an appropriate GDI object is being selected by the DC. For example, if we want to draw a red line with a width of 2, we must select a solid red pen whose width is 2. The following steps show how to use DC together with GDI objects:
+\par 
+\par 1)  Obtain or create a DC that can be used to perform drawing operations on the target window.
+\par 
+\par 2)  Create or obtain an appropriate GDI (pen, brush, font...) object.
+\par 
+\par 3)  Select the GDI object into the DC, use a pointer to store the old GDI object.
+\par 
+\par 4)  Perform drawing operations.
+\par 
+\par 5)  Select the old GDI object into the DC, this will select the new GDI object out of the DC.
+\par 
+\par 6)  Destroy the GDI object if necessary (If the GDI object was created in step 2 and will not be used by other DCs from now on).
+\par 
+\par The following sections will discuss how to use specific GDI objects to draw various kind of graphic objects.
+\par 
+\par 8.1\tab Line
+\par 
+\par Creating Pen
+\par 
+\par Sample 8.1\\GDI demonstrates how to create a pen and use it to draw lines. The sample is a standard SDI application generated from Application Wizard.
+\par 
+\par To draw a line, we need the following information: starting and ending points, width of the line, pattern of the line, and color. There are several types of pens that can be created: solid pen, dotted pen, dashed pen. Besides drawing patterns, each pen can have a different color and different width. So if we want to draw two types of lines, we need to create two different pens.
+\par 
+\par In MFC, pen is supported by class CPen, it has a member function CPen::CreatePen(...), which can be used to create a pen. This function has several versions, the following is one of them:
+\par 
+\par BOOL CPen::CreatePen(int nPenStyle, int nWidth, COLORREF crColor);
+\par 
+\par Parameter nPenStyle specifies the pen style, it can be any of the following: PS_SOLID, PS_DASH, PS_DOT, PS_DASHDOT, PS_DASHDOTDOT, PS_NULL, etc. The meanings of these styles are self-explanatory. The second parameter nWidth specifies width of the pen. Please note that if we create pen with a style other than PS_SOLID, this width can not exceed 1 device unit. Parameter crColor specifies color of the pen, which can be specified using RGB macro.
+\par 
+\par In MFC's document/view structure, the data should be stored in CDocument derived class and the drawing should be carried out in CView derived class (for SDI or MDI applications). Since CView is derived from CWnd, we can obtain its DC by either calling function CWnd::GetDC() or declare a CClientDC type variable using the window's pointer. To select a GDI object into the DC, we need to call function CDC::SelectObject(...). This function returns a pointer to a GDI object of the same type that is being selected by the DC. Before we delete the GDI object, we need to use this pointer to select the old GDI object into the DC so that the new DC will be selected out of the DC.
+\par 
+\par We can not delete a GDI object when it is being selected by a DC. If we do so, the application will become abnormal, and may cause GPF (General protection fault) error.
+\par 
+\par Drawing Mode
+\par 
+\par Besides drawing lines, sample 8.1\\GDI also demonstrates how to implement an interactive environment that lets the user use mouse to draw lines anywhere within the client window. In the sample, the user can start drawing by clicking mouse's left button, and dragging the mouse with left button held down, releasing the button to finish the drawing. When the user is dragging the mouse, dotted outlines will be drawn temporarily on the window. After the ending point is decided, the line will be actually drawn (with red color and a width of 1). In order to implement this, the following messages are handled in the application: WM_LBUTTONDOWN, WM_MOUSEMOVE and WM_LBUTTONUP.
+\par 
+\par Before the left mouse button is released, we have to erase the old outline before drawing a new one in order to give the user an impression that the outline "moves" with the mouse cursor. The best way to implement this type of operations is using XOR drawing mode. With this method, we can simply draw an object twice in order to remove it from the device.
+\par 
+\par XOR bit-wise operation is very powerful, we can use it to generate many special drawing effects. Remember when we perform a drawing operation, what actually happens in the hardware level is that data is filled into the memory. The original data contained in the memory indicates the original color of pixels on the screen (if we are dealing with a display device). The new data can be filled with various modes: it can be directly copied into the memory; it can be first combined with the data contained in the memory, then the combining result is copied into the memory. In the latter case, the combination could be bit-wise AND, OR, XOR, or simply a NOT operation on the original data. So by applying different drawing modes, the output color doesn't have to be the color of the pen selected by the DC. It could be either the combination of the two (original color and the pen color), or it could be the complement of the original color.
+\par 
+\par If we draw an object twice using XOR operation mode, the output color will be the original color on the target device. This can be demonstrated by the following equation:
+\par 
+\par A^B^B=A^(B^B)=A^0=A
+\par 
+\par Here A is the original color, and B is the new color. The above equation is valid because XORing any number with itself results in 0, and XORing a number with 0 does not change this number.
+\par 
+\par When using a pen, we can select various drawing modes. The following table lists some modes that can be used for drawing objects with a pen (In the table, P represents pen color, O represents original color on the target device, B represents black color, W represents white color, and the following symbols represent bit-wise NOT, AND, OR and XOR operations respectively: ~, &, |, ^):
+\par 
+\par (Table omitted)
+\par 
+\par To set the drawing mode, we need to call function CDC::SetROP2(...), which has the following format:
+\par 
+\par int CDC::SetROP2(int nDrawMode);
+\par 
+\par The function has only one parameter, which specifies the new drawing mode. It could be any of the modes listed in the above table.
+\par 
+\par Storing Data
+\par 
+\par When the user finishes drawing a line, the starting and ending points will be stored in the document. At this time, instead of drawing the new line directly to the window, we need to update the client window and let the function CView::OnDraw(...) be called. In this function, all the lines added previously will be drawn again, so the client will always become up-to-date.
+\par 
+\par We must override function CView::OnDraw(...) to implement client window drawing for an application. This is because the window update may happen at any time. For example, when the application is restored from the icon state, the whole portion of the window will be painted again. The system will draw the non-client area such as caption bar and borders, and it is the application's responsibility to implement client area drawing, which should be carried out in function CView::OnDraw(...) In MFC, if the application does not implement this, the client window will be simply painted with the default color. As a programmer, it is important for us to remember that when we output something to the window, it will not be kept there forever. We must redraw the output whenever the window is being updated. 
+\par 
+\par This forces us to store every line that has been drawn by the user in document, and redraw all of them when necessary. This is the basic document/view structure of MFC: storing data in CDocument derived class, and representing it in function CView::OnDraw(...).
+\par 
+\par In the sample, the lines are stored in an array declared in the document class CGDIDoc. Also, some new functions are declared to let the data be accessible from the view:
+\par 
+\par (Code omitted)
+\par 
+\par A CPtrArray type variable m_paLines is declared for storing lines. Class CPtrArray allows us to add and delete pointer type objects dynamically. This class encapsulates memory allocation and release, so we do not have to worry about memory management when adding new elements. Three new public member functions are also declared, among them CGDIDoc::AddLine(...) can be used to add a new line to m_paLines, CGDIDoc::GetLine(...) can be used to retrieve a specified line from m_paLines, and CGDIDoc:: GetNumOfLines() can be used to retrieve the total number of lines stored in m_paLines. Here lines are stored in CRect type variables, usually this class is used to store rectangles. In the sample, the rectangle's upper-left and bottom-right points are used to represent a line.
+\par 
+\par Although class CPtrArray can manage the memory allocation and release for storing pointers, it does not release the memory for the stored objects. So in class CGDIDoc's destructor, we need to delete all the objects stored in the array as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Here we just delete the first object and remove it from the array repeatedly until the size of the array becomes 0.
+\par 
+\par In CView derived class, we can call function CView::GetDocument() to obtain a pointer to the document and use it to access all the public variables and functions declared there.
+\par 
+\par Recording One Line
+\par 
+\par When the left button is pressed down, we need to trace the mouse's movement until it is released. During this period, it is possible that mouse may move outside the client window. To enable receiving mouse message even when it is outside the client window, we need to call function CWnd::SetCapture() to set window capture. This will direct all the mouse related messages to the window that has the capture no matter where the mouse is. After the left button is released, we need to call API function ::ReleaseCapture() to release the capture.
+\par 
+\par In class CGDIView, some new variables are declared to record the starting and ending points of the line and the window's capture state:
+\par 
+\par (Code omitted)
+\par 
+\par Variables m_ptStart and m_ptEnd are used to record the starting and ending points of a line, m_bCapture indicates if the window has the capture. Variable m_bNeedErase indicates if there is an old outline that needs to be erased. After the user presses down the left button, the initial mouse position will be stored in variable m_ptStart. Then as the user moves the mouse with the left button held down, m_ptEnd will be used to store the updated mouse position. A new line is defined by both m_ptStart and m_ptEnd. The only situation that we don't need to erase the old line is when m_ptEnd is first updated (before this, it does not contain valid data).
+\par 
+\par Two Boolean type variables are initialized in the constructor of CGDIView:
+\par 
+\par CGDIView::CGDIView()
+\par \{
+\par     m_bCapture=TRUE;
+\par     m_bNeedErase=FALSE;
+\par \}
+\par 
+\par Message handlers of WM_LBUTTONDOWN, WM_MOUSEMOVE and WM_LBUTTONUP can all be added through using Class Wizard. In the sample, these member functions are CGDIView::OnLButtonDown(...), CGDIView:: OnMouseMove(...) and CGDIView::OnLButtonUp(...) respectively.
+\par 
+\par Function CGDIView::OnLButtonDown(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par When the left button is pressed down, we need to store the current mouse position in m_ptStart. The second parameter of CView::OnLButtonDown(...) is the current mouse position measured in window's own coordinate system, which can be stored directly to m_ptStart. After that, we can set window capture and set flag m_bCapture.
+\par 
+\par When mouse is moving, we need to check if the left button is being held down. This can be implemented by examining the first parameter (nFlags) of function CView::OnMouseMove(...). If its MK_LBUTTON bit is set, the left button is being held down. We can also check other bits to see if SHIFT, CTRL key or mouse right button is being held down.
+\par 
+\par If the left button is being held down, we need to draw the outline using the dotted pen. If there already exists an old outline, we need to erase it before putting a new one. To draw a line, we need to first call function CDC::MoveTo(...) to move the DC's origin to the starting point of the line, then call CDC::LineTo(...) to complete drawing. We don't need to call CDC::MoveTo(...) each time when drawing several connected line segments continuously. After function CDC::LineTo(...) is called, the DC's origin will always be updated to the end point of that line. The following function shows how the mouse moving activities are handled in the sample:
+\par 
+\par (Code omitted)
+\par 
+\par We declare CClientDC type variable to obtain the device context of the client window. First function CPen::CreatePen(...) is called to create a dotted pen with black color. Then this pen is selected into the device context and the old pen is stored in ptrPenOld. Next, the device context's drawing mode is set to R2_XORPEN, and the original drawing mode is stored in nMode. If this is the first time the function is called after the user pressed mouse's left button, m_bNeedErase flag must be FALSE. In this case we need to set it to TRUE. Otherwise if m_bNeedErase is TRUE, we need to first draw the old outline (This will erase the outline). Next the current mouse position is stored in variable m_ptEnd, and CDC::MoveTo(...), CDC::LineTo(...) are called to draw the new outline. Finally device context's old drawing mode is resumed. Also, the old pen is selected back into the DC (which will also select the new pen out of the DC).
+\par 
+\par For WM_LBUTTONUP message handler, we also need to erase the old line if necessary. Because the new line is fixed now, we need to add new data to the document and update the client window. The following function shows how this message is handled:
+\par 
+\par (Code omitted)
+\par 
+\par Here a dotted pen is created again to erase the old line. Then function CView::GetDocument() is called to obtain a pointer to the document. After the line information is retrieved from the mouse position, function CGDIDoc::AddLine(...) is called to add new data to the document. Then flag m_bNeedErase is cleared, and window capture is released. Finally function CWnd::Invalidate() is called to update the client window. By default, this action will cause function CView::OnDraw(...) to be called.
+\par 
+\par For SDI and MDI applications, function CView::OnDraw(...) will be added to the project at the beginning by Application Wizard. In order to implement our own interface, we need to rewrite this member function as follows:
+\par 
+\par (Code omitted)
+\par 
+\par In the above function CPen::CreatePen(...) is called to create a red solid pen whose width is 1 device unit. Since the window DC is passed as a parameter to this funciton, we do not need to call CWnd::GetDC() or declare CClientDC type variable to obtain window's device context. After the pen is selected into the DC, the drawing mode is set to R2_COPYPEN, which will output the pen's color to the target device. Next function CGDIDoc::GetNumOfLines() is called to retrieve the total number of lines stored in the document. Then a loop is used to draw every line in the client window. Finally the DC's original drawing mode is resumed and the new pen is selected out of it.
+\par 
+\par 8.2\tab Rectangle and Ellipse
+\par 
+\par It is easy to implement rectangle drawing after we understand the previous sample. To draw a rectangle, we need to call function CDC::Rentangle(...) and pass a CRect type value to it. The rectangle's border will be drawn using current pen selected by the DC, and its interior will be filled with the currently selected brush.
+\par 
+\par We can declare a brush type variable using class CBrush, and create various kind of brushes by calling any of the following functions: CBrush::CreateSolidBrush(...), CBrush::CreateHatchBrush(...), CBrush::CreatePatternBrush(...). In the sample, only solid brush is used. In Windows(, there are several pre-implemented default GDI objects that can be retrieved and used at any time. These objects include pens, brushes, fonts, etc. We can get any object by calling ::GetStockObject(...) API function. The returned value is a handle that could be attached to a GDI variable (declared by MFC class) of the same type. For example, the following code shows how to obtain a gray brush and attach it to a CBrush type variable:
+\par 
+\par CBrush brush;
+\par brush.Attach(::GetStockObject(GRAY_BRUSH));
+\par //After some drawing
+\par brush.Detach();
+\par 
+\par We need to detach the object before the GDI variable goes out of scope.
+\par 
+\par When a rectangle is not finally fixed, we may want to draw only its border and leave its interior unpainted. To implement this, we can select a NULL (hollow) brush into the device context. A hollow brush can be obtained by calling function ::GetStockObject(...) using HOLLOW_BTRUSH or NULL_BRUSH flag.
+\par 
+\par Sample 8.2-1\\GDI demonstrates how to implement an interactive environment to let the user draw rectangles. It is an SDI application generated by Application Wizard. Like what we implemented in sample 8.1\\GDI, first some member variables and functions are declared in the document for storing rectangles:
+\par 
+\par (Code omitted)
+\par 
+\par In the destructor, all the objects in array m_paRects are deleted:
+\par 
+\par (Code omitted)
+\par 
+\par In class CGDIView, some new variables are declared, they will be used to record rectangles, erasing state and window capture state:
+\par 
+\par (Code omitted)
+\par 
+\par Two Boolean type variables are initialized in the constructor:
+\par 
+\par (Code omitted)
+\par 
+\par Message handlers for WM_LBUTTONDOWN, WM_MOUSEMOVE and WM_LBUTTONUP are added to class CGDIView through using Class Wizard. They are implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Also, function CGDIView::OnDraw(...) is modified as follows:
+\par 
+\par (Code omitted)
+\par 
+\par With the above implementation, the application will be able to let the user draw rectangles.
+\par 
+\par With only minor modifications we can let the application draw ellipses. Sample 8.2-2\\GDI demonstrates how to implement interactive ellipse drawing. It is based on sample 8.2-1\\GDI.
+\par 
+\par To draw an ellipse, we need to call function CDC::Ellipse(...)and pass a CRect type value to it. This is exactly the same with calling function CDC::Rectangle(...). So in the previous sample, if we change all the "Rectangle" keywords to "Ellipse", the application will be implemented to draw ellipses instead of rectangles.
+\par 
+\par In sample 8.2-2\\GDI, function CDC::Ellipse(...) is called within CGDIView::OnMouseMove(...) and CGDIView::OnDraw(...). The following shows the modified portion of two functions:
+\par 
+\par (Code omitted)
+\par 
+\par In CGDIView::OnDraw(...), function CBrush::CreateSolidBrush(...) is also changed to CBrush:: CreateHatchBrush(...). By doing this, a different brush will be used to fill the interior of ellipse.
+\par 
+\par 8.3\tab Curve
+\par 
+\par We can call function CDC::PolyBezier(...) to draw curves. This function has two parameters:
+\par 
+\par BOOL CDC::PolyBezier(const POINT* lpPoints, int nCount);
+\par 
+\par The first parameter lpPoints is a pointer to an array of points, which specify the control points that can be used for drawing a curve. The second parameter nCount specifies how many control points are included in the array. We need at least four control points to draw a curve, although the last three points could be the same (In this case, a straight line will be drawn).
+\par 
+\par Sample 8.3\\GDI demonstrates how to implement an interactive environment that can let the user draw curves. It is a standard SDI application generated by Application Wizard. First new variable and functions are declared in the document, which will be used to store the data of curves:
+\par 
+\par (Code omitted)
+\par 
+\par We use a CDWordArray type variable m_dwaPts to record control points, this class can be used to record DWORD type value, which is 32-bit integer. Because a point contains two integers, we need two DWORD type variables to store one point. So in CGDIDoc::AddPoint(...), function CDWordArray::Add(...) is called twice to add both x and y coordinates to the array. Function CGDIDoc::GetNumOfPts() returns the number of control points, which is obtained through dividing the size of the array by 2. Function CGDIDoc::GetOnePt() returns a specified control point, which is obtained from two consecutive elements contained in array m_dwaPts.
+\par 
+\par Curve drawing is implemented in function CGDIView::OnDraw(...) as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Since we need 4 control points to draw a curve, the number of curves we can draw should be equal to the number of points stored in array CGDIDoc::m_dwaPts divided by 4. In the function, a loop is used to draw each single curve. Within each loop, four control points are retrieved one by one, and stored in a local CPoint type array pt. After all four control points are retrieved, function CDC::PolyBezier(...) is called to draw the curve. Here, we also need to create a pen and select it into the DC before any drawing operation is performed.
+\par 
+\par The rest thing we need to implement is recording control points. In order to do this, we need to handle two mouse related messages: WM_LBUTTONUP and WM_MOUSEMOVE. In the sample, their message handlers are added through using Class Wizard, the corresponding member functions are CGDIView::OnLButtonUp(...) and CGDIView::OnMouseMove(...) respectively.
+\par 
+\par Since a curve needs four control points, we use mouse's left button up event to record them. In the application, a counter is implemented to count how many control points have been added. Before a new curve is added, this counter is set to 0. As we receive message WM_LBUTTONUP, the counter will be incremented by 1. As it reaches 4, we finish recording the control points, store the data in the document and update the client window.
+\par 
+\par In the sample, to implement curve drawing, some new variables are declared in class CGDIView as follows:
+\par 
+\par (Code omitted)
+\par 
+\par We are familiar with variables m_bCapture and m_bNeedErase. Here, variable m_ptCurve will be used to record temporary control points, and m_nCurrentPt will act as a counter.
+\par 
+\par Some of the variables are initialized in the constructor:
+\par 
+\par (Code omitted)
+\par 
+\par Since m_nCurrentPt starts from 0, we need to count till it reaches 3. In function CGDIView:: OnLButtonUp(...), if the value of m_nCurrentPt becomes 3, we will call CGDIDoc::AddPoint(...) four times to add the points stored in array m_ptCurve to the document, then update the client window. We also need to reset flags m_nCurrentPt, m_bNeedErase and m_bCapture because the drawing is now complete. The following is a portion of function CGDIView::OnLButtonUp(...) that demonstrates how to record the last point and store data in the document:
+\par 
+\par (Code omitted)
+\par 
+\par If m_nCurrentPt is 0, this means it is the first control point. In this case, we do not need to draw or erase anything. However, we need to set the window capture.
+\par 
+\par If m_nCurrentPt is not 0, we need to erase the previous curve, record the new point, assign its value to the rest points (This is for the convenience of drawing curve outline, because when we draw a curve, we always need four control points), and draw the curve outline.
+\par 
+\par Then the implementation of CGDIView::OnMouseMove(...) becomes easy. We just need to check if there is an existing curve outline. If so, we need to erase it before drawing a new curve outline. Otherwise we just draw the curve outline directly and set m_bNeedErase flag:
+\par 
+\par (Code omitted)
+\par 
+\par And that is all we need to do. If we compile and execute the application at this point, we will be able to draw curves using mouse.
+\par 
+\par 8.4\tab Other Shapes
+\par 
+\par There are many other shapes that we can draw using device context. These shapes include chord, focus rectangle, round rectangle, pie, polygon, 3D rectangle, and many others. Sample 8.4\\GDI demonstrates how to use member functions of CDC to draw different shapes. It is a standard SDI application generated by Application Wizard. In the sample, only function CGDIView::OnDraw(...) is modified, where we demonstrate how to draw the above-mentioned shapes:
+\par 
+\par (Code omitted)
+\par 
+\par The following is the explanation of the functions used above:
+\par 
+\par BOOL CDC::TextOut(int x, int y, const CString& str);
+\par 
+\par This function outputs a text string at the specified x-y coordinates. The string is stored in str parameter. Text color and background color can be set by using functions CDC::SetTextColor(...) and CDC::SetBkColor(...). Background mode (specifies if text has transparent or opaque background) can be set by using function CDC::SetBkMode(...).
+\par 
+\par BOOL CDC::Chord(LPCRECT lpRect, POINT ptStart, POINT ptEnd);
+\par 
+\par This function draws a chord formed from an ellipse and a line segment. Parameter lpRect specifies the bounding rectangle of an ellipse, ptStart and ptEnd specify the starting and ending points of a line segment (they do not have to be on the ellipse). The border of the chord will be drawn using the currently selected pen, and the interior will be filled with the currently selected brush (Figure 8-1).
+\par 
+\par void CDC::DrawFocusRect(LPCRECT lpRect);
+\par 
+\par This function draws a rectangle specified by lpRect parameter. The rectangle will have a dotted border. If we call this function twice for the same rectangle, the rectangle will be removed. This is because when drawing the rectangle, the function uses bit-wise XOR mode.
+\par 
+\par BOOL CDC::RoundRect(LPCRECT lpRect, POINT point);
+\par  
+\par The function draws a rectangle specified by lpRect with rounded corners. Parameter point specifies width and the height of the ellipse that will be used to draw rounded corners (Figure 8-2). The border of the rectangle will be drawn with currently selected pen and its interior will be filled with the currently selected brush.
+\par 
+\par BOOL CDC::Pie(LPCRECT lpRect, POINT ptStart, POINT ptEnd);
+\par 
+\par The function draws a pie that is formed from an ellipse and two line segments. The ellipse is specified by parameter lpRect, and the two line segments are formed by the center of ellipse and ptStart, ptEnd respectively (Figure 8-3). The pie will be drawn in the counterclockwise direction. The border of the pie will be drawn using currently selected pen and its interior will be filled with the currently selected brush.
+\par 
+\par BOOL CDC::Polygon(LPPOINT lpPoints, int nCount);
+\par 
+\par This function draws a polygon. Parameter lpPoints is an array of points specifying the vertices of the polygon. Parameter nCount indicates the number of vertices. The border of the polygon will be drawn using currently selected pen and its interior will be filled with the currently selected brush.
+\par 
+\par void CDC::Draw3dRect(LPCRECT lpRect, COLORREF clrTopLeft, COLORREF clrBottomRight);
+\par 
+\par This function draws a rectangle specified by lpRect. Its upper and left borders will be drawn using color specified by clrTopLeft, and its bottom and right borders will be drawn using color specified by clrBottomRight.
+\par 
+\par 8.5\tab Flood Fill
+\par 
+\par Flood fill is very useful for applications such as graphic editors. By using this method, we can easily fill an irregular area with a specified color. In class CDC, there are two member functions that can be used to implement flood fill:
+\par 
+\par BOOL CDC::FloodFill(int x, int y, COLORREF crColor);
+\par BOOL CDC::ExtFloodFill(int x, int y, COLORREF crColor, UINT nFillType);
+\par 
+\par There is a slight difference between the two functions. For function CDC::FloodFill(...), the filling starts from the point that is specified by parameters x and y using the brush being selected by the DC, and stretches out to all directions until a border whose color is the same with parameter crColor is encountered. The second function allows us to select filling mode, which is defined by parameter nFillType. Here we have two choices: FLOODFILLBORDER and FLOODFILLSURFACE. The first filling mode is exactly the same with that of function CDC::FloodFill(...). For the second mode, the filling starts from the point specified by parameters x and y, and stretches out to all directions, fills all the area that has the same color with crColor, until a border with different color is encountered.
+\par 
+\par Samples 8.5-1\\GDI and 8.5-2\\GDI demonstrate how to implement flood fill. They are based on sample 8.1\\GDI. In the samples a new command is added to the application, it can be used by the user to fill any closed area with gray color. This closed area can be formed from the lines drawn by the user.
+\par 
+\par First a button ID_FLOODFILL is added to the tool bar IDR_MAINFRAME. We will use this button to indicate if the application is in the line drawing mode or flood filling mode. By default the button will stay in its normal state, at this time the user can use mouse to draw lines in the client window. If the user clicks this button, the application will toggle to flood filling mode, at this time, if the user clicks mouse within the client window, flood filling will happen.
+\par 
+\par In the sample, both WM_COMMAND and UPDATE_COMMAND_UI message handlers are added for command ID_FLOODFILL, the corresponding functions are CGDIDoc::OnFloodfill() and CGDIDoc:: OnUpdateFloodfill(...) respectively. Also, a Boolean type variable m_bFloodFill is declared in class CGDIDoc, which is used to indicate the current mode of the application (line drawing mode or flood filling mode):
+\par 
+\par (Code omitted)
+\par 
+\par Function CGDIDoc::GetFloodFill() allows m_bFloodFill to be accessed outside class CGDIDoc. Variable m_bFloodFill is initialized in the constructor of class CGDIDoc as follows:
+\par 
+\par CGDIDoc::CGDIDoc()
+\par \{
+\par     m_bFloodFill=FALSE;
+\par \}
+\par 
+\par Functions CGDIDoc::OnFloodfill() and CGDIDoc::OnUpdateFloodfill(...) are implemented as follows:
+\par 
+\par void CGDIDoc::OnFloodfill() 
+\par \{
+\par     m_bFloodFill=m_bFloodFill ? FALSE:TRUE;\tab 
+\par \}
+\par 
+\par void CGDIDoc::OnUpdateFloodfill(CCmdUI* pCmdUI) 
+\par \{
+\par     pCmdUI->SetCheck(m_bFloodFill);\tab 
+\par \}
+\par 
+\par We need to implement flood filling in response to left button up events when CGDIDoc::m_bFloodFill is TRUE. So we need to modify function CGDIView::OnLButtonDown(...). In the sample, we first check flag CGDIDoc::m_bFloodFill. If it is set, we create a gray brush, select it into the DC and implement the flood filling. Otherwise we prepare for line drawing as we did before:
+\par 
+\par (Code omitted)
+\par 
+\par In the other two mouse message handlers CGDIView::OnMouseMove(...) and CGDIView:: OnLButtonUp(...), we also need to check flag CGDIDoc::m_bFloodFill. If it is not set, we can proceed to implement line drawing:
+\par 
+\par (Code omitted)
+\par 
+\par This will enable flood filling. 
+\par 
+\par Sample 8.5-2\\GDI is exactly the same with sample 8.5-1\\GDI except that here we use function CDC:: ExtFloodFill(...) instead of CDC::FloodFill(...). The following is the difference between the function calling in two samples:
+\par 
+\par 8.5-1\\GDI:
+\par 
+\par dc.FloodFill(point.x, point.y, RGB(255, 0, 0));
+\par 
+\par 8.5-2\\GDI:
+\par 
+\par dc.ExtFloodFill(point.x, point.y, dc.GetPixel(point), FLOODFILLSURFACE);
+\par 
+\par We call function CDC::GetPixel(...) to retrieve the color of the pixel specified by point, and fill the area that has the same color with it. The flood filling will stretch out to all directions until borders with different colors are reached. For samples 8.5-1\\GDI and 8.5-2\\GDI, we don't see much difference between function CDC::ExtFloodFill(...) and CDC::FloodFill(...). However, in the sample, if the lines can be drawn with different colors, we need to use CDC::ExtFloodFill(...) rather than CDC::FloodFill(...) to implement flood filling.
+\par 
+\par 8.6\tab Pattern Brush
+\par 
+\par Pattern brush is very useful in filling an area with a specific pattern. We already know how to create a hatch brush, which could have several simple patterns. By using pattern brush, we are able to create a brush with any custom pattern.
+\par 
+\par The pattern brush can be created from a bitmap with a dimension of 8(8. If we use a larger bitmap image, only the upper-left portion of the image (with a size of 8(8) will be used. The bitmap used to create pattern brush must be stored in a CBitamp declared variable.
+\par 
+\par The simplest way of implementing pattern brush is to prepare a bitmap resource, load it with a CBitmap type variable, then create the brush. The function that can be used to create pattern brush is CBrush:: CreatePatternBrush(...), which has the following format:
+\par 
+\par BOOL CBrush::CreatePatternBrush(CBitmap* pBitmap);
+\par 
+\par Sample 8.6\\GDI demonstrates how to create and use pattern brush. It is based on sample 8.2-1\\GDI. In the new sample, pattern brush is used to fill the interior of the rectangles instead of solid brush.
+\par 
+\par First an 8(8 bitmap resource IDB_BITMAP_BRUSH is added to the application. Here function CGDIView:: OnDraw(...) is modified as follows: 1) A new local CBitmap type variable bmp is declared, which is used to call function CBitmap::LoadBitmap(...) for loading bitmap IDB_BITMAP_BRUSH. 2) The original statement  brush.CreateSolidBrush(...) is changed to brush.CreatePatternBrush(...). The following is the modified function CGDIView::OnDraw(...):
+\par 
+\par (Code omitted)
+\par 
+\par With the above change, we can see the effect of pattern brush.
+\par 
+\par 8.7\tab Color Approximation
+\par 
+\par Palette Device vs. Non-Palette Device 
+\par 
+\par When creating a pen or a brush, we need to specify a color. The pen and brush will use this specified color to perform drawing operations. However, sometimes it is impossible for the system to create the exact same color as we specified, because the actual color that can be displayed on the screen depends on the hardware limitations. The total number of colors that can be displayed at any time depends on the screen resolution and the amount of video memory. For example, if we have a screen whose resolution is 1024(768, there are altogether 786432 pixels. If we use red, green and blue combination to specify a pixel, and each of the three basic colors (red, green and blue) can range from 0 to 255 (256 steps), we nee 3 bytes (24 bits) to specify one pixel on the screen. For screen with a resolution of 1024(768, the total memory needed is 786,432( 3=2,359,296=2.4 Mega Bytes (In reality, situation is more complex so a video card of this type requires more memory).
+\par 
+\par If the hardware has this amount of memory, there will be no problem in displaying any color specified by the R, G, B combination. This kind of device is called non-palette device. The advantage of non-palette device is that it is fast and does not cause color distortion. The disadvantage is obvious: it is expensive.
+\par 
+\par Contrary to the above approach, palette devices use fewer bytes to represent a pixel. A very common approach is to represent each pixel using only one byte (8 bits). In this case, with the above assumption, the total amount of video memory needed will be 786,432 bytes.
+\par 
+\par However, 8 bits is not enough to specify all possible R, G, B (each ranges from 0 to 255) combinations. The solution here is to use a color table, which contains 256 different R, G, B combinations. In this case, the data stored in the video memory actually represents an index to the color table. This kind of devices is called palette device. Although it introduces much inconvenience to the programmer and may cause color distortion, it is still widely used in all types of systems because of its inexpensive price.
+\par 
+\par Color Approximation
+\par 
+\par Since the index has only 8 bits, the size of this color table is limited to contain no more than 256 colors. In Windows(, in order to maintain some standard colors (i.e., the caption bar color, border color, menu color, etc.), some entries of this color table are reserved for solely storing system colors. The colors stored in these entries are called Static Colors. For the rest entries of the color table, any application may fill them with custom colors. When we specify an R, G, B combination and use it to draw geometrical objects, the actual color appeared on the screen depends on the available colors contained in the color table. If the specified color can not be found in the color table, Windows( uses two different approaches to do the color approximation: for brush, it uses dithering method to simulate the specified color using the colors that can be found in the color table (For example, if color gray can not be found in the color table, the system combines black and white to simulate it); for pen, the n
+\par earest color that can be found in the color table will be used instead of the specified color.
+\par 
+\par Sample
+\par 
+\par Sample 8.7-1\\GDI and 8.7-2\\GDI demonstrate two different color approximation approaches. Sample 8.7-1\\GDI is a standard SDI application generated from Application Wizard. In function CGDIView:: OnDraw(...), the client window area is painted with blue colors that gradually change from dark blue (black) to bright blue. The GDI object used here is brush.
+\par 
+\par We need to create 256 different brushes using colors from RGB(0, 0, 0), RGB(0, 0, 1), RGB(0, 0, 2)... to RGB(0, 0, 255). Also, we need to divide the client window into 256 rows. For each row, a different brush can be used to fill it. This will generate a visual effect that the color changes gradually from dark blue to bright blue. The following is the modified function CGDIView::OnDraw(...):
+\par 
+\par (Code omitted)
+\par 
+\par First function CWnd::GetClientRect(...) is called to retrieve the dimension of the client window, which is stored in variable rect. Then the rectangle's vertical size is shrunk to 1/256 of its original size. Next a 256-step loop is used to fill the client window. Within each loop, a different blue brush is created, and function CDC::FillRect(...) is called to fill the rectangle. Before calling this function, we do not need to select the brush into DC, this is because the second parameter of function CDC::FillRect(...) is a CBrush type pointer (The DC selection happens within the function). The difference between function CDC:: Rectangle(...) and CDC::FillRect(...) is that the former will draw a border with the currently selected pen while the latter does not draw the border.
+\par 
+\par Sample 8.7-2\\GDI is based on sample 8.7-1\\GDI. Here within function CGDIView::OnDraw(...), pens with different blue colors are created and used to draw lines for painting each row. The following is the modified function CGDIView::OnDraw(...):
+\par 
+\par (Code omitted)
+\par 
+\par Instead of creating brushes, solid pens are created to paint the client window area. The width of these pens is the same with the height of each row, and their colors change gradually from dark blue to bright blue. Within each loop, before calling functions to draw a line, we select the pen into DC, after the line is drawn, we select the pen out of the DC. Because a new pen is created in each loop, function CPen::DeleteObject() is called at the end of the loop. This will destroy the pen so that variable pen can be initialized again.
+\par 
+\par Adjusting Display Settings
+\par 
+\par The two programs must be run on a palette device with a setting of "256 Color" in order to see the effects of color approximation. Generally this can be adjusted through changing the settings of the system. 
+\par 
+\par We can do this by first opening application Control Panel (Click "Start" menu, go to "Settings", select "Control Panel"). Then we ned to double click icon "Display" and click "Setting" tab from the popped up property sheet. There are a lot of choices in the combo box that is labeled "Color Palette". Usually it contains entries such as "24bit", "256 color", "16 Color", etc. The actual available selections depend on the capability of the video card. If we select "24bit" true color setting, no dithering effect will be seen in the system. Here we need to choose "256 color" setting in order to test our samples (Figure 8-4).
+\par 
+\par Results
+\par 
+\par Figure 8-5 and Figure 8-6 show the results from the two color approximation approaches (Please note that if the samples are executed on non-palette device, we may not see the approximation effect).
+\par 
+\par User can avoid color approximation by increasing the color depth of the system. One simple way to do so is to reduce the screen resolution (e.g. from 1024(768 to 800(600): after the total number of pixels is reduced, the number of colors supported by the system will probably increase.
+\par 
+\par As a programmer, we need to prepare for the worst situation and make our application least susceptible to the system setting. To achieve this, we need to implement local palette.
+\par 
+\par 8.8\tab Logical Palette
+\par 
+\par Palette
+\par 
+\par Palette is another type of GDI objects, it encapsulates a color palette that can be used to store custom colors in an application. Although programmer can use logical palette like using an actual palette, it is not a real palette. Within any system, there is only one existing palette, which is the physical palette (or system palette). This is why the palettes created in the applications are called logical palettes. The advantage of using a logical palette is that the colors defined in the logical palette can be mapped to the system palette in an efficient way so that least color distortion can be achieved. There is no guarantee that all the colors implemented in the logical palette will be displayed without color distortion. Actually, the ultimate color realizing ability depends on the hardware. For example, if our hardware support only 256 colors and we implement a 512 logical palette, some colors defined in the logical palette will inevitably be distorted if we display all the 512 colors on the screen at the same time.
+\par 
+\par Color Mapping
+\par 
+\par When we implement a logical palette, operating system maps the colors contained in the logical palette to the system palette using the following method: for every entry in the logical palette, the system first finds out if there exists a color in the system palette that is exactly the same with the color contained in this entry. If so, it will be mapped to the corresponding entry of the system palette. If no such entry is found in the system palette, the system will find out if there is any entry in the system palette that is not occupied by any logical palette. If such an entry exists, the color in the logical palette will be filled into that entry. If there is no such entry available, the system find out the nearest color in the system palette and map the entry in the logical palette to it.
+\par 
+\par For a 256 color system, the operating system reserve 20 static colors as system colors, which can not be used to fill new colors. This assures that the default colors of window border, title, button do not change when we implement logical palettes. These static colors always occupy the first 10 and last 10 entries of the system palette. The rest 236 entries can be used fill any color.
+\par 
+\par Foreground and Background Palette
+\par 
+\par When creating a logical palette, we can either implement it as a "foreground" or a "background" palette. For foreground logical palette, the operating system maps the colors contained in the logical palette to the system palette only when the application is active (has the current focus). For the background logical palette, the operating system also tries to map the colors contained in the logical palette to the system palette even it is not active (does not have the current focus). In this case, the application in the foreground has the highest priority in mapping its colors to the system palette. If there is still entries left unused, they may be occupied by the applications in the background. If no such entry is left, the colors in the background palette will be mapped to the system palette by finding the nearest colors.
+\par 
+\par Creating Logical Palette
+\par 
+\par To create a logical palette, we need to call function CPalette::CreatePalette(...), which has the following format:
+\par 
+\par BOOL CPalette::CreatePalette(LPLOGPALETTE lpLogPalette);
+\par 
+\par The only parameter of this function is a LOGPALETTE type pointer. The following is the format of structure LOGPALETTE:
+\par 
+\par typedef struct tagLOGPALETTE \{
+\par     WORD         palVersion; 
+\par     WORD         palNumEntries; 
+\par     PALETTEENTRY palPalEntry[1]; 
+\par \} LOGPALETTE; 
+\par 
+\par This structure has three members: palVersion specifies the Windows( version of this structure, which must be set to 0x300; palNumEntries specifies the total number of entries contained in this palette, and palNumEntries is the first element of a PALETTEENTRY type array, which stores the color table. Structure PALETTEENTRY has four members:
+\par 
+\par typedef struct tagPALETTEENTRY \{
+\par     BYTE peRed; 
+\par     BYTE peGreen; 
+\par     BYTE peBlue; 
+\par     BYTE peFlags; 
+\par \} PALETTEENTRY; 
+\par 
+\par Members peRed, peGreen and peBlue specify RGB intensities, and peFlags can be assigned NULL if we want to create a normal palette (we will see how to set this flag to create a special palette later). To create a logical palette, we need to allocate enough buffers for storing LOGPALETTE structure and colors, and call function CPalette::CreatePalette(...). 
+\par 
+\par Using Logical Palette
+\par 
+\par Like other GDI objects, we must select a logical palette into the DC in order to use it. To select palette into the DC, we need to call function CDC::SelectPalette(...), which has two parameters:
+\par 
+\par CPalette *CPalette::SelectPalette(CPalette* pPalette, BOOL bForceBackground);
+\par 
+\par The first parameter is a CPalette type pointer, which stands for the logical palette we are going to use. The second parameter is a Boolean type variable indicating if the palette will be selected as a background palette or not.
+\par \
+\
+We need to select the palette out of the DC after using it. 
+\par 
+\par Realizing Palette
+\par 
+\par The color mapping does not happen if we do not realize the logical palette. We need to realize the palette in the following situations: 1) After the palette is created and about to be used. 2) After the colors in the logical palette have changed. 3) After the colors contained in the system palette have changed. 4) After the application has regained the focus.
+\par 
+\par To realize the palette, we need to call function CDC::RealizePalette() to force the colors in the logical palette to be mapped to the system palette. The format of this function is very simple:
+\par 
+\par UINT CDC::RealizePalette();
+\par 
+\par The returned value indicates how many entries were mapped to the system palette successfully.
+\par 
+\par Macro PALETTEINDEX
+\par 
+\par When a logical palette is selected into the DC, we need to use index to the color table to reference a color in the palette. In this case, we can use macro PALETTEINDEX to convert an index to R, G, B combination.
+\par 
+\par Sample
+\par 
+\par Sample 8.8-1\\GDI and 8.8-2\\GDI are based on sample 8.7-1\\GDI and 8.7-2\\GDI respectively. They demonstrate how to implement logical palette to avoid color distortion. In the two samples, the logical palettes contain all colors that will be used to paint the client window. These colors will be mapped to the colors contained in the system palette.
+\par 
+\par In both samples, first a CPalette type variable m_palDraw is declared in class CGDIView as follows:
+\par 
+\par class CGDIView : public CView
+\par \{
+\par ......
+\par protected:
+\par     CPalette m_palDraw;
+\par ......
+\par \};
+\par 
+\par The palette is created in the constructor of class CGDIView as follows:
+\par 
+\par (Code omitted)
+\par 
+\par In the function a LOGPALETTE type pointer is declared, we need to use it to store the buffers allocated for creating the logical palette. The buffers are allocated through using "new" method. The following is the formulae that is used to calculate the size of the total bytes needed for creating logical palette:
+\par 
+\par size of structure LOGPALETTE + (number of entries-1)((size of structure PALETTEENTRY)
+\par 
+\par Next the palette entries are filled with 256 colors ranging from dark blue to bright blue. After the logical palette is created, these buffers can be released.
+\par 
+\par The following is the updated function CGDIView::OnDraw(...) in sample 8.8-1\\GDI:
+\par 
+\par (Code omitted)
+\par 
+\par Each time the client window needs to be painted, we first call function CDC::SelectPalette(...) to select the logical palette into the device context and call function CDC::RealizePalette() to let the colors in the logical palette be mapped to the system palette. When creating the brushes, instead of using RGB macro to specify an R, G, B combination, we need to use PALETTEINDEX macro to indicate a color contained in the logical palette.
+\par 
+\par Sample 8.8-2\\GDI is implemented almost in the same way: first a CPalette type variable m_palDraw is declared in class CGDIView, and the palette is created in its constructor. In function CGDIView::OnDraw(...), before the client window is painted, the logical palette is selected into the device context. The following is the modified function CGDIView::OnDraw(...):
+\par 
+\par (Code omitted)
+\par 
+\par This function is similar to that of sample 8.8-1\\GDI: when creating a pen, we use PALETTEINDEX macro to indicate a color rather than using an R, G, B combination.
+\par 
+\par The samples will improve a lot with the above implementations (If the samples are executed on non-palette device, there will be no difference between the samples here and those in the previous section). However, we may still notice a tiny step between two contiguous blues. This is because for a video device of this type (256 color), usually the color depth is 18 bits on the hardware level. This means red, green and blue colors each uses only 6 bits (instead of 8 bits). So instead of displaying 256-level blue colors, only 64-level blue colors can be implemented.
+\par 
+\par 8.9\tab Monitoring System Palette
+\par 
+\par We know that when a logical palette is realized, the colors contained in the system palette may change. If we have several applications each implementing a logical palette, the system palette will change if any application calls function CDC::RealizePalette(). In Windows( programming, there is a way for us to monitor the colors contained in the system palette: we can create a logical palette and explicitly map a logical palette entry to a fixed system palette entry instead of let the mapping be implemented automatically. By doing this, we have a way of knowing what colors are contained in certain entries of the system palette.
+\par 
+\par Remember in the previous samples, when stuffing structure PALETTEENTRY, we set NULL to its peFlags member. Actually, it can also be set to one of the following three values: PC_EXPLICIT, PC_NOCOLLAPSE and PC_RESERVED.
+\par 
+\par If peFlags is set to PC_EXPLICIT, we can create a palette whose entries are mapped directly to the specified entries in the system palette. In this case, the low order of structure PALETTEENTRY (the combination of peRed and peGreen members) indicates an index to the system palette, and member peBlue has no effect.
+\par 
+\par Because non-static entries in the system palette may change constantly, if we use such a palette to implement drawing, the colors we draw will also change constantly with the system palette.
+\par 
+\par Sample 8.9\\GDI demonstrates how to implement such kind of palette. It is a standard SDI application generated by Application Wizard. In the sample, the palette is implemented and is used to paint the client window of the application. The client window is divided into 256 rectangles, and each rectangle is painted using the color contained in one of the system palette entry. So when a logical palette is realized from other application, we can see the changes from the client window.
+\par 
+\par In the sample, first a CPalette type variable m_palSys is declared in class CGDIView:
+\par 
+\par class CGDIView : public CView
+\par \{
+\par ......
+\par protected:
+\par     CPalette m_palSys;
+\par ......
+\par \};
+\par 
+\par In the constructor, the logical palette is created as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The procedure above is almost the same with creating a normal logical palette. The only difference here is that when stuffing structure PALETTEENTRY, the low order word of the structure is filled with an index to the system palette entry (from 0 to 255), and member peFlags is set to PC_EXPLICIT.
+\par Function CGDIView::OnDraw(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The client area is divided into 256 (16(16) rectangles. For each rectangle, a brush using a specific logical palette entry is created. Then function CDC::Rectangle(...) is called to draw the rectangle. Because no pen is selected into the DC, the default pen will be used to draw the border of the rectangles.
+\par 
+\par The application can be compiled and executed at this point. There are 256 rectangles in the client window, each represents one color contained in the system palette. By paying attention to the first 10 and last 10 entries, we will notice that the colors contained in these entries never change (because they are static colors). Other colors will change from time to time as we open and close graphic applications. We can use samples 8.8-1\\GDI or 8.8-2\\GDI to test this.
+\par 
+\par Please note that if the sample is executed on non-palette device, the logical palette will not represent the system palette. This is because on the hardware level, palette does not exist at all.
+\par 
+\par 8.10\tab Palette Animation
+\par 
+\par Flag PC_RESERVED
+\par 
+\par Another interesting flag we can use when creating a logical palette is PC_RESERVED, which can be used to implement palette animation. If we have a logical palette with this flag set for some entries, the colors in these entries will only be mapped to the unused entries of the system palette. If the mapping is successful, when we change the colors in the logical palette, the entries in the system palette will also change. If any portion of window is painted with such entries, this change will affect that portion. This is the reason why a logical entry with PC_RESERVED flag can not be mapped to an occupied entry.
+\par 
+\par The following table lists the difference between a normal logical palette entry and an entry with PC_RESERVED flag:
+\par 
+\par (Table omitted)
+\par 
+\par While we can change the color of any area in a window by painting it again (using a different brush or pen), the above mentioned method has two advantages:
+\par 
+\par 1)  If we have several areas painted with the same color, the new method will cause all of them to change at the same time once the old color is replaced with a new one in the logical palette. For the traditional method, we have to draw each area one by one to make this change, it takes longer time.
+\par 
+\par 2)  If we draw each area one by one, the change takes place in software level. For the new method, the color is filled to the system palette directly (This change happens at the hardware level), which is extremely fast.
+\par 
+\par Animation
+\par 
+\par With this method, it is very easy to implement an animation effect. For example, considering an array of four rectangles that are filled with the following four different colors respectively: red, green, blue and black. If we paint the four rectangles with green, blue, black, red next time, and blue, black, red, green next next time, and so on..., this will give us an impression that the rectangles are doing rotating shift. One way to implement this effect is to redraw four rectangles again and again using different colors (which means using different entries to draw the same rectangle again and again). Another way is to switch the colors in the palette directly.
+\par 
+\par Sample 8-10\\GDI demonstrates how to implement palette animation. It is a standard SDI application generated from Application Wizard. In the sample, the client area is divided into 236 columns, each row is painted with a different color. The colors in the logical palette will be shifting all the time, and we will see that the colors in the client window will also shift accordingly.
+\par 
+\par Among 256 system palette entries, only 236 of them contain non-static colors, so in the sample, a logical palette with 236 entries is created. The colors contained in this palette change gradually from red to green, and from green to blue. Figure 8-7 shows the RGB combination of each entry (i.e., entry 0 contains RGB(255, 0, 0), entry 79 contains RGB(0, 255, 0)...).
+\par 
+\par Sample
+\par 
+\par First three variables are declared in class CGDIView:
+\par 
+\par class CGDIView : public CView
+\par \{
+\par ......
+\par protected:
+\par     int m_nEntryID;
+\par     PALETTEENTRY m_palEntry[236*2-1];
+\par     CPalette m_palAni;
+\par ......
+\par \};
+\par 
+\par Variable m_palAni is used to create the animation palette, and array m_palEntry will be used to implement color shifting. When we shift the palette entries, it would be much faster if we use function memcpy(...) to copy all the entries in just one stroke. To achieve this, we keep all the colors in a PALETTEENTRY type array whose size is twice the logical palette size minus one. The original 236 colors are stored in entries 0, 1, 2... to 235, and entries 236, 237, 238...470 store the same colors as those contained in entries 0, 1, 2... 234. Also, we use variable m_nEntryID to indicate the current starting entry of the logical palette. For example, if m_nEntryID is 2, the logical palette should be filled with colors contained in entries 2 to 237 of m_palEntry. If m_nEntryID reaches 236, we need to reset it to 0. Figure 8-8 demonstrates this procedure.
+\par 
+\par First, 236 different colors are filled into entries from 0 to 235 for variable m_palEntry in the constructor of class CGDIView as follows:
+\par 
+\par (Code omitted)
+\par 
+\par This distribution of RGB values is the same with the graph shown in figure 8-8. Next, the colors contained in entries from 0 to 234 are copied to entries from 236 to end:
+\par 
+\par (Code omitted)
+\par 
+\par Next, we use entries from 0 to 235 contained in m_palEntry to create logical palette (using variable m_palAni), and assign 0 to variable m_nEntryID:
+\par 
+\par (Code omitted)
+\par 
+\par Note when filling array m_palEntry, we need to assign PC_RESERVED flag to member peFlags of structure PALETTEENTRY for every element. This flag will be copied to array pointed by lpLogPal when we actually create the palette. As we refill the palette entries again and again, these flags should remain unchanged all the time. Otherwise, the entries can not be changed dynamically.
+\par 
+\par To realize the animation, we need to implement a timer, and change the palette when it times out. The best place to start the timer is in function CView::OnInitialUpdate(), where the view is just created. In the sample, this function is added through using Class Wizard, and is implemented as follows:
+\par 
+\par void CGDIView::OnInitialUpdate() 
+\par \{
+\par     SetTimer(TIMER_ANIMATE, 100, NULL);
+\par 
+\par     CView::OnInitialUpdate();
+\par \}
+\par 
+\par Macro TIMER_ANIMATE is defined at the beginning of the implementation file, which acts as the ID of the timer:
+\par 
+\par #define TIMER_ANIMATE\tab 500
+\par 
+\par We can use any integer as the timer ID.
+\par 
+\par Next, a WM_TIMER type message handler is added to class CGDIView through using Class Wizard, which is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Like other drawing operations, before implementing palette animation, we must select the palette into target DC and realize it. After the animation is done, we need to select the palette out of DC. The palette animation is implemented through calling function CPalette::AnimatePalette(...), which has the following format:
+\par 
+\par void CPalette::AnimatePalette
+\par (
+\par     UINT nStartIndex, UINT nNumEntries, LPPALETTEENTRY lpPaletteColors
+\par );
+\par 
+\par The first parameter nStarIndex is the index indicating the first entry that will be filled with a new color, the second parameter nNumEntries indicates the total number of entries whose color will be changed, and the last parameter is a PALETTEENTRY type pointer which indicates buffers containing new colors.
+\par 
+\par If we call this function and change the contents of a logical palette, only those entries with PC_RESERVED flags will be affected.
+\par 
+\par The last thing we need to do is painting the client area using animation palette in function CGDIView:: OnDraw(...):
+\par 
+\par (Code omitted)
+\par 
+\par This is very straight forward, we just divide the client area into 236 columns and paint each column using one color contained in the logical palette. Note in function CGDIView::OnTimer(...), after palette animation is implemented, we do not need to call function CWnd::Invalidate() to update the client window.
+\par 
+\par Now the application can be compiled and executed. If we execute this application along with sample 8.9\\GDI, we will see how system palette changes when the animation is undergoing (We can put sample 8.9\\GDI in background to monitor the system palette): as the colors in the client window shifts, the colors in the system palette will also change.
+\par 
+\par Palette animation can also be used to implement special visual effect on bitmaps such as fade out. This function only works on palette type video device.
+\par 
+\par Please note that if the sample is executed on non-palette device, the animation effect can not be seen. This is because there is no palette on the hardware level.
+\par 
+\par 8.11\tab Find Out Device Capability
+\par 
+\par There are many type of devices, each has a different capability. Some use palette to implement colors, others use 24 bits to store an RGB value directly. Before a program is about to run, it might be a good idea to find out the capabilities of hardware and use different approaches to implement colors.
+\par 
+\par In MFC, there is a function that can be used to detect the capabilities of a device:
+\par 
+\par int CDC::GetDeviceCaps(int nIndex);
+\par 
+\par By passing different flags to parameter nIndex, we can retrieve different attributes of a device. The following is a list of some important flags that can be used:
+\par 
+\par (Table omitted)
+\par 
+\par Sample 8.11\\GDI demonstrates how to check the abilities of a device. It is a standard SDI application generated from Application Wizard. In the sample, ability checking is implemented in the initialization stage of the client window.
+\par 
+\par For this purpose, function CGDIView::OnInitialUpdate() is added to the application through using Application Wizard. In this function, various device abilities are checked and the result is displayed in a message box:
+\par 
+\par (Code omitted)
+\par 
+\par Here we check if the device is a palette device or not. If it is a palette device, we further find out the maximum number of colors it supports, the number of static colors reserved, and the actual color resolution for each pixel. Also, the device's horizontal and vertical sizes are retrieved.
+\par 
+\par This function is especially useful in finding out if the device is a palette device or not. With this information, we can decide if the logical palette should be used in the application.
+\par 
+\par The following lists the capabilities of certain device:
+\par 
+\par It is a palette device
+\par The device supports 256 colors
+\par There are 20 static colors
+\par Color resolution is 18 bits
+\par Horizontal size is 270 mm, 1024 pixels
+\par Vertical size is 203 mm, 768 pixels
+\par 
+\par Summary:
+\par 
+\par 1)  Before drawing anything to a window, we must first obtain its device context. There are many ways of obtaining a window's DC (Calling function CWnd::GetDC(), declaring CClientDC or CWindowDC type variables, etc.). 
+\par 
+\par 2)  A client DC can be used to paint a window's client area, and a window DC can be used to paint the whole window (client and non-client area).
+\par 
+\par 3)  Pen can be used to draw line, the border of rectangle, polygon, ellipse, etc. A pen can have different styles: solid pen, dotted pen, dashed pen, etc.
+\par 
+\par 4)  Brush can be used to fill the interior of rectangle, polygon, ellipse, etc. A brush can have different patterns: solid, hatched, etc.
+\par 
+\par 5)  We can use an 8(8 image to create pattern brush.
+\par 
+\par 6)  On a palette device, there are two color approaching methods: dithering and using the nearest color.
+\par 
+\par 7)  Logical palette can be used to avoid color distortion. To use a logical palette, we need to create it, select it into DC, and realize the palette.
+\par 
+\par 8)  System palette can be monitored by creating a logical palette whose entries are set to PC_EXPLICIT flags.
+\par 
+\par 9)  Palette animation can be implemented by creating a logical palette whose entries are set to PC_RESERVED flag.
+\par 
+\par 10)  The abilities of a device can be retrieved by calling function CDC::GetDeviceCaps().
+\par 
+\par }
+ 

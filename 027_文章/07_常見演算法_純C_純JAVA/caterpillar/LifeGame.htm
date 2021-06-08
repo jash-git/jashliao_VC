@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <title>生命遊戲</title>
+</head>
+
+
+<body>
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip: 生命遊戲</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+      <h2>&nbsp;說明</h2>
+      <small>
+
+生命遊戲（game of life）為1970年由英國數學家J. H. Conway所提出，某一細胞的鄰居包括上、下、左、右、左上、左下、右上與右下相鄰之細胞，遊戲規則如下：<br>
+      </small>
+
+      <ol>
+        <li><small>孤單死亡：如果細胞的鄰居小於一個，則該細胞在下一次狀態將死亡。</small></li>
+        <li><small>擁擠死亡：如果細胞的鄰居在四個以上，則該細胞在下一次狀態將死亡。</small></li>
+        <li><small>穩定：如果細胞的鄰居為二個或三個，則下一次狀態為穩定存活。</small></li>
+        <li><small>復活：如果某位置原無細胞存活，而該位置的鄰居為三個，則該位置將復活一細胞。</small></li>
+      </ol>
+
+
+      <h2>解法</h2>
+      <small>
+
+生命遊戲的規則可簡化為以下，並使用CASE比對即可使用程式實作：<br>
+      </small>
+
+      <ol>
+        <li><small>鄰居個數為0、1、4、5、6、7、8時，則該細胞下次狀態為死亡。</small></li>
+        <li><small>鄰居個數為2時，則該細胞下次狀態為穩定。</small></li>
+        <li><small>鄰居個數為3時，則該細胞下次狀態為復活。</small></li>
+      </ol>
+
+
+      <h2> 實作</h2>
+
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br>#include &lt;ctype.h&gt; <br><br>#define MAXROW 10 <br>#define MAXCOL 25 <br>#define DEAD 0 <br>#define ALIVE 1 <br>int map[MAXROW][MAXCOL], newmap[MAXROW][MAXCOL]; <br><br>void init(); <br>int neighbors(int, int);<br>void outputMap();<br>void copyMap();<br><br>int main() { <br>   int row, col; <br>   char ans; <br><br>   init();<br><br>   while(1) {<br>      outputMap();<br>      for(row = 0; row &lt; MAXROW; row++) {<br>         for(col = 0; col &lt; MAXCOL; col++) {<br>            switch (neighbors(row, col)) {<br>               case 0: <br>               case 1: <br>               case 4: <br>               case 5: <br>               case 6: <br>               case 7: <br>               case 8: <br>                  newmap[row][col] = DEAD; <br>                  break; <br>               case 2: <br>                  newmap[row][col] = map[row][col]; <br>                  break; <br>               case 3: <br>                  newmap[row][col] = ALIVE; <br>                  break; <br>            } <br>         }<br>      }<br><br>      copyMap();<br><br>      printf("\nContinue next Generation ? ");<br>      getchar();<br>      ans = toupper(getchar());<br><br>      if(ans != 'Y')<br>          break;<br>   }<br>    <br>   return 0; <br>} <br><br>void init() {<br>   int row, col; <br>    <br>   for(row = 0; row &lt; MAXROW; row++) <br>      for(col = 0; col &lt; MAXCOL; col++) <br>         map[row][col] = DEAD; <br><br>   puts("Game of life Program"); <br>   puts("Enter x, y where x, y is living cell");<br>   printf("0 &lt;= x &lt;= %d, 0 &lt;= y &lt;= %d\n", <br>                 MAXROW-1, MAXCOL-1); <br>   puts("Terminate with x, y = -1, -1");<br><br>   while(1) {<br>      scanf("%d %d", &amp;row, &amp;col); <br>      if(0 &lt;= row &amp;&amp; row &lt; MAXROW &amp;&amp; <br>         0 &lt;= col &amp;&amp; col &lt; MAXCOL)<br>         map[row][col] = ALIVE;<br>      else if(row == -1 || col == -1)<br>         break;<br>      else <br>         printf("(x, y) exceeds map ranage!"); <br>   }<br>}<br><br>int neighbors(int row, int col) {<br>   int count = 0, c, r; <br><br>   for(r = row-1; r &lt;= row+1; r++) <br>      for(c = col-1; c &lt;= col+1; c++) { <br>         if(r &lt; 0 || r &gt;= MAXROW || c &lt; 0 || c &gt;= MAXCOL) <br>            continue; <br>         if(map[r][c] == ALIVE) <br>            count++; <br>      } <br><br>   if(map[row][col] == ALIVE) <br>      count--; <br>    <br>   return count; <br>} <br><br>void outputMap() {<br>   int row, col; <br><br>   printf("\n\n%20cGame of life cell status\n"); <br>   for(row = 0; row &lt; MAXROW; row++) { <br>      printf("\n%20c", ' '); <br>      for(col = 0; col &lt; MAXCOL; col++) <br>         if(map[row][col] == ALIVE) <br>            putchar('#'); <br>         else <br>            putchar('-'); <br>   } <br>} <br><br>void copyMap() {<br>   int row, col; <br><br>   for(row = 0; row &lt; MAXROW; row++) <br>      for(col = 0; col &lt; MAXCOL; col++) <br>         map[row][col] = newmap[row][col]; <br>}  <br></pre>
+
+
+
+      <br>
+
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+
+      <pre>import java.io.BufferedReader;<br>import java.io.IOException;<br>import java.io.InputStreamReader;<br><br>public class LifeGame {<br>    private boolean[][] map;<br>    private boolean[][] newmap;<br>    <br>    public LifeGame(int maxRow, int maxColumn) {<br>        map = new boolean[maxRow][maxColumn];<br>        newmap = new boolean[maxRow][maxColumn];<br>    }<br>    <br>    public void setCell(int x, int y) {<br>        map[x][y] = true;<br>    }<br>    <br>    public void next() {<br>        for(int row = 0; row &lt; map.length; row++) {<br>            for(int col = 0; col &lt; map[0].length; col++) {<br>               switch (neighbors(row, col)) {<br>                  case 0: <br>                  case 1: <br>                  case 4: <br>                  case 5: <br>                  case 6: <br>                  case 7: <br>                  case 8: <br>                     newmap[row][col] = false; <br>                     break; <br>                  case 2: <br>                     newmap[row][col] = map[row][col]; <br>                     break; <br>                  case 3: <br>                     newmap[row][col] = true; <br>                     break; <br>               } <br>            }<br>         }<br><br>         copyMap();<br>    }<br><br>    public void outputMap() throws IOException { <br>        System.out.println("\n\nGame of life cell status"); <br>        for(int row = 0; row &lt; map.length; row++) { <br>            System.out.print("\n "); <br>           for(int col = 0; col &lt; map[0].length; col++) <br>              if(map[row][col] == true) <br>                  System.out.print('#'); <br>              else <br>                  System.out.print('-'); <br>        } <br>    }<br>    <br>    private void copyMap() {<br>        for(int row = 0; row &lt; map.length; row++) <br>           for(int col = 0; col &lt; map[0].length; col++) <br>              map[row][col] = newmap[row][col]; <br>    }<br>    <br>    private int neighbors(int row, int col) {<br>        int count = 0; <br><br>        for(int r = row-1; r &lt;= row+1; r++) <br>           for(int c = col-1; c &lt;= col+1; c++) { <br>              if(r &lt; 0 || r &gt;= map.length ||<br>                 c &lt; 0 || c &gt;= map[0].length) <br>                 continue; <br>              if(map[r][c] == true) <br>                 count++; <br>           } <br><br>        if(map[row][col] == true) <br>           count--; <br>         <br>        return count; <br>    } <br>    <br>    public static void main(String[] args) <br>                 throws NumberFormatException, IOException {<br>        BufferedReader bufReader = <br>            new BufferedReader(<br>                    new InputStreamReader(System.in));<br>        <br>        LifeGame game = new LifeGame(10, 25);<br>        <br>        System.out.println("Game of life Program"); <br>        System.out.println(<br>                   "Enter x, y where x, y is living cell");<br>        System.out.println("0 &lt;= x &lt; 10, 0 &lt;= y &lt; 25"); <br>        System.out.println("Terminate with x, y = -1, -1");<br>        <br>        while(true) {<br>            String[] strs = bufReader.readLine().split(" ");<br>            int row = Integer.parseInt(strs[0]);<br>            int col = Integer.parseInt(strs[1]);<br><br>            if(0 &lt;= row &amp;&amp; row &lt; 10 &amp;&amp; 0 &lt;= col &amp;&amp; row &lt; 25) <br>                game.setCell(row, col);<br>            else if(row == -1 || col == -1) {<br>                break;<br>            }<br>            else { <br>                System.out.print(<br>                         "(x, y) exceeds map ranage!");<br>            }<br>        }<br>        <br>        while(true) {<br>            game.outputMap();<br>            game.next();<br><br>            System.out.print(<br>                         "\nContinue next Generation ? ");<br>            <br>            String ans = bufReader.readLine().toUpperCase();<br><br>            if(!ans.equals("Y"))<br>                break;<br>        } <br>    }<br>}</pre>
+
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+<br>
+
+
+
+
+
+</body>
+</html>

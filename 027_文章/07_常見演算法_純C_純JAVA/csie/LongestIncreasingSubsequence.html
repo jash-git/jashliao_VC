@@ -1,0 +1,631 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Longest Increasing Subsequence</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Longest Increasing Subsequence</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Longest Increasing Subsequence（LIS）</p>
+<p>中文可以譯做「最長遞增子序列」。先來介紹subsequence這個字吧！subsequence是sub + sequence，sub這個字有「分支」、「次要」之類的意思，而sequence就是指數學中的「數列」、「序列」。</p>
+<pre>
+1 3 5 2 9
+</pre>
+<p>像這樣就是一個由五個數字組成的sequence。至於subsequence，是指從一個sequence之中，依照由左到右的順序，挑幾個數字出來，就是subsequence。</p>
+<pre>
+3 9
+</pre>
+<p>像這樣就是1 3 5 2 9的其中一個subsequence。再舉一個例子。</p>
+<pre>
+1 5 2 9
+</pre>
+<p>這樣也是1 3 5 2 9的其中一個subsequence。至於空集合、原來的sequence，也都是1 3 5 2 9的subsequence！</p>
+<p>接下來介紹increasing這個字。increasing是指數學中的「嚴格遞增」，就是數字不斷增加。1 3 5 2 9就不是一個遞增的sequence──因為在2的地方，這個sequence是在減少而非增加。至於3 9才是一個遞增的sequence。</p>
+<p>每一個sequence都有長度。1 3 5 2 9的長度就是五，因為它由五個數字組成；3 9的長度就是二，因為它由兩個數字組成。LIS是指一個sequence當中，它擁有最長的長度、且嚴格遞增的那些subsequence（不一定只有一個唷）。1 3 5 2 9的LIS是1 3 5 9這個subsequence。</p>
+<p>通常LIS的問題，只會要我們求出sequence的其中一個LIS即可。</p>
+<p>要解決LIS的問題，主要有兩種演算法，一種是O(N^2)的，一種是O(NlogN)。先講簡單易懂的O(N^2)吧！</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Increasing Subsequence: Dynamic Programming</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Recurrence</p>
+<pre>
+length(n) =  max  { length(i) + 1 : if s[i] < s[n] }
+           0≤i≤n-1
+
+n：第0項到第n項的LIS。
+length(n)：第0項到第n項的LIS長度。
+s[n]：第n項數值。
+</pre>
+<p>這個數學式子說實在話是有點複雜。</p>
+<p class="t">計算LIS的長度</p>
+<p>這裡提供兩支程式碼，效果一樣！你可以用紙筆來畫畫看，模擬程式執行的樣子，應該就能容易理解了。</p>
+<textarea>
+int s[5];		// 用來存 sequence
+int array[5];	// 第 x 格的值為 sequence: s[0]~s[x] 的 LIS 長度
+
+int LIS()
+{
+	// 初始化，每一個數字本身就是長度為一的 subsequence
+	for (int i=0; i<5; i++) array[i] = 1;
+
+	// LIS
+	for (int i=0; i<5; i++)
+		for (int j=i+1; j<5; j++)	// 找出能接在 s[i] 後面的數字
+			if (s[j] > s[i])		// 若是可以接，長度就增加
+				array[j] = max(array[j], array[i] + 1);
+
+	// array 中最大的值即為 LIS 的長度
+	int ans = 0;
+	for (int i=0; i<5; i++)
+		ans = max(ans, array[i]);
+	return ans;
+}
+</textarea>
+<p>或者：</p>
+<textarea>
+int s[5];		// 用來存 sequence
+int array[5];	// 第 x 格的值為 sequence: s[0]~s[x] 的 LIS 長度
+
+int LIS()
+{
+	// 初始化，每一個數字本身就是長度為一的 subsequence
+	for (int i=0; i<5; i++) array[i] = 1;
+
+	for (int i=0; i<5; i++)
+		for (int j=0; j<i; j++)	// 找出能讓 s[i] 接在後面的數字
+			if (s[j] < s[i])	// 若是可以接, 長度就增加
+				array[i] = max(array[i], array[j] + 1);
+
+	// array中最大的值即為LIS的長度
+	int ans = 0;
+	for (int i=0; i<5; i++)
+		ans = max(ans, array[i]);
+	return ans;
+}
+</textarea>
+<p class="t">找出一個LIS</p>
+<p>用一個陣列紀錄一個數字是接在哪個數字後面。</p>
+<textarea>
+int s[5];
+int array[5];
+int prev[5];	// prev[x] 紀錄 s[x] 是接在哪個位置的數字後面
+				// 如果它前面沒有數字就紀錄 -1
+int LIS()
+{
+	for (int i=0; i<5; i++) array[i] = 1;
+	// -1 代表這個數字沒有接在其他數字之後
+	for (int i=0; i<5; i++) prev[i] = -1;
+
+	for (int i=0; i<5; i++)
+		for (int j=i+1; j<5; j++)
+			if (s[j] > s[i])
+				if (array[i] + 1 > array[j])
+				{
+					array[j] = array[i] + 1;
+					prev[j] = i;   // s[j] 接在 s[i] 後面
+				}
+
+	int ans = 0, pos = 0;
+	for (int i=0; i<5; i++)
+		if (array[i] > ans)
+		{
+			ans = array[i];
+			pos = i;
+		}
+	print_LIS(pos);	// 印出一個LIS
+	return ans;
+}
+
+// 遞迴版
+void print_LIS(int x)
+{
+	if (prev[x] != -1) print_LIS(prev[x]);
+	cout << seq[x] << " ";
+}
+
+// 迴圈版，但是順序是顛倒的。
+void print_LIS(int x)
+{
+	for (; prev[x] != -1; x = prev[x])
+		cout << seq[x] << " ";
+}
+</textarea>
+<p class="e">UVa 103 111 231 437 497 10131 10534</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Increasing Subsequence: Robinson-Schensted-Knuth Algorithm</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Robinson-Schensted-Knuth Algorithm</p>
+<p>這個演算法採取Greedy策略，以Binary Search加速，達到O(NlogL)，N是給定序列的長度，L是LIS的長度。</p>
+<p class="t">計算LIS的長度</p>
+<p>很多演算法的書上都有提到此演算法，所以就不贅述了。用C++ STL寫成的程式碼短短的很可愛：</p>
+<textarea>
+int LIS(vector<int>& s)		// s 為原來的 sequence
+{
+	if (s.size() == 0) return 0;	// 不得不判斷的 special case
+
+	vector<int> v;
+	v.push_back(s[0]);	// 先放入一個數字，免得 v.back() 出錯
+
+	for (int i = 1; i < s.size(); ++i)
+	{
+		int n = s[i];
+
+		if (n > v.back())
+			v.push_back(n);
+		else
+			*lower_bound(v.begin(), v.end(), n) = n;
+	}
+
+	return v.size();
+}
+</textarea>
+<p class="t">找出一個LIS（uva481）</p>
+<p>很多演算法的書上都只說到如何去計算出LIS的長度，而沒有說要怎麼列出LIS。這裡以uva481這一題的規定為原則，來介紹列出LIS的辦法。</p>
+<p>如果要列出LIS，就還要再開一個一維陣列，叫做pos好了（position之意）。這個pos[]用來記錄這個數字是位於LIS的第幾個位置。現在假定輸入是-7 10 9 2 3 8 8 1。</p>
+<textarea>
+input: -7 10  9  2  3  8  8  1
+LIS  :
+pos  :
+
+input:(-7)10  9  2  3  8  8  1
+LIS  : -7
+pos  :  1		/* -7 在 LIS[] 的第一個位置 */
+
+input: -7(10) 9  2  3  8  8  1
+LIS  : -7 10
+pos  :  1  2	/* 10 在 LIS[] 的第二個位置, 接下來都以此類推 */
+
+input: -7 10 (9) 2  3  8  8  1
+LIS  : -7  9
+pos  :  1  2  2
+/* 9 成為 LIS 的潛力比 10 大, 所以以 9 代替 10 */
+
+input: -7 10  9 (2) 3  8  8  1
+LIS  : -7  2
+pos  :  1  2  2  2
+/* 2 成為 LIS 的潛力比 9 大, 所以以 2 代替 9 */
+
+input: -7 10  9  2 (3) 8  8  1
+LIS  : -7  2  3
+pos  :  1  2  2  2  3
+
+input: -7 10  9  2  3 (8) 8  1
+LIS  : -7  2  3  8
+pos  :  1  2  2  2  3  4
+
+input: -7 10  9  2  3  8 (8) 1
+LIS  : -7  2  3  8
+pos  :  1  2  2  2  3  4  4
+/* 8 成為 LIS 的潛力比 8 大, 所以以 8 代替 8 */
+
+input: -7 10  9  2  3  8  8 (1)
+LIS  : -7  1  3  8
+pos  :  1  2  2  2  3  4  4  2
+/* 1 成為 LIS 的潛力比 2 大, 所以以 1 代替 2 */
+</textarea>
+<p>LIS就從pos[]裡面找吧。從尾巴開始往回找，先找到的就是正確的。因為LIS長度為4，所以就先找位置為4的。</p>
+<textarea>
+input: -7 10  9  2  3  8 (8) 1
+pos  :  1  2  2  2  3  4 (4) 2
+I/O  :  -  -  -  8
+/* search 4th, 8 is fourth LIS element */
+
+input: -7 10  9  2 (3) 8  8  1
+pos  :  1  2  2  2 (3) 4  4  2
+I/O  :  -  -  3  8
+/* search 3rd, 3 is third LIS element */
+
+input: -7 10  9 (2) 3  8  8  1
+pos  :  1  2  2 (2) 3  4  4  2
+I/O  :  -  2  3  8
+/* search 2nd, 2 is second LIS element */
+
+input:(-7)10  9  2  3  8  8  1
+pos  : (1) 2  2  2  3  4  4  2
+I/O  : -7  2  3  8
+/* search 1st, -7 is first LIS element */
+</textarea>
+<p>所以得到LIS為-7 2 3 8。</p>
+<p class="t">非嚴格遞增的LIS</p>
+<p>請先看看這個例子。</p>
+<textarea>
+input: -7 10  9  2  3  8 (8) 1
+LIS  : -7  2  3  8
+pos  :  1  2  2  2  3  4  4
+/* 8 成為 LIS 的潛力比 8 大, 所以以 8 代替 8 */
+</textarea>
+<p>這個時候就不能用8來代替8，而要用8去代替比8稍大的數字。如果找不到比8稍大的數字，則直接將數字加在後面。上面的例子修改過後，就變成這樣。</p>
+<textarea>
+input: -7 10  9  2  3  8 (8) 1
+LIS  : -7  2  3  8  8
+pos  :  1  2  2  2  3  4  5
+/* 8 可以接在 8 後面 */
+</textarea>
+<p>uva481的題目限制原本是這樣的：如果有不止一個最長的嚴格遞增子序列，請輸出在輸入中最後出現的。若是修改成：如果有不止一個最長的嚴格遞增子序列，請輸出在輸入中「最先」出現的。那要怎麼辦呢？最快的方法就是由右至左的做Longest Decreasing Subsequence。</p>
+<p class="t">找出所有的LIS</p>
+<p>如果題目修改成：請列出所有的LIS。這樣的話，我也不知道怎麼解決了。可能要寫個遞迴找出所有答案吧？</p>
+<p class="t">演算法討論</p>
+<p>宏觀來看，這個演算法找出了所有的increasing subsequence，並依照特定順序排列。然後按順序記下幾個優良的subsequence。</p>
+<pre>
+原數列        5 2 9 4 8 3
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+讀入5 |  1 |  5 			// 長度1          （以5結尾最長的）
+－－－－－－－－－－－－－－
+讀入2 |  2 |    2   		// 長度1          （以3結尾最長的）
+－－－－－－－－－－－－－－
+讀入9 |  3 |      9 		// 長度1
+　　  |  4 |    2 9 		// 長度2，接第二串
+　　  |  5 |  5   9 		// 長度2，接第一串（以9結尾最長的）
+－－－－－－－－－－－－－－
+讀入4 |  6 |        4		// 長度1
+　　  |  7 |    2   4		// 長度2，接第二串（以4結尾最長的）
+－－－－－－－－－－－－－－
+讀入8 |  8 |          8		// 長度1
+　　  |  9 |        4 8		// 長度2，接第六串
+　　  | 10 |    2     8		// 長度2，接第二串
+　　  | 11 |  5       8		// 長度2，接第一串
+　　  | 12 |    2   4 8		// 長度3，接第七串（以8結尾最長的）
+－－－－－－－－－－－－－－
+讀入3 | 13 |            3	// 長度1
+　　  | 14 |    2       3	// 長度2，接第二串（以3結尾最長的）
+</pre>
+<pre>
+讀入5 |  5
+讀入2 |  2
+讀入9 |  2 9
+讀入4 |  2 4	// 同時記錄了第4串和第7串
+讀入8 |  2 4 8
+讀入3 |  2 3 8	// 同時記錄了第12串和第14串
+</pre>
+<p>在這個排列順序當中，長的subsequence排在短的subsequence之後，越串越長。</p>
+<p>每當讀入一個數字時，所有能串接的subsequence，先前一定都出現過了──陣列裡也隨時紀錄著先前出現過、比較優良的subsequence。因此，運用greedy，逐步地更新陣列資料，必可求出LIS。</p>
+<p class="e">UVa 481</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Increasing Subsequence: Dynamic Programming</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>還有一種特別的方法可以找出LIS。這個方法有一個限制，那就是給定的sequence的數字種類很少。</p>
+<p>假設給定的sequence，有一百個數字，但是只有五種不同的數字。對sequence中某一個位置的數字來說，它只可能接在這五種數字的其中一種數字後面；而所有subsequence的最後一個數字，也只有這五種可能。</p>
+<p>有了這些特性，可以發現一個greedy方法。一、因為只有五種不同的數字──用五個變數，分別紀錄以該種數字做結尾的subsequence目前最長的長度。二、由左到右去讀取sequence，每次讀進一個數字，就檢查這個數字能不能讓目前紀錄中的subsequence 接得更長。三、要接得更長，就檢查讀進來的數字能不能分別接在那五種subsequence的後面，可以變長就加一。四、做完了一百個步驟之後，在五個變數之中，挑出最大的那個，就是LIS的長度。</p>
+<p>用個實例來說明。假設給定的sequence是1 1 2 3 4 5 4。這裡以ss1到ss5，來代表以1到5結尾的subseqeuence目前最長的長度。</p>
+<textarea>
+──────────────────────────────
+初始化： 1  1  2  3  4  5  4
+
+ss1：0	ss2：0	ss3：0	ss4：0	ss5：0
+──────────────────────────────
+初始化：(1) 1  2  3  4  5  4
+
+// 1 可以當作長度為一的 ss1
+ss1：1	ss2：0	ss3：0	ss4：0	ss5：0
+──────────────────────────────
+第二個： 1 (1) 2  3  4  5  4
+
+// 1 沒有辦法接在任何一種 subsequence 後面
+ss1：1	ss2：2	ss3：0	ss4：0	ss5：0
+──────────────────────────────
+第三個： 1  1 (2) 3  4  5  4
+
+// 2 可以當作長度為一的 ss2
+ss1：1	ss2：1	ss3：0	ss4：0	ss5：0
+
+// 2 可以接在 ss1 的後面, 所以 ss2 = ss1+1
+ss1：1	ss2：2	ss3：0	ss4：0	ss5：0
+──────────────────────────────
+第四個： 1  1  2 (3) 4  5  4
+
+// 3 可以當作長度為一的 ss3
+ss1：1	ss2：2	ss3：1	ss4：0	ss5：0
+
+// 3 可以接在 ss1 的後面, 所以 ss3 = max(ss3, ss1+1);
+ss1：1	ss2：2	ss3：2	ss4：0	ss5：0
+
+// 3 也可以接在 ss2 的後面, 所以 ss3 = max(ss3, ss2+1);
+ss1：1	ss2：2	ss3：3	ss4：0	ss5：0
+──────────────────────────────
+第五個： 1  1  2  3 (4) 5  4
+
+// 4 可以當作長度為一的 ss4
+ss1：1	ss2：2	ss3：3	ss4：1	ss5：0
+
+// 4 可以接在 ss1 的後面, 所以 ss4 = max(ss4, ss1+1);
+ss1：1	ss2：2	ss3：3	ss4：2	ss5：0
+
+// 4 可以接在 ss2 的後面, 所以 ss4 = max(ss4, ss2+1);
+ss1：1	ss2：2	ss3：3	ss4：3	ss5：0
+
+// 4 可以接在 ss3 的後面, 所以 ss4 = max(ss4, ss3+1);
+ss1：1	ss2：2	ss3：3	ss4：4	ss5：0
+──────────────────────────────
+第六個： 1  1  2  3  4 (5) 4
+
+// 5 可以接在 ss1 到 ss4 的後面, 所以會計算了吧 :p
+ss1：1	ss2：2	ss3：3	ss4：4	ss5：5
+──────────────────────────────
+第七個： 1  1  2  3  4  5 (4)
+
+// 4 可以接在 ss1 到 ss3 的後面, 取 max() 後沒有改變值
+ss1：1	ss2：2	ss3：3	ss4：4	ss5：5
+──────────────────────────────
+</textarea>
+<p>程式碼。這裡將數字分為五種，並且利用函式來得到某一種數字的值、用值來知道數字屬於哪一種。</p>
+<textarea>
+int get_value(int type_no);	// 找出第 type_no 種的數字的值
+int get_type(int value);	// 找出數字是哪一個種類
+
+int s[100];		// 用來存題目給的 sequence
+int array[5];	// 以第一種到第五種數字作為結尾的 subsequence
+				// 其目前最長的長度
+
+int LIS()
+{
+	for (int i=0; i<5; i++) array[i] = 0;	// 初始化
+
+	for (int i=0; i<100; i++)
+	{
+		// s[i] 這個數字本身可以當作長度為 1 的 subsequence
+		if (array[get_type(s[i])] == 0)
+			array[get_type(s[i])] = 1;
+
+		// 看看 s[i] 這個數字，
+		// 接在那五種 subsequence 的後面，會不會變得更長
+		for (int j=0; j<5; j++)
+			if (s[i] > get_value(j))
+			{
+				// 若是可以接在第 j 種 subsequence 的後面
+				array[get_type(s[i])] =
+					max(array[get_type(s[i])] , array[j]+1);
+			}
+	}
+
+	// array 中最大的值即為LIS的長度
+	int ans = 0;
+	for (int i=0; i<5; i++)
+		ans = max(ans, array[i]);
+	return ans;
+}
+</textarea>
+<p>如果要印出LIS的話，那麼就要一個二維的陣列紀錄。【待補程式碼】</p>
+<p>一般來說，使用O(NlogN)的演算法也會比這個方法好。但是有些特別的題目卻可以這麼做。</p>
+<p class="e">UVa 10051</p>
+
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Increasing Subsequence: Dynamic Programming</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Recurrence</p>
+<p>這裡我們要講解的是一種特別的LIS演算法，是把LIS的長度設計於狀態當中，作為狀態的其中一個維度，狀態本身儲存LIS的結尾數字。</p>
+<p>根據Robinson-Schensted-Knuth Algorithm，我們知道當下的LIS的結尾數字越小越好，如此就更有潛力將LIS接得更長。此處的方法即是運用了Robinson-Schensted-Knuth Algorithm的概念。</p>
+<pre>
+f(n, l) =  min( f(n-1, l), s[n] : if f(n-1, l-1) < s[n] )
+
+f(n, l)：第0項到第n項，長度為l的遞增子序列，最小的結尾數值。
+s[n]：第n項數值。
+</pre>
+<p>也可以改用索引值來紀錄。這是比較適當的方式，只不過初始化會稍微麻煩一點。</p>
+<pre>
+f(n, l) =  min( f(n-1, l), n : if s[f(n-1, l-1)] < s[n] )
+
+f(n, l)：第0項到第n項，長度為l的遞增子序列，最小的結尾數值的索引值。
+s[n]：第n項數值。
+</pre>
+<p>計算順序是依序讀取序列數值，然後每個數值都嘗試能不能接得更長。</p>
+<p>時間複雜度為O(NL)，N為數列長度，L為LIS的長度。</p>
+<p class="t">計算LIS的長度</p>
+<textarea>
+const int N = 10;
+int s[10+1];
+int array[10+1][10+1];
+
+int LIS()
+{
+	for (int i=1; i<=N; ++i) array[i] = INF;
+	array[0] = -INF;
+
+	for (int i=1; i<=N; ++i)
+		for (int j=1; j<=i; ++j)
+			// 可以接的更長
+			if (array[i][j-1] < s[i])
+				array[i][j] = min(array[i-1][j], s[i]);
+			// 無法接的更長，與之前一樣長。
+			else
+				array[i][j] = array[i-1][j];
+
+	// 尋找LIS的長度
+	int n = N;
+	while (array[n] == INF) n--;
+	return n;
+}
+</textarea>
+<p>可以精簡記憶體空間，手法就如同0/1 Knapsack Problem的做法。</p>
+<textarea>
+const int N = 10;
+int s[10+1];
+int array[10+1];	// 一維陣列即可
+
+int LIS()
+{
+	for (int i=1; i<=N; ++i) array[i] = INF;
+	array[0] = -INF;
+
+	for (int i=1; i<=N; ++i)
+		for (int j=i; j>0; --j)	// 由後往前
+			if (array[j-1] < s[i])
+				array[j] = min(array[j], s[i]);
+
+	int n = N;
+	while (array[n] == INF) n--;
+	return n;
+}
+</textarea>
+<p>沒有必要計算超出LIS長度的狀態。</p>
+<textarea>
+const int N = 10;
+int s[10+1];
+int array[10+1];	// 一維陣列即可
+
+int LIS()
+{
+	for (int i=1; i<=N; ++i) array[i] = INF;
+	array[0] = -INF;
+
+	int n = 0;	// 目前LIS的長度
+	for (int i=1; i<=N; ++i)
+	{
+		if (array[n] < s[i]) n++;	// LIS增長了
+
+		for (int j=n; j>0; --j)	// 算至目前的LIS長度即可
+			if (array[j-1] < s[i])
+				array[j] = min(array[j], s[i]);
+	}
+	return n;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Non-Squashing Stack of Boxes</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">【註：這個問題還沒有正式名稱。】</p>
+<p>有一堆封裝完畢的紙箱，內容物的重量皆不同。現在要把紙箱一個一個疊起來存放，然而每個紙箱都有不同的抗壓力量，如果一個紙箱上方的總重量，超過這個紙箱的抗壓力量，這個紙箱就會被壓傷，這是我們不樂見的。請問一次最多能疊多少個紙箱？又有多少種不會壓壞紙箱的疊法呢？</p>
+<p>【註：筆者有找到一個接近的問題，叫做Sloane's Box Stacking Problem，提供各位參考。】</p>
+<p class="e">UVa 10154</p>
+<p class="t">延伸閱讀</p>
+<p>這個問題可以等價轉換成單機排程問題，可參考「<a href="Greedy.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Greedy.html">Single Machine Scheduling, Minimize the Number of Late Job</a>」。</p>
+<pre>
+N個工作要完成　　　　  <---> N個箱子要疊
+工作的處理時間　　　　 <---> 箱子的內容物重量
+工作的完工期限　　　　 <---> 箱子的抗壓力量＋箱子的內容物重量
+如期完工的工作越多越好 <---> 箱子疊越多越好
+</pre>
+<p class="t">第一種分割問題的方法：由上往下疊，累計重量越少越好。</p>
+<pre>
+一、依照承重能力由小到大排序。
+二、依序疊紙箱，由上往下疊，求出LIS。
+</pre>
+<p>在一個合理的疊法當中，任意兩個緊鄰的紙箱，如果上方紙箱的承重能力比下方紙箱還強，那麼交換這兩個紙箱，仍是一個合理的疊法。也就是說，一次疊最多個紙箱的疊法，可以經過多次兩兩交換緊鄰紙箱，使得由上往下來看，紙箱的承重能力恰好是遞增的。也就是說，我們可以依照承重能力排序紙箱，再來求LIS。</p>
+<p>由上往下疊紙箱的過程當中，需要不斷的累計紙箱的總重量，如果發現一個更好的疊法，就要更新總重量，並且讓總重量越小越好，如此一來下方就可以更容易添上紙箱。添上紙箱的條件，是該紙箱能夠承受上方全部紙箱的總重量，才能添上紙箱。</p>
+<textarea>
+const int N = 100;
+struct Box {int weight, strength;} box[N+1];
+int array[N+1];
+
+// 依照承重能力排序
+bool cmp(const Box& box1, const Box& box2)
+{
+	return box1.strength + box1.weight
+			< box2.strength + box2.weight;
+}
+
+int non_squashing_stack()
+{
+	sort(box+1, box+n, cmp);
+
+	memset(array, 0x7f, sizeof(array));
+	array[0] = 0;
+
+	for (int i=1; i<=N; ++i)
+		for (int j=i; j>0; --j)
+			// 可以添紙箱
+			if (array[j-1] <= box[i].strength)
+				// 視情況更新上方紙箱總重量
+				array[j] = min(
+					array[j],
+					array[j-1] + box[i].weight
+				);
+
+	int m = n;
+	while (array[m] == 0x7f7f7f7f) m--;
+	return m;
+}
+</textarea>
+<textarea>
+int non_squashing_stack()
+{
+	......
+
+	int m = 0; // speed up
+	for (int i=1; i<=n; ++i)
+	{
+		if (array[m] <= box[i].strength) m++; // speed up
+		for (int j=m; j>0; --j)
+			if (array[j-1] <= box[i].strength)
+				array[j] = min(
+					array[j],
+					array[j-1] + box[i].weight
+				);
+	}
+	return m;
+}
+</textarea>
+<p>時間複雜度是O(NlogN + NL)。</p>
+<p class="t">第二種分割問題的方法：由下往上疊，剩餘力量越多越好。</p>
+<pre>
+一、依照抗壓力量由大到小排序。
+二、依序疊紙箱，由下往上疊，求出LIS。
+</pre>
+<p>這個方法與前一個方法剛好互補。前面是以紙箱總重量的角度來思考，這裡則是以紙箱剩餘的抗壓力量來思考。</p>
+<p>由上往下疊紙箱的過程當中，需要不斷的更新紙箱的抗壓力量，如果發現一個更好的疊法，就要更新抗壓力量，並且讓抗壓力量越大越好，如此一來上方就可以更容易添上紙箱。添上紙箱的條件，是該下方紙箱都能夠承受該紙箱的重量，才能添上紙箱。</p>
+<textarea>
+const int N = 100;
+struct Box {int weight, strength;} box[N+1];
+int array[N+1];
+
+// 依照抗壓力量排序
+bool cmp(const Box& box1, const Box& box2)
+{
+	return box1.strength > box2.strength;
+}
+
+int non_squashing_stack()
+{
+	sort(box+1, box+n, cmp);
+
+	memset(array, 0, sizeof(array));
+	array[0] = 1e9;
+
+	for (int i=1; i<=N; ++i)
+		for (int j=i; j>0; --j)
+			// 可以添紙箱
+			if (array[j-1] >= box[i].weight)
+				// 視情況更新紙箱之抗壓力量
+				array[j] = max(
+					array[j],
+					min(array[j-1] - box[i].weight,
+						box[i].strength)
+				);
+
+	int m = n;
+	while (array[m] == 0) m--;
+	return m;
+}
+</textarea>
+<textarea>
+int non_squashing_stack()
+{
+	......
+
+	int m = 0;	// speed up
+	for (int i=1; i<=n; ++i)
+	{
+		if (array[m] >= box[i].weight) m++;	// speed up
+		for (int j=m; j>0; --j)
+			if (array[j-1] >= box[i].weight)
+				array[j] = max(
+					array[j],
+					min(array[j-1] - box[i].weight,
+						box[i].strength)
+				);
+	}
+	return m;
+}
+</textarea>
+<p>時間複雜度也是O(NlogN + NL)。</p>
+<p class="t">不會壓壞紙箱的疊法共有幾種</p>
+<p>【待補文字】</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

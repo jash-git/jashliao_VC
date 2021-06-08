@@ -1,0 +1,225 @@
+<html>
+
+<head>
+<title>12.3 串行通信与重叠I/O</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="4">12.3 </font><font color="#3973DE" size="4">串行通信与重叠</font><font color="#3973DE" FACE="Times New Roman" size="4">I/O</font><font FACE="Times New Roman" size="4"></p>
+    </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Win 32</font><font SIZE="3">系统为串行通信提供了全新的服务。传统的</font><font FACE="Times New Roman" SIZE="3">OpenComm</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">ReadComm</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WriteComm</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">CloseComm</font><font SIZE="3">等函数已经过时，</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息也消失了。取而代之的是文件</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">函数提供的打开和关闭通信资源句柄及读写操作的基本接口。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">新的文件</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">(CreateFile</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">等</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">支持重叠式输入输出，这使得线程可以从费时的</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">操作中解放出来，从而极大地提高了程序的运行效率。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">12.3.1 
+    </font><font SIZE="3" color="#3973DE">串行口的打开和关闭</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Win 32</font><font SIZE="3">系统把文件的概念进行了扩展。无论是文件、通信设备、命名管道、邮件槽、磁盘、还是控制台，都是用</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">CreateFile</font><font SIZE="3">来打开或创建的。该函数的声明为：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">HANDLE CreateFile(</p>
+    <p ALIGN="JUSTIFY">LPCTSTR lpFileName, // </font><font SIZE="3">文件名 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DWORD dwDesiredAccess, // </font><font SIZE="3">访问模式 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DWORD dwShareMode, // </font><font SIZE="3">共享模式 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">LPSECURITY_ATTRIBUTES lpSecurityAttributes, // </font><font SIZE="3">通常为</font><font FACE="Times New Roman" SIZE="3">NULL</p>
+    <p ALIGN="JUSTIFY">DWORD dwCreationDistribution, // </font><font SIZE="3">创建方式 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DWORD dwFlagsAndAttributes, // </font><font SIZE="3">文件属性和标志</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">HANDLE hTemplateFile // </font><font SIZE="3">临时文件的句柄，通常为</font><font FACE="Times New Roman" SIZE="3">NULL </p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">);</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果调用成功，那么该函数返回文件的句柄，如果调用失败，则函数返回</font><font FACE="Times New Roman" SIZE="3">INVALID_HANDLE_VALUE</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果想要用重叠</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">方式（参见</font><font FACE="Times New Roman" SIZE="3">12.3.3</font><font SIZE="3">）打开</font><font FACE="Times New Roman" SIZE="3">COM2</font><font SIZE="3">口，则一般应象清单</font><font FACE="Times New Roman" SIZE="3">12.4</font><font SIZE="3">那样调用</font><font FACE="Times New Roman" SIZE="3">CreateFile</font><font SIZE="3">函数。注意在打开一个通信端口时，应该以独占方式打开，另外要指定</font><font FACE="Times New Roman" SIZE="3">GENERIC_READ</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">GENERIC_WRITE</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">OPEN_EXISTING</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">FILE_ATTRIBUTE_NORMAL</font><font SIZE="3">等属性。如果要打开重叠</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">，则应该指定 </font><font FACE="Times New Roman" SIZE="3">FILE_FLAG_OVERLAPPED</font><font SIZE="3">属性。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">12.4</b></p>
+    <p ALIGN="JUSTIFY">HANDLE hCom;</p>
+    <p ALIGN="JUSTIFY">DWORD dwError;</p>
+    <p ALIGN="JUSTIFY">hCom=CreateFile(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">COM2</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">, // </font><font SIZE="3">文件名</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GENERIC_READ | GENERIC_WRITE, // </font><font SIZE="3">允许读和写 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">0, // </font><font SIZE="3">独占方式</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">NULL, </p>
+    <p ALIGN="JUSTIFY">OPEN_EXISTING, //</font><font SIZE="3">打开而不是创建</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // </font><font SIZE="3">重叠方式</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">NULL</p>
+    <p ALIGN="JUSTIFY">);</p>
+    <p ALIGN="JUSTIFY">if(hCom = = INVALID_HANDLE_VALUE)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">dwError=GetLastError( );</p>
+    <p ALIGN="JUSTIFY"><b>. . .</b> // </font><font SIZE="3">处理错误</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当不再使用文件句柄时，应该调用</font><font FACE="Times New Roman" SIZE="3">CloseHandle</font><font SIZE="3">函数关闭之。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">12.3.2 
+    </font><font SIZE="3" color="#3973DE">串行口的初始化</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在打开通信设备句柄后，常常需要对串行口进行一些初始化工作。这需要通过一个</font><font FACE="Times New Roman" SIZE="3">DCB</font><font SIZE="3">结构来进行。</font><font FACE="Times New Roman" SIZE="3">DCB</font><font SIZE="3">结构包含了诸如波特率、每个字符的数据位数、奇偶校验和停止位数等信息。在查询或配置置串行口的属性时，都要用</font><font FACE="Times New Roman" SIZE="3">DCB</font><font SIZE="3">结构来作为缓冲区。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">调用</font><font FACE="Times New Roman" SIZE="3">GetCommState</font><font SIZE="3">函数可以获得串口的配置，该函数把当前配置填充到一个</font><font FACE="Times New Roman" SIZE="3">DCB</font><font SIZE="3">结构中。一般在用</font><font FACE="Times New Roman" SIZE="3">CreateFile</font><font SIZE="3">打开串行口后，可以调用</font><font FACE="Times New Roman" SIZE="3">GetCommState</font><font SIZE="3">函数来获取串行口的初始配置。要修改串行口的配置，应该先修改</font><font FACE="Times New Roman" SIZE="3">DCB</font><font SIZE="3">结构，然后再调用</font><font FACE="Times New Roman" SIZE="3">SetCommState</font><font SIZE="3">函数用指定的</font><font FACE="Times New Roman" SIZE="3">DCB</font><font SIZE="3">结构来设置串行口。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">除了在</font><font FACE="Times New Roman" SIZE="3">DCB</font><font SIZE="3">中的设置外，程序一般还需要设置</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">缓冲区的大小和超时。</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">缓冲区来暂存串行口输入和输出的数据，如果通信的速率较高，则应该设置较大的缓冲区。调用</font><font FACE="Times New Roman" SIZE="3">SetupComm</font><font SIZE="3">函数可以设置串行口的输入和输出缓冲区的大小。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在用</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">读写串行口时，需要考虑超时问题。如果在指定的时间内没有读出或写入指定数量的字符，那么</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">的操作就会结束。要查询当前的超时设置应调用</font><font FACE="Times New Roman" SIZE="3">GetCommTimeouts</font><font SIZE="3">函数，该函数会填充一个</font><font FACE="Times New Roman" SIZE="3">COMMTIMEOUTS</font><font SIZE="3">结构。调用</font><font FACE="Times New Roman" SIZE="3">SetCommTimeouts</font><font SIZE="3">可以用某一个</font><font FACE="Times New Roman" SIZE="3">COMMTIMEOUTS</font><font SIZE="3">结构的内容来设置超时。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">有两种超时：间隔超时和总超时。间隔超时是指在接收时两个字符之间的最大时延，总超时是指读写操作总共花费的最大时间。写操作只支持总超时，而读操作两种超时均支持。用</font><font FACE="Times New Roman" SIZE="3">COMMTIMEOUTS</font><font SIZE="3">结构可以规定读</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">写操作的超时，该结构的定义为：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">typedef struct 
+      _COMMTIMEOUTS { </p>
+      <p ALIGN="JUSTIFY">DWORD ReadIntervalTimeout; // </font><font SIZE="3">读间隔超时</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD 
+      ReadTotalTimeoutMultiplier; // </font><font SIZE="3">读时间系数</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD 
+      ReadTotalTimeoutConstant; // </font><font SIZE="3">读时间常量</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD 
+      WriteTotalTimeoutMultiplier; // </font><font SIZE="3">写时间系数</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD 
+      WriteTotalTimeoutConstant; // </font><font SIZE="3">写时间常量</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">} 
+      COMMTIMEOUTS,*LPCOMMTIMEOUTS;</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY">COMMTIMEOUTS</font><font SIZE="3">结构的成员都以毫秒为单位。总超时的计算公式是：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">总超时</font><font FACE="Times New Roman" SIZE="3">=</font><font SIZE="3">时间系数×要求读</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">写的字符数 </font><font FACE="Times New Roman" SIZE="3">+ </font><font SIZE="3">时间常量</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">例如，如果要读入</font><font FACE="Times New Roman" SIZE="3">10</font><font SIZE="3">个字符，那么读操作的总超时的计算公式为：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读总超时＝</font><font FACE="Times New Roman" SIZE="3">ReadTotalTimeoutMultiplier</font><font SIZE="3">×</font><font FACE="Times New Roman" SIZE="3">10 + ReadTotalTimeoutConstant</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以看出，间隔超时和总超时的设置是不相关的，这可以方便通信程序灵活地设置各种超时。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果所有写超时参数均为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，那么就不使用写超时。如果</font><font FACE="Times New Roman" SIZE="3">ReadIntervalTimeout</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，那么就不使用读间隔超时，如果</font><font FACE="Times New Roman" SIZE="3">ReadTotalTimeoutMultiplier</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ReadTotalTimeoutConstant</font><font SIZE="3">都为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，则不使用读总超时。如果读间隔超时被设置成</font><font FACE="Times New Roman" SIZE="3">MAXDWORD</font><font SIZE="3">并且两个读总超时为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，那么在读一次输入缓冲区中的内容后读操作就立即完成，而不管是否读入了要求的字符。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在用重叠方式读写串行口时，虽然</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">在完成操作以前就可能返回，但超时仍然是起作用的。在这种情况下，超时规定的是操作的完成时间，而不是</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">的返回时间。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">清单</font><font FACE="Times New Roman" SIZE="3">12.5</font><font SIZE="3">列出了一段简单的串行口初始化代码。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">12.5 </font><font SIZE="3">打开并初始化串行口</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">HANDLE hCom;</p>
+    <p ALIGN="JUSTIFY">DWORD dwError;</p>
+    <p ALIGN="JUSTIFY">DCB dcb;</p>
+    <p ALIGN="JUSTIFY">COMMTIMEOUTS TimeOuts;</p>
+    <p ALIGN="JUSTIFY">hCom=CreateFile(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">COM2</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">, // </font><font SIZE="3">文件名</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GENERIC_READ | GENERIC_WRITE, // </font><font SIZE="3">允许读和写 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">0, // </font><font SIZE="3">独占方式</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">NULL, </p>
+    <p ALIGN="JUSTIFY">OPEN_EXISTING, //</font><font SIZE="3">打开而不是创建</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // </font><font SIZE="3">重叠方式</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">NULL</p>
+    <p ALIGN="JUSTIFY">);</p>
+    <p ALIGN="JUSTIFY">if(hCom = = INVALID_HANDLE_VALUE)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">dwError=GetLastError( );</p>
+    <p ALIGN="JUSTIFY"><b>. . .</b> // </font><font SIZE="3">处理错误</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetupComm( hCom, 1024, 1024 ) //</font><font SIZE="3">缓冲区的大小为</font><font FACE="Times New Roman" SIZE="3">1024</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">TimeOuts. ReadIntervalTimeout=1000; </p>
+    <p ALIGN="JUSTIFY">TimeOuts.ReadTotalTimeoutMultiplier=500; </p>
+    <p ALIGN="JUSTIFY">TimeOuts.ReadTotalTimeoutConstant=5000; </p>
+    <p ALIGN="JUSTIFY">TimeOuts.WriteTotalTimeoutMultiplier=500; </p>
+    <p ALIGN="JUSTIFY">TimeOuts.WriteTotalTimeoutConstant=5000;</p>
+    <p ALIGN="JUSTIFY">SetCommTimeouts(hCom, &amp;TimeOuts); // </font><font SIZE="3">设置超时</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetCommState(hCom, &amp;dcb);</p>
+    <p ALIGN="JUSTIFY">dcb.BaudRate=2400; // </font><font SIZE="3">波特率为</font><font FACE="Times New Roman" SIZE="3">2400</p>
+    <p ALIGN="JUSTIFY">dcb.ByteSize=8; // </font><font SIZE="3">每个字符有</font><font FACE="Times New Roman" SIZE="3">8</font><font SIZE="3">位</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">dcb.Parity=NOPARITY; //</font><font SIZE="3">无校验</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">dcb.StopBits=ONESTOPBIT; //</font><font SIZE="3">一个停止位</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetCommState(hCom, &amp;dcb);</p>
+    <b><p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">12.3.3 
+    </font><font SIZE="3" color="#3973DE">重叠</font><font color="#3973DE" FACE="Times New Roman" SIZE="3">I/O</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在用</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">读写串行口时，既可以同步执行，也可以重叠（异步）执行。在同步执行时，函数直到操作完成后才返回。这意味着在同步执行时线程会被阻塞，从而导致效率下降。在重叠执行时，即使操作还未完成，调用的函数也会立即返回。费时的</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">操作在后台进行，这样线程就可以干别的事情。例如，线程可以在不同的句柄上同时执行</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">操作，甚至可以在同一句柄上同时进行读写操作。“重叠”一词的含义就在于此。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ReadFile</font><font SIZE="3">函数只要在串行口输入缓冲区中读入指定数量的字符，就算完成操作。而</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">函数不但要把指定数量的字符拷入到输出缓冲中，而且要等这些字符从串行口送出去后才算完成操作。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">函数是否为执行重叠操作是由</font><font FACE="Times New Roman" SIZE="3">CreateFile</font><font SIZE="3">函数决定的。如果在调用</font><font FACE="Times New Roman" SIZE="3">CreateFile</font><font SIZE="3">创建句柄时指定了</font><font FACE="Times New Roman" SIZE="3">FILE_FLAG_OVERLAPPED</font><font SIZE="3">标志，那么调用</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">对该句柄进行的读写操作就是重叠的，如果未指定重叠标志，则读写操作是同步的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">的参数和返回值很相似。这里仅列出</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">函数的声明：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL ReadFile(</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">HANDLE hFile, // </font><font SIZE="3">文件句柄</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LPVOID lpBuffer, // </font><font SIZE="3">读缓冲区</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD 
+      nNumberOfBytesToRead, // </font><font SIZE="3">要求读入的字节数 </font><font FACE="Times New Roman" SIZE="3"></p>
+      <p ALIGN="JUSTIFY">LPDWORD lpNumberOfBytesRead, // </font><font SIZE="3">实际读入的字节数</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LPOVERLAPPED lpOverlapped 
+      // </font><font SIZE="3">指向一个</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">); //</font><font SIZE="3">若返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">则表明操作成功</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">需要注意的是如果该函数因为超时而返回，那么返回值是</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">。参数</font><font FACE="Times New Roman" SIZE="3">lpOverlapped</font><font SIZE="3">在重叠操作时应该指向一个</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构，如果该参数为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">，那么函数将进行同步操作，而不管句柄是否是由</font><font FACE="Times New Roman" SIZE="3">FILE_FLAG_OVERLAPPED</font><font SIZE="3">标志建立的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">时，不一定就是操作失败，线程应该调用</font><font FACE="Times New Roman" SIZE="3">GetLastError</font><font SIZE="3">函数分析返回的结果。例如，在重叠操作时如果操作还未完成函数就返回，那么函数就返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，而且</font><font FACE="Times New Roman" SIZE="3">GetLastError</font><font SIZE="3">函数返回</font><font FACE="Times New Roman" SIZE="3">ERROR_IO_PENDING</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在使用重叠</font><font FACE="Times New Roman" SIZE="3">I/O</font><font SIZE="3">时，线程需要创建</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构以供读写函数使用。</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构最重要的成员是</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">是一个事件对象句柄，线程应该用</font><font FACE="Times New Roman" SIZE="3">CreateEvent</font><font SIZE="3">函数为</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">成员创建一个手工重置事件，</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">成员将作为线程的同步对象使用。如果读写函数未完成操作就返回，就那么把</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">成员设置成无信号的。操作完成后（包括超时），</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">会变成有信号的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果</font><font FACE="Times New Roman" SIZE="3">GetLastError</font><font SIZE="3">函数返回</font><font FACE="Times New Roman" SIZE="3">ERROR_IO_PENDING</font><font SIZE="3">，则说明重叠操作还为完成，线程可以等待操作完成。有两种等待办法：一种办法是用象</font><font FACE="Times New Roman" SIZE="3">WaitForSingleObject</font><font SIZE="3">这样的等待函数来等待</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构的</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">成员，可以规定等待的时间，在等待函数返回后，调用</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">。另一种办法是调用</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">函数等待，如果指定该函数的</font><font FACE="Times New Roman" SIZE="3">bWait</font><font SIZE="3">参数为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，那么该函数将等待</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构的</font><font FACE="Times New Roman" SIZE="3">hEvent </font><font SIZE="3">事件。</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">可以返回一个</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构来报告包括实际传输字节在内的重叠操作结果。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果规定了读</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">写操作的超时，那么当超过规定时间后，</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">成员会变成有信号的。因此，在超时发生后，</font><font FACE="Times New Roman" SIZE="3">WaitForSingleObject</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">都会结束等待。</font><font FACE="Times New Roman" SIZE="3">WaitForSingleObject</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">dwMilliseconds</font><font SIZE="3">参数会规定一个等待超时，该函数实际等待的时间是两个超时的最小值。注意</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">不能设置等待的时限，因此如果</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">成员无信号，则该函数将一直等待下去。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在调用</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteFile</font><font SIZE="3">之前，线程应该调用</font><font FACE="Times New Roman" SIZE="3">ClearCommError</font><font SIZE="3">函数清除错误标志。该函数负责报告指定的错误和设备的当前状态。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">调用</font><font FACE="Times New Roman" SIZE="3">PurgeComm</font><font SIZE="3">函数可以终止正在进行的读写操作，该函数还会清除输入或输出缓冲区中的内容。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">12.3.4 
+    </font><font SIZE="3" color="#3973DE">通信事件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">Windows 
+    95/NT</font><font SIZE="3">中，</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息已经取消，在串行口产生一个通信事件时，程序并不会收到通知消息。线程需要调用</font><font FACE="Times New Roman" SIZE="3">WaitCommEvent</font><font SIZE="3">函数来监视发生在串行口中的各种事件，该函数的第二个参数返回一个事件屏蔽变量，用来指示事件的类型。线程可以用</font><font FACE="Times New Roman" SIZE="3">SetCommMask</font><font SIZE="3">建立事件屏蔽以指定要监视的事件，表</font><font FACE="Times New Roman" SIZE="3">12.4</font><font SIZE="3">列出了可以监视的事件。调用</font><font FACE="Times New Roman" SIZE="3">GetCommMask</font><font SIZE="3">可以查询串行口当前的事件屏蔽。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">12.4 </font><font SIZE="3">通信事件</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="35%"><font SIZE="3"><b><p ALIGN="JUSTIFY">事件屏蔽</b></font></td>
+        <td WIDTH="65%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_BREAK</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">检测到一个输入中断</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_CTS</font></td>
+        <td WIDTH="65%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CTS</font><font SIZE="3">信号发生变化</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_DSR</font></td>
+        <td WIDTH="65%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DSR</font><font SIZE="3">信号发生变化</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_ERR</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">发生行状态错误</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_RING</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">检测到振铃信号</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_RLSD</font></td>
+        <td WIDTH="65%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">RLSD(CD)</font><font SIZE="3">信号发生变化</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_RXCHAR</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">输入缓冲区接收到新字符</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_RXFLAG</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">输入缓冲区收到事件字符</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EV_TXEMPTY</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">发送缓冲区为空</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WaitCommEvent</font><font SIZE="3">即可以同步使用，也可以重叠使用。如果串口是用</font><font FACE="Times New Roman" SIZE="3">FILE_FLAG_OVERLAPPED</font><font SIZE="3">标志打开的，那么</font><font FACE="Times New Roman" SIZE="3">WaitCommEvent</font><font SIZE="3">就进行重叠操作，此时该函数需要一个</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构。线程可以调用等待函数或</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">函数来等待重叠操作的完成。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当指定范围内的某一事件发生后，线程就结束等待并把该事件的屏蔽码设置到事件屏蔽变量中。需要注意的是，</font><font FACE="Times New Roman" SIZE="3">WaitCommEvent</font><font SIZE="3">只检测调用该函数后发生的事件。例如，如果在调用</font><font FACE="Times New Roman" SIZE="3">WaitCommEvent</font><font SIZE="3">前在输入缓冲区中就有字符，则不会因为这些字符而产生</font><font FACE="Times New Roman" SIZE="3">EV_RXCHAR</font><font SIZE="3">事件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果检测到输入的硬件信号（如</font><font FACE="Times New Roman" SIZE="3">CTS</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">RTS</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">信号等）发生了变化，线程可以调用</font><font FACE="Times New Roman" SIZE="3">GetCommMaskStatus</font><font SIZE="3">函数来查询它们的状态。而用</font><font FACE="Times New Roman" SIZE="3">EscapeCommFunction</font><font SIZE="3">函数可以控制输出的硬件信号（如</font><font FACE="Times New Roman" SIZE="3">DTR</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">RTS</font><font SIZE="3">信号）。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap12_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap12/chap12_2.htm">上一页</a></td>
+        <td><p align="right"><a href="chap12_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap12/chap12_4.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

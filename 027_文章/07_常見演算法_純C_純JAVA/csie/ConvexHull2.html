@@ -1,0 +1,271 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Convex Hull</title></head><body>
+<div class="a"><div class="h">
+<p class="b">3D Convex Hull（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">3D Convex Hull</p>
+<p>三維凸包的表面，由數個凸多邊形拼成。</p>
+<img src="3DConvexHull1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/3DConvexHull1.png">
+<p>通常會將凸多邊形剖分成數個三角形，讓三角形擁有方向。一般默認正向是朝外，反向是朝內。</p>
+<img src="3DConvexHull2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/3DConvexHull2.png">
+<p>要讓正向是朝外，就以逆時針順序紀錄三角形的三個頂點（三條邊就變成有向邊）。這麼做的好處是，三角形依序取兩條邊計算外積，得到的都會是朝外的法向量。</p>
+<img src="3DConvexHull3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/3DConvexHull3.png">
+<p class="t">Facet</p>
+<p>高維度空間的物體，一塊平坦表面稱作「刻面」，就好像被刻了一刀。鑽石就是刻面的極致工藝。</p>
+<img src="3DConvexHull4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/3DConvexHull4.png">
+<textarea>
+struct Point {double x, y, z;} p[10];
+
+Point operator-(Point& a, Point& b)
+{
+	return (Point){a.x - b.x, a.y - b.y, a.z - b.z};
+}
+
+double dot(Point a, Point b)
+{
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+Point cross(Point a, Point b)
+{
+	return (Point){a.y * b.z - b.y * a.z,
+				   a.z * b.x - b.z * a.x,
+				   a.x * b.y - b.x * a.y};
+}
+
+// 凸包的刻面。
+// 令一個刻面由三個頂點組成，並且有方向性。
+// 此處僅紀錄頂點的索引值，令逆時針順序為向外。
+struct Facet {int a, b, c;};
+
+// 計算刻面的法向量。
+Point normal(Facet& f)
+{
+	return cross(p[f.b] - p[f.a], p[f.c] - p[f.a]);
+}
+</textarea>
+<p class="t">三維凸包的繞行順序是什麼？</p>
+<p>二維凸包上的頂點，是以時針順序繞行一圈；然而三維凸包至今仍未發現適當的繞行順序。3D Graham's Scan至今仍是懸案。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">3D Convex Hull: Enumerative Method（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p>窮舉所有三角形，嘗試作為凸包刻面。凸包刻面外部必無點；所有點必在凸包刻面內部、或者與凸包刻面共面。時間複雜度O(N^4)。</p>
+<p>此演算法並不完美。如果凸包表面有多點共面，則會得到多餘的三角形。</p>
+<img src="3DConvexHull5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/3DConvexHull5.png">
+<textarea>
+struct Point {double x, y, z;} p[10];
+struct Facet {int a, b, c;};
+
+// 如果有點出現在刻面外部，此刻面就不屬於凸包。
+bool isfacet(Facet& f)
+{
+	Point n = normal(f);
+	for (int i=0; i<10; ++i)
+		if (dot(n, p[i] - p[f.a]) > 0)
+			return false;
+	return true;
+}
+
+void convex_hull()
+{
+	// 窮舉所有三角形，判斷是否為凸包刻面。
+	// 三角形擁有方向，兩種方向都要嘗試。
+	vector<Facet> ch;
+	for (int i=0; i<10; ++i)
+		for (int j=i+1; j<10; ++j)
+			for (int k=j+1; k<10; ++k)
+			{
+				Facet f1 = {i, j, k};
+				if (isfacet(f1)) ch.push_back(f1);
+				Facet f2 = {k, j, i};
+				if (isfacet(f2)) ch.push_back(f2);
+			}
+
+	// 印出結果
+	for (int i=0; i<ch.size(); ++i)
+		cout << "3D凸包擁有刻面"
+			<< ch[i].a << ch[i].b << ch[i].c;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">3D Convex Hull: Gift Wrapping Algorithm（Under Construction!）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p>先找到第一個凸包刻面，找座標最低的三個點，O(N)。</p>
+<img src="3DConvexHull6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/3DConvexHull6.png">
+<p>接下來不斷尋找位於最外側的點，最外側的點與目前的刻面連線（也就是包覆）形成新刻面。</p>
+<p>時間複雜度是O(NF)，其中F為凸包刻面數量。多面體最多有O(N)個面，因此F可寫作O(N)，時間複雜度可寫作O(N^2)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">3D Convex Hull: Incremental Method（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p>與2D版本概念相同。通常採用試誤法，窮舉刻面，容易實作。時間複雜度是O(N^2)。</p>
+<img src="3DConvexHull7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/3DConvexHull7.png">
+<p>運用刻面法向量，可以輕鬆判斷刻面屬於凸面、凹面、切面。留下凸面與切面、移除凹面，然後增加當前輸入點到凹凸分際的新刻面，就完成了凸包。</p>
+<p>利用三角形有向邊的概念，可以輕鬆紀錄凹凸分際的哪些邊已經製作過新刻面。這是一個很好用的實作技巧。</p>
+<textarea>
+struct Point {double x, y, z;} p[10];
+struct Facet {int a, b, c;};
+
+// 紀錄凸包上每一個刻面的每一條邊，與新加入點的相對位置。
+int vis[10][10];
+
+bool iszero(Point a)
+{
+	return a.x == 0 && a.y == 0 && a.z == 0;
+}
+
+// 判斷刻面是否共面、並且同向。參數是刻面的法向量。
+bool coface(Point& a, Point& b)
+{
+	return dot(a, b) > 0 && iszero(cross(a, b));
+}
+
+void convex_hull()
+{
+	/* 必須弄出一個四面體。 */
+
+	// 令前兩點不共點
+	int i;
+	for (i=1; i<10; ++i)
+		if (!iszero(p[0] - p[i]))
+		{
+			swap(p[1], p[i]);
+			break;
+		}
+	if (i == 10) return;	// 統統共點
+
+	// 令前三點不共線
+	for (++i; i<N; ++i)
+		if (!iszero(cross(p[1] - p[0], p[i] - p[0])))
+		{
+			swap(p[2], p[i]);
+			break;
+		}
+	if (i == 10) return;	// 統統共線
+
+	// 令前四點不共面
+	Point n = cross(p[0] - p[1], p[1] - p[2]);
+	for (++i; i<N; ++i)
+		if (dot(n, p[0] - p[i]) != 0)
+		{
+			swap(p[3], p[i]);
+			break;
+		}
+	if (i == 10) return;	// 統統共面
+
+	/* 開始建立凸包 */
+
+	// 前三點形成的凸包。
+	// 已經確認前四點為四面體，因此稍後不會產生錯誤。
+	vector<Facet> cur;
+	cur.push_back((Facet){0,1,2});
+	cur.push_back((Facet){2,1,0});
+
+	// 處理其餘點。
+	for (int i=3; i<N; ++i)
+	{
+		vector<Facet> next;
+		for (int j=0; j<cur.size(); ++j)
+		{
+			Facet& f = cur[j];
+
+			// 如果刻面是凸面、切面，就是新凸包的刻面。
+			double d = dot(p[f.a] - p[i], normal(f));
+			if (d >= 0) next.push_back(f);
+
+			// 紀錄刻面，可能是凸面、凹面、切面。
+			int side = 0;			// 切面
+			if (d > 0) side = +1;	// 凸面
+			if (d < 0) side = -1;	// 凹面
+			vis[f.a][f.b] = side;
+			vis[f.b][f.c] = side;
+			vis[f.c][f.a] = side;
+		}
+
+		// 找到凹面，看看其邊是否為凹凸分際。
+		// 如果是，新凸包就增加當前輸入點到凹凸分際的刻面。
+		for (int j=0; j<cur.size(); ++j)
+		{
+			Facet& f = cur[j];
+			int a = f.a, b = f.b, c = f.c;
+
+			if (vis[a][b] < 0 && vis[a][b] != vis[b][a])
+				next.push_back((Facet){a, b, i});
+
+			if (vis[b][c] < 0 && vis[b][c] != vis[c][b])
+				next.push_back((Facet){b, c, i});
+
+			if (vis[c][a] < 0 && vis[c][a] != vis[a][c])
+				next.push_back((Facet){c, a, i});
+		}
+
+		cur = next;
+	}
+}
+</textarea>
+<p class="e">UVa 11769 ICPC 5090 4795</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">3D Convex Hull: Divide and Conquer（Under Construction!）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p>與二維版本相同，總時間複雜度是O(NlogN)。</p>
+<img src="3DConvexHull8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/3DConvexHull8.png">
+<p>比較困難的地方是合併兩個三維凸包，O(N)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Erdős-Szekeres Conjecture</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Erdős-Szekeres Conjecture（Happy Ending Problem）</p>
+<p><a href="javascript:if(confirm('http://garden.irmacs.sfu.ca/?q=op/erdos_szekeres_conjecture  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://garden.irmacs.sfu.ca/?q=op/erdos_szekeres_conjecture'" tppabs="http://garden.irmacs.sfu.ca/?q=op/erdos_szekeres_conjecture">http://garden.irmacs.sfu.ca/?q=op/erdos_szekeres_conjecture</a></p>
+<p>平面上任意2^N + 1個頂點（不會多點共線），是否能描出一個有N+2個頂點的凸多邊形。例如任意三個點可以描出凸三角形，任意五個點可以描出凸四邊形，任意九個點可以描出凸五邊形，以此類推。</p>
+<img src="Erdős-SzekeresConjecture1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Erdős-SzekeresConjecture1.png">
+<p>Szekeres發表了這個猜想之後，有一位女數學家證明了N更大的情形，兩人因而相知相遇、結為連理，有了幸福快樂的結局。因此Erdős暱稱此猜想為Happy Ending Problem。</p>
+<p>註：Erdős-Szekeres Theorem是另外一件事情，與Erdős-Szekeres Conjecture不同。</p>
+<p class="t">2^N個數字，任何一種排列，<br>必能形成長度為N+1的「先遞增、再遞減子序列」。</p>
+<p>這個命題曾經用來證明此猜想，不過結果是失敗的。</p>
+<p>目前來說，凹與凸是無法量化的，凹與凸無法全體一起比較、全體一起排序。即便是凸包演算法，也只能局部逐一判斷凹凸。</p>
+<p>用長度來衡量凹凸乍看是個不錯的點子，不過困難重重，可能不是一個好方向。</p>
+<p>最後附上此命題的證明。</p>
+<pre>
+2^(N-2)個數字，任何一種排列，
+必能形成長度為N-1的「先遞增、再遞減子序列」。
+
+數學歸納法。
+
+當N=2時，一個數字的任何一種排列，
+都可以形成一個長度為1的「先遞增、再遞減子序列」。
+
+當N=3時，兩個數字的任何一種排列，
+都可以形成一個長度為2的「先遞增、再遞減子序列」。
+例如12，剛好都是遞增。
+例如21，剛好都是遞減。
+例如11，說是遞增或是遞減都可以。
+
+假設N=k時成立。
+則N=k+1時，
+我們將2^(k-1)個數字的隨便一個排列，中間切一刀，等分為左半和右半。
+左半、右半各自都可以形成長度為k-1的「先遞增、再遞減子序列」。
+
+左半「先遞增、再遞減子序列」的最後一個數字，叫做p，
+右半「先遞增、再遞減子序列」的第一個數字，叫做q，
+如果p > q，則左半與q可形成長度為k的「先遞增、再遞減子序列」。
+如果p < q，則p與右半可形成長度為k的「先遞增、再遞減子序列」。
+如果p = q，則上述兩種情形任意一種皆可。
+得證。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Erdős-Nagy Theorem</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p>一個凹多邊形不斷翻折，最後必能變成凸多邊形。</p>
+<p><a href="javascript:if(confirm('http://www.matrix67.com/blog/archives/4780  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.matrix67.com/blog/archives/4780'" tppabs="http://www.matrix67.com/blog/archives/4780">http://www.matrix67.com/blog/archives/4780</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

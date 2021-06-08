@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <title>後序式的運算</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;後序式的運算</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> <small>
+
+說明
+將 <a class="wikilink" href="InFixPostfix.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/InFixPostfix.htm">中序式轉換為後序式</a>
+的好處是，不用處理運算子先後順序問題，只要依序由運算式由前往後讀取即可。</small> 
+      <h2> 解法</h2>
+      <small>
+
+
+運算時由後序式的前方開始讀取，遇到運算元先存入堆疊，如果遇到運算子，則由堆疊中取出兩個運算元進行對應的運算，然後將結果存回堆疊，如果運算式讀取完
+畢，那麼堆疊頂的值就是答案了，例如我們計算12+34+*這個運算式（也就是(1+2)*(3+4)）：</small> 
+
+  
+    
+      <table border="1" width="50%">
+
+
+  <tbody>
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>讀取 </small></td>
+
+
+
+      <td align="left" valign="top"><small>堆疊 </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>1 </small></td>
+
+
+
+      <td align="left" valign="top"><small>1 </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>2 </small></td>
+
+
+
+      <td align="left" valign="top"><small>1 2 </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>+ </small></td>
+
+
+
+      <td align="left" valign="top"><small>3 // 1+2 後存回 </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>3 </small></td>
+
+
+
+      <td align="left" valign="top"><small>3 3 </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>4 </small></td>
+
+
+
+      <td align="left" valign="top"><small>3 3 4 </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>+ </small></td>
+
+
+
+      <td align="left" valign="top"><small>3 7 // 3+4 後存回 </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>* </small></td>
+
+
+
+      <td align="left" valign="top"><small>21 // 3 * 7 後存回</small></td>
+
+
+    </tr>
+
+
+  
+  
+        </tbody>
+      </table>
+
+
+
+      <br>
+
+
+      <h2> 實作</h2>
+
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>void evalPf(char*); <br>double cal(double, char, double); <br><br>int main(void) { <br>    char input[80]; <br><br>    printf("輸入後序式："); <br>    scanf("%s", input); <br>    evalPf(input); <br><br>    return; <br>} <br><br>void evalPf(char* postfix) { <br>    double stack[80] = {0.0}; <br>    char temp[2]; <br>    char token; <br>    int top = 0, i = 0; <br><br>    temp[1] = '\0'; <br><br>    while(1) { <br>        token = postfix[i]; <br>        switch(token) { <br>            case '\0': <br>                printf("ans = %f\n", stack[top]); <br>                return; <br>            case '+': case '-': case '*': case '/': <br>                stack[top-1] = <br>                       cal(stack[top-1], token, stack[top]); <br>                top--; <br>                break; <br>            default: <br>                if(top &lt; sizeof(stack) / sizeof(float)) { <br>                    temp[0] = postfix[i]; <br>                    top++; <br>                    stack[top] = atof(temp); <br>                } <br>                break; <br>        } <br>        i++; <br>    } <br>} <br><br>double cal(double p1, char op, double p2) { <br>    switch(op) { <br>        case '+': <br>            return p1 + p2; <br>        case '-': <br>            return p1 - p2; <br>        case '*': <br>            return p1 * p2; <br>        case '/': <br>            return p1 / p2; <br>    } <br>} <br></pre>
+
+
+
+      <br>
+
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+
+      <pre>public class InFix {<br>    private static int priority(char op) {  <br>        switch(op) { <br>           case '+': case '-': <br>                return 1; <br>            case '*': case '/': <br>                return 2;<br>            default: <br>                return 0;<br>        }  <br>    }<br>    <br>    public static char[] toPosfix(char[] infix) {<br>        char[] stack = new char[infix.length]; <br>        char[] postfix = new char[infix.length];<br>        char op; <br><br>        StringBuffer buffer = new StringBuffer();<br><br>        int top = 0;<br>        for(int i = 0; i &lt; infix.length; i++) { <br>            op = infix[i]; <br>            switch(op) {  <br>                // 運算子堆疊 <br>                case '(': <br>                    if(top &lt; stack.length) { <br>                        top++; <br>                        stack[top] = op; <br>                    } <br>                    break; <br>                case '+': case '-': case '*': case '/': <br>                    while(priority(stack[top]) &gt;= <br>                          priority(op)) { <br>                        buffer.append(stack[top]);<br>                        top--; <br>                    } <br>                    // 存入堆疊 <br>                    if(top &lt; stack.length) { <br>                        top++; <br>                        stack[top] = op; <br>                    } <br>                    break; <br>                // 遇 ) 輸出至 ( <br>                case ')': <br>                    while(stack[top] != '(') { <br>                        buffer.append(stack[top]);<br>                        top--; <br>                    } <br>                    top--;  // 不輸出( <br>                    break; <br>                // 運算元直接輸出 <br>                default: <br>                    buffer.append(op);<br>                    break; <br>            } <br>        } <br>        <br>        while(top &gt; 0) { <br>            buffer.append(stack[top]);<br>            top--; <br>        }<br>        <br>        return buffer.toString().toCharArray();<br>    }<br><br>    private static double cal(double p1, char op, double p2) { <br>        switch(op) { <br>            case '+': <br>                return p1 + p2; <br>            case '-': <br>                return p1 - p2; <br>            case '*': <br>                return p1 * p2; <br>            case '/': <br>                return p1 / p2; <br>        }<br>        return 0.0;<br>    }<br>    <br>    public static double eval(char[] postfix) {<br>        double[] stack = new double[postfix.length]; <br>        char token; <br>        int top = 0; <br><br>        for(int i = 0; i &lt; postfix.length; i++) { <br>            token = postfix[i]; <br>            switch(token) { <br>                case '+': case '-': case '*': case '/': <br>                    stack[top-1] = <br>                       cal(stack[top-1], token, stack[top]); <br>                    top--; <br>                    break; <br>                default: <br>                    if(top &lt; stack.length) { <br>                        char temp = postfix[i]; <br>                        top++; <br>                        stack[top] = <br>                            Double.parseDouble(<br>                                    String.valueOf(temp)); <br>                    } <br>                    break; <br>            } <br>        } <br><br>        return stack[top];<br>    }<br>    <br>    public static void main(String[] args) {<br>        String infix = "(1+2)*(3+4)";<br>        <br>        System.out.println(InFix.eval(<br>                InFix.toPosfix(infix.toCharArray())));<br>    }<br>}</pre>
+
+
+      <br>
+
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+<br>
+
+
+
+
+
+
+</body>
+</html>

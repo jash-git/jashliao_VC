@@ -1,0 +1,407 @@
+<html>
+
+<head>
+<title>10.5 CRecordset类</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font FACE="Times New Roman" color="#3973DE" size="5">10.5 CRecordset</font><font color="#3973DE" size="5">类</font><font FACE="Times New Roman" size="5"></p>
+    </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset</font><font SIZE="3">类代表一个记录集．该类是</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">类中最重要、功能最强大的类。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.5.1 
+    </font><font SIZE="3" color="#3973DE">动态集、快照、光标和光标库</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在多任务操作系统或网络环境中，多个用户可以共享同一个数据源。共享数据的一个主要问题是如何协调各个用户对数据源的修改。例如，当某一个应用改变了数据源中的记录时，别的连接至该数据源的应用应该如何处理。对于这个问题，基于</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">应用程序可以采取几种不同的处理办法，这将由程序采用哪种记录集决定。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">记录集主要分为快照</font><font FACE="Times New Roman" SIZE="3">(Snapshot) </font><font SIZE="3">和动态集</font><font FACE="Times New Roman" SIZE="3">(Dynaset)</font><font SIZE="3">两种，</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">类对这两者都支持。这两种记录集的不同表现在它们对别的应用改变数据源记录采取了不同的处理方法。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">快照型记录集提供了对数据的静态视．快照是个很形象的术语，就好象对数据源的某些记录照了一张照片一样．当别的用户改变了记录时（包括修改、添加和删除），快照中的记录不受影响，也就是说，快照不反映别的用户对数据源记录的改变．直到调用了</font><font FACE="Times New Roman" SIZE="3">CRecordset::Requery</font><font SIZE="3">重新查询后，快照才会反映变化．对于象产生报告或执行计算这样的不希望中途变动的工作，快照是很有用的。需要指出的是，快照的这种静态特性是相对于别的用户而言的，它会正确反映由本身用户对记录的修改和删除，但对于新添加的记录直到调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">后才能反映到快照中．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">动态集提供了数据的动态视．当别的用户修改或删除了记录集中的记录时，会在动态集中反映出来：当滚动到修改过的记录时对其所作的修改会立即反映到动态集中，当记录被删除时，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">代码会跳过记录集中的删除部分．对于其它用户添加的记录，直到调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">时，才会在动态集中反映出来。本身应用程序对记录的修改、添加和删除会反映在动态集中。当数据必须是动态的时侯，使用动态集是最适合的。例如，在一个火车票联网售票系统中，显然应该用动态集随时反映出共享数据的变化。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在记录集中滚动，需要有一个标志来指明滚动后的位置（当前位置）。</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">驱动程序会维护一个光标，用来跟踪记录集的当前记录，可以把光标理解成跟踪记录集位置的一种机制。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">光标库</font><font FACE="Times New Roman" SIZE="3">(Cursor Library)</font><font SIZE="3">是处于</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">驱动程序管理器和驱动程序之间的动态链接库</font><font FACE="Times New Roman" SIZE="3">(ODBCCR32.DLL)</font><font SIZE="3">．光标库的主要功能是支持快照以及为底层驱动程序提供双向滚动能力，高层次的驱动程序不需要光标库，因为它们是可滚动的．光标库管理快照记录的缓冲区，该缓冲区反映本程序对记录的修改和删除，但不反映其它用户对记录的改变，由此可见，快照实际上相当于当前的光标库缓冲区．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">应注意的是，快照是一种静态光标</font><font FACE="Times New Roman" SIZE="3">(Static Cursor)</font><font SIZE="3">．静态光标直到滚动到某个记录才能取得该记录的数据．因此，要保证所有的记录都被快照，可以先滚动到记录集的末尾，然后再滚动到感兴趣的第一个记录上．这样做的缺点是滚动到末尾需要额外的开销，会降低性能．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">与快照不同，动态集不用光标库维持的缓冲区来存放记录．实际上，动态集是不使用光标库的，因为光标库会屏蔽掉一些支持动态集的底层驱动程序功能．动态集是一种键集驱动光标</font><font FACE="Times New Roman" SIZE="3">(Keyset-Driven Cursor)</font><font SIZE="3">，当打开一个动态集时，驱动程序保存记录集中每个记录的键．只要光标在动态集中滚动，驱动程序就会通过键来从数据源中检取当前记录，从而保证选取的记录与数据源同步．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">从上面的分析中可以看出，快照和动态集有一个共同的特点，那就是在建立记录集后，记录集中的成员就已经确定了．这就是为什么两种记录集都不能反映别的用户添加记录的原因．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.5.2 
+    </font><font SIZE="3" color="#3973DE">域数据成员与数据交换</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRecordset</font><font SIZE="3">类代表一个记录集．用户一般需要用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">创建一个</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">的派生类．</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">可以为派生的记录集类创建一批数据成员，这些数据成员与记录的各字段相对应，被称为字段数据成员或域数据成员．例如，对于表</font><font FACE="Times New Roman" SIZE="3">10.2</font><font SIZE="3">所示的将在后面例子中使用的数据库表，</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">会在派生类中加入</font><font FACE="Times New Roman" SIZE="3">6</font><font SIZE="3">个域数据成员，如清单</font><font FACE="Times New Roman" SIZE="3">10.1</font><font SIZE="3">所示．可以看出域数据成员与表中的字段名字类似，且类型匹配．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">10.2 stdreg32.mdb</font><font SIZE="3">中的</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="577">
+      <tr>
+        <td WIDTH="17%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">CourseID</p>
+        <p ALIGN="JUSTIFY">(Text)</b></font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">SectionNo</p>
+        <p ALIGN="JUSTIFY">(Text)</b></font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">InstructorID</p>
+        <p ALIGN="JUSTIFY">(Text)</b></font></td>
+        <td WIDTH="19%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">RoomNo</p>
+        <p ALIGN="JUSTIFY">(Text)</b></font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">Schedule</p>
+        <p ALIGN="JUSTIFY">(Text)</b></font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">Capacity</p>
+        <p ALIGN="JUSTIFY">(int)</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="17%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH101</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">1</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">KLAUSENJ</font></td>
+        <td WIDTH="19%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">KEN-12</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MWF10-11</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">40</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="17%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH101</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">2</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ROGERSN</font></td>
+        <td WIDTH="19%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WIL-1088</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">TTH3:30-5</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">15</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="17%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH201</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">1</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ROGERSN</font></td>
+        <td WIDTH="19%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WIL-1034</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MWF2-3</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">20</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="17%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH201</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">2</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SMITHJ</font></td>
+        <td WIDTH="19%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WIL-1054</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MWF3-4</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">25</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="17%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH202</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">1</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">KLA</font></td>
+        <td WIDTH="19%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WIL-1054</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MWF9-10</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">20</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="17%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH202</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">2</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ROGERSN</font></td>
+        <td WIDTH="19%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">KEN-12</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">TTH9:30-11</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">15</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="17%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH202</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">3</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">KLAUSENJ</font></td>
+        <td WIDTH="19%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WIL-2033</font></td>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">TTH3-4:30</font></td>
+        <td WIDTH="14%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">15</font></td>
+      </tr>
+    </table>
+    <b><font SIZE="3"><p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.1 
+    </font><font SIZE="3">派生类中的域数据成员</p>
+    <blockquote>
+      <blockquote>
+        </font></b><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">class CSectionSet : 
+        public CRecordset</p>
+        <p ALIGN="JUSTIFY">{</p>
+        <p ALIGN="JUSTIFY">public:</p>
+        <p ALIGN="JUSTIFY"><b>. . . . . .</p>
+        </b><p ALIGN="JUSTIFY">//{{AFX_FIELD(CSectionSet, CRecordset)</p>
+        <p ALIGN="JUSTIFY">CString m_CourseID;</p>
+        <p ALIGN="JUSTIFY">CString m_SectionNo;</p>
+        <p ALIGN="JUSTIFY">CString m_InstructorID;</p>
+        <p ALIGN="JUSTIFY">CString m_RoomNo;</p>
+        <p ALIGN="JUSTIFY">CString m_Schedule;</p>
+        <p ALIGN="JUSTIFY">int m_Capacity;</p>
+        <p ALIGN="JUSTIFY">//}}AFX_FIELD</p>
+        <p ALIGN="JUSTIFY"><b>. . . . . .</p>
+        </b><p ALIGN="JUSTIFY">};</p>
+        <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">域数据成员用来保存某条记录的各个字段，它们是程序与记录之间的缓冲区．域数据成员代表当前记录，当在记录集中滚动到某一记录时，框架自动地把记录的各个字段拷贝到记录集对象的域数据成员中．当用户要修改当前记录或增加新记录时，程序先将各字段的新值放入域数据成员中，然后调用相应的</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">成员函数把域数据成员设置到数据源中．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">不难看出，在记录集与数据源之间有一个数据交换问题．</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">类使用＂记录域交换＂</font><font FACE="Times New Roman" SIZE="3">(Record Field Exchange</font><font SIZE="3">，缩写为</font><font FACE="Times New Roman" SIZE="3">RFX)</font><font SIZE="3">机制自动地在域数据成员和数据源之间交换数据．</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">机制与对话数据交换</font><font FACE="Times New Roman" SIZE="3">(DDX)</font><font SIZE="3">类似．</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">的成员函数</font><font FACE="Times New Roman" SIZE="3">DoFieldExchange</font><font SIZE="3">负责数据交换任务，在该函数中调用了一系列</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">函数．当用户用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">加入域数据成员时，</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">会自动在</font><font FACE="Times New Roman" SIZE="3">DoFieldExchange</font><font SIZE="3">中建立</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">．典型</font><font FACE="Times New Roman" SIZE="3">DoFieldExchange</font><font SIZE="3">如清单</font><font FACE="Times New Roman" SIZE="3">10.2</font><font SIZE="3">所示：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.2 </font><font SIZE="3">典型的</font><font FACE="Times New Roman" SIZE="3">DoFieldExchange</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionSet::DoFieldExchange(CFieldExchange* pFX)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">//{{AFX_FIELD_MAP(CSectionSet)</p>
+    <p ALIGN="JUSTIFY">pFX-&gt;SetFieldType(CFieldExchange::outputColumn);</p>
+    <p ALIGN="JUSTIFY">RFX_Text(pFX, _T(&quot;[CourseID]&quot;), m_CourseID);</p>
+    <p ALIGN="JUSTIFY">RFX_Text(pFX, _T(&quot;[SectionNo]&quot;), m_SectionNo);</p>
+    <p ALIGN="JUSTIFY">RFX_Text(pFX, _T(&quot;[InstructorID]&quot;), m_InstructorID);</p>
+    <p ALIGN="JUSTIFY">RFX_Text(pFX, _T(&quot;[RoomNo]&quot;), m_RoomNo);</p>
+    <p ALIGN="JUSTIFY">RFX_Text(pFX, _T(&quot;[Schedule]&quot;), m_Schedule);</p>
+    <p ALIGN="JUSTIFY">RFX_Int(pFX, _T(&quot;[Capacity]&quot;), m_Capacity);</p>
+    <p ALIGN="JUSTIFY">//}}AFX_FIELD_MAP</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.5.3 
+    SQL</font><font SIZE="3" color="#3973DE">查询</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">记录集的建立实际上主要是一个查询过程，</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句用来查询数据源．在建立记录集时，</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">会根据一些参数构造一个</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句来查询数据源，并用查询的结果创建记录集．明白这一点对理解</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">至关重要．</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句的句法如下：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SELECT rfx-field-list FROM table-name [WHERE m_strFilter] </p>
+    <p ALIGN="JUSTIFY">[ORDER BY m_strSort]</p>
+    <b><p ALIGN="JUSTIFY"></b></font><font SIZE="3">其中</font><font FACE="Times New Roman" SIZE="3">table-name</font><font SIZE="3">是表名，</font><font FACE="Times New Roman" SIZE="3">rfx-field-list</font><font SIZE="3">是选择的列（字段）．</font><font FACE="Times New Roman" SIZE="3">WHERE</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ORDER BY</font><font SIZE="3">是两个子句，分别用来过滤和排序。下面是</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句的一些例子：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SELECT CourseID, 
+      InstructorID FROM Section </p>
+      <p ALIGN="JUSTIFY">SELECT * FROM Section WHERE CourseID=</font><font SIZE="3">‘</font><font FACE="Times New Roman" SIZE="3">MATH202</font><font SIZE="3">’ </font><font FACE="Times New Roman" SIZE="3">AND Capacity=15</p>
+      <p ALIGN="JUSTIFY">SELECT InstructorID FROM Section ORDER BY CourseID ASC</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">其中第一个语句从</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表中选择</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">InstructorID</font><font SIZE="3">字段．第二个语句从</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表中选择</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">MATH202</font><font SIZE="3">且</font><font FACE="Times New Roman" SIZE="3">Capacity</font><font SIZE="3">等于</font><font FACE="Times New Roman" SIZE="3">15</font><font SIZE="3">的记录，在该语句中使用了象＂</font><font FACE="Times New Roman" SIZE="3">AND</font><font SIZE="3">＂或＂</font><font FACE="Times New Roman" SIZE="3">OR</font><font SIZE="3">＂这样的逻辑连接符．要注意在</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">语句中引用字符串、日期或时间等类型的数据时要用单引号括起来，而数值型数据则不用．第三个语句从</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表中选择</font><font FACE="Times New Roman" SIZE="3">InstructorID</font><font SIZE="3">列并且按</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">的升序排列，若要降序排列，可使用关键字</font><font FACE="Times New Roman" SIZE="3">DESC</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#71D0FF">
+      <tr>
+        <td width="100%"></b>提示：如果列名或表名中包含有空格，则必需用方括号把该名称包起来。例如，如果有一列名为“</font><font FACE="Times New Roman" SIZE="3">Client Name</font><font SIZE="3">”，则应该写成“</font><font FACE="Times New Roman" SIZE="3">[Client Name]</font><font SIZE="3">”。<b></b></font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.5.4 </font><font SIZE="3" color="#3973DE">记录集的建立和关闭</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要建立记录集，首先要构造一个</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">派生类对象，然后调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">成员函数查询数据源中的记录并建立记录集．在</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数中，可能会调用</font><font FACE="Times New Roman" SIZE="3">GetDefaultConnect</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">GetDefaultSQL</font><font SIZE="3">函数．函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset( CDatabase* 
+        pDatabase = NULL);<br>
+        </font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">pDatabase</font><font SIZE="3">指向一个</font><font FACE="Times New Roman" SIZE="3">CDatabase</font><font SIZE="3">对象，用来获取数据源．如果</font><font FACE="Times New Roman" SIZE="3">pDatabase</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">，则会在</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数中自动构建一个</font><font FACE="Times New Roman" SIZE="3">CDatabase</font><font SIZE="3">对象．如果</font><font FACE="Times New Roman" SIZE="3">CDatabase</font><font SIZE="3">对象还未与数据源连接，那么在</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数中会建立连接，连接字符串（参见</font><font FACE="Times New Roman" SIZE="3">10.3.1</font><font SIZE="3">）由成员函数</font><font FACE="Times New Roman" SIZE="3">GetDefaultConnect</font><font SIZE="3">提供．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual CString 
+        GetDefaultConnect( );<br>
+        </font><font SIZE="3">该函数返回缺省的连接字符串．</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数在必要的时侯会调用该函数获取连接字符串以建立与数据源的连接．一般需要在</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">派生类中覆盖该函数并在新版的函数中提供连接字符串．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual BOOL Open( UINT 
+        nOpenType = AFX_DB_USE_DEFAULT_TYPE, LPCTSTR lpszSQL = NULL, DWORD dwOptions = none );<br>
+        throw( CDBException, CMemoryException );<br>
+        </font><font SIZE="3">该函数使用指定的</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">语句查询数据源中的记录并按指定的类型和选项建立记录集．参数</font><font FACE="Times New Roman" SIZE="3">nOpenType</font><font SIZE="3">说明了记录集的类型，如表</font><font FACE="Times New Roman" SIZE="3">10.3</font><font SIZE="3">所示，如果要求的类型驱动程序不支持，则函数将产生一个异常．参数</font><font FACE="Times New Roman" SIZE="3">lpszSQL</font><font SIZE="3">是一个</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句，或是一个表名．函数用</font><font FACE="Times New Roman" SIZE="3">lpszSQL</font><font SIZE="3">来进行查询，如果该参数为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">，则函数会调用</font><font FACE="Times New Roman" SIZE="3">GetDefaultSQL</font><font SIZE="3">获取缺省的</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">语句．参数</font><font FACE="Times New Roman" SIZE="3">dwOptions</font><font SIZE="3">可以是一些选项的组合，常用的选项在表</font><font FACE="Times New Roman" SIZE="3">10.4</font><font SIZE="3">中列出．若创建成功则函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，若函数调用了</font><font FACE="Times New Roman" SIZE="3">CDatabase::Open</font><font SIZE="3">且返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，则函数返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">10.3 </font><font SIZE="3">记录集的类型</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="39%"><font SIZE="3"><p ALIGN="JUSTIFY">类型</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">含义</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">AFX_DB_USE_DEFAULT_TYPE</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">使用缺省值．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset::dynaset</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">可双向滚动的动态集．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset::snapshot</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">可双向滚动的快照．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset::dynamic</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">提供比动态集更好的动态特性，大部分</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">驱动程序不支持这种记录集．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset::forwardOnly</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">只能前向滚动的只读记录集．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><b><font SIZE="3">表</font><font FACE="Times New Roman" SIZE="3">10.4 
+    </font><font SIZE="3">创建记录集时的常用选项</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="39%"><font SIZE="3"><p ALIGN="JUSTIFY">选项</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">含义</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset::none</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">无选项（缺省）．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset::appendOnly</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">不允许修改和删除记录，但可以添加记录．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset::readOnly</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">记录集是只读的．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="39%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CRecordset::skipDeletedRecords</font></td>
+        <td WIDTH="61%"><font SIZE="3"><p ALIGN="JUSTIFY">有些数据库（如</font><font FACE="Times New Roman" SIZE="3">FoxPro</font><font SIZE="3">）在删除记录时并不真删除，而是做个删除标记，在滚动时将跳过这些被删除的记录．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">virtual CString GetDefaultSQL( );<br>
+        Open</font><font SIZE="3">函数在必要时会调用该函数返回缺省的</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">语句或表名以查询数据源中的记录．一般需要在</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">派生类中覆盖该函数并在新版的函数中提供</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">语句或表名．下面是一些返回字符串的例子．<br>
+        “</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">” </font><font FACE="Times New Roman" SIZE="3">//</font><font SIZE="3">选择</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表中的所有记录到记录集中<br>
+        “</font><font FACE="Times New Roman" SIZE="3">Section, Course</font><font SIZE="3">” </font><font FACE="Times New Roman" SIZE="3">//</font><font SIZE="3">合并</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表和</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">表的各列到记录集中</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">//</font><font SIZE="3">对</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表中的所有记录按</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">的升序进行排序，然后建立记录集</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">SELECT * FROM Section ORDER BY CourseID ASC</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3"></p>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">上面的例子说明，通过合理地安排</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">语句和表名，</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数可以十分灵活地查询数据源中的记录．用户可以合并多个表的字段，也可以只选择记录中的某些字段，还可以对记录进行过滤和排序．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">上一小节说过，在建立记录集时，</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">会构造一个</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句来查询数据源．如果在调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">时只提供了表名，那么</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句还缺少选择列参数</font><font FACE="Times New Roman" SIZE="3">rfx-field-list</font><font SIZE="3">（参见</font><font FACE="Times New Roman" SIZE="3">10.5.3</font><font SIZE="3">）．框架规定，如果只提供了表名，则选择列的信息从</font><font FACE="Times New Roman" SIZE="3">DoFieldExchange</font><font SIZE="3">中的</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">语句里提取．例如，如果在调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">时只提供了＂</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">＂表名，那么将会构造如下一个</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SELECT CourseID,SectionNo,InstructorID,RoomNo, Schedule,Capacity FROM 
+    Section</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">建立记录集后，用户可以随时调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">成员函数来重新查询和建立记录集．</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">有两个重要用途：</p>
+    <ul>
+      <li><p ALIGN="JUSTIFY">使记录集能反映用户对数据源的改变（参见<font FACE="Times New Roman" SIZE="3">10.5.1</font>）．</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">按照新的过滤或排序方法查询记录并重新建立记录集．</font></p>
+      </li>
+    </ul>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">之前，可调用</font><font FACE="Times New Roman" SIZE="3">CanRestart</font><font SIZE="3">来判断记录集是否支持</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">操作．要记住</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">只能在成功调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">后调用，所以程序应调用</font><font FACE="Times New Roman" SIZE="3">IsOpen</font><font SIZE="3">来判断记录集是否已建立．函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual BOOL Requery( 
+        );throw( CDBException, CMemoryException );<br>
+        </font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">表明记录集建立成功，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．若函数内部出错则产生异常．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL CanRestart( ) const; 
+        //</font><font SIZE="3">若支持</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">则返回</font><font FACE="Times New Roman" SIZE="3">TRUE</p>
+        <p ALIGN="JUSTIFY">BOOL IsOpen( ) const; //</font><font SIZE="3">若记录集已建立则返回</font><font FACE="Times New Roman" SIZE="3">TRUE</p>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY">CRecordset</font><font SIZE="3">类有两个公共数据成员</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">用来设置对记录的过滤和排序．在调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">前，如果在这两个数据成员中指定了过滤或排序，那么</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">将按这两个数据成员指定的过滤和排序来查询数据源．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">成员</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">用于指定过滤器．</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">实际上包含了</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">WHERE</font><font SIZE="3">子句的内容，但它不含</font><font FACE="Times New Roman" SIZE="3">WHERE</font><font SIZE="3">关键字．使用</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">的一个例子为：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_strFilter=</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">CourseID=</font><font SIZE="3">‘</font><font FACE="Times New Roman" SIZE="3">MATH101</font><font SIZE="3">’”</font><font FACE="Times New Roman" SIZE="3">; //</font><font SIZE="3">只选择</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">MATH101</font><font SIZE="3">的记录</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(m_pSet-&gt;Open(CRecordset::snapshot, </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">))</p>
+    <p ALIGN="JUSTIFY"><b>. . . . . .</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">成员</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">用于指定排序．</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">实际上包含了</font><font FACE="Times New Roman" SIZE="3">ORDER BY</font><font SIZE="3">子句的内容，但它不含</font><font FACE="Times New Roman" SIZE="3">ORDER BY</font><font SIZE="3">关键字．</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">的一个例子为</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_strSort=</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">CourseID DESC</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">; //</font><font SIZE="3">按</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">的降序排列记录</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;Open();</p>
+    <p ALIGN="JUSTIFY"><b>. . . . . .</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">事实上，</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数在构造</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句时，会把</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">的内容放入</font><font FACE="Times New Roman" SIZE="3">SELECT</font><font SIZE="3">语句的</font><font FACE="Times New Roman" SIZE="3">WHERE</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ORDER BY</font><font SIZE="3">子句中．如果在</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">lpszSQL</font><font SIZE="3">参数中已包括了</font><font FACE="Times New Roman" SIZE="3">WHERE</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ORDER BY</font><font SIZE="3">子句，那么</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">必需为空．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">调用无参数成员函数</font><font FACE="Times New Roman" SIZE="3">Close</font><font SIZE="3">可以关闭记录集．在调用了</font><font FACE="Times New Roman" SIZE="3">Close</font><font SIZE="3">函数后，程序可以再次调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">建立新的记录集．</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">的析构函数会调用</font><font FACE="Times New Roman" SIZE="3">Close</font><font SIZE="3">函数，所以当删除</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">对象时记录集也随之关闭。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.5.5 
+    </font><font SIZE="3" color="#3973DE">滚动记录</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRecordset</font><font SIZE="3">提供了几个成员函数用来在记录集中滚动，如下所示．当用这些函数滚动到一个新记录时，框架会自动地把新记录的内容拷贝到域数据成员中．</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void MoveNext( ); //</font><font SIZE="3">前进一个记录</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void MovePrev( ); //</font><font SIZE="3">后退一个记录</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void MoveFirst( ); //</font><font SIZE="3">滚动到记录集中的第一个记录</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void MoveLast( ); //</font><font SIZE="3">滚动到记录集中的最后一个记录</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void SetAbsolutePosition( 
+        long nRows ); <br>
+        </font><font SIZE="3">该函数用于滚动到由参数</font><font FACE="Times New Roman" SIZE="3">nRows</font><font SIZE="3">指定的绝对位置处．若</font><font FACE="Times New Roman" SIZE="3">nRows</font><font SIZE="3">为负数，则从后往前滚动．例如，当</font><font FACE="Times New Roman" SIZE="3">nRows</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">时，函数就滚动到记录集的末尾．注意，该函数不会跳过被删除的记录．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual void Move( long 
+        nRows, WORD wFetchType = SQL_FETCH_RELATIVE );<br>
+        </font><font SIZE="3">该函数功能强大．通过将</font><font FACE="Times New Roman" SIZE="3">wFetchType</font><font SIZE="3">参数指定为</font><font FACE="Times New Roman" SIZE="3">SQL_FETCH_NEXT</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SQL_FETCH_PRIOR</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SQL_FETCH_FIRST</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SQL_FETCH_LAST</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">SQL_FETCH_ABSOLUTE</font><font SIZE="3">，可以完成上面五个函数的功能．若</font><font FACE="Times New Roman" SIZE="3">wFetchType</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">SQL_FETCH_RELATIVE</font><font SIZE="3">，那么将相对当前记录移动，若</font><font FACE="Times New Roman" SIZE="3">nRows</font><font SIZE="3">为正数，则向前移动，若</font><font FACE="Times New Roman" SIZE="3">nRows</font><font SIZE="3">为负数，则向后移动．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果在建立记录集时选择了</font><font FACE="Times New Roman" SIZE="3">CRecordset::skipDeletedRecords</font><font SIZE="3">选项，那么除了</font><font FACE="Times New Roman" SIZE="3">SetAbsolutePosition</font><font SIZE="3">外，在滚动记录时将跳过被删除的记录，这一点对象</font><font FACE="Times New Roman" SIZE="3">FoxPro</font><font SIZE="3">这样的数据库十分重要．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果记录集是空的，那么调用上述函数将产生异常．另外，必须保证滚动没有超出记录集的边界．调用</font><font FACE="Times New Roman" SIZE="3">IsEOF</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">IsBOF</font><font SIZE="3">可以进行这方面的检测．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">BOOL IsEOF( ) const;<br>
+        </font><font SIZE="3">如果记录集为空或滚动过了最后一个记录，那么函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL IsBOF( ) const;<br>
+        </font><font SIZE="3">如果记录集为空或滚动过了第一个记录，那么函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">下面是一个使用</font><font FACE="Times New Roman" SIZE="3">IsEOF</font><font SIZE="3">的例子：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">while(!m_pSet-&gt;IsEOF( ))</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;MoveNext( );</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">调用</font><font FACE="Times New Roman" SIZE="3">GetRecordCound</font><font SIZE="3">可获得记录集中的记录总数，该函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">long GetRecordCount( ) 
+        const;<br>
+        </font><font SIZE="3">要注意这个函数返回的实际上是用户在记录集中滚动的最远距离．要想真正返回记录总数，只有调用</font><font FACE="Times New Roman" SIZE="3">MoveNext</font><font SIZE="3">移动到记录集的末尾</font><font FACE="Times New Roman" SIZE="3">(MoveLast</font><font SIZE="3">不行</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3">
+      </blockquote>
+    </blockquote>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.5.6 
+    </font><font SIZE="3" color="#3973DE">修改、添加和删除记录</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要修改当前记录，应该按下列步骤进行：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">Edit</font><font SIZE="3">成员函数．调用该函数后就进入了编辑模式，程序可以修改域数据成员．注意不要在一个空的记录集中调用</font><font FACE="Times New Roman" SIZE="3">Edit</font><font SIZE="3">，否则会产生异常．</font><font FACE="Times New Roman" SIZE="3">Edit</font><font SIZE="3">函数会把当前域数据成员的内容保存在一个缓冲区中，这样做有两个目的，一是可以与域数据成员作比较以判断哪些字段被改变了，二是在必要的时侯可以恢复域数据成员原来的值．若再次调用</font><font FACE="Times New Roman" SIZE="3">Edit</font><font SIZE="3">，则将从缓冲区中恢复域数据成员，调用后程序仍处于编辑模式．调用</font><font FACE="Times New Roman" SIZE="3">Move(AFX_MOVE_REFRESH)</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Move(0)</font><font SIZE="3">可退出编辑模式</font><font FACE="Times New Roman" SIZE="3">(AFX_MOVE_REFRESH</font><font SIZE="3">的值为</font><font FACE="Times New Roman" SIZE="3">0)</font><font SIZE="3">，同时该函数会从缓冲区中恢复域数据成员．</p>
+        <p ALIGN="JUSTIFY">设置域数据成员的新值．</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">Update</font><font SIZE="3">完成编辑．</font><font FACE="Times New Roman" SIZE="3">Update</font><font SIZE="3">把变化后的记录写入数据源并结束编辑模式．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要向记录集中添加新的记录，应该按下列步骤进行：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">AddNew</font><font SIZE="3">成员函数．调用该函数后就进入了添加模式，该函数把所有的域数据成员都设置成</font><font FACE="Times New Roman" SIZE="3">NULL(</font><font SIZE="3">注意，在数据库术语中，</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">是指没有值，这与</font><font FACE="Times New Roman" SIZE="3">C++</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">是不同的</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">．与</font><font FACE="Times New Roman" SIZE="3">Edit</font><font SIZE="3">一样，</font><font FACE="Times New Roman" SIZE="3">AddNew</font><font SIZE="3">会把当前域数据成员的内容保存在一个缓冲区中，在必要的时侯，程序可以再次调用</font><font FACE="Times New Roman" SIZE="3">AddNew</font><font SIZE="3">取消添加操作并恢复域数据成员原来的值，调用后程序仍处于添加模式．调用</font><font FACE="Times New Roman" SIZE="3">Move(AFX_MOVE_REFRESH)</font><font SIZE="3">可退出添加模式，同时该函数会从缓冲区中恢复域数据成员．</p>
+        <p ALIGN="JUSTIFY">设置域数据成员．</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">Update</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3">Update</font><font SIZE="3">把域数据成员中的内容作为新记录写入数据源，从而结束了添加．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果记录集是快照，那么在添加一个新的记录后，需要调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">重新查询，因为快照无法反映添加操作．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要删除记录集的当前记录，应按下面两步进行：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">成员函数．该函数会同时给记录集和数据源中当前记录加上删除标记．注意不要在一个空记录集中调用</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">，否则会产生一个异常．</p>
+        <p ALIGN="JUSTIFY">滚动到另一个记录上以跳过删除记录．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">上面提到的函数声明为：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">virtual void Edit( 
+        );throw( CDBException, CMemoryException );</p>
+        <p ALIGN="JUSTIFY">virtual void AddNew( );throw( CDBException );</p>
+        <p ALIGN="JUSTIFY">virtual void Delete( );throw( CDBException );</p>
+        <p ALIGN="JUSTIFY">virtual BOOL Update( );throw( CDBException ); <br>
+        </font><font SIZE="3">若更新失败则函数返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，且会产生一个异常．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在对记录集进行更改以前，程序也许要调用下列函数来判断记录集是否是可以更改的，因为如果在不能更改的记录集中进行修改、添加或删除将导致异常的产生．</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL CanUpdate( ) const; 
+        //</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">表明记录是可以修改、添加和删除的．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL CanAppend( ) const; 
+        //</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">则表明可以添加记录．</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap10_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/chap10_4.htm">上一页</a></td>
+        <td><p align="right"><a href="chap10_6.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/chap10_6.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

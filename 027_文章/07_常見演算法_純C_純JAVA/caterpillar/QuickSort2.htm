@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <title>快速排序法（二）</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;快速排序法（二）</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+
+      <h2>說明</h2>
+      <small>
+
+在 <a href="QuickSort1.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/QuickSort1.htm">快速排序法（一） </a>中，每次將最左邊的元素設為軸，而之前曾經說過，快速排序法的加速在於軸的選擇，在這個例子中，只將軸設定為中間的元素，依這個元素作基準進行比較，這可以增加快速排序法的效率。</small><br>
+
+
+      <h2>解法</h2>
+      <small>
+
+在這個例子中，取中間的元素s作比較，同樣的先得右找比s大的索引 i，然後找比s小的索引 j，只要兩邊的索引還沒有交會，就交換 i 與 j 的元素值，這次不用再進行軸的交換了，因為在尋找交換的過程中，軸位置的元素也會參與交換的動作，例如：<br>
+      </small>
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">41　24　76　11　45　64　21　69　19　36</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+首先left為0，right為9，(left+right)/2 = 4（取整數的商），所以軸為索引4的位置，比較的元素是45，您往右找比45大的，往左找比45小的進行交換：<br>
+      </small>
+
+      <ul style="font-family: Courier New,Courier,monospace;">
+        <li><small>41　24　76*　11　[45]　64　21　69　19　*36</small></li>
+        <li><small>41　24　36　11　45*　64　21　69　19*　76</small></li>
+        <li><small>41　24　36　11　19　64*　21*　69　45　76</small></li>
+        <li><small>[41　24　36　11　19　21]　[64　69　45　76]</small></li>
+      </ul>
+
+
+      <small><br>
+
+
+完成以上之後，再初別對左邊括號與右邊括號的部份進行遞迴，如此就可以完成排序的目的。 </small><br>
+
+
+
+      <h2> 實作</h2>
+
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br>#include &lt;time.h&gt; <br>#define MAX 10 <br>#define SWAP(x,y) {int t; t = x; x = y; y = t;} <br><br>void quicksort(int[], int, int); <br><br>int main(void) { <br>    int number[MAX] = {0}; <br>    int i, num;  <br><br>    srand(time(NULL)); <br><br>    printf("排序前："); <br>    for(i = 0; i &lt; MAX; i++) { <br>        number[i] = rand() % 100; <br>        printf("%d ", number[i]); <br>    } <br><br>    quicksort(number, 0, MAX-1); <br><br>    printf("\n排序後："); <br>    for(i = 0; i &lt; MAX; i++) <br>        printf("%d ", number[i]); <br>    <br>    printf("\n"); <br><br>    return 0; <br>} <br><br>void quicksort(int number[], int left, int right) { <br>    int i, j, s; <br><br>    if(left &lt; right) { <br>        s = number[(left+right)/2]; <br>        i = left - 1; <br>        j = right + 1; <br><br>        while(1) { <br>            while(number[++i] &lt; s) ;  // 向右找 <br>            while(number[--j] &gt; s) ;  // 向左找 <br>            if(i &gt;= j) <br>                break; <br>            SWAP(number[i], number[j]); <br>        } <br><br>        quicksort(number, left, i-1);   // 對左邊進行遞迴 <br>        quicksort(number, j+1, right);  // 對右邊進行遞迴 <br>    } <br>} <br></pre>
+
+
+
+      <br>
+
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+
+      <pre>public class QuickSort {<br>    public static void sort(int[] number) {<br>        sort(number, 0, number.length-1);<br>    }<br>    <br>    private static void sort(int[] number, <br>                             int left, int right) {<br>        if(left &lt; right) { <br>            int s = number[(left+right)/2]; <br>            int i = left - 1; <br>            int j = right + 1; <br><br>            while(true) { <br>                // 向右找<br>                while(number[++i] &lt; s) ;<br>                // 向左找<br>                while(number[--j] &gt; s) ; <br>                if(i &gt;= j) <br>                    break; <br>                swap(number, i, j); <br>            } <br><br>            sort(number, left, i-1);   // 對左邊進行遞迴 <br>            sort(number, j+1, right);  // 對右邊進行遞迴 <br>        }<br>    }<br>    <br>    private static void swap(int[] number, int i, int j) {<br>        int t; <br>        t = number[i]; <br>        number[i] = number[j]; <br>        number[j] = t;<br>    }<br>} </pre>
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+
+
+
+
+
+</body>
+</html>

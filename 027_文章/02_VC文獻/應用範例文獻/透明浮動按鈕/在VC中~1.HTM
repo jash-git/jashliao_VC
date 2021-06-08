@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0061)http://twt.tju.edu.cn/netclass/computer/textinfo.php?myid=553 -->
+<HTML><HEAD><TITLE>网上课堂</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312"><LINK 
+href="在VC中透明浮动按键的实现.files/index.css" type=text/css rel=stylesheet><LINK 
+href="在VC中透明浮动按键的实现.files/list.css" type=text/css rel=stylesheet>
+<STYLE type=text/css>A:active {
+	COLOR: #000000; TEXT-DECORATION: none
+}
+A:hover {
+	COLOR: #ff0000; TEXT-DECORATION: none
+}
+A:link {
+	COLOR: #000000; TEXT-DECORATION: none
+}
+A:visited {
+	COLOR: #000000; TEXT-DECORATION: none
+}
+</STYLE>
+
+<META content="MSHTML 6.00.2800.1106" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff leftMargin=3 topMargin=0>
+<TABLE cellSpacing=0 cellPadding=0 width=772 align=center border=0>
+  <TBODY>
+  <TR>
+    <TD><IMG height=70 alt="" src="在VC中透明浮动按键的实现.files/netpopup_r1_c1.jpg" 
+      width=772 border=0 name=images/netpopup_r1_c1></TD></TR>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD width=167 background=在VC中透明浮动按键的实现.files/netpopup_r2_c1.jpg 
+          height=27>&nbsp;</TD>
+          <TD width=326 background=在VC中透明浮动按键的实现.files/netpopup_r2_c2.jpg 
+          height=27>
+            <DIV align=center><FONT color=#ff0000></FONT></DIV></TD>
+          <TD width=68 background=在VC中透明浮动按键的实现.files/netpopup_r2_c3.jpg 
+          height=27>
+            <DIV align=center></DIV></TD>
+          <TD background=在VC中透明浮动按键的实现.files/netpopup_r2_c4.jpg height=27>
+            <DIV align=center><A href="http://twt.tju.edu.cn/netclass/"><FONT 
+            color=#ff0000>网上课堂</FONT></A><FONT color=#ff0000>_&gt;</FONT><A 
+            href="http://twt.tju.edu.cn/netclass/computer/default.php"><FONT 
+            color=#ff0000>电脑</FONT></A><FONT color=#ff0000>_&gt;技术文档 
+            </FONT></DIV></TD></TR></TBODY></TABLE></TD></TR>
+  <TR>
+    <TD height=200>
+      <TABLE height="100%" cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD width=4 bgColor=#b6e2fc height=366></TD>
+          <TD vAlign=top>
+            <TABLE cellSpacing=1 cellPadding=4 width="100%" align=center 
+            border=0>
+              <TBODY>
+              <TR vAlign=top>
+                <TD bgColor=white colSpan=3 height=28>
+                  <CENTER>
+                  <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                    <TR>
+                      <TD>
+                        <DIV align=center><FONT color=#ff0000><B><FONT 
+                        size=3>在VC中透明浮动按键的实现 </FONT></B></FONT></DIV></TD></TR>
+                    <TR>
+                      <TD><FONT 
+                        size=2>&nbsp;&nbsp;&nbsp;&nbsp;有一种按键，看起来是一幅完整的图片，当鼠标移到按键区域时，图片的一部分凸现，形成一个按键，当鼠标移走时又恢复原来状态。 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp; 
+                        最近，看了一些关于浮动按键的代码，其原理大致上跟CBitmapButton差不多，用数幅位图代表按键的各个状态，响应鼠标的各种消息来设置按键的状态，实现按键的浮动显示，但是这样的按键却不能和周围的背景混和成一幅图片。 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp; 
+                        为了实现“透明”按键，可以简单地做个试验：先在对话框中加入一个BUTTON，通过属性框选“Owner 
+                        Draw”风格，再加入一个PICTURE，并加入图片，将BUTTON移到PICTURE上。运行结果发现，按键没有显示出来，但在按键区域按下鼠标时，该按键仍然能发出WM_COMMAND消息，这样一个纯透明的按键建立了。显然，这个按键是毫无使用意义的，因为用户不知道按键的位置，必须让用户容易觉察到按键的位置，可以把这个按键改造一下： 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp; 
+                        (首先从CButton派生出一个新类CDrawButton) 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp; ·把按键的标题显示出来 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp; 
+                        这个实现起来比较简单，我们可以重载CButton类的成员函数DrawItem()， <BR><BR>void 
+                        CDrawButton::DrawItem<BR>(LPDRAWITEMSTRUCT 
+                        lpDrawItemStruct)<BR>{<BR>CDC dc;<BR>CRect 
+                        rect=lpDrawItemStruct- &gt;rcItem;//得到按键区域<BR>CString 
+                        sCaption;<BR>dc.Attach(lpDrawItemStruct- &gt;hDC); 
+                        //得到设备环境CDC<BR>VERIFY(lpDrawItemStruct- 
+                        &gt;CtlType==ODT_BUTTON);<BR>GetWindowText(sCaption);//得到按键的标题<BR>dc.SetBkMode(TRANSPARENT);//透明显示<BR>CFont* 
+                        m_pOldFont=dc.SelectObject(m_pFont);<BR>dc.DrawText(sCaption,&amp;rect,DT_CENTER|DT_VCENTER|DT_SINGLELINE);<BR>dc.SelectObject(m_pOldFont);<BR>}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp; 
+                        其中的m_pFont是成员变量，它保存了对话框的字体指针，为了按键的标题风格与对话框的字体风格一致，在初始化时调用对话框的成员函数GetFont()即可得到指向对话框字体的CFont类指针。 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp; ·使按键浮动显示 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;要通过自绘来表示按键的各种状态，可填写DRAWITEMSTRUCT来通知DrawItem()函数需要做什么，我们先了解一下DRAWITEMSTRUCT： 
+                        <BR><BR>typedef struct 
+                        tagDRAWITEMSTRUCT{<BR>&nbsp;&nbsp;&nbsp;&nbsp;UINT 
+                        CtlType; // 控件类型<BR>&nbsp;&nbsp;&nbsp;&nbsp;UINT 
+                        CtlID;// 控件的ID号<BR>&nbsp;&nbsp;&nbsp;&nbsp;UNIT 
+                        itemID;//菜单项的索引<BR>&nbsp;&nbsp;&nbsp;&nbsp;UINT 
+                        itemAction;// 绘图操作<BR>&nbsp;&nbsp;&nbsp;&nbsp;UINT 
+                        itemState; // 状态<BR>&nbsp;&nbsp;&nbsp;&nbsp;HWND 
+                        hwndItem; // 控件的窗口句柄<BR>&nbsp;&nbsp;&nbsp;&nbsp;HDC hDC; 
+                        // 相关的设备环境<BR>&nbsp;&nbsp;&nbsp;&nbsp;RECT 
+                        rcItem;//控件的范围<BR>&nbsp;&nbsp;&nbsp;&nbsp;DWORD 
+                        itemData;//指定与菜单项相联系的应用程序定义的32位值<BR>}DRAWITEMSTRUCT;<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;利用这个结构先做一个按键状态设置函数： 
+                        <BR>void CDrawButton::SetButtonMode(UINT action, UINT 
+                        mode)<BR>{<BR>// TODO: Add your message handler code 
+                        <BR>here and/or call 
+                        default<BR>&nbsp;&nbsp;&nbsp;&nbsp;DRAWITEMSTRUCT DIS; 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;DIS.CtlType = ODT_BUTTON; 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;DIS.CtlID = GetDlgCtrlID(); 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;DIS.itemAction = action; 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;DIS.itemState = mode; 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;DIS.hwndItem = 
+                        GetSafeHwnd(); <BR>&nbsp;&nbsp;&nbsp;&nbsp;DIS.hDC = 
+                        GetDC()- &gt;GetSafeHdc(); 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;GetClientRect(&amp;(DIS.rcItem)); 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;SendMessage(WM_DRAWITEM,(WPARAM)<BR>GetSafeHwnd(),(LPARAM)&amp;DIS);<BR>&nbsp;&nbsp;&nbsp;&nbsp;ReleaseDC(CDC::FromHandle(DIS.hDC));<BR>}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;这样，我们可以响应鼠标的各种消息来设置按键的各种状态： 
+                        <BR>void CDrawButton::OnMouseMove<BR>(UINT nFlags, 
+                        CPoint point) <BR>{<BR>&nbsp;&nbsp;&nbsp;&nbsp;// TODO: 
+                        Add your message handler code <BR>here and/or call 
+                        default<BR>&nbsp;&nbsp;&nbsp;&nbsp;CRect 
+                        rect;<BR>&nbsp;&nbsp;&nbsp;&nbsp;GetClientRect(&amp;rect);<BR>&nbsp;&nbsp;&nbsp;&nbsp;if(rect.PtInRect(point)){<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (mBtnStats==BTN_NORMAL){<BR>&nbsp;&nbsp;&nbsp;&nbsp;SetButtonMode(ODA_SELECT, 
+                        ODS_FOCUS); 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SetCapture();<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR>&nbsp;&nbsp;&nbsp;&nbsp;else{<BR>//AutoLoad(GetDlgCtrlID(),GetParent());<BR>SetButtonMode(ODA_DRAWENTIRE,ODS_DEFAULT);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReleaseCapture();<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;CButton::OnMouseMove(nFlags, 
+                        point);<BR>}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;这里，mBtnStats是个UINT类型的成员变量，它可以有三种自定义状态： 
+                        <BR>BTN_NORMAL&nbsp;&nbsp;&nbsp;&nbsp;正常状态<BR>BTN_UP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;鼠标移入按键区域或释放鼠标<BR>BTN_DOWN&nbsp;&nbsp;&nbsp;&nbsp;按下鼠标<BR>(可以再加一种DISABLE状态)<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;当在按键区域释放鼠标时，必须发送WM_COMMAND消息：<BR>void 
+                        CDrawButton::OnLButtonUp(UINT nFlags, CPoint point) 
+                        <BR>{<BR>&nbsp;&nbsp;&nbsp;&nbsp;// TODO: Add your 
+                        message handler code<BR>here and/or call 
+                        default<BR>&nbsp;&nbsp;&nbsp;&nbsp;CRect 
+                        rect;<BR>&nbsp;&nbsp;&nbsp;&nbsp;GetClientRect(&amp;rect);<BR>&nbsp;&nbsp;&nbsp;&nbsp;if(rect.PtInRect(point)){<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (mBtnStats==BTN_DOWN)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GetParent()- 
+                        &gt;SendMessage(WM_COMMAND,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAKELPARAM(GetDlgCtrlID(),BN_CLICKED),<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(LPARAM)GetSafeHwnd());<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SetCapture();<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR>&nbsp;&nbsp;&nbsp;&nbsp;else{<BR>&nbsp;&nbsp;&nbsp;&nbsp;SetButtonMode(ODA_DRAWENTIRE,ODS_DEFAULT);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReleaseCapture();<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;CButton::OnLButtonUp(nFlags, 
+                        point);<BR>}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;接着就是绘制按键的各种状态：由于按键必须“透明”，所以在按下和释放时只在按键区域的四周加上一个3D边框就行了。而在正常状态下，则必须去掉边框恢复背景。但如何恢复背景图象呢？我是这样做的：在按键初始化时，先把被按键覆盖了的区域保存在一个CBitmap类中，以后需要重绘按键时就把这个CBitmap画在按键上就行了。 
+                        <BR>void CDrawButton::DrawItem<BR>(LPDRAWITEMSTRUCT 
+                        lpDrawItemStruct) <BR>{<BR>&nbsp;&nbsp;&nbsp;&nbsp;// 
+                        TODO: Add your code to draw the specified 
+                        item<BR>&nbsp;&nbsp;&nbsp;&nbsp;CDC 
+                        dc;<BR>&nbsp;&nbsp;&nbsp;&nbsp;CRect 
+                        rect=lpDrawItemStruct- 
+                        &gt;rcItem;<BR>&nbsp;&nbsp;&nbsp;&nbsp;CString 
+                        sCaption;<BR>&nbsp;&nbsp;&nbsp;&nbsp;dc.Attach(lpDrawItemStruct-&gt;hDC); 
+                        <BR>//得到绘制的设备环境CDC<BR>&nbsp;&nbsp;&nbsp;&nbsp;VERIFY(lpDrawItemStruct- 
+                        &gt;CtlType==ODT_BUTTON);<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (lpDrawItemStruct- &gt;itemAction &amp; 
+                        ODA_DRAWENTIRE){<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//重绘控件(正常状态)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mBtnStats=BTN_NORMAL;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (m_pBitmap!=0){<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDC 
+                        memDC; 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memDC.CreateCompatibleDC(&amp;dc);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memDC.SelectObject(m_pBitmap);<BR>&nbsp;&nbsp;&nbsp;&nbsp;dc.BitBlt(0, 
+                        0, rect.Width(), 
+                        rect.Height(),<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;memDC, 
+                        0, 0, SRCCOPY); 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;memDC.DeleteDC();<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//显示按键标题<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GetWindowText(sCaption);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dc.SetBkMode(TRANSPARENT);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (m_pFont!=0){<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CFont* 
+                        m_pOldFont=dc.SelectObject(m_pFont);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dc.DrawText(sCaption,&amp;rect,<BR>&nbsp;&nbsp;&nbsp;&nbsp;DT_CENTER|DT_VCENTER|DT_SINGLELINE);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dc.SelectObject(m_pOldFont);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR>if 
+                        ((lpDrawItemStruct- &gt;itemState &amp; ODS_SELECTED) 
+                        &amp;&amp;<BR>(lpDrawItemStruct- &gt;itemAction &amp; 
+                        ODA_SELECT)){<BR>//按下鼠标<BR>mBtnStats=BTN_DOWN;<BR>dc.Draw3dRect(&amp;rect,RGB(128,128,128),RGB(192,192,192));<BR>rect.top=rect.top+1;rect.bottom=rect.bottom-1;<BR>rect.left=rect.left+1;rect.right=rect.right-1;<BR>dc.Draw3dRect(&amp;rect,RGB(0,0,0),RGB(255,255,255));<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR>if(!(lpDrawItemStruct- 
+                        &gt;itemState &amp; ODS_SELECTED) 
+                        &amp;&amp;<BR>(lpDrawItemStruct- &gt;itemAction &amp; 
+                        ODA_SELECT)){<BR>//释放鼠标或鼠标进入按键区域<BR>mBtnStats=BTN_UP;<BR>dc.Draw3dRect(&amp;rect,RGB(255,255,255),RGB(0,0,0));<BR>rect.top=rect.top+1;rect.bottom=rect.bottom-1;<BR>rect.left=rect.left+1;rect.right=rect.right-1;<BR>dc.Draw3dRect(&amp;rect,RGB(192,192,192),RGB(128,128,128));<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;dc.Detach();<BR>}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;接着就必须一些初始化工作，其中最关键就是把被按键覆盖了的区域保存进CBitmap类中，我们知道CDC::StretchBlt()函数可以把位图的指定区域从一个设备拷贝到另一个设备中，这样可以很方便地把窗口或对话框的某个区域保存，条件是获得其DC： 
+                        <BR>void CDrawButton::LoadBack(CWnd 
+                        *pParent)<BR>{<BR>&nbsp;&nbsp;&nbsp;&nbsp;ASSERT(GetStyle() 
+                        &amp; BS_OWNERDRAW); <BR>&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (m_pBitmap!=0) 
+                        return;<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;CRect 
+                        rect;<BR>&nbsp;&nbsp;&nbsp;&nbsp;GetWindowRect(&amp;rect);<BR>&nbsp;&nbsp;&nbsp;&nbsp;pParent- 
+                        &gt;ScreenToClient(&amp;rect);//获得按键区域<BR>&nbsp;&nbsp;&nbsp;&nbsp;CPaintDC 
+                        dc(pParent);<BR>&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (m_pBitmap==0) m_pBitmap=new 
+                        CBitmap;//初始化位图<BR>&nbsp;&nbsp;&nbsp;&nbsp;m_pBitmap- 
+                        &gt;CreateCompatibleBitmap 
+                        <BR>(&amp;dc,rect.Width(),rect.Height());<BR>&nbsp;&nbsp;&nbsp;&nbsp;CDC 
+                        memDC;<BR>&nbsp;&nbsp;&nbsp;&nbsp;memDC.CreateCompatibleDC(&amp;dc);<BR>&nbsp;&nbsp;&nbsp;&nbsp;memDC.SelectObject(m_pBitmap);<BR>memDC.StretchBlt(0, 
+                        0, rect.Width(),rect.Height(), 
+                        &amp;dc,<BR>&nbsp;&nbsp;&nbsp;&nbsp;rect.left, rect.top, 
+                        <BR>rect.Width(),rect.Height(), 
+                        SRCCOPY);//保存<BR>&nbsp;&nbsp;&nbsp;&nbsp;memDC.DeleteDC();<BR>m_pFont=pParent- 
+                        &gt;GetFont();//获得窗口或对话框的字体<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;ModifyStyle(0,WS_VISIBLE);//显示按键<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;SetBitmapMode(ODA_DRAWENTIRE,0);//绘制按键<BR>}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;而使这个类和对话框上的按键产生联系还必须调用一下SubclassDlgItem()： 
+                        <BR>BOOL CDrawButton::AutoLoad(UINT nID, CWnd 
+                        *pParent)<BR>{<BR>// first attach the CDrawButton to the 
+                        dialog control <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (m_pBitmap!=0) return 
+                        FALSE;<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;if 
+                        (!SubclassDlgItem(nID, pParent)) return 
+                        FALSE;<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;LoadBack(pParent);<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;return 
+                        TRUE;<BR>}<BR><BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;这个类还必须具有三个成员变量： 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;CFont* 
+                        m_pFont;<BR>&nbsp;&nbsp;&nbsp;&nbsp;CBitmap* 
+                        m_pBitmap;<BR>&nbsp;&nbsp;&nbsp;&nbsp;UINT 
+                        mBtnStats;<BR><BR>在构造函数中初始化这些变量<BR>&nbsp;&nbsp;&nbsp;&nbsp;m_pBitmap=0;<BR>&nbsp;&nbsp;&nbsp;&nbsp;m_pFont=0;<BR>&nbsp;&nbsp;&nbsp;&nbsp;//赋予0是可以的<BR>&nbsp;&nbsp;&nbsp;&nbsp;mBtnStats=BTN_NORMAL;<BR><BR>在折构函数中拆除位图<BR>&nbsp;&nbsp;&nbsp;&nbsp;if(m_pBitmap!=0) 
+                        delete 
+                        m_pBitmap;<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;这样，一个透明的浮动式按键类就做好了，具体实现方法以下： 
+                        <BR>&nbsp;&nbsp;&nbsp;&nbsp;1.接管对话框的BUTTON，首先在对话框上画一个BUTTON，再加一个PICTURE图片，BUTTON的风格必须加入OWNER 
+                        DRAW及去掉VISIBLE，把BUTTON移到PICTURE上适当的位置，在对话框类加入CDrawButton类成员m_myButton，由于按键初始化时必须保存对话框的图象，而对话框在运行InitDialog()或第一次运行OnPaint()时对话框的控件还没有真正显示出来，我们只好在OnMouseMove()中进行初始化： 
+                        <BR><BR>m_myButton.AutoLoad(IDC_BUTTON1,this);<BR>AutoLoad()只运行一次。<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;2.动态建立CDrawButton，在对话框类或CxxxView类加入CDrawButton类成员m_myButton，可以在对话框的InitDialog()或CxxxView类的InitialUpdate()中加入：m_myButton.Create()函数，必须包含BS_OWNERDRAW而不能有WS_VISIBLE风格，然后在OnMouseMove()或OnDraw()中进行初始化：m_myButton.LoadBack(this);注意应加在OnDraw()的最后。 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;同样地，LoadBack()只运行一次。 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;(如果按键比背景的图片迟建立而具有可见(Visible)属性，则会把图片抹掉，所以必须去掉VISIBLE属性或不能加入WS_VISIBLE风格) 
+                        <BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;·当鼠标移到按键区域时，改变鼠标<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;这个很容易实现，不在这里多说了。&nbsp;&nbsp;<BR><BR></FONT></TD></TR></TBODY></TABLE></CENTER></TD></TR>
+              <TR>
+                <TD width=399 bgColor=white height=27>阅读次数：<FONT 
+                  color=#000000><B> 1107 </B></FONT>&nbsp; </TD>
+                <TD width=359 bgColor=white colSpan=2 height=27>
+                  <P>发布时间<FONT size=2>： 2002-04-29 18:18:42 
+              </FONT></P></TD></TR></TBODY></TABLE></TD>
+          <TD width=4 bgColor=#b6e2fc></TD></TR>
+        <TR>
+          <TD width=4 bgColor=#b6e2fc></TD>
+          <TD>
+            <DIV align=center>〖<A onclick=javascript:window.close(1) 
+            href="http://twt.tju.edu.cn/netclass/computer/textinfo.php?myid=553#">关闭窗口</A>〗</DIV></TD>
+          <TD width=4 bgColor=#b6e2fc></TD></TR>
+        <TR>
+          <TD bgColor=#b6e2fc height=4></TD>
+          <TD bgColor=#b6e2fc height=4></TD>
+          <TD bgColor=#b6e2fc height=4></TD></TR></TBODY></TABLE></TD></TR>
+  <TR>
+    <TD height=17>
+      <STYLE type=text/css>.textbottom {
+	FONT-SIZE: 9pt; COLOR: #002266
+}
+A.bottomlink:link {
+	FONT-SIZE: 9pt; COLOR: #002266; TEXT-DECORATION: none
+}
+A.bottomlink:visited {
+	FONT-SIZE: 9pt; COLOR: #002266; TEXT-DECORATION: none
+}
+A.bottomlink:active {
+	FONT-SIZE: 9pt; COLOR: #002266; TEXT-DECORATION: none
+}
+A.bottomlink:hover {
+	FONT-SIZE: 9pt; COLOR: #3694dc; TEXT-DECORATION: underline
+}
+</STYLE>
+
+      <TABLE class=textbottom cellSpacing=0 cellPadding=0 width=600 align=center 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD colSpan=3 height=20>&nbsp; </TD></TR>
+        <TR>
+          <TD width=130 rowSpan=3></TD>
+          <TD align=middle height=44><BR>Copyright @ 2000-2001 TWT Studio. All 
+            rights reserved.<BR>天外天工作室 版权所有 </TD>
+          <TD align=middle width=130><IMG height=43 
+            src="在VC中透明浮动按键的实现.files/gongshang.gif" width=35></TD></TR>
+        <TR>
+          <TD align=middle height=10>Mailto:<A class=bottomlink 
+            href="mailto:twtmaster@tju.edu.cn">twtmaster@tju.edu.cn</A></TD>
+          <TD align=middle width=130>津ICP备000017号</TD></TR>
+        <TR>
+          <TD align=middle height=10></TD>
+          <TD width=130></TD></TR></TBODY></TABLE><BR>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD bgColor=#93c8f4 height=1></TD></TR>
+        <TR>
+          <TD bgColor=#0a81e7 height=1></TD></TR>
+        <TR>
+          <TD bgColor=#93c8f4 
+height=1></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></BODY></HTML>

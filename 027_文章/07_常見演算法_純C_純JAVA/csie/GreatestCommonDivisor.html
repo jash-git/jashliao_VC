@@ -1,0 +1,294 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Greatest Common Divisor</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Greatest Common Divisor</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Greatest Common Divisor</p>
+<p>最大公因數。多個數字共同都有的正因數當中最大的一個。</p>
+<textarea>
+int gcd(int a, int b)
+{
+    int d;
+    for (d=a; !(a%d==0 && b%d==0); d--) ;
+    return d;
+}
+
+int gcd(int a, int b, int c)
+{
+    int d;
+    for (d=a; !(a%d==0 && b%d==0 && c%d==0); d--) ;
+    return d;
+}
+</textarea>
+<p class="t">Least Common Multiple</p>
+<p>最小公倍數。多個數字共同都有的正倍數當中最小的一個。</p>
+<textarea>
+int lcm(int a, int b)
+{
+    int m;
+    for (m=a; !(m%a==0 && m%b==0); m++) ;
+    return m;
+}
+
+int lcm(int a, int b, int c)
+{
+    int m;
+    for (m=a; !(m%a==0 && m%b==0 && m%c==0); m++) ;
+    return m;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Greatest Common Divisor: Euclid's Algorithm</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Euclid's Algorithm（Euclidean Algorithm）</p>
+<p>幾何學之父歐幾里德所發明的「輾轉相除法」，用來求兩個數的最大公因數。幾何學之父原來跟數論也扯得上關係。</p>
+<p>由於兩個數必定是由最大公因數的整數倍所組合而成，故其差值也必定由最大公因數的整數倍所組合而成，不管兩數如何輾轉相減、輾轉求餘數，其得到的值都會是最大公因數的倍數。把最大公因數想成是萬丈高樓平地起的磚塊們就簡單多了。</p>
+<img src="Euclid'sAlgorithm.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Euclid'sAlgorithm.png">
+<p>求出了差值後，原問題便縮小成了跟原問題類似的問題。也就是說，輾轉相除法採取了Divide and Conquer的策略。</p>
+<p class="t">時間複雜度</p>
+<p>時間複雜度是O(logB)，其中B是兩數中較小的那個數。時間複雜度可用Fibonacci Sequence算得，詳情可參考離散數學的書籍。</p>
+<p class="t">程式碼</p>
+<p>迴圈版本。</p>
+<textarea>
+// 令 a 比 b 大，比較容易思考
+int gcd(int a, int b)
+{
+	if (a < b)	// 如果大小不對，便交換位置
+		return gcd(b, a);
+
+	while (b != 0)
+	{
+		int t = a % b;
+		a = b; b = t;
+	}
+
+	return a;	// 如果比較小的數字為零，表示比較大的數字為最大公因數
+}
+</textarea>
+<textarea>
+// 其實不必偵測 a b 大小，自己便會交換
+int gcd(int a, int b)
+{
+	while (b != 0)
+	{
+		int t = a % b;
+		a = b; b = t;
+	}
+	return a;
+}
+</textarea>
+<p>另一種奇怪的迴圈版本。僅供參考。</p>
+<textarea>
+// b不能為零
+int gcd(int a, int b)
+{
+	while ((a %= b) && (b %= a))
+		/* empty */;
+	return a + b;
+}
+</textarea>
+<p>遞迴版本。</p>
+<textarea>
+// 令 a 比 b 大，比較容易思考
+int gcd(int a, int b)
+{
+	if (a < b)	// 如果大小不對，便交換位置
+		return gcd(b, a);
+
+	if (b == 0)	// 如果比較小的數字為零，表示比較大的數字為最大公因數
+		return a;
+	else
+		return gcd(b, a%b);	// 輾轉相除
+}
+</textarea>
+<textarea>
+int gcd(int a, int b)
+{
+	if (a < b) return gcd(b, a);
+	return b==0 ? a : gcd(b, a%b);	// 連成一氣
+}
+</textarea>
+<textarea>
+// 其實不必偵測 a b 大小，自己便會交換
+int gcd(int a, int b)
+{
+	return b==0 ? a : gcd(b, a%b);
+}
+</textarea>
+<textarea>
+int gcd(int a, int b)
+{
+	return b ? gcd(b, a%b) : a;
+}
+</textarea>
+<p>寫的很簡略。自己實做時，敬請注意參數的數值範圍。</p>
+<p class="e">UVa 10193 10407</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Greatest Common Divisor: Extended Euclid's Algorithm</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Extended Euclid's Algorithm（Extended Euclidean Algorithm）</p>
+<p>輾轉相除法的擴充版本。除了可以找出兩數的最大公因數，還可以順便找出此兩數各乘上多少倍率後相加可得到最大公因數（倍率可以是負數或零），並且讓兩個倍率的絕對值相加後最小。</p>
+<p>以數學符號來表示的話，這個演算法可找出a b兩數的最大公因數d，以及順便找出滿足a*i + b*j = d的兩個倍率i j，且讓|i|+|j|會最小。</p>
+<p>想像一下萬丈高樓平地起的模型。由於a b兩數都是最大公因數的倍數，所以a的倍數a*i、b的倍數b*j兩數也會是最大公因數的倍數囉。然後，同之前文章所述，a*i、b*j兩數不管如何輾轉相減，都會是最大公因數的倍數。所以要找到符合條件的i j，讓a*i、b*j兩數的和（差）剛好是最大公因數的一倍，應該是滿有可能的事情。</p>
+<p>以下整理出兩種解決方式。</p>
+<p class="t">Iterative</p>
+<p>首先分別複製a b到c d上面，以c d兩數來輾轉相除。然後設計另外兩個倍率i' j'，並令每次輾轉相除時都保持a*i' + b*j' = c且a*i + b*j = d。</p>
+<p>由於a*i' + b*j' = c且a*i + b*j = d，及每次做除法的式子r = c - q*d，可推得 r = c - q*d = (a*i' + b*j') - q * (a*i + b*j) = a * (i'-q*i) + b * (j'-q*j)。如此一來，在輾轉相除時，就知道i j兩數如何隨著r做變動了。</p>
+<textarea>
+int gcd(int a, int b, int& i, int& j)
+{
+	int i_ = 1, j_ = 0;
+	i = 0, j = 1;
+	int c = a, d = b;
+
+	while (true)
+	{
+		int q = c / d, r = c % d, t;
+		if (r == 0) break;
+		c = d; d = r;
+		t = i_; i_ = i; i = t - q * i;
+		t = j_; j_ = j; j = t - q * j;
+	}
+	return d;
+}
+</textarea>
+<p>至於為什麼|i|+|j|會最小呢？我也不知道。</p>
+<p class="t">Recursive（Divide and Conquer）</p>
+<p>要計算i j，可利用Divide and Conquer的Merge階段來做：當問題分割至最小的時候，可以很明確的、輕鬆的算出i j的值；每次將小問題合併時，便重新調整i j的值，並保持|i|+|j|最小；當合併至原來的問題時，得到的i j即是所求。</p>
+<textarea>
+// 令 a 比 b 大
+void gcd(int a, int b, int& i, int& j, int& d)
+{
+	// 問題已分割至最小，i j 很好算。
+	if (b == 0)
+	{
+		d = a;			// 最大公因數為 a
+		i = 1; j = 0;	// 此時的 i j
+		return;
+	}
+
+	// Divide + Conquer：輾轉相除。
+	gcd(b, a%b);
+
+	// Merge：利用小問題的結果，計算出現在這個問題的 i j。
+	int t = i;
+	i = j;
+	j = t - (a/b) * j;
+}
+</textarea>
+<textarea>
+void gcd(int a, int b, int &i, int &j, int &d)
+{
+	if (b == 0)
+	{
+		d = a; i = 1; j = 0;
+	}
+	else
+	{
+		gcd(b, a % b, j, i, d);
+		j = j - (a / b) * i;
+	}
+}
+</textarea>
+<p class="t">Modular Inverse</p>
+<p>Extended Euclid's Algorithm也可以用來計算：當a m已知時，令a*i ≡ 1 (mod m)的i。方法是將原式改寫成a*i + m*j = 1即可。</p>
+<textarea>
+/* a * i ≡ 1 (mod m) */
+int modular_inverse(int a, int m)
+{
+	int d = m, i = 0, j = 1, q, r, t;
+	while (a != 0)
+	{
+		q = d / a, r = d % a;
+		d = a, a = r;
+		t = i - q * j, i = j, j = t;
+	}
+	if (i < 0) i += m;
+	return i;
+}
+</textarea>
+<p>來一點題目。</p>
+<p class="e">UVa 10090 10104</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Greatest Common Divisor: Binary GCD Algorithm</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Binary GCD Algorithm</p>
+<p>在九章數學裡稱做「更相減損術」，二進位數字的最大公因數計算方法。</p>
+<pre>
+如果 a b 有一個是零     -> gcd(a, b) = a 和 b 當中不是零的那ㄧ個數
+如果 a b 都是偶數       -> gcd(a, b) = gcd(a/2, b/2) * 2;
+如果 a 是偶數  b 是奇數 -> gcd(a, b) = gcd(a/2, b)
+如果 a 是奇數  b 是偶數 -> gcd(a, b) = gcd(a, b/2)
+如果 a b 都是奇數       -> gcd(a, b) = gcd(a 和 b 比較小那個, a 和 b 的差);
+</pre>
+<p>電腦裡的數字都是用二進位儲存的──要乘以二，就把數字的每個bit都左移一個bit；要除以二，就把數字的每個bit都右移一個bit（別忘記補零）。位移運算比除法運算、模數運算還要快，於是便開發了以提取因數二來計算最大公因數的方法。</p>
+<p>歸納要點：甲、不斷提取共同的因數，都只提取二；乙、二與奇數互質，不會影響最大公因數，故可除去二；丙、若無因數二則相減，相減後仍是最大公因數的倍數。</p>
+<p>時間複雜度是O((logAB)^2)，AB為a b兩數的乘積。【待補證明】【待補速度討論】</p>
+<p class="t">程式碼</p>
+<p>這裡提供幾支程式碼供大家參考。首先是迴圈版本。</p>
+<textarea>
+int gcd(int a, int b)
+{
+	int c = 0;						// 紀錄 gcd 乘二乘了幾次
+	while (a && b)					// 如果 a b 都是正數
+		if (!(a & 1) && !(b & 1))	// 如果 a b 都是偶數
+			a >>= 1, b >>= 1, c++;	// a /= 2, b /= 2, gcd 乘二
+		else if (!(a & 1))			// 如果 a 是偶數、b 是奇數
+			a >>= 1;				// a /= 2
+		else if (!(b & 1))			// 如果 a 是奇數、b 是偶數
+			b >>= 1;				// b /= 2
+		else if (a > b)				// 如果 a b 都是奇數
+			a -= b;					// 判斷 a b 大小，求出餘數
+		else
+			b -= a;					// 判斷 a b 大小，求出餘數
+
+	return max(a, b) << c;	// 不為零的數乘上 c 個 2 就是 gcd
+}
+</textarea><p>遞迴版本。</p>
+<textarea>
+int gcd(int a, int b)
+{
+	if (a == 0) return b;
+	if (b == 0) return a;
+
+	if ((a & 1) == 0 && (b & 1) == 0)
+		return gcd(a >> 1, b >> 1) << 1;
+	else if ((a & 1) == 0)
+		return gcd(a >> 1, b);
+	else if ((b & 1) == 0)
+		return gcd(a, b >> 1);
+	else
+		return gcd(min(a, b), abs(a - b));
+}
+</textarea><p>按照TAOCP的建議，然後我自己實作的版本。</p>
+<textarea>
+int gcd(int a, int b)
+{
+	int c = 0;
+
+	while (!(a & 1) && !(b & 1))
+		a >>= 1, b >>= 1, c++;
+
+	while (a)
+		if (!(a & 1))
+			a >>= 1;
+		else if (!(b & 1))
+			b >>= 1;
+		else
+		{
+			int t = abs(a-b) >> 1;
+			if (a < b) b = t; else a = t;
+		}
+
+	return b << c;
+}
+</textarea>
+<p>維基百科：<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Binary_GCD_algorithm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Binary_GCD_algorithm#Implementation_in_C'" tppabs="http://en.wikipedia.org/wiki/Binary_GCD_algorithm#Implementation_in_C" class="l">http://en.wikipedia.org/wiki/Binary_GCD_algorithm#Implementation_in_C</a>上面也有一版。如果各位有更快更好的實作方法，歡迎提供。謝謝大家收看。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

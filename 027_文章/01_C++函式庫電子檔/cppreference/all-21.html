@@ -1,0 +1,933 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+
+  <title>C++ Maps</title>
+  <link href="cppreference.css" tppabs="http://www.cppreference.com/cppreference.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<table>
+  <tr>
+  <td>
+  <div class="body-content">
+
+  <div class="header-box">
+    <a href="index.html" tppabs="http://www.cppreference.com/index.html">cppreference.com</a> &gt; <a href=
+    "index-22.html" tppabs="http://www.cppreference.com/cppmap/index.html">C++ Maps</a>
+  </div>
+
+  <div class="name-format">
+    begin
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  iterator begin();
+  const_iterator begin() const;
+</pre>
+
+  <p>The function begin() returns an iterator to the first element of
+  the map. begin() should run in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant
+  time</a>.</p>
+
+  <p>For example, the following code uses begin() to initialize an
+  iterator that is used to traverse a list:</p>
+  <pre class="example-code">
+   // Create a list of characters
+   list&lt;char&gt; charList;
+   for( int i=0; i &lt; 10; i++ ) {
+     charList.push_front( i + 65 );
+   }
+   // Display the list
+   list&lt;char&gt;::iterator theIterator;
+   for( theIterator = charList.begin(); theIterator != charList.end(); theIterator++ ) {
+     cout &lt;&lt; *theIterator;
+   }            
+</pre>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="end-6.html" tppabs="http://www.cppreference.com/cppmap/end.html">end</a><br>
+    <a href="rbegin-6.html" tppabs="http://www.cppreference.com/cppmap/rbegin.html">rbegin</a><br>
+    <a href="rend-6.html" tppabs="http://www.cppreference.com/cppmap/rend.html">rend</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    equal_range
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  pair&lt;iterator, iterator&gt; equal_range( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">key_type</a>&amp; key );
+</pre>
+
+  <p>The function equal_range() returns two iterators - one to the
+  first element that contains <em>key</em>, another to a point just
+  after the last element that contains <em>key</em>.</p>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    clear
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  void clear();
+</pre>
+
+  <p>The function clear() deletes all of the elements in the map.
+  clear() runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">linear time</a>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    (C++ Lists) <a href="erase-3.html" tppabs="http://www.cppreference.com/cpplist/erase.html">erase</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    count
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  <strong>size_type</strong> count( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">key_type</a>&amp; key );
+</pre>
+
+  <p>The function count() returns the number of occurrences of
+  <em>key</em> in the map.</p>
+
+  <p>count() should run in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">logarithmic
+  time</a>.</p>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    empty
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  bool empty() const;
+</pre>
+
+  <p>The empty() function returns true if the map has no elements,
+  false otherwise.</p>
+
+  <p>For example, the following code uses empty() as the stopping
+  condition on a <a href= "while.html" tppabs="http://www.cppreference.com/keywords/while.html">while</a> loop to
+  clear a map and display its contents in order:</p>
+
+  <pre class="example-code">
+  struct strCmp {
+    bool operator()( const char* s1, const char* s2 ) const {
+      return strcmp( s1, s2 ) &lt; 0;
+    }
+  };
+
+  ...
+
+  map&lt;const char*, int, strCmp&gt; ages;
+  ages["Homer"] = 38;
+  ages["Marge"] = 37;
+  ages["Lisa"] = 8;
+  ages["Maggie"] = 1;
+  ages["Bart"] = 11;
+
+  while( !ages.empty() ) {
+    cout &lt;&lt; "Erasing: " &lt;&lt; (*ages.begin()).first &lt;&lt; ", " &lt;&lt; (*ages.begin()).second &lt;&lt; endl;
+    ages.erase( ages.begin() );
+  }
+</pre>
+
+  <p>When run, the above code displays:</p>
+
+  <pre class="example-code">
+  Erasing: Bart, 11
+  Erasing: Homer, 38
+  Erasing: Lisa, 8
+  Erasing: Maggie, 1
+  Erasing: Marge, 37
+</pre>
+
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="begin-6.html" tppabs="http://www.cppreference.com/cppmap/begin.html">begin</a><br>
+    <a href="erase-6.html" tppabs="http://www.cppreference.com/cppmap/erase.html">erase</a><br>
+    <a href="size-9.html" tppabs="http://www.cppreference.com/cppmap/size.html">size</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    end
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  iterator end();
+  const_iterator end() const;
+</pre>
+
+  <p>The end() function returns an iterator just past the end of the
+  map.</p>
+
+  <p>Note that before you can access the last element of the map using
+  an iterator that you get from a call to end(), you&#39;ll have to
+  decrement the iterator first.</p>
+
+  <p>For example, the following code uses <a href=
+  "begin-6.html" tppabs="http://www.cppreference.com/cppmap/begin.html">begin</a>() and end() to iterate through all of the
+  members of a vector:</p>
+  <pre class="example-code">
+ vector&lt;int&gt; v1( 5, 789 );
+ vector&lt;int&gt;::iterator it;
+ for( it = v1.begin(); it != v1.end(); it++ ) {
+   cout &lt;&lt; *it &lt;&lt; endl;
+ }              
+</pre>
+
+  <p>The iterator is initialized with a call to <a href=
+  "begin-6.html" tppabs="http://www.cppreference.com/cppmap/begin.html">begin</a>(). After the body of the loop has been
+  executed, the iterator is incremented and tested to see if it is
+  equal to the result of calling end(). Since end() returns an iterator
+  pointing to an element just after the last element of the vector, the
+  loop will only stop once all of the elements of the vector have been
+  displayed.</p>
+
+  <p>end() runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant time</a>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="begin-6.html" tppabs="http://www.cppreference.com/cppmap/begin.html">begin</a><br>
+    <a href="rbegin-6.html" tppabs="http://www.cppreference.com/cppmap/rbegin.html">rbegin</a><br>
+    <a href="rend-6.html" tppabs="http://www.cppreference.com/cppmap/rend.html">rend</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    key_comp
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  key_compare key_comp() const;
+</pre>
+
+  <p>The function key_comp() returns the function that compares
+  keys.</p>
+
+  <p>key_comp() runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant
+  time</a>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="value_comp-2.html" tppabs="http://www.cppreference.com/cppmap/value_comp.html">value_comp</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    erase
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  void erase( iterator pos );
+  void erase( iterator start, iterator end );
+  <strong>size_type</strong> erase( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">key_type</a>&amp; key );
+</pre>
+
+  <p>The erase function() either erases the element at <em>pos</em>,
+  erases the elements between <em>start</em> and <em>end</em>, or
+  erases all elements that have the value of <em>key</em>.</p>
+
+  <p>For example, the following code uses erase() in a <a href=
+  "while.html" tppabs="http://www.cppreference.com/keywords/while.html">while</a> loop to incrementally clear a map
+  and display its contents in order:</p>
+
+  <pre class="example-code">
+  struct strCmp {
+    bool operator()( const char* s1, const char* s2 ) const {
+      return strcmp( s1, s2 ) &lt; 0;
+    }
+  };
+
+  ...
+
+  map&lt;const char*, int, strCmp&gt; ages;
+  ages["Homer"] = 38;
+  ages["Marge"] = 37;
+  ages["Lisa"] = 8;
+  ages["Maggie"] = 1;
+  ages["Bart"] = 11;
+
+  while( !ages.empty() ) {
+    cout &lt;&lt; "Erasing: " &lt;&lt; (*ages.begin()).first &lt;&lt; ", " &lt;&lt; (*ages.begin()).second &lt;&lt; endl;
+    ages.erase( ages.begin() );
+  }
+</pre>
+
+  <p>When run, the above code displays:</p>
+
+  <pre class="example-code">
+  Erasing: Bart, 11
+  Erasing: Homer, 38
+  Erasing: Lisa, 8
+  Erasing: Maggie, 1
+  Erasing: Marge, 37
+</pre>
+
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="begin-6.html" tppabs="http://www.cppreference.com/cppmap/begin.html">begin</a><br>
+    <a href="empty-9.html" tppabs="http://www.cppreference.com/cppmap/empty.html">empty</a><br>
+    <a href="size-9.html" tppabs="http://www.cppreference.com/cppmap/size.html">size</a>
+  </div>
+
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    find
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  iterator find( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">key_type</a>&amp; key );
+</pre>
+
+  <p>The find() function returns an iterator to <em>key</em>, or an
+  iterator to the end of the map if <em>key</em> is not found.</p>
+
+  <p>find() runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">logarithmic
+  time</a>.</p>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    insert
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  iterator insert( iterator i, const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">TYPE</a>&amp; val );
+  void insert( <a href=
+"iterators.html" tppabs="http://www.cppreference.com/iterators.html">input_iterator</a> start, <a href=
+"iterators.html" tppabs="http://www.cppreference.com/iterators.html">input_iterator</a> end );
+  pair&lt;iterator,bool&gt; insert( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">TYPE</a>&amp; val );
+</pre>
+
+  <p>The function insert() either:</p>
+
+  <ul>
+    <li>inserts <em>val</em> after the element at <em>pos</em> (where
+    <em>pos</em> is really just a suggestion as to where <em>val</em>
+    should go, since sets and maps are ordered), and returns an
+    iterator to that element.</li>
+
+    <li>inserts a range of elements from <em>start</em> to
+    <em>end</em>.</li>
+
+    <li>inserts <em>val</em>, but only if <em>val</em> doesn&#39;t
+    already exist. The return value is an iterator to the element
+    inserted, and a boolean describing whether an insertion took
+    place.</li>
+  </ul>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="map_operators.html" tppabs="http://www.cppreference.com/cppmap/map_operators.html">Map operators</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    Map Constructors &amp; Destructors
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  map();
+  map( const map&amp; m );
+  map( iterator start, iterator end );
+  map( iterator start, iterator end, const key_compare&amp; cmp );
+  map( const key_compare&amp; cmp );
+  ~map();
+</pre>
+
+  <p>The default constructor takes no arguments, creates a new instance
+  of that map, and runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant
+  time</a>. The default copy constructor runs in <a href=
+  "complexity.html" tppabs="http://www.cppreference.com/complexity.html">linear time</a> and can be used to create a new
+  map that is a copy of the given map <em>m</em>.</p>
+
+  <p>You can also create a map that will contain a copy of the
+  elements between <em>start</em> and <em>end</em>, or specify a
+  comparison function <em>cmp</em>.
+
+  <p>The default destructor is called when the map should be
+  destroyed.</p>
+
+  <p>For example, the following code creates a map that associates a
+  string with an integer:</p>
+  <pre class="example-code">
+  map&lt;const char*, int&gt; ages;
+  ages["Homer"] = 38;
+  ages["Marge"] = 37;
+  ages["Lisa"] = 8;
+  ages["Maggie"] = 1;
+  ages["Bart"] = 11;
+
+  cout &lt;&lt; "Bart is " &lt;&lt; ages["Bart"] &lt;&lt; " years old" &lt;&lt; endl;
+</pre>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="map_operators.html" tppabs="http://www.cppreference.com/cppmap/map_operators.html">Map Operators</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    lower_bound
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  iterator lower_bound( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">key_type</a>&amp; key );
+</pre>
+
+  <p>The lower_bound() function returns an iterator to the first
+  element which has a value greater than or equal to key.</p>
+
+  <p>lower_bound() runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">logarithmic
+  time</a>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="upper_bound-3.html" tppabs="http://www.cppreference.com/cppmap/upper_bound.html">upper_bound</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    Map operators
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  <a href="containers.html" tppabs="http://www.cppreference.com/containers.html">TYPE</a>&amp; operator[]( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">key_type</a>&amp; key );
+  map operator=(const map&amp; c2);
+  bool operator==(const map&amp; c1, const map&amp; c2);
+  bool operator!=(const map&amp; c1, const map&amp; c2);
+  bool operator&lt;(const map&amp; c1, const map&amp; c2);
+  bool operator&gt;(const map&amp; c1, const map&amp; c2);
+  bool operator&lt;=(const map&amp; c1, const map&amp; c2);
+  bool operator&gt;=(const map&amp; c1, const map&amp; c2);
+</pre>
+
+  <p>Maps can be compared and assigned with the standard comparison
+  operators: ==, !=, &lt;=, &gt;=, &lt;, &gt;, and =. Individual
+  elements of a map can be examined with the [] operator.</p>
+
+  <p>Performing a comparison or assigning one map to another takes
+  <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">linear time</a>.</p>
+
+  <p>Two maps are equal if:</p>
+
+  <ol>
+    <li>Their size is the same, and</li>
+
+    <li>Each member in location <em>i</em> in one map is equal to the
+    the member in location <em>i</em> in the other map.</li>
+  </ol>
+
+  <p>Comparisons among maps are done lexicographically.</p>
+
+  <p>For example, the following code defines a map between strings and
+  integers and loads values into the map using the [] operator:</p>
+  <pre class="example-code">
+  struct strCmp {
+    bool operator()( const char* s1, const char* s2 ) const {
+      return strcmp( s1, s2 ) &lt; 0;
+    }
+  };
+
+  map&lt;const char*, int, strCmp&gt; ages;
+  ages["Homer"] = 38;
+  ages["Marge"] = 37;
+  ages["Lisa"] = 8;
+  ages["Maggie"] = 1;
+  ages["Bart"] = 11;
+
+  cout &lt;&lt; "Bart is " &lt;&lt; ages["Bart"] &lt;&lt; " years old" &lt;&lt; endl;
+
+  cout &lt;&lt; "In alphabetical order: " &lt;&lt; endl;
+  for( map&lt;const char*, int, strCmp&gt;::iterator iter = ages.begin(); iter != ages.end(); iter++ ) {
+    cout &lt;&lt; (*iter).first &lt;&lt; " is " &lt;&lt; (*iter).second &lt;&lt; " years old" &lt;&lt; endl;
+  }
+</pre>
+
+  <p>When run, the above code displays this output:</p>
+  <pre class="example-code">
+  Bart is 11 years old
+  In alphabetical order:
+  Bart is 11 years old
+  Homer is 38 years old
+  Lisa is 8 years old
+  Maggie is 1 years old
+  Marge is 37 years old  
+</pre>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="insert-6.html" tppabs="http://www.cppreference.com/cppmap/insert.html">insert</a><br>
+    <a href="map_constructors.html" tppabs="http://www.cppreference.com/cppmap/map_constructors.html">Map Constructors &amp; Destructors</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    max_size
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  <strong>size_type</strong> max_size() const;
+</pre>
+
+  <p>The max_size() function returns the maximum number of elements
+  that the map can hold. The max_size() function should not be confused
+  with the <a href="size-9.html" tppabs="http://www.cppreference.com/cppmap/size.html">size</a>() or (C++ Strings) <a href=
+  "capacity.html" tppabs="http://www.cppreference.com/cppstring/capacity.html">capacity</a>() functions, which return
+  the number of elements currently in the map and the the number of
+  elements that the map will be able to hold before more memory will
+  have to be allocated, respectively.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="size-9.html" tppabs="http://www.cppreference.com/cppmap/size.html">size</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    rbegin
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  <a href="iterators.html" tppabs="http://www.cppreference.com/iterators.html">reverse_iterator</a> rbegin();
+  const_<a href=
+"iterators.html" tppabs="http://www.cppreference.com/iterators.html">reverse_iterator</a> rbegin() const;
+</pre>
+
+  <p>The rbegin() function returns a <a href=
+  "iterators.html" tppabs="http://www.cppreference.com/iterators.html">reverse_iterator</a> to the end of the current
+  map.</p>
+
+  <p>rbegin() runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant
+  time</a>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="begin-6.html" tppabs="http://www.cppreference.com/cppmap/begin.html">begin</a><br>
+    <a href="end-6.html" tppabs="http://www.cppreference.com/cppmap/end.html">end</a><br>
+    <a href="rend-6.html" tppabs="http://www.cppreference.com/cppmap/rend.html">rend</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    rend
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  <a href="iterators.html" tppabs="http://www.cppreference.com/iterators.html">reverse_iterator</a> rend();
+  const_<a href="iterators.html" tppabs="http://www.cppreference.com/iterators.html">reverse_iterator</a> rend() const;
+</pre>
+
+  <p>The function rend() returns a <a href=
+  "iterators.html" tppabs="http://www.cppreference.com/iterators.html">reverse_iterator</a> to the beginning of the
+  current map.</p>
+
+  <p>rend() runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant time</a>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="begin-6.html" tppabs="http://www.cppreference.com/cppmap/begin.html">begin</a><br>
+    <a href="end-6.html" tppabs="http://www.cppreference.com/cppmap/end.html">end</a><br>
+    <a href="rbegin-6.html" tppabs="http://www.cppreference.com/cppmap/rbegin.html">rbegin</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    size
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  <strong>size_type</strong> size() const;
+</pre>
+
+  <p>The size() function returns the number of elements in the current
+  map.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="empty-9.html" tppabs="http://www.cppreference.com/cppmap/empty.html">empty</a><br>
+    <a href="max_size-6.html" tppabs="http://www.cppreference.com/cppmap/max_size.html">max_size</a><br>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    swap
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  void swap( const container&amp; from );
+</pre>
+
+  <p>The swap() function exchanges the elements of the current map with
+  those of <em>from</em>. This function operates in <a href=
+  "complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant time</a>.</p>
+
+  <p>For example, the following code uses the swap() function to
+  exchange the values of two strings:</p>
+  <pre class="example-code">
+   string first( &quot;This comes first&quot; );
+   string second( &quot;And this is second&quot; );
+   first.swap( second );
+   cout &lt;&lt; first &lt;&lt; endl;
+   cout &lt;&lt; second &lt;&lt; endl;          
+</pre>
+
+  <p>The above code displays:</p>
+  <pre class="example-code">
+   And this is second
+   This comes first             
+</pre>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    (C++ Lists) <a href="splice.html" tppabs="http://www.cppreference.com/cpplist/splice.html">splice</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    upper_bound
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  iterator upper_bound( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">key_type</a>&amp; key );
+</pre>
+
+  <p>The function upper_bound() returns an iterator to the first
+  element in the map with a key greater than <em>key</em>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="lower_bound-3.html" tppabs="http://www.cppreference.com/cppmap/lower_bound.html">lower_bound</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+
+  <div class="name-format">
+    value_comp
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  value_compare value_comp() const;
+</pre>
+
+  <p>The value_comp() function returns the function that compares
+  values.</p>
+
+  <p>value_comp() runs in <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant
+  time</a>.</p>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="key_comp-2.html" tppabs="http://www.cppreference.com/cppmap/key_comp.html">key_comp</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>
+<hr>
+</body></html>

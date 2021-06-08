@@ -1,0 +1,796 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb_2312-80">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>第四章 基于对话框的应用程序</TITLE>
+</HEAD>
+<BODY>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=5><P ALIGN="CENTER"><A NAME="_Toc425698722">第十章</FONT><FONT FACE="Arial" SIZE=5> MFC</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=5>通用类</A></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不仅提供了大量的用于编写图形用户界面的类，它也包含了许多通用类用于处理字符串、列表、数组、日期和时间，有了这些通用类，编写程序时就可以避免使用复杂的数据结构。例如，由于</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的数组类能够自动的改变大小，我们在不知道数组维数的情况下就不必使用一个大数组，这样就可以节约内存，提高程序的运行速度。</P>
+<P ALIGN="JUSTIFY">本章主要涉及以下内容：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>数组类</LI></P>
+<P ALIGN="JUSTIFY"><LI>列表类</LI></P>
+<P ALIGN="JUSTIFY"><LI>映射类</LI></P>
+<P ALIGN="JUSTIFY"><LI>字符串类</LI></P>
+<P ALIGN="JUSTIFY"><LI>日期和时间类</LI></P></UL>
+
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698723">第一节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>数组类</A></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的数组类使你可以创建和操作一个实际上可以处理各种数据类型的一维数组对象。除了</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以在运行时动态的增大和缩小数组对象外，这些数组对象非常象常规的数组。这也意味者在声明数组对象时不必关心它的维数。由于</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以动态的变大和变小，你不必考虑使用常规数组时出现的内存浪费。使用常规数组时你必须将其定义成能够容纳所有可能需要的元素，而不管这些元素是否真的被会使用。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的数组类包含</FONT><FONT SIZE=3>CByteArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CDWordArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CPtrArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CUIntArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CWordArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CStringArray.</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。从这些类的名称可以看出，每一个类都被设计成能够处理一个特定的数据类型。例如，在本节例子中将要用到的</FONT><FONT SIZE=3>CUIntArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类是一个处理无符号整形数的数组类，而</FONT><FONT SIZE=3>CObjecArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类代表对象数组类。这些数组类几乎相同，仅仅的区别在于它们储存的数据类型不同。如果你学会使用其中的一种数组类的使用，你就学会了所有数组类的使用。</P>
+<P ALIGN="JUSTIFY">数组类有下列成员函数：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Add</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">在数组的最后追加一个元素，可以根据需要增大数组大小。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">ElementAt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">获得一个指向数组元素的指针</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">FreeExtra</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">释放不用的数组内存</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetAt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">获取数组内指定位置处的值</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">获取数组中包含的元素个数</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetUpperBound</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">获取数组的上界值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">InsertAt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">在数组的指定位置处插入一个元素，后面的元素的下标加</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">RemoveAll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">删除数组中所有的元素。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SetAt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">设定数组指定位置处的值。因为制革函数不会增加数组的大小，故这个下标此时一定要有效。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SetAtGrow</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">设定数组的指定位置处的值，可以根据需要增大数组的大小。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SetSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">设置数组的初始大小。</P>
+<P ALIGN="JUSTIFY">下面将介绍一个数组的程序，这个程序可以让你测试一下</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的数组类。</P>
+<P ALIGN="JUSTIFY">首先，这个程序在</FONT><FONT SIZE=3>View</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类中声明一个数组对象，如下：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CUIntArray  array;</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">接着，在</FONT><FONT SIZE=3>View</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的构造函数中初始化数组，将其设置成包含十个元素，</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>array.SetSize(10, 5);</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SetSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数有两个参数，第一个参数是数组的初始大小，第二个参数是数组元素每次增加时增加的个数。</P>
+<P ALIGN="JUSTIFY">在设置完数组的大小之后，程序等待用户在窗口中单击鼠标左键或右键。如果用户这样做了，程序将显示一个合适的对话框并且处理输入到对话框中的数据。下面的代码是该程序的</FONT><FONT SIZE=3>OnLButtonDown</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数，用于处理用户单击右键的事件。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CArrayView::OnLButtonDown(UINT nFlags, CPoint point) </P>
+<P>{</P>
+<P>    CArrayAddDlg dialog(this);</P>
+<P>    dialog.m_index = 0;</P>
+<P>    dialog.m_value = 0;</P>
+<P>    dialog.m_radio = 0;</P>
+<P>    int result = dialog.DoModal();</P>
+<P>    if (result == IDOK)</P>
+<P>    {</P>
+<P>        if (dialog.m_radio == 0)</P>
+<P>            array.SetAtGrow(dialog.m_index, dialog.m_value);</P>
+<P>        else if (dialog.m_radio == 1)</P>
+<P>            array.InsertAt(dialog.m_index, dialog.m_value, 1);</P>
+<P>        else</P>
+<P>            </P>
+<P>array.Add(dialog.m_value);</P>
+<P>        Invalidate();</P>
+<P>    }</P>
+<P>    CView::OnLButtonDown(nFlags, point);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这段代码开始先创建一个对话框对象并初始化。如果用户选择对话框的“确定”按钮，</FONT><FONT SIZE=3>OnLButton</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数将检查对话框的成员变量</FONT><FONT SIZE=3>m_radio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。值为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>表示第一个单选按钮（设置）被选中，值为</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>表示第二个单选按钮（插入）被选中，值为</FONT><FONT SIZE=3>2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>表示第三个单选按钮（添加）被选中。</P>
+<P ALIGN="JUSTIFY">如果用户希望设置数组的元素，程序将调用</FONT><FONT SIZE=3>SetAtGrow</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数，它需要两个参数，一个是数组元素的下标值，另一个是希望设置的值。它不象常规的</FONT><FONT SIZE=3>SetAt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数，用户必须使用当前有效的数组下标值。</FONT><FONT SIZE=3>SetAtGrow</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）为了设置指定位置处的值将根据需要增大数组的大小。</P>
+<P ALIGN="JUSTIFY">当用户选择了“插入”单选按钮，程序将调用</FONT><FONT SIZE=3>InsertAt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数，它需要两个参数，一个是要插入的数组元素的下标，另一个是该数组元素的值。这将在指定位置处创建一个新的数组元素，并将把后面的元素往后推。最后当用户选择了“添加”按钮，程序将调用</FONT><FONT SIZE=3>Add()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数，这将在数组的后面添加一个元素。对</FONT><FONT SIZE=3>Invalidate</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）的调用将使程序重新显示数据。</P>
+<P ALIGN="JUSTIFY">下面的</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数读取并显示数组。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CArrayView::OnDraw(CDC* pDC)</P>
+<P>{</P>
+<P>    CArrayDoc* pDoc = GetDocument();</P>
+<P>    ASSERT_VALID(pDoc);</P>
+<P>    // Get the current font's height.</P>
+<P>    TEXTMETRIC textMetric;</P>
+<P>    pDC-&gt;GetTextMetrics(&amp;textMetric);</P>
+<P>    int fontHeight = textMetric.tmHeight;</P>
+<P>    // Get the size of the array. </P>
+<P>    int count = array.GetSize();</P>
+<P>    int displayPos = 10;</P>
+<P>    // Display the array data.</P>
+<P>    </P>
+<P>for (int x=0; x&lt;count; ++x)</P>
+<P>    {</P>
+<P>        UINT value = array.GetAt(x);</P>
+<P>        char s[81];</P>
+<P>        wsprintf(s, "Element %d contains the value %u.", x, value);</P>
+<P>        pDC-&gt;TextOut(10, displayPos, s);</P>
+<P>        displayPos += fontHeight;</P>
+<P>    }</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这里，程序首先获得当前字体的高度，然后程序通过调用</FONT><FONT SIZE=3>GetSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数获得数组元素的个数。最后，使用数组元素的个数控制一个</FONT><FONT SIZE=3>for</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>循环，调用</FONT><FONT SIZE=3>GetAt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数获得当前下标处的数组元素的值。为了显示程序将数组元素的值转化成字符串。</P>
+<P ALIGN="JUSTIFY">程序的</FONT><FONT SIZE=3>OnRButtonDown</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数用来响应用户按下鼠标右键的事件，此函数用来处理删除数组元素的任务。下面是该函数的代码：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CArrayView::OnRButtonDown(UINT nFlags, CPoint point) </P>
+<P>{</P>
+<P>&#9;// TODO: Add your message handler code here and/or call default</P>
+<P>    CArrayRemoveDlg dialog(this);</P>
+<P>    dialog.m_radio= 1;</P>
+<P>    dialog.m_index= 0;</P>
+<P>    int result = dialog.DoModal();</P>
+<P>    if (result == IDOK)</P>
+<P>    {</P>
+<P>        if (dialog.m_radio==0)</P>
+<P>        &#9;&#9;array.RemoveAll();</P>
+<P>        else</P>
+<P>            array.RemoveAt(dialog.m_index);</P>
+<P>        Invalidate();</P>
+<P>    }</P>
+<P>&#9;CView::OnRButtonDown(nFlags, point);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在这个函数中，当显示完对话框后，程序检查对话框的成员变量</FONT><FONT SIZE=3>m_removeAll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。如果这个值为真意味着用户希望删除数组中所有的元素。这种情况下，程序调用数组类的成员函数</FONT><FONT SIZE=3>RemoveAll</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）。否则，程序将调用</FONT><FONT SIZE=3>RemoveAt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）删除指定位置处的数组元素。最后调用</FONT><FONT SIZE=3>Invalidate</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数刷新数据显示。</P>
+<P ALIGN="JUSTIFY">下面将介绍对话框类</FONT><FONT SIZE=3>CArrayAddDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，按照下面的步骤创建这个对话框类。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建如图</FONT><FONT SIZE=3>10.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，</FONT><FONT SIZE=3>3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个单选按钮的</FONT><FONT SIZE=3>ID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>分别为</FONT><FONT SIZE=3>IDC_ADD0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>IDC_ADD1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>IDC_ADD2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="CENTER"><IMG SRC="Image292.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image292.gif" WIDTH=247 HEIGHT=154></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 1 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>添加元素对话框</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ClassWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中为两个文本框映射两个</FONT><FONT SIZE=3>UINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的变量</FONT><FONT SIZE=3>m_index</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>m_value</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给该对话框添加一个</FONT><FONT SIZE=3>UINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的成员变量</FONT><FONT SIZE=3>m_radio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>WM_INITDIALOG</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>添加函数</FONT><FONT SIZE=3>OnInitDialog()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在其中设置单选按钮的初始状态。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>BOOL CArrayAddDlg::OnInitDialog() </P>
+<P>{</P>
+<P>&#9;CDialog::OnInitDialog();</P>
+<P>&#9;</P>
+<P>&#9;// TODO: Add extra initialization here</P>
+<P>&#9;((CButton*)GetDlgItem(IDC_ADD0))-&gt;SetCheck(1);</P>
+<P>&#9;return TRUE;  // return TRUE unless you set the focus to a control</P>
+<P>&#9;              // EXCEPTION: OCX Property Pages should return FALSE</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>添加三个函数用以响应用户单击单选按钮。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CArrayAddDlg::OnAdd0() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your control notification handler code here</P>
+<P>&#9;GetDlgItem(IDC_INDEX)-&gt;EnableWindow(true);</P>
+<P>}</P>
+
+<P>void CArrayAddDlg::OnAdd1() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your control notification handler code here</P>
+<P>&#9;GetDlgItem(IDC_INDEX)-&gt;EnableWindow(true);</P>
+<P>}</P>
+
+<P>void CArrayAddDlg::OnAdd2() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your control notification handler code here</P>
+<P>&#9;GetDlgItem(IDC_INDEX)-&gt;EnableWindow(false);</P>
+<P>}</P>
+<P>为了确定用户选择了哪一个单选按钮，重载CDialog::OnOK()。</P>
+<P>void CArrayAddDlg::OnOK() </P>
+<P>{</P>
+<P>&#9;// TODO: Add extra validation here</P>
+<P>&#9;UINT nRadio=GetCheckedRadioButton(IDC_ADD0,IDC_ADD2);</P>
+<P>&#9;switch(nRadio)</P>
+<P>&#9;{</P>
+<P>&#9;case IDC_ADD0:</P>
+<P>&#9;&#9;m_radio=0;</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;case IDC_ADD1:</P>
+<P>&#9;&#9;m_radio=1;</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;case IDC_ADD2:</P>
+<P>&#9;&#9;m_radio=2;</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;default:</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;}</P>
+<P>&#9;CDialog::OnOK();</P>
+<P>}</P><DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">按照下面的步骤创建另一个对话框类CRemoveDlg。</P></DIR>
+
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建如图</FONT><FONT SIZE=3>10.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，两个单选按钮的</FONT><FONT SIZE=3>ID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>分别是</FONT><FONT SIZE=3>IDC_REMOVE0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>IDC_REMOVE1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="CENTER"><IMG SRC="Image293.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image293.gif" WIDTH=213 HEIGHT=130></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 2 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>删除数组元素对话框</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ClassWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中为文本框映射一个</FONT><FONT SIZE=3>UINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的变量</FONT><FONT SIZE=3>m_index</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给该对话框添加一个</FONT><FONT SIZE=3>UINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的成员变量</FONT><FONT SIZE=3>m_radio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>WM_INITDIALOG</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>添加函数</FONT><FONT SIZE=3>OnInitDialog()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在其中设置单选按钮的初始状态。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>BOOL CArrayRemoveDlg::OnInitDialog() </P>
+<P>{</P>
+<P>&#9;CDialog::OnInitDialog();</P>
+<P>&#9;</P>
+<P>&#9;// TODO: Add extra initialization here</P>
+<P>&#9;((CButton*)GetDlgItem(IDC_REMOVE1))-&gt;SetCheck(1);</P>
+<P>&#9;return TRUE;  // return TRUE unless you set the focus to a control</P>
+<P>&#9;              // EXCEPTION: OCX Property Pages should return FALSE</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>．添加两个函数用以响应用户单击单选按钮。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CArrayRemoveDlg::OnRemove0() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your control notification handler code here</P>
+<P>&#9;GetDlgItem(IDC_INDEX)-&gt;EnableWindow(false);</P>
+<P>}</P>
+
+<P>void CArrayRemoveDlg::OnRemove1() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your control notification handler code here</P>
+<P>&#9;GetDlgItem(IDC_INDEX)-&gt;EnableWindow(true);</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">6.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为了确定用户选择了哪一个单选按钮，重载</FONT><FONT SIZE=3>CDialog::OnOK()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CArrayRemoveDlg::OnOK() </P>
+<P>{</P>
+<P>&#9;// TODO: Add extra validation here</P>
+<P>&#9;UINT nRadio=GetCheckedRadioButton(IDC_REMOVE0,IDC_REMOVE1);</P>
+<P>&#9;switch(nRadio)</P>
+<P>&#9;{</P>
+<P>&#9;case IDC_REMOVE0:</P>
+<P>&#9;&#9;m_radio=0;</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;case IDC_REMOVE1:</P>
+<P>&#9;&#9;m_radio=1;</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;default:</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;}</P>
+<P>&#9;CDialog::OnOK();</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">现在编译并运行这个程序，首先在窗口中显示一个有十个元素的数组，如图</FONT><FONT SIZE=3>10.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。单击左键弹出如图</FONT><FONT SIZE=3>10.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，你可以选择三种数组操作：设置、插入和添加。单击右键弹出如图</FONT><FONT SIZE=3>10.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，你可以选择两种删除操作：删除全部元素和删除指定元素。</P>
+<P ALIGN="CENTER"><IMG SRC="Image294.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image294.gif" WIDTH=302 HEIGHT=204></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 3 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>程序运行初始窗口</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">　</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698724">第二节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>列表类</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">列表类象是有特殊功能的数组。列表的元素被称为节点。列表使用指针来连结它的节点。如果你希望快速的插入和删除数组元素，列表类是一个比较好的选择。但是在列表中查找一个元素要比在数组中慢，因为列表需要按照指针顺序从一个节点到另外一个节点。</P>
+<P ALIGN="JUSTIFY">通常我们称列表中第一个节点为列表的头，列表中最后一个节点是列表的尾。</P>
+<P ALIGN="JUSTIFY">列表类有以下成员函数：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Clist</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Clist</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的构造函数，其中的参数指定分配内存的基本单元。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetHead( )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得列表的第一个元素的值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetTail( )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得列表的最后一个元素的值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">RemoveHead( )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">删除列表中第一个元素</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">RemoveTail( )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">删除列表中最后一个元素。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">AddHead</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">在列表的头部添加一个节点，使这个节点成为列表的新的头。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">AddTail</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">在列表的尾部添加一个节点，使这个节点成为列表的新的尾。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">RemoveAll()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">删除节点中所有的元素。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetHeadPosition( )</P>
+<P ALIGN="JUSTIFY">&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得列表的头节点的位置。</P>
+<P ALIGN="JUSTIFY">&#9;</FONT><FONT SIZE=3>GetTailPosition( )</P>
+<P ALIGN="JUSTIFY">&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得列表中尾节点的位置。</P>
+<P ALIGN="JUSTIFY">&#9;</FONT><FONT SIZE=3>GetNext()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得指定位置下一个节点处的值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetPrev()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得指定位置上一个节点处的值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetAt()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得指定位置处节点的值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SetAt()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">设置指定位置处节点的值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">RemoveAt()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">删除指定位置处的节点。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">InsertBefore()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在指定位置的前面插入一个节点。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">InsertAfter()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在指定位置的后面插入一个节点。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Find()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">按照列表顺序搜索给定的对象指针，返回一个</FONT><FONT SIZE=3>POSITION</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的量。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">FindIndex()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">按照列表顺序搜索指定的下标。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetCount()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得列表中包含的节点个数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">IsEmpty()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">检查一个列表是否不含有任何节点。</P>
+<P ALIGN="JUSTIFY">下面的程序将允许用户添加和删除节点，按照以下步骤进行：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>MFC AppWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个单文档应用程序</FONT><FONT SIZE=3>List</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>添加一个对话框类</FONT><FONT SIZE=3>CAddStudentDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，其对应的对话框如图</FONT><FONT SIZE=3>10.4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+<P ALIGN="CENTER"><IMG SRC="Image295.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image295.gif" WIDTH=191 HEIGHT=133></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 4 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>添加节点对话框</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为两个文本框映射两个变量</FONT><FONT SIZE=3>m_name</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>m_score</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>添加一个对话框类</FONT><FONT SIZE=3>CRemoveStudentDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，其对应的对话框如图</FONT><FONT SIZE=3>10.5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。两个单选按钮的</FONT><FONT SIZE=3>ID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>IDC_REMOVE0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>IDC_REMOVE1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="CENTER"><IMG SRC="Image296.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image296.gif" WIDTH=183 HEIGHT=135></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图10. 5 删除节点对话框</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为对话框类添加一个</FONT><FONT SIZE=3>UINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的成员变量</FONT><FONT SIZE=3>m_radio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">6.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>OnInitDialog()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中设置单选按钮的初始状态。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>BOOL CRemoveStudentDlg::OnInitDialog() </P>
+<P>{</P>
+<P>&#9;CDialog::OnInitDialog();</P>
+<P>&#9;</P>
+<P>&#9;// TODO: Add extra initialization here</P>
+<P>&#9;((CButton*)GetDlgItem(IDC_REMOVE0))-&gt;SetCheck(1);</P>
+<P>&#9;return TRUE;  // return TRUE unless you set the focus to a control</P>
+<P>&#9;              // EXCEPTION: OCX Property Pages should return FALSE</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">7.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为了知道用户选择了哪一个单选按钮，在</FONT><FONT SIZE=3>OnOk()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中添加下面的代码。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CRemoveStudentDlg::OnOK() </P>
+<P>{</P>
+<P>&#9;// TODO: Add extra validation here</P>
+<P>&#9;UINT nRadio=GetCheckedRadioButton(IDC_REMOVE0,IDC_REMOVE1);</P>
+<P>&#9;switch(nRadio)</P>
+<P>&#9;{</P>
+<P>&#9;case IDC_REMOVE0:</P>
+<P>&#9;&#9;m_radio=0;</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;case IDC_REMOVE1:</P>
+<P>&#9;&#9;m_radio=1;</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;default:</P>
+<P>&#9;&#9;break;</P>
+<P>&#9;}</P>
+<P>&#9;CDialog::OnOK();</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">8.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ListView.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中</FONT><FONT SIZE=3>CListView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的声明之前添加如下代码，用来定义一个结构体</FONT><FONT SIZE=3>CStudent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，包含两个变量</FONT><FONT SIZE=3>m_name</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>m_score</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，分别用于存放学生的姓名和成绩。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>struct CStudent</P>
+<P>{</P>
+<P>&#9;CString m_name;</P>
+<P>&#9;int m_score;</P>
+<P>};</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">9.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>ClistView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>添加一个类型为</FONT><FONT SIZE=3>CptrList</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员变量</FONT><FONT SIZE=3>m_list</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">10.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ListView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加下列语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "AddStudentDlg.h"</P>
+<P>#include "RemoveStudentDlg.h"</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">11.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>当用户单击左键后，弹出如图</FONT><FONT SIZE=3>10.4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，可以添加一个节点。对应的OnLButtonDown（）函数代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CMyListView::OnLButtonDown(UINT nFlags, CPoint point) </P>
+<P>{</P>
+<P>&#9;// TODO: Add your message handler code here and/or call default</P>
+<P>&#9;CAddStudentDlg dialog;</P>
+<P>    dialog.m_name = "";</P>
+<P>    dialog.m_score = 0 ;</P>
+<P>    // Display the dialog box.</P>
+<P>    int result = dialog.DoModal();</P>
+<P>    if (result == IDOK)</P>
+<P>    {</P>
+<P>        // Create and initialize the new node.</P>
+<P>        CStudent* m_pStudent = new CStudent;</P>
+<P>        m_pStudent-&gt;m_name = dialog.m_name;</P>
+<P>        m_pStudent-&gt;m_score = dialog.m_score;</P>
+<P>        // Add the node to the list.</P>
+<P>        m_list.AddTail(m_pStudent);</P>
+<P>        // Repaint the window.</P>
+<P>   &#9;&#9;Invalidate();</P>
+<P>    }</P>
+<P>&#9;CView::OnLButtonDown(nFlags, point);</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">12.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>当用户单击右键后，弹出如图</FONT><FONT SIZE=3>10.5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，可以删除一个节点。对应的OnRButtonDown（）函数代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CMyListView::OnRButtonDown(UINT nFlags, CPoint point) </P>
+<P>{</P>
+<P>&#9;// TODO: Add your message handler code here and/or call default</P>
+<P>&#9;CRemoveStudentDlg dialog;</P>
+<P>    dialog.m_radio = 0;</P>
+<P>    // Display the dialog box.</P>
+<P>    int result = dialog.DoModal();</P>
+<P>    // If the user clicked the OK button...</P>
+<P>    if (result == IDOK)</P>
+<P>    {</P>
+<P>        CStudent* m_pStudent=new CStudent;</P>
+<P>        // Make sure the list isn't empty.</P>
+<P>        if (m_list.IsEmpty())</P>
+<P>            MessageBox("节点已经全部删除!");</P>
+<P>        else</P>
+<P>        {</P>
+<P>            // Remove the specified node.</P>
+<P>            if (dialog.m_radio == 0)</P>
+<P>                m_pStudent = (CStudent*)m_list.RemoveHead();</P>
+<P>            else</P>
+<P>                m_pStudent = (CStudent*)m_list.RemoveTail();</P>
+<P>            // Delete the node object and repaint the window.</P>
+<P>            delete m_pStudent;</P>
+<P>            Invalidate();</P>
+<P>   &#9;&#9;}</P>
+<P>    }</P>
+<P>&#9;CView::OnRButtonDown(nFlags, point);</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">13.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>最后设置</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数用来响应</FONT><FONT SIZE=3>Invalidate()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CMyListView::OnDraw(CDC* pDC)</P>
+<P>{</P>
+<P>&#9;CListDoc* pDoc = GetDocument();</P>
+<P>&#9;ASSERT_VALID(pDoc);</P>
+
+<P>&#9;// TODO: add draw code for native data here</P>
+<P>    TEXTMETRIC textMetric;</P>
+<P>    pDC-&gt;GetTextMetrics(&amp;textMetric);</P>
+<P>    int fontHeight = textMetric.tmHeight;</P>
+<P>    // Initialize values used in the loop.</P>
+<P>    POSITION pos = m_list.GetHeadPosition();</P>
+<P>    int displayPosition = 10;</P>
+<P>    // Iterate over the list, displaying each node's values.</P>
+<P>    while (pos != NULL)</P>
+<P>    {</P>
+<P>        &#9;CStudent* m_pStudent = (CStudent*)m_list.GetNext(pos);</P>
+<P>        &#9;char s[81];</P>
+<P>        &#9;wsprintf(s, " 的成绩是 %d.",m_pStudent-&gt;m_score);</P>
+<P>&#9;&#9;&#9;CString m_string=m_pStudent-&gt;m_name+s;</P>
+<P>        &#9;pDC-&gt;TextOut(10, displayPosition, m_string);</P>
+<P>        &#9;displayPosition += fontHeight;</P>
+<P>    }</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="CENTER"><IMG SRC="Image297.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image297.gif" WIDTH=280 HEIGHT=201></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 6 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>程序运行的初始窗口</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">14.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>最后在</FONT><FONT SIZE=3>CListView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的析构函数中删除数组中所有的节点。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CMyListView::~CMyListView()</P>
+<P>{</P>
+<P>&#9;while (!m_list.IsEmpty())</P>
+<P>    {</P>
+<P>        CStudent* m_pStudent = (CStudent*)m_list.RemoveHead();</P>
+<P>        delete m_pStudent;</P>
+<P>    }</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">现在编译并运行这个程序，当程序运行后，弹出如图</FONT><FONT SIZE=3>10.6</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的窗口。单击左键，弹出如图</FONT><FONT SIZE=3>10.4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框来添加节点。单击右键，弹出如图</FONT><FONT SIZE=3>10.5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框来删除节点。如果在没有节点删除节点，将弹出如图</FONT><FONT SIZE=3>10.7</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框提示用户节点已经全部删除。</P>
+<P ALIGN="CENTER"><IMG SRC="Image298.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image298.gif" WIDTH=85 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 7 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>没有节点时删除节点弹出的消息框</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698725">第三节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>映射类</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这个类用于创建关键对象和数值对象联系的集合。你可以使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的映射类创建查询表格。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的映射类包含</FONT><FONT SIZE=3>CMapPtrToPtr, CMapPtrToWord, CMapStringToOb, CMapStringToPtr, CMapStringToString, CMapWordToOb, and CmapWordToPtr.</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在类的名称中第一个数据类型是关键字的数据类型，第二个数据类型是对应的数值的数据类型。</P>
+<P ALIGN="JUSTIFY">映射类有下列成员函数：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Lookup()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">查询映射到指定关键字的值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SetAt()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">向映射中插入一个元素，如果指定的关键字存在，替换掉原来的元素。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator [ ]</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">向映射中插入一个元素，其作用和</FONT><FONT SIZE=3>SetAt()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>相同。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">RemoveKey</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">查询符合关键字的映射。如果发现，则删除这个元素。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">RemoveAll( )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">删除映射中所有的元素。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetStartPosition( )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得映射中第一个元素的位置。映射中第一个元素是不预知的，所以映射的第一个元素实际上没有特定的意义。一般将这个值传递给</FONT><FONT SIZE=3>GetNextAssoc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetNextAssoc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">获得映射中指定位置处下一个元素。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetCount( )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得映射中元素的个数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">IsEmpty( )</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">测试这个数组元素是否为空。</P>
+<P ALIGN="JUSTIFY">现在用一个查询程序来使你对映射类有一个更深入的了解。按照下面的步骤创建这个程序。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个单文档的应用程序</FONT><FONT SIZE=3>Map</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>添加如图</FONT><FONT SIZE=3>10.8</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，并生成基于这个对话框的类</FONT><FONT SIZE=3>CLookUpMapDlg,</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>并为文本框添加一个变量</FONT><FONT SIZE=3>m_key</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="CENTER"><IMG SRC="Image299.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image299.gif" WIDTH=228 HEIGHT=94></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 8 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>查询表格</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>CMapView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>添加一个</FONT><FONT SIZE=3>CMapStringToString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的成员变量</FONT><FONT SIZE=3>m_map</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>CMapView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的构造函数中添加下列代码初始化映射。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CMapView::CMapView()</P>
+<P>{</P>
+<P>&#9;// TODO: add construction code here</P>
+<P>&#9;m_map.SetAt("red", "红色");</P>
+<P>    m_map.SetAt("yellow", "黄色");</P>
+<P>    m_map.SetAt("green", "绿色");</P>
+<P>    m_map.SetAt("blue", "蓝色");</P>
+<P>    m_map.SetAt("white", "白色");</P>
+<P>    m_map.SetAt("black", "黑色");</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>MapView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加下列语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "LookUpMapDlg.h"</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">6.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>WM_LbuttonDown</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息添加消息处理函数</FONT><FONT SIZE=3>OnLButtonDown(),</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CMapView::OnLButtonDown(UINT nFlags, CPoint point) </P>
+<P>{</P>
+<P>&#9;// TODO: Add your message handler code here and/or call default</P>
+<P>&#9;CLookUpMapDlg dialog(this);</P>
+<P>    dialog.m_key = "";</P>
+<P>    // Display the dialog box.</P>
+<P>    int result = dialog.DoModal();</P>
+<P>    if (result == IDOK)</P>
+<P>    {</P>
+<P>        // Look for the requested value.</P>
+<P>        CString m_value;</P>
+<P>        BOOL m_bFound = m_map.Lookup(dialog.m_key, m_value);</P>
+<P>        if (m_bFound)</P>
+<P>            MessageBox(m_value);</P>
+<P>        else</P>
+<P>            MessageBox("未发现匹配字符串");</P>
+<P>    }</P>
+
+<P>&#9;CView::OnLButtonDown(nFlags, point);</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">7.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>OnDraw()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中添加下列代码，在视图中显示映射中所有的元素。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CMapView::OnDraw(CDC* pDC)</P>
+<P>{</P>
+<P>&#9;CMapDoc* pDoc = GetDocument();</P>
+<P>&#9;ASSERT_VALID(pDoc);</P>
+
+<P>&#9;// TODO: add draw code for native data here</P>
+<P>&#9;TEXTMETRIC textMetric;</P>
+<P>    pDC-&gt;GetTextMetrics(&amp;textMetric);</P>
+<P>    int fontHeight = textMetric.tmHeight;</P>
+<P>    int displayPosition = 10;</P>
+<P>    POSITION pos =m_map.GetStartPosition();</P>
+<P>    CString m_key;</P>
+<P>    CString m_value;</P>
+<P>&#9;int m_index=m_map.GetCount();</P>
+<P>    for(int i=0;i&lt;m_index;i++)</P>
+<P>    {        </P>
+<P>&#9;&#9;m_map.GetNextAssoc(pos, m_key, m_value);</P>
+<P>        CString m_str=m_key+"的意思是"+m_value;</P>
+<P>        pDC-&gt;TextOut(10, displayPosition,m_str);</P>
+<P>        displayPosition += fontHeight;</P>
+<P>    }</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">现在编译并运行程序，首先出现如图</FONT><FONT SIZE=3>10.9</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的主窗口，映射中每一个元素都显示在</P>
+<P ALIGN="CENTER"><IMG SRC="Image300.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image300.gif" WIDTH=220 HEIGHT=158></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 9 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>程序运行初始窗口</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">其中。单击左键弹出如图</FONT><FONT SIZE=3>10.8</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，用户在其中输入要查询的关键字，选择“确定”按钮，如果映射中存在此关键字，将弹出如图</FONT><FONT SIZE=3>10.10</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框告知用户关键字对应的中文意思。如果映射中不存在此关键字，弹出如图</FONT><FONT SIZE=3>10.11</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框告知用户未发现匹配字符串。</P>
+<P ALIGN="JUSTIFY">　</P>
+<P ALIGN="CENTER"><IMG SRC="Image301.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image301.gif" WIDTH=67 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 10 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>查询结果显示对话框</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="CENTER"><IMG SRC="Image302.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image302.gif" WIDTH=81 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 11 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>未发现匹配字符串</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698726">第四节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>字符串类</A></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"> MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类使用</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>操作字符串和使用</FONT><FONT SIZE=3>Basic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或</FONT><FONT SIZE=3>Pascal</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>一样便捷。</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类没有基类。一个</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象由一个长度可变的字符序列组成。</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>包含很多成员函数用来操作字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>主要包含以下成员函数：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CString()</P>
+<P ALIGN="JUSTIFY">CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的构造函数，用来创建一个</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetLength()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获取</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象包含的字符串的长度（字节数）。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">IsEmpty()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">测试</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象包含的字符串是否为空。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Empty()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">使</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象包含的字符串为空字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetAt()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得字符串指定位置处的字符。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator [ ] </P>
+<P ALIGN="JUSTIFY">&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得字符串指定位置处的字符，作用和</FONT><FONT SIZE=3>GetAt()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>一样。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SetAt()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">设定字符串指定位置处的字符。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator LPCTSTR</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">返回指向储存在</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象内的字符的指针。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator =</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">将一个新的值赋予</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator + </P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">将两个字符串合并成一个新的字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator +=</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在一个字符串的后面再添加一个字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Compare</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">比较两个字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CompareNoCase</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">在忽略字符大小写的情况下比较两个字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Mid()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">从</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类对象包含的字符串中提取指定开头和结尾的字符串，类似于</FONT><FONT SIZE=3>Basic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>MID$</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Left()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获取字符串左边指定长度的字符串，类似于</FONT><FONT SIZE=3>Basic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>LEFT$</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Right()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获取字符串右边指定长度的字符串，类似于</FONT><FONT SIZE=3>Basic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>RIGHT$</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SpanIncluding</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">从字符串中提取包含在指定字符数组内的字符的子串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SpanEncluding()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">从字符串中提取不包含在指定字符数组内的字符的子串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">NakeUpper()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">将字符串中所有的字符全部转化成大写形式。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MakeLower()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">将字符串中所有的字符全部转化成小写形式。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MakeReverse()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">将字符串倒置。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Format()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">象</FONT><FONT SIZE=3>sprintf()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数一样格式化字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">TrimLeft()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">删除字符串左边开头的空白字符。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">TrimRight()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">删除字符串右边结尾的空白字符。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">FormatMessage()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">格式化消息字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Find()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在字符串中查找指定的字符或字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">ReverseFind()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">返回字符串中最后一次和指定的字符匹配的字符的下标。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">FindOneOf()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在字符串中查找第一个和指定的字符匹配的字符。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetBuffer()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得指向</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象内字符的指针。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetBufferSetLength()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获得指向</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象内字符的指针，但是只能截取指定长度的字符。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">ReleaseBuffer()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">释放在缓冲区内由</FONT><FONT SIZE=3>GetBuffer()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数返回的字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">LockBuffer()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">复制字符串，并将其锁入缓冲区。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">UnlockBuffer()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">将调用</FONT><FONT SIZE=3>LockBuffer()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数锁入缓冲区的字符串解锁。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">LoadString()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">从一个</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>资源加载一个已经存在的</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+<P ALIGN="JUSTIFY">下面用几个例子来上读者体会一个</FONT><FONT SIZE=3>CString</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的好处。</P><DIR>
+
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P>示例</FONT><FONT FACE="Arial" SIZE=3>1</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>：连结字符串</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CString m_str1="工作";</P>
+<P>CString m_str2="正常";</P>
+<P>CString m_str3=m_str1+m_str2;</P>
+<P>AfxMessageBox(m_str3);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">运行结果如图</FONT><FONT SIZE=3>10.12</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+<P ALIGN="CENTER"><IMG SRC="Image303.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image303.gif" WIDTH=67 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 12 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>连结字符串</P><DIR>
+
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P>示例</FONT><FONT FACE="Arial" SIZE=3>2</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>：比较字符串</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CString m_str1="a";</P>
+<P>CString m_str2="b";</P>
+<P>int result=m_str1.Compare(m_str2);</P>
+<P>if(result=0)</P>
+<P>&#9;AfxMessageBox("两者相同");</P>
+<P>else if(result&gt;0)</P>
+<P>&#9;AfxMessageBox("m_str1大于m_str2");</P>
+<P>else</P>
+<P>&#9;AfxMessageBox("m_str1小于m_str2");</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">运行结果如图</FONT><FONT SIZE=3>10.13</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。两个字符串比较大小时从第一个字母开始，按照对应的</FONT><FONT SIZE=3>ASCII</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>值比较。如果第一个字母相同，再比较下一个字母。依次往下直到比较出大小为止。</P>
+<P ALIGN="CENTER"><IMG SRC="Image304.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image304.gif" WIDTH=111 HEIGHT=74></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 13 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>比较字符串</P><DIR>
+
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P>示例</FONT><FONT FACE="Arial" SIZE=3>3</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>：提取字符串</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CString m_str1="aabcc";</P>
+<P>CString m_str2=m_str1.Left(1)+m_str1.Mid(2,1)+m_str1.Right(1);</P>
+<P>AfxMessageBox(m_str2);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="CENTER"><IMG SRC="Image305.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image305.gif" WIDTH=67 HEIGHT=74></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 14 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>提取字符串</P><DIR>
+
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P>示例</FONT><FONT FACE="Arial" SIZE=3>4</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>：查找字符串</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CString m_str1="abcdef";</P>
+<P>CString m_str2="deq";</P>
+<P>int index=m_str1.Find(m_str2);</P>
+<P>if(index&gt;=0)</P>
+<P>{</P>
+<P>&#9;char s[10];</P>
+<P>&#9;wsprintf(s,"匹配字符的下标为%d",index);</P>
+<P>&#9;MessageBox(s);</P>
+<P>}</P>
+<P>else </P>
+<P>&#9;MessageBox("没有匹配字符");</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">运行结果如图</FONT><FONT SIZE=3>10.15</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image306.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image306.gif" WIDTH=85 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 15 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>查找字符串</P><DIR>
+
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P>示例</FONT><FONT FACE="Arial" SIZE=3>5</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>：变换字符串</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CString m_str="  ABCabc    ";</P>
+<P>m_str.TrimLeft();</P>
+<P>m_str.TrimRight();</P>
+<P>m_str.MakeUpper();</P>
+<P>MessageBox(m_str);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="CENTER"><IMG SRC="Image307.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image307.gif" WIDTH=67 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 16 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>提取字符串</P><DIR>
+<DIR>
+<DIR>
+
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698727">第五节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>日期和时间类</A></P></DIR>
+</DIR>
+</DIR>
+
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供了两个日期和时间类</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CTimeSpan,</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>分别代表相对时间和绝对时间。</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是基于格林威治平均时间（</FONT><FONT SIZE=3>GMT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）的，本地的时间由环境变量</FONT><FONT SIZE=3>TZ</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>决定。</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代表了时间间隔。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类由下列成员函数：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CTime()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">创建一个</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetCurrentTime()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">由当前时间创建一个</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetTime()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">由</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象返回一个</FONT><FONT SIZE=3>time_t</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>变量。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetYear()</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">获取</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表的年。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetMonth</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）</P>
+<P ALIGN="JUSTIFY">获取</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表的月。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetDay()  </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获取</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表的日期。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetHour() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获取</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表的小时。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetMinute()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获取</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表的分。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetSecond() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获取</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表的秒。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetDayOfWeek() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获取</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表的周日，</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代表周日，</FONT><FONT SIZE=3>2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代表周</FONT><FONT SIZE=3>-</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>等等。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Format() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将字符串转换成一个基于本地时区的格式字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">FormatGmt() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将字符串转换成一个基于</FONT><FONT SIZE=3>UTC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（世界时）的格式字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator = </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>赋予新的时间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator + </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>增加</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator – </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>减小</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator += CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象加一个</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator -= CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象减一个</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator == </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比较两个绝对时间是否相等。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator != </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比较两个绝对时间是否不相等。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator &lt;  </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比较两个绝对时间，是否前一个大于后一个。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator &gt;  </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比较两个绝对时间，是否前一个小于后一个。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator &gt;= </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比较两个绝对时间，是否前一个大于等于后一个。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator &lt;= </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比较两个绝对时间，是否前一个小于等于后一个。</P>
+<P ALIGN="JUSTIFY">下面用几个例子来看看如何使用</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>操作时间。</P><DIR>
+
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P>示例</FONT><FONT FACE="Arial" SIZE=3>1</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>：获取当前时间</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CTime m_time=CTime::GetCurrentTime();</P>
+<P>CString s=m_time.Format("%A,%B,%d,%Y");</P>
+<P>CString m_strTime="当前时间是："+s;</P>
+<P>MessageBox(m_strTime);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">运行结果如图</FONT><FONT SIZE=3>10.17</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。有关</FONT><FONT SIZE=3>Format()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中的参数在下面的示例中介绍。</P>
+<P ALIGN="CENTER"><IMG SRC="Image308.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image308.gif" WIDTH=139 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 17 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>获取当前时间</P><DIR>
+
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P>示例</FONT><FONT FACE="Arial" SIZE=3>2</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>：由年、月、日得到对应的周日。</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CTime m_time(1998,7,20,12,0,0);</P>
+<P>int weekday=m_time.GetDayOfWeek();</P>
+<P>switch(weekday)</P>
+<P>{</P>
+<P>case 1:</P>
+<P>&#9;MessageBox("今天是周日");</P>
+<P>&#9;break;</P>
+<P>case 2:</P>
+<P>&#9;MessageBox("今天是周一");</P>
+<P>&#9;break;</P>
+<P>case 3:</P>
+<P>&#9;MessageBox("今天是周二");</P>
+<P>&#9;break;</P>
+<P>case 4:</P>
+<P>&#9;MessageBox("今天是周三");</P>
+<P>&#9;break;</P>
+<P>case 5:</P>
+<P>&#9;MessageBox("今天是周四");</P>
+<P>&#9;break;</P>
+<P>case 6:</P>
+<P>&#9;MessageBox("今天是周五");</P>
+<P>&#9;break;</P>
+<P>case 7:</P>
+<P>&#9;MessageBox("今天是周六");</P>
+<P>&#9;break;</P>
+<P>default:</P>
+<P>&#9;break;</P>
+<P>&#9;}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">运行结果如图</FONT><FONT SIZE=3>10.18</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，代码准确的给出了</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象代表周几。</P>
+<P ALIGN="CENTER"><IMG SRC="Image309.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image309.gif" WIDTH=67 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 18 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>获取CTime对象代表周几</P><DIR>
+
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P>示例</FONT><FONT FACE="Arial" SIZE=3>3</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>：将</FONT><FONT FACE="Arial" SIZE=3>CTime</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>对象转换成格式字符串。</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">通过使用</FONT><FONT SIZE=3>Format()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数来实现</FONT><FONT SIZE=3>CTime</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象转换成格式字符串。所以在看这个例子之前，先看一下</FONT><FONT SIZE=3>Format()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数的参数，由下列参数：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%a </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>简写的日期名，例如</FONT><FONT SIZE=3>Sat</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代表</FONT><FONT SIZE=3>Saturday</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%A </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>日期名，不简写。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%b </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>简写的月名，例如</FONT><FONT SIZE=3>Mar</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代表</FONT><FONT SIZE=3>March</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%B </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>月名，不简写。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%c </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>地区化的日期和时间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%d </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>月中的天数，值在</FONT><FONT SIZE=3>01</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>31</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%H 24</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>小时格式的小时数，值在</FONT><FONT SIZE=3>00</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>23</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%I </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>通常的</FONT><FONT SIZE=3>12</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>小时格式的小时数，值在</FONT><FONT SIZE=3>01</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>12</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%j </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>年中的天数，值在</FONT><FONT SIZE=3>001</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>366</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%m </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>月数，值在</FONT><FONT SIZE=3>01</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>12</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%M </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>分钟数，值在</FONT><FONT SIZE=3>00</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>59</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%p </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>由</FONT><FONT SIZE=3>12</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>小时格式的时钟指示的</FONT><FONT SIZE=3>a.m./p.m.</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（上午</FONT><FONT SIZE=3>/</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>下午）。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%S </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>秒数，值在</FONT><FONT SIZE=3>00</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>59</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%U </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>年中的周数，值在</FONT><FONT SIZE=3>00</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>51</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间，以周日为一周的第一天。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%w </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>周中的日期数，值在</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>6</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间，其中</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为周日。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%W </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>年中的周数，值在</FONT><FONT SIZE=3>00</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>51</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间，以周一为一周的第一天。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%x </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>本地化的日期表示。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%X </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>本地化的时间表示。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%y </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不带年代前缀的年数，值在</FONT><FONT SIZE=3>00</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>99</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%Y </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>带年代前缀的年数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%z </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>简写的时区名称。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%Z </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不简写的时区名称。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">%% </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>百分号标志。</P>
+<P ALIGN="JUSTIFY">这个程序的代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CTime m_time=CTime::GetCurrentTime();</P>
+<P>CString s1=m_time.Format("%A,%B,%d,%Y");</P>
+<P>CString s2=m_time.Format("%U");</P>
+<P>CString m_str="当前时间是："+s1+"\n"+"本周是今年的第"+s2+"周";</P>
+<P>MessageBox(m_str);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">运行结果如图</FONT><FONT SIZE=3>10.19</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image310.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image310.gif" WIDTH=215 HEIGHT=111></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 19 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>显示当前时间</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类由下列成员函数：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CTimeSpan() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>构造一个</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetDays() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类对象中包含的完整的天数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetHours() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得当天的小时数，值在</FONT><FONT SIZE=3>-23</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>23</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetTotalHours()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类对象中包含的完整的小时数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetMinutes() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得当前小时包含的分数，值在</FONT><FONT SIZE=3>-59</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>59</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetTotalMinutes() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类对象中包含的完整的分数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetSeconds() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得当前分钟包含的秒数，值在</FONT><FONT SIZE=3>-59</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>59</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之间。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">GetTotalSeconds()  </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类对象中包含的完整的秒数。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Format() </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将一个</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象转换成格式字符串。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator = </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>赋予新的时间范围值。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator </FONT><FONT FACE="Symbol" SIZE=3>????</FONT><FONT SIZE=3> </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>增加或减小</FONT><FONT SIZE=3>CTimsSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator </FONT><FONT FACE="Symbol" SIZE=3>???????</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象增加或减去一个</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">operator </FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT FACE="Symbol" SIZE=3>?</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT FACE="Symbol" SIZE=3>?</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT SIZE=3> </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比较两个</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的大小。</P>
+<P ALIGN="JUSTIFY">下面的程序将构造一个</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，并获取其中的完整天数、小时数、分数和秒数，代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CTimeSpan m_timespan(3,4,5,6);</P>
+<P>//构造一个CTimeSpan对象</P>
+<P>LONG m_totalDays=m_timespan.GetDays();</P>
+<P>//获得完整天数</P>
+<P>LONG m_totalHours=m_timespan.GetTotalHours();</P>
+<P>//获得完整小时数</P>
+<P>LONG m_totalMinutes=m_timespan.GetTotalMinutes();</P>
+<P>//获得完整分数</P>
+<P>LONG m_totalSeconds=m_timespan.GetTotalSeconds();</P>
+<P>//获得完整秒数</P>
+<P>char s1[8],s2[8],s3[8],s4[8];</P>
+<P>wsprintf(s1,"%ld",m_totalDays);</P>
+<P>wsprintf(s2,"%ld",m_totalHours);</P>
+<P>wsprintf(s3,"%ld",m_totalMinutes);</P>
+<P>wsprintf(s4,"%ld",m_totalSeconds);</P>
+<P>CString m_str="此时间范围包含：\n完整天数  :"+CString(s1)+</P>
+<P>&#9;"\n完整小时数:"+CString(s2)+"\n完整分数  :"+CString(s3)+</P>
+<P>&#9;"\n完整秒数  :"+CString(s4);</P>
+<P>MessageBox(m_str);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="CENTER"><IMG SRC="Image311.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image311.gif" WIDTH=85 HEIGHT=99></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>10. 20 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>获取时间范围量包含的天、小时、分和秒数</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这段代码主要让读者体会使用</FONT><FONT SIZE=3>CTimeSpan</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>处理时间范围量的便捷。运行结果如图</FONT><FONT SIZE=3>10.20</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示，消息框中显示了希望获得的信息。</P></FONT></BODY>
+</HTML>

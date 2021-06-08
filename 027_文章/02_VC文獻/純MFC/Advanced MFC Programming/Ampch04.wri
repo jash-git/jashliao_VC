@@ -1,0 +1,491 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab720{\fonttbl{\f0\fswiss MS Sans Serif;}{\f1\froman\fcharset2 Symbol;}{\f2\fmodern Courier New;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033\pard\plain\f2\fs20 Chapter 4 Buttons
+\par 
+\par Button is one of the most commonly used controls, almost every application needs to include one or more buttons. It seems that it is very easy to implement a standard button in a dialog box: all we need to do is adding a button resource to the dialog template, then using Class Wizard to generate message handlers. However, it is not very easy to further customize button's default properties.
+\par 
+\par In this chapter, we will discuss how to implement different type of customized buttons. At the end of this chapter, we will be able to include some eye-catching buttons in our applications.
+\par 
+\par 4.1\tab Bitmap Button: Automatic Method
+\par 
+\par Generally, buttons display plain text on its interface. Sometimes it is more desirable to let them have graphic user interface. A typical application that uses this type of buttons would be a CD player, everyone would like the play button to have a graphic interface instead of just displaying text such as "play", "stop" (so that it looks like a real "play" button).
+\par 
+\par Button States
+\par 
+\par Before customizing button's default feature, it is important for us to understand some basics of buttons. Every button has four states. When a button is not clicked, is in "up" state (the most common state). When it is pressed down, it is in "down" state. To emphasis a button's 3D effect, a default button will recess when it is pressed by the mouse. Also, a button could be disabled, in this state, the button will not respond to any mouse clicking (As the default implementation, when a button is disabled, it will be drawn with "grayed" effect). Finally, a button has a "focused" or "unfocused" state. In the "focused" state, the button is an active window, and is accessible through using keyboard (ENTER or downward ARROW key). For the default implementation, a rectangle with dashed border will be drawn over a button's face when it has the current focus.
+\par 
+\par Owner-Draw Bitmap Button
+\par 
+\par We can use owner draw bitmap button to add graphics to the button. To distinguish among different states, we need to associate different states with different images if necessary.
+\par 
+\par The simplest way to create this type of button is to implement bitmap button using class CBitmapButton. To create a bitmap button, first we must set its "Owner Draw" style. This can be implemented by checking "Owner Draw" check box in the "Push Button Properties" property sheet when creating the button resource (We need to add button resource in order to create button, this is the same with a normal button. See Figure 4-1). For an owner-draw button, message WM_DRAWITEM will be sent to the button when it needs to be painted (remember, a button is also a window that can receive message). Upon receiving this message, the button will be drawn by the overridden function. For non-owner-draw button, its interface is implemented by the default method, and will display a plain text on the button's face.
+\par 
+\par Class CBitmapButton handles message trapping and processing; also, it contains member functions that can be used to paint the button. If we use this class to implement bitmaps buttons, all we need to do is preparing some bitmap resources, declaring variables using class CBitmapButton, and associating bitmap resources with the corresponding buttons.
+\par 
+\par Although every button has four states, we do not need to provide four bitmaps all the time. If one of the bitmaps is not available, class CBitmapButton will draw the button's corresponding state using the default bitmap, which is the bitmap associated with button's "up" state. So the bitmap used to represent a button's "up" state is required all the time and can not be omitted.
+\par 
+\par Automatic Method
+\par 
+\par We have two ways of associating bitmap images with different states of a bitmap button: we can either let class CBitmapButton handle this automatically or we can do it manually. To use the automatic method, the IDs of all four bitmap resources must be text strings, and must be formed by suffixing one of the following four letters to the button's caption text: 'U', 'D', 'F', 'X'. These letters represent "up", "down", "focused" and "disabled" state respectively. By naming the resource IDs this way, the rest thing we need to do is calling function CBitmapButton::AutoLoad() in the dialog box's initialization stage (within member function CDialog::OnInitDialog()). Please note that we cannot call this function in the constructor of class CDialog. At that time, the dialog box window is still not created (Therefore, the buttons are still not available), and the bitmaps cannot be associated with the button correctly.
+\par 
+\par Sample
+\par 
+\par Sample 4.1\\Btn demonstrates how to create bitmap button using automatic method. It is a dialog-based application that is generated by the Application Wizard. First, the ID of default dialog template is changed to IDD_DIALOG_BTN. Also, the "OK" and "Cancel" buttons originally included in the template are deleted. Then a new button IDC_PLAY is added, whose caption text is set to "Play" (Figure 4-2). Since the button will be drawn using the bitmaps, it doesn't matter how big the button resource is. Besides this, we need to set button's style to "Owner draw".
+\par 
+\par Two bitmap resources are added to the application whose IDs are "PLAYU" and "PLAYD" respectively (Figure 4-3). They correspond to button's "up" and "down" states. In addition, the sizes of the two bitmaps are exactly the same.
+\par 
+\par A CBitmapButton type variable is declared in class CBtnDlg to implement this bitmap button:
+\par 
+\par class CBtnDlg : public CDialog
+\par \{
+\par ......
+\par protected:
+\par ......
+\par     CBitmapButton m_btnPlay;
+\par ......
+\par \};
+\par 
+\par Within function CBtnDlg::OnInitDialog(), function CBitmapButton::AutoLoad(...) is called to initialize the bitmap button and associate it with the corresponding bitmap resources. After this call, we don't need to do anything. The bitmap button will be created and its states will be set automatically:
+\par 
+\par BOOL CBtnDlg::OnInitDialog()
+\par \{
+\par ......
+\par     m_btnPlay.AutoLoad(IDC_PLAY, this);
+\par ......
+\par \}
+\par 
+\par Function CBitmapButton::AutoLoad(...) has two parameters, first of which is the button's resource ID, and the second is a pointer to the button's parent window.
+\par In the sample application only two bitmap images are prepared. We may add two other bitmaps whose IDs are "PLAYF" and "PLAYX". Then we can enable or disable the button to see what will happen to the button's interface.
+\par 
+\par 4.2\tab Bitmap Check Box and Radio Button: Method 1
+\par 
+\par The bitmap button implemented this way behaves like a push button. Unfortunately, in MFC, there is no class such as CBitmapCheckBox and CBitmapRadioButton to let us implement bitmap check box or radio button. However, check box and radio button are another two types of buttons, both of them can be implemented using class CButton.
+\par 
+\par A button implemented by class CButton can display either plain text or bitmap. Actually, there is a member function of CButton that allows us to associate button with a bitmap: CButton::SetBitmap(...).
+\par 
+\par If a button implemented by class CButton can also be associated with a bitmap, what is the difference between CBitmapButton and CButton? First, CBitmapButton is derived from CButton, so it has more features than CButton. For example, with CBitmapButton, we can use automatic method to associate button with bitmap resources by calling function CBitmapButton::AutoLoad(...). Second, CButton allows only one bitmap to be associated with a button at any time, and it always implement the focus state of the button by drawing a dash-bordered rectangle over button's face.
+\par 
+\par Although only one bitmap could be associated with a button at any time, we still can manage to represent a button's different states using different bitmaps.
+\par The trick here is to change button's associated bitmap whenever its state changes. To achieve this, we must implement a WM_COMMAND message handler for the button. For example, in the case of check box, we can find out whether the current state of the check box is "Checked" or "Unchecked". Based on this information, we can decide which bitmap should be used.
+\par 
+\par Sample 4.2\\Btn demonstrates the above method. It is based on sample 4.1\\Btn. In the sample, three new buttons are added: one of them is implemented as a check box; the rest are implemented as radio buttons. The following describes how the bitmap check box and radio buttons are implemented in the sample:
+\par 
+\par 1)  Add a check box and two radio buttons to the dialog template. Name the IDs of new controls  IDC_CHECK, IDC_RADIO_A and IDC_RADIO_B respectively. In the property sheet that lets us customize control's properties, check "Bitmap" check box (Figure 4-4).
+\par 
+\par (Figure omitted)
+\par 
+\par 2)  Add two bitmap resources, one for checked state and one for unchecked state. Their resource IDs are ID_BITMAP_CHECK and ID_BITMAO_UNCHECK respectively. The bitmaps must have a same size.
+\par 
+\par 3)  Declare two CBitmap type variables m_bmpCheck and m_bmpUnCheck in class CBtnDlg, in function CBtnDlg::OnInitDlg(), call CBitmap::LoadBitmap(...) to load the two bitmap resources. Then call function CButton::SetBitmap(...) to set bitmap for the check box and radio buttons. In the sample, all of the new controls are initialized to unchecked state (In order to do this, we need to associate buttons with m_bmpUnCheck instead of m_bmpCheck). The following code fragment shows the modified class CBtnDlg and the function CBtnDlg::OnInitDialog(...):
+\par 
+\par (Code omitted)
+\par 
+\par 4)  Declare a new member function CBtnDlg::SetCheckBitmap(...). We will use it to set a button's bitmap according to its current state. The function has one parameter nID that identifies the control. Within the function, first the button's current state is examined, if it is checked, we call CButton::SetBitmap(...) to associate it with IDB_BITMAP_CHECK; otherwise we use bitmap IDB_BITMAP_UNCHECK. The following is the implementation of this function:
+\par 
+\par (Code omitted)
+\par 
+\par 5)  Use Class Wizard to implement three WM_COMMAND message handlers for IDC_CHECK, IDC_RADIO_A and IDC_RADIO_B. Within each handler, we call CBtnDlg::SetCheckBitmap(...) to set appropriate bitmaps. Because two radio buttons should be treated as a group (if one is checked, the other one will be unchecked automatically), we need to set both button's bitmaps within each message handler:
+\par 
+\par (Code omitted)
+\par 
+\par In step 3, when calling CWnd::GetDlgItem(...), we pass the control's resource ID to the function to obtain a pointer to the control and use it to call function CButton::SetBitmap(...). Because CWnd::GetDlgItem(...) will return a CWnd type pointer, we must first cast it to CButton type pointer before calling the member function of CButton.
+\par 
+\par Function Cbutton::SetBitmap(...) has an HBITMAP type parameter, which requires a valid bitmap handle. A bitmap handle can be obtained by calling function CBitmap::GetSafeHandle(), of course, the returned handle is valid only after the bitmap is loaded.
+\par 
+\par In step 4, function CButton::GetCheck() is called to retrieve button's current state (checked or unchecked). The function returns a Boolean type value, if the returned value is TRUE, the button is being checked, otherwise it is not checked.
+\par After these modifications, the bitmap check box and radio buttons will become functional.
+\par 
+\par 4.3\tab Subclass
+\par 
+\par In section 4.1, we used automatic method to create bitmap buttons. This requires us to create owner-draw buttons with special caption text, which will be used to name the bitmap resource IDs. For simple cases, this is a very convenient method. However, if we implement bitmap buttons this way, it is difficult for us to customize them at runtime.
+\par 
+\par Implementing Subclass
+\par 
+\par Class CBitmapButton gives us another member function that can be used to associate bitmaps with an owner-draw button: CBitmapButton::LoadBitmaps(...). This function has two versions, the first version allows us to load bitmaps with string IDs, the second version allows us to load bitmaps with integer IDs.
+\par 
+\par To use this function, we must first implement subclass for the owner-draw button. "Subclass" is a very powerful technique in Windows? programming. It allows us to write a procedure, attach it to a window, and use it to intercept messages sent to this window then process it. By doing this, we are able to customize the window's behavior within the procedure.
+\par 
+\par Subclass is supported by class CWnd, so theoretically all windows (including client window, dialog box, dialog common controls...) can be "subclassed". There are two functions to implement subclass, one is CWnd::SubclassWindow(...), which allows us to customize the normal behavior of a window. Here we will use the other one: CWnd::SubclassDlgItem(...), which is specially designed to implement subclass for the common controls contained in a dialog box.
+\par 
+\par In MFC, implementing subclass is very simple. We don't need to write a special procedure to handle the intercepted messages. All we need to do is designing a class as usual, adding message handlers for the messages we want to process, and implementing the message handlers. Then we can declare a variable using the newly designed class, and call function CWnd::SubclassDlgItem(...) to implement subclass.
+\par Function CWnd::SubclassDlgItem(...) has two parameters:
+\par 
+\par BOOL CWnd::SubclassDlgItem(UINT nID, CWnd *pParent);
+\par 
+\par Parameter nID indicates which control we are dealing with, and pParent is the pointer to the control's parent window.
+\par 
+\par Class CBitmapButton uses subclass to change the default behavior of a button. If we use automatic method to load the bitmaps, the subclass procedure is transparent to the programmer. However, if we want to load the bitmaps by ourselves, we must implement subclass first.
+\par 
+\par Bitmap Button
+\par 
+\par Sample 4.3\\Btn demonstrates how to associate bitmaps with an owner draw button by calling function CBitmapButton::LoadBitmaps(...). It is based on sample 4.2\\Btn. There is nothing new in this sample, except that button IDC_PLAY is implemented differently.
+\par 
+\par In the previous samples, variable CBtnDlg::m_btnPlay is declared as a CBitmapButton type variable. In the new sample, instead of using automatic method to load the bitmaps, we first implement the subclass then load the bitmaps manually in function CBitmapButton::LoadBitmaps(...):
+\par 
+\par (Code omitted)
+\par 
+\par Here, function CBitmapButton::AutoLoad(...) is replaced by three new functions. The first function added is CWnd::SubclassDlgItem(...). The second function is CBitmapButton::LoadBitmaps(...). This function has four parameters, which are the bitmap IDs corresponding to button's "Up", "Down", "Focused" and "Disabled" states respectively. They could be either string IDs or integer IDs. The last function is CBitmap::SizeToContent(), which allows us to set bitmap button's size to the size of the associated bitmaps. If we don't call this function, the bitmaps may not fit well into the button.
+\par 
+\par Now we can remove or modify bitmap button IDC_PLAY's caption text "Play. Actually, it doesn't matter if the button has caption text or not. By compiling the application and executing it at this point, we will see that the bitmap button implemented here is exactly the same as the one implemented in the previous sample.
+\par 
+\par 4.4\tab Bitmap Check Box and Radio Button: Method 2
+\par 
+\par In sample 4.2\\Btn, although we can represent the checked and unchecked states of a check box or a radio button using different bitmaps, we could not customize their "focused" state. When a button has the current focus, a rectangle with dashed border will always be put over button's face (Figure 4-5). This is because we use CButton instead of CBitmapButton to implement buttons, this allows only one bitmap to be associated with a button.
+\par 
+\par (Figure omitted)
+\par 
+\par To improve this, we can use class CBitmapButton to create both check box and radio button. By doing this, the button's focused state will be implemented using the bitmap image provided by the programmer instead of drawing a rectangle with dashed border over button's face. Since class CBitmapButton supports only push button implementation, we need to change the bitmap by ourselves to imitate check box and radio button.
+\par 
+\par Sample 4.4\\Btn is based on sample 4.3\\Btn. In this sample, three new buttons are added to the dialog template: one will be implemented as a check box; the other two will be implemented as radio buttons. All of them will be based on class CBitmapButton.
+\par 
+\par First, we need a Boolean type variable for each check box and radio button to represent its current state. This variable toggles between TRUE and FALSE, indicating if the button is currently checked or unchecked. When the state of a button changes, we re-associate the button with an alternate bitmap and paint the bitmap button again.
+\par 
+\par Since we use push button to implement check box and radio button, we can not call function CButton::GetCheck(...) to examine if the button is currently checked or not. This is because a push button will automatically resume to the "up" state after the mouse is released.
+\par 
+\par In the sample application, three new buttons are added to the dialog template IDD_BTN_DIALOG, and their corresponding IDs are IDC_BMP_CHECK, IDC_BMP_RADIO_A, IDC_BMP_RADIO_B respectively. Also, they all have a "Owner draw" style. Besides the new controls, two new bitmap resources are also added to the application, which will be used to implement button's "Checked" and "Unchecked" states. The IDs of the new bitmap resources are IDB_BITMAP_BTNCHECK and IDB_BITMAP_BTNUNCHECK. The difference between the new bitmaps and two old ones (whose IDs are IDB_BITMAP_CHECK and IDB_BITMAP_UNCHECK) is that the new bitmaps have a 3-D effect. In sample 4.2\\Btn, the check box and radio buttons are implemented using class CButton, which automatically adds 3-D effect to the controls. Since we want the controls to be implemented solely by programmer-provided bitmaps, we need to add 3-D effect by ourselves.
+\par 
+\par In the sample application, three new CBitmapButton type variables are declared in class CBtnDlg. Also, a new member function SetRadioBitmap() is added to associate bitmaps with the two radio buttons. This function will be called when one of the radio buttons is clicked by mouse. For the check box, associating bitmap with it is relatively simple, so it is implemented within the message handler. Besides this, a new Boolean type variable CBtnDlg::m_bBmpCheck is declared to indicate the current state of the check box, and an unsigned integer CBtnDlg::m_uBmpRadio is declared to indicate which radio button is being selected. For each button, WM_COMMAND message handler is added through using Class Wizard. These message handlers are CBtnDlg::OnBmpCheck(), CBtnDlg::OnBmpRadioA() and CBtnDlg::OnBmpRadioB() respectively. The following code fragment shows the new members added to the class:
+\par 
+\par (Code omitted)
+\par 
+\par In the constructor of CBtnDlg, variable CBtnDlg::m_bBmpCheck is initialized to FALSE and CBtnDlg::m_uBmpRadio is initialized to zero. This means the original state of the check box is unchecked, and no radio button is selected:
+\par 
+\par CBtnDlg::CBtnDlg(CWnd* pParent /*=NULL*/)
+\par \tab : CDialog(CBtnDlg::IDD, pParent)
+\par \{
+\par ......
+\par     m_bBmpCheck=FALSE;
+\par     m_uBmpRadio=0;
+\par \}
+\par 
+\par In the dialog initialization stage, subclass is implemented for buttons, then the corresponding bitmaps are loaded:
+\par 
+\par (Code omitted)
+\par 
+\par For each button, first we implement subclass for it, then we load the bitmap by calling function CBitmapButton::LoadBitmaps(...). Because we provide only one bitmap for each control, state transition of these buttons (e.g., normal state to focused state) will not be reflected to the interface unless we add extra code to handle it.
+\par 
+\par For check box IDC_BMP_CHECK, when it is clicked by the mouse's left button, we need to toggle the value of variable CBtnDlg::m_bCheck, load the corresponding bitmap and paint the button again. The following is the WM_DOMMAND message handler for check box:
+\par 
+\par (Code omitted)
+\par 
+\par Radio buttons are slightly different. When one radio button is checked, the other button should be unchecked. So within both CBtnDlg::OnBmpRadioA() and CBtnDlg::OnBmpRadioB(), function CBtnDlg:: SetRadioBitmap() is called to set bitmaps for both radio buttons:
+\par 
+\par (Code omitted)
+\par 
+\par When the user clicks one of the radio buttons, its resource ID is assigned to variable CBtnDlg::m_uBmpRadio. Then in function CBtnDlg::SetRadioBitmap(), this variable is compared to both radio button IDs. Bitmap IDB_BITMAP_BTNCHECK will be associated to the button whose ID is currently stored in variable CBtnDlg::m_uBmpRadio. For the other button, bitmap IDB_BITMAP_BTNUNCHECK will be loaded.
+\par 
+\par The appearance of our new check box and radio buttons is almost the same with that of old ones implemented in sample 4.2\\Btn. However, here the rectangle with dashed border will not be put over a button's face when the button has the current focus (Figure 4-6).
+\par 
+\par (Figure omitted)
+\par 
+\par 4.5\tab Irregular Shape Bitmap Button
+\par 
+\par Transparent Background
+\par 
+\par Up to now all the buttons created by us have a rectangular shape. It is relatively difficult to create a button with irregular shapes (e.g., a round button). Even for bitmap buttons, their associated bitmaps are always rectangular.
+\par 
+\par We may think that by setting the bitmap's background color to the color of the dialog box, the bitmap button may look like a non-rectangular button. For example, in the previous samples, button IDC_PLAY is made up of two regions: its foreground is the triangular region, and rest area can be treated as its background (Figure 4-7). We can change the background color to the color of the dialog box so that this area appears transparent to us when the bitmap button is implemented.
+\par 
+\par However, this is not the best solution. In Windows? operating system, the color of dialog box can be customized. The user can double click "Display" icon contained in the "Control Panel" window and set the colors for many objects, which include title bar, backdrop..., and so on. So actually we have no way of knowing the color of dialog box beforehand. If we implement a bitmap button and set its background color to the dialog box color in our system, it may not work properly in another system.
+\par 
+\par To draw a bitmap with transparent background, we need to use "mask" when painting the bitmap. We can imagine a mask as a matrix with the same dimension of the bitmap image, and each element in the matrix corresponds to a pixel contained in the bitmap. The elements in the matrix may be either "0" or "1". When we paint the bitmap, only those pixels with "0" masks are output to the device (we can also use "1" to indicate the pixels that need to be drawn).
+\par When programming the application, we can prepare two bitmaps of exactly the same size: one stores the normal image, the other one stores mask. The mask bitmap is made up of only two types of pixels: black and white. This is because for black color, its RGB elements are all 0s; for white color, the elements are all 1s. By implementing the mask bitmap like this, the background area of the mask bitmap is white and the foreground area is black.
+\par 
+\par Windows allows us to output the pixels of a bitmap to the target device using different operation mode. We can copy a pixel directly to the target device, we can also combine a pixel contained in the bitmap with the pixel contained in the target device using various mode: bit-wise OR, AND, and XOR. For example, if we combine red color (RGB(255, 0, 0)) with green color (RGB(0, 255, 0)) using bit-wise AND operation, the output will be yellow color (RGB(255, 255, 0)).
+\par When painting the bitmap, we first need to output the normal bitmap to the target device using bit-wise XOR drawing mode, then output the mask bitmap to the target device at the same position using bit-wise AND mode. Finally we can output the normal bitmap again using bit-wise XOR mode. By doing this, the output bitmap's background will become transparent.
+\par 
+\par The reason for this is simple. Before bitmap is painted, the target device may contain a uniform color or any image pattern. After normal bitmap is first painted, the foreground area of the target device will become the combination of source image pattern and target image pattern. After we output mask bitmap using bit-wise AND operation, the foreground area of the target device will become black. This means on the target device, every pixel in the foreground area is zero now. Since we use bit-wise XOR mode to output normal image in the last step, and XORing anything with zero will not change the source, the foreground area on the target device will finally contain the pattern of the source image. For mask area, the second ANDing operation doesn't make any change to it because ANDing a pixel with white color (all 1s) doesn't change that pixel. So the overall operations on the mask region is equivalent to two consecutive XOR operations, which will resume all the pixels in this region to their original colors.
+\par 
+\par However there is still a slight problem here: if we draw the source and mask bitmaps directly to the target device using the method mentioned above, we will see a quick flicker on the mask area of the target device. Although it lasts only for a very short period, it is an undesirable effect. To overcome this, we can prepare a bitmap in the memory, copy the target image pattern to this bitmap, do the transparent painting on the memory bitmap, and copy the final result back to the target. Since the background area of the memory bitmap has the same pattern with the background area of the target device, this final copy will not cause any flicker.
+\par 
+\par To customize the drawing behavior of bitmap button, we need to override function CBitmapButton::OnDrawItem(...). For an owner-draw button, this function will be called when a button needs to be updated. Actually, menu and combo box also use similar functions. We can create an owner draw menu or combo box by overriding the member functions with the same name. For these functions, their parameters are all pointers to DRAWITEMSTRUCT type object. This structure stores information such as button's current state (i.e. focused, disabled), the device context that can be used to implement drawing, and the rectangle indicating where we can output the image pattern.
+\par 
+\par New Class
+\par 
+\par Sample 4.5\\Btn is based on sample 4.4\\Btn, it demonstrates how to create bitmap buttons with transparent background. In this sample, a new class MCBitmapButton is derived from CBitmapButton. Besides the default properties inherited from base class, the following new features are added to this class:
+\par 
+\par 1)  The new class handles transparent background drawing automatically. Programmer can prepare a black-and-white mask bitmap and associate it with the bitmap button together with other required bitmaps. The drawing will be taken care in the member function of the class. Programmer doesn't need to add extra code.
+\par 
+\par 2)  The mask bitmap can be loaded along with other images by calling either AutoLoad(...) or LoadBitmaps(...).
+\par 
+\par 3)  Function AutoLoad(...) is overridden to load the mask image automatically. In this case, the mask bitmap must have a string ID that is created by suffixing an 'M' character to button's caption text. For example, if we want to create mask bitmap for a button whose caption text is "PLAY", the ID of the mask bitmap must be "PLAYM". If we load the mask bitmap using automatic method, there is no difference between using the new class and CBitmapButton.
+\par 
+\par 4)  Mask bitmap could also be loaded by calling function LoadBitmaps(...). The overridden function has five parameters, the last of which is the ID of the mask bitmap.
+\par 
+\par 5)  If the mask bitmap is not present, the bitmap will be output directly to the target device using the default implementation.
+\par 
+\par In the sample, a mask bitmap "PLAYM" is added to the application. It will be used to draw button IDC_PLAY with transparent background.
+\par 
+\par The new class derived from CBitmapButton is MCBitmapButton. In this class, a new CBitmap type variable m_bitmapMask is added to load the mask bitmap, also, functions AutoLoad(...) and LoadBitmaps(...) are overridden. The following code fragment shows this new class:
+\par 
+\par (Code omitted)
+\par 
+\par Function LoadBitmaps(...) has two versions, one is used to load bitmaps with string IDs, the other is used to load bitmaps with integer IDs. Both functions have five parameters.
+\par 
+\par Overriding Function CBitmapButton::LoadBitmaps(...)
+\par 
+\par When overriding functions, we can utilize the features implemented by the base class to load standard four bitmaps, and add our own code to load the mask bitmap. The following is the implementation of function MCBitmapButton::LoadBitmaps(...):
+\par 
+\par (Code omitted)
+\par 
+\par First we must use variable m_bitmapMask to call function CBitmap::DeleteObject(), which is inherited from class CGdiObject. Since bitmap is a GDI (graphics device interface) object, once it is initialized, it will allocate some memory. If we want to initialize it again, we must first release the previously allocated memory. Function CGdiObject::DeleteObject() can be used for this purpose.
+\par 
+\par Next we call function CBitmapButton::LoadBitmaps(...) to load the default four bitmaps, and see if the mask bitmap is available. If so, we use m_bitmapMask to load the mask bitmap.
+\par 
+\par Overriding Function CBitmapButton::AutoLoad(...)
+\par 
+\par In member function MCBitmapButton::AutoLoad(...), the bitmap resource IDs are obtained by suffixing 'U', 'D', 'F', 'X' or 'M' to button's caption text. With the resource IDs, function MCBitmapButton:: LoadBitmaps(...) is called to load the relevant bitmaps:
+\par 
+\par (Code omitted)
+\par 
+\par The caption text of the button can be retrieved by calling function CWnd::GetWindwoText(...). Actually, every window can have a caption text, which can be an empty string, or any text. We can use this function to retrieve the caption text of any window, for example, a title tar.
+\par 
+\par We need to call functions CWnd::SubclassDlgItem(...) and CBitmapButton::SizeToContent() to change the button's default properties. Actually, the above two functions are also called in function CBitmapButton::AutoLoad(...).
+\par 
+\par Overriding Function CBitmapButton::DrawItem(...)
+\par 
+\par Then we need to implement MCBitmapButton::DrawItem(...). In this member function, we need to check the current state of button, and choose appropriate bitmaps for painting button's face.
+\par 
+\par Class CBitmapButton has four CBitmap type variables: m_bitmap, m_bitmapSel, m_bitmapFocus and m_bitmapDisabled, which are used to store the standard four bitmaps. Because they are not declared as private members, we can access them from the derived classes and use them to paint the button.
+\par 
+\par The only parameter of function CBitmapButton::DrawItem(...) is a pointer to a DRAWITEMSTRUCT type object. When overriding this function, we need to use four members contained in DRAWITEMSTRUCT: itemState, which indicates the current state of the button; hDC, which is the handle to the target device context; rcItem, which is the rectangle specifies the position and size of the output area. Besides these, we also need to check the following bits of member itemState: ODS_SELECTED, ODS_FOCUS, ODS_DISABLED, which indicate if the current state of button is "selected", "focused" or "disabled".
+\par 
+\par At the beginning of the overridden function, we need to declare several CBitmap and CDC type variables or pointers, all of which are used for bitmap drawing:
+\par 
+\par (Code omitted)
+\par 
+\par Three DCs are declared here. To draw a bitmap, we must create a memory DC, select the bitmap into it and copy the bitmap from the memory DC to the target DC. The target could be either a device or a memory block (we could copy bitmap between two memory DCs). A DC can select only one bitmap at any time.
+\par 
+\par When there is no mask bitmap, variable memDC is used to perform normal bitmap drawing: it is used to select the normal bitmap, and copy it directly to the target DC. When there is a mask bitmap, memDC will be used along with memDCMask to implement transparent background drawing.
+\par 
+\par Variable memDCImage is used to act as the target memory DC and implement transparent background drawing. It will be used in conjunction with bmpImage, which will be selected into memDCImage. To draw the bitmap, first we need to copy the image pattern from the target device to the memory bitmap, then copy the source bitmap to the memory bitmap (perform AND and XOR drawings). Finally, we can output the result from the memory bitmap to the target device.
+\par 
+\par Variable bmpImage is used to create bitmap in memory.
+\par 
+\par Variable memDCMask is used to select mask bitmap image.
+\par 
+\par Pointer pDC will be used to store the pointer of the target device context that is created from hDC member of structure DRAWITEMSTRUCT.
+\par 
+\par Pointers pBitmap and pBitmapMask will be used to store the pointers to the normal bitmap (could be one of the bitmaps indicating the four states of the button) and the mask bitmap respectively.
+\par 
+\par The other three CBitmap pointers pOld, pOldMask and pOldImage are used to select the bitmaps out of the DCs (When the bitmaps are being selected into the DCs, these pointers are used to store the bitmaps selected out of the DCs. After bitmap drawing is finished, we can select old bitmaps back into the DCs, this will select our bitmaps out of the DCs automatically).
+\par 
+\par Variable state is used to store the current state of button.
+\par 
+\par The following portion of function MCBitmapButton::DrawItem(...) shows how to choose appropriate bitmaps:
+\par 
+\par (Code omitted)
+\par 
+\par First pBitmap is assigned the address of variable m_bitmap, which holds the default bitmap. Then we check if the mask bitmap exists, if so, we assign its address to pBitmapMask. The current state of the button is read into variable state, whose ODS_SELECTED, ODS_FOCUS and ODS_DISABLED bits are examined in turn. If any of them is set, the corresponding bitmap's address will be stored in pBitmap.
+\par 
+\par The following portion of this function creates the memory DCs and selects relative bitmaps into different DCs:
+\par 
+\par (Code omitted)
+\par 
+\par First, the address of the target DC is obtained from the DC handle by calling function CDC:: FromHandle(...). Then the memory DC that will select source image is created by calling function CDC::CreateCompatibleDC(...). Since the bitmap could be copied only between compatible DCs, each time we create a memory DC, we need to make sure that it is compatible with the target DC. Next, if the mask bitmap exists, we create three DCs: memDC for normal bitmap, memDCMask for mask bitmap and memDCImage for memory target bitmap (It will act as temparory target device DC). In this case, we also create a memory bitmap using variable bmpImage, which is selected into memDCImage (This bitmap must also be compatible with the DC that will select it). In the above implementation, we call function CBitmap::GetBitmap(...) to obtain the dimension information of a bitmap and call function CBitmap::CreateCompatibleBitmap(...) to create compatible memory bitmap). The mask bitmap is selected into memDCMask. The normal bitmap is always selected into memDC.
+\par 
+\par The following portion of function MCBitmapButton::DrawItem(...) draws the bitmap by copying normal and mask bitmaps among different DCs:
+\par 
+\par (Code omitted)
+\par 
+\par Bitmap copy is implemented by calling function CDC::BitBlt(...). This function will copy the selected bitmap from one DC to another. If there is no mask bitmap, we copy the normal bitmap (selected by memDC) directly to the target DC (pointed by pDC). Otherwise, first we copy the image pattern from the target device (pDC) to memory bitmap (selected by memDCImage). Then we copy normal bitmap and mask bitmap (selected by memDC and memDCMask) to this memory bitmap three times, using different operation modes, and copy the final result to the target DC (pDC). At last, we select the bitmaps out of DCs.
+\par 
+\par Using Class MCBitmapButton
+\par 
+\par In sample 4.5\\Btn, automatic method is used to load the mask bitmap. There are two differences between this sample and sample 4.4\\Btn. First, in the new sample, a new bitmap resource "PLAYM" is added to the application that is used as the mask bitmap. Second, variable CBtnDlg::m_btnPlay is declared using MCBitmapButton instead of CBitmapButton (Also, we need to include the header file of MCBitmapButton). No other change is needed.
+\par 
+\par With the above implementation, the button will have a transparent background. We can test this by re-configuring the system colors.
+\par 
+\par 4.6\tab Making Button Aware of Mouse Position
+\par 
+\par By now no button we've made could provide us with information of mouse position when it is pressed. Although most of the time it is not necessary to know the exact coordinates of the mouse cursor, it may help us create more powerful buttons if we have this information. For example, we can create a bitmap button with four arrows pointing to different directions. When the user clicks mouse on different arrows, we can let different commands be executed if we know the current cursor position.
+\par 
+\par Since class CButton is derived from CWnd, and CWnd handles different types of mouse events, we should be able to trap mouse related messages into the member functions of CButton. Actually, all classes derived from CWnd can trap mouse events such as left button down, left button up, left button double click, etc. In order to implement the button described above, we need to trap left button up message, which is defined as WM_LBUTTONUP under Windows.
+\par 
+\par Sample 4.6\\Btn demonstrates how to handle mouse-related message for a button. It is based on sample 4.6\\Btn, with a new button added to the application. The new button has four arrows pointing to different directions, if the user clicks on any of the arrows, a message box will pop up displaying a different message (Figure 4-8).
+\par 
+\par (Figure omitted)
+\par 
+\par Trapping Message WM_LBUTTONUP within Button
+\par 
+\par In the sample, WM_LBUTTONUP message handler is added to class MCBitmapButton. Like trapping any other type of message, in order to handle WM_LBUTTONUP, we need to declare an afx_msg type function and add message mapping macros. If the class is created by Class Wizard, this procedure could be very easy. Otherwise, we must add everything manually.
+\par 
+\par First we need to declare an afx_msg type member function in the class:
+\par 
+\par class MCBitmapButton : public CBitmapButton
+\par \{
+\par ......
+\par protected:
+\par ......
+\par     afx_msg void OnLButtonUp(UINT, CPoint);
+\par ......
+\par     DECLARE_MESSAGE_MAP()
+\par \};
+\par 
+\par There must be a DECLARE_MESSAGE_MAP macro in the class in order to let it support message mapping.
+\par 
+\par The message mapping macros are added to the implementation file as follows:
+\par 
+\par BEGIN_MESSAGE_MAP(MCBitmapButton, CBitmapButton)
+\par     ON_WM_LBUTTONUP()
+\par END_MESSAGE_MAP()
+\par 
+\par Message WM_LBUTTONUP will be trapped to member function MCBitmapButton::OnLButtonUp(...), which has the following format:
+\par 
+\par void MCBitmapButton::OnLButtonUp(UINT nFlags, CPoint point)
+\par \{
+\par \}
+\par 
+\par We see that the mouse position is passed to parameter point of this function.
+\par Because the commands are generally handled in the parent window of the button, we need to resend mouse clicking information from the button to class CBtnDlg. In the sample application, this is implemented through sending a user- defined message.
+\par 
+\par User-Defined Message
+\par 
+\par User defined messages can be treated the same with other standard Windows messages: they can be sent from one window to another, and we can add message handlers for them. All user-defined messages must have a message ID equal to or greater than WM_USER.
+\par 
+\par In the sample, a new message WM_BTNPOS is defined in file "MButton.h":
+\par 
+\par #define WM_BTNPOS\tab WM_USER+1000
+\par 
+\par By doing this, WM_BTNPOS becomes a message that can be used in the application. Please note that this message can not be sent to other applications. If we want to send user-defined message among different applications, we need to register that message to the system.
+\par 
+\par In function MCBitmapButton::OnLButtonUp(...), user defined message WM_BTNPOS is sent to the parent window, with the current mouse position stored in LPARAM parameter:
+\par 
+\par (Code omitted)
+\par 
+\par First the default implementation of function OnLButtonUp(...)is called. Then a CWnd type pointer of parent window is obtained by calling function CWnd::GetParent(). Class CWnd has several member functions that can be used to send Windows? message, the most commonly used ones are CWnd:: SendMessage(...) and CWnd::PostMessage(...). The difference between the two functions is that after sending out the message, CWnd::SendMessage(...) does not return until the message has been processed by the target window, and CWnd::PostMessage(...) returns immediately after the message has been sent out. In the sample, function CWnd::PostMessage(...) is used to send WM_BTNPOS message.
+\par 
+\par All messages in Windows have two parameters, WPARAM and LPARAM. For Win32 applications, both WPARAM and LPARAM are 32-bit integers. They can be used to send additional information.
+\par 
+\par In MFC, usually message parameters are passed as arguments to message handlers, so they are rarely noticed. For example, for message WM_LBUTTONDOWN, its WPARAM parameter is used to indicate if any of CTRL, ALT, or SHIFT key is held down when the mouse button is up. In the message handler, this information is mapped to the first parameter of CWnd::OnLButtonUp(...). Again, its LPARAM parameter contains the information of current mouse position, which is mapped to the second parameter of CWnd::OnLButtonUp(...). Both CWnd::SendMessage(...) and CWnd::PostMessage(...) have three parameters, the first of which specifies message ID, and the rest two are WPARAM and LPARAM parameters. If we don't want to send additional message, we can pass 0 to both of them.
+\par 
+\par In the sample, we need to use both parameters: the parent window needs to know the control ID of the button; also, it needs to know the current mouse position.
+\par 
+\par The button's ID can be retrieved by calling function CWnd::GetDlgCtrlID(), it will be sent through WPARAM parameter to the button's parent. The x and y coordinates of mouse cursor can be combined together to form an LPARAM parameter by using MAKELPARAM macro. Here, macro MAKELPARAM can combine two 16-bit numbers to form a 32-bit message. If we provide two 32-bit numbers, only the lower 16 bits will be used (Of course, screen coordinates won't use more than 16 bits).
+\par 
+\par The message is received and processed in class CBtnDlg. In MFC, general message can be mapped to a member function by using ON_MESSAGE macro. This type of message handler has two parameters, one for receiving WPARAM information and the other for receiving LPARAM information. Also, it must return a LONG type value.
+\par 
+\par The following code fragment shows how member function OnBtnPos(...) is declared in class CBtnDlg (It will be used to receive WM_BTNPOS message):
+\par 
+\par class CBtnDlg : public CDialog
+\par \{
+\par ......
+\par protected:
+\par ......
+\par     afx_msg LONG OnBtnPos(UINT, LONG);
+\par     DECLARE_MESSAGE_MAP()
+\par \};
+\par 
+\par In the implementation file, ON_MESSAGE macro is added as follows:
+\par \tab 
+\par BEGIN_MESSAGE_MAP(CBtnDlg, CDialog)
+\par ......
+\par     ON_MESSAGE(WM_BTNPOS, OnBtnPos)
+\par END_MESSAGE_MAP()
+\par 
+\par The control ID and the mouse information can be extracted within the message handler as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Sample
+\par 
+\par Sample 4.6\\Btn has a four-arrow bitmap button. First a button resource is added to the dialog template, whose ID is IDC_PLAY_POS and caption text is "PLAYPOS" (bitmaps will be loaded through automatic method). Two new bitmap resources "PLAYPOSU" and "PLAYPOSD" are also added to the application, which will be used to draw button's "up" and "down" states.
+\par 
+\par We need to know the sizes and the positions of four arrows within the bitmap button so we can judge if the mouse cursor is over any of the arrows. Within class CBtnDlg, a CRect type array with size of 4 is declared for this purpose. Their values are initialized in function CBtnDlg::OnInitDialog(). Also an MCBitmapButton type variable m_btnPlayPos is declared to implement this new button:
+\par 
+\par class CBtnDlg : public CDialog
+\par \{
+\par ......
+\par protected:
+\par ......
+\par     MCBitmapButton m_btnPlayPos;
+\par ......
+\par     CRect m_rectBtnPos[4];
+\par ......
+\par \};
+\par 
+\par The following portion of function CBtnDlg::OnInitDialog() shows how array m_rectBtnPos is initialized:
+\par 
+\par (Code omitted)
+\par 
+\par Here, we call function CWnd::GetClientRect() to retrieve the button size. We need to calculate the sizes and positions of the arrows after bitmaps have been loaded. This is because a button will be resized according to the bitmap size after it is initialized.
+\par 
+\par Function CBtnDlg::OnBtnPos(...) is implemented just for the purpose of demonstration: if any of the four arrows is pressed, a message box will pop up displaying a different message:
+\par 
+\par (Code omitted)
+\par 
+\par The application is now ready for compile. Based on this method, we can implement bitmap buttons with more complicated functionality.
+\par 
+\par 4.7\tab Mouse Sensitive Button
+\par 
+\par Setting Capture
+\par 
+\par In this section, we are going to create a very special button. It is not a push button, nor a check box or radio button. The button has two states: normal and highlighted. Generally, the button will stay in normal state. When the mouse cursor is within the button's rectangle (with no mouse button being clicked), the button will become highlighted, and if the mouse moves out of the rectangle, the button will resume to normal state.
+\par 
+\par To implement this type of button, we need to trap mouse messages and implement handlers. One of the messages we need to handle is WM_MOUSEMOVE, which will be sent to a window if the mouse cursor is moving over the button. We need to respond to this message and set button's state to "highlighted" when the mouse cursor first comes into the button's rectangle. From now on, we need to keep an eye on the mouse's movement, if the mouse moves out of the rectangle, we need to resume button's normal state.
+\par 
+\par However, since message WM_MOUSEMOVE will only be sent to a window when the mouse cursor is within it, it is difficult to be informed of the event that mouse has just left the button's window. This is because once the mouse leaves, the button will not be able to receive WM_MOUSEMOVE message anymore.
+\par 
+\par To help us solve this type of problems, Windows? provides a technique that can be used to track mouse's activities after it leaves a window. This technique is called Capture. By using this method, we could capture all the mouse-related messages to one specific window, no matter where the mouse is.
+\par 
+\par We can call function CWnd::SetCapture() to set capture for a window. The capture can also be released by calling function ::ReleaseCapture(), which is a Win32 API function. Besides using this function, the capture can also be removed by the operating system under certain conditions. If this happens, the window that is losing capture will receive a WM_CAPTURECHANGED message. 
+\par 
+\par New Class
+\par 
+\par Sample 4.7\\Btn demonstrates how to implement "mouse sensitive button". In the application, a new class MCSenButton is created for this purpose, and is defined as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The class contains only a constructor, two message handlers, and a Boolean type variable m_bCheck. Variable m_bCheck will be used to indicate the button's current state: it is TRUE if the button is currently highlighted, and is FALSE if the button is in the normal state. Within the constructor, this variable is initialized to FALSE:
+\par 
+\par MCSenButton::MCSenButton() : MCBitmapButton()
+\par \{
+\par     m_bCheck=FALSE;
+\par \}
+\par 
+\par Functions MCSenButton::OnMouseMove(...) and MCSenButton::OnCaptureChanged(...) are message handlers for WM_MOUSEMOVE and WM_CAPTURECHANGED respectively. Like all other types of messages, their message mapping macros should be added in the implementation file:
+\par 
+\par IMPLEMENT_DYNAMIC(MCSenButton, MCBitmapButton)
+\par BEGIN_MESSAGE_MAP(MCSenButton, MCBitmapButton)
+\par     ON_WM_MOUSEMOVE()
+\par     ON_WM_CAPTURECHANGED()
+\par END_MESSAGE_MAP()
+\par 
+\par Here, ON_WM_MOUSEMOVE and ON_WM_CAPTURECHANGED are message mapping macros defined by MFC.
+\par The following two functions handle above two messages:
+\par 
+\par (Code omitted)
+\par 
+\par In function MCSenButton::OnMouseMove(...), if m_bCheck is FALSE, it means the button is in the normal state. In this case, we need to set mouse capture, change the button to "highlighted" state, and redraw the button. If the button is currently highlighted, we need to check the current position of mouse cursor, if it has moved out of the button window, we should resume button's normal state, and redraw the button. Here, CButton::SetState(...) is used to set the button to different states (it will cause the bitmap button to use the corresponding bitmap), and CWnd::Invalidate() is used to cause the button to be redrawn.
+\par In function MCSenButton::OnCaptureChanged(...), we need to change m_bCheck back to FALSE, and resume button's normal state.
+\par 
+\par Implementation
+\par 
+\par In the sample, four new buttons are added to the application. The IDs of these new buttons are IDC_MOUSE_SEN_1, IDC_MOUSE_SEN_2, IDC_MOUSE_SEN_3 and IDC_MOUSE_SEN_4 respectively. An MCSenButton type array m_btnBmp (The array size is 4) is declared in class CBtnDlg and initialized in function CBtnDlg::OnInitDialog() as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Here, we use subclass instead of automatic method to load bitmaps. Also, we use IDB_BITMAP_BTNUNCHECK and IDB_BITMAP_BTNCHECK to implement button's normal and highlighted states respectively.
+\par 
+\par Because mouse related messages are handled within the member functions of class MCSenButton, once we declare variables within it, the buttons will automatically become mouse sensitive. There is no need for us to write extra code for handling mouse messages outside the class.
+\par 
+\par Summary
+\par 
+\par 1)  We can use class CBitmapButton to implement bitmap buttons. To use this class, we need to prepare 1 to 4 bitmap resources indicating button's different states, then use class CBitmapButton to declare variables, and call either CBitmapButton::AutoLoad(...) or CBitmapButton::LoadBitmaps(...) to associate the bitmap resources with the buttons.
+\par 
+\par 2)  To use function CBitmapButton::AutoLoad(...), the bitmap resources must have string IDs, and must be created by suffixing 'U', 'D', 'F' or 'X' to the button's caption text.
+\par 
+\par 3)  Buttons, check boxes and radio buttons implemented by class CButton can display user-provided bitmaps by calling function CButton::LoadBitmap(...). With this method, the button could be associated with only one image at any time. Also, its focused state will be indicated by drawing a dash-bordered rectangle over button's face.
+\par 
+\par 4)  We can call function CBitmapButton::LoadBitmaps(...) at any time to change the associated bitmaps. This provides us a way of implementing check box and radio button using push button.
+\par 
+\par 5)  Irregular shape button can be implemented by drawing images with transparency. We can prepare a normal image and a black-and-white mask image. When drawing the button, only the unmasked region of the normal image should be output to the target device.
+\par 
+\par 6)  A button can handle mouse-related messages. If we want to know the mouse position when a button is being pressed, we can trap WM_LBUTTONUP message.
+\par 
+\par 7)  We can implement mouse sensitive button by handling WM_MOUSEMOVE message and setting window capture.
+\par 
+\par 
+\par 
+\par }
+ 

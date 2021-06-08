@@ -1,0 +1,430 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab720{\fonttbl{\f0\fswiss MS Sans Serif;}{\f1\froman\fcharset2 Symbol;}{\f2\fmodern Courier New;}{\f3\froman Times New Roman;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033\pard\plain\f2\fs20 Chapter 15 DDE
+\par 
+\par Dynamic Data Exchange (DDE) is one of the ways to exchange information and data among different applications. From samples of previous chapters we already have some experience on implementing registered message and file sharing, which allow one process to send simple message or a block of data to another process. DDE is another way of implementing data exchange, it can handle more complicated situation than the other two methods.
+\par 
+\par DDE is constructed under client-server model: a server application exposes its services to all the applications in the system; any client application can ask the server for certain type of services, such as getting data from server, sending data to the server, asking the server to execute a command. The best way to implement DDE in an application is to use Dynamic Data Exchange Management Library (DDEML), which is supported by the Windows(. With this library, the implementation of DDE becomes easy. All the samples in this chapter are based on this library.
+\par 
+\par MFC does not have a class that encapsulates DDE, so we have to call all the functions in the DDEML.
+\par 
+\par 15.1\tab DDE Registration
+\par 
+\par To support DDE functions, every application (server or client) must implement the following: 1) Initialize DDE. 2) Provide a callback function that will be used to handle DDE messages. 3) Uninitialize DDE when the application exits (or when DDE functions are no longer supported). For the server application, it needs additional two steps: 1) Register name services after the DDE is initialized. 2) Unregister the name services before DDE is uninitialized.
+\par 
+\par DDE Initialization, Uninitialization, Service Registration, Unregistration
+\par 
+\par DDEML provides functions for everything described above. The following discusses functions contained in the DDEML that can be used for these purposes:
+\par 
+\par DDE initialization:
+\par 
+\par UINT ::DdeInitialize
+\par (
+\par     LPDWORD pidInst, PFNCALLBACK pfnCallback, DWORD afCmd, DWORD ulRes
+\par );
+\par 
+\par An application must implement a DWORD type variable for storing its instance identifier, which is somehow similar to application's instance handle. When a server is making conversation with a client, they both must use their instance identifiers to verify that the message is directed to them. This unique instance ID is obtained through calling function ::DdeInitialize(...). When calling this function, we need to pass the address of the DWORD type variable to its first parameter, and the variable will be filled with the instance ID.
+\par 
+\par The second parameter is the pointer to a callback function, which will be discussed later.
+\par 
+\par The third parameter is the combination of different flags, which can be used to specify what kind of DDE messages we want to receive. This is useful because there are a lot of services provided by the DDE model. Sometimes we do not want certain types of messages to be sent to our applications. In this case, we can pass parameter afCmd a combination of filter flags, which will allow only certain type of messages to be sent to the application. The following table shows some examples:
+\par 
+\par (Table omitted)
+\par 
+\par DDE uninitialization:
+\par 
+\par BOOL ::DdeUninitialize(DWORD idInst);
+\par 
+\par The only parameter of this function is the value obtained from function ::DdeInitialize(...).
+\par 
+\par DDE name service registration and unregistration:
+\par 
+\par HDDEDATA ::DdeNameService(DWORD idInst, HSZ hsz1, HSZ hsz2, UINT afCmd);
+\par 
+\par Again, idInst is the DDE instance ID which is obtained from function ::DdeInitialize(...). The second parameter is the handle of the name service string, which is a new type of variable. Actually, it is just a new type of handle that can be obtained by calling another function supported by DDEML.
+\par 
+\par In DDE, data is exchanged through sending string handles among different applications. For example, if we have a string that is contained in a series of buffers, we cannot send the buffers' starting address to another process and let the string be accessed there. To let the string be shared by other DDE applications, we need to create a string handle and let it be shared by other applications. With the handle, any application can access the contents contained in the buffers. In DDEML, following two functions can be used to create and free string handle:
+\par 
+\par HSZ ::DdeCreateStringHandle(DWORD idInst, LPTSTR psz, int iCodePage);
+\par BOOL ::DdeFreeStringHandle(DWORD idInst, HSZ hsz);
+\par 
+\par For the first function, we can pass the string pointer to parameter psz, and the function will return a string handle. When the string is no longer useful, we need to call function ::DdeFreeStringHandle(...) to free the string handle.
+\par 
+\par When registering a service name, we must use a string handle rather than the service name itself.
+\par 
+\par A service name is the identifier of the server that lets the client applications find the server when requesting a service. We can use any string as the service name so long as it is not identical to other DDE service names present in the system. When a client requests for services from the server, it must obtain a string handle for the service name and use it to communicate with the server.
+\par 
+\par DDE Callback Function
+\par 
+\par The DDE callback function is similar to the callback functions implemented for common dialog boxes and hooks, except that the situation is more complicated here. A DDE callback function has 8 parameters, which may have different meanings for different messages. The basic form of the callback function is as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The most important parameter here is uType, which indicates what kind of message has been sent to this application. There are many types of DDE messages. In the callback function, we can return NULL if we do not want to process the message. Standard DDE messages will be explained in the following sections.
+\par 
+\par Server
+\par 
+\par Sample 15.1\\DDE\\Server is a standard SDI application generated by Application Wizard. The view of this application is based on class CEditView, so that it can be used to display current server states. The sample is a very basic DDE server, which implements DDE registration and name service registration but actually provides no service. In the sample, the service name is "Server". All the DDE functions are implemented in the frame window. In the sample, function CMainFrame::InitializeDDE() is called to initialize DDE. This function is called after the client view is created:
+\par 
+\par (Code omitted)
+\par 
+\par Function CMainFrame::InitializeDDE() simply calls ::DdeInitialize(...) with appropriate parameters, if the function returns DMLERR_NO_ERROR, it further proceeds to register the name service:
+\par 
+\par (Code omitted)
+\par 
+\par Here CMainFrame::m_dwInst is a DWORD type static variable and CMainFram::DdeCallback(...) is a static member function. This is because a callback function must be either a global function or a static member function. Function CMainFrame::Hszize() can be used to obtain a string handle for the name service and store the handle in static variable CMainFrame::m_hszServiceName. When the application exits, the name service is unregistered and also, the DDE is uninitialized there. This is implemented in WM_CLOSE message handler:
+\par 
+\par (Code omitted)
+\par 
+\par Also, the string handle is freed here. In the sample, functions CMainFrame::Hszize() and CMainFrame:: UnHszize() are implemented for obtaining and freeing string handles respectively:
+\par 
+\par (Code omitted)
+\par 
+\par (Code omitted)
+\par 
+\par Here CMainFrame::m_szService is a static variable.
+\par 
+\par Monitoring DDE Activities
+\par 
+\par To monitor the activities of the server, function CMainFrame::Printf(...) is implemented in the sample. This function imitates the well-known function prinf(...), and outputs a formatted string to the client window. We can use it exactly the same way as we use function printf(...). Since the view of the sample is based on class CEditView, it is easy for us to display text in the client window. Since the client window is solely used for displaying information, we need to set the window's ES_READONLY style before the it is created:
+\par 
+\par (Code omitted)
+\par 
+\par Because function CEditCtrl::ReplaceSel(...) is used to output text to the edit view in function CMainFrame::Printf(...), we further need to prevent the cursor position from being changed by the user (Function CEditCtrl::ReplaceSel(...) will always output text at the current caret position). For this reason, the following messages are handled to bypass the default implementations in the sample: WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOSUEMOVE and ON_WM_LBUTTONDBLCLK. The handlers of these messages are empty. This will prevent the application from responding to the mouse events so that the cursor position can not be changed under any condition.
+\par 
+\par If we execute the sample at this point, messages will appear on the client window indicating if the DDE initialization is successful.
+\par 
+\par 15.2\tab Connecting to Server
+\par 
+\par Sample 15.2\\DDE\\Server is based on sample 15.1\\DDE\\Server. Also, a new sample 15.2\\DDE\\Client is created in this section, which is a dialog-based application.
+\par 
+\par At the beginning, the client also needs to do DDE initialization in order to support DDE. The client initialization procedure is almost the same with that of server except that it does not need to register the service name. The client needs to call functions ::DdeInitialize(...) and ::DdeUninitialize(...) for DDE initialization and clean up. Besides, it also needs to prepare a static (or global) DWORD variable for storing its instance identifier, and prepare a callback function that will be used to receive DDE messages.
+\par 
+\par DDE Connection: Client Side
+\par 
+\par Before requesting any service from the server, the client needs to make DDE connection. This is somehow similar to making a phone call: we need to dial number and make the connection first, then we can request the other side to do anything for us.
+\par 
+\par The client can call function ::DdeConnect(...) to set up a connection with the server:
+\par 
+\par HCONV ::DdeConnect(DWORD idInst, HSZ hszService, HSZ hszTopic, PCONVCONTEXT pCC);
+\par 
+\par We need to provide three parameters in order to make the connection: the client instance ID, the server's service name, and the topic name that is supported by the server.
+\par 
+\par While the service name is the identification that can be used by the client to locate the server in the system, a topic name indicates the type of service which is provided by the server. A server can provide more than one service, whose properties and features can be defined by the programmer. For example, we can implement a DDE server managing images, and a client can request the server to send any image to it. For this service, we can name the topic name "image" (or whatever).
+\par 
+\par Like the service name, a string handle must be obtained for the topic name before it is used. When function ::DdeConnect(...) is called from the client side, this handle must be passed to its hszTopic parameter.
+\par 
+\par The server does not need to register the topic name. When the client makes the connection, the server will receive a XTYP_CONNECT message, and the topic name string handle will be passed as one of the parameters to the DDE call back function. Upon receiving this message, the handle passed with the message can be compared with the topic string handles stored on the server side (which represent all the topics supported by the server). If there is a match, it means the server supports this topic, otherwise the server should reject the connection.
+\par 
+\par DDE Connection: Server Side
+\par 
+\par On the server side, we need to handle XTYP_CONNECT message in the callback function. In the previous section, NULL is returned for all messages sent to the server. In order to respond to the connection request from the client, XTYP_CONNECT message must be processed.
+\par 
+\par As we mentioned before, the callback function has 8 parameters. Parameter uType indicates the type of message, if the message is a connection request, this message should be XTYP_CONNECT. The meanings of other 7 parameters are listed as follows:
+\par 
+\par (Table omitted)
+\par 
+\par In the sample of the previous section, a service name "Server" is registered on the server side. To let the connection be set up between the server and the client, we also need to prepare a topic name that will be used by both sides. In the sample 15.2\\DDE\\Server, string "Topic" is used as the topic name, whose string handle is obtained in function CMainFrame::Hszize() and freed in function CMainFrame::UnHszize().
+\par 
+\par The client should also obtain a string handle for the topic name and use it to make connection. The server will receive the handles of service name and topic name together with message XTYP_CONNECT. Upon receiving this message, the server needs to check if the service name and topic name requested by the client are supported by itself.
+\par 
+\par To compare two strings by their handles, we can call function ::DdeCmpStringHandles(...), which will compare two DDE strings. When calling this function, we need to pass the string handles to its two parameters. The function will return -1, 0 or 1 indicating if the first string is less than, equal to, or greater than the second string. The following is the format of this function:
+\par 
+\par int ::DdeCmpStringHandles(HSZ hsz1, HSZ hsz2);
+\par 
+\par Now it is clear what the server should do after receiving XTYP_CONNECT message: comparing hszAppName with its registered service name, and comparing hszTopic with its supported topic names by calling function ::DdeCmpStringHandles(...). If the comparisons are successful, the callback function should return TRUE, this indicates the connection request is accepted. Otherwise it should return FALSE, in which case the connection request is rejected. The following code fragment shows how this is implemented  in sample 15.2\\DDE\\Server:
+\par 
+\par (Code omitted)
+\par 
+\par Client Implementation
+\par 
+\par Sample 15.2\\DDE\\Client is implemented as a dialog based application using Application Wizard. Similar to the server, here an edit control is included in the dialog template that will be used to display DDE activities. The DDE initialization procedure is implemented in function CDDEDialog::OnInitDialog(). There is also another edit box and a button labeled "Connect" in the dialog box. When the user clicks this button, the application will retrieve the string from this edit box, use it as the topic name and call function ::DdeConnect(...) to connect to the server:
+\par 
+\par (Code omitted)
+\par 
+\par The value returned by function ::DdeConnect(...) is a handle used for conversation. Every time the client want to make a transaction to the server, it must present this handle. By using the handle, the server knows with whom it is talking with.
+\par 
+\par In case the connection is not successful, function ::DdeConnect(...) will return a FALSE value.
+\par 
+\par Confirm Connection
+\par 
+\par On the server side, if the connection is successful, it will further receive an XTYP_CONNECT_CONFIRM message from the client. In this case, apart from hszTopic and hszAppName parameters, hconv is also used to provide the conversation handle that should be used by the server to make further conversation with the client. The following code segment shows how this message is processed on the server side:
+\par 
+\par (Code omitted)
+\par 
+\par Variable m_hConvServer is a static variable declared in class CMainFrame and is initialized to NULL in the constructor.
+\par 
+\par DDE Disconnection
+\par 
+\par After the connection is set up, the client and server can proceed to initiate various types of transactions. We will show this in later sections. After all the transactions are finished, or if one side wants to exit, the conversation must be terminated. Either the server or the client can terminate the conversion. This can be implemented by calling function ::DdeDisconnect(...) using the conversion handle. This function can be called either from the server or from the client side. Once the message is sent, the other side will be notified of the disconnection by receiving an XTYP_DISCONNECT message.
+\par 
+\par In the sample, once the connection is set up, it can be terminated from the client side by pressing "Disconnect" button or from the server side through executing DDE | Disconnect command. This is implemented as follows:
+\par 
+\par The server side:
+\par 
+\par (Code omitted)
+\par 
+\par The client side:
+\par 
+\par (Code omitted)
+\par 
+\par The following shows how message XTYP_DISCONNECT is handled in both sides:
+\par 
+\par The client side:
+\par 
+\par (Code omitted)
+\par 
+\par The server side:
+\par 
+\par (Code omitted)
+\par 
+\par Test
+\par 
+\par We can test this version of DDE client and server by starting both applications, then inputting "Topic" into the edit box contained in the client dialog box, and clicking "Connect" button (see Figure 15-1). After this, we will see that the server will output some information indicating if the connection is successful. Then, we can terminate the conversation either from the client or from the server side. We can also try to use an incorrect topic name while making the connection, this will cause the connection to be unsuccessful.
+\par 
+\par To prevent the application from exiting without terminating the conversation, both client and server need to check if the conversation is still undergoing while exiting. If necessary, function ::DdeDisconnect(...) will be called before the applications exit.
+\par 
+\par Figure 15-2 explains the procedure of DDE connection and disconnection.
+\par 
+\par (Figure 15-2 omitted)
+\par 
+\par 15.3\tab Transaction: Data Request
+\par 
+\par Samples 15.3\\DDE\\Server and 15.3\\DDE\\Client are based on samples 15.2\\DDE\\Server and 15.2\\DDE\\Client respectively.
+\par 
+\par There are several types of transactions, one of which is XTYPE_REQUEST, it can be used by the client to request the server to send up-to-date value of an item to it.
+\par 
+\par We know that there are two names that are used to set up a connection: the service name and the topic name. The service name is used to locate the server and the topic name is used to specify a general topic. Under any topic there may exist several items, each item also needs an item name. When the client wants to request a transaction from the server, it needs to specify the item name.
+\par 
+\par For example, if a server provides a service that sends different type of data to the client(s), there may be different topics such as "Image", "Text" (indicating different type of data). Under each topic, there may exist different items such as "Image A", "Image B", "Text 1", "Text 2".
+\par 
+\par Data Request Transaction: Client Side
+\par 
+\par The client should call function ::DdeClientTransaction(...) to initiate a transaction:
+\par 
+\par (Code omitted)
+\par 
+\par We need to pass different types of data to parameters pData, cbData, wFmt and wType for different types of transactions. If the transaction requires the client to pass data to the server (Besides data request transaction, there exist other transactions that can be used by the client to send data to server), we need to use parameters pData and cbData to pass the data, and use parameter wFmt to specify the data format. If the client is requesting data from the server, it should specify the format of data by passing standard or user-defined format to parameter wFmt. In case the client is not sending data to the server, we can neglect parameters pData and cbData. Parameter wType can be used to specify the type of transaction the client is requesting from the server. In the case of data request transaction, this parameter must be set to XTYP_REQUEST. The meanings of the rest four parameters are the same for all types of transactions, which are listed in the following table:
+\par 
+\par (Table omitted)
+\par 
+\par For synchronous transmission mode (the asynchronous transmission mode will be introduced in a later section), after the client calls this function, a timer will be set (the time out value is specified by parameter dwTimeout). If there is no response from the server, the function does not return until the timer times out. We can specify an appropriate value to prevent the program from getting into the deadlock.
+\par 
+\par Data Request Transaction: Server Side
+\par 
+\par Calling this function from the client side will cause the server to receive an XTYP_REQUEST message. The server should check parameter uFmt, hConv, hszTopic and hszAppName, whose meanings are listed in the following table:
+\par 
+\par (Table omitted)
+\par 
+\par The server must check if it supports the topic and the specific item, as well as the data format. If it supports all of them, the server must prepare data using the required format and send the data back to client.
+\par 
+\par Preparing Data
+\par 
+\par One way to send data to the client is to prepare data in server's local buffers, then create a handle for this data, and send the handle to the client. The data handle can be obtained by calling function ::DdeCreateDataHandle(...), which has the following format:
+\par 
+\par (Code omitted)
+\par 
+\par The data can also be sent through a pointer. We will discuss this in a later section.
+\par 
+\par The following table explains the meanings of the above parameters:
+\par 
+\par (Code omitted)
+\par 
+\par We can use standard clipboard format such CF_TEXT, CF_DIB to pass data. If we define a special data format, we must register it before passing the data.
+\par 
+\par Receiving Data
+\par 
+\par Because data is not sent directly, the client must obtain the required data from the handle first. For synchronous transmission mode, the data handle will be returned directly from function ::DdeClientTransacton(). In case the transaction is not successful, a NULL value will be returned.
+\par 
+\par After receiving the handle, the client must first call function ::DdeAccessData(...) to access the data. After the data is processed, function ::DdeUnaccessData(...) must be called to "unaccess" the data. If the data is created with HDATA_APPOWNED flag, the client should not free the data. Otherwise, it can release the data by calling function ::DdeFreeDataHandle(...).
+\par 
+\par Samples
+\par 
+\par In the sample application, an item "Time" is supported by the server under "Topic" topic name. When the client request an XTYPE_REQUEST transaction on this item, the server get the current system time and send it to the client. The client then displays the time in one of its edit box.
+\par 
+\par Compared with the samples in the previous section, a new edit box and a button labeled "Request" are added to the dialog box (Figure 15-3). The edit box is read-only, which will be used to display the time obtained from the server. The button is used to let the user initiate the request transaction.
+\par 
+\par The following function shows how the client initiates the transaction after the user clicks "Request" button, and how the client updates the time displayed in the edit box if the transaction is successful:
+\par 
+\par (Code omitted)
+\par 
+\par The following code fragment shows how the server responds to message XTYPE_REQUEST, prepares data and sends it to the client:
+\par 
+\par (Code omitted)
+\par 
+\par 15.4\tab Transaction: Advise
+\par 
+\par Basics
+\par 
+\par Another interesting transaction is Advise, which provides a way to let the server inform the client after an item stored on the server side has changed. The advise transaction can be initiated from the client side by initiating XTYP_ADVSTART type transaction. As the server receives this message, it keeps an eye on the item that is required by the client for advise service. If the data changes, the server will receive an XTYP_ADVREQ message indicating that the item has changed (This message is posted by the server itself, which could be triggered by any event indicating that the topic item has changed. For example, for "time" item discussed in the previous section, it could be triggered by message WM_TIMER). After receiving message XTYP_ADVREQ, the server sends an XTYP_ADVDATA message along with the handle of the updated data to the client. After the client receives this message, it updates the advised topic item.
+\par 
+\par Now that we understand how XTYP_REQUEST type transaction is handled, it is easier for us to figure out how the advise transaction should be implemented. First, the client initiates advise transaction by calling function ::DdeClientTransaction(...) and passing XTYP_ADVSTART to parameter wType. Upon receiving this message, the server must return TURE if it supports the specified topic and item; otherwise, it should return FALSE. Once the data has changed, the server should call function ::DdePostAdvise(...) to let its callback function receive an XTYP_ADVREQ message. Upon receiving this message, the server needs to prepare the data and send the data handle to the client (There is no special function for doing this, all the server needs to do is returning the data handle from the callback function). Once the server has provided advise, the client will receive an XTYP_ADVDATA message along with the data handle. After receiving this message, the client should update the advised item. The client can terminate the advise service at any time by sending XTYP_ADVSTOP message through calling function ::DdeClientTransaction(...).
+\par 
+\par Initiating Advise Transaction
+\par 
+\par In the samples contained in 15.4\\DDE\\, a new topic item "Text" is added to both client and server, which will be used as an example for advise transaction. Like "Time" item, a new edit box and a button labeled "Advise" are also added to the dialog box (Figure 15-4). On the server side, a variable CMainFrame::m_szText is declared and the user can edit this string through dialog box IDD_DIALOG_ADVISE. The following code fragment shows how the client initiates XTYPE_ADVSTART transaction after the user clicks "Advise" button:
+\par 
+\par (Code omitted)
+\par 
+\par It is more or less the same with XTYP_REQUEST transaction. If the transaction is successful, we set a Boolean type variable CDDECliDlg::m_bAdvise to TRUE and change the button's text to "Unadvise". By doing this way, the button can be used for both advise starting and stopping.
+\par 
+\par Advise Transaction Responding
+\par 
+\par On the server side, after message XTYP_ADSTART is received, it checks the topic name, item name, and the data format specified by the client (just like data request transaction). If the server supports all of them, it sets a Boolean type variable CMainFrame::m_bAdvise to TRUE. This is a flag, if it is TRUE, whenever the user modifies the content of CMainFrame::m_szText variable (it is the advised item stored on the server side, which can be modified by a new command added to the application, see below for detail), function ::DdePostAdvise(...) will be called. The following code fragment shows how message XTYP_ADSTART is processed on the server side:
+\par 
+\par (Code omitted)
+\par 
+\par On the server side, a new command DDE | Advise is added to mainframe menu IDR_MAINFRAME. The following function shows how this command is implemented. If the user changes the content contained in variable CMainFrame::m_szText (if flag CMainFrame::m_bAdvise is TRUE at this time), message XTYP_ADVREQ will be posted to the server:
+\par 
+\par (Code omitted)
+\par 
+\par Upon receiving message XTYP_ADVREQ in the DDE callback function, we must prepare a string handle for CMainFrame::m_szText, and return it when the function exits:
+\par 
+\par (Code omitted)
+\par 
+\par Again, the data handle is created by calling function ::DdeCreateDataHandle(...). If the server doesn't support this service, it should return FALSE.
+\par 
+\par Upon Receiving Advise
+\par 
+\par This will again cause the client to receive XTYP_ADVDATA message. The data handle will be passed through parameter hData, which should be accessed through calling function ::DdeAccessData(...). After the data is obtained, the client need to call function ::DdeUnaccessData(...) to stop accessing the data, and call function ::DdeFreeDataHandle(...) to free the data. If these procedures are successful, the client's DDE callback function should return a DDE_FACK value, otherwise it should return a DDE_FNOTPROCESSED value. The following code fragment shows how message XTYP_ADVDATA is processed on the client side:
+\par 
+\par (Code omitted)
+\par 
+\par Terminating Advise Transaction
+\par 
+\par The advise can be terminated from the client side by sending message XTYP_ADVSTOP to the server:
+\par 
+\par (Code omitted)
+\par 
+\par On the server side, after receiving this message, it simply turns off CMainFrame::m_bAdvise flag. After this, if the user updates variable CMainFrame::m_szText, function ::DdePostAdvise(...) will not be called.
+\par 
+\par 15.5\tab Transactions: Poke and Execute
+\par 
+\par Sample 15.5\\DDE\\Server and 15.5\\DDE\\Client are based on sample 15.4\\DDE\\Server and 15.4\\DDE\\Client respectively.
+\par 
+\par The poke transaction is the opposite of request transaction: the client can use this transaction to send data to the server. The transaction is relatively simple: the client initiates the transaction by sending a message along with the data handle to the server. After the server receives the message, it can obtain the data from the data handle.
+\par 
+\par Like require and advise transactions, poke transaction also needs a topic name and an item name. In the samples contained in 15.5\\DDE\\, a new item "Poke" is supported by both the server and the client. Also, a new edit box and a new button labeled "Poke" are added to the client dialog box (see Figure 15-5). The user can input any string into the edit box, and use poke transaction to send it to the server.
+\par 
+\par Poke Transaction: Client Side
+\par 
+\par The procedure of preparing data and calling function ::DdeClientTransaction(...) is very similar to that of request transaction. The difference between two types of transactions is that here it is the client that needs to prepare the data handle. In sample 15.5\\DDE\\Client, the user can input any string into the edit box and send it to the server.
+\par 
+\par By now when sending data between two DDE applications, we always use data handle. An alternate way of sending data is to use a pointer that contains the address to the data buffers. (The samples contained in 15.5\\DDE use data handle. We will see an example using pointer to transfer data in a later section). When the client calls function ::DdeClientTransaction(...), the first parameter can be set to either a string handle or a string pointer. If it is string handle, the second parameter must be 0xFFFFFFFF. If the first parameter is a string pointer, the second parameter must specify the length of the buffers.
+\par 
+\par The following code fragment shows how the client initiates a poke transaction in sample 15.5\\DDE\\Client:
+\par 
+\par (Code omitted)
+\par 
+\par Poke Transaction: Server Side
+\par 
+\par The server will receive an XTYP_POKE message. In the samples contained in 15.5\\DDE, the server obtains the data from the string handle and calls function CMainFrame::Printf(...) to display the string in the client window, then return a DDE_FACK value. If the server does not support either topic name, item name or the format, it should return a DDE_FNOTPROCESSED value.
+\par 
+\par Transaction: Executing Commands
+\par 
+\par Another type of transaction is execute. By using this type of transaction, the client can send commands to the server and let them be executed at the server side. This transaction is different from all other type of transactions because it does not need an item name and does not require format specification. We need to pass NULL to parameter hszItem (string handle of the item name) and parameter wFmt when calling function ::DdeClientTransaction(...) to initiate execute transaction. However, a text string must be used to specify the command (The command must be specified by parameters pData and cbData). In the samples, the execute transaction is implemented similar to that of poke transaction: an edit box and a button labeled "Execute" are added to the dialog box, the user can input any command into the edit box and click "Execute" button to execute it. The following code fragment shows how this is implemented on the client side:
+\par 
+\par (Code omitted)
+\par 
+\par Rather than using data handle, the address of the buffers will be used to transfer data. So when the client calls ::DdeClientTransaction(...) to initiate transaction, the first parameter of this function is set to the address rather that the handle of the buffers. Also, the second parameter is set to the size of buffers instead of 0xFFFFFFFF. Since there is no need to specify item name and data format, the fourth and fifth parameters are set to NULL.
+\par 
+\par The address of the buffers will not be sent directly to the server. Instead, they will be used to create a DDE object that contains the data. So as the server receives the corresponding message, it actually gets the handle of this DDE object instead of the buffer address. In order to access the data, it must prepare some buffers allocated locally and copy the data from the DDE object into these buffers by calling function ::DdeGetData(...), whose format is as follows:
+\par 
+\par DWORD ::DdeGetData(HDDEDATA hData, LPBYTE pDst, DWORD cbMax, DWORD cbOff);
+\par 
+\par Parameter hData is the handle received from the DDE callback function that identifies the DDE object. Parameter pDst is a pointer to the buffers that will be used to receive data, whose size is specified by parameter cbMax. Parameter cbOff specifies the offset within the DDE object.
+\par 
+\par Generally we do not know the size of data beforehand, so before allocating buffers, we can call this function and pass NULL to its pDst parameter, which will cause the function to return the actual size of the data. Then we can prepare enough buffers, pass the address of buffers and the buffer length to this function to actually receive data.
+\par 
+\par In the samples, when the client initiates an execute transaction, the server does nothing but displaying the command in its client window. Although it seems like poke transaction, there are some radical differences between two types of transactions:
+\par 
+\par 1)  The poke transaction can be used to transmit any type of data, it requires a format specification. The execute transaction only transmit a simple command.
+\par 
+\par 2)  The poke transaction must specify an item name. The execute transaction does not require this.
+\par 
+\par 3)  As we will see in section 15.7, the server will respond to execute transaction by executing a command. The poke transaction just update data.
+\par 
+\par The following code fragment shows how the execute transaction is implemented on the server side:
+\par 
+\par (Code omitted)
+\par 
+\par 15.6\tab Asynchronous Transaction
+\par 
+\par Synchronous vs. Asynchronous
+\par 
+\par By now all our transactions are implemented by synchronous transmission mode. An alternative way of implementing them is using asynchronous transmission mode. The difference between two types of transactions is listed as follows:
+\par 
+\par Synchronous transaction: after the client initialized the transaction, it will start a timer and wait till it gets the response from the server. If there is no response when timer times out, the transaction will be terminated.
+\par 
+\par Asynchronous transaction: after the client initialized the transaction, it does not wait. Instead, the client will go on to do other job. After the server finished the transaction, the client will receive a message indicating that the previous transaction has been finished.
+\par 
+\par Synchronous transaction is simple to implement. However, if the server responds very slowly, it will cause severe overhead. In our sample, synchronous transaction is good enough because the server supports only very limited types of services and each transaction won't take much time. But generally a server may need to serve multiple clients simultaneously, so when a client initialized a transaction, the server may be busy with another transaction. If we use synchronous transaction, the client may need to wait until the server comes to serve it. If we have several clients waiting concurrently, it will waste the system resource.
+\par 
+\par The asynchronous transaction is implemented more efficiently. As the client initialized the transaction, it just moves on to do other job; when the server finishes this transaction, the client will receive a message telling it the result of the transaction. In this case the client's waiting time is eliminated.
+\par 
+\par Implementing Asynchronous Transaction
+\par 
+\par In DDEML, asynchronous transaction can be initiated very easily. The only difference between initializing a synchronous transaction and an asynchronous transaction is that instead of specifying a time out value, we need to pass TIMEOUT_ASYNC to parameter dwTimeout when calling function ::DdeClientTransaction(...). Another difference is that instead of receiving a value (usually the result of the transaction) from function ::DdeClientTransaction(...) directly, the client will receive an XTYP_XACT_COMPLETE message and the result of the transaction will be passed through parameter hData of the callback function. Figure 15-6 illustrates the difference between two type of transactions.
+\par 
+\par Samples
+\par 
+\par Samples 15.6\\DDE\\Server and 15.6\\DDE\\Client are based on Samples 15.5\\DDE\\Server and 15.5\\DDE\\Client respectively. In the two samples, the poke transaction is implemented in asynchronous mode. The following code fragment shows how the transaction is initiated:
+\par 
+\par (Code omitted)
+\par 
+\par The following code fragment shows how the transaction result is processed when the client receives an XTYP_XACT_COMPLETE message:
+\par 
+\par (Code omitted)
+\par 
+\par There is no change on the server side.
+\par 
+\par All types of transactions can be implemented by either synchronous or asynchronous mode.
+\par 
+\par 15.7\tab Program Manager: A DDE Server
+\par 
+\par By now, we have introduced some of the most useful DDE transactions. We can use these data transfer protocols to design and build applications that can share data and information. Besides this, we can also write client application to communicate with standard DDE servers contained in the system.
+\par 
+\par Program Manager
+\par 
+\par Under Windows, all types of applications are managed into groups. By clicking on Start | Programs command on the task bar, we will see many groups, such as "Accessories", "Startup". Within each group, there may exist some items that are linked directly to executable files, or there may exist some sub-groups. Sometimes we may want to modify this structure by adding a new item or deleting an existing item.
+\par 
+\par Actually this structure is managed by Program Manager, which is a DDE server. We can interact with this server to create group, delete group, add items to the group, delete items from a group through initiating Execute transactions.
+\par 
+\par The client sample from the previous section is modified so that it can be used to communicate only to Program Manager. Here, the service name of the Program Manager is "Progman". As we can see, the DDE initialization for this client is exactly the same as we did before.
+\par 
+\par The five commands we will ask the server to execute are: creating group; bringing up an existing group; deleting a group; creating an item; deleting an item. All the DDE commands must start and end with square braces ('[' and ']'). The following table lists the formats of five commands:
+\par 
+\par (Table omitted)
+\par 
+\par A combo box for storing the command types is added to sample's dialog box. Besides this, the dialog box also contains an edit box and a button labeled "Command". The edit box will be used to let the user input parameters for the command. For example, if we want to create a group with name "Test", we can select "Create group" from the combo box and input "Test" into the edit box then click "Command" button. The application will initiate an execute transaction to the Program Manager and send "[CreateGroup(Test)]" command to it.
+\par 
+\par We can use this program to create groups and add items to a group. We can also delete unwanted groups or remove items from a group.
+\par 
+\par Summary
+\par 
+\par 1)  To support DDE in an application, function ::DdeInitialize(...) must be called to initialize it; also, before the application exits, function ::DdeUninitialize(...) must be called to uninitialize the DDE.
+\par 
+\par 2)  The server must register DDE service by calling function ::DdeNameService(...). Before the server exits, it must call the same function to unregister the service.
+\par 
+\par 3)  Before DDE client initiates any transaction, it must call function ::DdeConnect(...) to obtain a conversation handle that can be used to identify the server in the following transactions.
+\par 
+\par 4)  A server can support several topics, under each topic there may be several items supported. When initiating a transaction, the client need to specify both of them.
+\par 
+\par 5)  Data can not be exchanged directly between two processes. Instead, it must be sent either by data handle or by DDE object. In the former case, the data can be accessed by calling functions ::DdeAccessData(...). Function ::DdeUnaccessData(...) can be used to unaccess data and ::DdeFreeDataHandle(...) can be used to free data. In the later case, the data can be retrieved by calling function ::DdeGetData(...). To create a data handle, we can use function ::DdeCreateDataHandle(...).
+\par 
+\par 6)  In DDE model, two strings can be compared by their handles. In order to do this, we need to call function ::DdeCmpStringHandles(...).
+\par 
+\par 7)  Data request transaction can be used to request data from the server.
+\par 
+\par 8)  Advise transaction can be used to let the client monitor the changes on the data stored on the server side.
+\par 
+\par 9)  Poke transaction can be used by the client to update the data stored on the server side.
+\par 
+\par 10)  Execute transaction can be used by the client to let commands be executed on the server side.
+\par 
+\par 11)  There are two types of transmission modes: synchronous and asynchronous. Synchronous transaction is easy to implement, but asynchronous transaction is more efficient under certain conditions.
+\par 
+\par 12)  Program Manager is a DDE server that supports execute transaction.
+\par 
+\par }
+ 

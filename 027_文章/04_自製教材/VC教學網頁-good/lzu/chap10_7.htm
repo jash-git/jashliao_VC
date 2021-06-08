@@ -1,0 +1,519 @@
+<html>
+
+<head>
+<title>10.7 学习Enroll例程</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><b><font FACE="Times New Roman" SIZE="3"><p ALIGN="CENTER"></font></b><font FACE="Times New Roman" size="4" color="#3973DE">10.7 </font><font size="4" color="#3973DE">学习</font><font FACE="Times New Roman" size="4" color="#3973DE">Enroll</font><font size="4" color="#3973DE">例程</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="JUSTIFY"></font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">提供了一个名为</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">的例子来作为学习</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">数据库编程的教程．</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">分为四步，本节的任务就是指导读者完成前三步的</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">例程，并对其进行较彻底的剖析．通过学习这三步例程，读者将掌握用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">创建</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">数据库应用程序的方法．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在开始学习</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">例程时，读者也许会感到用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">创建数据库应用很容易，似乎不用学习前面几节的内容．诚然，</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">自动地为应用程序加入了许多与数据库有关的代码，大大简化了数据库应用的开发．但</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">不是万能的，它建立的数据库应用往往不能满足用户的需要．用户真正想知道的是如何不依赖</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">而编写自己的数据库应用程序，这也正是本章的宗旨所在．事实上，前面几节的分析以及后面进行的对</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">例程的分析正是为这一宗旨服务的．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在学习</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">以前，请读者先从</font><font FACE="Times New Roman" SIZE="3">Visual C++ 5.0</font><font SIZE="3">的光盘上将</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">（在</font><font FACE="Times New Roman" SIZE="3">samples \ mfc \ tutorial \ enroll</font><font SIZE="3">目录下）在前三步的例程拷到硬盘上，以供参考．另外，</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">要用到</font><font FACE="Times New Roman" SIZE="3">Access</font><font SIZE="3">数据库</font><font FACE="Times New Roman" SIZE="3">STDRED32.MDB</font><font SIZE="3">，该文件在</font><font FACE="Times New Roman" SIZE="3">VC5.0</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">Stdreg</font><font SIZE="3">例程中（在</font><font FACE="Times New Roman" SIZE="3">samples \ mfc \ database \ stdreg</font><font SIZE="3">目录下），请读者将该例子也拷贝到硬盘上．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.7.1 
+    </font><font SIZE="3" color="#3973DE">注册数据源</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ODBC</font><font SIZE="3">应用程序不能直接使用数据库，用户必需为要使用的数据库注册数据源．注册数据源的工作由</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">管理器完成，该管理器位于</font><font FACE="Times New Roman" SIZE="3">Windows 95</font><font SIZE="3">控制面板的</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">位</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">内．现在让我们为</font><font FACE="Times New Roman" SIZE="3">Access</font><font SIZE="3">数据库</font><font FACE="Times New Roman" SIZE="3">STDREG32.MDB</font><font SIZE="3">注册数据源．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">打开控制面板，双击“</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">位</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">”图标，则会显示一个“</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">数据源管理器”，如图</font><font FACE="Times New Roman" SIZE="3">10.5</font><font SIZE="3">所示。在管理器中选择“用户</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">”页，用户</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">只对用户可见而且只能用户当前机器。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T10_5.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/T10_5.gif" alt="T10_5.tif (174104 bytes)" WIDTH="460" HEIGHT="355"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font size="2">图<font FACE="Times New Roman">10.5 ODBC</font>数据源管理器<font FACE="Times New Roman"></p>
+    </font></font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">点击“添加”按钮，则会弹出一个“创建新数据源”对话框。在该对话框中选择</font><font FACE="Times New Roman" SIZE="3">Microsoft Access Driver(*.mdb)</font><font SIZE="3">，然后按完成按钮。接下来会显示一个</font><font FACE="Times New Roman" SIZE="3">ODBC Microsoft Access 97 Setup</font><font SIZE="3">对话框，如图</font><font FACE="Times New Roman" SIZE="3">10.6</font><font SIZE="3">所示，该对话框用来把数据库与一个数据源名连接起来。在</font><font FACE="Times New Roman" SIZE="3">Data Source Name:</font><font SIZE="3">栏中输入</font><font FACE="Times New Roman" SIZE="3">Student Registration</font><font SIZE="3">，然后点击</font><font FACE="Times New Roman" SIZE="3">Select...</font><font SIZE="3">按钮，在随后弹出的对话框中找到并选择</font><font FACE="Times New Roman" SIZE="3">STDREG32.MDB</font><font SIZE="3">。连按两个</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮后，一个名为</font><font FACE="Times New Roman" SIZE="3">Student Registration</font><font SIZE="3">的新数据源就被注册到了管理器中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T10_6.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/T10_6.gif" alt="T10_6.tif (156780 bytes)" WIDTH="471" HEIGHT="312"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">10.6 
+    ODBC Microsoft Access 97 Setup</font><font SIZE="3">对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#80D6FF">
+      <tr>
+        <td width="100%"></b>提示：如果要为</font><font FACE="Times New Roman" SIZE="3">dBase</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">FoxPro</font><font SIZE="3">数据库注册数据源，则应该选择一个目录而不是文件作为数据源。这是因为在</font><font FACE="Times New Roman" SIZE="3">Access</font><font SIZE="3">中，一个</font><font FACE="Times New Roman" SIZE="3">MDB</font><font SIZE="3">文件可以包含多张表，因此可以认为一个</font><font FACE="Times New Roman" SIZE="3">MDB</font><font SIZE="3">文件就是一个数据库。而在</font><font FACE="Times New Roman" SIZE="3">dBase</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">FoxPro</font><font SIZE="3">中，一个</font><font FACE="Times New Roman" SIZE="3">DBF</font><font SIZE="3">文件只能对应一张表，一个数据库可能会包含好几个</font><font FACE="Times New Roman" SIZE="3">DBF</font><font SIZE="3">文件，所以可以认为某一个包含了若干</font><font FACE="Times New Roman" SIZE="3">DBF</font><font SIZE="3">文件的目录是一个数据库。<b></b></font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.7.2 Enroll</font><font SIZE="3" color="#3973DE">的第一个版本</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Enroll</font><font SIZE="3">第一个版本如图</font><font FACE="Times New Roman" SIZE="3">10.3</font><font SIZE="3">所示，该程序具有浏览记录集和修改记录这两个基本功能。在修改了表单中的记录后，移动到一个新的记录上就可以保存对原记录的修改。注意在表单中</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">编辑框都是只读的，这是因为这两个字段的内容较重要，用户不能随便修改。</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">使用了</font><font FACE="Times New Roman" SIZE="3">STDREG32.MDB</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表，该表是一张课程表，其内容如表</font><font FACE="Times New Roman" SIZE="3">10.2</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在让我们来建立</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">应用程序。首先，用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">来完成</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">程序框架的建立，请读者按下面几步进行：</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">启动<font FACE="Times New Roman" SIZE="3">AppWizard</font>，指定一个名为<font FACE="Times New Roman" SIZE="3">Enroll</font>的<font FACE="Times New Roman" SIZE="3">MFC</font>工程。</p>
+      <p ALIGN="JUSTIFY">在<font FACE="Times New Roman" SIZE="3">MFC AppWizard</font>的第一步选择<font FACE="Times New Roman" SIZE="3">Single document</font>。</p>
+      <p ALIGN="JUSTIFY">在<font FACE="Times New Roman" SIZE="3">MFC AppWizard</font>的第二步选择<font FACE="Times New Roman" SIZE="3">Database view without file support</font>，然后点击<font FACE="Times New Roman" SIZE="3">Data Source...</font>按钮，在<font FACE="Times New Roman" SIZE="3">Database Options</font>对话框中的<font FACE="Times New Roman" SIZE="3">ODBC</font>组合框中选择<font FACE="Times New Roman" SIZE="3">Student Registration</font>数据源，如图<font FACE="Times New Roman" SIZE="3">10.7</font>所示。然后按“<font FACE="Times New Roman" SIZE="3">OK</font>”按钮，则会打开一个<font FACE="Times New Roman" SIZE="3">Select Database Table</font>对话框，如图<font FACE="Times New Roman" SIZE="3">10.8</font>所示。在该对话框中选择<font FACE="Times New Roman" SIZE="3">Section</font>表。按<font FACE="Times New Roman" SIZE="3">OK</font>按钮退出。</p>
+      <p ALIGN="JUSTIFY">在<font FACE="Times New Roman" SIZE="3">MFC AppWizard</font>的第六步中，将类<font FACE="Times New Roman" SIZE="3">CEnrollSet</font>改名为<font FACE="Times New Roman" SIZE="3">CSectionSet</font>，将类<font FACE="Times New Roman" SIZE="3">CEnrollView</font>改名为<font FACE="Times New Roman" SIZE="3">CSectionForm</font>。</p>
+      <p ALIGN="JUSTIFY">按<font FACE="Times New Roman" SIZE="3">Finish</font>按钮，建立<font FACE="Times New Roman" SIZE="3">Enroll</font>工程。</p>
+      </font><font FACE="Times New Roman" SIZE="3">
+    </blockquote>
+    <p ALIGN="center"></font><img src="T10_7.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/T10_7.gif" alt="T10_7.tif (155892 bytes)" WIDTH="470" HEIGHT="248"><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">10.7 
+    Database Options</font><font SIZE="3">对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T10_8.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/T10_8.gif" alt="T10_8.tif (135432 bytes)" WIDTH="452" HEIGHT="279"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">10.8 
+    Select Database Table</font><font SIZE="3">对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">打开工作区的类视图，可以发现</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">自动创建了一个记录集类</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">和一个记录视图类</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">，这两个类分别是</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CRecordView</font><font SIZE="3">的派生类。</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">也为</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">类自动创建了域数据成员。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">打开工作区的资源视图，读者不难找到一个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDD_ENROLL_FORM</font><font SIZE="3">的对话框模板，该模板将被记录视图用来显示表单。清除该模板中的所有控件，并把模板的尺寸扩大到</font><font FACE="Times New Roman" SIZE="3">183</font><font SIZE="3">×</font><font FACE="Times New Roman" SIZE="3">110</font><font SIZE="3">，然后按图</font><font FACE="Times New Roman" SIZE="3">10.3</font><font SIZE="3">的式样放置控件。这里可以采取一个偷懒的方法：打开</font><font FACE="Times New Roman" SIZE="3">VC5.0</font><font SIZE="3">已作好的第一个版本</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">的资源文件</font><font FACE="Times New Roman" SIZE="3">(Enroll.rc)</font><font SIZE="3">，找到并打开</font><font FACE="Times New Roman" SIZE="3">IDD_ENROLL_FORM</font><font SIZE="3">对话框模板，按住</font><font FACE="Times New Roman" SIZE="3">Ctrl</font><font SIZE="3">键并用鼠标选择模板中的所有控件，然后按</font><font FACE="Times New Roman" SIZE="3">Ctrl+Insert</font><font SIZE="3">键拷贝所选的控件。切换到自己的</font><font FACE="Times New Roman" SIZE="3">IDD_ENROLL_FORM</font><font SIZE="3">对话框模板，然后按</font><font FACE="Times New Roman" SIZE="3">Shift+Insert</font><font SIZE="3">键把刚才拷贝的控件粘贴到模板中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接下来的任务是用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">把表单中的控件与记录集的域数据成员连接起来，以实现控件与当前记录的</font><font FACE="Times New Roman" SIZE="3">DDX</font><font SIZE="3">数据交换。请读者按如下步骤操作：</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">进入<font FACE="Times New Roman" SIZE="3">ClassWizard</font>，选择<font FACE="Times New Roman" SIZE="3">Member Variables</font>页并且选择<font FACE="Times New Roman" SIZE="3">CSectionForm</font>类。</p>
+      <p ALIGN="JUSTIFY">在变量列表中双击<font FACE="Times New Roman" SIZE="3">IDC_CAPACITY</font>项，则会显示<font FACE="Times New Roman" SIZE="3">Add Member Variable</font>对话框。注意该对话框的<font FACE="Times New Roman" SIZE="3">Member variable name</font>栏显示的是一个组合框，而不是平常看到的编辑框。如图<font FACE="Times New Roman" SIZE="3">10.9</font>所示，在组合框的列表中选择<font FACE="Times New Roman" SIZE="3">m_pSet-&gt;m_Capacity</font>。按<font FACE="Times New Roman" SIZE="3">OK</font>按钮确认。</p>
+      <p ALIGN="JUSTIFY">仿照第<font FACE="Times New Roman" SIZE="3">2</font>步，为其他控件连接记录集的域数据成员。根据控件的<font FACE="Times New Roman" SIZE="3">ID</font>，不难确定对应的域数据成员。</p>
+      </font><font FACE="Times New Roman" SIZE="3">
+    </blockquote>
+    <p ALIGN="center"></font><img src="T10_9.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/T10_9.gif" alt="T10_9.tif (159244 bytes)" WIDTH="424" HEIGHT="349"><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">10.9 
+    Add Member Variable</font><font SIZE="3">对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">类的定义内可以找到下面一行：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSectionSet* m_pSet;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可见</font><font FACE="Times New Roman" SIZE="3">m_pSet</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">类的成员，它指向一个</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">对象。用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">可以把控件与象记录集这样的“外部数据”连接起来，这是</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">在数据库编程方面的一个特殊应用。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">，读者会惊奇的发现</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">居然是一个相当不错的记录浏览器，并且用户可以对记录进行修改。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在，让我们来分析一下</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">干了哪些事情。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在文档类</font><font FACE="Times New Roman" SIZE="3">CEnrollDoc</font><font SIZE="3">的定义中，有如下一行：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSectionSet m_sectionSet;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可见</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CEnrollDoc</font><font SIZE="3">类中嵌入了一个</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">对象。这相当于调用了构造函数</font><font FACE="Times New Roman" SIZE="3">CSectionSet(NULL)</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">类的构造函数的声明如下：<br>
+    </font><font FACE="Times New Roman" SIZE="3">CSectionSet(CDatabase* pDatabase = NULL);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">函数的定义在清单</font><font FACE="Times New Roman" SIZE="3">10.5</font><font SIZE="3">中列出。可以看出，构造函数调用了基类的构造函数，并对域数据成员进行了初始化。通过</font><font FACE="Times New Roman" SIZE="3">10.5.4</font><font SIZE="3">我们知道，若传递</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">参数给</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">的构造函数，那么</font><font FACE="Times New Roman" SIZE="3">CRecordset::Open</font><font SIZE="3">函数将自动构建一个</font><font FACE="Times New Roman" SIZE="3">CDatabase</font><font SIZE="3">对象，并根据</font><font FACE="Times New Roman" SIZE="3">CRecordset:: GetDefaultConnect</font><font SIZE="3">返回的连接字符串建立与数据源的连接。</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">提供了虚拟函数</font><font FACE="Times New Roman" SIZE="3">GetDefaultConnect</font><font SIZE="3">的新版本，如清单</font><font FACE="Times New Roman" SIZE="3">10.6</font><font SIZE="3">所示，在该函数中提供了数据源</font><font FACE="Times New Roman" SIZE="3">Student Registration</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.5 CSectionSet</font><font SIZE="3">的构造函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSectionSet::CSectionSet(CDatabase* pdb)</p>
+    <p ALIGN="JUSTIFY">: CRecordset(pdb)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">//{{AFX_FIELD_INIT(CSectionSet)</p>
+    <p ALIGN="JUSTIFY">m_CourseID = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_SectionNo = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_InstructorID = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_RoomNo = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_Schedule = _T(&quot;&quot;);</p>
+    <p ALIGN="JUSTIFY">m_Capacity = 0;</p>
+    <p ALIGN="JUSTIFY">m_nFields = 6;</p>
+    <p ALIGN="JUSTIFY">//}}AFX_FIELD_INIT</p>
+    <p ALIGN="JUSTIFY">m_nDefaultType = snapshot;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.6 </font><font SIZE="3">派生类的</font><font FACE="Times New Roman" SIZE="3">GetDefaultConnect</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CString CSectionSet::GetDefaultConnect()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">return _T(&quot;ODBC;DSN=Student Registration&quot;);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">至于记录集的建立，实际上是在</font><font FACE="Times New Roman" SIZE="3">CRecordView:: OnInitialUpdate</font><font SIZE="3">中完成的，这部分代码对用户是透明的，这里在清单</font><font FACE="Times New Roman" SIZE="3">10.7</font><font SIZE="3">中列出。在该函数中调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Open</font><font SIZE="3">来建立记录集。在函数的开头调用了</font><font FACE="Times New Roman" SIZE="3">OnGetRecordset</font><font SIZE="3">函数来获取与记录视图相连的记录集对象。</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">提供了虚拟函数</font><font FACE="Times New Roman" SIZE="3">OnGetRecordset</font><font SIZE="3">的新版本，如清单</font><font FACE="Times New Roman" SIZE="3">10.8</font><font SIZE="3">所示，该函数把</font><font FACE="Times New Roman" SIZE="3">m_pSet</font><font SIZE="3">提交给调用者。至于</font><font FACE="Times New Roman" SIZE="3">m_pSet</font><font SIZE="3">的初始化，则是在</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnInitialUpdate</font><font SIZE="3">函数中完成的，如清单</font><font FACE="Times New Roman" SIZE="3">10.9</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.7 CRecordView:: 
+    OnInitialUpdate</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRecordView::OnInitialUpdate()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CRecordset* pRecordset = OnGetRecordset();</p>
+    <p ALIGN="JUSTIFY">// recordset must be allocated already</p>
+    <p ALIGN="JUSTIFY">ASSERT(pRecordset != NULL);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (!pRecordset-&gt;IsOpen())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CWaitCursor wait;</p>
+    <p ALIGN="JUSTIFY">pRecordset-&gt;Open();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CFormView::OnInitialUpdate();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.8 </font><font SIZE="3">派生类的</font><font FACE="Times New Roman" SIZE="3">OnGetRecordset</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRecordset* CSectionForm::OnGetRecordset()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">return m_pSet;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.9 </font><font SIZE="3">派生类的</font><font FACE="Times New Roman" SIZE="3">OnInitialUpdate</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionForm::OnInitialUpdate()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_pSet = &amp;GetDocument()-&gt;m_sectionSet;</p>
+    <p ALIGN="JUSTIFY">CRecordView::OnInitialUpdate();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">注意到在</font><font FACE="Times New Roman" SIZE="3">CRecordView:: OnInitialUpdate</font><font SIZE="3">中调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Open</font><font SIZE="3">时未提供任何参数，这意味着</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数将从</font><font FACE="Times New Roman" SIZE="3">CRecordset::GetDefaultSQL</font><font SIZE="3">中获取</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">信息。</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">提供了虚拟函数</font><font FACE="Times New Roman" SIZE="3">GetDefaultSQL</font><font SIZE="3">的新版本，如清单</font><font FACE="Times New Roman" SIZE="3">10.10</font><font SIZE="3">所示，该函数返回了“</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">”表名。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.10 </font><font SIZE="3">派生类的</font><font FACE="Times New Roman" SIZE="3">GetDefaultSQL</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CString CSectionSet::GetDefaultSQL()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">return _T(&quot;[Section]&quot;);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">至于记录的滚动和修改的实现，请参看</font><font FACE="Times New Roman" SIZE="3">10.6</font><font SIZE="3">。而与</font><font FACE="Times New Roman" SIZE="3">DDX</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">DFX</font><font SIZE="3">有关的代码已在清单</font><font FACE="Times New Roman" SIZE="3">10.3</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">10.2</font><font SIZE="3">中列出。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果读者对上面的分析还有不明白的地方，那么请再把本章的前几节内容再仔细阅读一遍。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.7.3 
+    Enroll</font><font SIZE="3" color="#3973DE">的第二个版本</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Enroll</font><font SIZE="3">的第二个版本向读者演示了在一个记录视图中使用两个相关联的记录集，以及记录的过滤和排序技术，该版本使读者真正接触到了关系数据库。本小节还将向读者介绍如何用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">建立记录集类，以及参数化记录集的方法。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者可以先运行</font><font FACE="Times New Roman" SIZE="3">VC 5.0</font><font SIZE="3">提供的</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">例子的第二步看看。</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">的界面有了一个变化，原来的</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">编辑框被替换成了组合框，如图</font><font FACE="Times New Roman" SIZE="3">10.10</font><font SIZE="3">所示。组合框中的内容来自同一数据源的另一张表</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">字段。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T10_10.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/T10_10.gif" alt="T10_10.tif (174388 bytes)" WIDTH="480" HEIGHT="342"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">10.10 
+    Enroll</font><font SIZE="3">的第二个版本</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Course</font><font SIZE="3">表的内容如表</font><font FACE="Times New Roman" SIZE="3">10.5</font><font SIZE="3">所示，与表</font><font FACE="Times New Roman" SIZE="3">10.2</font><font SIZE="3">相对照，读者可以发现</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">表和</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表有一个公共字段</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">。记录视图程序正是利用这个公共字段把两张表联系起来的。例如，当用户在</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">组合框中选择了</font><font FACE="Times New Roman" SIZE="3">MATH202</font><font SIZE="3">时，程序将选择</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表中所有</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">MATH202</font><font SIZE="3">的记录并建立新的记录集。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">事实上，在</font><font FACE="Times New Roman" SIZE="3">STDREG32.MDB</font><font SIZE="3">的大部分表都共享了</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">。在主表</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">表中，每个记录的</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">是唯一的，我们称其为主关键字</font><font FACE="Times New Roman" SIZE="3">(Primary key)</font><font SIZE="3">。在</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">的相关表中，</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">不一定唯一，如</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表，我们称相关表中的</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">为外关键字</font><font FACE="Times New Roman" SIZE="3">(Foreign key)</font><font SIZE="3">。通过关键字可以把多张表联系到一起，这样的数据库就是关系数据库。</font><font FACE="Times New Roman" SIZE="3">SectionNo</font><font SIZE="3">也是一个关键字，在</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表中，</font><font FACE="Times New Roman" SIZE="3">SectioinNo</font><font SIZE="3">字段是主关键字，它的值是唯一的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">10.5 Course</font><font SIZE="3">表</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">CourseID(Text)</b></font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">CourseTitle(Text)</b></font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">Hours(int)</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH101</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Algebra</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">4</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH201</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Calculus I</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">4</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MATH202</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Calculus II</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">4</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在就让我们开始在上一小节</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">的基础上制作新版本。若当前工程不是</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">，请读者打开上一小节创建的</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">工程。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">首先要把</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">编辑框替换成组合框，这包括下面几步：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">打开</font><font FACE="Times New Roman" SIZE="3">IDD_ENROLL_FORM</font><font SIZE="3">对话框模板并删除</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">编辑框。</p>
+        <p ALIGN="JUSTIFY">在原来编辑框的位置加入一个组合框。打开该控件的属性对话框，令其</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDC_COURSELIST</font><font SIZE="3">，并在</font><font FACE="Times New Roman" SIZE="3">Styles</font><font SIZE="3">页中选择</font><font FACE="Times New Roman" SIZE="3">Drop List</font><font SIZE="3">。注意要适当调整组合框的下拉列表尺寸</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">点击向下的箭头后扩大其尺寸</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">自上到下从新安排</font><font FACE="Times New Roman" SIZE="3">Tab</font><font SIZE="3">顺序。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接下来要用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">做一些与新加的组合框有关的工作：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">，选择</font><font FACE="Times New Roman" SIZE="3">Member Variables</font><font SIZE="3">页并选择</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">类。单击列表中的</font><font FACE="Times New Roman" SIZE="3">IDC_COURSE</font><font SIZE="3">项并按</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">键删除该项。然后双击</font><font FACE="Times New Roman" SIZE="3">IDC_COURSELIST</font><font SIZE="3">项，在</font><font FACE="Times New Roman" SIZE="3">Add Member Variable</font><font SIZE="3">对话框的组合框中选择</font><font FACE="Times New Roman" SIZE="3">m_pSet-&gt;m_CourseID</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">再次双击</font><font FACE="Times New Roman" SIZE="3">IDC_COURSELIST</font><font SIZE="3">，并为</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">类加入一个名为</font><font FACE="Times New Roman" SIZE="3">m_ctlCourseList</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">类成员。</p>
+        <p ALIGN="JUSTIFY">选择</font><font FACE="Times New Roman" SIZE="3">Message Maps</font><font SIZE="3">页，为</font><font FACE="Times New Roman" SIZE="3">IDC_COURSELIST</font><font SIZE="3">组合框加入</font><font FACE="Times New Roman" SIZE="3">CBN_SELENDOK</font><font SIZE="3">通知消息处理函数，函数名为</font><font FACE="Times New Roman" SIZE="3">OnSelendokCourselist</font><font SIZE="3">。该函数负责响应用户在组合框中选择的变化。</p>
+        <p ALIGN="JUSTIFY">按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮退出</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接着，需要为</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">表创建一个名为</font><font FACE="Times New Roman" SIZE="3">CCourseSet</font><font SIZE="3">的记录集类，这个工作可由</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">完成，请读者按下面几步操作：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">，点击</font><font FACE="Times New Roman" SIZE="3">Add Class...</font><font SIZE="3">按钮并在弹出的菜单中选择</font><font FACE="Times New Roman" SIZE="3">New...</font><font SIZE="3">，然后在</font><font FACE="Times New Roman" SIZE="3">Create New Class</font><font SIZE="3">对话框中的</font><font FACE="Times New Roman" SIZE="3">Name</font><font SIZE="3">栏中输入</font><font FACE="Times New Roman" SIZE="3">CCourseSet</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Base class</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">，按</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">按钮。</p>
+        <p ALIGN="JUSTIFY">在弹出的</font><font FACE="Times New Roman" SIZE="3">Database 
+        Options</font><font SIZE="3">对话框中，在</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">组合框里选择</font><font FACE="Times New Roman" SIZE="3">Student Registration</font><font SIZE="3">数据源。然后按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮。</p>
+        <p ALIGN="JUSTIFY">在弹出的</font><font FACE="Times New Roman" SIZE="3">Select 
+        Database Tables</font><font SIZE="3">对话框中选择</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">表。按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">确认。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">看看新建的</font><font FACE="Times New Roman" SIZE="3">CCourseSet</font><font SIZE="3">类，读者会发现</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">自动为</font><font FACE="Times New Roman" SIZE="3">CCourseSet</font><font SIZE="3">类创建了与</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">表的字段相对应的域数据成员，并且建立了</font><font FACE="Times New Roman" SIZE="3">DoFieldExchange</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">也为记录集类提供了新的</font><font FACE="Times New Roman" SIZE="3">GetDefaultConnect</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">GetDefaultSQL</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接着，在</font><font FACE="Times New Roman" SIZE="3">CEnrollDoc</font><font SIZE="3">类的定义中，紧接着</font><font FACE="Times New Roman" SIZE="3">m_sectionSet</font><font SIZE="3">成员，加入下面一行：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">CCourseSet m_courseSet;</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">这样</font><font FACE="Times New Roman" SIZE="3">CEnrollDoc</font><font SIZE="3">就包含了两个记录集。由于</font><font FACE="Times New Roman" SIZE="3">CEnrollDoc</font><font SIZE="3">类用到了</font><font FACE="Times New Roman" SIZE="3">CCourseSet</font><font SIZE="3">类，所以要在所有含有</font><font FACE="Times New Roman" SIZE="3">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">EnrolDoc.h</font><font SIZE="3">”语句的</font><font FACE="Times New Roman" SIZE="3">CPP</font><font SIZE="3">文件中，在</font><font FACE="Times New Roman" SIZE="3">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">EnrolDoc.h</font><font SIZE="3">”语句的前面加上如下的</font><font FACE="Times New Roman" SIZE="3">include</font><font SIZE="3">语句。这些</font><font FACE="Times New Roman" SIZE="3">CPP</font><font SIZE="3">文件包括</font><font FACE="Times New Roman" SIZE="3">CEnrollApp</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CEnrollDoc</font><font SIZE="3">类所在的</font><font FACE="Times New Roman" SIZE="3">CPP</font><font SIZE="3">文件。</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">#include &quot;CourseSet.h&quot;</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">类的定义中，紧接着域数据成员，在“</font><font FACE="Times New Roman" SIZE="3">//}}AFX_FIELD</font><font SIZE="3">”注释外加入下面一行。</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">CString m_strCourseIDParam;</b></p>
+    <p ALIGN="JUSTIFY">m_strCourseIDParam</font><font SIZE="3">是记录集的参数数据成员，其作用将在后面说明。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">最后，请读者按清单</font><font FACE="Times New Roman" SIZE="3">10.11</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">10.12</font><font SIZE="3">修改程序。清单</font><font FACE="Times New Roman" SIZE="3">10.11</font><font SIZE="3">列出的是</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">类的部分源代码，清单</font><font FACE="Times New Roman" SIZE="3">10.12</font><font SIZE="3">列出的是</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">类的部分代码。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.11 CSectionSet</font><font SIZE="3">类的部分代码</b> </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSectionSet::CSectionSet(CDatabase* pdb)</p>
+    <p ALIGN="JUSTIFY">: CRecordset(pdb)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY"><b>. . .</p>
+    <p ALIGN="JUSTIFY">m_nParams = 1; //</font><font SIZE="3">只有一个参数数据成员</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_strCourseIDParam = &quot;&quot;;</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionSet::DoFieldExchange(CFieldExchange* pFX)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY"><b>. . .</p>
+    <p ALIGN="JUSTIFY">pFX-&gt;SetFieldType(CFieldExchange::param);</p>
+    <p ALIGN="JUSTIFY">RFX_Text(pFX, &quot;CourseIDParam&quot;, m_strCourseIDParam); //</font><font SIZE="3">替换参数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.12 CSectionForm</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionForm::OnInitialUpdate()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_pSet = &amp;GetDocument()-&gt;m_sectionSet;</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CEnrollDoc* pDoc = GetDocument();</p>
+    <p ALIGN="JUSTIFY">pDoc-&gt;m_courseSet.m_strSort = &quot;CourseID&quot;;</p>
+    <p ALIGN="JUSTIFY">if (!pDoc-&gt;m_courseSet.Open())</p>
+    <p ALIGN="JUSTIFY">return;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_strFilter = &quot;CourseID = ?&quot;; //</font><font SIZE="3">使用参数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_strCourseIDParam = pDoc-&gt;m_courseSet.m_CourseID;</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_strSort = &quot;SectionNo&quot;;</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_pDatabase = pDoc-&gt;m_courseSet.m_pDatabase; //</font><font SIZE="3">共享</font><font FACE="Times New Roman" SIZE="3">CDatabase</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRecordView::OnInitialUpdate();</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_ctlCourseList.ResetContent();</p>
+    <p ALIGN="JUSTIFY">if (pDoc-&gt;m_courseSet.IsOpen())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">while (!pDoc-&gt;m_courseSet.IsEOF())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_ctlCourseList.AddString(</p>
+    <p ALIGN="JUSTIFY">pDoc-&gt;m_courseSet.m_CourseID); //</font><font SIZE="3">向表中加入</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">字段</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pDoc-&gt;m_courseSet.MoveNext();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">m_ctlCourseList.SetCurSel(0);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionForm::OnSelendokCourselist()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (!m_pSet-&gt;IsOpen())</p>
+    <p ALIGN="JUSTIFY">return;</p>
+    <p ALIGN="JUSTIFY">m_ctlCourseList.GetLBText(m_ctlCourseList.GetCurSel(),</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_strCourseIDParam);</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;Requery(); //</font><font SIZE="3">重新查询</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (m_pSet-&gt;IsEOF())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;SetFieldNull(&amp;(m_pSet-&gt;m_CourseID), FALSE);</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_CourseID = m_pSet-&gt;m_strCourseIDParam;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">UpdateData(FALSE);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnInitialUpdate</font><font SIZE="3">函数的开头部分，调用了</font><font FACE="Times New Roman" SIZE="3">CRecordset::Open</font><font SIZE="3">建立</font><font FACE="Times New Roman" SIZE="3">CCourseSet</font><font SIZE="3">记录集，在调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数之前，指定了按</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">字段排序记录集。关于调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">函数的一些前因后果在前面已经解释过了，读者应该不难分析。接下来的代码读者可能就看不懂了，为什么在记录集的</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">过滤字符串中会有一个“</font><font FACE="Times New Roman" SIZE="3">?</font><font SIZE="3">”号呢。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">这是因为在本例中使用了“参数化记录集”技术。在记录集的</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">中，可以用“</font><font FACE="Times New Roman" SIZE="3">?</font><font SIZE="3">”号作为参数使用，这样在指定过滤器和排序时可以更具灵活性。例如，在</font><font FACE="Times New Roman" SIZE="3">OnInitialUpdate</font><font SIZE="3">函数中，是这样指定过滤器的：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_strFilter = &quot;CourseID = ?&quot;;</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在调用</font><font FACE="Times New Roman" SIZE="3">Open</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">时，“</font><font FACE="Times New Roman" SIZE="3">?</font><font SIZE="3">”将会被</font><font FACE="Times New Roman" SIZE="3">CSectionSet::m_strCourseIDParam</font><font SIZE="3">中的内容取代。例如，如果指定</font><font FACE="Times New Roman" SIZE="3">m_strCourseIDParam</font><font SIZE="3">为“</font><font FACE="Times New Roman" SIZE="3">MATH101</font><font SIZE="3">”，则</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">将变成</font><font FACE="Times New Roman" SIZE="3">&quot;CourseID = MATH101&quot;</font><font SIZE="3">。这样用户只要指定了</font><font FACE="Times New Roman" SIZE="3">m_strCourseIDParam</font><font SIZE="3">，就可以定制过滤器。象</font><font FACE="Times New Roman" SIZE="3">m_strCourseIDParam</font><font SIZE="3">这样的成员被称作参数数据成员，同域数据成员一样，它是记录集所特有的。</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">不支持参数数据成员，用户只能手工加入之，且其名字由用户自己确定。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">参数替换的工作实际上是由</font><font FACE="Times New Roman" SIZE="3">CSectionSet::DoFieldExchange</font><font SIZE="3">中的</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">函数完成的，在</font><font FACE="Times New Roman" SIZE="3">DoFieldExchange</font><font SIZE="3">函数的末尾，我们加入了下面两行：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">pFX-&gt;SetFieldType(CFieldExchange::param);</p>
+    <p ALIGN="JUSTIFY">RFX_Text(pFX, &quot;CourseIDParam&quot;, m_strCourseIDParam);</b></p>
+    <p ALIGN="JUSTIFY">DoFieldExchange</font><font SIZE="3">可以识别域数据成员和参数数据成员。第一行调用用来表明随后的</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">函数用于参数替换。第二行是一个用于</font><font FACE="Times New Roman" SIZE="3">m_strCourseIDParam</font><font SIZE="3">参数的</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">第二个参数的名字可由用户确定，这里指定其为“</font><font FACE="Times New Roman" SIZE="3">CourseIDParam</font><font SIZE="3">”。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">用户可以在</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">中使用一个或多个参数。在有多个参数的情况下，要注意</font><font FACE="Times New Roman" SIZE="3">RFX</font><font SIZE="3">函数的调用次序应与参数出现的次序相对应。框架规定，用户应该先在</font><font FACE="Times New Roman" SIZE="3">m_strFilter</font><font SIZE="3">中安排参数，然后才是</font><font FACE="Times New Roman" SIZE="3">m_strSort</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRecordset</font><font SIZE="3">有两个数据成员</font><font FACE="Times New Roman" SIZE="3">m_nFields</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">m_nParams</font><font SIZE="3">分别用来统计域数据成员和参数数据成员的数目。前者由</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">自动计数，而后者必需由用户来维护。在</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">的构造函数中，</font><font FACE="Times New Roman" SIZE="3">m_nParams</font><font SIZE="3">被置为</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">，因为只有一个参数数据成员。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在让我们继续研究</font><font FACE="Times New Roman" SIZE="3">OnInitialUpdate</font><font SIZE="3">。在调用基类的</font><font FACE="Times New Roman" SIZE="3">OnInitialUpdate</font><font SIZE="3">以前，在程序中有这样一行代码：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_pDatabase = pDoc-&gt;m_courseSet.m_pDatabase;</b></p>
+    <p ALIGN="JUSTIFY">m_pDatabase</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CRecordset</font><font SIZE="3">的公共成员，它是指向</font><font FACE="Times New Roman" SIZE="3">CDatabase</font><font SIZE="3">对象的指针。如果应用程序使用了两个以上的记录集，在缺省情况下，每个记录集都会创建一个代表同一数据源的</font><font FACE="Times New Roman" SIZE="3">CDatabase</font><font SIZE="3">对象</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">参见</font><font FACE="Times New Roman" SIZE="3">10.5.4)</font><font SIZE="3">，这显然没有必要。上面一行代码使</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">记录集共享由</font><font FACE="Times New Roman" SIZE="3">CCourseSet</font><font SIZE="3">记录集创建的</font><font FACE="Times New Roman" SIZE="3">CDatabase</font><font SIZE="3">对象，这样，当在</font><font FACE="Times New Roman" SIZE="3">CRecordView:: OnInitialUpdate</font><font SIZE="3">中调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Open</font><font SIZE="3">打开</font><font FACE="Times New Roman" SIZE="3">CSectionSet</font><font SIZE="3">记录集时，就不会再创建</font><font FACE="Times New Roman" SIZE="3">CDatabase</font><font SIZE="3">对象了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接下来，程序把</font><font FACE="Times New Roman" SIZE="3">CCourseSet</font><font SIZE="3">的每一个记录的</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">字段都加入到组合框中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当用户在组合框中选择了新的</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">时，在</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnSelendokCourselist</font><font SIZE="3">中，就会把用户选择的</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">设置到</font><font FACE="Times New Roman" SIZE="3">m_strCourseIDParam</font><font SIZE="3">中，然后调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Requery</font><font SIZE="3">按照定制的过滤器和排序重新查询和建立记录集。如果重新建立的记录集为空，则说明</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表中没有与指定的</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">相对应的记录，这时记录集被自动设置为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。在程序中，调用了</font><font FACE="Times New Roman" SIZE="3">CRecordset:: SetFieldNull</font><font SIZE="3">把</font><font FACE="Times New Roman" SIZE="3">m_CourseID</font><font SIZE="3">字段设置为非空。最后，调用</font><font FACE="Times New Roman" SIZE="3">CRecordView::UpdateData</font><font SIZE="3">更新表单中的控件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">从程序中不难看出，使用参数化记录集的最大好处是可以在程序运行期间方便地指定过滤器和排序，这大大提高了程序的用户定制查询能力。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">，试试新增加的功能。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.7.4 
+    Enroll</font><font SIZE="3" color="#3973DE">的第三个版本</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Enroll</font><font SIZE="3">的第三个版本支持记录的添加和删除，该版本也演示了对数据库异常的处理。请读者先运行</font><font FACE="Times New Roman" SIZE="3">VC5.0</font><font SIZE="3">提供的第三步</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">程序看一看。第三版</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">菜单中多了三个命令：</font><font FACE="Times New Roman" SIZE="3">Add</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Refresh</font><font SIZE="3">，它们分别用来添加、删除和刷新记录。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当用户选择</font><font FACE="Times New Roman" SIZE="3">Add</font><font SIZE="3">命令后，就进入了添加模式。这时除</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">组合框外，所有的字段都被清除。用户可以在各编辑框内输入新记录的字段值，然后移动到别的记录上，这样就把新的记录保存到数据源中。用户也可以通过再次选择</font><font FACE="Times New Roman" SIZE="3">Add</font><font SIZE="3">命令来保存新加的记录。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当用户选择</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">命令后，当前记录被删除，程序会自动滚动到下一个记录上。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Refresh</font><font SIZE="3">命令用来放弃记录的修改或添加操作，同时，恢复原记录的内容。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在就让我们开始在上一小节</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">的基础上制作新版本。若当前工程不是</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">，请读者打开上一小节创建的</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">工程。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">首先要为</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">菜单添加三个菜单项，菜单项的各项属性在表</font><font FACE="Times New Roman" SIZE="3">10.6</font><font SIZE="3">中列出。请把这三个菜单项加到</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">菜单的开头，并且用一个分隔线和后面的命令隔开。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">10.6</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">Caption</b></font></td>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">ID</b></font></td>
+        <td WIDTH="46%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">Prompt</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">&amp;Add</font></td>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_RECORD_ADD</font></td>
+        <td WIDTH="46%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Add a new section</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">&amp;Refresh</font></td>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_RECORD_REFRESH</font></td>
+        <td WIDTH="46%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Cancel changes on 
+        form,or cancel Add</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">&amp;Delete</font></td>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_RECORD_DELETE</font></td>
+        <td WIDTH="46%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Delete section</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接着，用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为上面三个命令创建处理函数，函数名为缺省的。另外，需要为记录视图编写新的</font><font FACE="Times New Roman" SIZE="3">OnMove</font><font SIZE="3">函数来处理滚动命令，这是因为原来的</font><font FACE="Times New Roman" SIZE="3">OnMove</font><font SIZE="3">函数没有添加记录的功能。在</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">类的</font><font FACE="Times New Roman" SIZE="3">Messages</font><font SIZE="3">列表中可以找到</font><font FACE="Times New Roman" SIZE="3">OnMove</font><font SIZE="3">函数，请读者双击并建立该函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnMove</font><font SIZE="3">函数处理滚动命令时，必需要有一个标志来判断当前是否处于添加模式，以便向数据源中加入新记录或进行普通的滚动处理。请读者在</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">类的定义中的适当位置加入下面两行：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY">protected:</p>
+    <p ALIGN="JUSTIFY">BOOL m_bAddMode;</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在前两个版本的</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">中，</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">编辑框都是只读的，但在添加记录时，必需允许用户修改</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">编辑框。这是因为</font><font FACE="Times New Roman" SIZE="3">SectionNo</font><font SIZE="3">字段是</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">表的主关键字，它的值必需唯一，如果在加入新记录时不改变原来的</font><font FACE="Times New Roman" SIZE="3">SectionNo</font><font SIZE="3">字段，那么将会因为主关键字重复而导致异常产生。显然，我们需要一个</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">对象来控制</font><font FACE="Times New Roman" SIZE="3">IDC_SECTION</font><font SIZE="3">编辑框，请读者用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">CSectionForm</font><font SIZE="3">类加入一个与</font><font FACE="Times New Roman" SIZE="3">IDC_SECTION</font><font SIZE="3">对应的</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">型成员变量，变量的名字为</font><font FACE="Times New Roman" SIZE="3">m_ctlSection</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">最后，请读者按清单</font><font FACE="Times New Roman" SIZE="3">10.13</font><font SIZE="3">修改程序。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.13 CSectionForm</font><font SIZE="3">类的部分源代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSectionForm::CSectionForm()</p>
+    <p ALIGN="JUSTIFY">: CRecordView(CSectionForm::IDD)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY"><b>. . .</p>
+    <p ALIGN="JUSTIFY">m_bAddMode = FALSE;</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionForm::OnSelendokCourselist()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if (!m_pSet-&gt;IsOpen())</p>
+    <p ALIGN="JUSTIFY">return;</p>
+    <p ALIGN="JUSTIFY">m_ctlCourseList.GetLBText(m_ctlCourseList.GetCurSel(),</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_strCourseIDParam);</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (!m_bAddMode)</p>
+    <p ALIGN="JUSTIFY">{</b></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;Requery();</p>
+    <p ALIGN="JUSTIFY">if (m_pSet-&gt;IsEOF())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;SetFieldNull(&amp;(m_pSet-&gt;m_CourseID), FALSE);</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_CourseID = m_pSet-&gt;m_strCourseIDParam;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">UpdateData(FALSE);</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionForm::OnRecordAdd()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (m_bAddMode) //</font><font SIZE="3">如果已处于添加模式，则完成添加操作</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">OnMove(ID_RECORD_FIRST);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CString strCurrentCourse = m_pSet-&gt;m_CourseID;</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;AddNew();</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;SetFieldNull(&amp;(m_pSet-&gt;m_CourseID), FALSE);</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;m_CourseID = strCurrentCourse;</p>
+    <p ALIGN="JUSTIFY">m_bAddMode = TRUE;</p>
+    <p ALIGN="JUSTIFY">m_ctlSection.SetReadOnly(FALSE);</p>
+    <p ALIGN="JUSTIFY">UpdateData(FALSE); //</font><font SIZE="3">更新表单视图</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionForm::OnRecordDelete()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">TRY</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;Delete();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">CATCH(CDBException, e)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(e-&gt;m_strError);</p>
+    <p ALIGN="JUSTIFY">return;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">END_CATCH</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;MoveNext(); //</font><font SIZE="3">滚动到下一个记录</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (m_pSet-&gt;IsEOF()) //</font><font SIZE="3">如果滚出了记录集的边界，则滚动到最后一个记录</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;MoveLast();</p>
+    <p ALIGN="JUSTIFY">if (m_pSet-&gt;IsBOF()) //</font><font SIZE="3">如果记录变空了，则清除域数据成员</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;SetFieldNull(NULL);</p>
+    <p ALIGN="JUSTIFY">UpdateData(FALSE); //</font><font SIZE="3">更新表单视图</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CSectionForm::OnRecordRefresh()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (m_bAddMode == TRUE)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;Move(AFX_MOVE_REFRESH); //</font><font SIZE="3">取消添加模式</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_ctlSection.SetReadOnly(TRUE);</p>
+    <p ALIGN="JUSTIFY">m_bAddMode = FALSE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">UpdateData(FALSE); //</font><font SIZE="3">更新表单视图</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CSectionForm::OnMove(UINT nIDMoveCommand)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (m_bAddMode)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if (!UpdateData())</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">TRY</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;Update();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">CATCH(CDBException, e)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(e-&gt;m_strError);</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">END_CATCH</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pSet-&gt;Requery(); //</font><font SIZE="3">重新查询，使新加的记录对用户可见</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">UpdateData(FALSE);</p>
+    <p ALIGN="JUSTIFY">m_ctlSection.SetReadOnly(TRUE);</p>
+    <p ALIGN="JUSTIFY">m_bAddMode = FALSE;</p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">else</p>
+    <p ALIGN="JUSTIFY">{</b></p>
+    <p ALIGN="JUSTIFY">return CRecordView::OnMove(nIDMoveCommand);</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">我们先来看看</font><font FACE="Times New Roman" SIZE="3">Add</font><font SIZE="3">命令的处理函数</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnRecordAdd</font><font SIZE="3">函数。在该函数中，最重要的代码是调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::AddNew</font><font SIZE="3">进入添加模式。其余代码的解释如下：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">如果已处于添加模式，则调用</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnMove</font><font SIZE="3">滚动到别的记录上，这导致新记录被保存到数据源中。通过滚动到别的记录上来完成添加操作是一种常用的方法。其实，缺省的</font><font FACE="Times New Roman" SIZE="3">CRecordView::OnMove</font><font SIZE="3">就可以完成这一功能</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">参见</font><font FACE="Times New Roman" SIZE="3">10.5.6</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">10.6)</font><font SIZE="3">，但</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnMove</font><font SIZE="3">有另外的考虑</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">见下面的说明</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">保存当前记录的</font><font FACE="Times New Roman" SIZE="3">CourseID</font><font SIZE="3">，并将它作为新记录的缺省值。</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CEdit::SetReadOnly(FALSE)</font><font SIZE="3">把</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">编辑框改成可输入的，以便用户输入新的值。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSectionForm::OnMove</font><font SIZE="3">负责处理滚动命令。与缺省的</font><font FACE="Times New Roman" SIZE="3">CRecordView::OnMove</font><font SIZE="3">函数不同的是，该函数对于添加模式下的滚动进行了重新处理：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">在调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Update</font><font SIZE="3">把新记录保存到数据源后，调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Requery</font><font SIZE="3">重新查询记录集。这样做的原因是</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">使用的是快照型记录集，快照不反映用户添加的记录，所以需要调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">重新查询以把新加的记录包含进记录集中。在调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">后，会自动滚动到第一个记录上，所以在添加模式下滚动记录总是滚动动到第一个记录上。</p>
+        <p ALIGN="JUSTIFY">在调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Update</font><font SIZE="3">时，对可能发生的异常进行了处理。这里将直接输出异常信息。</p>
+        <p ALIGN="JUSTIFY">在调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">后，要调用</font><font FACE="Times New Roman" SIZE="3">CRecordView::UpdateData(FALSE)</font><font SIZE="3">来更新表单，并调用</font><font FACE="Times New Roman" SIZE="3">CEdit::SetReadOnly(TRUE)</font><font SIZE="3">使</font><font FACE="Times New Roman" SIZE="3">Sectioin</font><font SIZE="3">编辑框变成只读的。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">命令的处理函数</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnDelete</font><font SIZE="3">中调用了</font><font FACE="Times New Roman" SIZE="3">CRecordset::Delete</font><font SIZE="3">来删除记录，并对可能发生的异常进行了处理。在调用</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">后，滚动记录到新的位置上以跳过被删除的记录。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Refresh</font><font SIZE="3">命令的处理函数</font><font FACE="Times New Roman" SIZE="3">CSectionForm::OnRefresh</font><font SIZE="3">用来放弃修改或添加记录的操作。对该函数的解释为：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">如果当前处于添加模式，则调用</font><font FACE="Times New Roman" SIZE="3">CRecordset::Move(AFX_MOVE_REFRESH)</font><font SIZE="3">取消添加模式并恢复域数据成员的原值</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">参见</font><font FACE="Times New Roman" SIZE="3">10.5.6)</font><font SIZE="3">，把</font><font FACE="Times New Roman" SIZE="3">Section</font><font SIZE="3">编辑框设置成只读的。</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CRecordView::UpdateData(FALSE)</font><font SIZE="3">恢复表单视图中的记录。</font></p>
+      </blockquote>
+    </blockquote>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CSectionForm::OnSelendokCourselist</font><font SIZE="3">函数中多了一个用来判断当前是否处于添加模式的</font><font FACE="Times New Roman" SIZE="3">if</font><font SIZE="3">语句。如果处于添加模式，那么就不能调用</font><font FACE="Times New Roman" SIZE="3">Requery</font><font SIZE="3">重新查询，因为此时</font><font FACE="Times New Roman" SIZE="3">Course</font><font SIZE="3">组合框的作用仅仅是让用户选择一个字段值，而不是指定过滤器。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Enroll</font><font SIZE="3">，试试新增加的功能。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap10_6.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/chap10_6.htm">上一页</a></td>
+        <td><p align="right"><a href="chap10_8.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/chap10_8.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+
+  <title>Container constructors</title>
+  <link href="cppreference.css" tppabs="http://www.cppreference.com/cppreference.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<table>
+  <tr>
+  <td>
+  <div class="body-content">
+
+  <div class="header-box">
+    <a href="index.html" tppabs="http://www.cppreference.com/index.html">cppreference.com</a> &gt; <a href=
+    "index-16.html" tppabs="http://www.cppreference.com/cpplist/index.html">C++ Lists</a> &gt; <a href=
+    "container_constructors2-1.html" tppabs="http://www.cppreference.com/cpplist/container_constructors2.html">Container constructors</a>
+  </div>
+
+  <div class="name-format">
+    Container constructors
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;list&gt;
+  container();
+  container( const container&amp; c );
+  container( <strong>size_type</strong> num, const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">TYPE</a>&amp; val = <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">TYPE</a>() );
+  container( <a href=
+"iterators.html" tppabs="http://www.cppreference.com/iterators.html">input_iterator</a> start, <a href=
+"iterators.html" tppabs="http://www.cppreference.com/iterators.html">input_iterator</a> end );
+  ~container();
+</pre>
+
+  <p>The default list constructor takes no arguments, creates a new
+  instance of that list.</p>
+
+  <p>The second constructor is a default copy constructor that can be
+  used to create a new list that is a copy of the given list
+  <em>c</em>.</p>
+
+  <p>The third constructor creates a list with space for <em>num</em>
+  objects. If <em>val</em> is specified, each of those objects will be
+  given that value. For example, the following code creates a vector
+  consisting of five copies of the integer 42:</p>
+  <pre class="example-code">
+ vector&lt;int&gt; v1( 5, 42 );         
+</pre>
+
+  <p>The last constructor creates a list that is initialized to contain
+  the elements between <em>start</em> and <em>end</em>. For
+  example:</p>
+  <pre class="example-code">
+ // create a vector of random integers
+ cout &lt;&lt; &quot;original vector: &quot;;
+ vector&lt;int&gt; v;
+ for( int i = 0; i &lt; 10; i++ ) {
+   int num = (int) rand() % 10;
+   cout &lt;&lt; num &lt;&lt; &quot; &quot;;
+   v.push_back( num );
+ }
+ cout &lt;&lt; endl;            
+
+ // find the first element of v that is even
+ vector&lt;int&gt;::iterator iter1 = v.begin();
+ while( iter1 != v.end() &amp;&amp; *iter1 % 2 != 0 ) {
+   iter1++;
+ }              
+
+ // find the last element of v that is even
+ vector&lt;int&gt;::iterator iter2 = v.end();
+ do {
+   iter2--;
+ } while( iter2 != v.begin() &amp;&amp; *iter2 % 2 != 0 );              
+
+ cout &lt;&lt; &quot;first even number: &quot; &lt;&lt; *iter1 &lt;&lt; &quot;, last even number: &quot; &lt;&lt; *iter2 &lt;&lt; endl;         
+
+ cout &lt;&lt; &quot;new vector: &quot;;
+ vector&lt;int&gt; v2( iter1, iter2 );
+ for( int i = 0; i &lt; v2.size(); i++ ) {
+   cout &lt;&lt; v2[i] &lt;&lt; &quot; &quot;;
+ }
+ cout &lt;&lt; endl;            
+</pre>
+
+  <p>When run, this code displays the following output:</p>
+  <pre class="example-code">
+ original vector: 1 9 7 9 2 7 2 1 9 8
+ first even number: 2, last even number: 8
+ new vector: 2 7 2 1 9          
+</pre>
+
+  <p>All of these constructors run in <a href=
+  "complexity.html" tppabs="http://www.cppreference.com/complexity.html">linear time</a> except the first, which runs in
+  <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">constant time</a>.</p>
+
+  <p>The default destructor is called when the list should be
+  destroyed.</p>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>

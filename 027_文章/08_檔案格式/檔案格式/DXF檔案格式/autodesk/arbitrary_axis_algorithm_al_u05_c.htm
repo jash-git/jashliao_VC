@@ -1,0 +1,60 @@
+<html>
+<head>
+<meta name=ID content="Arbitrary_Axis_Algorithm_Al_u05_c">
+<title>Arbitrary Axis Algorithm  [ACG]</title>
+<meta name=KEYWORDS content="DXF files, arbitrary axis algorithm;arbitrary axis algorithm;arbitrary axis algorithm">
+<meta name=BROWSE content="BROWSE1:000">
+<meta name=WINDOW content="main">
+</head>
+<body bgcolor=#ffffff link=#003399 vlink=#003399>
+<a name="XREF_24259_Al_u05_c"></a>
+
+<table width=100% cellpadding=5 cellspacing=0 border=0><tr><td>
+<font face=Arial color=#003399 size=3><b> <a href="dxf_group_codes.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/dxf_group_codes.htm">DXF Group Codes</a>
+</b></font>
+<hr size=1>
+<font face=Arial color=#003399 size=3><b><a href="advanced_dxf_issues_al_u05_c.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/advanced_dxf_issues_al_u05_c.htm"><img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> Advanced DXF Issues</a> 
+</b></font><br>
+</td></tr><tr><td>
+<font face=Arial color=#003399 size=3><b><a href="object_coordinate_systems_40ocs41_al_u05_c.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/object_coordinate_systems_40ocs41_al_u05_c.htm"><img src="bk_space.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/bk_space.gif" border=0> <img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> Object Coordinate Systems (OCS)</a> 
+</b></font><br>
+</td></tr><tr><td>
+<font face=Arial color=#003399 size=3><b><img src="bk_space.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/bk_space.gif" border=0> <img src="bk_space.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/bk_space.gif" border=0> <img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> Arbitrary Axis Algorithm
+</b></font>
+<hr size=1>
+</td></tr></table>
+
+<p><font face="MS Sans Serif,Arial" size=2>The arbitrary axis algorithm is used by AutoCAD internally to implement the arbitrary but consistent generation of object coordinate systems for all entities which use object coordinates.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>Given a unit-length vector to be used as the <FONT FACE=ARIAL><I>Z</I></FONT> axis of a coordinate system, the arbitrary axis algorithm generates a corresponding <FONT FACE=ARIAL><I>X</I></FONT> axis for the coordinate system. The <FONT FACE=ARIAL><I>Y</I></FONT> axis follows by application of the right-hand rule.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The method is to examine the given <FONT FACE=ARIAL><I>Z</I></FONT> axis (also called the <font face=Arial><i>normal vector</i></font>) and see if it is close to the positive or negative World <FONT FACE=ARIAL><I>Z</I></FONT> axis. If it is, cross the World <FONT FACE=ARIAL><I>Y</I></FONT> axis with the given <FONT FACE=ARIAL><I>Z</I></FONT> axis to arrive at the arbitrary <FONT FACE=ARIAL><I>X</I></FONT> axis. If not, cross the World <FONT FACE=ARIAL><I>Z</I></FONT> axis with the given <FONT FACE=ARIAL><I>Z</I></FONT> axis to arrive at the arbitrary <FONT FACE=ARIAL><I>X</I></FONT> axis. The boundary at which the decision is made was chosen to be both inexpensive to calculate and completely portable across machines. This is achieved by having a sort of "square" polar cap, the bounds of which is 1/64, which is precisely specifiable in six decimal-fraction digits and in six binary-fraction bits.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The algorithm does the following. (All vectors are assumed to be in 3D space and specified in the World Coordinate System).
+</font></p>
+<font face="Courier New,Courier" size=2>Let the given normal vector be called N.
+</font><br>
+<font face="Courier New,Courier" size=2>Let the world Y axis be called Wy, which is always (0,1,0).
+</font><br>
+<p><font face="Courier New,Courier" size=2>Let the world Z axis be called Wz, which is always (0,0,1).
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>Here we are looking for the arbitrary <FONT FACE=ARIAL><I>X</I></FONT> and <FONT FACE=ARIAL><I>Y</I></FONT> axes to go with the normal <FONT FACE=ARIAL><I>N</I></FONT>. They will be called <font face=Arial><i>Ax</i></font> and <font face=Arial><i>Ay</i></font>. <FONT FACE=ARIAL><I>N</I></FONT> could also be called <font face=Arial><i>Az</i></font> (the arbitrary <FONT FACE=ARIAL><I>Z</I></FONT> axis) as follows:
+</font></p>
+<font face="Courier New,Courier" size=2>If (abs (Nx) &lt; 1/64) and (abs (Ny) &lt; 1/64)&nbsp;&nbsp;then
+</font><br>
+<font face="Courier New,Courier" size=2>&nbsp;&nbsp;&nbsp;Ax = Wy X N&nbsp;&nbsp;(where "X" is the cross-product operator).
+</font><br>
+<font face="Courier New,Courier" size=2>Otherwise,
+</font><br>
+<font face="Courier New,Courier" size=2>&nbsp;&nbsp;&nbsp;Ax = Wz X N.
+</font><br>
+<p><font face="Courier New,Courier" size=2>Scale Ax to unit length.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The method of getting the Ay vector is
+</font></p>
+<p><font face="Courier New,Courier" size=2>Ay = N X Ax.&nbsp;&nbsp;Scale Ay to unit length.
+</font></p>
+
+</body>
+</html>
+

@@ -1,0 +1,328 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Dynamic Programming</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Staircase Walk</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">問題描述</p>
+<p>有一個長方形的方格棋盤，從左上角開始，欲走至右下角，每次只能往右走一格或者往下走一格。請問有幾種不同走法？</p>
+<img src="StaircaseWalk1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StaircaseWalk1.png">
+<p class="e">UVa 10599 825 926 ICPC 4787</p>
+<p class="t">Recurrence</p>
+<p>對某個位置的方格來說，只可能是從左走來或者從上走來，將這兩種情形分開，便得到遞迴公式：</p>
+<pre>
+count(i, j) =
+ { 0                               , if i < 0 or j < 0    [Exterior]
+ { 1                               , if i = 0             [Initial]
+ { 1                               , if j = 0             [Initial]
+ { count(i-1, j) + count(i, j-1)   , if i > 0 and j > 0   [Compute]
+
+count(i, j)：從格子 (0, 0) 走到格子 (i, j) 的走法種類數。
+</pre>
+<img src="StaircaseWalk2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StaircaseWalk2.png">
+<p>如果能夠懂得遞迴關係，就不必強記遞迴公式。如果能看得懂圖解的話，就不必硬背數學式子。</p>
+<p>除了遞迴公式之外，這個問題也有一般公式解，會用到排列組合的技巧：<a href="javascript:if(confirm('http://mathworld.wolfram.com/StaircaseWalk.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mathworld.wolfram.com/StaircaseWalk.html'" tppabs="http://mathworld.wolfram.com/StaircaseWalk.html" class="l">http://mathworld.wolfram.com/StaircaseWalk.html</a></p>
+<p class="t">複雜度</p>
+<p>時間複雜度分析：令X和Y分別是棋盤的長和寬。每個問題用O(1)時間（用了兩個更小的問題）就可算得，共有X*Y個問題，所以算出所有問題要用O(XY)時間。</p>
+<p>空間複雜度分析：共有X*Y個問題，所以要用O(XY)空間，簡單來說就是開一個二維陣列啦！如果不需要紀錄全部問題的答案，只想算出一個特定問題的答案，那只需要一條一維陣列就可以了，也就是O(min(X, Y))空間。</p>
+<p class="t">程式碼</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[10][10];
+
+void staircase_walk()
+{
+	// initial
+	for (int i=0; i<X; i++)
+		count[i][0] = 1;
+
+	for (int j=0; j<Y; j++)
+		count[0][j] = 1;
+
+	// compute
+	for (int i=1; i<X; i++)
+		for (int j=1; j<Y; j++)
+			count[i][j] = count[i-1][j] + count[i][j-1];
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[9][9] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[X-1][Y-1] << 種走法;
+
+	int x, y;
+	while (cin >> x >> y)
+		cout << "由(0,0)走到(x,y)有" << count[x][y] << 種走法;
+}
+</textarea>
+<p class="t">程式碼</p>
+<p>為了讓程式碼更清爽，這裡把count[]裡面的數值都往右移動一格，如此就可以簡化設定初始值的過程。</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[10 + 1][10 + 1];
+
+void staircase_walk()
+{
+	// initial
+	memset(count, 0, sizeof(count));
+	count[0][0] = 1;	// 只需要設定一格為1
+
+	// compute
+	for (int i=0; i<X; i++)	// 可以從零開始了
+		for (int j=0; j<Y; j++)
+			if (i != 0 && j != 0)
+				count[i][j] = count[i-1][j] + count[i][j-1];
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[10][10] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[X][Y] << 種走法;
+}
+</textarea>
+<p>下面是比較奸詐的做法，連判斷式都省略了。</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[10 + 1][10 + 1];
+
+void staircase_walk()
+{
+	// initial
+	memset(count, 0, sizeof(count));
+	count[0][1] = 1;
+	count[1][0] = 1;
+
+	// compute
+	for (int i=0; i<X; i++)
+		for (int j=0; j<Y; j++)
+			count[i][j] = count[i-1][j] + count[i][j-1];
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[10][10] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[X][Y] << 種走法;
+}
+</textarea>
+<p class="t">節省記憶體空間</p>
+<img src="StaircaseWalk3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StaircaseWalk3.png">
+<p>如果只打算求出一個問題，那麼中途所有的問題其實都不必紀錄下來，只要紀錄最近算出來的問題，讓計算過程可以順利進行就可以了。</p>
+<p>使用兩條陣列，就足夠紀錄最近算出來的問題，並且也能夠避免count[i-1][j]造成邊界溢位。這個實作技巧在中文網路上稱做「滚动数组」，「数组」是陣列的意思，「滚动」也就是兩條陣列輪替使用的意思。</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[2][10 + 1];	// 兩條陣列，紀錄最近算出來的問題。
+
+void staircase_walk()
+{
+	// initial
+	memset(count, 0, sizeof(count));
+	count[0][0] = 1;
+
+	// compute
+	for (int i=0; i<X; i++)
+		for (int j=0; j<Y; j++)
+			if (i != 0 && j != 0)
+				// 只是多了 mod 2，
+				// 外觀看起來就像兩條陣列輪替使用。
+				count[i % 2][j] = count[(i-1) % 2][j] + count[i % 2][j-1];
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[10 % 2][10 % 2] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[X % 2][Y % 2] << 種走法;
+}
+</textarea>
+<img src="StaircaseWalk4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StaircaseWalk4.png">
+<p>不過事實上，一條陣列就夠了。也不能再少了。</p>
+<textarea>
+const int X = 10, Y = 10;
+int count[10 + 1];	// 一條即可
+
+void staircase_walk()
+{
+	// initial
+	memset(count, 0, sizeof(count));
+	count[0] = 1;
+
+	// compute
+	for (int i=0; i<X; i++)
+		for (int j=0; j<Y; j++)
+			if (i != 0 && j != 0)
+				count[j] += count[j-1];	// 累加即可
+
+	// 輸出結果
+	cout << "由(0,0)走到(9,9)有" << count[10] << 種走法;
+//	cout << "由(0,0)走到(9,9)有" << count[Y] << 種走法;
+}
+</textarea>
+<p class="t">往其他方向走的話？</p>
+<p>如果某些格子上有障礙物呢？其實也很簡單，如果某格有障礙物，在計算過程中，遇到障礙物就把此格的c(i, j)設為零就可以了。</p>
+<p>如果也可以往右下斜角走呢？那麼遞迴公式就再修改一下，多加一項c(i-1, j-1)就行了。</p>
+<p>如果可以往上下左右走呢？那麼就可以不斷繞圈子，走法就成了無限多種了。寫成遞迴公式的話，就會產生無窮遞迴，永遠也不會結束。</p>
+<p>如果也可以往右上斜角走呢？因為不會產生無窮遞迴，所以這是可以解的！</p>
+<p class="t">Tree / DAG</p>
+<p>這裡談一點圖論。無向樹、有向無環圖，都是沒有環的圖。不會無窮遞迴的遞迴公式，其實都可以表示成無向樹、有向無環圖。</p>
+<p>換句話說，如果發現問題具有無向樹、有向無環圖的特性，極有機會可以使用DP解決問題。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Self-Avoiding Walk</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<iframe src="Q4gTV4r0zRs" tppabs="http://www.youtube.com/embed/Q4gTV4r0zRs"></iframe>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum Subarray</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">問題描述</p>
+<p>又稱做Maximum Consecutive Sum或者Maximum Consecutive Subsequence。</p>
+<p>從一串數列中取一連串數字求其總和。找出最大的總和。最糟糕的情況就是什麼數字都不取，總和為零。</p>
+<p class="e">UVa 507 10684 108 836 10827 10755</p>
+<p class="t">如果使用窮舉法</p>
+<p>如果用窮舉法的話，窮舉所有可能的起點、終點，並計算總和，時間複雜度就是O(N^3)。</p>
+<p class="t">Recurrence</p>
+<pre>
+sum(i) =
+ { 0                     , if i < 0                       [Exterior]
+ { sum(i-1) + array[i]   , if i >= 0                      [Compute]
+ {                         and sum(i-1) + array[i] > 0
+ { 0                     , if i >= 0                      [Compute]
+ {                         and sum(i-1) + array[i] <= 0
+
+sum(i)：以第i格作為結尾的Maximum Subarray的元素總和。
+</pre>
+<p class="t">複雜度</p>
+<p>時間複雜度是O(N)。儲存全部問題的答案，空間複雜度是O(N)；只想計算一個特定問題的答案，可以精簡至O(1)。</p>
+<p class="t">程式碼：計算Maximum Subarray之元素總和</p>
+<p>沒有使用表格紀錄全部的問題，只用了一個變數紀錄最近算過的問題。雖然外表看起來一點也不像Dynamic Programming，但是這種累計總和的作法，其實就是Dynamic Programming了。</p>
+<textarea>
+int a[10] = {1, 2, -6, 3, -2, 4, -1, 3, 2, -4};
+
+int maximum_subarray()
+{
+	int max_sum = 0, sum = 0;
+
+	for (int i=0; i<10; ++i)
+	{
+		sum += a[i];	// 累計總和
+
+		if (sum < 0) sum = 0;	// 零總比負數好
+
+		if (sum > max_sum) max_sum = sum;	// 隨時紀錄最大值
+	}
+
+	return max_sum;
+}
+</textarea>
+<p class="t">程式碼：找出其中一個Maximum Subarray的位置</p>
+<p>如果有很多串，下面這支程式碼只會找出比較早出現的那一串。</p>
+<textarea>
+int a[10] = {1, 2, -6, 3, -2, 4, -1, 3, 2, -4};
+
+int maximum_subarray()
+{
+	int max_sum = 0, sum = 0;
+	int start = 0, end = 0, temp_start = 0;
+
+	for (int i=0; i<10; ++i)
+	{
+		sum += a[i];
+
+		if (sum < 0)
+		{
+			sum = 0;
+			temp_start = i+1;	// 現在情況很糟，故設定起點在下一個數字
+		}
+
+		if (sum > max_sum)
+		{
+			max_sum = sum;
+			start = temp_start;
+			end = i;
+		}
+	}
+
+	if (start > end)
+		cout << "什麼數字都不取";
+	else
+		cout << "從" << start << "到" << end;
+
+	return max_sum;
+}
+</textarea>
+<p class="t">程式碼：計算Maximum Subarray之元素總和（至少取一個數字）</p>
+<textarea>
+int a[10] = {1, 2, -6, 3, -2, 4, -1, 3, 2, -4};
+
+int maximum_subarray()
+{
+	int max_sum = -1e9, sum = 0;
+
+	for (int i=0; i<10; ++i)
+	{
+		if (sum > 0) sum += a[i];	// 先前的數字若不為負數才加
+		else sum = a[i];			// 不加數字總會比加上負數好
+
+		if (sum > max_sum) max_sum = sum;	// 隨時紀錄最大值
+	}
+
+	return max_sum;
+}
+</textarea>
+<p class="t">推廣到高維度</p>
+<p>這個問題還可推廣到2D、3D，時間複雜度分別是O(N^3)、O(N^5)。原理是面與面合併，條與條合併，元素與元素合併。以下直接提供3D的情形。</p>
+<textarea>
+const int A = 20, B = 20, C = 20;	// 三個維度的個別寬度
+
+int max1D(int a[])
+{
+	int ans = -1e9;
+	int s = 0;
+
+	for (int i=0; i<C; ++i)
+	{
+		if (s >= 0) s += a[i];
+		else s = a[i];
+		ans = max(ans, s);
+	}
+	return ans;
+}
+
+int max2D(int a[][20])
+{
+	int ans = -1e9;
+	int s[20];
+
+	for (int i=0; i<B; ++i)
+	{
+		memset(s, 0, sizeof(s));
+		for (int j=i; j<B; ++j)
+		{
+			for (int k=0; k<C; ++k)
+				s[k] += a[j][k];
+			ans = max(ans, max1D(s));
+		}
+	}
+	return ans;
+}
+
+int max3D(int a[][20][20])
+{
+	int ans = -1e9;
+	int s[20][20];
+
+	for (int i=0; i<A; ++i)
+	{
+		memset(s, 0, sizeof(s));
+		for (int j=i; j<A; ++j)
+		{
+			for (int k=0; k<B; ++k)
+				for (int l=0; l<C; ++l)
+					s[k][l] += a[j][k][l];
+			ans = max(ans, max2D(s));
+		}
+	}
+	return ans;
+}
+
+int main()
+{
+	int a[20][20][20];
+	cout << max3D(a) << endl;
+	return 0;
+}
+</textarea>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

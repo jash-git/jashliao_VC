@@ -1,0 +1,500 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Point, Line, Plane</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Sweep Line</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Sweep Line</p>
+<p>「掃描線」是計算幾何領域的基礎手法，可以用來解決許多計算幾何的問題，有如圖論中的BFS與DFS一樣經典。它並不是一個物品，而是一個概念。</p>
+<p class="t">平移的掃描線</p>
+<img src="SweepLine1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SweepLine1.png">
+<p>一條（或兩條）無限長平行線，沿其垂直方向不斷移動，從畫面一端移動到另一端，只在頂點處停留。</p>
+<p>實作時，通常是先按座標大小排序所有頂點，然後以兩索引值，紀錄平行線的位置在哪個頂點上面。兩條平行線，一條為主，穿越整個畫面；一條為輔，跟著主線的狀況進行平移。這是陰陽的道理。</p>
+<p class="e">UVa 920 972</p>
+<p class="t">旋轉的掃描線</p>
+<img src="SweepLine2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SweepLine2.png">
+<p>一條（或兩條）從原點射出的射線，做360°旋轉，只在頂點處停留。</p>
+<p>實作時，通常是先按極角大小排序所有頂點，然後以兩索引值，紀錄射線的位置在哪個頂點上面。兩條射線，一條為主，轉過整個畫面；一條為輔，跟著主線的狀況進行平移。這是陰陽的道理。</p>
+<p class="e">UVa 270 10691 10927 11529 11696 11704 ICPC 3259 4064</p>
+<p class="t">用Sweep Line設計演算法時的步驟</p>
+<p>說穿了，掃描線的基本精神就是：先排序、再搜尋。</p>
+<p>在二維平面上，有一個重要的特性就是「區域性」。比如說，兩點之間，會被距離更近的點隔開。</p>
+<img src="SweepLine3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SweepLine3.png">
+<p>排序的目的，也就是建立「區域性」。有了「區域性」，搜尋的條件就更精確了，搜尋的速度也就更快了。</p>
+<pre>
+觀察問題是否有「不重疊」、「不相交」、「間隔」、「相聚」之類的性質。
+然後選定平移的或者旋轉的掃描線，進行掃描。
+換句話說，排序所有的頂點，進行搜尋。
+</pre>
+<p class="t">Sweep Line可以解決的問題</p>
+<pre>
+平移的掃描線
+Closest Pair             找出所有最近點對
+Segment Intersections    找出所有線段的所有交點
+Polygon Intersection     找出兩個多邊形的交集、聯集、差集
+Voronoi Diagram
+Delaunay Triangulation
+
+旋轉的掃描線
+Convex Hull              找出凸包
+</pre>
+<p class="t">旋轉的掃描線：極角排序（Sorting Points by Polar Angle）</p>
+<img src="SweepLine4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SweepLine4.png">
+<textarea>
+typedef complex<double> Point;
+#define x real()
+#define y imag()
+
+double cross(const Point& a, const Point& b)
+{
+	return a.x * b.y - a.y * b.x;
+}
+
+// 用 complex 的內建函數，算出極角大小。
+bool cmp(const Point& p1, const Point& p2)
+{
+	return arg(p1) < arg(p2);
+}
+
+// 用 arctan 計算極角大小。
+// 注意到大小範圍是(-180°, +180°]。
+bool cmp(const Point& p1, const Point& p2)
+{
+	return atan2(p1.y, p1.x) < atan2(p2.y, p2.x);
+}
+
+// 先判斷象限，再用外積判斷順序。
+// 若極角相同，會再以長度排序。
+bool cmp(const Point& p1, const Point& p2)
+{
+	if (p1.y == 0 && p2.y == 0 && p1.x * p2.x <= 0) return p1.x > p2.x;
+	if (p1.y == 0 && p1.x >= 0 && p2.y != 0) return true;
+	if (p2.y == 0 && p2.x >= 0 && p1.y != 0) return false;
+	if (p1.y * p2.y < 0) return p1.y > p2.y;
+	double c = cross(p1, p2);
+	return c > 0 || c == 0 && fabs(p1.x) < fabs(p2.x);
+}
+
+// 先判斷象限，再用外積判斷順序。
+// 適用於每個點的極角皆不同。
+bool cmp(const Point& p1, const Point& p2)
+{
+	if (p1.y > 0 && p2.y > 0)
+		return p2.x * p1.y < p2.y * p1.x;
+	else if (p1.y < 0 && p2.y < 0)
+		return p2.x * p1.y < p2.y * p1.x;
+	else if (p1.y == 0)
+		if (p1.x > 0)
+			return true;
+		else
+			return p2.y < 0;
+	else if (p2.y == 0)
+		if (p2.x > 0)
+			return false;
+		else
+			return p1.y > 0;
+	else
+		return p1.y > 0;
+}
+
+void sort_points_by_polar_angle()
+{
+	Point p[100];
+	sort(p, p+N, cmp);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Rotating Caliper</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Rotating Caliper</p>
+<p>「旋轉卡尺」也是計算幾何領域的基礎手法，它並不是一個物品，而是一個概念。參考資料：<a href="javascript:if(confirm('http://cgm.cs.mcgill.ca/~orm/rotcal.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://cgm.cs.mcgill.ca/~orm/rotcal.html'" tppabs="http://cgm.cs.mcgill.ca/~orm/rotcal.html" class="l">http://cgm.cs.mcgill.ca/~orm/rotcal.html</a>，中文翻譯：<a href="javascript:if(confirm('http://blog.csdn.net/ACMaker/archive/2008/10.aspx  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://blog.csdn.net/ACMaker/archive/2008/10.aspx'" tppabs="http://blog.csdn.net/ACMaker/archive/2008/10.aspx" class="l">http://blog.csdn.net/ACMaker/archive/2008/10.aspx</a>。</p>
+<img src="RotatingCaliper1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/RotatingCaliper1.png">
+<p>平面上的圖形做360°旋轉，並以兩條垂直線，隨時從左右夾緊圖形，量測寬度、找到極端頂點。</p>
+<p>切換視點，就變成：兩條無限長平行線，做360°旋轉，嘗試夾住平面上的圖形。</p>
+<p>實作時，通常是以兩索引值，紀錄平行線的位置在哪個頂點上面。兩條平行線，一條為主，轉過整個畫面；一條為輔，跟著主線的狀況進行鬆緊。這是陰陽的道理。</p>
+<p>實作時，只需轉180°即可。轉半圈，兩條平行線對調，效果同360°。</p>
+<p>說穿了，旋轉卡尺的基本精神就是：窮舉斜率，判斷目標對象有多斜。</p>
+<p class="e">UVa 303 10173 10416 11243</p>
+<p class="t">Rotating Caliper可以解決的問題</p>
+<pre>
+Farthest Pair    找出所有最遠點對
+Convex Polygon   凸多邊形的各種問題，例如求直徑、合併、相交等等
+Bounding Box
+</pre>
+<p>事實上旋轉卡尺與平移的掃描線互為點線對偶，所以平移的掃描線能解決的問題，旋轉卡尺也能解決，反之亦然。</p>
+<p class="t">旋轉卡尺：凸包（Convex Hull）</p>
+<img src="RotatingCaliper2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/RotatingCaliper2.png">
+<p>使用旋轉卡尺夾住圖形，卡尺夾不進的地方，剛好是該圖形的凸包。因此，旋轉卡尺適合用於凸包、凸多邊形的相關問題。</p>
+<p>旋轉卡尺夾到的頂點順序，就是凸包的頂點順序。</p>
+<textarea>
+struct Point {dobule x, y;} P[10];
+Point L[10+1], U[10];	// 下凸包、上凸包
+
+bool cmp(const Point& a, const Point& b)
+{
+	return a.x < b.x || a.x == b.x && a.y < b.y;
+}
+
+void rotating_cliper()
+{
+	/* 尋找凸包，Andrew's Monotone Chain。 */
+
+	sort(P, P + 10, cmp);	// 先排X座標、再排Y座標
+
+	int l = 0, u = 0;		// 上凸包的點數、下凸包的點數
+	for (int i=0; i<10; ++i)
+	{
+		while (l >= 2 && cross(L[l-2], L[l-1], P[i]) <= 0) l--;
+		while (u >= 2 && cross(U[u-2], U[u-1], P[i]) >= 0) u--;
+		L[l++] = P[i];
+		U[u++] = P[i];
+	}
+
+	/* 旋轉卡尺 */
+
+	// 下凸包額外補上一個凸包頂點，以便操作。
+	if (u-2 >= 0) L[l] = U[u-2];
+
+	for (int i=0, j=u-1; i<l && j>0; )
+	{
+		cout << "夾到了頂點 L[i] 與頂點 U[j]";
+
+		// 下方邊與上方邊的張開角度：
+		// 小於180°，則上方前進。想像成下方很平、上方變凸。
+		// 大於180°，則下方前進。想像成上方很平、下方變凸。
+		// 等於180°，則同時前進，亦可擇一前進。
+		if (cross(L[i+1] - L[i], U[j-1] - U[j]) < 0)
+			i++;	// 下方前進
+		else
+			j--;	// 上方前進
+	}
+}
+</textarea>
+<p>迴圈部分亦可採一主一副的形式：每窮舉一個頂點，就立即找出對頂的點。</p>
+<textarea>
+	for (int i=0, j=u-1; i<l && j>0; i++)	// i++挪入迴圈
+	{
+		cout << "夾到了頂點 L[i] 與頂點 U[j]";
+		if (cross(L[i+1] - L[i], U[j-1] - U[j]) > 0) j--;
+	}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Closest Pair</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Closest Pair</p>
+<p>一群點當中，距離最近的兩個點叫作「最近點對」。</p>
+<p class="t">演算法（Enumerative Method）</p>
+<p>窮舉法的時間複雜度是O(N^2)，可以找出所有的最近點對。</p>
+<textarea>
+struct Point {double x, y;} p[10];
+
+double closest_pair()
+{
+	double d = 1e9;	// 最近點對的距離
+	Segment cp[10];	// 最近點對
+	int n = 0;		// 最近點對的數目
+
+	for (int i=0; i<N; ++i)			// 窮舉a點
+		for (int j=i+1; j<N; ++j)	// 窮舉b點
+		{
+			double dij = distance(p[i], p[j]);
+			if (dij < d)
+				d = dij, n = 0, cp[n++] = Segment(i, j);
+			else (dij == d)
+				cp[n++] = Segment(i, j);
+		}
+
+	return d;
+}
+</textarea>
+<p class="t">演算法（Enumerative Method）</p>
+<p>此處再介紹另外一種窮舉法，時間複雜度仍是O(N^2)，不過會比直接窮舉全部點對的方法快上許多，也比後面要談的分治法快上許多。</p>
+<pre>
+1. 先排序所有點，以X座標為主，Y座標無所謂。
+2. 由左往右掃，依序窮舉各點作為左端點。
+　甲、由左端點開始向右掃，窮舉所有右端點。
+　乙、若左右兩點距離差太遠，就可以停止窮舉右端點。
+</pre>
+<img src="ClosestPair11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair11.png">
+<p>實作時，減少sqrt函式的呼叫次數，盡量紀錄距離的平方，可以增進執行速度。避免直接排序原資料，複製一份指標或索引值來排序，也可以增進執行速度。</p>
+<textarea>
+struct Point {double x, y;} p[10];
+bool cmp(const Point& i, const Point& j) {return i.x < j.x;}
+
+double closest_pair()
+{
+	sort(p, p+10, cmp);	// 依X座標排序
+
+	double d = 1e9;		// 最近點對的距離
+	Segment cp[10];		// 最近點對
+	int n = 0;			// 最近點對的數目
+
+	for (int i=0; i<N; ++i)
+		for (int j=i+1; j<N; ++j)
+		{
+			if (p[i].x + d < p[j].x) break;
+			double dij = distance(p[i], p[j]);
+			if (dij < d)
+				d = dij, n = 0, cp[n++] = Segment(i, j);
+			else (dij == d)
+				cp[n++] = Segment(i, j);
+		}
+
+	return d;
+}
+</textarea>
+<p class="e">UVa 10245 10750 11378</p>
+<p class="t">演算法（Divide and Conquer）</p>
+<p>時間複雜度是O(N * (logN)^2)，可以找出所有的最近點對。原理是把平面切割成左右兩側，答案分為「點對在左側」、「點對在右側」、「點對橫跨兩側」等三種情形。先將左側與右側分別遞迴求解之後，再利用左側與右側的答案，快速的算出橫跨兩側的答案。</p>
+<pre>
+Preprocessing:
+1. 排序所有點，以X座標為主，Y座標無所謂。O(NlogN)
+2. 檢查是否有共點。如果有，就找出所有共點，演算法結束。O(N)
+   （只想找出其中一組最近點對時，可省略此步驟。）
+
+Divide：
+把所有點分為左右兩側，左側、右側的點數盡量一樣多。
+
+Conquer：
+左側、右側分別遞迴求解。
+
+Merge：
+1. 利用左側、右側的最佳解d，求出橫跨兩側的解：
+　甲、首先找出靠近中線的點，水平距離小於d、包含d。O(N)
+　　　（小於d、不包含d，則只找出其中一組最近點對。）
+　乙、排序這些點，以Y座標為主，X座標無所謂。O(NlogN)
+　丙、每一個點都找鄰近的點，看看是不是解。
+　　　鄰近、不共點，並且偏高、等高的點，最多只有四個點。O(N*4) = O(N)
+　　　（如果只想找其中一組最近點對，最多只有兩個點。O(N*2) = O(N)）
+2. 答案為左側、右側、橫跨兩側，三者當中的最佳解。
+</pre>
+<img src="ClosestPair21.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair21.png">
+<p>以下提供釋例。畫面上有一些點。</p>
+<img src="ClosestPair22.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair22.png">
+<p>把點分為左側與右側，點數盡量一樣多。左側與右側的交界處可能會銜接，也可能不會銜接。左右兩側通常是不一樣寬的。</p>
+<img src="ClosestPair23.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair23.png">
+<p>左側、右側分別遞迴求解，最後求得這兩種情況下的最近點對。最近點對的距離為d。</p>
+<img src="ClosestPair24.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair24.png">
+<p>可以發現，左側的每一個點，半徑d以內的範圍（不包含邊界），不會有其他左側的點存在，只可能出現另一側的點。右側亦如是。</p>
+<img src="ClosestPair25.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair25.png">
+<p>要找出橫跨兩側的點對，可以從左側的右邊線，往左距離d以內的範圍裡（包含邊界）的這些點，有可能與右側的點形成更近點對（一樣近點對）。</p>
+<p>也可以以右側為主。</p>
+<img src="ClosestPair26.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair26.png">
+<p>從左側的右邊線，往右距離d以內的範圍裡的這些點，則是可能的另一頭端點的範圍。</p>
+<img src="ClosestPair27.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair27.png">
+<p>要找出橫跨兩側的最近點對，只要依序窮舉左側右邊界距離d以內、位於左側的點，作為左端點；然後再找左側右邊界距離d以內、位於右側的點，作為右端點。相距太遠的點對沒必要去找。</p>
+<p>這種方式雖然直覺，但是不容易實作。</p>
+<img src="ClosestPair28.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair28.png">
+<p>一個比較容易實作的方式，是把範圍內的這些點全部混在一起，不分左右，然後由下往上掃描。</p>
+<img src="ClosestPair29.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair29.png">
+<p>對於一個點來說，只要找距離小於等於d的端點就行了，也就是半徑d以內的範圍（包含邊界）。</p>
+<p>當運氣不好，左側、右側的邊界相互銜接的時候，又恰巧這一個點就在邊界上，此時距離小於等於d的端點，最多會有九個點：有四個點是同側的，位於同側的半圓周上，角度相離60°的位置；有五個點是異側的，其中四個點位於異側的半圓周上，角度相離60°的位置，另有一點與原點重疊。這是從邊邊角角瘋狂硬塞的結果。當我們由下往上掃描的時候，僅需檢查其後五點；當我們一開始有處理掉共點的問題，僅需檢查其後四點。</p>
+<img src="ClosestPair30.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ClosestPair30.png">
+<p>如果只想找出其中一組最近點對，那麼只要找距離小於d的端點就行了，不必找距離等於d的端點。距離小於d的端點，最多只有三個點：這三個點都是異側的，自由的在異側的半圓之內移動。從邊邊角角瘋狂硬塞，塞不進四點，必有一點會觸到圓周。當我們由下往上掃描的時候，僅需檢查其後兩點。</p>
+<p>大功告成。</p>
+<p>實作時，當問題被分割成剩下兩個點、三個點時，可以直接求解，不要再遞迴下去，如此可以增進執行速度。</p>
+<textarea t="只找出最近點對的距離">
+struct Point {double x, y;} p[10], t[10];
+bool cmpx(const Point& i, const Point& j) {return i.x < j.x;}
+bool cmpy(const Point& i, const Point& j) {return i.y < j.y;}
+
+double DnC(int L, int R)
+{
+	if (L >= R) return 1e9;	// 沒有點、只有一個點。
+
+	/* Divide：把所有點分成左右兩側，點數盡量一樣多。 */
+
+	int M = (L + R) / 2;
+
+	/* Conquer：左側、右側分別遞迴求解。 */
+
+	double d = min(DnC(L,M), DnC(M+1,R));
+//	if (d == 0.0) return d; // 提早結束
+
+	/* Merge：尋找靠近中線的點，並依Y座標排序。O(NlogN)。 */
+
+	int N = 0;	// 靠近中線的點數目
+	for (int i=M;   i>=L && p[M].x - p[i].x < d; --i) t[N++] = p[i];
+	for (int i=M+1; i<=R && p[i].x - p[M].x < d; ++i) t[N++] = p[i];
+	sort(t, t+N, cmpy);	// O(NlogN)
+
+	/* Merge：尋找橫跨兩側的最近點對。O(N)。 */
+
+	for (int i=0; i<N-1; ++i)
+		for (int j=1; j<=2 && i+j<N; ++j)
+			d = min(d, distance(t[i], t[i+j]));
+
+	return d;
+}
+
+double closest_pair()
+{
+	sort(p, p+10, cmpx);
+	return DnC(0, N-1);
+}
+</textarea>
+<p>如果在Merge階段，以Merge Sort將所有點重新依照Y座標排序，時間複雜度可以降到O(NlogN)。然而執行Merge Sort的額外負擔實在太大，通常會比原來的方法慢上許多。</p>
+<textarea t="只找出最近點對的距離">
+struct Point {double x, y;} p[10], t[10];
+bool cmpx(const Point& i, const Point& j) {return i.x < j.x;}
+bool cmpy(const Point& i, const Point& j) {return i.y < j.y;}
+
+double DnC(int L, int R)
+{
+	if (L >= R) return 1e9;	// 沒有點、只有一個點。
+
+	/* Divide：把所有點分成左右兩側，點數盡量一樣多。 */
+
+	int M = (L + R) / 2;
+
+	// 先把中線的X座標記起來，因為待會重新排序之後會跑掉。
+	double x = p[M].x;
+
+	/* Conquer：左側、右側分別遞迴求解。 */
+
+	// 遞迴求解，並且依照Y座標重新排序。
+	double d = min(DnC(L,M), DnC(M+1,R));
+//	if (d == 0.0) return d;	// 提早結束
+
+	/* Merge：尋找靠近中線的點，並依Y座標排序。O(N)。 */
+
+	// 尋找靠近中線的點，先找左側。各點已照Y座標排序了。
+	int N = 0;	// 靠近中線的點數目
+	for (int i=0; i<=M; ++i)
+		if (x - p[i].x < d)
+			t[N++] = p[i];
+
+	// 尋找靠近中線的點，再找右側。各點已照Y座標排序了。
+	int P = N;	// P為分隔位置
+	for (int i=M+1; i<=R; ++i)
+		if (p[i].x - x < d)
+			t[N++] = p[i];
+
+	// 以Y座標排序。使用Merge Sort方式，合併已排序的兩陣列。
+	inplace_merge(t, t+P, t+N, cmpy);
+
+	/* Merge：尋找橫跨兩側的最近點對。O(N)。 */
+
+	for (int i=0; i<N; ++i)
+		for (int j=1; j<=2 && i+j<N; ++j)
+			d = min(d, distance(t[i], t[i+j]));
+
+	/* Merge：重新以Y座標排序所有點。O(N)。 */
+
+	// 如此一來，更大的子問題就可以直接使用Merge Sort。
+	inplace_merge(p+L, p+M+1, p+R+1, cmpy);
+
+	return d;
+}
+
+double closest_pair()
+{
+	sort(p, p+10, cmpx);
+	return DnC(0, N-1);
+}
+</textarea>
+<p>如果一開始將所有點複製一份，先以Y座標排序，那麼在遞迴途中就不用每次都排序。如此會使時間複雜度暴增為O(N^2)，甚至比窮舉法還慢。</p>
+<textarea t="只找出最近點對的距離">
+struct Point {double x, y;} px[10], py[10], t[10];
+bool cmpx(const Point& i, const Point& j) {return i.x < j.x;}
+bool cmpy(const Point& i, const Point& j) {return i.y < j.y;}
+
+double DnC(int L, int R)
+{
+	if (L >= R) return 1e9;
+
+	int M = (L + R) / 2;
+	double d = min(DnC(L,M), DnC(M+1,R));
+//	if (d == 0.0) return d; // 提早結束
+
+	/* Merge：依照Y座標順序，來尋找靠近中線的點。O(N)。 */
+
+	int N = 0;	// 靠近中線的點數目
+	for (int i=0; i<10; ++i)	// 全部的點都要找過一遍
+		if (py[i].x - px[M].x < d)
+			t[N++] = py[i];
+
+	for (int i=0; i<N-1; ++i)
+		for (int j=1; j<=2 && i+j<N; ++j)
+			d = min(d, distance(t[i], t[i+j]));
+
+	return d;
+}
+
+double closest_pair()
+{
+	sort(px, px+10, cmpx);
+	copy(px, px+10, py);	// 先複製一份
+	sort(py, py+10, cmpy);	// 然後依照Y座標排序
+	return DnC(0, N-1);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Farthest Pair</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Farthest Pair</p>
+<p>一群點當中，距離最遠的兩個點叫作「最遠點對」。</p>
+<p>窮舉法的時間複雜度是O(N^2)，可以找出所有的最遠點對。</p>
+<p>使用旋轉卡尺，時間複雜度是O(NlogN)。</p>
+<p class="t">想法</p>
+<p>距離變遠，就是擴張。無論是擴張兩點連線，或者是擴張邊界，距離都是變遠。</p>
+<img src="FarthestPair1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FarthestPair1.png">
+<p>要找最遠點對，可以使用擴張邊界的概念。擴張邊界直到極限，邊界便會碰觸到最偏遠的點，最後形成凸包。</p>
+<img src="FarthestPair2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FarthestPair2.png">
+<p>因此，最遠點對一定是凸包的對角線。就如同日常生活中，邊邊角角的寬度是最寬的、最容易卡到。</p>
+<p>也許這段論述太過抽象、不夠嚴謹。來詳細推敲一番吧！</p>
+<p class="t">凸多邊形範圍內，最遠的距離是對角線距離。</p>
+<p>換句話說，凸多邊形範圍內任一線段，必定短於、等長於某一條對角線。此處改用擴張兩點連線的概念進行說明。</p>
+<img src="FarthestPair3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FarthestPair3.png">
+<p>一、凸多邊形範圍內，任取兩點。</p>
+<p>二、延長兩點連線，直到邊界。</p>
+<p>三、挪動一點至頂點，盡可能遠離垂足。</p>
+<p>四、挪動另一點至頂點，同上。</p>
+<p>藉由此性質，以旋轉卡尺，窮舉最長對角線的斜率，量測最長對角線的長度，就能輕鬆找到最遠點對。</p>
+<p class="t">凸多邊形的最長對角線們，斜率皆不同。</p>
+<p>同一個斜率，如果有兩條以上的最長對角線，就會產生矛盾──以兩條最長對角線描出平行四邊形，可以發現平行四邊形的對角線更長。凸多邊形範圍內一定可以順利描出平行四邊形，請參考凸的定義。</p>
+<img src="FarthestPair4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/FarthestPair4.png">
+<p>凸多邊形範圍內，同一個斜率，最多只有一條最長對角線。因此，同一個斜率，旋轉卡尺只能夾到一條最長對角線。</p>
+<p class="t">凸多邊形的最長對角線數目，不超過頂點數目。</p>
+<p>平面上N個點，其凸包最多有N個頂點。隨著卡尺旋轉，每一個頂點，都可能作為下一條最長對角線的端點，可以推理出凸包最多有N條最長對角線，此時形成正多角星。</p>
+<p>平面上N個點的最遠點對，最多只有N組。</p>
+<p class="t">演算法</p>
+<pre>
+一、求凸包，過濾出可能是最遠點對的點。O(NlogN)
+二、旋轉卡尺，找出最長對角線，即是最遠點對。O(N)
+</pre>
+<p class="e">PKU 2187 UVa 11012</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Segment Intersection（Under Construction!）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Segment Intersection</p>
+<p>使用窮舉法窮舉兩線段，時間複雜度是O(N^2)，可以求出所有交點。</p>
+<p>這裡要介紹的演算法，是先將線段排序，再由左到右依序窮舉各線段，判斷相交，時間複雜度為O((N+K)*logN)。類似於最近點對的窮舉法。</p>
+<pre>
+一、排序所有端點：
+　甲、X座標，由小到大。
+　乙、Y座標，由小到大。
+　丙、左端點先於右端點。
+　丁、下端點先於上端點。下可當作左，上可當作右。
+二、依序掃描各端點：
+　甲、若為左端點，把線段放入二元樹。並判斷是否相交，求交點。
+　乙、若為右端點，從二元樹拿出線段。
+　丙、若為交點，顛倒對應線段在二元樹當中的順序。
+</pre>
+<p>若只是要判斷是否有交點，而不是要找出所有交點，那麼可以把演算法改成更容易實作的形式，時間複雜度是O(NlogN)。請參考CLRS。</p>
+<pre>
+Shamos-Hoey              O(NlogN)
+Bentley-Ottmann          O(NlogN + KlogK) = O((N+K)*logN)   K < C(N,2) < N^2
+Chazelle & Edelsbrunner  O(NlogN + K)
+Balaban                  O(NloglogN + K)
+</pre>
+<p class="e">ICPC 4125</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

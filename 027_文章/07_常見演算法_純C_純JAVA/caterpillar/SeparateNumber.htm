@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <title>數字拆解</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip: 數字拆解</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+
+      <h2>說明</h2>
+      <small>
+
+這個題目來自於 <a href="javascript:if(confirm('http://www.jsptw.com/jute/post/view?bid=5&id=8317&sty=1&tpg=1&age=0  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.jsptw.com/jute/post/view?bid=5&id=8317&sty=1&tpg=1&age=0'" tppabs="http://www.jsptw.com/jute/post/view?bid=5&id=8317&sty=1&tpg=1&age=0">數字拆解</a>，我將之改為C語言的版本，並加上說明。<br>
+      <br>
+
+
+題目是這樣的：<br>
+      </small>
+
+
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">3&nbsp;= 2+1 = 1+1+1 所以3有三種拆法</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">4 = 3 + 1 = 2 + 2 = 2 + 1 + 1 = 1 + 1 + 1 + 1 共五種</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">5 = 4 + 1 = 3 + 2 = 3 + 1 + 1 = 2 + 2 + 1 = 2 + 1 + 1 + 1 = 1 + 1 +1 +1 +1</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+共七種<br>
+      <br>
+
+
+依此類推，請問一個指定數字NUM的拆解方法個數有多少個？</small>
+
+      <br>
+
+
+      <h2>解法</h2>
+      <small>
+
+我們以上例中最後一個數字5的拆解為例，假設f( n )為數字n的可拆解方式個數，而f(x, y)為使用y以下的數字來拆解x的方法個數，則觀察：<br>
+      </small>
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">5 = 4 + 1 = 3 + 2 = 3 + 1 + 1 = 2 + 2 + 1 = 2 + 1 + 1 + 1 = 1 + 1 +1 +1 +1</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+使用函式來表示的話：<br>
+      </small>
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">f(5) = f(4, 1) + f(3,2) + f(2,3) + f(1,4) + f(0,5)</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+其中f(1, 4) = f(1, 3) + f(1, 2) + f(1, 1)，但是使用大於1的數字來拆解1沒有意義，所以f(1, 4) = f(1, 1)，而同樣的，f(0, 5)會等於f(0, 0)，所以：<br>
+      </small>
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">f(5) = f(4, 1) + f(3,2) + f(2,3) + f(1,1) + f(0,0)</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+依照以上的說明，使用動態程式規畫（Dynamic programming）來進行求解，其中f(4,1)其實就是f(5-1,
+min(5-1,1))，f(x, y)就等於f(n-y, min(n-x, y))，其中n為要拆解的數字，而min()表示取兩者中較小的數。<br>
+      <br>
+
+
+使用一個二維陣列表格table[x][y]來表示f(x, y)，剛開始時，將每列的索引0與索引1元素值設定為1，因為任何數以0以下的數拆解必只有1種，而任何數以1以下的數拆解也必只有1種：<br>
+      </small>
+
+
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">for(i = 0; i &lt; NUM +1; i++){ </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp; table[i][0] = 1;&nbsp; // 任何數以0以下的數拆解必只有1種 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp; table[i][1] = 1;&nbsp; // 任何數以1以下的數拆解必只有1種 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">}</span><br>
+
+
+      </small></div>
+      <small>
+
+&nbsp;<br>
+      <br>
+
+
+接下來就開始一個一個進行拆解了，如果數字為NUM，則我們的陣列維度大小必須為NUM x (NUM/2+1)，以數字10為例，其維度為10 x 6我們的表格將會如下所示：<br>
+      </small>
+
+
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 0 0 0 0</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 0 0 0 0</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 2 0 0 0</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 2 3 0 0</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 3 4 5 0</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 3 5 6 7</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 4 7 9 0</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 4 8 0 0</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 5 0 0 0</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1 1 0 0 0 0 </span></small>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <br>
+
+
+      </div>
+
+
+
+      <br>
+
+
+      <h2> 實作</h2>
+
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br>#define NUM 10    //  要拆解的數字 <br>#define DEBUG 0 <br><br>int main(void) { <br>    int table[NUM][NUM/2+1] = {0}; // 動態規畫表格 <br>    int count = 0; <br>    int result = 0; <br>    int i, j, k; <br><br>    printf("數字拆解\n"); <br>    printf("3 = 2+1 = 1+1+1 所以3有三種拆法\n"); <br>    printf("4 = 3 + 1 = 2 + 2 = 2 + 1 + 1 = 1 + 1 + 1 + 1");   <br>    printf("共五種\n"); <br>    printf("5 = 4 + 1 = 3 + 2 = 3 + 1 + 1");<br>    printf(" = 2 + 2 + 1 = 2 + 1 + 1 + 1 = 1 + 1 +1 +1 +1");<br>    printf("共七種\n"); <br>    printf("依此類推，求 %d 有幾種拆法？", NUM); <br><br>    // 初始化 <br>    for(i = 0; i &lt; NUM; i++){ <br>        table[i][0] = 1;  // 任何數以0以下的數拆解必只有1種 <br>        table[i][1] = 1;  // 任何數以1以下的數拆解必只有1種 <br>    }        <br><br>    // 動態規劃 <br>    for(i = 2; i &lt;= NUM; i++){ <br>       for(j = 2; j &lt;= i; j++){ <br>            if(i + j &gt; NUM) // 大於 NUM <br>                continue; <br>            <br>            count = 0;    <br>            for(k = 1 ; k &lt;= j; k++){ <br>                count += table[i-k][(i-k &gt;= k) ? k : i-k];                  <br>            } <br>            table[i][j] = count; <br>        }            <br>    } <br><br>    // 計算並顯示結果 <br>    for(k = 1 ; k &lt;= NUM; k++) <br>        result += table[NUM-k][(NUM-k &gt;= k) ? k : NUM-k];                    <br>    printf("\n\nresult: %d\n", result); <br><br>    if(DEBUG) { <br>        printf("\n除錯資訊\n"); <br>        for(i = 0; i &lt; NUM; i++) { <br>            for(j = 0; j &lt; NUM/2+1; j++) <br>                 printf("%2d", table[i][j]); <br>            printf("\n"); <br>        } <br>    } <br><br>    return 0; <br>}</pre>
+
+
+      <br>
+
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+
+
+
+
+
+</body>
+</html>

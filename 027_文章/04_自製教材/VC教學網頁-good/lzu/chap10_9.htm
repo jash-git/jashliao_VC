@@ -1,0 +1,146 @@
+<html>
+
+<head>
+<title>10.9 自动注册DSN和创建表</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><b><font FACE="Times New Roman" SIZE="3"><p ALIGN="CENTER"></font></b><font FACE="Times New Roman" size="4" color="#3973DE">10.9 </font><font size="4" color="#3973DE">自动注册</font><font FACE="Times New Roman" size="4" color="#3973DE">DSN</font><font size="4" color="#3973DE">和创建表</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在开始编写自己的数据库应用程序时，读者很快会遇到两个令人头痛的问题。一是在访问</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">数据源前，必须在</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">管理器中手工注册</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">（数据源名）。这样的应用程序要求用户作额外的工作，显得很不专业。另一个问题是</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">并不支持表的创建，程序员似乎必须先用</font><font FACE="Times New Roman" SIZE="3">DBMS</font><font SIZE="3">创建好表，然后才能使用。如果一个数据库应用程序不能自己创建表，那么它的功能将大打折扣。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">事实上，通过一些技巧，可以使应用程序能够对用户透明地注册</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">并任意创建表。本节的目的就是教会读者如何解决这两个问题。在下面几个小节中，分别提供了</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">DAO</font><font SIZE="3">的解决方案。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.9.1 
+    </font><font SIZE="3" color="#3973DE">自动注册</font><font color="#3973DE" FACE="Times New Roman" SIZE="3">DSN</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font SIZE="3">无论是用</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">还是</font><font FACE="Times New Roman" SIZE="3">DAO</font><font SIZE="3">类，在访问</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">数据源以前，都必须先注册</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">。通过调用函数</font><font FACE="Times New Roman" SIZE="3">SQLConfigDataSource</font><font SIZE="3">，可以实现自动注册</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">。当然，用</font><font FACE="Times New Roman" SIZE="3">DAO</font><font SIZE="3">可以直接访问一些常用的数据库，而不必通过</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">来访问（参见</font><font FACE="Times New Roman" SIZE="3">10.8.3</font><font SIZE="3">）。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">清单</font><font FACE="Times New Roman" SIZE="3">10.14</font><font SIZE="3">的代码演示了注册</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">的过程。该段代码先用</font><font FACE="Times New Roman" SIZE="3">SQLConfigDataSource</font><font SIZE="3">注册一个名为</font><font FACE="Times New Roman" SIZE="3">MYDB</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">FoxPro 2.5</font><font SIZE="3">数据源，然后调用</font><font FACE="Times New Roman" SIZE="3">CDatabase::Open</font><font SIZE="3">函数与该数据源连接。注意在使用这段代码时，要包含</font><font FACE="Times New Roman" SIZE="3">afxdb.h</font><font SIZE="3">头文件，读者可以把该文件放到</font><font FACE="Times New Roman" SIZE="3">stdafx.h</font><font SIZE="3">中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.14 </font><font SIZE="3">自动注册</font><font FACE="Times New Roman" SIZE="3">DSN</b></p>
+    <p ALIGN="JUSTIFY">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">afxdb.h</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"><b>. . .</b></p>
+    <p ALIGN="JUSTIFY">CDatabase db;</p>
+    <p ALIGN="JUSTIFY">if(!SQLConfigDataSource(NULL,ODBC_ADD_DSN, &quot;Microsoft FoxPro 
+    Driver (*.dbf)&quot;, </p>
+    <p ALIGN="JUSTIFY">&quot;DSN=MYDB\0&quot;</p>
+    <p ALIGN="JUSTIFY">&quot;DefaultDir=c:\\mydir\0&quot;</p>
+    <p ALIGN="JUSTIFY">&quot;FIL=FoxPro 2.5\0&quot;</p>
+    <p ALIGN="JUSTIFY">&quot;DriverId=280\0&quot;))</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(&quot;Can't add DSN!&quot;);</p>
+    <p ALIGN="JUSTIFY">return ;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">TRY</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">db.Open(&quot;MYDB&quot;);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">CATCH(CDBException, e)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(e-&gt;m_strError);</p>
+    <p ALIGN="JUSTIFY">return;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">END_CATCH</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在注册</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">时，</font><font FACE="Times New Roman" SIZE="3">SQLConfigDataSource</font><font SIZE="3">函数的第二个参数应该是</font><font FACE="Times New Roman" SIZE="3">ODBC_ADD_DSN</font><font SIZE="3">，第三个参数指定了</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">驱动程序，它的写法可以参照</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">管理器的驱动程序页。第四个参数说明了数据源的各种属性，它是由一系列子串构成，每个子串的末尾必须有一个“</font><font FACE="Times New Roman" SIZE="3">\0</font><font SIZE="3">”。最重要的属性是“</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">＝数据源名”，其它属性包括缺省目录以及驱动程序版本信息。在上例中，使用</font><font FACE="Times New Roman" SIZE="3">FoxPro 2.5</font><font SIZE="3">的版本，所以</font><font FACE="Times New Roman" SIZE="3">DriverId</font><font SIZE="3">应该是</font><font FACE="Times New Roman" SIZE="3">280</font><font SIZE="3">，对应地，</font><font FACE="Times New Roman" SIZE="3">FoxPro 2.6</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">DriverId</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">536</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">FoxPro 2.0</font><font SIZE="3">的是</font><font FACE="Times New Roman" SIZE="3">24</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果读者对</font><font FACE="Times New Roman" SIZE="3">SQLConfigDataSource</font><font SIZE="3">函数的第四个参数的设置方法不清楚，那么可以打开</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">的注册表看一看已注册过的</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">的各项属性。运行</font><font FACE="Times New Roman" SIZE="3">RegEdit</font><font SIZE="3">可以打开注册表，然后依次打开</font><font FACE="Times New Roman" SIZE="3">HKEY_CURRENT_USER-&gt;Software-&gt;ODBC-&gt;ODBC.INI</font><font SIZE="3">，就可以看到已注册的</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">，打开各</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">，则可以看到该</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">的各项属性，读者可以仿照</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">属性来设置第四个参数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DSN</font><font SIZE="3">的名字必须唯一，因此如果要注册的</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">已被注册过，那么</font><font FACE="Times New Roman" SIZE="3">SQLConfigDataSource</font><font SIZE="3">就修改原来</font><font FACE="Times New Roman" SIZE="3">DSN</font><font SIZE="3">的属性。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.9.2 
+    </font><font color="#3973DE"><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">创建表</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">由于</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">类不支持</font><font FACE="Times New Roman" SIZE="3">DDL</font><font SIZE="3">，所以只有通过</font><font FACE="Times New Roman" SIZE="3">ODBC API</font><font SIZE="3">来创建表。程序需要调用</font><font FACE="Times New Roman" SIZE="3">Cdatabase :: ExecuteSQL</font><font SIZE="3">来直接执行</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">语句。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">清单</font><font FACE="Times New Roman" SIZE="3">10.15</font><font SIZE="3">给出了创建表的一个例子，该程序先自动注册了一个名为</font><font FACE="Times New Roman" SIZE="3">MYDB</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">FoxPro 2.5</font><font SIZE="3">数据源，然后创建了一个名为</font><font FACE="Times New Roman" SIZE="3">OFFICES</font><font SIZE="3">的表（</font><font FACE="Times New Roman" SIZE="3">OFFICES.DBF</font><font SIZE="3">文件），在这个表中有</font><font FACE="Times New Roman" SIZE="3">OfficeID</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OfficeName</font><font SIZE="3">两个</font><font FACE="Times New Roman" SIZE="3">TEXT</font><font SIZE="3">型字段，长度分别为</font><font FACE="Times New Roman" SIZE="3">4</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">10</font><font SIZE="3">个字节。注意，如果要使用这段代码，则需要包含</font><font FACE="Times New Roman" SIZE="3">afxdb.h</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">odbcinst.h</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.15 ODBC</font><font SIZE="3">创建表的例子</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">afxdb.h</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include &quot;odbcinst.h&quot;</p>
+    <p ALIGN="JUSTIFY"><b>. . .</b></p>
+    <p ALIGN="JUSTIFY">CDatabase db;</p>
+    <p ALIGN="JUSTIFY">if(!SQLConfigDataSource(NULL,ODBC_ADD_DSN, &quot;Microsoft FoxPro 
+    Driver (*.dbf)&quot;, </p>
+    <p ALIGN="JUSTIFY">&quot;DSN=MYDB\0&quot;</p>
+    <p ALIGN="JUSTIFY">&quot;DefaultDir=c:\\mydir\0&quot;</p>
+    <p ALIGN="JUSTIFY">&quot;FIL=FoxPro 2.5\0&quot;</p>
+    <p ALIGN="JUSTIFY">&quot;DriverId=280\0&quot;))</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(&quot;Can't add DSN!&quot;);</p>
+    <p ALIGN="JUSTIFY">return ;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">TRY</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">db.Open(&quot;MYDB&quot;);</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">db.ExecuteSQL(&quot;CREATE TABLE OFFICES (OfficeID TEXT(4)&quot; </p>
+        <p ALIGN="JUSTIFY">&quot;,OfficeName TEXT(10))&quot;); }</p>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY">CATCH(CDBException, e)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(e-&gt;m_strError);</p>
+    <p ALIGN="JUSTIFY">return;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">END_CATCH</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ExecuteSQL</font><font SIZE="3">执行了一个实实在在的</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">语句</font><font FACE="Times New Roman" SIZE="3">CREATE</font><font SIZE="3">来创建表，看来用户应该找本</font><font FACE="Times New Roman" SIZE="3">SQL</font><font SIZE="3">方面的书研究研究。要注意一个数据库中的表名必须是唯一的，如果要创建的表已经存在，则</font><font FACE="Times New Roman" SIZE="3">ExecuteSQL</font><font SIZE="3">会产生一个异常。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">10.9.3 
+    </font><font color="#3973DE"><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">DAO</font><font SIZE="3">创建表</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">由于</font><font FACE="Times New Roman" SIZE="3">DAO</font><font SIZE="3">类直接支持</font><font FACE="Times New Roman" SIZE="3">DDL</font><font SIZE="3">，所以用</font><font FACE="Times New Roman" SIZE="3">DAO</font><font SIZE="3">类创建表比</font><font FACE="Times New Roman" SIZE="3">ODBC</font><font SIZE="3">容易。</font><font FACE="Times New Roman" SIZE="3">DAO</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CDaoTableDef</font><font SIZE="3">类提供了对表的结构的定义，该类提供了创建表的成员函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">清单</font><font FACE="Times New Roman" SIZE="3">10.16</font><font SIZE="3">演示了一段用</font><font FACE="Times New Roman" SIZE="3">DAO</font><font SIZE="3">类创建表的例子。注意，若要使用这段代码，则应该包含</font><font FACE="Times New Roman" SIZE="3">afxdao.h</font><font SIZE="3">头文件。在该例中，先与一个</font><font FACE="Times New Roman" SIZE="3">FoxPro 2.5</font><font SIZE="3">数据库连接（实际上是一个目录），然后再构建一个</font><font FACE="Times New Roman" SIZE="3">CDaoTableDef</font><font SIZE="3">对象，接着调用</font><font FACE="Times New Roman" SIZE="3">CDaoTableDef :: Create</font><font SIZE="3">函数创建一个名为</font><font FACE="Times New Roman" SIZE="3">STUDENTS</font><font SIZE="3">的表</font><font FACE="Times New Roman" SIZE="3">(STUDENTS.DBF)</font><font SIZE="3">，调用</font><font FACE="Times New Roman" SIZE="3">CDaoTableDef :: CreateField</font><font SIZE="3">为该表创建了两字段，字段名分别是</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">NAME</font><font SIZE="3">，类型分别是</font><font FACE="Times New Roman" SIZE="3">Integer</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">dbText</font><font SIZE="3">，字段的长度分别为</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">10</font><font SIZE="3">个字节。最后调用</font><font FACE="Times New Roman" SIZE="3">CDaoTableDef :: Append</font><font SIZE="3">把新创建的表保存到数据库中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><b><font SIZE="3"><p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">10.16 DAO</font><font SIZE="3">创建表的例子</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">afxdao.h</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"><b>. . .</b></p>
+    <p ALIGN="JUSTIFY">CDaoDatabase daoDb;</p>
+    <p ALIGN="JUSTIFY">try</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">daoDb.Open(&quot;&quot;,FALSE,FALSE,&quot;FoxPro 
+    2.5;DATABASE=d:\\zwin&quot;);</p>
+    <p ALIGN="JUSTIFY">CDaoTableDef table(&amp;daoDb);</p>
+    <p ALIGN="JUSTIFY">table.Create(&quot;STUDENTS&quot;);</p>
+    <p ALIGN="JUSTIFY">table.CreateField(&quot;ID&quot;,dbInteger,2);</p>
+    <p ALIGN="JUSTIFY">table.CreateField(&quot;NAME&quot;,dbText,10);</p>
+    <p ALIGN="JUSTIFY">table.Append();</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">catch(CDaoException* e)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(e-&gt;</p>
+    <p ALIGN="JUSTIFY">m_pErrorInfo-&gt;m_strDescription);</p>
+    <p ALIGN="JUSTIFY">e-&gt;Delete();</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">关于</font><font FACE="Times New Roman" SIZE="3">CDaoDatabase :: Open</font><font SIZE="3">的说明请参见</font><font FACE="Times New Roman" SIZE="3">10.8.3</font><font SIZE="3">。注意一个数据库中的表名必须是唯一的，如果要创建的表已经存在，则</font><font FACE="Times New Roman" SIZE="3">CDaoTableDef :: Create</font><font SIZE="3">会产生一个异常。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap10_8.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/chap10_8.htm">上一页</a></td>
+        <td><p align="right"><a href="chap1010.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap10/chap1010.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

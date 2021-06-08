@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <title>2(2N+1) 魔方陣</title>
+</head>
+
+
+<body>
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;2(2N+1) 魔方陣</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+      <h2>說明</h2>
+      <small>
+方陣的維度整體來看是偶數，但是其實是一個奇數乘以一個偶數，例如6X6，其中6=2X3，我們也稱這種方陣與單偶數方陣。</small><br>
+
+      <h2>解法</h2>
+      <small>
+如果您會解奇數魔術方陣，要解這種方陣也就不難理解，首先我們令n=2(2m+1)，並將整個方陣看作是數個奇數方陣的組合，如下所示： <br>
+      </small>
+
+      <div style="text-align: center;"><small><img style="width: 393px; height: 236px;" alt="2(2N+1)魔方陣" title="2(2N+1)魔方陣" src="twoNOneArray-1.jpg" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/images/twoNOneArray-1.jpg"><br>
+
+      </small></div>
+
+      <small><br>
+
+首先依序將A、B、C、D四個位置，依奇數方陣的規則填入數字，填完之後，方陣中各行的和就相同了，但列與對角線則否，此時必須在A-D與C- B之間，作一些對應的調換，規則如下：<br>
+      </small>
+      <ol>
+        <li><small>將A中每一列(中間列除外)的頭m個元素，與D中對應位置的元素調換。</small></li>
+        <li><small>將A的中央列、中央那一格向左取m格，並與D中對應位置對調</small></li>
+        <li><small>將C中每一列的倒數m-1個元素，與B中對應的元素對調</small></li>
+      </ol>
+
+      <small><br>
+
+舉個實例來說，如何填6X6方陣，我們首先將之分解為奇數方陣，並填入數字，如下所示： <br>
+      </small>
+      <div style="text-align: center;"><small><img style="width: 202px; height: 258px;" alt="2(2N+1)魔方陣" title="2(2N+1)魔方陣" src="twoNOneArray-2.jpg" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/images/twoNOneArray-2.jpg"></small></div>
+
+      <small><br>
+
+接下來進行互換的動作，互換的元素以不同顏色標示，如下：<br>
+      </small>
+      <div style="text-align: center;"><small><img style="width: 194px; height: 192px;" alt="2(2N+1)魔方陣" title="2(2N+1)魔方陣" src="twoNOneArray-3.jpg" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/images/twoNOneArray-3.jpg"></small></div>
+
+      <small><br>
+
+由於m-1的數為0，所以在這個例子中，C-B部份並不用進行對調。</small><br>
+
+      <h2> 實作</h2>
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>#define N 6 <br>#define SWAP(x,y) {int t; t = x; x = y; y = t;} <br><br>void magic_o(int [][N], int); <br>void exchange(int [][N], int); <br><br>int main(void) { <br>    int square[N][N] = {0}; <br>    int i, j; <br><br>    magic_o(square, N/2); <br>    exchange(square, N); <br><br>    for(i = 0; i &lt; N; i++) { <br>        for(j = 0; j &lt; N; j++) <br>            printf("%2d ", square[i][j]); <br>        printf("\n"); <br>    } <br><br>    return 0; <br>} <br><br>void magic_o(int square[][N], int n) { <br>    int count, row, column; <br><br>    row = 0; <br>    column = n / 2; <br><br>    for(count = 1; count &lt;= n*n; count++) { <br>        square[row][column] = count;            // 填A <br>        square[row+n][column+n] = count + n*n;  // 填B <br>        square[row][column+n] = count + 2*n*n;  // 填C <br>        square[row+n][column] = count + 3*n*n;  // 填D <br>        if(count % n == 0) <br>            row++; <br>        else { <br>            row = (row == 0) ? n - 1 : row - 1 ; <br>            column = (column == n-1) ? 0 : column + 1; <br>        } <br>    } <br>} <br><br>void exchange(int x[][N], int n) { <br>    int i, j; <br>    int m = n / 4; <br>    int m1 = m - 1; <br><br>    for(i = 0; i &lt; n/2; i++) { <br>        if(i != m)  {    <br>            for(j = 0; j &lt; m; j++)          // 處理規則 1 <br>                SWAP(x[i][j], x[n/2+i][j]); <br>            for(j = 0; j &lt; m1; j++)         // 處理規則 2 <br>                SWAP(x[i][n-1-j], x[n/2+i][n-1-j]); <br>        } <br>        else {  // 處理規則 3 <br>            for(j = 1; j &lt;= m; j++) <br>                SWAP(x[m][j], x[n/2+m][j]); <br>            for(j = 0; j &lt; m1; j++) <br>                SWAP(x[m][n-1-j], x[n/2+m][n-1-j]); <br>        } <br>    } <br>} <br></pre>
+
+
+      <br>
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+      <pre>public class Matrix {<br>    public static int[][] magic22mp1(int n) {<br>        int[][] square = new int[n][n]; <br><br>        magic_o(square, n/2); <br>        exchange(square, n);         <br>        <br>        return square;<br>    }<br>    <br>    private static void magic_o(int[][] square, int n) {<br>        int row = 0; <br>        int column = n / 2; <br><br>        for(int count = 1; count &lt;= n*n; count++) { <br>            square[row][column] = count;            // 填A <br>            square[row+n][column+n] = count + n*n;  // 填B <br>            square[row][column+n] = count + 2*n*n;  // 填C <br>            square[row+n][column] = count + 3*n*n;  // 填D <br>            if(count % n == 0) <br>                row++; <br>            else { <br>                row = (row == 0) ? n - 1 : row - 1 ; <br>                column = (column == n-1) ? 0 : column + 1; <br>            } <br>        }<br>    }<br>    <br>    private static void exchange(int[][] x, int n) {<br>        int i, j; <br>        int m = n / 4; <br>        int m1 = m - 1; <br><br>        for(i = 0; i &lt; n/2; i++) { <br>            if(i != m)  {    <br>                for(j = 0; j &lt; m; j++)          // 處理規則 1 <br>                    swap(x, i, j, n/2+i, j); <br>                for(j = 0; j &lt; m1; j++)         // 處理規則 2 <br>                    swap(x, i, n-1-j, n/2+i, n-1-j); <br>            } <br>            else {  // 處理規則 3 <br>                for(j = 1; j &lt;= m; j++) <br>                    swap(x, m, j, n/2+m, j); <br>                for(j = 0; j &lt; m1; j++) <br>                    swap(x, m, n-1-j, n/2+m, n-1-j); <br>            } <br>        } <br>    }<br>    <br>    private static void swap(int[][] number,<br>                                int i, int j, int k, int l) {<br>        int t; <br>        t = number[i][j]; <br>        number[i][j] = number[k][l]; <br>        number[k][l] = t;<br>    }<br>    <br>    public static void main(String[] args) {<br>        int[][] magic = Matrix.magic22mp1(6);<br>        <br>        for(int k = 0; k &lt; magic.length; k++) {<br>            for(int l = 0; l &lt; magic[0].length; l++) {<br>                System.out.print(magic[k][l] + " ");<br>            }<br>            System.out.println();<br>         }<br>    }<br>} </pre>
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+<br>
+
+
+
+
+
+</body>
+</html>

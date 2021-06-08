@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+  
+  
+  
+  
+  <title>騎士走棋盤</title>
+</head>
+
+
+<body>
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip: 騎士走棋盤</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+      <h2>&nbsp;說明</h2>
+      <small>
+騎士旅遊（Knight tour）在十八世紀初倍受數學家與拼圖迷的注意，它什麼時候被提出已不可考，騎士的走法為西洋棋的走法，騎士可以由任一個位置出發，它要如何走完[所有的位置？</small><br>
+
+      <h2>解法</h2>
+      <small>
+騎士的走法，基本上可以使用遞迴來解決，但是純綷的遞迴在維度大時相當沒有效率，一個聰明的解法由J.C.
+Warnsdorff在1823年提出，簡單的說，先將最難的位置走完，接下來的路就寬廣了，騎士所要走的下一步，「為下一步再選擇時，所能走的步數最少
+的一步。」，使用這個方法，在不使用遞迴的情況下，可以有較高的機率找出走法（找不到走法的機會也是有的）。 </small><br>
+
+
+
+
+      <h2> 演算法</h2>
+
+
+      <pre>FOR(m = 2; m &lt;= 總步數; m++) [<br>    測試下一步可以走的八個方向，記錄可停留的格數count。<br><br>    IF(count == 0) [<br>        遊歷失敗<br>    ]<br>    ELSE IF(count == 1) [<br>        下一步只有一個可能<br>    ]<br>    ELSE [<br>        找出下一步的出路最少的格子<br>       如果出路值相同，則選第一個遇到的出路。 <br>    ]<br><br>    走最少出路的格子，記錄騎士的新位置。  <br>] <br></pre>
+
+
+
+      <h2> 實作</h2>
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br><br>int board[8][8] = {0}; <br><br>int main(void) {<br>    int startx, starty;<br>    int i, j;<br><br>    printf("輸入起始點：");<br>    scanf("%d %d", &amp;startx, &amp;starty);<br><br>    if(travel(startx, starty)) {<br>        printf("遊歷完成！\n");<br>    }<br>    else {<br>        printf("遊歷失敗！\n");<br>    }<br><br>    for(i = 0; i &lt; 8; i++) {<br>        for(j = 0; j &lt; 8; j++) {<br>            printf("%2d ", board[i][j]);<br>        }<br>        putchar('\n');<br>    }<br><br>    return 0;<br>} <br><br>int travel(int x, int y) {<br>    // 對應騎士可走的八個方向<br>    int ktmove1[8] = {-2, -1, 1, 2, 2, 1, -1, -2};<br>    int ktmove2[8] = {1, 2, 2, 1, -1, -2, -2, -1};<br><br>    // 測試下一步的出路<br>    int nexti[8] = {0};<br>    int nextj[8] = {0};<br><br>    // 記錄出路的個數<br>    int exists[8] = {0};<br><br>    int i, j, k, m, l;<br>    int tmpi, tmpj;<br>    int count, min, tmp;<br><br>    i = x;<br>    j = y;<br><br>    board[i][j] = 1;<br><br>    for(m = 2; m &lt;= 64; m++) {<br>        for(l = 0; l &lt; 8; l++) {<br>            exists[l] = 0;<br>        }<br><br>        l = 0;<br><br>        // 試探八個方向<br>        for(k = 0; k &lt; 8; k++) {<br>            tmpi = i + ktmove1[k];<br>            tmpj = j + ktmove2[k];<br><br>            // 如果是邊界了，不可走<br>            if(tmpi &lt; 0 || tmpj &lt; 0 || tmpi &gt; 7 || tmpj &gt; 7)<br>                continue;<br><br>            // 如果這個方向可走，記錄下來<br>            if(board[tmpi][tmpj] == 0) {<br>                nexti[l] = tmpi;<br>                nextj[l] = tmpj;<br>                // 可走的方向加一個<br>                l++;<br>            }<br>        }<br><br>        count = l;<br><br>        // 如果可走的方向為0個，返回<br>        if(count == 0) {<br>            return 0;<br>        }<br>        else if(count == 1) {<br>            // 只有一個可走的方向<br>            // 所以直接是最少出路的方向<br>            min = 0;<br>        }<br>        else {<br>            // 找出下一個位置的出路數<br>            for(l = 0; l &lt; count; l++) {<br>                for(k = 0; k &lt; 8; k++) {<br>                    tmpi = nexti[l] + ktmove1[k];<br>                    tmpj = nextj[l] + ktmove2[k];<br><br>                    if(tmpi &lt; 0 || tmpj &lt; 0 || <br>                       tmpi &gt; 7 || tmpj &gt; 7) {<br>                        continue;<br>                    }<br><br>                    if(board[tmpi][tmpj] == 0)<br>                        exists[l]++;<br>                }<br>            }<br><br>            tmp = exists[0];<br>            min = 0;<br><br>            // 從可走的方向中尋找最少出路的方向<br>            for(l = 1; l &lt; count; l++) {<br>                if(exists[l] &lt; tmp) {<br>                    tmp = exists[l];<br>                    min = l;<br>                }<br>            }<br>        }<br><br>        // 走最少出路的方向<br>        i = nexti[min];<br>        j = nextj[min];<br>        board[i][j] = m;<br>    }<br><br>    return 1;<br>} <br></pre>
+
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+      <pre>public class Knight {<br>    public boolean travel(int startX, <br>                          int startY, int[][] board) {<br>        // 對應騎士可走的八個方向<br>        int[] ktmove1 = {-2, -1, 1, 2, 2, 1, -1, -2};<br>        int[] ktmove2 = {1, 2, 2, 1, -1, -2, -2, -1};<br>        <br>        // 下一步出路的位置<br>        int[] nexti = new int[board.length];<br>        int[] nextj = new int[board.length];<br>        <br>        // 記錄出路的個數<br>        int[] exists = new int[board.length];<br>        <br>        int x = startX;<br>        int y = startY;<br>        <br>        board[x][y] = 1;<br>        <br>        for(int m = 2; m &lt;= Math.pow(board.length, 2); m++) {<br>            for(int k = 0; k &lt; board.length; k++) {<br>                exists[k] = 0;<br>            }<br>            <br>            int count = 0;<br>            // 試探八個方向<br>            for(int k = 0; k &lt; board.length; k++) {<br>                int tmpi = x + ktmove1[k];<br>                int tmpj = y + ktmove2[k];<br>                <br>                // 如果是邊界了，不可走<br>                if(tmpi &lt; 0 || tmpj &lt; 0 || <br>                   tmpi &gt; 7 || tmpj &gt; 7) {<br>                    continue;<br>                }<br>                <br>                // 如果這個方向可走，記錄下來<br>                if(board[tmpi][tmpj] == 0) {<br>                    nexti[count] = tmpi;<br>                    nextj[count] = tmpj;<br>                    // 可走的方向加一個<br>                    count++;<br>                }<br>            }<br>            <br>            int min = -1;<br>            if(count == 0) {<br>                return false;<br>            }<br>            else if(count == 1) {<br>                min = 0;<br>            }<br>            else {<br>                // 找出下一個位置的出路數<br>                for(int l = 0; l &lt; count; l++) {<br>                    for(int k = 0; k &lt; board.length; k++) {<br>                        int tmpi = nexti[l] + ktmove1[k];<br>                        int tmpj = nextj[l] + ktmove2[k];<br><br>                        if(tmpi &lt; 0 || tmpj &lt; 0 || <br>                           tmpi &gt; 7 || tmpj &gt; 7) {<br>                            continue;<br>                        }<br><br>                        if(board[tmpi][tmpj] == 0)<br>                            exists[l]++;<br>                    }<br>                }<br><br>                int tmp = exists[0];<br>                min = 0;<br><br>                // 從可走的方向中尋找最少出路的方向<br>                for(int l = 1; l &lt; count; l++) {<br>                    if(exists[l] &lt; tmp) {<br>                        tmp = exists[l];<br>                        min = l;<br>                    }<br>                }<br>            }<br>            <br>            // 走最少出路的方向<br>            x = nexti[min];<br>            y = nextj[min];<br>            board[x][y] = m;<br>        }<br>        <br>        return true;<br>    }<br>    <br>    public static void main(String[] args) {<br>        int[][] board = new int[8][8];<br>        Knight knight = new Knight();<br>        <br>        if(knight.travel(<br>                Integer.parseInt(args[0]), <br>                Integer.parseInt(args[1]), board)) {<br>            System.out.println("遊歷完成！");<br>        }<br>        else {<br>            System.out.println("遊歷失敗！");<br>        }<br>        <br>        for(int i = 0; i &lt; board.length; i++) {<br>            for(int j = 0; j &lt; board[0].length; j++) {<br>                if(board[i][j] &lt; 10) {<br>                    System.out.print(" " + board[i][j]);<br>                }<br>                else {<br>                    System.out.print(board[i][j]);<br>                }<br>                System.out.print(" ");<br>            }<br>            System.out.println();<br>        }<br>    }<br>}</pre>
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+<br>
+
+<br>
+
+
+
+
+</body>
+</html>

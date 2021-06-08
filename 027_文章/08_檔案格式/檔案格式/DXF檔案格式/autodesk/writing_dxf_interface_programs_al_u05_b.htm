@@ -1,0 +1,234 @@
+<html>
+<head>
+<meta name=ID content="Writing_DXF_Interface_Programs_al_u05_b">
+<title>Writing DXF Interface Programs  [ACG]</title>
+<meta name=KEYWORDS content="DXF files, interface programs;DXF files,  writing interface programs">
+<meta name=BROWSE content="BROWSE1:000">
+<meta name=WINDOW content="main">
+</head>
+<body bgcolor=#ffffff link=#003399 vlink=#003399>
+
+<table width=100% cellpadding=5 cellspacing=0 border=0><tr><td>
+<font face=Arial color=#003399 size=3><b> <a href="drawing_interchange_file_formats.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/drawing_interchange_file_formats.htm">Drawing Interchange File Formats</a>
+</b></font>
+<hr size=1>
+<font face=Arial color=#003399 size=3><b><a href="ascii_dxf_file_format_al_u05_b.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/ascii_dxf_file_format_al_u05_b.htm"><img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> ASCII DXF File Format</a> 
+</b></font><br>
+</td></tr><tr><td>
+<font face=Arial color=#003399 size=3><b><img src="bk_space.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/bk_space.gif" border=0> <img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> Writing DXF Interface Programs
+</b></font>
+<hr size=1>
+</td></tr></table>
+
+<p><font face="MS Sans Serif,Arial" size=2>Writing a program that communicates with AutoCAD by means of the DXF mechanism appears more difficult than it actually is. The DXF format makes it easy to ignore information you don't need, while reading the information you do need.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The following example is a Microsoft BASIC(tm) program that reads a DXF file and extracts all the line entities from the drawing (ignoring lines that appear inside blocks). It displays the endpoints of these lines on the screen. This program is an example of how simple a DXF-reading program can be.
+</font></p>
+<font face="Courier New,Courier" size=2>1000&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1010&nbsp;&nbsp;REM Extract lines from DXF file
+</font><br>
+<font face="Courier New,Courier" size=2>1020&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1030&nbsp;&nbsp;G1% = 0
+</font><br>
+<font face="Courier New,Courier" size=2>1040&nbsp;&nbsp;LINE INPUT "DXF file name: "; A$
+</font><br>
+<font face="Courier New,Courier" size=2>1050&nbsp;&nbsp;OPEN "i", 1, A$ + ".dxf"
+</font><br>
+<font face="Courier New,Courier" size=2>1060&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1070&nbsp;&nbsp;REM Ignore until section start encountered
+</font><br>
+<font face="Courier New,Courier" size=2>1080&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1090&nbsp;&nbsp;GOSUB 2000
+</font><br>
+<font face="Courier New,Courier" size=2>1100&nbsp;&nbsp;IF G% &lt;&gt; 0 THEN 1090
+</font><br>
+<font face="Courier New,Courier" size=2>1110&nbsp;&nbsp;IF S$ &lt;&gt; "SECTION" THEN 1090 
+</font><br>
+<font face="Courier New,Courier" size=2>1120&nbsp;&nbsp;GOSUB 2000
+</font><br>
+<font face="Courier New,Courier" size=2>1130&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1140&nbsp;&nbsp;REM Skip unless ENTITIES section
+</font><br>
+<font face="Courier New,Courier" size=2>1150&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1160&nbsp;&nbsp;IF S$ &lt;&gt; "ENTITIES" THEN 1090
+</font><br>
+<font face="Courier New,Courier" size=2>1170&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1180&nbsp;&nbsp;REM Scan until end of section, processing LINEs
+</font><br>
+<font face="Courier New,Courier" size=2>1190&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1200&nbsp;&nbsp;GOSUB 2000
+</font><br>
+<font face="Courier New,Courier" size=2>1210&nbsp;&nbsp;IF G% = 0 AND S$ = "ENDSEC" THEN 2200
+</font><br>
+<font face="Courier New,Courier" size=2>1220&nbsp;&nbsp;IF G% = 0 AND S$ = "LINE" THEN GOSUB 1400 : GOTO 1210
+</font><br>
+<font face="Courier New,Courier" size=2>1230&nbsp;&nbsp;GOTO 1200
+</font><br>
+<font face="Courier New,Courier" size=2>1400&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1410&nbsp;&nbsp;REM Accumulate LINE entity groups
+</font><br>
+<font face="Courier New,Courier" size=2>1420&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1430&nbsp;&nbsp;GOSUB 2000
+</font><br>
+<font face="Courier New,Courier" size=2>1440&nbsp;&nbsp;IF G% = 10 THEN X1 = X : Y1 = Y : Z1 = Z
+</font><br>
+<font face="Courier New,Courier" size=2>1450&nbsp;&nbsp;IF G% = 11 THEN X2 = X : Y2 = Y : Z2 = Z
+</font><br>
+<font face="Courier New,Courier" size=2>1460&nbsp;&nbsp;IF G% = 0 THEN PRINT "Line from
+</font><br>
+<font face="Courier New,Courier" size=2> (";X1;",";Y1;",";Z1;") to (";X2;",";Y2;",";Z2;")":RETURN
+</font><br>
+<font face="Courier New,Courier" size=2>1470&nbsp;&nbsp;GOTO 1430
+</font><br>
+<font face="Courier New,Courier" size=2>2000&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>2010&nbsp;&nbsp;REM Read group code and following value
+</font><br>
+<font face="Courier New,Courier" size=2>2020&nbsp;&nbsp;REM For X coordinates, read Y and possibly Z also
+</font><br>
+<font face="Courier New,Courier" size=2>2030&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>2040&nbsp;&nbsp;IF G1% &lt; 0 THEN G% = -G1% : G1% = 0 ELSE INPUT #1, G%
+</font><br>
+<font face="Courier New,Courier" size=2>2050&nbsp;&nbsp;IF G% &lt; 10 OR G% = 999 THEN LINE INPUT #1, S$ : RETURN
+</font><br>
+<font face="Courier New,Courier" size=2>2060&nbsp;&nbsp;IF G% &gt;= 38 AND G% &lt;= 49 THEN INPUT #1, V : RETURN
+</font><br>
+<font face="Courier New,Courier" size=2>2080&nbsp;&nbsp;IF G% &gt;= 50 AND G% &lt;= 59 THEN INPUT #1, A : RETURN
+</font><br>
+<font face="Courier New,Courier" size=2>2090&nbsp;&nbsp;IF G% &gt;= 60 AND G% &lt;= 69 THEN INPUT #1, P% : RETURN
+</font><br>
+<font face="Courier New,Courier" size=2>2100&nbsp;&nbsp;IF G% &gt;= 70 AND G% &lt;= 79 THEN INPUT #1, F% : RETURN
+</font><br>
+<font face="Courier New,Courier" size=2>2110&nbsp;&nbsp;IF G% &gt;= 210 AND G% &lt;= 219 THEN 2130
+</font><br>
+<font face="Courier New,Courier" size=2>2115&nbsp;&nbsp;IF G% &gt;= 1000 THEN LINE INPUT #1, T$ : RETURN
+</font><br>
+<font face="Courier New,Courier" size=2>2120&nbsp;&nbsp;IF G% &gt;= 20 THEN PRINT "Invalid group code";G% : STOP
+</font><br>
+<font face="Courier New,Courier" size=2>2130&nbsp;&nbsp;INPUT #1, X
+</font><br>
+<font face="Courier New,Courier" size=2>2140&nbsp;&nbsp;INPUT #1, G1%
+</font><br>
+<font face="Courier New,Courier" size=2>2150&nbsp;&nbsp;IF G1% &lt;&gt; (G%+10) THEN PRINT "Invalid Y coord code";
+</font><br>
+<font face="Courier New,Courier" size=2> G1% : STOP
+</font><br>
+<font face="Courier New,Courier" size=2>2160&nbsp;&nbsp;INPUT #1, Y 
+</font><br>
+<font face="Courier New,Courier" size=2>2170&nbsp;&nbsp;INPUT #1, G1%
+</font><br>
+<font face="Courier New,Courier" size=2>2180&nbsp;&nbsp;IF G1% &lt;&gt; (G%+20) THEN G1% = -G1% ELSE INPUT #1, Z
+</font><br>
+<font face="Courier New,Courier" size=2>2190&nbsp;&nbsp;RETURN
+</font><br>
+<p><font face="Courier New,Courier" size=2>2200&nbsp;&nbsp;CLOSE 1
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>Writing a program that constructs a DXF file poses different problems. You must maintain consistency within the drawing, although with AutoCAD you can omit many items in a DXF file and still obtain a usable drawing. The entire HEADER section can be omitted if you don't set header variables. Any of the tables in the TABLES section can be omitted if you don't need to make entries, and the entire TABLES section can be dropped if nothing in it is required. If you define any linetypes in the LTYPE table, this table must appear before the LAYER table. If no block definitions are used in the drawing, the BLOCKS section can be omitted. If present, the BLOCKS section must appear before the ENTITIES section. Within the ENTITIES section, you can reference layer names even though you haven't defined them in the LAYER table. Such layers are automatically created with color 7 and the CONTINUOUS linetype. The EOF item must be present at the end of file.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The following Microsoft BASIC program constructs a DXF file representing a polygon with a specified number of sides, leftmost origin point, and side length. This program supplies only the ENTITIES section of the DXF file and places all entities generated on the default layer 0. Because this program doesn't create the drawing header, the drawing limits, extents, and current view will be invalid after performing a DXFIN on the drawing generated by this program. You can do a ZOOM Extents to fill the screen with the drawing generated. Then adjust the limits manually.
+</font></p>
+<font face="Courier New,Courier" size=2>1000&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1010&nbsp;&nbsp;REM Polygon generator
+</font><br>
+<font face="Courier New,Courier" size=2>1020&nbsp;&nbsp;REM
+</font><br>
+<font face="Courier New,Courier" size=2>1030&nbsp;&nbsp;LINE INPUT "Drawing (DXF) file name: "; A$
+</font><br>
+<font face="Courier New,Courier" size=2>1040&nbsp;&nbsp;OPEN "o", 1, A$ + ".dxf"
+</font><br>
+<font face="Courier New,Courier" size=2>1050&nbsp;&nbsp;PRINT #1, 0
+</font><br>
+<font face="Courier New,Courier" size=2>1060&nbsp;&nbsp;PRINT #1, "SECTION"
+</font><br>
+<font face="Courier New,Courier" size=2>1070&nbsp;&nbsp;PRINT #1, 2
+</font><br>
+<font face="Courier New,Courier" size=2>1080&nbsp;&nbsp;PRINT #1, "ENTITIES"
+</font><br>
+<font face="Courier New,Courier" size=2>1090&nbsp;&nbsp;PI = ATN(1) * 4
+</font><br>
+<font face="Courier New,Courier" size=2>1100&nbsp;&nbsp;INPUT "Number of sides for polygon: "; S%
+</font><br>
+<font face="Courier New,Courier" size=2>1110&nbsp;&nbsp;INPUT "Starting point (X,Y): "; X, Y
+</font><br>
+<font face="Courier New,Courier" size=2>1120&nbsp;&nbsp;INPUT "Polygon side: "; D
+</font><br>
+<font face="Courier New,Courier" size=2>1130&nbsp;&nbsp;A1 = (2 * PI) / S%
+</font><br>
+<font face="Courier New,Courier" size=2>1140&nbsp;&nbsp;A = PI / 2
+</font><br>
+<font face="Courier New,Courier" size=2>1150&nbsp;&nbsp;FOR I% = 1 TO S%
+</font><br>
+<font face="Courier New,Courier" size=2>1160&nbsp;&nbsp;PRINT #1, 0
+</font><br>
+<font face="Courier New,Courier" size=2>1170&nbsp;&nbsp;PRINT #1, "LINE"
+</font><br>
+<font face="Courier New,Courier" size=2>1180&nbsp;&nbsp;PRINT #1, 8
+</font><br>
+<font face="Courier New,Courier" size=2>1190&nbsp;&nbsp;PRINT #1, "0"
+</font><br>
+<font face="Courier New,Courier" size=2>1200&nbsp;&nbsp;PRINT #1, 10
+</font><br>
+<font face="Courier New,Courier" size=2>1210&nbsp;&nbsp;PRINT #1, X
+</font><br>
+<font face="Courier New,Courier" size=2>1220&nbsp;&nbsp;PRINT #1, 20
+</font><br>
+<font face="Courier New,Courier" size=2>1230&nbsp;&nbsp;PRINT #1, Y
+</font><br>
+<font face="Courier New,Courier" size=2>1240&nbsp;&nbsp;PRINT #1, 30
+</font><br>
+<font face="Courier New,Courier" size=2>1250&nbsp;&nbsp;PRINT #1, 0.0
+</font><br>
+<font face="Courier New,Courier" size=2>1260&nbsp;&nbsp;NX = D * COS(A) + X
+</font><br>
+<font face="Courier New,Courier" size=2>1270&nbsp;&nbsp;NY = D * SIN(A) + Y
+</font><br>
+<font face="Courier New,Courier" size=2>1280&nbsp;&nbsp;PRINT #1, 11
+</font><br>
+<font face="Courier New,Courier" size=2>1290&nbsp;&nbsp;PRINT #1, NX
+</font><br>
+<font face="Courier New,Courier" size=2>1300&nbsp;&nbsp;PRINT #1, 21
+</font><br>
+<font face="Courier New,Courier" size=2>1310&nbsp;&nbsp;PRINT #1, NY
+</font><br>
+<font face="Courier New,Courier" size=2>1320&nbsp;&nbsp;PRINT #1, 31
+</font><br>
+<font face="Courier New,Courier" size=2>1330&nbsp;&nbsp;PRINT #1, 0.0
+</font><br>
+<font face="Courier New,Courier" size=2>1340&nbsp;&nbsp;X = NX
+</font><br>
+<font face="Courier New,Courier" size=2>1350&nbsp;&nbsp;Y = NY
+</font><br>
+<font face="Courier New,Courier" size=2>1360&nbsp;&nbsp;A = A + A1
+</font><br>
+<font face="Courier New,Courier" size=2>1370&nbsp;&nbsp;NEXT I%
+</font><br>
+<font face="Courier New,Courier" size=2>1380&nbsp;&nbsp;PRINT #1, 0
+</font><br>
+<font face="Courier New,Courier" size=2>1390&nbsp;&nbsp;PRINT #1, "ENDSEC"
+</font><br>
+<font face="Courier New,Courier" size=2>1400&nbsp;&nbsp;PRINT #1, 0
+</font><br>
+<font face="Courier New,Courier" size=2>1410&nbsp;&nbsp;PRINT #1, "EOF"
+</font><br>
+<p><font face="Courier New,Courier" size=2>1420&nbsp;&nbsp;CLOSE 1
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>As long as a properly formatted item appears on the line on which the data is expected, DXFIN accepts it. (Of course, string items should not have leading spaces unless these are intended to be part of the string.) This program takes advantage of this flexibility in input format and does not generate a file exactly like one generated by AutoCAD.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>In the case of an error in using DXFIN TO load, AutoCAD reports the error with a message indicating the nature of the error and the last line processed in the <font face=Arial><i>dxf</i></font> file before the error was detected. This may not be the line on which the error occurred, especially in the case of errors such as the omission of required groups. 
+</font></p>
+
+</body>
+</html>
+

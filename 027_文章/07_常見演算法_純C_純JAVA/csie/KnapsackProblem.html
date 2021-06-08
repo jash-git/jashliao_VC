@@ -1,0 +1,917 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Knapsack Problem</title></head><body>
+<div class="a"><div class="h">
+<p class="b">0/1 Knapsack Problem</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Knapsack Problem</p>
+<p>將一群物品儘量塞進背包裡面，令背包裡面的物品總價值最高。僅考慮背包只有負重限制（似乎太天真了一點）。</p>
+<p>至於要讓背包裡面的物品總價值最低的話，那就是什麼東西都不要放進背包了吧，沒有什麼好討論的。</p>
+<p>這裡向大家提供一本專述背包問題的論著：<a href="javascript:if(confirm('http://www.or.deis.unibo.it/knapsack.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.or.deis.unibo.it/knapsack.html'" tppabs="http://www.or.deis.unibo.it/knapsack.html" class="l">http://www.or.deis.unibo.it/knapsack.html</a>。</p>
+<p class="t">0/1 Knapsack Problem</p>
+<p>背包問題是很經典的問題，亦引申出許多變形和應用。這裡我們介紹基本款式：0/1背包問題。</p>
+<p>文言的說法是：每種類型的物品只會放進背包零個或一個。通俗的說法是：每個物品都是不同類型的，每種物品都只有一個。</p>
+<p>0/1背包問題基本上是NP問題，當數值範圍不大時，能以DP處理之。</p>
+<p class="e">UVa 431 624 990 10130 10819</p>
+<p class="t">摘要</p>
+<pre>
+讓背包裡面的物品總價值最大
+此時背包裡面最少會用掉多少空間、最多會剩下多少空間
+此時背包裡面放了哪些物品
+此時背包裡面的物品有哪些不同的組合方式
+此時背包裡面的物品有幾種不同的組合方式
+此時背包裡面的物品盡量最少（多）個
+</pre>
+<p class="t">分割問題的方法</p>
+<p>當我們把一件物品放進背包裡面時，會讓總價值變高，並且讓背包變重。對某一件物品來說，我們可以選擇放或不放；然後移去這件物品所帶來的影響，將問題縮小成子問題。遞迴式便可設計為：</p>
+<pre>
+c(n, w) = max( c(n-1, w), c(n-1, w-weight[n]) + cost[n] )
+               ^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               不放 -> 0            有放 -> 1
+
+n：第0個到第n個物品要放進背包內。
+w：背包負重上限。
+c(n, w)：只有第0個到第n個物品，負重限制為w，此時的背包問題答案。
+weight[n]：第n個物品的重量。
+cost[n]：第n個物品的價值。
+</pre>
+<p>考慮一下東西放不進去時的情形，以及沒有東西時的情形。</p>
+<pre>
+c(n, w) =
+ { 0                                      , if n = 0
+ {
+ { c(n-1, w)                              , if n > 0
+ {                                          and w-weight[n] < 0
+ {
+ { max( c(n-1, w),                        , if n > 0
+ {      c(n-1, w-weight[n]) + cost[n] )     and w-weight[n] >= 0
+</pre>
+<p>物品一開始的先後順序是無所謂的，最後得出的答案都會一樣。</p>
+<p class="t">讓背包裡面的物品總價值最大</p>
+<p>只要計算所有小問題的答案，那麼必然可以推導出大問題的答案。建立二維表格後，依序計算每個小問題吧！</p>
+<textarea>
+const int N = 100;		// 物品總數上限
+const int W = 100000;	// 背包負重上限
+						//（有時候會使用物品的總重量作為此值）
+int cost[N], weight[N];	// 物品的價值與重量
+int c[N + 1][W + 1];	// DP所需的陣列
+
+void knapsack(int n, int w)	// n為物品個數，w為背包負重上限。
+{
+	memset(c, 0, sizeof(c));
+
+	for (int i = 0; i < n; ++i)			// 每個物品都試試看
+		for (int j = 0; j <= w; ++j)	// 每個重量都試試看
+			if (j - weight[i] < 0)
+				c[i+1][j] = c[i][j];	// 負重能力不足，故只能不放。
+			else
+				c[i+1][j] = max(		// 負重能力足夠，可以放或不放。
+					c[i][j],
+					c[i][j - weight[i]] + cost[i]
+				);
+
+	cout << "最高的價值為" << c[n][w];
+}
+</textarea>
+<p>因為計算時只需要用到上方和左上方的格子，所以其實只需要一條陣列就夠了。不過計算次序需要改為由陣列後端開始，才不會覆蓋掉需要拿來計算的陣列格子。</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+int c[W + 1];	// 只需要一條陣列就夠了
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+
+	for (int i = 0; i < n; ++i)
+		for (int j = w; j - weight[i] >= 0; --j)	// 由後往前
+			c[j] = max(c[j], c[j - weight[i]] + cost[i]);
+
+	cout << "最高的價值為" << c[w];
+}
+</textarea>
+<p>物品的價值與重量可以合併設計成一個物件，讓人容易理解。</p>
+<textarea>
+const int N = 100, W = 100000;
+struct Item {int cost, weight;} items[N];	// 設計成物件
+int c[W + 1];
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+
+	for (int i = 0; i < n; ++i)
+	{
+		int weight = items[i].weight, cost = items[i].cost;
+		for (int j = w; j - weight >= 0; --j)
+			c[j] = max(c[j], c[j - weight] + cost);
+	}
+
+	cout << "最高的價值為" << c[w];
+}
+</textarea>
+<p>方才所採用的方法會計算到所有可能的問題，然而並不是所有問題都需要計算，故採用Top-down的方式會比較快。</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+int c[N + 1][W + 1];
+
+int knapsack(int n, int w)
+{
+	if (w < 0) return -1e9;	// 負重能力不足，故只能不放。
+	if (n == 0) return 0;	// 沒有物品時，就沒有cost。
+
+	// memoization，直接讀取記憶體的答案。
+	if (c[n][w]) return c[n][w];
+
+	// 遞迴求得小問題的答案
+	return c[n][w] = max(
+		knapsack(n-1, w-weight[n]) + cost[n],
+		knapsack(n-1, w)
+	);
+}
+</textarea>
+<p class="t">此時背包裡面最少會用掉多少空間、最多會剩下多少空間</p>
+<p>計算完畢之後，從表格的右方開始往左搜尋即可。當發現最佳的cost將要變小時，表示該處為最節省空間的地方。</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+int c[W + 1];
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+
+	for (int i = 0; i < n; ++i)
+		for (int j = w; j - weight[i] >= 0; --j)
+			c[j] = max(c[j], c[j - weight[i]] + cost[i]);
+
+	cout << "最高的價值為" << c[w];
+
+	while (w-1 >= 0 && c[w-1] == c[w]) w--;	// 往左搜尋邊界
+
+	cout << "最多會剩下的空間是" << w;
+}
+</textarea>
+<p class="t">此時背包裡面放了哪些物品</p>
+<p>另外建立一個二維陣列，紀錄每一個問題的答案，是由哪個子問題推導出來的。每個問題只會有放或不放兩種情形，所以只要記錄放或不放便可以了。</p>
+<p>這段程式碼只能找出其中一種組合方式，會是字典順序最小的一種組合方式，只是印出來的順序剛好前後顛倒。</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+int c[W + 1];
+bool p[N][W + 1];	// 紀錄放還是不放，false為不放，true為放。
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+	memset(p, 0, sizeof(p));	// 初始化為 false
+
+	for (int i = 0; i < n; ++i)
+		for (int j = w; j >= weight[i]; --j)
+			if (c[j - weight[i]] + cost[i] > c[j])
+			{
+				c[j] = c[j - weight[i]] + cost[i];
+				p[i][j] = true;	// 有放
+			}
+
+	cout << "最高的價值為" << c[w];
+
+	// 往回逆推，求出所有放入的物品。
+	for (int i = n-1, j = w; i >= 0; --i)
+		if (p[i][j])	// 背包有該物品
+		{
+			cout << "背包裡面有第" << i << "個物品";
+			j -= weight[i];
+		}
+}
+</textarea>
+<p>改成這樣，就得到字典順序最大的一種組合方式。</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+int c[W + 1];
+bool p[N][W + 1];	// 紀錄放還是不放，false為不放，true為放。
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+	memset(p, 0, sizeof(p));
+
+	for (int i = n-1; i >= 0; --i)	// 改為由後往前
+		for (int j = w; j >= weight[i]; --j)
+			if (c[j - weight[i]] + cost[i] > c[j])
+			{
+				c[j] = c[j - weight[i]] + cost[i];
+				p[i][j] = true;
+			}
+
+	cout << "最高的價值為" << c[w];
+
+	// 往回逆推，求放入的物品。
+	for (int i = 0, j = w; i < N; ++i)	// 改為由前往後
+		if (p[i][j])
+		{
+			cout << "背包裡面有第" << i << "個物品";
+			j -= weight[i];
+		}
+}
+</textarea>
+<p class="t">此時背包裡面的物品有哪些不同的組合方式</p>
+<p>若要找出所有方式，那就要寫個遞迴了吧？就我所知，目前尚未存在有效率的方法，能夠求出所有的配置方式。</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+
+int c[W + 1];
+int p[N][W + 1];	// 0為不放，1為放，2為放與不放都可以。
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+	memset(p, 0, sizeof(p));
+
+	for (int i = n-1; i >= 0; --i)
+		for (int j = w; j >= weight[i]; --j)
+			// 放了比較好
+			if (c[j - weight[i]] + cost[i] > c[j])
+			{
+				c[j] = c[j - weight[i]] + cost[i];
+				p[i][j] = 1;
+			}
+			// 可放可不放
+			else if (c[j - weight[i]] + cost[i] == c[j])
+			{
+//				c[j] = c[j - weight[i]] + cost[i];
+				p[i][j] = 2;
+			}
+			// 不放比較好
+			else if (c[j - weight[j]] + cost[i] < c[j])
+			{
+				p[i][j] = 0;
+			}
+
+	cout << "最高的價值為" << c[w];
+}
+
+// 從表格右下角開始往回逆推
+void find_path(int n, int w)
+{
+	if (n < 0) return;			// 找完了
+
+	// 背包裡面有該物品
+	if (p[n][w] == 1)
+	{
+		cout << "背包裡面有第" << i << "個物品";
+		find_path(n-1, w-weight[i]);
+	}
+	// 可有可無
+	else if (p[n][w] == 2)
+	{
+		// 如果有
+		cout << "背包裡面有第" << i << "個物品";
+		find_path(n-1, w-weight[i]);
+
+		// 如果無
+		find_path(n-1, w);
+	}
+	// 背包裡面沒有該物品
+	else if (p[n][w] == 0)
+	{
+		find_path(n-1, w);
+	}
+}
+</textarea>
+<p class="t">此時背包裡面的物品有幾種不同的組合方式</p>
+<p>概念等同於「<a href="DynamicProgramming.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DynamicProgramming.html">Staircase Walk</a>」，每當遇到放與不放都沒有差別的時候，就表示這是不同的組合方式，要進行計數。</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+
+int c[W + 1];
+int way[W + 1];	// 紀錄不同的物品組合方式共有幾種
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+	memset(way, 0, sizeof(way));
+	way[0] = 1;
+
+	for (int i = n-1; i >= 0; --i)
+		for (int j = w; j >= weight[i]; --j)
+			// 放了比較好
+			if (c[j - weight[i]] + cost[i] > c[j])
+			{
+				c[j] = c[j - weight[i]] + cost[i];
+				way[j] = way[j - weight[i]];
+			}
+			// 可放可不放
+			else if (c[j - weight[i]] + cost[i] == c[j])
+			{
+//				c[j] = c[j - weight[i]] + cost[i];
+				way[j] = way[j] + way[j - weight[i]];
+			}
+			// 不放比較好
+			else if (c[j - weight[j]] + cost[i] < c[j])
+			{
+//				way[j] = way[j];
+			}
+
+	cout << "最高的價值為" << c[w];
+
+	cout << "此時背包裡面的物品";
+	cout << "有" << way[m] << "種不同的組合方式";
+}
+</textarea>
+<p class="t">此時背包裡面的物品盡量最少（多）個</p>
+<p>有一種消極的方法是增加問題維度。重新設計recurrence為：</p>
+<pre>
+c(n, w, t) = max( c(n-1, w-weight[n], t-1) + cost[n] , c(n-1, w, t) )
+
+t：放入的物品個數。
+</pre>
+<p>建立三維的表格，算出每一格的答案，然後窮舉所有可能的t，觀察那些答案，比較優劣，就可以得到最佳答案。</p>
+<p>有一種比較積極的方法，是在計算過程當中，同步紀錄背包裡面放了多少個物品。遇到放與不放都沒有差別的時候，就用物品的個數來決定要不要放，採用物品較少的方式。</p>
+<p>附帶一提，這個方法也可以用來找出此時背包裡面最少會用掉多少空間、最多會剩下多少空間。</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+int c[W + 1];
+int n[W + 1];	// 同步紀錄放了幾個物品
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+	memset(n, 0, sizeof(n));
+
+	for (int i = 0; i < n; ++i)
+		for (int j = w; j - weight[i] >= 0; --j)
+			// 放了比較好
+			if (c[j - weight[i]] + cost[i] > c[j])
+			{
+				c[j] = c[j - weight[i]] + cost[i];
+				n[j] = n[j - weight[i]] + 1;
+			}
+			// 可放可不放
+			else if (c[j - weight[i]] + cost[i] == c[j])
+			{
+				// 物品越少越好，還是放了比較好。
+				if (n[j - weight[i]] + 1 < n[j])
+				{
+					c[j] = c[j - weight[i]] + cost[i];
+					n[j] = n[j - weight[i]] + 1;
+				}
+			}
+
+	cout << "最高的價值為" << c[w];
+}
+</textarea>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+int c[W + 1];
+int n[W + 1];	// 同步紀錄放了幾個物品
+
+void knapsack(int n, int w)
+{
+	memset(c, 0, sizeof(c));
+	memset(n, 0, sizeof(n));
+
+	for (int i = 0; i < n; ++i)
+		for (int j = w; j - weight[i] >= 0; --j)
+			// 把判斷式合併成一行
+			if (c[j - weight[i]] + cost[i] > c[j] ||
+				c[j - weight[i]] + cost[i] == c[j] &&
+				n[j - weight[i]] + 1 < n[j])
+			{
+				c[j] = c[j - weight[i]] + cost[i];
+				n[j] = n[j - weight[i]] + 1;
+			}
+
+	cout << "最高的價值為" << c[w];
+}
+</textarea>
+<p class="t">另一種分割問題的方法</p>
+<p>想像物品放入背包時是照物品編號順序來放。由於每一種物品都可能是最後一個放入背包的物品，遞迴式可設計為：</p>
+<pre>
+c(n, w) = max( 0 ,                                   都不放
+               c(0, w-weight[0]) + cost[0] ,         最後是放第0個物品
+               c(1, w-weight[1]) + cost[1] ,         最後是放第1個物品
+               ... ,                                 ...
+               c(n-1, w-weight[n-1]) + cost[n-1] )   最後是放第n-1個物品
+
+n：第0個到第n個物品要放進背包內。
+w：背包負重上限。
+c(n, w)：只有第0個到第n個物品，負重限制為w，此時的背包問題答案。
+weight[n]：第n個物品的重量。
+cost[n]：第n個物品的價值。
+</pre>
+<p class="t">讓背包裡面的物品總價值最大</p>
+<textarea>
+const int N = 100, W = 100000;
+int cost[N], weight[N];
+int c[N + 1][W + 1];
+
+int knapsack(int n, int w)
+{
+	if (w < 0) return -1e9;
+	if (n == 0) return 0;
+
+	if (c[n][w]) return c[n][w];
+
+	int v = 0;
+	for (i=0; i<n; ++i)	// 每個物品都試試看
+		v = max(v, knapsack(i, w-weight[i]) + cost[i]);
+
+	return c[n][w] = v;
+}
+</textarea>
+<p class="t">複雜度</p>
+<p>時間複雜度是O(NW)，空間複雜度是O(NW)。只算一個問題時，空間複雜度為O(W)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Unbounded Knapsack Problem</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Unbounded Knapsack Problem</p>
+<p>物品有許多種類，每一種物品都無限量供應的背包問題。</p>
+<p class="e">UVa 10898</p>
+<p class="t">分割問題的方法</p>
+<p>解法類似於0/1 Knapsack Problem。由於每種物品都改為無限供應，因此分割問題時，必須考慮每一種物品的用量。</p>
+<pre>
+c(n, w) = max( c(n-1, w - 0*weight[n]) + cost[n] ,   用去零個第n種物品
+               c(n-1, w - 1*weight[n]) + cost[n] ,   用去一個第n種物品
+               c(n-1, w - 2*weight[n]) + cost[n] ,   用去兩個第n種物品
+               ...                               )   ...
+
+n：第0種到第n種物品要放進背包內。
+w：背包負重上限。
+c(n, w)：只有第0種到第n種物品，負重限制為w，此時的背包問題答案。
+weight[n]：第n種物品的重量。
+cost[n]：第n種物品的價值。
+</pre>
+<p class="t">另一種分割問題的方法</p>
+<p>仿照0/1 Knapsack Problem的方式，以一個物品的去留，將原問題分割成小問題。</p>
+<pre>
+c(n, w) = max( c(n-1, w), c(n, w-weight[n]) + cost[n] )
+                            ^^
+                            只有這裡不同，因為物品無限量供應。
+
+n：第0種到第n種物品要放進背包內。
+w：背包負重上限。
+c(n, w)：只有第0種到第n種物品，負重限制為w，此時的背包問題答案。
+weight[n]：第n種物品的重量。
+cost[n]：第n種物品的價值。
+</pre>
+<p class="t">又一種分割問題的方法</p>
+<p>以最後放入背包的物品，將原問題分割成小問題。這是最簡潔的方式！</p>
+<pre>
+c(w) = max( c(w - weight[0]) + cost[0] ,       最後放入的是第0種物品
+            c(w - weight[1]) + cost[1] ,       最後放入的是第1種物品
+            ... ,                              ...
+            c(w - weight[N-1]) + cost[N-1] )   最後放入的是第N-1種物品
+
+N：物品種類數目。
+w：背包負重上限。
+c(w)：全部物品都可使用，負重限制為w，此時的背包問題答案。
+weight[n]：第n種物品的重量。
+cost[n]：第n種物品的價值。
+</pre>
+<p>這個方式很特別，精簡了一個維度，時間複雜度降低成O(NW)，空間複雜度降低成為O(W)。</p>
+<p class="t">複雜度</p>
+<p>時間複雜度是O(NW)，空間複雜度是O(W)。只算一個問題時，空間複雜度為O(W)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Bounded Knapsack Problem（Under Construction!）</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Bounded Knapsack Problem</p>
+<p>物品有許多種類，每一種物品都是限量供應的背包問題。</p>
+<p class="e">UVa 10086</a>
+<p class="t">分割問題的方法</p>
+<p>考慮每一種物品的用量即可。</p>
+<pre>
+c(n, w) = max( c(n-1, w - 0*weight[n]) + cost[n] ,       用去零個第n種物品
+               c(n-1, w - 1*weight[n]) + cost[n] ,       用去一個第n種物品
+               ... ,          
+               c(n-1, w - num[n]*weight[n]) + cost[n])   用去num[n]個第n種物品
+
+n：第1種到第n種物品要放進背包內。
+w：背包負重上限。
+c(n, w)：只有第1個到第n種物品，負重限制為w，此時的背包問題答案。
+weight[n]：第n種物品的重量。
+cost[n]：第n種物品的價值。
+num[n]：第n種物品的數量。
+</pre>
+<p class="t">複雜度</p>
+<p>時間複雜度是O(NWK)，空間複雜度是O(NW)。</p>
+<pre>
+每一種類的物品都分成 1 2 4 8 ... 個物品同捆
+物品數目就下降成 logC
+O(logC*N*W)
+
+另一種是用deque做
+每個同餘系分開做就行了
+O(NW)
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Money Changing Problem</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Money Changing Problem</p>
+<p>給定許多種不同面額的錢幣，能否湊得某個價位？每種面額的錢幣都無限供應，一定夠用。</p>
+<p>Money Changing Problem其實就是Unbounded Knapsack Problem的變形：物品變成錢幣，物品重量變成面額，物品價值變成「湊得到、湊不到」兩種情況，累計價值的方式從加法運算變成OR運算。</p>
+<p class="t">Money Changing Problem的各種延伸問題</p>
+<pre>
+能否湊得某個價位（Money Changing Problem）
+印出某個價位的其中一種湊法
+印出某個價位的各種湊法
+湊得某個價位的湊法共有幾種（Coin Change Problem）
+湊得某個價位的最少（多）錢幣用量（Change-Making Problem）
+湊得某個價位的最少（多）錢幣種類
+所有無法湊得的價位當中，最大的價位（Frobenius Number）
+所有無法湊得的價位共有幾種
+限制錢幣用量，求得Frobenius Number加一（Postage Stamp Problem）
+</pre>
+<p>另外還有一些有關係的問題。</p>
+<pre>
+一個數字集合，挑幾個數字，總和恰為零（Subset Sum Problem）
+一個數字集合，挑幾個數字，總和恰為整體總和的一半（Partition Problem）
+N個不同重量物品，M個不同耐重箱子，用最少箱子裝所有物品（Bin Packing Problem）
+</pre>
+<p>以下將介紹其中幾個問題。</p>
+<p class="t">能否湊得某個價位（Money Changing Problem）</p>
+<p>跟Unbounded Knapsack Problem的原理一模一樣。唯一要小心的是，設定表格的初始值，是把0元設定為可以湊到，而其他價位設定為湊不到。0元可以湊到的原因，是發現把0元設定為可以湊到，並不會違反遞迴公式，而且初始化也變簡單了；正常情況下，是無法湊到0元的。</p>
+<pre>
+c(n, m) =    c(n-1, m - 0*price[n])   用去零個第n種錢幣
+          or c(n-1, m - 1*price[n])   用去一個第n種錢幣
+          or c(n-1, m - 2*price[n])   用去兩個第n種錢幣
+          or ...                      ...
+
+n：用第0種到第n種錢幣來湊得價位。
+m：欲湊得的價位值。
+c(n, m)：用第0種到第n種錢幣是否能湊得價位m。
+price[n]：第n種錢幣的面額大小。
+</pre>
+<pre>
+c(n, m) =
+ { true                            , if n < 0 and m = 0    [Initial]
+ { false                           , if n < 0 and m > 0    [Initial]
+ { false                           , if n < 0 and m < 0    [Exterior]
+ { c(n-1, m - 0*price[n]) or ...   , if n >= 0 and m > 0   [Compute]
+</pre>
+<p class="t">能否湊得某個價位（Money Changing Problem）</p>
+<pre>
+c(n, m) = c(n-1, m) or c(n, m-price[n])
+          ^^^^^^^^^    ^^^^^^^^^^^^^^^
+          保持一樣      用去一個錢幣
+
+n：用第0種到第n種錢幣來湊得價位。
+m：欲湊得的價位值。
+c(n, m)：用第0種到第n種錢幣是否能湊得價位m。
+price[n]：第n種錢幣的面額大小。
+</pre>
+<pre>
+c(n, m) =
+ { true               , if n < 0 and m = 0    [Initial]
+ { false              , if n < 0 and m > 0    [Initial]
+ { false              , if n < 0 and m < 0    [Exterior]
+ { c(n-1, m)          , if n >= 0             [Compute]
+ {                      and m-price[n] < 0
+ { c(n-1, m) or       , if n >= 0             [Compute]
+ { c(n, m-price[n])     and m-price[n] >= 0
+</pre>
+<p>儲存問題的表格，其實就是一個集合，改用bitset可以節省記憶體空間。可參考「<a href="Set.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Set.html">Set</a>」。</p>
+<textarea>
+int price[5] = {5, 2, 6, 11, 17};	// 各種面額，順序可隨意。
+bool c[1000+1];
+
+// 看看 {5, 2, 6, 11, 17} 這些面額湊不湊得到價位 m
+void change(int m)
+{
+	memset(c, false, sizeof(c));
+	c[0] = true;
+
+	for (int i = 0; i < 5; ++i)				// 依序加入各種面額
+		for (int j = price[i]; j <= m; ++j)	// 由低價位逐步到高價位
+			c[j] ||= c[j-price[i]];			// 湊、湊、湊
+
+	if (c[m])
+		cout << "湊得到";
+	else
+		cout << "湊不到";
+}
+</textarea>
+<textarea>
+int price[5] = {5, 2, 6, 11, 17};
+int c[5][1000+1];	// 大於等於0代表該問題有計算過，-1代表沒計算過。
+					// 一開始必須全部初始化為-1。
+
+void change(int n, int m)
+{
+	if (n < 0 || m < 0) return 0;	// 0 代表 false
+	if (m == 0) return 1;			// 1 代表 true
+	if (c[n][m] != -1) return c[n][m];
+	return c[n][m] = change(n-1, m) | change(n, m - price[n]);
+}
+</textarea>
+<p class="t">能否湊得某個價位（Money Changing Problem）</p>
+<pre>
+c(m) =    c(m - price[0])     最後是用第0種錢幣
+       or c(m - price[1])     最後是用第1種錢幣
+       or ...                 ...
+       or c(m - price[n-1])   最後是用第n-1種錢幣
+
+m：欲湊得的價位值。
+c(m)：這些錢幣是否能湊得價位m。
+price[n]：第n種錢幣的面額大小。
+</pre>
+<pre>
+c(m) =
+ { false                                         , if m < 0
+ { true                                          , if m = 0
+ { c(m - price[0]) or ... or c(m - price[n-1])   , if m > 0
+</pre>
+<p>與上一個段落的程式碼做比較，可以發現兩支程式碼迴圈的層序恰好相反，非常有趣。</p>
+<textarea>
+int price[5] = {5, 2, 6, 11, 17};
+bool c[1000+1];
+
+void change(int m)
+{
+	memset(c, 0, sizeof(c));
+	c[0] = true;
+
+	for (int j = 0; j <= m; ++j)		// 由低價位逐步到高價位
+		for (int i = 0; i < 5; ++i)		// 依序嘗試各種面額
+			if (j - price[i] >= 0)		// 如果可以湊
+				c[j] ||= c[j-price[i]];	// 湊、湊、湊
+
+	if (c[m])
+		cout << "湊得到";
+	else
+		cout << "湊不到";
+}
+</textarea>
+<textarea>
+int price[5] = {5, 2, 6, 11, 17};
+int c[5][1000+1];	// 大於等於0代表該問題有計算過，-1代表沒計算過。
+					// 一開始必須全部初始化為-1。
+
+void change(int m)
+{
+	if (m < 0) return 0;
+	if (m == 0) return 1;
+	if (c[n][m] != -1) return c[n][m];
+
+	for (int i=0; i<5; ++i) c[m] |= change(m - price[i]);
+	return c[m];
+}
+</textarea>
+<p class="e">UVa 10306 10898 10261</p>
+<p class="t">湊得某個價位的湊法共有幾種（Coin Change Problem）</p>
+<p>分割問題的方法就和Money Changing Problem一樣！只是將OR運算改為加法運算罷了。湊得0元的湊法設定為1，也是用遞迴公式逆推出來的。</p>
+<pre>
+c(n, m) = c(n-1, m) + c(n, m-price[n])
+          ^^^^^^^^^   ^^^^^^^^^^^^^^^
+        不用這種錢幣    用去一個錢幣
+
+n：用第0種到第n種錢幣來湊得價位。
+m：欲湊得的價位值。
+c(n, m)：用第0種到第n種錢幣湊得價位m的湊法數目。
+price[n]：第n種錢幣的面額大小。
+</pre>
+<pre>
+c(n, m) =
+ { 1                  , if n < 0 and m = 0    [Initial]
+ { 0                  , if n < 0 and m > 0    [Initial]
+ { 0                  , if n < 0 and m < 0    [Exterior]
+ { c(n-1, m)          , if n >= 0             [Compute]
+ {                      and m-price[n] < 0
+ { c(n-1, m) +        , if n >= 0             [Compute]
+ { c(n, m-price[n])     and m-price[n] >= 0
+</pre>
+<textarea>
+int price[5] = {5, 2, 6, 11, 17};
+int c[1000+1];
+
+void change(int m)
+{
+	memset(c, 0, sizeof(c));
+	c[0] = 1;
+
+	for (int i = 0; i < 5; ++i)
+		for (int j = price[i]; j <= m; ++j)
+			c[j] += c[j-price[i]];
+
+	cout << "湊得價位" << m << "的湊法有" << c[m] << "種";
+}
+</textarea>
+<p>至於下面的遞迴公式是錯誤的，它算的是排列數，不是組合數：</p>
+<pre>
+c(m) =   c(m - price[0])     最後是用第0種錢幣
+       + c(m - price[1])     最後是用第1種錢幣
+       + ...                 ...
+       + c(m - price[n-1])   最後是用第n-1種錢幣
+
+m：欲湊得的價位值。
+c(m)：這些錢幣是否能湊得價位m。
+price[n]：第n種錢幣的面額大小。
+</pre>
+<p class="e">UVa 147 357 674 10313 430</p>
+<p class="t">湊得某個價位的最少錢幣用量（Change-Making Problem）</p>
+<p>分割問題的方法就和Money Changing Problem一樣！只是將湊不湊的到，改成湊到的錢幣數量，並且將OR運算改為加法運算罷了。如果錢幣數為無限大，則表示湊不到。</p>
+<pre>
+c(n, m) = min( c(n-1, m) , c(n, m-price[n]) + 1 )
+               ^^^^^^^^^   ^^^^^^^^^^^^^^^^^^^^
+               保持一樣        用去一個錢幣
+
+n：用第0種到第n種錢幣來湊得價位。
+m：欲湊得的價位值。
+c(n, m)：用第0種到第n種錢幣湊得價位m，最少所需要的錢幣數。
+price[n]：第n種錢幣的面額大小。
+</pre>
+<textarea>
+int price[5] = {5, 2, 6, 11, 17};
+int c[1000+1];
+
+void change(int m)
+{
+	memset(c, 0x7f, sizeof(c));
+	c[0] = 0;
+
+	for (int i = 0; i < 5; ++i)
+		for (int j = price[i]; j <= m; ++j)
+			c[j] = min(c[j], c[j-price[i]] + 1);
+
+	cout << "湊得價位" << m;
+	cout << "最少需（只）要" << c[m] << "個錢幣";
+}
+</textarea>
+<p class="t">湊得某個價位的最少錢幣用量（Change-Making Problem）</p>
+<p>當各種錢幣的面額有特別的關係時，有速度很快的Greedy演算法可以求得答案，詳細情形請參考「<a href="Greedy.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Greedy.html">Change-Making Problem: Cashier's Algorithm</a>」。</p>
+<p class="t">湊得某個價位的錢幣用量，有哪幾種可能性。</p>
+<p>錢幣用量不多時，可直接以int變數（可充作32個元素的bitset）或long long變數（可充作64個元素的bitset）來作為一個bitset，利用位元運算來求出所有可能性。</p>
+<textarea>
+int price[5] = {5, 2, 6, 11, 17};
+long long c[1000];	// 每一格都是一個bitset，
+					// 紀錄該價位可用幾個錢幣湊得，包含各種可能性。
+
+void change(int m)
+{
+	memset(c, 0, sizeof(c));
+	c[0] = 1;
+
+	for (int i = 0; i < 5; ++i)
+		for (int j = price[i]; j <= m; ++j)
+			// 錢幣數量加一，每一種可能性都加一。
+			c[j] |= c[j-price[i]] << 1;
+
+	for (int i = 1; i <= 63; ++i)
+		if (c[m] & (1 << i))
+			cout << "用" << i << "個錢幣可湊得價位" << m;
+}
+</textarea>
+<p>這裡列出幾題可以利用上述手法來解決的題目。這些題目不盡然都是錢幣無限供應的問題，各位得自行轉化一下。</p>
+<p class="e">UVa 242 10032 10690 10930</p>
+<p class="t">所有無法湊得的價位當中，最大的價位（Frobenius Number）</p>
+<p>Sebastian Böcker, Zsuzsanna Lipták. A Fast and Simple Algorithm for the Money Changing Problem. Algorithmica, 2007, 48, 413-432.</p>
+<p>當問題給定的數值範圍不大時，便可以結合同餘理論、DP、Greedy，在多項式時間內解決這個問題，其時間複雜度是O(N*a1)，N為面額種類數，a1是最小的錢幣面額值。【待補文字】</p>
+<p>這個演算法也可以同時解決Money Changing Problem。</p>
+<p class="t">限制錢幣用量，求得Frobenius Number加一（Postage Stamp Problem）</p>
+<p>【待補文字】</p>
+<p class="t">能否湊得某個價位，但是錢幣限量供應。</p>
+<p>先前所討論的都是錢幣無限供應的情況。若是錢幣限量供應，就必須考慮每一個錢幣用量，就如同最一開始的recurrence：</p>
+<pre>
+c(n, m) =    c(n-1, m - 0*price[n])        用去零個第n種錢幣
+          or c(n-1, m - 1*price[n])        用去一個第n種錢幣
+          or ...                           ...
+          or c(n-1, m - num[n]*price[n])   用去num[n]個第n種錢幣
+
+n：用第0種到第n種錢幣來湊得價位。
+m：欲湊得的價位值。
+c(n, m)：用第0種到第n種錢幣是否能湊得價位m。
+price[n]：第n種錢幣的面額大小。
+num[n]：第n種錢幣的供應數量。
+</pre>
+<p>事實上有一個比較簡潔的做法，是用Greedy演算法，在節省錢幣用量的前提下，盡量的湊出各種價位。</p>
+<textarea>
+int price[5] = {5, 2, 6, 11, 17};
+int num[5] = {4, 5, 5, 3, 2};	// 各種面額的供應量
+bool c[1000+1];
+
+void change(int m)
+{
+	memset(c, 0, sizeof(c));
+	c[0] = true;
+
+	for (int i = 0; i < 5; ++i)
+		for (int k = 0; k < M[i]; ++k)	// 各種餘數分開處理
+//		for (int k = 1; k <= M[i]; ++k)	// 快了那麼一點的寫法
+		{
+			int left = T[i];
+			for (int j = k; j <= m; j += M[i])	// 由低價位到高價位
+				// 用第0種到第i種面額已能湊得，錢幣可以省著用。
+				if (c[j])
+				{
+					left = T[i];	// 補充彈藥
+				}
+				// 過去都無法湊得，一定要試著用目前面額硬湊。
+				else if (left > 0)
+				{
+					left--;	// 用掉一個錢幣
+					c[j] = true;
+				}
+		}
+
+	if (c[m])
+		cout << "湊得到";
+	else
+		cout << "湊不到";
+}
+</textarea>
+<p class="e">UVa 233 711</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Banzhaf Power Index</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Banzhaf Power Index</p>
+<p>有一項決策要投票表決，一人一票，不得投廢票，過半數贊成則通過，反之則否決。投票者有許多派系組成，各個派系都相當團結，同樣派系的人，要嘛全部都是投贊成票，要嘛全部都是投反對票。然而有些派系人多，有些派系人少，人多的派系能左右大局，人少的派系卻勢單力薄。於是產生一個問題：有能力對最終決策造成影響的是哪些派系？影響能力又是多少？</p>
+<p>一個派系有能力對決策造成影響，是指所有派系都設定立場之後，此派系一旦改變立場，會馬上顛倒決策結果。換個角度來說，是指此派系之外的所有派系都投完票之後，此派系若全數投贊成票，則會使決策順利通過，反之若全數投反對票，則會使決策無法通過。</p>
+<p>Banzhaf Power Index的計算方式是這樣的：一個派系X的Banzhaf Power Index = 派系X影響決策的情況數目 ÷ (派系1影響決策的情況數目 + ... + 派系N影響決策的情況數目)。所有派系的Banzhaf Power Index的總和會是1。</p>
+<p>藉由Banzhaf Power Index，可以看出各派系的實力，也可以看出投票表決是否公平。</p>
+<pre>
+1.
+A派系9票、B派系9票、C派系7票、D派系3票、E派系1票、F派系1票。
+總共投票數為30票。過半數之票數為16票。
+
+2.
+以A派系為例，A派系影響決策的情況，一共有16種：
+
+   AB AC ABC ABD ABE ABF ACD ACE ACF
+   ABDE ABDF ABEF ACDE ACDF ACEF ADEF
+
+派系有出現，表示投贊成票；派系無出現，表示投反對票。
+拿掉A則會逆轉決策結果。
+
+3.
+可以發現D派系、E派系、F派系，
+完全無法介入結果，沒有任何影響力：
+
+  | votes | power |  BPI
+--+-------+-------+-------
+A |   9   |  16   | 16/48
+B |   9   |  16   | 16/48
+C |   7   |  16   | 16/48
+D |   3   |   0   |   0
+E |   1   |   0   |   0
+F |   1   |   0   |   0
+--+-------+-------+--------
+  |  30   |  48   |  1.0
+</pre>
+<p class="t">計算一個派系影響決策的情況數目</p>
+<pre>
+甲、移除此派系。
+乙、剩餘派系進行投票，並算出各種不同總票數之下的情況數目。
+丙、搜尋靠近過半票數的情況，累計這些情況數目。
+</pre>
+<p>是Partition problem的延伸應用。</p>
+<p class="t">時間複雜度</p>
+<p>時間複雜度是O(N^2 * S)，N是派系數目，S是總投票數，或者說是過半票數。</p>
+<textarea>
+int w[6];			// 各種派系的人數
+int c[(16-1) + 1];	// 算出0票到15票這些未過半數的情形
+
+int power[6];	// 各派系影響決策結果的情況數目
+int sum = 0;	// power[]總和
+
+void Banzhaf_power_index()
+{
+	for (int k=0; k<N; ++k)
+	{
+		// 暫時去除派系k，
+		// 算出剩餘派系的投票情況種類數目。
+		memset(c, 0, sizeof(c));
+		c[0] = 1;
+
+		for (int i=0; i<N; ++i)
+			if (i != k)
+				for (int j=16-1; j>=w[i]; --j)
+					c[j] += c[j-w[i]];
+
+		// 累計靠近過半票數的情況數目
+		power[k] = 0;
+		for (int j=max(16-w[k], 0); j<16; ++j)
+			power[k] += c[j];
+
+		sum += power[k];
+	}
+
+	for (int i=0; i<N; ++i)
+		cout << i << "派系的BPI是" << float(power[i]) / sum;
+}
+</textarea>
+<p class="e">UVa 430 435</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

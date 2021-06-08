@@ -1,0 +1,436 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>11.6 Win 32的多媒体服务</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font FACE="Times New Roman" size="4" color="#3973DE">11.6 Win 32</font><font size="4" color="#3973DE">的多媒体服务</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="JUSTIFY"></font><font FACE="Times New Roman" SIZE="3">Windows 95/NT</font><font SIZE="3">提供了丰富的多媒体服务功能，包括大量从低级到高级的多媒体</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">函数。利用这些功能强大的</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">，用户可以在不同层次上编写多媒体应用程序。有关多媒体服务的内容完全可以写一本书，本节只是向读者简要地介绍一些最常用的多媒体服务。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在用</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">开发多媒体应用时，用户必须在所有要用到多媒体函数的源程序中包含</font><font FACE="Times New Roman" SIZE="3">MMSYSTEM.H</font><font SIZE="3">头文件，并且该文件位置应在</font><font FACE="Times New Roman" SIZE="3">WINDOWS.H</font><font SIZE="3">头文件的后面。另外，在连接程序时要用到</font><font FACE="Times New Roman" SIZE="3">WINMM.LIB</font><font SIZE="3">引入库，所以用户应该在</font><font FACE="Times New Roman" SIZE="3">Project Settings</font><font SIZE="3">对话框的</font><font FACE="Times New Roman" SIZE="3">Link</font><font SIZE="3">页的</font><font FACE="Times New Roman" SIZE="3">Object/library modules</font><font SIZE="3">栏中加入</font><font FACE="Times New Roman" SIZE="3">WINMM.LIB</font><font SIZE="3">，或者在源程序中加入下面一行：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#pragma comment(lib, &quot;winmm.lib&quot;)</p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">11.6.1 
+    </font><font SIZE="3" color="#3973DE">高级音频函数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Windows</font><font SIZE="3">提供了三个特殊的播放声音的高级音频函数：</font><font FACE="Times New Roman" SIZE="3">MessageBeep</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">sndPlaySound</font><font SIZE="3">。这三个函数可以满足播放波形声音的一般需要，但它们播放的</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">文件（波形声音文件）的大小不能超过</font><font FACE="Times New Roman" SIZE="3">100KB</font><font SIZE="3">，如果要播放较大的</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">文件，则应该使用</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">服务。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MessageBeep</font><font SIZE="3">读者已经用过了，该函数主要用来播放系统报警声音。系统报警声音是由用户在控制面板中的声音</font><font FACE="Times New Roman" SIZE="3">(Sounds)</font><font SIZE="3">程序中定义的，或者在</font><font FACE="Times New Roman" SIZE="3">WIN.INI</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">[sounds]</font><font SIZE="3">段中指定。该函数的声明为：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL MessageBeep(UINT 
+      uType);</p>
+      </font><font SIZE="3"><p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">uType</font><font SIZE="3">说明了告警级，如表</font><font FACE="Times New Roman" SIZE="3">11.4</font><font SIZE="3">所示。若成功则函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">。</p>
+      </font><b>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">11.4 </font><font SIZE="3">系统告警级</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="32%"><font SIZE="3"><b><p ALIGN="JUSTIFY">级别</b></font></td>
+        <td WIDTH="68%"><font SIZE="3"><b><p ALIGN="JUSTIFY">描述</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">-1</font></td>
+        <td WIDTH="68%"><font SIZE="3"><p ALIGN="JUSTIFY">从机器的扬声器中发出蜂鸣声。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MB_ICONASTERISK</font></td>
+        <td WIDTH="68%"><font SIZE="3"><p ALIGN="JUSTIFY">播放由</font><font FACE="Times New Roman" SIZE="3">SystemAsterisk</font><font SIZE="3">定义的声音。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MB_ICONEXCLAMATION</font></td>
+        <td WIDTH="68%"><font SIZE="3"><p ALIGN="JUSTIFY">播放由</font><font FACE="Times New Roman" SIZE="3">SystemExclamation</font><font SIZE="3">定义的声音。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MB_ICONHAND</font></td>
+        <td WIDTH="68%"><font SIZE="3"><p ALIGN="JUSTIFY">播放由</font><font FACE="Times New Roman" SIZE="3">SystemHand</font><font SIZE="3">定义的声音。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MB_ICONQUESTION</font></td>
+        <td WIDTH="68%"><font SIZE="3"><p ALIGN="JUSTIFY">播放由</font><font FACE="Times New Roman" SIZE="3">SystemQuestion</font><font SIZE="3">定义的声音。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MB_OK</font></td>
+        <td WIDTH="68%"><font SIZE="3"><p ALIGN="JUSTIFY">播放由</font><font FACE="Times New Roman" SIZE="3">SystemDefault</font><font SIZE="3">定义的声音</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY"></b></font><font SIZE="3">在开始播放后，</font><font FACE="Times New Roman" SIZE="3">MessageBeep</font><font SIZE="3">函数立即返回。如果该函数不能播放指定的报警声音，它就播放</font><font FACE="Times New Roman" SIZE="3">SystemDefault</font><font SIZE="3">定义的系统缺省声音，如果连系统缺省声音也播放不了，那么它就会在计算机的扬声器上发出嘟嘟声。在缺省时上表的</font><font FACE="Times New Roman" SIZE="3">MB_</font><font SIZE="3">系列声音均未定义。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MessageBeep</font><font SIZE="3">只能用来播放少数定义的声音，如果程序需要播放数字音频文件</font><font FACE="Times New Roman" SIZE="3">(*.WAV</font><font SIZE="3">文件）或音频资源，就需要使用</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">sndPlaySound</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">PlaySound</font><font SIZE="3">函数的声明为：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL PlaySound(LPCSTR 
+          pszSound, HMODULE hmod,DWORD fdwSound);</font></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">pszSound</font><font SIZE="3">是指定了要播放声音的字符串，该参数可以是</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">文件的名字，或是</font><font FACE="Times New Roman" SIZE="3">WAV</font><font SIZE="3">资源的名字，或是内存中声音数据的指针，或是在系统注册表</font><font FACE="Times New Roman" SIZE="3">WIN.INI</font><font SIZE="3">中定义的系统事件声音。如果该参数为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">则停止正在播放的声音。参数</font><font FACE="Times New Roman" SIZE="3">hmod</font><font SIZE="3">是应用程序的实例句柄，当播放</font><font FACE="Times New Roman" SIZE="3">WAV</font><font SIZE="3">资源时要用到该参数，否则它必须为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。参数</font><font FACE="Times New Roman" SIZE="3">fdwSound</font><font SIZE="3">是标志的组合，如表</font><font FACE="Times New Roman" SIZE="3">11.5</font><font SIZE="3">所示。若成功则函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">11.5 </font><font SIZE="3">播放标志</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="27%"><font SIZE="3"><b><p ALIGN="JUSTIFY">标志</b></font></td>
+        <td WIDTH="73%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_APPLICATION</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">用应用程序指定的关联来播放声音。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_ALIAS</font></td>
+        <td WIDTH="73%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">pszSound</font><font SIZE="3">参数指定了注册表或</font><font FACE="Times New Roman" SIZE="3">WIN.INI</font><font SIZE="3">中的系统事件的别名。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_ALIAS_ID</font></td>
+        <td WIDTH="73%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">pszSound</font><font SIZE="3">参数指定了预定义的声音标识符。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_ASYNC</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">用异步方式播放声音，</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">函数在开始播放后立即返回。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_FILENAME</font></td>
+        <td WIDTH="73%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">pszSound</font><font SIZE="3">参数指定了</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">文件名。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_LOOP</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">重复播放声音，必须与</font><font FACE="Times New Roman" SIZE="3">SND_ASYNC</font><font SIZE="3">标志一块使用。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_MEMORY</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">播放载入到内存中的声音，此时</font><font FACE="Times New Roman" SIZE="3">pszSound</font><font SIZE="3">是指向声音数据的指针。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_NODEFAULT</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">不播放缺省声音，若无此标志，则</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">在没找到声音时会播放缺省声音。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_NOSTOP</font></td>
+        <td WIDTH="73%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">PlaySound</font><font SIZE="3">不打断原来的声音播出并立即返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_NOWAIT</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">如果驱动程序正忙则函数就不播放声音并立即返回。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_PURGE</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">停止所有与调用任务有关的声音。若参数</font><font FACE="Times New Roman" SIZE="3">pszSound</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">，就停止所有的声音，否则，停止</font><font FACE="Times New Roman" SIZE="3">pszSound</font><font SIZE="3">指定的声音。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_RESOURCE</font></td>
+        <td WIDTH="73%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">pszSound</font><font SIZE="3">参数是</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">资源的标识符，这时要用到</font><font FACE="Times New Roman" SIZE="3">hmod</font><font SIZE="3">参数。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SND_SYNC</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">同步播放声音，在播放完后</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">函数才返回。</font></td>
+      </tr>
+    </table>
+    <p><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">C:\WINDOWS\MEDIA</font><font SIZE="3">目录下有一个名为</font><font FACE="Times New Roman" SIZE="3">The Microsoft Sound.wav</font><font SIZE="3">的声音文件，在</font><font FACE="Times New Roman" SIZE="3">Windows 95</font><font SIZE="3">启动时会播放这个声音。下面我们用三种方法来调用</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">函数播出</font><font FACE="Times New Roman" SIZE="3">Windows 95</font><font SIZE="3">的启动声音。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">第一种方法是直接播出声音文件，相应的代码为：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">PlaySound(&quot;c:\\win95\\media\\The 
+          Microsoft Sound.wav&quot;, NULL, SND_FILENAME | SND_ASYNC);</p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">注意参数中的路径使用两个连续的反斜杠转义代表一个反斜杠。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">第二种方法是把声音文件加入到资源中，然后从资源中播放声音。</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">支持</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">型资源，用户在资源视图中单击鼠标右键并选择</font><font FACE="Times New Roman" SIZE="3">Import</font><font SIZE="3">命令，然后在文件选择对话框中选择</font><font FACE="Times New Roman" SIZE="3">The Microsoft Sound.wav</font><font SIZE="3">文件，则该文件就会被加入到</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">资源中。假定声音资源的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDR_STARTWIN</font><font SIZE="3">，则下面的调用同样会输出启动声音：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">PlaySound((LPCTSTR)IDR_STARTWIN, 
+          AfxGetInstanceHandle(), SND_RESOURCE | SND_ASYNC);</p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">第三种方法是用</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">播放系统声音，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">启动的声音是由</font><font FACE="Times New Roman" SIZE="3">SystemStart</font><font SIZE="3">定义的系统声音，因此可以用下面的方法播放启动声音：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">PlaySound(&quot;SystemStart&quot;,NULL,SND_ALIAS|SND_ASYNC);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">sndPlaySound</font><font SIZE="3">的功能与</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">类似，但少了一个参数。函数的声明为：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL sndPlaySound(LPCSTR 
+          lpszSound, UINT fuSound);</font></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">除了不能指定资源名字外，参数</font><font FACE="Times New Roman" SIZE="3">lpszSound</font><font SIZE="3">与</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">的是一样的。参数</font><font FACE="Times New Roman" SIZE="3">fuSound</font><font SIZE="3">是如何播放声音的标志，可以是</font><font FACE="Times New Roman" SIZE="3">SND_ASYNC</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SND_LOOP</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SND_MEMORY</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SND_NODEFAULT</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SND_NOSTOP</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">SND_SYNC</font><font SIZE="3">的组合，这些标志的含义与</font><font FACE="Times New Roman" SIZE="3">PlaySound</font><font SIZE="3">的一样。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以看出，</font><font FACE="Times New Roman" SIZE="3">sndPlaySound</font><font SIZE="3">不能直接播放声音资源。要用该函数播放</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">文件，可按下面的方式调用：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">sndPlaySound(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">MYSOUND.WAV</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">,SND_ASYNC);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b><font color="#3973DE">11.6.2 MCI</font></p>
+    <p ALIGN="JUSTIFY">MCI(Media Control Interface</font><font SIZE="3">，媒体控制接口</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">向</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">程序提供了在高层次上控制媒体设备接口的能力。程序不必关心具体设备，就可以对激光唱机（</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">）、视盘机、波形音频设备、视频播放设备和</font><font FACE="Times New Roman" SIZE="3">MIDI</font><font SIZE="3">设备等媒体设备进行控制。对于程序员来说，可以把</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">理解为设备面板上的一排按键，通过选择不同的按键（发送不同的</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令）可以让设备完成各种功能，而不必关心设备内部实现。比如，对于</font><font FACE="Times New Roman" SIZE="3">play</font><font SIZE="3">，视盘机和</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">机有不同的反应（一个是播放视频，一个播放音频），而对用户来说却只需要按同一按钮。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">应用程序通过向</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">发送命令来控制媒体设备。</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令接口分命令字符串和命令消息两种，两者具有相同的功能。命令字符串具有使用简单的特点，但是它的执行效率不如命令消息。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">所有的</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令字符串都是通过多媒体</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">mciSendString</font><font SIZE="3">传递给</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">的，该函数的声明为：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MCIERROR mciSendString(</p>
+      <p ALIGN="JUSTIFY">LPCTSTR lpszCommand, //MCI</font><font SIZE="3">命令字符串</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LPTSTR lpszReturnString, 
+      //</font><font SIZE="3">存放反馈信息的缓冲区</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">UINT cchReturn, //</font><font SIZE="3">缓冲区的长度</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HANDLE hwndCallback //</font><font SIZE="3">回调窗口的句柄，一般为</font><font FACE="Times New Roman" SIZE="3">NULL</p>
+      <p ALIGN="JUSTIFY">); //</font><font SIZE="3">若成功则返回</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，否则返回错误码。</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">该函数返回的错误码可以用</font><font FACE="Times New Roman" SIZE="3">mciGetErrorString</font><font SIZE="3">函数进行分析，该函数的声明为：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL mciGetErrorString(</p>
+      <p ALIGN="JUSTIFY">DWORD fdwError, //</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">mciSendString</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">mciSendCommand</font><font SIZE="3">返回的错误码</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LPTSTR lpszErrorText, //</font><font SIZE="3">接收描述错误的字符串的缓冲区</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">UINT cchErrorText //</font><font SIZE="3">缓冲区的长度</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">);</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">下面是使用</font><font FACE="Times New Roman" SIZE="3">mciSendString</font><font SIZE="3">函数的一个简单例子：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">char buf[50];</p>
+      <p ALIGN="JUSTIFY">MCIERROR mciError;</p>
+      <p ALIGN="JUSTIFY">mciError=mciSendString(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">open cdaudio</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">,buf,strlen(buf),NULL);</p>
+      <p ALIGN="JUSTIFY">if(mciError)</p>
+      <p ALIGN="JUSTIFY">{</p>
+      <p ALIGN="JUSTIFY">mciGetErrorString(mciError,buf,strlen(buf));</p>
+      <p ALIGN="JUSTIFY">AfxMessageBox(buf);</p>
+      <p ALIGN="JUSTIFY">return;</p>
+      <p ALIGN="JUSTIFY">}</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY">open cdaudio</font><font SIZE="3">命令打开</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">播放器，如果出错（如驱动器内没有</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">）则返回错误码，此时可以用</font><font FACE="Times New Roman" SIZE="3">mciGetErrorString</font><font SIZE="3">函数取得错误信息字符串。</font><font FACE="Times New Roman" SIZE="3">open</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">打开设备的命令，</font><font FACE="Times New Roman" SIZE="3">cdaudio</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">设备名。</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">的设备类型在表</font><font FACE="Times New Roman" SIZE="3">11.6</font><font SIZE="3">列出。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">11.6 MCI</font><font SIZE="3">设备类型</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="24%"><font SIZE="3"><b><p ALIGN="JUSTIFY">设备类型</b></font></td>
+        <td WIDTH="76%"><font SIZE="3"><b><p ALIGN="JUSTIFY">描述</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">animation</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">动画设备</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">cdaudio</font></td>
+        <td WIDTH="76%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CD</font><font SIZE="3">播放器</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">dat</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">数字音频磁带机</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">digitalvideo</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">某一窗口中的数字视频（不基于</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">other</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">未定义的</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">设备</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">overlay</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">重叠设备（窗口中的模拟视频）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">scanner</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">图象扫描仪</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">sequencer</font></td>
+        <td WIDTH="76%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MIDI</font><font SIZE="3">序列器</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">videodisc</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">视盘机</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="24%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">waveaudio</font></td>
+        <td WIDTH="76%"><font SIZE="3"><p ALIGN="JUSTIFY">播放数字波形文件的音频设备</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">请读者注意，设备类型和设备名是不同的概念。设备类型是指响应一组共用命令的一类</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">设备，而设备名则是某一个</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">设备的名字。系统需要用不同的设备名来区分属于同一设备类型的不同设备。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">设备名是在注册表或</font><font FACE="Times New Roman" SIZE="3">SYSTEM.INI</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">[mci]</font><font SIZE="3">部分定义的，典型的</font><font FACE="Times New Roman" SIZE="3">[mci]</font><font SIZE="3">段如下所示：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">[mci]</p>
+      <p ALIGN="JUSTIFY">cdaudio=mcicda.drv</p>
+      <p ALIGN="JUSTIFY">sequencer=mciseq.drv</p>
+      <p ALIGN="JUSTIFY">waveaudio=mciwave.drv</p>
+      <p ALIGN="JUSTIFY">avivideo=mciavi.drv</p>
+      <p ALIGN="JUSTIFY">videodisc=mcipionr.drv</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">等号的左边是设备名，右边是对应的</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">驱动程序。当安装了新的</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">驱动程序时，系统要用不同的设备名来区分。设备名通常与驱动程序中的设备类型名相同，如</font><font FACE="Times New Roman" SIZE="3">cdaudio</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">waveaudio</font><font SIZE="3">等，但也有例外，如</font><font FACE="Times New Roman" SIZE="3">avivideo</font><font SIZE="3">设备是一个</font><font FACE="Times New Roman" SIZE="3">digitalvideo</font><font SIZE="3">类型的设备。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">使用</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">设备一般包括打开、使用和关闭三个过程。</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">的大部分命令可以控制不同的媒体设备。例如，可以用</font><font FACE="Times New Roman" SIZE="3">play</font><font SIZE="3">命令来播放</font><font FACE="Times New Roman" SIZE="3">WAVE</font><font SIZE="3">文件、视频文件或</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">。表</font><font FACE="Times New Roman" SIZE="3">11.7</font><font SIZE="3">列出常用的</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令字符串，表中大部分命令都具有通用性。在</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令的后面一般要跟一个设备名以指定操作的对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">11.7 </font><font SIZE="3">常用的</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">命令</b></font></td>
+        <td WIDTH="67%"><font SIZE="3"><b><p ALIGN="JUSTIFY">描述</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">capacility</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">查询设备能力</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">close</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">关闭设备</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">info</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">查询设备的信息</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">open</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">打开设备</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">pause</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">暂停设备的播放或记录</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">play</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">开始设备播放</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">record</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">开始</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">resume</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">恢复暂停播放或记录的设备</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">seek</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">改变媒体的当前位置</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">set</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">改变设置</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">status</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">查询设备状态信息</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">stop</font></td>
+        <td WIDTH="67%"><font SIZE="3"><p ALIGN="JUSTIFY">停止设备的播放或记录</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">例如，上面的例子打开了一个</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">播放机后，可以发送常用的命令来控制</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">机：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">play cdaudio from &lt;</font><font SIZE="3">位置</font><font FACE="Times New Roman" SIZE="3">&gt; to &lt;</font><font SIZE="3">位置</font><font FACE="Times New Roman" SIZE="3">&gt;</font><font SIZE="3">。若省略</font><font FACE="Times New Roman" SIZE="3">from</font><font SIZE="3">则从当前磁道开始播放，若省略</font><font FACE="Times New Roman" SIZE="3">to</font><font SIZE="3">则播放到结束。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">pause cdaudio</font><font SIZE="3">。暂停播放。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">stop cdaudio</font><font SIZE="3">。停止播放。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">resume cdaudio</font><font SIZE="3">。继续被暂停的播放。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">status cdaudio number of 
+        tracks</font><font SIZE="3">。查询</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">的磁道数。</font><font FACE="Times New Roman" SIZE="3">status cdaudio 
+        current track</font><font SIZE="3">可以查询当前磁道。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">seek cdaudio to &lt;</font><font SIZE="3">位置</font><font FACE="Times New Roman" SIZE="3">&gt;</font><font SIZE="3">。移动到指定磁道。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">set cdaudio door 
+        open/closed</font><font SIZE="3">。弹出或缩进</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">盘。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">close cdaudio</font><font SIZE="3">。关闭设备。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MCI</font><font SIZE="3">设备可以按简单设备和复合设备进行分类。象</font><font FACE="Times New Roman" SIZE="3">cdaudio</font><font SIZE="3">这样的设备不使用文件，我们称之为简单设备，而复合设备在播放时要用到数据文件，如数字视频</font><font FACE="Times New Roman" SIZE="3">(digitalvideo)</font><font SIZE="3">和波形音频</font><font FACE="Times New Roman" SIZE="3">(waveaudio)</font><font SIZE="3">设备，我们把这些数据文件叫做设备元素。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在打开一个复合设备时要指定设备名和设备元素。例如，下面命令打开一个波形音频设备：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">open mysound.wav type waveaudio</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以只为复合设备指定设备元素，例如：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">open mysound.wav</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如下面所示，系统通过查找注册表或</font><font FACE="Times New Roman" SIZE="3">WIN.INI</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">[mci extensions]</font><font SIZE="3">可以确定打开哪一个设备。</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">[mci extensions]</p>
+      <p ALIGN="JUSTIFY">mid=Sequencer</p>
+      <p ALIGN="JUSTIFY">rmi=Sequencer</p>
+      <p ALIGN="JUSTIFY">wav=waveaudio</p>
+      <p ALIGN="JUSTIFY">avi=AVIVideo</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">有时，程序需要多次打开同一设备来播放不同的数据文件。例如，谁也不能否认在屏幕上同时播放两个</font><font FACE="Times New Roman" SIZE="3">AVI</font><font SIZE="3">文件的可能性，在这种情况下，需要为每次打开的设备起一个不同的别名，这样</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">才能区分两个播放设备。例如，下面这段代码打开并播放了两个</font><font FACE="Times New Roman" SIZE="3">AVI</font><font SIZE="3">文件：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">char buf[50];</p>
+      <p ALIGN="JUSTIFY">mciSendString(&quot;open dillo.avi type avivideo alias 
+      dillo&quot;,buf,strlen(buf),NULL);</p>
+      <p ALIGN="JUSTIFY">mciSendString(&quot;play dillo repeat&quot;,buf,strlen(buf),NULL); //</font><font SIZE="3">重复播放</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">mciSendString(&quot;open 
+      search.avi type avivideo alias search&quot;,buf,strlen(buf),NULL);</p>
+      <p ALIGN="JUSTIFY">mciSendString(&quot;play search&quot;,buf,strlen(buf),NULL);</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在用</font><font FACE="Times New Roman" SIZE="3">open</font><font SIZE="3">命令打开设备时，如果指定了别名，则以后对该设备的操作都要使用别名。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">到目前为止，我们使用的都是</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令字符串。读者可能己经有了这样的体会，命令字符串具有简单易学的优点，但这种接口与</font><font FACE="Times New Roman" SIZE="3">C/C++</font><font SIZE="3">的风格相去甚远，如果程序要查询和设置大量数据，那么用字符串的形式将很不方便。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MCI</font><font SIZE="3">的命令消息接口提供了</font><font FACE="Times New Roman" SIZE="3">C</font><font SIZE="3">语言接口，它速度更快，并且更能符合</font><font FACE="Times New Roman" SIZE="3">C/C++</font><font SIZE="3">程序员的需要。所有</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令消息都是通过</font><font FACE="Times New Roman" SIZE="3">mciSendCommand</font><font SIZE="3">函数发送的，该函数的声明为：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">MCIERROR mciSendCommand(</p>
+      <p ALIGN="JUSTIFY">MCIDEVICEID IDDevice, //</font><font SIZE="3">设备的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，在打开设备时不用该参数</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">UINT uMsg, //</font><font SIZE="3">命令消息</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD fdwCommand, //</font><font SIZE="3">命令消息的标志</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD dwParam //</font><font SIZE="3">指向包含命令消息参数的结构</p>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">); //</font><font SIZE="3">若成功则返回</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，否则返回错误码</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">清单</font><font FACE="Times New Roman" SIZE="3">11.8</font><font SIZE="3">的代码演示了用</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">命令消息来打开和重复播放一个</font><font FACE="Times New Roman" SIZE="3">AVI</font><font SIZE="3">文件：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">11.8</b></p>
+    <p ALIGN="JUSTIFY">MCI_DGV_OPEN_PARMS mciOpen;</p>
+    <p ALIGN="JUSTIFY">UINT wDeviceID;</p>
+    <p ALIGN="JUSTIFY">MCIERROR mciError;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">mciOpen.lpstrDeviceType = &quot;avivideo&quot;; //</font><font SIZE="3">设备名</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">mciOpen.lpstrElementName = &quot;dillo.avi&quot;; //</font><font SIZE="3">设备元素</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">mciError=mciSendCommand(0, MCI_OPEN, </p>
+    <p ALIGN="JUSTIFY">MCI_OPEN_TYPE|MCI_OPEN_ELEMENT, //</font><font SIZE="3">使用了设备元素</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">(DWORD)&amp;mciOpen);</p>
+    <p ALIGN="JUSTIFY">if(mciError)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">char s[80];</p>
+    <p ALIGN="JUSTIFY">mciGetErrorString(mciError,s,80);</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(s);</p>
+    <p ALIGN="JUSTIFY">return ;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">wDeviceID=mciOpen.wDeviceID; //</font><font SIZE="3">保存设备</font><font FACE="Times New Roman" SIZE="3">ID</p>
+    <p ALIGN="JUSTIFY">MCI_DGV_PLAY_PARMS mciPlay;</p>
+    <p ALIGN="JUSTIFY">mciError=mciSendCommand(wDeviceID, MCI_PLAY, MCI_DGV_PLAY_REPEAT, </p>
+    <p ALIGN="JUSTIFY">(DWORD)&amp;mciPlay);</p>
+    <p ALIGN="JUSTIFY"><b>. . .</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以看出，用命令消息比用命令字符串要复杂的多。命令消息与命令字符串是对应的，例如，</font><font FACE="Times New Roman" SIZE="3">open</font><font SIZE="3">与</font><font FACE="Times New Roman" SIZE="3">MCI_OPEN</font><font SIZE="3">完成的是一样的功能。变量</font><font FACE="Times New Roman" SIZE="3">wDeviceID</font><font SIZE="3">用来保存设备的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，系统用</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">来标识不同的设备，以保证命令发给正确的对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">限于篇幅，对</font><font FACE="Times New Roman" SIZE="3">MCI</font><font SIZE="3">的命令消息就不作详细介绍了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap11_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/chap11_5.htm">上一页</a></td>
+        <td><p align="right"><a href="chap11_7.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap11/chap11_7.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

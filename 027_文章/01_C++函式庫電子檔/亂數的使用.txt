@@ -1,0 +1,134 @@
+亂數的使用
+
+一、rand() 函數
+
+在某些情況下(特別是設計遊戲時)，我們會需要使用到亂數，在 C 語言中提供了一個 rand() 函數可以讓我們取得一個亂數，其用法如下：
+
+整數變數=rand();
+
+要使用 rand() 函數，必須 include 它的標頭檔 stdlib.h (stdlib 為 Standard Library, 標準函式庫)，上例的 rand() 將會傳回一個介於 0 到 RAND_MAX 之間的一個整數值，RAND_MAX 是 stdlib.h 定義的一個常數，其值在不同的系統有不同的大小，以 DOS 系統為例，其值為 32767 (215-1)。當然，這樣的變數對我們可能沒有什麼用，因此通常我們會搭配使用取餘數符號 % 來做運算，例如我們要取 0-9 的變數，可以寫成 a=rand() % 10，下面我們再看幾個例子：
+
+取 1-10 的亂數 a=(rand() % 10) +1
+
+取 1-100 的亂數 a=(rand() % 100) +1
+
+取 100-1000 的亂數 a=(rand() % 901) +100
+
+我們可以規納出以下的規則： ( rand() % (最大值-最小值+1) ) + 最小值。接下來我們實際寫一個程式來取得 1-100 之間的亂數：
+
+#include <stdio.h>
+
+#include <stdlib.h>
+
+void main()
+
+{
+
+ int a;
+
+ a=(rand()%100)+1;
+
+ printf("The Random Number is %d .\n", a);
+
+}
+
+上例的 main() 函數前面改用 void 代表我們的主程式不把執行的結果傳回給呼叫它的程式，雖然這不是最正統的寫法，但是可以讓程式碼短一點，因為我們就不用再 main() 裡加上那一個 return 0; 把結果傳回去了。
+
+ 
+
+二、srand() 函數
+
+當我們把上面的程式重複執行數次之後，會發現所得到的亂數是一樣的，這是因為它由上一個數值產生出下一個亂數，而一開始系統都是 0，所以每次產生出來的亂數才會一樣。因此我們可以用 srand() 函數改變一開始的亂數值( srand() 函數也是定義在 stdlib.h)， srand() 需要一個參數做為種子，以產生一個新的亂數數列，而這個參數我們通常以目前的時間傳入，也就是使用 time() 函數，而 time() 是定義在 time.h 中，整個程式如下：
+
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <time.h>
+
+void main()
+
+{
+
+ int a;
+
+ srand(time(NULL));
+
+ a=(rand()%100)+1;
+
+ printf("The Random Number is %d .\n", a);
+
+}
+
+至於是不是每次呼叫 rand() 前就必須使用 srand() 一次，答案是否定的，各位只要在程式的一開頭執行一次 srand() 即可，之後出來的亂數就會和上次執行的不一樣。
+
+ 
+
+三、猜數字遊戲(簡易版)
+
+接下來，我們利用上一頁學到的 if 敘述及這一頁學到的 rand() 來寫一個簡易的猜數字遊戲，由於還沒學到迴圈的寫法，所以我們只讓使用者猜三次，整個程式的流程如下：
+
+系統產生一個 1-100 的亂數 
+提示使用者輸入一個數字 
+如果使用者輸入的數字和答案相同，則印出 "Bingo!" 並結束程式，否則繼續讓使用者猜一次 
+如果三次都沒猜中，則印出標準答案 
+整個程式如下：
+
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <time.h>
+
+void main()
+
+{
+
+ int a, b;
+
+ srand(time(NULL));
+
+ a=(rand()%100)+1;
+
+ printf("1st. 1 - 100 =>");
+
+ scanf("%d", &b);
+
+ if(b==a) {
+
+   printf("Bingo!\n");
+
+   return;
+
+   }
+
+ printf("2nd. 1 - 100 =>");
+
+ scanf("%d", &b);
+
+ if(b==a) {
+
+   printf("Bingo!\n");
+
+   return;
+
+   }
+
+ printf("3rd. 1 - 100 =>");
+
+ scanf("%d", &b);
+
+ if(b==a) {
+
+   printf("Bingo!\n");
+
+   return;
+
+   }
+
+ printf("The Answer is %d .\n", a);
+
+}
+
+PS.上例中，使用 return 可以直接結束程式。
+

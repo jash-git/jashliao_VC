@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+  
+  
+  
+  
+  
+  <title>堆疊 - 使用陣列實作</title>
+</head>
+
+
+<body>
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip: 堆疊 - 使用陣列實作</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+      <h2>說明</h2>
+      <small>
+
+堆疊是一種先進後出的資料結構，就如同您將書本放入箱子，最先放進的書本在最後才能拿出來，所有資料的加入與刪除都在堆疊頂端完成。堆疊的使用很廣，遞迴
+就是一種堆疊，在之前介紹中序式轉後序式時，也使用到堆疊的結構。 <br>
+      <br>
+
+堆疊可以使用多種方式實作，其中使用陣列是最簡單的方法，也最不受使用的程式語言所限制。</small>
+
+
+      <h2> 解法</h2>
+      <small>
+
+堆疊最重要的就是記錄頂端的位置，尤其是在堆疊空間固定的情況下，必須注意堆疊已滿或已空的判斷，當使用陣列實作堆疊時尤其重要。 <br>
+      <br>
+
+堆疊的基本操作有五項：建立堆疊、傳回頂端元素、加入元素至堆疊、刪除元素至堆疊、顯示堆疊所有內容。為了方便，加入一個測試堆疊是否為空的方法，詳
+細的演算並不難，直接列出程式實作。</small>
+
+ 
+      <h2> 實作</h2>
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br>#define MAX 10 <br><br>int creates(int[]);         // 建立堆疊 <br>int isEmpty(int);           // 堆疊已空 <br>int stacktop(int[], int);   // 傳回頂端元素 <br>int add(int[], int, int);   // 插入元素 <br>int delete(int[], int);     // 刪除元素 <br>void list(int[], int);      // 顯示所有內容 <br><br>int main(void) { <br>    int stack[MAX]; <br>    int top; <br>    int input, select; <br><br>    top = creates(stack); <br><br>    while(1) { <br>        printf("\n\n請輸入選項(-1結束)："); <br>        printf("\n(1)插入值至堆疊"); <br>        printf("\n(2)顯示堆疊頂端"); <br>        printf("\n(3)刪除頂端值"); <br>        printf("\n(4)顯示所有內容"); <br>        printf("\n$c&gt;"); <br>        scanf("%d", &amp;select); <br>        <br>        if(select == -1) <br>            break; <br><br>        switch(select) { <br>            case 1: <br>                printf("\n輸入值："); <br>                scanf("%d", &amp;input); <br>                top = add(stack, top, input); <br>                break; <br>            case 2: <br>                printf("\n頂端值：%d", stacktop(stack, top)); <br>                break; <br>            case 3: <br>                top = delete(stack, top); <br>                break; <br>            case 4: <br>                list(stack, top); <br>                break; <br>            default: <br>                printf("\n選項錯誤！"); <br>        } <br>    } <br><br>    printf("\n"); <br><br>    return 0; <br>} <br><br>// 以下為堆疊操作的實作 <br>int creates(int stack[]) { <br>    int i; <br><br>    for(i = 0; i &lt; MAX; i++) <br>        stack[i] = 0; <br><br>    return -1; <br>} <br><br>int isEmpty(int top) { <br>    return (top == -1); <br>} <br><br>int stacktop(int stack[], int top) { <br>    return stack[top]; <br>} <br><br>int add(int stack[], int top, int item) { <br>    int t = top; <br><br>    if(t &gt;= MAX-1) { <br>        printf("\n堆疊已滿！"); <br>        return t; <br>    } <br><br>    stack[++t] = item; <br><br>    return t; <br>} <br><br>int delete(int stack[], int top) { <br>    int t = top; <br><br>    if(isEmpty(t)) { <br>        printf("\n堆疊已空！"); <br>        return t; <br>    } <br><br>    return --t; <br>} <br><br>void list(int stack[], int top) { <br>    int t = top; <br><br>    printf("\n堆疊內容："); <br>    while(!isEmpty(t)) { <br>        printf("%d ", stack[t]); <br>        t--; <br>    } <br>}</pre>
+
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+
+
+
+
+</body>
+</html>

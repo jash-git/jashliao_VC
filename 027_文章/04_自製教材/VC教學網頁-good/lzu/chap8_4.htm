@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>8.4访问当前活动视图和活动文档 </title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="4">8.4</font><font color="#3973DE" SIZE="4">访问当前活动视图和活动文档 
+    </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">对于</font><font FACE="Times New Roman" SIZE="3">SDI</font><font SIZE="3">程序，主框架窗口就是文档框窗，可以采用以下方法取得当前文档和视图：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">取得活动文档：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CMyDocument* pDoc;</p>
+    <p>pDoc=(CMyDocument*)((CFrameWnd*)AfxGetApp()-&gt;m_pMainWnd)</p>
+    <p>-&gt;GetActiveDocument();</p>
+    <p></font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pDoc=(CMyDocument*)((CFrameWnd*)AfxGetMainWnd())</font><font SIZE="3">；</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">这两者是等效的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">取得活动视图：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CMyView* pView;</p>
+    <p>pView=(CMyView*)((CFrameWnd*)AfxGetApp()-&gt;m_pMainWnd)-&gt;GetActiveView();</p>
+    <p></font><font SIZE="3">对于</font><font FACE="Times New Roman" SIZE="3">MDI</font><font SIZE="3">程序，由于子窗口才是文档框窗，因此首先要用</font><font FACE="Times New Roman" SIZE="3">GetActiveFrame()</font><font SIZE="3">取得活动子框架窗口，然后通过该子窗口获取活动文档和视图：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CMDIChildWnd* 
+    pChild=(CMDIChildWnd*)((CFrameWnd*)AfxGetApp()-&gt;m_pMainWnd)-&gt;GetActiveFrame();</p>
+    <p></font><font SIZE="3">取得活动文档：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CMyDocument* pDoc=pChild-&gt;GetActiveDocument();</p>
+    <p>CMyView* pView=(CMyView*)pChild-&gt;GetActiveView();</p>
+    <p></font><font SIZE="3">可以把上述函数片段做成静态成员函数，比如：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>static CMyDocument::GetCurrentDoc()</p>
+    <p>{</p>
+    <p>CMDIChildWnd* pChild=(CMDIChildWnd*)((CFrameWnd*)AfxGetApp()- 
+    &gt;m_pMainWnd)-&gt;GetActiveFrame();</p>
+    <p>CMyDocument* pDoc=pChild-&gt;GetActiveDocument();</p>
+    <p>}</p>
+    <p></font><font SIZE="3">这样就可以通过以下方式取得活动文档（或视图）：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CMyDocument::GetCurrentDoc();</font><font SIZE="3"><b></p>
+    <p></b><font color="#3973DE">注：静态成员函数调用时不需要一个具体的对象与之相关联。</font></font><font FACE="Times New Roman" SIZE="4"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap8_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap8/chap8_3.htm">上一页</a></td>
+        <td><p align="right"><a href="chap8_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap8/chap8_5.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

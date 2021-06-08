@@ -1,0 +1,490 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Cut</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Cut</p>
+<p class="r">程度★★　難度★</p>
+<p class="w">話說天下大勢，分久必合，合久必分。《三國演義》</p>
+</div><div class="c">
+<p class="t">Cut</p>
+<p>「割」有兩種定義方式：</p>
+<p>一、「割」是點：圖上所有點分成第一群和第二群。</p>
+<p>二、「割」是邊：第一群點連向第二群點的邊。</p>
+<p>把點分兩群，一種分法就是一個Cut。所有點可以集中在同一群，此時另一群就是空的。</p>
+<p>V個點的有向圖，共有2^V種Cut。V個點的無向圖，第一群和第二群的順序沒有差別，共有(2^V)/2種Cut。</p>
+<p>一個Cut的權重，是所有邊的權重總和。</p>
+<img src="Cut1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cut1.png">
+<p>「割」還有另一種觀點：</p>
+<p>一、從圖上挑出一群點。（剩下的點自然而然就是第二群。）</p>
+<p>二、一群點連向其他點的邊。</p>
+<p class="t">s-t Cut</p>
+<p>限制s點位在第一群、限制t點位在第二群的Cut。</p>
+<p>s點、t點所屬的點集合，一般稱作s側、t側。</p>
+<img src="Cut2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cut2.png">
+<p class="t">Minimum Cut（Min-Cut）</p>
+<p>「最小割」，一張圖權重最小的Cut，可能會有許多個。</p>
+<p>求最小割是NP-hard問題。當圖上沒有負邊時，才有多項式時間的演算法。</p>
+<p class="t">Maximum Cut（Max-Cut）</p>
+<p>求最大割是NP-hard問題。圖上每一條邊變號後，求最大割就變成求最小割。當圖上沒有正邊時，才有多項式時間的演算法。</p>
+<p class="t">Partition</p>
+<p>一堆數字，分成兩堆，稱作一個Partition。讓兩堆各自的總和盡量一樣大，是精典NP-Complete問題。</p>
+<p>點有權重、邊無權重，此時Cut與Partition兩者概念相等。</p>
+<p class="t">一群點收縮為一個點（Contraction）</p>
+<p>收縮一群點之後，這群點連接的邊就集中在同一點了。</p>
+<p>收縮同屬一群的點，Cut的權重依舊相同。</p>
+<img src="Cut3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cut3.png">
+<p class="t">多重的邊變成單獨的邊</p>
+<p>當一點到另一點有多重的邊，加總這些邊的權重，合併成單獨的邊，Cut的權重依舊相同。</p>
+<img src="Cut4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cut4.png">
+<p class="t">Submodular Function</p>
+<p>當圖上只有正邊、零邊的時候，有個特別的不等式：</p>
+<img src="Cut5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Cut5.png">
+<p>這是在說明原集合、交集、聯集之間的關係。這裡只證明無向圖，至於有向圖也是成立的。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum s-t Cut: Max-Flow Min-Cut Theorem</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>利用Maximum s-t Flow，求出一張無向圖的其中一個Minimum s-t Cut。限制是圖上每條邊的權重皆非負值。</p>
+<p>稀奇的是，目前沒有直接求得Minimum s-t Cut的演算法。</p>
+<p class="t">演算法</p>
+<p>根據最大流最小割定理，在一張圖上求得一個流量的最大源匯流，則圖上同時存在一個容量的最小源匯割，陰陽相生。</p>
+<p>找到最大流之後，從源點開始遍歷，途中不通過管線滿溢的邊，最後便得到其中一個最小源匯割的源點側；而且此最小源匯割的源點側點數，是所有最小源匯割當中最少的。若從匯點開始遍歷圖，亦有相對應結果。</p>
+<p>管線滿溢，等同於遇到了瓶頸，所以目前的流就是一個最大源匯流。由源點開始，能夠流及的點集合（瓶頸之前），和無法流及的點集合（瓶頸之後），就是一個源點與匯點不同側的最小源匯割。</p>
+<img src="CutByFlow1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/CutByFlow1.png">
+<textarea t="找出一個最小st割（adjacency matrix）">
+typedef int Graph[9][9];	// adjacency matrix
+Graph C, F, R;				// 分別是容量上限、流量、剩餘容量
+
+bool visit[9];
+
+void DFS(int i)
+{
+	visit[i] = true;
+	for (int j=0; j<9; ++j)
+		if (!visit[j] && F[i][j] < C[i][j])
+			DFS(j);
+}
+
+void minimum_s_t_cut(int s, int t)
+{
+	// 求一個最大源匯流，源點為s點，匯點為t點。
+	Edmonds_Karp(s, t);
+
+	// 從源點開始遍歷，找出流量瓶頸。
+	memset(visit, false, sizeof(visit));
+	DFS(s);
+
+	// 找出其中一個最小源匯割，會是源點側點數最少的最小源匯割。
+	for (int i=0; i<9; ++i)			// 窮舉源點側的點
+		if (visit[i])
+			for (int j=0; j<9; ++j)	// 窮舉匯點側的點
+				if (!visit[j])
+					if (C[i][j] > 0)	// 要確定有邊
+						cout << "割上的邊有"
+							<< "由" << i << "到" << j;
+}
+</textarea>
+<p>在一個最大源匯流中，能找到的最小源匯割不只一種。一般來說，要找最小源匯割，可以先找源點側，也可以先找匯點側（邊的方向要反過來看），不過還是會有其他的最小源匯割，通常也很難發現。</p>
+<img src="CutByFlow2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/CutByFlow2.png">
+<p class="e">UVa 10480 ICPC 5099</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum s-t Cut</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Minimum s-t Cut</p>
+<p>介紹幾個Minimum s-t Cut的基本性質。以下只針對無向圖無負邊的最小割。</p>
+<p>這些性質是了無生趣的數學。如果您無暇深究，可以略過不看；如果您打算設計新演算法，可以參考看看。</p>
+<p>性質的名稱是筆者隨興取的。歡迎各位讀者提供建議。</p>
+<p class="t">性質：叛離</p>
+<p>一個最小st割。除了s點與t點以外，從s側或t側分離出一群點，得到不等式：</p>
+<img src="MinimumCut1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MinimumCut1.png">
+<p>除了s點與t點以外，從一側分離出一群點到另一側，權重就會變大、也可能不變（遇到另一個最小st割）：</p>
+<img src="MinimumCut2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MinimumCut2.png">
+<p>簡單的說，各種st割的權重，一定比最小st割的權重來得大、或者相等。</p>
+<p class="t">性質：基準</p>
+<p>一個最小st割。x點在s側，y點在t側，那麼最小xy割的權重小於等於最小st割的權重。</p>
+<img src="MinimumCut3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MinimumCut3.png">
+<p>無論最小xy割多麼差勁，走投無路時至少還有最小st割。</p>
+<p class="t">性質：共側</p>
+<p>圖上任取三點ijk，求出最小ij割、最小jk割、最小ki割。</p>
+<p>權重較小的那兩個割，事實上權重相等；那兩個割可以是同一個割。</p>
+<p>以幾何角度來看，ijk是頂角大於等於60°的等腰三角形。</p>
+<img src="MinimumCut4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MinimumCut4.png">
+<pre>
+一、最小ij割、最小jk割、最小ki割，
+　　找到權重最小的。
+　　不失一般性，暫定是最小ij割。
+二、要嘛k點在i側，要嘛k點在j側。
+　甲、暫定k點在j側。
+　　　由基準性質可知：最小kj割的權重小於等於最小ij割的權重。
+　　　又因為最小ij割已經是權重最小的，
+　　　所以，最小kj割的權重被迫等於最小ij割的權重。
+　　　既然權重相等，那麼是同一個割也無所謂。
+　乙、暫定k點在j側。
+　　　同理，最小ki割的權重被迫等於最小ij割的權重。
+</pre>
+<p>此性質可用min函數表示，但是性質會變弱、失真：</p>
+<pre>
+最小st割的權重，標作Wst。
+
+圖上任意三點ijk，
+Wik ≥ min(Wij, Wjk)
+
+數學歸納法，推廣至任意序列：
+Waz ≥ min(Wab, Wbc, Wcd, ..., Wyz) 
+
+等號什麼時候成立？似乎沒有多大討論意義。
+</pre>
+<p class="t">性質：交集與聯集</p>
+<p>一個最小st割、一個最小xy割，各取一側進行交集或聯集。當交集不是空集合，則有可能是：</p>
+<p>另一個最小st割、另一個最小xy割、權重更小或一樣的其他割、權重不明的其他割。</p>
+<p>根據stxy四個點所在位置，可以鑑定結果是哪些種。詳細情況請見下列證明過程。</p>
+<img src="MinimumCut5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MinimumCut5.png">
+<pre>
+一、cut(S) + cut(X) ≥ cut(S∩X) + cut(S∪X)。
+二甲、假設cut(S∩X)不含s點、不含t點。
+　　　此時歸納不出任何結論。
+二乙、假設cut(S∩X)含有s點、不含t點，是個st割。
+　　　因為cut(S∩X)是st割，又知道cut(S)是最小st割，所以
+　　　cut(S∩X) ≥ cut(S)。
+　　　然後併入步驟一的式子，輕鬆得到
+　　　cut(S∪X) ≤ cut(X)。
+三甲、假設cut(S∪X)含有x點、不含y點，是個xy割。
+　　　以最小xy割cut(X)為基準，根據叛離性質，
+　　　cut(S∪X)的權重只會變大（或不變），
+　　　cut(S∪X) ≥ cut(X)。
+　　　然後併入步驟二乙的結論，輕鬆得到
+　　　cut(S∪X) = cut(X)。
+　　　證得cut(S∪X)與cut(X)都是最小xy割。
+三乙、假設cut(S∪X)含有x點也含有y點，不是個xy割。
+　　　此時無法套用叛離性質。
+　　　使用步驟二乙的結論
+　　　cut(S∪X) ≤ cut(X)。
+　　　證得cut(S∪X)是比cut(X)權重更小（或一樣）的其他割。
+四、附帶一提，無向圖上，一個割的兩側，對調也無妨，
+　　cut(S∪X) = cut(T∩Y)。
+
+步驟二，可以改為假設cut(S∩X)是xy割，
+然後在步驟三，對應地改成st割，
+最後就得到cut(S∪X)與cut(S)的關係。
+
+步驟一，可以改為其他submodular function：
+cut(S) + cut(X) ≥ cut(S∩X) + cut(S∪X)，證得cut(S∪X)。
+cut(S) + cut(Y) ≥ cut(S∩Y) + cut(S∪Y)，證得cut(S∪Y)。
+cut(T) + cut(X) ≥ cut(T∩X) + cut(T∪X)，證得cut(T∪X)。
+cut(T) + cut(Y) ≥ cut(T∩Y) + cut(T∪Y)，證得cut(T∪Y)。
+
+步驟二，以cut(S∩X)或者以cut(S∪X)作為主角都是可以的。
+最後證得的分別是(S∪X)與cut(S∩X)。
+</pre>
+<p class="t">Minimum Cut Tree</p>
+<p>已知一個最小st割，又有xy兩點。</p>
+<p>甲、xy兩點同在s側（xy兩點同在t側）：</p>
+<p>根據聯集交集性質，可以發現最小xy割不只一個。最小xy割的某一側，可以完全包含t側。無論xy是哪兩點都成立！</p>
+<p>也就是說，就算收縮t側、不理t側，仍然可以找到一個最小xy割。用抽象感覺來說，s側與t側劃清界線、各自為政。</p>
+<img src="MinimumCut6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MinimumCut6.png">
+<p>乙、x點在s側、y點在t側（x點在t側、y點在s側）：</p>
+<p>根據基準性質，最小xy割的權重，一定小於等於最小st割的權重。</p>
+<img src="MinimumCut3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MinimumCut3.png">
+<p>由甲乙得知「最小割樹」的存在：樹上取st兩點，s點到t點的路徑當中，權重最小的邊（路徑瓶頸），就是最小st割的權重；移除權重最小的邊，即形成最小st割。</p>
+<img src="MinimumCut7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MinimumCut7.png">
+<p>一張無向圖的最小割樹可能有許多棵。至於有向圖的最小割樹，至今仍未被發現。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">All Pairs Minimum s-t Cuts: Divide and Conquer</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">演算法（Gomory-Hu Algorithm）</p>
+<p>求得無向圖的一棵最小割樹。</p>
+<p><a href="javascript:if(confirm('http://www.cs.bgu.ac.il/~visproj/eransagi/flow.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.cs.bgu.ac.il/~visproj/eransagi/flow.html'" tppabs="http://www.cs.bgu.ac.il/~visproj/eransagi/flow.html">http://www.cs.bgu.ac.il/~visproj/eransagi/flow.html</a></p>
+<pre>
+Divide：
+隨便求一個Minimum s-t Cut，得到s側、t側。
+注意到s點和t點必須是圖上原本的點，而不是收縮之後的點。
+
+Conquer：
+此圖收縮t側（得t'點），遞迴求解，得到s側的Minimum Cut Tree。
+此圖收縮s側（得s'點），遞迴求解，得到t側的Minimum Cut Tree。
+
+Merge：
+新增邊s't'，權重設定為Minimum s-t Cut的權重。
+所有新增的邊，最後拼在一起，構成一棵Minimum Cut Tree。
+</pre>
+<p class="t">時間複雜度</p>
+<p>為下列三項總和，主要取決於第一項：</p>
+<p>一、求V-1次最小st割的時間。</p>
+<p>二、收縮點的時間，平均O(VlogV)，最差O(V^2)。</p>
+<p>三、新增邊的時間，共V-1條邊，O(V)。</p>
+<p>使用Dynamic Programming建立表格，就能快速得到所有兩點之間的最小st割，時間複雜度與空間複雜度都是O(V^2)。</p>
+<p class="t">加速</p>
+<p>如果原圖已經有一部分是樹，此部分顯然就是最小割樹，不必再逐次計算最小st割。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">All Pairs Minimum s-t Cuts: Incremental Method</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">演算法（Gusfield's Algorithm）</p>
+<p>求V-1次最小st割，得到無向圖的一棵最小割樹。</p>
+<p>時間複雜度為求V-1次最小st割的時間。</p>
+<p class="t">演算法：找出一棵最小割樹</p>
+<pre>
+一、初始化最小割樹：
+　　第零點是中心，第一點到第V-1點皆連向第零點。
+二、依序處理第一點到第V-1點：
+　甲、當前點s，只有連向點t。
+　　　邊st的權重設定為最小st割的權重。
+　乙、屬於s側的點x，全部改為連往s點。
+　　　邊xs保持原本設定的權重。
+</pre>
+<p>【待補程式碼】</p>
+<p class="t">演算法：找出一棵簡易版的最小割樹（Equivalent Flow Tree）</p>
+<p>此樹只能求得最小st割的權重，但是不能求出最小st割。</p>
+<pre>
+一、初始化最小割樹：
+　　第零點是中心，第一點到第V-1點皆連向第零點。
+二、依序處理第一點到第V-1點：
+　甲、當前點s，只有連向點t。
+　　　邊st的權重設定為最小st割的權重。
+　乙、屬於s側、並且尚未處理的點，全部改為連往s點。
+</pre>
+<textarea t="找出一棵簡易版的最小割樹＋所有兩點之間最小st割（adjacency matrix）">
+int adj[9][9];	// adjacency matrix
+int p[9];		// equivalent flow tree
+int c[9][9];	// 所有兩點之間最小st割的權重
+
+void Gusfield()
+{
+	memset(p, 0, sizeof(p));	// star graph
+	memset(c, 0x7f, sizeof(c));	// 預設為無限大
+
+	for (int i=1; i<9; ++i)
+	{
+		// 找出最小i p[i]割，並找出i側有哪些點。
+		bool i_side[9];	// BFS visit record
+		int f = Edmonds_Karp(i, p[i], i_side);
+
+		// i點以後的點（尚未處理的點），
+		// 屬於i側、但是連往p[i]點的，就改連到i點。
+		for (int j=i+1; j<9; ++j)
+			if (i_side[j] && p[j] == p[i])
+				p[j] = i;
+
+		// 順便計算各點與i的最小st割的權重。
+		c[i][p[i]] = c[p[i]][i] = f;
+		for (int j=0; j<i; ++j)
+			c[i][j] = c[j][i] = min(f, c[p[i]][j]);
+	}
+
+	// 最後把對角線設回為零
+	for (int i=0; i<9; ++i)
+		c[i][i] = 0;
+}
+</textarea>
+<p class="e">UVa 11594 11603</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Maximum Adjacency Search</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Maximum Adjacency Search</p>
+<p>Maximum Adjacency Search與Dijkstra's Algorithm與Prim's Algorithm的過程如出一轍，時間複雜度O(V^2)，得加速至O(E+VlogV)。實作時要小心圖不連通的情況。</p>
+<pre>
+一、建立一個空的A集合。
+二、首先隨便在圖上找一個點，加入到A集合當中。
+三、令w(A, x)是「目前的A集合的各個點」與「x點」之間所有的邊的權重總和。
+　　逐次加入一個尚未加入A當中、且w(A, x)最大的x點到A集合中。
+四、圖上所有點都加入到A集合之後，各個點加入的順序即為所求。
+</pre>
+<img src="MaximumAdjacencySearch1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaximumAdjacencySearch1.png">
+<textarea t="Maximum Adjacency Search（adjacency matrix）">
+int adj[9][9];	// adjacency matrix
+int w[9];		// 紀錄各點到目前的A集合的距離
+bool visit[9];	// 紀錄各點是不是已經加入A集合
+
+void maximum_adjacency_search()
+{
+	for (int i=0; i<9; ++i) visit[i] = false;
+	for (int i=0; i<9; ++i) w[i] = 0;
+
+	for (int i=0; i<9; ++i)
+	{
+		// 找出一個尚未加入A當中、且w(A, x)最大的x點。
+		int x = 0, max = -1e9;
+		for (int j=0; j<9; ++j)
+			if (!visit[j] && w[j] > max)
+				max = w[j], x = j;
+
+		visit[x] = true;	// 加入x點到A集合
+		cout << "遍歷到第" << x << "點";
+
+		// 加入x點到A集合後，更新w(A, x)的值。
+		for (int j=0; j<9; ++j)
+			if (!visit[j])
+				w[j] += adj[x][j];
+	}
+}
+</textarea>
+<p class="t">性質：當圖上無負邊，最後兩點會形成Minimum s-t Cut</p>
+<p>令Maximum Adjacency Search的遍歷順序是v<sub>1</sub>…v<sub>n</sub>，最後兩點是v<sub>n-1</sub>與v<sub>n</sub>。</p>
+<p>當圖上無負邊，{v<sub>1</sub>…v<sub>n-1</sub>}與{v<sub>n</sub>}是一個最小v<sub>n-1</sub>v<sub>n</sub>割。</p>
+<img src="MaximumAdjacencySearch2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MaximumAdjacencySearch2.png">
+<pre>
+一、欲證cut(v<sub>1~n-1</sub>, v<sub>n</sub>)是最小v<sub>n-1</sub>v<sub>n</sub>割。
+二、觀察v<sub>n-2</sub>與v<sub>n-1</sub>與v<sub>n</sub>這三點，根據共側性質，
+　　最小v<sub>n-2</sub>v<sub>n-1</sub>割、最小v<sub>n-2</sub>v<sub>n</sub>割、最小v<sub>n-1</sub>v<sub>n</sub>割，
+　　其中權重比較小的那兩個割，權重相等。
+三、嘗試找到最小v<sub>n-2</sub>v<sub>n-1</sub>割、最小v<sub>n-2</sub>v<sub>n</sub>割，
+　　並且證明cut(v<sub>1~n-1</sub>, v<sub>n</sub>)的權重同時小於等於這兩個割，
+　　那麼根據共側性質，cut(v<sub>1~n-2</sub>, v<sub>n</sub>)就一定是最小v<sub>n-1</sub>v<sub>n</sub>割。
+四、以下用數學歸納法證明，但是以反方向講解。
+
+basis step:
+圖上只有兩點一邊時，顯然是一個最小st割。
+
+inductive step:
+一、從圖上移除邊v<sub>n-1</sub>v<sub>n</sub>，
+　　不影響v<sub>n-1</sub>v<sub>n</sub>割的位置，刪除也無妨。
+二、最小v<sub>n-2</sub>v<sub>n-1</sub>割的部分：
+　甲、從圖上移除v<sub>n</sub>（以及連著的邊）。
+　　　重新實施Maximum Adjacency Search，順序仍舊相同，v<sub>n-2</sub>與v<sub>n-1</sub>成為最後兩點。
+　　　遞迴求解，證得cut(v<sub>1~n-2</sub>, v<sub>n-1</sub>)是一個最小v<sub>n-2</sub>v<sub>n-1</sub>割。
+　乙、因為v<sub>n-1</sub>與v<sub>n</sub>兩點之間沒有邊，
+　　　把v<sub>n</sub>（以及連著的邊）加回到cut(v<sub>1~n-2</sub>, v<sub>n-1</sub>)的v<sub>n-2</sub>側，
+　　　得到cut(v<sub>1~n-2</sub> + v<sub>n</sub>, v<sub>n-1</sub>)是原圖的一個最小v<sub>n-2</sub>v<sub>n-1</sub>割。
+　丙、由Maximum Adjacency Search倒數第二步的選擇，可知
+　　　cut(v<sub>1~n-2</sub>, v<sub>n-1</sub>) ≥ cut(v<sub>1~n-2</sub>, v<sub>n</sub>)
+　　　又因為v<sub>n-1</sub>與v<sub>n</sub>兩點之間沒有邊，
+　　　cut(v<sub>1~n-2</sub> + v<sub>n</sub>, v<sub>n-1</sub>) ≥ cut(v<sub>1~n-2</sub> + v<sub>n-1</sub>, v<sub>n</sub>)
+　　　顯然地，
+　　　cut(v<sub>1~n-2</sub> + v<sub>n</sub>, v<sub>n-1</sub>) ≥ cut(v<sub>1~n-1</sub>, v<sub>n</sub>)
+　　　也就是說，cut(v<sub>1~n-1</sub>, v<sub>n</sub>)的權重小於等於最小v<sub>n-2</sub>v<sub>n-1</sub>割。
+三、最小v<sub>n-2</sub>v<sub>n</sub>割的部分：
+　甲、從圖上移除v<sub>n-1</sub>（以及連著的邊）。
+　　　重新實施Maximum Adjacency Search，順序仍舊相同，v<sub>n-2</sub>與v<sub>n</sub>成為最後兩點。
+　　　遞迴求解，證得cut(v<sub>1~n-2</sub>, v<sub>n</sub>)是一個最小v<sub>n-2</sub>v<sub>n</sub>割。
+　乙、因為v<sub>n-1</sub>與v<sub>n</sub>兩點之間沒有邊，
+　　　把v<sub>n-1</sub>（以及連著的邊）加回到cut(v<sub>1~n-2</sub>, v<sub>n</sub>)的v<sub>n-2</sub>側，
+　　　得到cut(v<sub>1~n-2</sub> + v<sub>n-1</sub>, v<sub>n</sub>)是原圖的一個最小v<sub>n-2</sub>v<sub>n</sub>割。
+　丙、顯然地，
+　　　cut(v<sub>1~n-2</sub> + v<sub>n-1</sub>, v<sub>n</sub>) = cut(v<sub>1~n-1</sub>, v<sub>n</sub>)
+　　　也就是說，cut(v<sub>1~n-1</sub>, v<sub>n</sub>)的權重小於等於最小v<sub>n-2</sub>v<sub>n</sub>割。
+四、由二丙、三丙，得證。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum Cut: Stoer-Wagner Algorithm</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>求出一張無向圖的其中一個最小割。</p>
+<p>限制：無向圖上只有正邊、零邊，不得有負邊。</p>
+<p class="t">想法</p>
+<p>圖上隨意取一條邊，要嘛在割上，要嘛不在割上。</p>
+<p>圖上隨意取兩個點，要嘛在割異側，要嘛在割同側。</p>
+<p>這兩句話都是一樣意思，用哪一句話當作主角都行。</p>
+<img src="Stoer-WagnerAlgorithm.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Stoer-WagnerAlgorithm.png">
+<p>藉由此觀察，得到了Divide and Conquer的機會。隨意取st兩點，分別計算這兩種情況下的最小割：</p>
+<p>一、假設st在最小割異側：最小割根本就是最小st割！<p>
+<p>二、假設st在最小割同側：原圖收縮st兩點，不影響最小割位置。圖上少了一點，就能遞迴求解，得到最小割。</p>
+<p>由於從頭到尾都沒有限制st是哪兩點，所以可以用Maximum Adjacency Search快速求得st異側的那個最小st割。</p>
+<p>注意到，這兩種情況其中一種肯定是假設錯誤的（當最小割只有唯一一個）。假設矛盾的情況下，根據邏輯，計算結果有可能是正版最小割，也有可能是權重亂七八糟的山寨最小割。</p>
+<p>因此，還必須證明，假設矛盾的情況下，不管計算結果為何，那些山寨最小割一定比正版最小割來得差：</p>
+<p>一、最小割根本不是st異側：方才是把最小st割當作最小割。正版最小割不用邊st的原因，就是邊st權重比較大──而最小st割一定用到邊st，所以最小st割的權重肯定比正版最小割的權重還大（或一樣，當有多個最小割）。<p>
+<p>二、最小割根本不是st同側：因為權重較小的邊被收縮了，求出來的割只會比正版最小割還大（或一樣，當有多個最小割）。<p>
+<p>如此一來就能保證，兩種情況下分別求得的最小割，權重較小的那一個，一定是正版最小割。</p>
+<p>這比一般的Divide and Conquer還要複雜一點。</p>
+<p class="t">演算法</p>
+<pre>
+一、用Maximum Adjacency Search隨便求一個Minimum s-t Cut。
+二、收縮s點與t點，重複步驟一，直到圖上只剩一點。
+三、這V-1個Minimum s-t Cut當中，權重最小者，即是Minimum Cut。
+</pre>
+<p class="t">時間複雜度</p>
+<p>為下列兩項總和：</p>
+<p>一、V-1次Maximum Adjacency Search的時間。</p>
+<p>二、收縮點的時間：圖的資料結構為adjacency matrix的話，收縮兩點需時O(V)，收縮兩點V-1次需時O(V^2)；圖的資料結構為adjacency lists的話，收縮兩點需時O(1)，收縮兩點V-1次需時O(V)。</p>
+<p class="t">找出一個最小割（adjacency matrix）</p>
+<p>實作時要小心圖不連通的情況，圖不連通的地方就是最小割，權重為零。</p>
+<textarea>
+int adj[9][9];		// adjacency matrix
+int contract[9];	// 紀錄各點收縮之後的新編號
+					// 可以視作disjoint sets
+void stoer_wagner()
+{
+	for (int i=0; i<9; ++i) contract[i] = i;
+
+	int cost = 0;		// Minimum Cut的權重
+	int cut[9], n = 0;	// Minimum Cut的t側、t側點數
+
+	for (int k=0; k<9-1; ++k)
+	{
+		// 隨便找一個Minimum s-t Cut
+		int s, t, c;
+		maximum_adjacency_search(s, t, c, adj, contract);
+
+		/* 如果s點與t點在Minimum Cut的異側 */
+
+		// 紀錄權重比較小的Minimum s-t Cut
+		if (c < cost)
+		{
+			cost = c;
+
+			n = 0;
+			for (int i=0; i<9; ++i)
+				if (contract[i] == t)
+					cut[n++] = i;
+			assert(n == k+1);
+		}
+
+		/* 如果s點與t點在Minimum Cut的同側 */
+
+		// t點併至s點
+		for (int i=0; i<9; ++i)
+			if (contract[i] == t)
+				contract[i] = s;
+
+		// t點連著的邊併至s點
+		for (int i=0; i<9; ++i)
+			// 只找尚存的點！
+			if (i != s && contract[i] == i)
+			{
+				adj[i][s] += adj[i][t];
+				adj[s][i] += adj[t][i];
+			}
+	}
+}
+</textarea>
+<p class="e">UVa 10989</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Minimum Cut: Karger's Algorithm</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>求出一張無向圖的其中一個最小（大）割。</p>
+<p>Monte Carlo Algorithm，不保證答案百分之百正確。</p>
+<p class="t">演算法</p>
+<p>圖上隨意取一條邊，要嘛在最小割上，要嘛不在最小割上。</p>
+<p>圖上隨意取兩個點，要嘛在最小割異側，要嘛在最小割同側。</p>
+<p>怕麻煩的話，直接都當作不在最小割上、都在同側不就好了。</p>
+<pre>
+重複下述步驟V-1次，直到圖上剩下兩個點，得到一個割，推定為最小割：
+甲、隨機取圖上一條邊。
+乙、推定這條邊不在最小割上，
+　　也就是推定這條邊的兩個端點在最小割同側。
+　　收縮這條邊的兩個端點，不影響最小割權重。
+</pre>
+<p>Kruskal's Algorithm也是每次選擇一條邊、連結兩端點。兩者的差異，在於Karger's Algorithm是隨機選擇一條邊，而Kruskal's Algorithm是選擇權重最小的邊。</p>
+<p>時間複雜度不知如何計算，可能很接近O(V+E)吧。</p>
+<p class="t">正確率</p>
+<p>既然是隨機演算法，就得計算一下正確率了！</p>
+<p>令一張圖的最小割有c條邊。</p>
+<p>補充零邊，令圖上每一個點連著c條邊。如此一來，圖上每一個割都有c條邊、每一個割都可能成為最小割，利於分析。</p>
+<p>現在圖上共有c*V/2條邊。V是點數。</p>
+<p>隨機從圖上選擇一條邊，這條邊在最小割上的機率是c / (c*V/2) = 2/V，不在最小割上的機率是1 - 2/V。</p>
+<p>Karger's Algorithm每個步驟選擇的邊，都必須不是最小割的邊，最後才能得到正確的最小割。選對的機率是1 - 2/V。</p>
+<p>每個步驟都會減少一個點，推得正確率是[1-2/V] * [1-2/(V-1)] * … * [1-2/4] * [1-2/3] = 1/C{V,2} = Ω(1/V^2) = Ω(V^-2)。</p>
+<p>根據這個正確率，只要實施V^2次以上的Karger's Algorithm，結果就相當準確了！</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

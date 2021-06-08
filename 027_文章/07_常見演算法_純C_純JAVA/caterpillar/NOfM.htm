@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <title>m元素集合的n個元素子集</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;m元素集合的n個元素子集</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+      <h2>說明</h2>
+      <small>
+
+假設有個集合擁有m個元素，任意的從集合中取出n個元素，則這n個元素所形成的可能子集有那些？</small><br>
+
+
+      <h2>解法</h2>
+      <small>
+
+假設有5個元素的集點，取出3個元素的可能子集如下：<br>
+      </small>
+
+      <div style="margin-left: 40px; font-family: Courier New,Courier,monospace;"><small><span style="font-weight: bold;">{1 2 3}、{1 2 4 }、{1 2 5}、{1 3 4}、{1 3 5}、{1 4 5}、{2 3 4}、{2 3 5}、{2 4 5}、{3 4 5}</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+這些子集已經使用字典順序排列，如此才可以觀察出一些規則：<br>
+      </small>
+
+      <ol>
+        <li><small>如果最右一個元素小於m，則如同碼錶一樣的不斷加1</small></li>
+        <li><small>如果右邊一位已至最大值，則加1的位置往左移</small></li>
+        <li><small>每次加1的位置往左移後，必須重新調整右邊的元素為遞減順序</small></li>
+      </ol>
+
+
+      <small><br>
+
+
+所以關鍵點就在於哪一個位置必須進行加1的動作，到底是最右一個位置要加1？還是其它的位置？<br>
+      <br>
+
+
+在實際撰寫程式時，可以使用一個變數positon來記錄加1的位置，position的初值設定為n-1，因為我們要使用陣列，而最右邊的索引值為最大
+的n-1，在position位置的值若小於m就不斷加1，如果大於m了，position就減1，也就是往左移一個位置；由於位置左移後，右邊的元素會
+經過調整，所以我們必須檢查最右邊的元素是否小於m，如果是，則position調整回n-1，如果不是，則positon維持不變。 </small>
+
+      <br>
+
+
+      <h2> 實作</h2>
+
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>#define MAX 20 <br><br>int main(void) { <br>    int set[MAX]; <br>    int m, n, position; <br>    int i; <br><br>    printf("輸入集合個數 m："); <br>    scanf("%d", &amp;m); <br>    printf("輸入取出元素 n："); <br>    scanf("%d", &amp;n); <br><br>    for(i = 0; i &lt; n; i++) <br>        set[i] = i + 1; <br><br>    // 顯示第一個集合 <br>    for(i = 0; i &lt; n; i++) <br>        printf("%d ", set[i]); <br>    putchar('\n'); <br>    <br>    position = n - 1; <br><br>    while(1) { <br>        if(set[n-1] == m) <br>            position--; <br>        else <br>            position = n - 1; <br><br>        set[position]++; <br><br>        // 調整右邊元素 <br>        for(i = position + 1; i &lt; n; i++) <br>            set[i] = set[i-1] + 1; <br><br>        for(i = 0; i &lt; n; i++) <br>            printf("%d ", set[i]); <br>        putchar('\n'); <br><br>        if(set[0] &gt;= m - n + 1) <br>            break; <br>    } <br><br>    return 0; <br>} <br></pre>
+
+
+
+      <br>
+
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+
+      <pre>public class NofM {<br>    private int m;<br>    private int[] set;<br>    private boolean first;<br>    private int position;<br>    <br>    public NofM(int n, int m) {<br>        this.m = m;<br>        first = true;<br>        position = n - 1; <br><br>        set = new int[n];<br>        for(int i = 0; i &lt; n; i++) <br>            set[i] = i + 1; <br>    }<br>    <br>    public boolean hasNext() {<br>        return set[0] &lt; m - set.length + 1;<br>    }<br>    <br>    public int[] next() {<br>        if(first) {<br>            first = false;<br>            return set;<br>        }<br>        <br>        if(set[set.length-1] == m) <br>            position--; <br>        else <br>            position = set.length - 1; <br><br>        set[position]++; <br><br>        // 調整右邊元素 <br>        for(int i = position + 1; i &lt; set.length; i++) <br>            set[i] = set[i-1] + 1;<br>        <br>        return set;<br>    }<br>    <br>    public static void main(String[] args) {<br>        NofM nOfm = new NofM(3, 5);<br>        <br>        while(nOfm.hasNext()) {<br>            int[] set = nOfm.next();<br>            for(int i = 0; i &lt; set.length; i++) {<br>                System.out.print(set[i]);   <br>            }<br>            System.out.println();<br>        }<br>    }<br>}</pre>
+
+
+      <br>
+
+
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+
+
+
+
+
+</body>
+</html>

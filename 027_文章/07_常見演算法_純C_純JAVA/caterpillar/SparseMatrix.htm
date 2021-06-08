@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <title>稀疏矩陣</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip: 稀疏矩陣</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+
+
+      <h2>說明</h2>
+      <small>
+
+
+如果在矩陣中，多數的元素並沒有資料，稱此矩陣為稀疏矩陣（sparse
+matrix），由於矩陣在程式中常使用二維陣列表示，二維陣列的大小與使用的記憶體空間成正比，如果多數的元素沒有資料，則會造成記憶體空間的浪費，為
+此，必須設計稀疏矩陣的陣列儲存方式，利用較少的記憶體空間儲存完整的矩陣資訊。</small><br>
+
+
+
+      <h2>解法</h2>
+      <small>
+
+
+在這邊所介紹的方法較為簡單，陣列只儲存矩陣的行數、列數與有資料的索引位置及其值，在需要使用矩陣資料時，再透過程式運算加以還原，例如若矩陣資料如下 ，其中0表示矩陣中該位置沒有資料：<br>
+      </small>
+
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">0&nbsp; 0&nbsp; 0&nbsp; 0&nbsp; 0&nbsp; 0 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">0&nbsp; 3&nbsp; 0&nbsp; 0&nbsp; 0&nbsp; 0 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">0&nbsp; 0&nbsp; 0&nbsp; 6&nbsp; 0&nbsp; 0 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">0&nbsp; 0&nbsp; 9&nbsp; 0&nbsp; 0&nbsp; 0 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">0&nbsp; 0&nbsp; 0&nbsp; 0&nbsp; 12 0</span><br>
+
+
+
+      </small></div>
+
+
+
+      <small><br>
+
+
+
+這個矩陣是5X6矩陣，非零元素有4個，您要使用的陣列第一列記錄其列數、行數與非零元素個數：<br>
+      </small>
+
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">5&nbsp; 6&nbsp; 4 </span><br>
+
+
+
+      </small></div>
+
+
+
+      <small><br>
+
+
+
+陣列的第二列起，記錄其位置的列索引、行索引與儲存值：<br>
+      </small>
+
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">1&nbsp; 1&nbsp; 3 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">2&nbsp; 3&nbsp; 6 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">3&nbsp; 2&nbsp; 9 </span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">4&nbsp; 4&nbsp; 12 </span><br>
+
+
+
+      </small></div>
+
+
+
+      <small><br>
+
+
+
+所以原本要用30個元素儲存的矩陣資訊，現在只使用了15個元素來儲存，節省了不少記憶體的使用。 </small><br>
+
+
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>int main(void) { <br>    int num[5][3] = {{5, 6, 4}, <br>                     {1, 1, 3}, <br>                     {2, 3, 6}, <br>                     {3, 2, 9}, <br>                     {4, 4, 12}}; <br>    int i, j, k = 1; <br><br>    printf("sparse matrix：\n"); <br>    for(i = 0; i &lt; 5; i++) { <br>        for(j = 0; j &lt; 3; j++) { <br>            printf("%4d", num[i][j]); <br>        } <br>        putchar('\n'); <br>    } <br><br>    printf("\nmatrix還原：\n"); <br>    for(i = 0; i &lt; num[0][0]; i++) { <br>        for(j = 0; j &lt; num[0][1]; j++) { <br>            if(k &lt; num[0][2] &amp;&amp; <br>               i == num[k][0] &amp;&amp; j == num[k][1]) { <br>                printf("%4d ", num[k][2]); <br>                k++; <br>            } <br>            else <br>                printf("%4d ", 0); <br>        } <br>        putchar('\n'); <br>    } <br><br>    return 0; <br>} <br></pre>
+
+
+
+
+      <br>
+
+
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+
+
+      <pre>public class SparseMatrix {<br>    public static int[][] restore(int[][] sparse) {<br>        int row = sparse[0][0];<br>        int column = sparse[0][1];<br>        <br>        int[][] array = new int[row][column];<br>        <br>        int k = 1;<br>        for(int i = 0; i &lt; row; i++) { <br>            for(int j = 0; j &lt; column; j++) { <br>                if(k &lt;= sparse[0][2] &amp;&amp; <br>                    i == sparse[k][0] &amp;&amp; j == sparse[k][1]) { <br>                    array[i][j] = sparse[k][2]; <br>                    k++; <br>                } <br>                else <br>                    array[i][j] = 0; <br>            }  <br>        } <br>        <br>        return array;<br>    }<br><br>    public static void main(String[] args) {<br>        int[][] sparse = {{5, 6, 4}, <br>                          {1, 1, 3}, <br>                          {2, 3, 6}, <br>                          {3, 2, 9}, <br>                          {4, 4, 12}};<br>        <br>        int[][] array = SparseMatrix.restore(sparse);<br>        <br>        for(int i = 0; i &lt; array.length; i++) { <br>            for(int j = 0; j &lt; array[i].length; j++) { <br>                System.out.print(array[i][j] + " ");<br>            }  <br>            System.out.println();<br>        } <br>    }<br>}</pre>
+
+
+
+      <br>
+
+
+
+      <br>
+
+
+
+      <br>
+
+
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+
+
+
+
+
+
+</body>
+</html>

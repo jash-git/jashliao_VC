@@ -1,0 +1,184 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>5.4 非模态对话框</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font FACE="Times New Roman" size="4" color="#3973DE">5.4 </font><font size="4" color="#3973DE">非模态对话框</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="JUSTIFY"></font><font color="#3973DE"><font FACE="Times New Roman" SIZE="3">5.4.1 
+    </font><font SIZE="3">非模态对话框的特点</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">与模态对话框不同，非模态对话框不垄断用户的输入，用户打开非模态对话框后，仍然可以与其它界面进行交互。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">非模态对话框的设计与模态对话框基本类似，也包括设计对话框模板和设计</font><font FACE="Times New Roman" SIZE="3">CDialog</font><font SIZE="3">类的派生类两部分。但是，在对话框的创建和删除过程中，非模态对话框与模态对话框相比有下列不同之处：</p>
+    <ul>
+      <li><p ALIGN="JUSTIFY">非模态对话框的模板必须具有<font FACE="Times New Roman" SIZE="3">Visible</font>风格，否则对话框将不可见，而模态对话框则无需设置该项风格。更保险的办法是调用<font FACE="Times New Roman" SIZE="3">CWnd::ShowWindow(SW_SHOW)</font>来显示对话框，而不管对话框是否具有<font FACE="Times New Roman" SIZE="3">Visible</font>风格。</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">非模态对话框对象是用<font FACE="Times New Roman" SIZE="3">new</font>操作符在堆中动态创建的，而不是以成员变量的形式嵌入到别的对象中或以局部变量的形式构建在堆栈上。通常应在对话框的拥有者窗口类内声明一个指向对话框类的指针成员变量，通过该指针可访问对话框对象。</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">通过调用<font FACE="Times New Roman" SIZE="3">CDialog::Create</font>函数来启动对话框，而不是<font FACE="Times New Roman" SIZE="3">CDialog::DoModal</font>，这是模态对话框的关键所在。由于<font FACE="Times New Roman" SIZE="3">Create</font>函数不会启动新的消息循环，对话框与应用程序共用同一个消息循环，这样对话框就不会垄断用户的输入。<font FACE="Times New Roman" SIZE="3">Create</font>在显示了对话框后就立即返回，而<font FACE="Times New Roman" SIZE="3">DoModal</font>是在对话框被关闭后才返回的。众所周知，在<font FACE="Times New Roman" SIZE="3">MFC</font>程序中，窗口对象的生存期应长于对应的窗口，也就是说，不能在未关闭屏幕上窗口的情况下先把对应的窗口对象删除掉。由于在<font FACE="Times New Roman" SIZE="3">Create</font>返回后，不能确定对话框是否已关闭，这样也就无法确定对话框对象的生存期，因此只好在堆中构建对话框对象，而不能以局部变量的形式来构建之。</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">必须调用<font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font>而不是<font FACE="Times New Roman" SIZE="3">CDialog::EndDialog</font>来关闭非模态对话框。调用<font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font>是直接删除窗口的一般方法。由于缺省的<font FACE="Times New Roman" SIZE="3">CDialog::OnOK</font>和<font FACE="Times New Roman" SIZE="3">CDialog::OnCancel</font>函数均调用<font FACE="Times New Roman" SIZE="3">EndDialog</font>，故程序员必须编写自己的<font FACE="Times New Roman" SIZE="3">OnOK</font>和<font FACE="Times New Roman" SIZE="3">OnCancel</font>函数并且在函数中调用<font FACE="Times New Roman" SIZE="3">DestroyWindow</font>来关闭对话框。</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">因为是用<font FACE="Times New Roman" SIZE="3">new</font>操作符构建非模态对话框对象，因此必须在对话框关闭后，用<font FACE="Times New Roman" SIZE="3">delete</font>操作符删除对话框对象。在屏幕上一个窗口被删除后，框架会调用<font FACE="Times New Roman" SIZE="3">CWnd::PostNcDestroy</font>，这是一个虚拟函数，程序可以在该函数中完成删除窗口对象的工作，具体代码如下<br>
+        <font FACE="Times New Roman" SIZE="3">void CModelessDialog::PostNcDestroy<br>
+        {<br>
+        delete this; //</font>删除对象本身<br>
+        <font FACE="Times New Roman" SIZE="3">}<br>
+        </font>这样，在删除屏幕上的对话框后，对话框对象将被自动删除。拥有者对象就不必显式的调用<font FACE="Times New Roman" SIZE="3">delete</font>来删除对话框对象了。</p>
+      </li>
+      <li><p ALIGN="JUSTIFY">必须有一个标志表明非模态对话框是否是打开的。这样做的原因是用户有可能在打开一个模态对话框的情况下，又一次选择打开命令。程序根据标志来决定是打开一个新的对话框，还是仅仅把原来打开的对话框激活。通常可以用拥有者窗口中的指向对话框对象的指针作为这种标志，当对话框关闭时，给该指针赋<font FACE="Times New Roman" SIZE="3">NULL</font>值，以表明对话框对象已不存在了。</p>
+      </li>
+    </ul>
+    <b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#8CDAFF">
+      <tr>
+        </b><td width="100%">提示：在</font><font FACE="Times New Roman" SIZE="3">C++</font><font SIZE="3">编程中，判断一个位于堆中的对象是否存在的常用方法是判断指向该对象的指针是否为空。这种机制要求程序员将指向该对象的指针初始化为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">值，在创建对象时将返回的地址赋给该指针，而在删除对象时将该指针置成</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">值。</font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">根据上面的分析，我们很容易把</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">程序中的登录数据对话框改成非模态对话框。这样做的好处在于如果用户在输入数据时发现编辑视图中有错误的数据，那么不必关闭对话框，就可以在编辑视图中进行修改。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">请读者按下面几步操作：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">在登录数据对话框模板的属性对话框的</font><font FACE="Times New Roman" SIZE="3">More Styles</font><font SIZE="3">页中选择</font><font FACE="Times New Roman" SIZE="3">Visible</font><font SIZE="3">项。</p>
+        <p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">RegisterView.h</font><font SIZE="3">头文件的</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">类的定义中加入<br>
+        </font><font FACE="Times New Roman" SIZE="3"><b>public:<br>
+        CRegisterDialog* m_pRegisterDlg;</p>
+        </b></font><font SIZE="3"><p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">RegisterView.h</font><font SIZE="3">头文件的头部加入对</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类的声明<br>
+        </font><font FACE="Times New Roman" SIZE="3"><b>class CRegisterDialog;<br>
+        </b></font><font SIZE="3">加入该行的原因是在</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">类中有一个</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类型的指针，因此必须保证</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类的声明出现在</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">之前，否则编译时将会出错。解决这个问题有两种办法，一种办法是保证在</font><font FACE="Times New Roman" SIZE="3">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">RegisterView.h</font><font SIZE="3">”语句之前有</font><font FACE="Times New Roman" SIZE="3">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">RegisterDialog.h</font><font SIZE="3">”语句，这种办法造成了一种依赖关系，增加了编译负担，不是很好；另一种办法是在</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">类的声明之前加上一个对</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">的声明来暂时“蒙蔽”编译器，这样在有</font><font FACE="Times New Roman" SIZE="3">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">RegisterView.h</font><font SIZE="3">”语句的模块中，除非要用到</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类，否则不用加入</font><font FACE="Times New Roman" SIZE="3">#include </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">RegisterDialog.h</font><font SIZE="3">”语句。</p>
+        <p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">RegisterDialog.cpp</font><font SIZE="3">文件的头部的</font><font FACE="Times New Roman" SIZE="3">#include</font><font SIZE="3">语句区的末尾添加下面两行<br>
+        </font><font FACE="Times New Roman" SIZE="3"><b>#include &quot;RegisterDoc.h&quot;<br>
+        #include &quot;RegisterView.h&quot;</p>
+        </b></font><font SIZE="3"><p ALIGN="JUSTIFY">利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类加入</font><font FACE="Times New Roman" SIZE="3">OnCancel</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">PostNcDestroy</font><font SIZE="3">成员函数。加入的方法是进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">后选择</font><font FACE="Times New Roman" SIZE="3">Message Maps</font><font SIZE="3">页，并在</font><font FACE="Times New Roman" SIZE="3">Class name</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">。然后，在</font><font FACE="Times New Roman" SIZE="3">Object IDs</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">IDCANCEL</font><font SIZE="3">后，在</font><font FACE="Times New Roman" SIZE="3">Messages</font><font SIZE="3">栏中双击</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">，这就创建了</font><font FACE="Times New Roman" SIZE="3">OnCancel</font><font SIZE="3">。要创建</font><font FACE="Times New Roman" SIZE="3">PostNcDestroy</font><font SIZE="3">，先在</font><font FACE="Times New Roman" SIZE="3">Object IDs</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">，再在</font><font FACE="Times New Roman" SIZE="3">Messages</font><font SIZE="3">栏中双击</font><font FACE="Times New Roman" SIZE="3">PostNcDestroy</font><font SIZE="3">即可。</p>
+        <p ALIGN="JUSTIFY">分别按清单</font><font FACE="Times New Roman" SIZE="3">5.10</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">5.11</font><font SIZE="3">，对</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">类和</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">类进行修改。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.10 CRegisterView</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRegisterView::CRegisterView()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: add construction code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pRegisterDlg=NULL; //</font><font SIZE="3">指针初始化为</font><font FACE="Times New Roman" SIZE="3">NULL</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterView::OnEditRegister() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command handler code here</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(m_pRegisterDlg)</p>
+    <p ALIGN="JUSTIFY">m_pRegisterDlg-&gt;SetActiveWindow(); //</font><font SIZE="3">激活对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">else</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">创建非模态对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_pRegisterDlg=new CRegisterDialog(this);</p>
+    <p ALIGN="JUSTIFY">m_pRegisterDlg-&gt;Create(IDD_REGISTER,this);</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY">}<br>
+    </p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">5.11 CRegisterDialog</font><font SIZE="3">的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterDialog::PostNcDestroy() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your specialized code here and/or call the base class</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">delete this; //</font><font SIZE="3">删除对话框对象</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CRegisterDialog::OnCancel() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add extra cleanup here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">((CRegisterView*)m_pParent)-&gt;m_pRegisterDlg=NULL;</p>
+    <p ALIGN="JUSTIFY">DestroyWindow(); //</font><font SIZE="3">删除对话框 </font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">CRegisterView::OnEditRegister</font><font SIZE="3">函数判断登录数据对话框是否已打开，若是，就激活对话框，否则，就创建该对话框。该函数中主要调用了下列函数：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CWnd::SetActiveWindow</font><font SIZE="3">激活对话框，该函数的声明为<br>
+        </font><font FACE="Times New Roman" SIZE="3">CWnd* SetActiveWindow( );<br>
+        </font><font SIZE="3">该函数使本窗口成为活动窗口，并返回原来活动的窗口。</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CDialog::Create</font><font SIZE="3">来显示对话框，该函数的声明为<br>
+        </font><font FACE="Times New Roman" SIZE="3">BOOL Create( UINT nIDTemplate, CWnd* 
+        pParentWnd = NULL );<br>
+        </font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nIDTemplate</font><font SIZE="3">是对话框模板的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">pParentWnd</font><font SIZE="3">指定了对话框的父窗口或拥有者。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当用户在登录数据对话框中点击“取消”按钮后，</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog::OnCancel</font><font SIZE="3">将被调用，在该函数中调用</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">来关闭对话框，并且将</font><font FACE="Times New Roman" SIZE="3">CRegisterView</font><font SIZE="3">的成员</font><font FACE="Times New Roman" SIZE="3">m_pRegisterDlg</font><font SIZE="3">置为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">以表明对话框被关闭了。调用</font><font FACE="Times New Roman" SIZE="3">DestroyWindow</font><font SIZE="3">导致了对</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog::PostNcDestroy</font><font SIZE="3">的调用，在该函数中用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">操作符删除了</font><font FACE="Times New Roman" SIZE="3">CRegisterDialog</font><font SIZE="3">对象本身。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">，现在登录数据对话框已经变成一个非模态对话框了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">5.4.2 
+    </font><font SIZE="3" color="#3973DE">窗口对象的自动清除</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">一个</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">窗口对象包括两方面的内容：一是窗口对象封装的窗口，即存放在</font><font FACE="Times New Roman" SIZE="3">m_hWnd</font><font SIZE="3">成员中的</font><font FACE="Times New Roman" SIZE="3">HWND</font><font SIZE="3">（窗口句柄），二是窗口对象本身是一个</font><font FACE="Times New Roman" SIZE="3">C++</font><font SIZE="3">对象。要删除一个</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">窗口对象，应该先删除窗口对象封装的窗口，然后删除窗口对象本身。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">删除窗口最直接方法是调用</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">::DestroyWindow</font><font SIZE="3">，前者封装了后者的功能。前者不仅会调用后者，而且会使成员</font><font FACE="Times New Roman" SIZE="3">m_hWnd</font><font SIZE="3">保存的</font><font FACE="Times New Roman" SIZE="3">HWND</font><font SIZE="3">无效</font><font FACE="Times New Roman" SIZE="3">(NULL)</font><font SIZE="3">。如果</font><font FACE="Times New Roman" SIZE="3">DestroyWindow</font><font SIZE="3">删除的是一个父窗口或拥有者窗口，则该函数会先自动删除所有的子窗口或被拥有者，然后再删除父窗口或拥有者。在一般情况下，在程序中不必直接调用</font><font FACE="Times New Roman" SIZE="3">DestroyWindow</font><font SIZE="3">来删除窗口，因为</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">会自动调用</font><font FACE="Times New Roman" SIZE="3">DestroyWindow</font><font SIZE="3">来删除窗口。例如，当用户退出应用程序时，会产生</font><font FACE="Times New Roman" SIZE="3">WM_CLOSE</font><font SIZE="3">消息，该消息会导致</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">自动调用</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">来删除主框架窗口，当用户在对话框内按了</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Cancel</font><font SIZE="3">按钮时，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">会自动调用</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">来删除对话框及其控件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">窗口对象本身的删除则根据对象创建方式的不同，分为两种情况。在</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">编程中，会使用大量的窗口对象，有些窗口对象以变量的形式嵌入在别的对象内或以局部变量的形式创建在堆栈上，有些则用</font><font FACE="Times New Roman" SIZE="3">new</font><font SIZE="3">操作符创建在堆中。对于一个以变量形式创建的窗口对象，程序员不必关心它的删除问题，因为该对象的生命期总是有限的，若该对象是某个对象的成员变量，它会随着父对象的消失而消失，若该对象是一个局部变量，那么它会在函数返回时被清除。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对于一个在堆中动态创建的窗口对象，其生命期却是任意长的。初学者在学习</font><font FACE="Times New Roman" SIZE="3">C++</font><font SIZE="3">编程时，对</font><font FACE="Times New Roman" SIZE="3">new</font><font SIZE="3">操作符的使用往往不太踏实，因为用</font><font FACE="Times New Roman" SIZE="3">new</font><font SIZE="3">在堆中创建对象，就不能忘记用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">删除对象。读者在学习</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的例程时，可能会产生这样的疑问，为什么有些程序用</font><font FACE="Times New Roman" SIZE="3">new</font><font SIZE="3">创建了一个窗口对象，却未显式的用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">来删除它呢？问题的答案就是有些</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">窗口对象具有自动清除的功能。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如前面讲述非模态对话框时所提到的，当调用</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">::DestroyWindow</font><font SIZE="3">删除一个窗口时，被删除窗口的</font><font FACE="Times New Roman" SIZE="3">PostNcDestroy</font><font SIZE="3">成员函数会被调用。缺省的</font><font FACE="Times New Roman" SIZE="3">PostNcDestroy</font><font SIZE="3">什么也不干，但有些</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">窗口类会覆盖该函数并在新版本的</font><font FACE="Times New Roman" SIZE="3">PostNcDestroy</font><font SIZE="3">中调用</font><font FACE="Times New Roman" SIZE="3">delete this</font><font SIZE="3">来删除对象，从而具有了自动清除的功能。此类窗口对象通常是用</font><font FACE="Times New Roman" SIZE="3">new</font><font SIZE="3">操作符创建在堆中的，但程序员不必操心用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">操作符去删除它们，因为一旦调用</font><font FACE="Times New Roman" SIZE="3">DestroyWindow</font><font SIZE="3">删除窗口，对应的窗口对象也会紧接着被删除。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">不具有自动清除功能的窗口类如下所示。这些窗口对象通常是以变量的形式创建的，无需自动清除功能。</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">所有标准的</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">控件类。</p>
+        <p ALIGN="JUSTIFY">从</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类直接派生出来的子窗口对象（如用户定制的控件）。</p>
+        <p ALIGN="JUSTIFY">切分窗口类</font><font FACE="Times New Roman" SIZE="3">CSplitterWnd</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">缺省的控制条类（包括工具条、状态条和对话条）。</p>
+        <p ALIGN="JUSTIFY">模态对话框类。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">具有自动清除功能的窗口类如下所示，这些窗口对象通常是在堆中创建的。</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">主框架窗口类（直接或间接从</font><font FACE="Times New Roman" SIZE="3">CFrameWnd</font><font SIZE="3">类派生）。</p>
+        <p ALIGN="JUSTIFY">视图类（直接或间接从</font><font FACE="Times New Roman" SIZE="3">CView</font><font SIZE="3">类派生）。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者在设计自己的派生窗口类时，可根据窗口对象的创建方法来决定是否将窗口类设计成可以自动清除的。例如，对于一个非模态对话框来说，其对象是创建在堆中的，因此应该具有自动清除功能。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">综上所述，对于</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">窗口类及其派生类来说，在程序中一般不必显式删除窗口对象。也就是说，既不必调用</font><font FACE="Times New Roman" SIZE="3">DestroyWindow</font><font SIZE="3">来删除窗口对象封装的窗口，也不必显式地用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">操作符来删除窗口对象本身。只要保证非自动清除的窗口对象是以变量的形式创建的，自动清除的窗口对象是在堆中创建的，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的运行机制就可以保证窗口对象的彻底删除。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果需要手工删除窗口对象，则应该先调用相应的函数（如</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">）删除窗口，然后再删除窗口对象．对于以变量形式创建的窗口对象，窗口对象的删除是框架自动完成的．对于在堆中动态创建了的非自动清除的窗口对象，必须在窗口被删除后，显式地调用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">来删除对象（一般在拥有者或父窗口的析构函数中进行）．对于具有自动清除功能的窗口对象，只需调用</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">即可删除窗口和窗口对象。注意，对于在堆中创建的窗口对象，不要在窗口还未关闭的情况下就用</font><font FACE="Times New Roman" SIZE="3">delete</font><font SIZE="3">操作符来删除窗口对象．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#A3BDEF">
+      <tr>
+        <td width="100%"></b>提示：在非模态对话框的</font><font FACE="Times New Roman" SIZE="3">OnCancel</font><font SIZE="3">函数中可以不调用</font><font FACE="Times New Roman" SIZE="3">CWnd::DestroyWindow</font><font SIZE="3">，取而代之的是调用</font><font FACE="Times New Roman" SIZE="3">CWnd::ShowWindow(SW_HIDE)</font><font SIZE="3">来隐藏对话框．在下次打开对话框时就不必调用</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">了，只需调用</font><font FACE="Times New Roman" SIZE="3">CWnd::ShowWindow(SW_SHOW)</font><font SIZE="3">来显示对话框．这样做的好处在于对话框中的数据可以保存下来，供以后使用．由于拥有者窗口在被关闭时会调用</font><font FACE="Times New Roman" SIZE="3">DestroyWindow</font><font SIZE="3">删除每一个所属窗口，故只要非模态对话框是自动清除的，程序员就不必担心对话框对象的删除问题．<b></b></font></td>
+      </tr>
+    </table>
+    </center></div><p ALIGN="JUSTIFY"><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap5_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/chap5_3.htm">上一页</a></td>
+        <td><p align="right"><a href="chap5_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap5/chap5_5.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

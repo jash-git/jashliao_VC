@@ -1,0 +1,203 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>4.2工具条的编程技术</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="4">4.2</font><font color="#3973DE" size="4">工具条的编程技术</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">本节将讨论一些与工具条有关的编程技术，主要包括命令处理、命令更新、按钮风格和工具条的隐藏</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">显示等技术。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">4.2.1</font><font SIZE="3" color="#3973DE">命令处理</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">要使菜单和工具条执行命令，光为它们指定命令</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">是不行的，必须为每个命令</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">定义命令处理函数。如果不为命令定义命令处理函数或下面将要提到的命令更新处理函数，则框架将自动使该命令对应的菜单项和按钮禁止（灰化），这就是</font><font FACE="Times New Roman" SIZE="3">4.1</font><font SIZE="3">节中的工具条按钮和菜单项灰化的原因。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">可以很方便地加入命令处理函数，请读者按以下步骤操作：</p>
+    <blockquote>
+      <blockquote>
+        <p>按</font><font FACE="Times New Roman" SIZE="3">Ctrl+W</font><font SIZE="3">键进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">。</p>
+        <p align="center"><img src="T4_6.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap4/T4_6.gif" alt="T4_6.tif (317964 bytes)" WIDTH="515" HEIGHT="387"></p>
+        <p align="center">图<font FACE="Times New Roman" SIZE="3">4.6 ClassWizard</font>对话框</p>
+        <p>如图</font><font FACE="Times New Roman" SIZE="3">4.6</font><font SIZE="3">所示，在</font><font FACE="Times New Roman" SIZE="3">Class name</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Object IDs</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">ID_RECORD_START</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Messages</font><font SIZE="3">栏中双击</font><font FACE="Times New Roman" SIZE="3">COMMAND</font><font SIZE="3">项，则</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">会弹出一个对话框询问命令处理函数的名字，使用其提供的函数名即可。按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮后，函数</font><font FACE="Times New Roman" SIZE="3">OnRecordStart</font><font SIZE="3">就被加入到了</font><font FACE="Times New Roman" SIZE="3">Member functions</font><font SIZE="3">栏中。</p>
+        <p>仿照第</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">步，为</font><font FACE="Times New Roman" SIZE="3">ID_RECORD_STOP</font><font SIZE="3">定义一个命令处理函数。</p>
+        <p>按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮关闭</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">对话框。这时读者会发现</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类多了两个成员函数，</font><font FACE="Times New Roman" SIZE="3">OnRecordStart</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OnRecordStop</font><font SIZE="3">。</p>
+        <p>现在要在这两个命令处理函数中插入相应的源代码以实现其功能。当然，这里不会真的实现开始录音和停止录音的功能。我们只是让这两个函数发出一个声音，象征性地表示功能的执行，具体代码如清单</font><font FACE="Times New Roman" SIZE="3">4.2</font><font SIZE="3">所示。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">4.2<b> OnRecordStart</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OnRecordStop</font><font SIZE="3">函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CMainFrame::OnRecordStart() </p>
+    <p>{</p>
+    <p>// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>MessageBeep((UINT)(-1));</b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnRecordStop() </p>
+    <p>{</p>
+    <p>// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>MessageBeep((UINT)(-1));</b></p>
+    <p>}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">，可以看到</font><font FACE="Times New Roman" SIZE="3">Start</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Stop</font><font SIZE="3">命令已经可以执行了。</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">4.2.2</font><font SIZE="3" color="#3973DE">命令更新</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">虽然</font><font FACE="Times New Roman" SIZE="3">Start</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Stop</font><font SIZE="3">命令可以执行了，但是还有一个不足之处。在没有开始录音之前，</font><font FACE="Times New Roman" SIZE="3">Stop</font><font SIZE="3">命令应该是禁止的，也即对应的菜单项和按钮应是禁止的，这是因为此时没有必要执行该命令。录音开始后，</font><font FACE="Times New Roman" SIZE="3">Stop</font><font SIZE="3">命令应该允许，而</font><font FACE="Times New Roman" SIZE="3">Start</font><font SIZE="3">命令则应变为禁止。我们可以利用</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的命令更新机制实现此逻辑功能。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在菜单下拉之前，或在工具条按钮处在空闲循环期间，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">会发一个更新命令，这将导致命令更新处理函数的调用。命令更新处理函数可以根据情况，使用户接口对象（主要指菜单项和工具条按钮）允许或禁止。定义命令更新处理函数的方法如下：</p>
+    <blockquote>
+      <blockquote>
+        <p>按</font><font FACE="Times New Roman" SIZE="3">Ctrl+W</font><font SIZE="3">键进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">。</p>
+        <p align="center"><img src="T4_7.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap4/T4_7.gif" alt="T4_7.tif (317964 bytes)" WIDTH="518" HEIGHT="389"></p>
+        <p align="center">图<font FACE="Times New Roman" SIZE="3">4.7 ClassWizard</font>对话框</p>
+        <p ALIGN="JUSTIFY">如图</font><font FACE="Times New Roman" SIZE="3">4.7</font><font SIZE="3">所示，在</font><font FACE="Times New Roman" SIZE="3">Class name</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Object IDs</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">ID_RECORD_START</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Messages</font><font SIZE="3">栏中双击</font><font FACE="Times New Roman" SIZE="3">UPDATE_COMMAND_UI</font><font SIZE="3">项，则</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">会弹出一个对话框询问命令更新处理函数的名字，使用其提供的函数名即可。按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮后，函数</font><font FACE="Times New Roman" SIZE="3">OnUpdateRecordStart</font><font SIZE="3">就被加入到了</font><font FACE="Times New Roman" SIZE="3">Member functions</font><font SIZE="3">栏中。</p>
+        <p>仿照步</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">，为</font><font FACE="Times New Roman" SIZE="3">ID_RECORD_STOP</font><font SIZE="3">定义一个命令更新处理函数。</p>
+        <p>按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮关闭</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">对话框。这时读者会发现</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类多了两个成员函数，</font><font FACE="Times New Roman" SIZE="3">OnUpdateRecordStart</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OnUpdateRecordStop</font><font SIZE="3">。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">命令更新处理函数有一个参数是</font><font FACE="Times New Roman" SIZE="3">CCmdUI</font><font SIZE="3">类的指针，通过调用</font><font FACE="Times New Roman" SIZE="3">CCmdUI</font><font SIZE="3">类的成员函数</font><font FACE="Times New Roman" SIZE="3">Enable(TRUE)</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Enable(FALSE)</font><font SIZE="3">可以使用户接口对象允许或禁止。需要给</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">加一个布尔型成员变量以表明是否正在录音，这样命令更新处理函数可根据这个变量来决定用户接口对象的状态。请读者在</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类内加入下面一行代码：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p>BOOL m_bWorking;</b></p>
+    <p></font><font SIZE="3">接下来请读者按清单</font><font FACE="Times New Roman" SIZE="3">4.3</font><font SIZE="3">进行修改。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">4.3 </font><font SIZE="3">命令更新处理</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CMainFrame::CMainFrame()</p>
+    <p>{</p>
+    <p>// TODO: add member initialization code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_bWorking=FALSE; </b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnRecordStart() </p>
+    <p>{</p>
+    <p>// TODO: Add your command handler code here</p>
+    <p>MessageBeep((UINT)(-1));</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_bWorking=TRUE;</b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnRecordStop() </p>
+    <p>{</p>
+    <p>// TODO: Add your command handler code here</p>
+    <p>MessageBeep((UINT)(-1));</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_bWorking=FALSE;</b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnUpdateRecordStart(CCmdUI* pCmdUI) </p>
+    <p>{</p>
+    <p>// TODO: Add your command update UI handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pCmdUI-&gt;Enable(!m_bWorking); </b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnUpdateRecordStop(CCmdUI* pCmdUI) </p>
+    <p>{</p>
+    <p>// TODO: Add your command update UI handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pCmdUI-&gt;Enable(m_bWorking) ;</b></p>
+    <p>}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_bWorking</font><font SIZE="3">的初值应是</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，对它的初始化工作在</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">的构造函数中完成。</font><font FACE="Times New Roman" SIZE="3">m_bWorking</font><font SIZE="3">的值在处理</font><font FACE="Times New Roman" SIZE="3">Start</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Stop</font><font SIZE="3">命令时会被更新以反映当前的状态。两个命令更新处理函数都调用了</font><font FACE="Times New Roman" SIZE="3">CCmdUI::Enable</font><font SIZE="3">，该函数根据</font><font FACE="Times New Roman" SIZE="3">m_bWorking</font><font SIZE="3">的值来更新命令接口对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">，现在</font><font FACE="Times New Roman" SIZE="3">Start</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Stop</font><font SIZE="3">命令的逻辑功能已经实现了。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>4.2.3</font><font SIZE="3">按钮风格</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">程序中，用户可以选择两种采样频率来录音。用户接口对象应该能反映出当前的采样频率。普通的工具条按钮在按下后会立刻弹起来，我们希望</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">程序的频率选择按钮具有单选按钮的风格，即当用户选择了一个采样频率时，该采样频率对应的按钮一直处于按下的状态，而另一个频率选择按钮应处于弹起状态。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">我们可以利用</font><font FACE="Times New Roman" SIZE="3">CCmdUI::SetCheck</font><font SIZE="3">函数来实现这一功能，在命令更新函数中调用</font><font FACE="Times New Roman" SIZE="3">CCmdUI::SetCheck(TRUE)</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">CCmdUI::SetCheck(FALSE)</font><font SIZE="3">可将用户接口对象设定为选中或不选中状态，当一个用户接口对象被选中时，相应的工具按钮会处于按下的状态，并且相应的菜单项的前面会加上一个选中标记。这里需要给</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类加一个布尔型成员变量以表明当前的采样频率。请读者在</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类内加入下面一行代码：</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p>BOOL m_bHighQuality;</b></p>
+    <p></font><font SIZE="3">接下来请读者按清单</font><font FACE="Times New Roman" SIZE="3">4.4</font><font SIZE="3">进行修改。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">4.4 </b></p>
+    <p>CMainFrame::CMainFrame()</p>
+    <p>{</p>
+    <p>// TODO: add member initialization code here</p>
+    <p>m_bWorking=FALSE; </p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_bHighQuality=TRUE;</b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnHighQuality() </p>
+    <p>{</p>
+    <p>// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_bHighQuality=TRUE; </b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnLowQuality() </p>
+    <p>{</p>
+    <p>// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_bHighQuality=FALSE; </b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnUpdateHighQuality(CCmdUI* pCmdUI) </p>
+    <p>{</p>
+    <p>// TODO: Add your command update UI handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pCmdUI-&gt;SetCheck(m_bHighQuality); </b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnUpdateLowQuality(CCmdUI* pCmdUI) </p>
+    <p>{</p>
+    <p>// TODO: Add your command update UI handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pCmdUI-&gt;SetCheck(!m_bHighQuality); </b></p>
+    <p>}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_bHighQuality</font><font SIZE="3">的初值是</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，即缺省时是高频采样，对它的初始化工作在</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">的构造函数中完成。</font><font FACE="Times New Roman" SIZE="3">m_bHighQuality</font><font SIZE="3">的值在处理</font><font FACE="Times New Roman" SIZE="3">High quality</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Low quality</font><font SIZE="3">命令时会被更新以反映当前的状态。两个命令更新处理函数都调用了</font><font FACE="Times New Roman" SIZE="3">CCmdUI::SetCheck</font><font SIZE="3">，该函数根据</font><font FACE="Times New Roman" SIZE="3">m_bHighQuality</font><font SIZE="3">的值来更新命令接口对象，从而使工具条按钮具有了单选按钮的风格。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">，读者可以看到具有新风格的工具条按钮。当选择采样频率时，相应的菜单项前会出现一个选中标记，相应的工具条按钮会被按下。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>4.2.4</font><font SIZE="3">工具条的隐藏</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">显示</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">读者可能已经试过了</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">程序的</font><font FACE="Times New Roman" SIZE="3">View</font><font SIZE="3">菜单的功能。通过该菜单用户可以隐藏</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">显示工具条和状态栏，这个功能是由</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">自动实现的。由于第二个工具条是手工建立的，因此它不会自动具备<b>隐藏</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">显示功能。</b>但我们可以通过编程来实现第二个工具条的隐藏</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">显示：</p>
+    <blockquote>
+      <blockquote>
+        <p>打开</font><font FACE="Times New Roman" SIZE="3">IDR_MAINFRAME</font><font SIZE="3">菜单资源</p>
+        <p>在</font><font FACE="Times New Roman" SIZE="3">View</font><font SIZE="3">菜单中加入一个名为</font><font FACE="Times New Roman" SIZE="3">Toolbar1</font><font SIZE="3">的菜单项，指定其</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">ID_VIEW_TOOLBAR1,</font><font SIZE="3">并在</font><font FACE="Times New Roman" SIZE="3">Prompt</font><font SIZE="3">栏中输入</font><font FACE="Times New Roman" SIZE="3">Show or hide the toolbar1\nToggle ToolBar1</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">按</font><font FACE="Times New Roman" SIZE="3">Ctrl+W</font><font SIZE="3">键进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">。在</font><font FACE="Times New Roman" SIZE="3">Class name</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Object IDs</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">ID_VIEW_TOOLBAR1</font><font SIZE="3">，并为该命令</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">定义命令处理函数</font><font FACE="Times New Roman" SIZE="3">OnViewToolbar1</font><font SIZE="3">和命令更新处理函数</font><font FACE="Times New Roman" SIZE="3">OnUpdateViewToolbar1</font><font SIZE="3">。</p>
+        <p>按清单</font><font FACE="Times New Roman" SIZE="3">4.5</font><font SIZE="3">修改程序。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">4.5 </font><font SIZE="3">显示</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">隐藏工具条</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CMainFrame::OnViewToolbar1() </p>
+    <p>{</p>
+    <p>// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_wndToolBar1.ShowWindow(m_wndToolBar1.IsWindowVisible()?</p>
+    <p>SW_HIDE:SW_SHOW); </p>
+    <p>RecalcLayout();</b></p>
+    <p>}</p>
+    <p>void CMainFrame::OnUpdateViewToolbar1(CCmdUI* pCmdUI) </p>
+    <p>{</p>
+    <p>// TODO: Add your command update UI handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pCmdUI-&gt;SetCheck(m_wndToolBar1.IsWindowVisible()); </b></p>
+    <p>}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">调用</font><font FACE="Times New Roman" SIZE="3">CWnd::ShowWindow(SW_SHOW)</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">CWnd::ShowWindow(SW_HIDE)</font><font SIZE="3">可以显示或隐藏窗口。由于工具条也是窗口，</font><font FACE="Times New Roman" SIZE="3">CToolBar</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的继承类，故该函数也是</font><font FACE="Times New Roman" SIZE="3">CToolBar</font><font SIZE="3">的成员。在命令处理函数</font><font FACE="Times New Roman" SIZE="3">OnViewToolbar1</font><font SIZE="3">中，我们调用</font><font FACE="Times New Roman" SIZE="3">CToolBar::ShowWindow</font><font SIZE="3">来显示</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">隐藏工具条，在调用时会利用</font><font FACE="Times New Roman" SIZE="3">CWnd::IsWindowVisible</font><font SIZE="3">函数作出判断，如果工具条是可见的，就传给</font><font FACE="Times New Roman" SIZE="3">ShowWindow</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">SW_HIDE</font><font SIZE="3">参数以隐藏工具条，否则，就传</font><font FACE="Times New Roman" SIZE="3">SW_SHOW</font><font SIZE="3">参数显示工具条。接着要调用</font><font FACE="Times New Roman" SIZE="3">CMainFrame::RecalcLayout</font><font SIZE="3">以重新调整主框架窗口的布局。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">命令更新处理函数</font><font FACE="Times New Roman" SIZE="3">OnUpdateViewToolbar1</font><font SIZE="3">会根据工具条是否可见使</font><font FACE="Times New Roman" SIZE="3">View-&gt;Toolbar1</font><font SIZE="3">菜单项选中或不选中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">，现在</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">程序已变得很有趣了。至此，读者已经掌握了工具条的一些实用编程技术。</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    </b></font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap4_1.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap4/chap4_1.htm">上一页</a></td>
+        <td><p align="right"><a href="chap4_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap4/chap4_3.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

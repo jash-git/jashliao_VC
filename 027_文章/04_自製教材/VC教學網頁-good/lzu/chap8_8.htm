@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>8.8 防止应用程序运行时自动创建空白窗口</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="4">8.8 </font><font SIZE="4" color="#3973DE">防止应用程序运行时自动创建空白窗口</font><font FACE="Times New Roman" SIZE="4"></p>
+    </font><font SIZE="3"><p>在前面的MDI程序中，当应用程序启动时，都会自动创建一个空白窗口。但有时我们并不希望创建这样的空白窗口。比如，对于一个文件浏览器来说，空白窗口就没有什么意义。</p>
+    <p>要防止空白窗口的创建，首先就要明白这个窗口是如何被创建的。在InitInstance（）中，有一个命令行的执行过程，当命令行上没有参数时，函数ParseCommandLine(cmdInfo)会将CCommandLineInfo::m_nShellCommand成员置为CCommandLineInfo::FileNew，这将导致ProcessShellCommand调用CWinApp::OnFileNew成员函数。要想防止程序开始时就调用OnFileNew，解决方法之一是去掉与命令行有关的代码，但是这样就没有了命令行处理功能。另一种方法是在ProcessShellCommand调用之前加一句cmdInfo.m_nShellCommand 
+    =CCommandLineInfo::FileNothing。具体代码见清单8.12。</p>
+    <b><p>清单8.12 不自动创建空白文档窗口的InitInstance成员函数定义</b></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BOOL CDrawApp::InitInstance()</p>
+    <p>{</font><font FACE="Times New Roman" SIZE="4"><b></p>
+    <p></b></font><font FACE="Times New Roman" SIZE="3">// Enable DDE Execute open</p>
+    <p>EnableShellOpen();</p>
+    <p>RegisterShellFileTypes(TRUE);</p>
+    <p>// Parse command line for standard shell commands, DDE, file open</p>
+    <p>CCommandLineInfo cmdInfo;</p>
+    <p>// Alter behaviour to not open window immediately</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>cmdInfo.m_nShellCommand = CCommandLineInfo::FileNothing;</b></p>
+    <p>ParseCommandLine(cmdInfo);</p>
+    <p>// Dispatch commands specified on the command line</p>
+    <p>if (!ProcessShellCommand(cmdInfo))</p>
+    <p>return FALSE;</font><font FACE="Times New Roman" SIZE="4"><b></p>
+    <p>//</b></font><font FACE="Times New Roman" SIZE="3">......</p>
+    <p>}</font><font SIZE="4"><b></p>
+    </b></font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap8_7.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap8/chap8_7.htm">上一页</a></td>
+        <td><p align="right"><a href="chap8_9.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap8/chap8_9.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

@@ -1,0 +1,954 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab720{\fonttbl{\f0\fswiss MS Sans Serif;}{\f1\froman\fcharset2 Symbol;}{\f2\fmodern Courier New;}{\f3\froman Times New Roman;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033\pard\plain\f2\fs20 Chapter 2 Menu
+\par 
+\par Menu is very important for all types of applications, it provides a primary way of letting user execute application commands. If we create applications using Application Wizard, mainframe menus will be implemented automatically for all SDI and MDI applications. For dialog-based applications, system menus will also be implemented, which can be used to execute system commands (Move the application window, resize it, minimize, maximize and close the application). Some user-friendly applications also include right-click pop up menus.
+\par 
+\par This chapter discusses in-depth topics on using and customizing menus, which include: how to customize the behavior of standard menus, how to make change to standard menu interface, how to implement owner-draw menu, how to create right-click menu, how to customize the system menu and implement message mapping for system menu items. 
+\par 
+\par 2.1\tab Message WM_COMMAND and UPDATE_COMMAND_UI
+\par 
+\par When creating an SDI application using Application Wizard, we will have a default menu added to the application. This menu has four sub-menus: File, Edit, View and Help, which contain the most commonly used commands for a typical application. At the beginning some of these commands are functional (such as View | Tool bar and File | Exit) but some are disabled (such as Edit | Copy). We have to add our own code in order to make them usable.
+\par 
+\par To activate a command, we need to add message handlers for it. For a general Windows( application, we need to pay attention to two messages: WM_COMMAND and UPDATE_COMMOND_UI.
+\par 
+\par Sample 2.1\\Menu demonstrates how to handle two types of messages through simulating a cut, copy and paste procedure. Here, we make use of three default menu commands added by the Application Wizard: View | Cut, View | Copy, View | Paste. The application will enable View | Paste menu item only after View | Cut or View | Copy has been executed at least once (For demonstration purpose, command View | Copy and View | Cut do not actually copy data to the clipboard). Also, item View | Paste will be changed dynamically indicating if the newly copied data has been pasted.
+\par 
+\par The sample is started by generating standard SDI application using Application Wizard. The project is named "Menu" and four standard classes are CMenuApp, CMainFrame, CMenuDoc, and CMenuView respectively. All other settings are default. After compiling and executing the skeleton application, we will see a standard SDI application with a menu implemented in the mainframe window. By examining this menu, we can find that it has the following structure:
+\par 
+\par File
+\par New...
+\par Open...
+\par Save...
+\par Save As...
+\par Separator
+\par Recent File
+\par Separator
+\par Exit
+\par Edit
+\par Undo
+\par Separator
+\par Cut
+\par Copy
+\par Paste
+\par View
+\par Toolbar
+\par Status Bar
+\par Help
+\par About...
+\par 
+\par By clicking "Edit" sub-menu, we will see that all the commands contained there are disabled. If we edit the menu resource and add additional commands, they will not become functional until we add message handlers for them.
+\par 
+\par Handling WM_COMMAND Command
+\par 
+\par The first step of enabling a menu command is to implement a WM_COMMAND message handler for it. This is exactly the same with what we did for a tool bar command in Chapter 1. Just as buttons contained in a tool bar, each menu command has a unique command ID. When the user clicks the menu item, the system detects the mouse events and sends a WM_COMMAND message to the application, with the command ID passed through WPARAM parameter. In MFC, as the application receives this message, a corresponding message handler will be called to execute the command. Again, the message mapping should be implemented by using ON_COMMAND macro.
+\par 
+\par The message mapping could be implemented either manually or through using Class Wizard. This procedure is also the same with adding message handlers for tool bar buttons as we did in Chapter 1. If we use Class Wizard, after invoking it, first we need to go to "Messages Maps" page. Then we need to select a class name from "Class name" combo box (In the sample, all the commands are handled in the document class, so we need to select "CMenuDoc" if it is not selected). Next, we need to find the command ID to which we want to add handlers in "Object IDs" window, and highlight "Command" item in "Messages" window. Now click "Add Function" button and confirm the member function name. After this, a new member function and the corresponding message mapping macros will be added to the application.
+\par 
+\par There is no difference between adding message handlers manually and adding them using Class Wizard. However, doing it manually will let us understand message mapping mechanism, which will make it easier for us to further customize the menu behavior.
+\par 
+\par In the sample application we will implement commands View | Cut, View | Copy and View |Paste. So at first WM_COMMAND type message handlers need to be added for commands ID_EDIT_COPY, ID_EDIT_CUT and ID_EDIT_PASTE in CMenuDoc class. The following shows the steps of adding them through using Class Wizard:
+\par 
+\par 1)  In file "MenuDoc.h", three member functions are declared in the class, they will be used to handle ID_EDIT_COPY, ID_EDIT_CUT and ID_EDIT_PASTE command execution:
+\par 
+\par class CMenuDoc : public CDocument
+\par \{
+\par ......
+\par     //\{\{AFX_MSG(CMenuDoc)
+\par     afx_msg void OnEditCopy();
+\par     afx_msg void OnEditCut();
+\par     afx_msg void OnEditPaste();
+\par     //\}\}AFX_MSG
+\par ......
+\par \}
+\par 
+\par 2)  In file "MenuDoc.cpp", message mapping macros are added to associate the member functions with the command IDs:
+\par 
+\par BEGIN_MESSAGE_MAP(CMenuDoc, CDocument)
+\par     //\{\{AFX_MSG_MAP(CMenuDoc)
+\par     ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
+\par     ON_COMMAND(ID_EDIT_CUT, OnEditCut)
+\par     ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
+\par     //\}\}AFX_MSG_MAP
+\par END_MESSAGE_MAP()
+\par 
+\par 3)  Three blank message handlers are added in file "MenuDoc.cpp":
+\par 
+\par void CMenuDoc::OnEditCopy() 
+\par \{
+\par \}
+\par 
+\par void CMenuDoc::OnEditCut() 
+\par \{
+\par \}
+\par 
+\par void CMenuDoc::OnEditPaste() 
+\par \{
+\par \}
+\par 
+\par When first added, these functions are empty. We have to add our own code in order to support command execution.
+\par 
+\par By compiling and executing the sample application at this point, we will see that Edit | Copy, Edit | Cut and Edit | Paste menu items are all enabled. This is because three blank message handlers have just been added.
+\par 
+\par Enabling & Disabling a Command
+\par 
+\par The sample application will not actually cut, copy or paste data. The three commands will be implemented just to simulate data copy and paste procedure. Before going on to implement it, we need to make following assumptions.
+\par 
+\par Suppose the application supports only internal data copy, cut and paste (it does not accept data from other applications through using system clipboard). Before command Edit | Copy or Edit | Cut is executed, there should be no data stored in the "local clipboard". Therefore, if we execute Edit | Paste command at this time, there will be an error. To avoid this, we need to disable Edit | Paste command before data has been copied to the clipboard.
+\par 
+\par The state of menu item can be set thought handling UPDATE_COMMAND_UI message. The parameter comes along with this message is a pointer to CCmdUI type object, which can be used to enable or disable a command, set or remove check for a menu item. Handling this message for menu items is the same with that of tool bar controls.
+\par 
+\par So it is easy to find out a mechanism for updating command Edit | Paste: we need to declare a Boolean type variable in class CMenuDoc and initialize it to FALSE. We can set this flag to TRUE when Edit | Cut or Edit | Copy command is executed, and enable Edit | Paste command only if this flag is set.
+\par 
+\par In the sample application, this Boolean variable is CMenuDoc::m_bPasteAvailable. The following code fragment shows how it is declared and initialized in the constructor of class CMenuDoc:
+\par 
+\par class CMenuDoc : public CDocument
+\par \{
+\par ......
+\par protected:
+\par     BOOL m_bPasteAvailable;
+\par ......
+\par \}
+\par 
+\par CMenuDoc::CMenuDoc()
+\par \{
+\par     m_bPasteAvailable=FALSE;
+\par \}
+\par 
+\par The value of CmenuDoc::m_bPasteAvailable is set to TRUE when user executes either Edit | Copy or Edit | Cut command:
+\par 
+\par void CMenuDoc::OnEditCopy() 
+\par \{
+\par     m_bPasteAvailable=TRUE;
+\par \}
+\par 
+\par void CMenuDoc::OnEditCut() 
+\par \{
+\par     m_bPasteAvailable=TRUE;
+\par \}
+\par 
+\par Now we will use CMenuDoc::m_bPasteAvailable to enable Edit | Paste menu item when it becomes TRUE. In MFC, menu items are updated through handling UPDATE_COMMAND_UI messages. When the state of a menu command needs to be updated, UPDATE_COMMAND_UI message will be automatically sent to the application. If there exists a corresponding message handler, it will be called for updating the corresponding menu item. Otherwise, the menu item will remain unchanged.
+\par 
+\par Adding an UPDATE_COMMAND_UI message handler is the same with adding a WM_COMMAND message handler. After invoking the Class Wizard, we need to select the class name, the command ID, and highlight "UPDATE_COMMAND_UI" instead of "WM_COMMAND" in "Messages" window. Finally, we need to click button "Add Function".
+\par 
+\par After adding the message handler for ID_EDIT_PASTE command, we will have a new member function declared in class CMenuDoc, and a new message mapping macro added to the class implementation file. In addition, we will have an empty function that could be modified to implement message handling:
+\par 
+\par void CMenuDoc::OnUpdateEditPaste(CCmdUI *pCmdUI) 
+\par \{
+\par \}
+\par 
+\par The only parameter to this function is a pointer to CCmdUI type object. Here, class CCmdUI has several member functions, which can be used to set the state of the menu item. To enable or disable the menu item, we can call function CCmdUI::Enable(...). The function has only one Boolean type parameter, we can pass TRUE to enable the menu item and pass FALSE to disable it. Because the state of Edit | Paste command depends upon variable CMenuDoc::m_bPasteAvailable, we can use it to set the state of menu item:
+\par 
+\par void CMenuDoc::OnUpdateEditPaste(CCmdUI* pCmdUI) 
+\par \{
+\par     pCmdUI->Enable(m_bPasteAvailable);
+\par \}
+\par 
+\par By compiling and executing the sample application at this point, we will see that Edit | Paste command is disabled at the beginning, and after we execute either Edit | Cut or Edit | Copy command, it will be enabled.
+\par 
+\par Changing Menu Text
+\par 
+\par We will go on to add more features to the mainframe menu. Class CCmdUI has another useful member function CCmdUI::SetText(...), which allows us to change the text of a menu item dynamically. By using this function, we can change the text of Edit | Paste menu item so that it can convey more information to the user. For example, we could set text to "Do not paste" when data is not available, and to "Please paste" when data is available. To add this feature, all we need is to call CCmdUI::SetText(...) in the above message handler as follows:
+\par 
+\par void CMenuDoc::OnUpdateEditPaste(CCmdUI* pCmdUI) 
+\par \{
+\par     pCmdUI->Enable(m_bPasteAvailable);
+\par     pCmdUI->SetText(m_bPasteAvailable ? "Please &paste":"Do not &paste");
+\par \}
+\par 
+\par Checking a Menu Item
+\par 
+\par Let's further add some more interesting features to the menu commands. With the current implementation we do not know if the data has been "Pasted" after it is "cut" or "copied" to the "clipboard". We can indicate the data status by putting a check mark on the menu item so the user knows if the current "data" in the "clipboard" has been pasted (after the user executes View | Paste command). This check will be removed when either "cut" or "copy" command is executed.
+\par 
+\par Similar to tool bar, we can call function CCmdUI::SetCheck(...) to set check for a menu item. The difference between the results of this function is the changing on the interface: while setting check for a button will make it recess, setting check for a menu item will put a check mark at the left side of the menu item.
+\par 
+\par We need a new Boolean type variable to indicate the status of "data". In the sample application, this variable is CMenuDoc::m_bDataPasted, which is initialized to FALSE in the constructor. The following functions show how its value is changed under different situations:
+\par 
+\par void CMenuDoc::OnEditCopy() 
+\par \{
+\par     m_bPasteAvailable=TRUE;
+\par     m_bDataPasted=FALSE;
+\par \}
+\par 
+\par void CMenuDoc::OnEditCut() 
+\par \{
+\par     m_bPasteAvailable=TRUE;
+\par     m_bDataPasted=FALSE;
+\par \}
+\par 
+\par void CMenuDoc::OnEditPaste() 
+\par \{
+\par     m_bDataPasted=TRUE;\tab 
+\par \}
+\par 
+\par In function OnUpdateEditPaste(...), the menu item is checked only when flag CMenuDoc:: m_bDataPasted is TRUE:
+\par 
+\par void CMenuDoc::OnUpdateEditPaste(CCmdUI* pCmdUI) 
+\par \{
+\par     pCmdUI->Enable(m_bPasteAvailable);
+\par     pCmdUI->SetCheck(m_bDataPasted);
+\par     pCmdUI->SetText
+\par     (
+\par         m_bPasteAvailable ? 
+\par         (
+\par             m_bDataPasted ? "Data &pasted":"Please &paste"):
+\par             "Do not &paste"
+\par         );
+\par \}
+\par 
+\par The text of the menu item is also change to "Data pasted" when the menu item is checked.
+\par 
+\par The last thing need to be mentioned here is another member function of class CCmdUI: CCmdUI:: SetRadio(...). Like CCmdUI::SetCheck(...), this function will put a check mark on a menu item. The difference between two functions is that CCmdUI::SetRadio(...) makes menu items behave like radio buttons: when this function is called to check one item, all other items in the same group will be unchecked automatically. Calling function CCmdUI::SetCheck(...) does not affect other menu items.
+\par 
+\par 2.2\tab Right Click Pop Up Menu
+\par 
+\par In Windows 95, right-click menu becomes a standard user interface. We can right click on the desktop, task bar, or other types of windows to bring up a menu that contains the most commonly used commands. In this section, we will discuss how to add right-click menu to our application.
+\par 
+\par Adding Menu Resource
+\par 
+\par Sample 2.2\\Menu demonstrates right-click menu implementation. It is a standard SDI application generated by Application Wizard with all the default settings. This is the same with the previous sample. We can also start from sample 2.1\\Menu and add the new features that will be discussed below.
+\par 
+\par Like tool bar and dialog bar, a menu can be implemented starting from building menu resource. To add a menu resource, We can execute Insert | Resource command in Developer Studio, select "menu" resource type from the popped up dialog box, and click button "New". Now a new menu resource with a default ID will be added to the application. In the sample, this default ID is changed to IDR_MENU_POPUP, and a sub-menu with four menu items is created. The newly created menu items are "Pop Up Item 1", "Pop Up Item 2", "Pop Up Item 3" and "Pop Up Item 4", whose command IDs are ID__POPUPITEM1, ID__POPUPITEM2, ID__POPUPITEM3 and ID__POPUPITEM4 respectively (Figure 2-1). 
+\par 
+\par Trapping Right Button Clicking Event
+\par 
+\par The first step to implement a right-click menu is to detect mouse's right clicking event, which is a standard Windows( event, and its corresponding message is WM_RBUTTONDOWN. To trap this message, we need to implement message handler.
+\par 
+\par When we click mouse's right button on a window, message WM_RBUTTONDOWN will be sent to that window. This window could be any type: mainframe window, client window, dialog box, or even button.
+\par 
+\par We need to handle this message in the class that implements the window. For example, if we want to handle right click in a dialog box, we need to add the message handler in a CDialog derived class, if we want to handle it in the client window of an SDI application, we need to add the message handler in CView derived class.
+\par 
+\par In our sample, right-clicking menu is implemented in the client window. So we need to trap message WM_RBUTTONDOWN in class CMenuView.
+\par 
+\par Adding message handler for message WM_RBUTTONDOWN is similar to that of WM_COMMAND: first we need to declare an afx_msg type member function OnRButtonDown(...), then use ON_RBUTTONDOWN macro to map the message to this function. Finally, we need to implement the message handler. Please note that OnRButtonDow(...) is the standard function name that will be automatically associated with message WM_RBUTTONDOWN. When using ON_RBUTTONDOWN macro, we do not need to specify function name.
+\par 
+\par The above-mentioned procedure can be implemented through using Class Wizard as follows: after invoking the Class Wizard, select class CMenuView, which is the class used to implement the client window. There are a lot of virtual functions and messages listed in the "Messages" window. By scrolling the vertical scroll bar, it is easy to find message WM_RBUTTONDOWN. Now highligh this message and click "Add function" button. This will cause a new member function OnRButtonDown to be added to class CMenuView, and message mapping macros to be added to the implementation file (See Figure 2-2).
+\par 
+\par In the sample, the newly added function is CMenuView::OnRButtonDown(...), which needs to be modified to implement right-click menu. By default, this function does nothing but calling the message handler implemented by the base class:
+\par 
+\par void CMenuView::OnRButtonDown(UINT nFlags, CPoint point) 
+\par \{
+\par     CView::OnRButtonDown(nFlags, point);
+\par \}
+\par 
+\par Using Class CMenu
+\par 
+\par We need to modify the above function in order to implement right-click pop up menu. In MFC, there is a class designed for menu implementation: CMenu, which contains some member functions that allow us to create menu dynamically, track and update menu items, and destroy the menu.
+\par 
+\par The first function we will use is CMenu::LoadMenu(...), it allows us to load a menu resource and use it later. This function has two different versions, one allows us to load a menu resource with a numerical ID, and the other allows us to load a resource with a string ID:
+\par 
+\par BOOL LoadMenu(LPCTSTR lpszResourceName);
+\par BOOL LoadMenu(UINT nIDResource);
+\par 
+\par In the sample application, the menu resource is stored by a numerical ID (IDR_MENU_POPUP). We can also assign a string ID to it by inputting a quoted text in the edit box labeled with "ID".
+\par We need to use CMenu to declare a variable that will be used to load the menu resource. Normally the right-click menu will be initiated after right-clicking event has been detected. Then the mouse's activities will be tracked by the menu until the user executes one of the menu commands or dismisses the menu. Because all these things can be handled within the message handler, the variable used to implement menu can be declared as a local variable. In the sample, the menu resource is loaded as follows:
+\par 
+\par void CMenuView::OnRButtonDown(UINT nFlags, CPoint point) 
+\par \{
+\par     CMenu menu;
+\par \tab \tab 
+\par     menu.LoadMenu(IDR_MENU_POPUP);
+\par     CView::OnRButtonDown(nFlags, point);
+\par \}
+\par 
+\par Generally, one menu contains several sub-menus, and each sub-menu contains several menu items. For right click menu, only one sub-menu (instead of whole menu) will be implemented each time the user clicks mouse's right button. Because of this, in the sample application, menu IDR_MENU_POPUP contains only one sub-menu. To obtain a pointer to the sub-menu, we can call function CMenu::GetSubMenu(...), which has the following format:
+\par 
+\par CMenu *Cmenu::GetSubMenu(int nPos) const;
+\par 
+\par Parameter nPos indicates which sub-menu we are trying to obtain. In a menu resource, the left-most sub-menu is indexed 0, next sub-menu indexed 1, and so on. In the sample application, sub-menu that contains items "Pop Up Item 1"... is located at position 0.
+\par This function returns a CMenu type pointer that could be used to further access each item contained in the sub-menu. Before the menu is displayed, we may want to set the state of each menu item: we can enable, disable, set check or change text for a menu item. Please note that for a right-click menu, we do not need to handle message UPDATE_COMMAND_UI in order to set the states of menu items. Instead, there exist two member functions that can be used:
+\par 
+\par UINT CMenu::EnableMenuItem(UINT nIDEnableItem, UINT nEnable);
+\par UINT CMenu::CheckMenuItem(UINT nIDCheckItem, UINT nCheck);
+\par 
+\par The above two functions can be used to enable/disable, set/remove check for a menu item. When calling the two functions, we can reference a menu item by using either its command ID or its position. Normally we can pass a command ID to nIDEnableItem or nIDCheckItem parameter. If we want to reference an item by its position (0 based, for example, in the sample application, ID__POPUPITEM1's position is 0, and ID__POPUPITEM2's position is 1...), we need to set MF_BYPOSITION bit of nEnable or nCheck parameter.
+\par 
+\par The menu can be activated and tracked by calling function CMenu::TrackPopupMenu(...):
+\par 
+\par BOOL CMenu::TrackPopupMenu
+\par (
+\par     UINT nFlags, int x, int y, CWnd* pWnd, LPCRECT lpRect=NULL
+\par );
+\par 
+\par This function has 5 parameters. The first parameter nFlags lets us set styles of the menu (Where should the menu be put, which mouse button will be tracked). The most commonly used combination is TPM_LEFTALIGN | TPM_RIGHTBUTTON, which aligns menu's left border according to parameter x, and tracks mouse's right button activity (because we are implementing a right-click menu). The second parameter y decides the vertical position of the menu's top border. Please note that when message WM_RBUTTONDOWN is received, position of current mouse cursor will be passed to one of the parameters of function OnRButtonDown(...) as a CPoint type object. To make right-click menu easy to use, we can pass this position to function CMenu::TrackPopupMenu(...), which will create a pop up menu at the position of current mouse cursor. The fourth parameter is a CWnd type pointer, which indicates which window owns the pop up menu. In the sample, because the menu is implemented in the member function of class CMenuView, we can use this pointer to indicate the menu owner. The final parameter discribes a rectangle within which the user can click the mouse without dismissing the pop up menu. We could set it to NULL, in which case the menu will be dismissed if the user clicks outside the pop up menu.
+\par 
+\par Implementing Right-Click Menu
+\par 
+\par Now we can implement WM_RBUTTONDOWN message handler, load the menu resource and create right-click menu in the member function:
+\par 
+\par void CMenuView::OnRButtonDown(UINT nFlags, CPoint point) 
+\par \{
+\par     CMenu menu;
+\par     CMenu *ptrMenu;
+\par \tab \tab 
+\par     menu.LoadMenu(IDR_MENU_POPUP);
+\par     ptrMenu=menu.GetSubMenu(0);
+\par     ptrMenu->EnableMenuItem(ID__POPUPITEM1, MF_GRAYED);
+\par     ptrMenu->EnableMenuItem(ID__POPUPITEM2, MF_ENABLED);
+\par     ptrMenu->CheckMenuItem(ID__POPUPITEM3, MF_UNCHECKED);
+\par     ptrMenu->CheckMenuItem(ID__POPUPITEM4, MF_CHECKED);
+\par     ClientToScreen(&point);
+\par     ptrMenu->TrackPopupMenu
+\par     (
+\par         TPM_LEFTALIGN|TPM_RIGHTBUTTON,
+\par         point.x,
+\par         point.y,
+\par         this,
+\par         NULL
+\par     );
+\par     CView::OnRButtonDown(nFlags, point);
+\par \}
+\par 
+\par After implementing the right-click menu, we still need to call function CView::OnRButtonDown(...). This is to make sure that the application does not lose any default property implemented by class CView.
+\par 
+\par In the above function, before CMenu::TrackPopupMenu(...) is called, function CWnd::ClientToScreen() is used to convert the coordinates of a point from the client window to the desktop window (the whole screen). When point parameter is passed to CMenuView::OnRButtonDown(...), it is assumed to be measured in the coordinates system of the client window, which means (0, 0) is located at the upper-left corner of the client window. When we implement a menu, function CMenu::TrackPopupMenu(...) requires coordinates to be measured in the desktop window system, which means (0, 0) is located at the upper-left corner of the screen. Function CWnd::ClientToScreen(...) can convert the coordinates of a point between the two systems. This function is frequently used when we need to convert coordinates from one window to another.
+\par 
+\par By compiling and executing the application at this point, we will see that the right-click menu is implemented successfully.
+\par 
+\par Message Mapping for Right-Click Menu
+\par 
+\par Although the right-click menu is working now, we still can not use it to execute any command. The reason is simple: we haven't implemented WM_COMMAND type message handlers for the menu commands yet. For right-click menu, we cannot add message handlers using Class Wizard, because the command IDs of the menu items are not listed in "Object IDs" window of the Class Wizard. Thus, we have to do everything manually. Actually, adding message handlers for right-click menu items is the same with adding handlers for a normal menu item: we need to declare afx_msg type functions, use ON_COMMAND macros to do the message mapping, and implement the member functions. In the sample, WM_COMMAND type message handler is added for each menu item contained in the right-click menu. Within each message handler, a message box pops up indicating which menu item it is.
+\par 
+\par The following portion of code shows the member functions declared in class CMenuDoc:
+\par 
+\par class CMenuDoc : public CDocument
+\par \{
+\par ......
+\par //\{\{AFX_MSG(CMenuDoc)
+\par     //\}\}AFX_MSG
+\par     afx_msg void OnPopUpItem1();
+\par     afx_msg void OnPopUpItem2();
+\par     afx_msg void OnPopUpItem3();
+\par     afx_msg void OnPopUpItem4();
+\par     DECLARE_MESSAGE_MAP()
+\par ......
+\par \}
+\par 
+\par Message mapping macros are implemented as follows:
+\par 
+\par BEGIN_MESSAGE_MAP(CMenuDoc, CDocument)
+\par     //\{\{AFX_MSG_MAP(CMenuDoc)
+\par     //\}\}AFX_MSG_MAP
+\par     ON_COMMAND(ID__POPUPITEM1, OnPopUpItem1)
+\par     ON_COMMAND(ID__POPUPITEM2, OnPopUpItem2)
+\par     ON_COMMAND(ID__POPUPITEM3, OnPopUpItem3)
+\par     ON_COMMAND(ID__POPUPITEM4, OnPopUpItem4)
+\par END_MESSAGE_MAP()
+\par 
+\par Four member functions are implemented as follows:
+\par 
+\par void CMenuDoc::OnPopUpItem1()
+\par \{
+\par     AfxMessageBox("Pop up menu item 1");
+\par \}
+\par 
+\par void CMenuDoc::OnPopUpItem2()
+\par \{
+\par     AfxMessageBox("Pop up menu item 2");
+\par \}
+\par 
+\par void CMenuDoc::OnPopUpItem3()
+\par \{
+\par     AfxMessageBox("Pop up menu item 3");
+\par \}
+\par 
+\par void CMenuDoc::OnPopUpItem4()
+\par \{
+\par     AfxMessageBox("Pop up menu item 4");
+\par \}
+\par 
+\par With the above implementation, we are able to execute the commands contained in the right-click pop up menu.
+\par 
+\par 2.3\tab Updating Menu Dynamically
+\par 
+\par Sometimes it is desirable to change the contents of a menu dynamically. For example, if we create an application that supports many commands, we may want to organize them into different groups. Sometimes we want to enable a group of commands, sometimes we want to disable them.
+\par 
+\par Although we can handle UPDATE_COMMAND_UI message to enable or disable commands, sometimes it is more desirable if we can remove the whole sub-menu instead of just graying the menu text. Actually, sub-menu and menu item can all be modified dynamically: we can either add or delete a sub-menu or menu item at any time; we can also change the text of a menu item, move a sub-menu or menu item, or add a separator between two menu items. All these things can be implemented at run-time.
+\par 
+\par Menu Struture
+\par 
+\par The structure of menu --> sub menu --> menu item is like a tree. At the topmost level (the root), the menu comprises several sub-menus. Each sub-menu also comprises several items, which could be a normal command or another sub-menu. For example, in application Explorer (file browser in Windows95(), its first level menu comprises five sub-menus: File, Edit, View, Tool, and Help. If we examine File sub-menu, we will see that it comprises eight items: New, separator, Create Shortcut, Delete, Rename, Properties, separator and Close. Here, item New is another sub-menu, which comprises several other menu items. This kind of structure can continue. As long as our program needs, we can organize our menu into many different levels.
+\par 
+\par In MFC, class CMenu should be used this way. With a CMenu type pointer to a menu object, we have the access to only the menu items at certain level. If we want to access a menu item at a lower level, we first need to access the sub-menu that contains the desired menu item.
+\par 
+\par This can be explained by the previous "Explorer" example: suppose we have a CMenu type pointer to the main menu, we can use it to access the first level menu items: File, Edit, View, Tool, and Help. This means we can use the pointer to disable, enable or set text for any of the above items, but we can not use it to make change to the items belonging to other levels, for example, New item under File sub-menu. To access this item, we need to first obtain a CMenu type pointer to File sub-menu, then use it to modify item File | New.
+\par 
+\par Inserting and Removing Menu Item
+\par 
+\par Class CMenu has certain member functions that allow us to insert or delete a menu item dynamically. We can add either a menu item (including separator), or a whole sub-menu. When we remove a sub-menu, all the lower level items and sub-menus will be removed.
+\par The function that can be used to insert menu items or sub-menus is CMenu::InsertMenu(...), it has the following format:
+\par 
+\par BOOL CMenu::InsertMenu
+\par (
+\par     UINT nPosition, UINT nFlags, UINT nIDNewItem=0, LPCTSTR     lpszNewItem=NULL
+\par );
+\par 
+\par This function has five parameters. The first parameter, nPosition, indicates where we want our new menu item to be inserted. It could be an absolute position, 0, 1, 2..., or a command ID of the menu item. In the former case, MF_BYPOSITION bit of second parameter nFlags must be set. In the latter case, MF_BYCOMMAND bit must be set. Since not all menu items have a command ID (such as a separator), using position to indicate a menu item is sometimes necessary.
+\par 
+\par Generally, we can insert three types of items: a menu item with specified command ID, a separator or a sub-menu. To insert a menu item, we need to pass the command ID to nIDNewItem parameter, then use the final parameter lpszNewItem to specify the text of this menu item. If we want to insert a separator, we must set MF_SEPARATOR bit of parameter nFlag. In this case the rest two parameters nIDNewItem and lpszNewItem will be ignored, so we can pass any value to them. If we want to insert a sub-menu, we must pass a menu handle to parameter nIDNewItem, and use lpszNewItem to set the text for the menu item.
+\par 
+\par In Windows( programming, handle is a very important concept. Many types of resources are managed through using handles. A handle is just a unique number that can be used to reference a block of memory. After an object (program, resource, dynamically allocated memory block, etc.) is loaded into the memory, it will be assigned a unique handle that can be used to access this object. As a programmer, we don't need to know the exact value of a handle. When accessing an object, instead of using handle's absolute value, we can just use the variable that stores the handle.
+\par 
+\par Different handles have different prototypes, for a menu object, its prototype is HMENU.
+\par 
+\par In MFC, this is further simplified. When we call a member function to load an object into the memory, the handle will be automatically saved to a member variable. Later if we need this handle, we can just call a member function to retrieve it.
+\par 
+\par In the case of class CMenu, after calling function CMenu::LoadMenu(...), we can obtain the handle of the menu resource by calling function CMenu::GetSafeHmenu().
+\par 
+\par For example, in sample 2.2\\Menu, after menu resource IDR_MENU_POUP is loaded into the memory, we could obtain the handle of its first sub-menu and store it to an HMENU type variable as follows:
+\par 
+\par CMenu menu;
+\par CMenu *ptrMenu;
+\par HMENU hMenu;
+\par \tab \tab 
+\par menu.LoadMenu(IDR_MENU_POPUP);
+\par ptrMenu=menu.GetSubMenu(0);
+\par hMenu=ptrMenu->GetSafeHmenu();
+\par 
+\par To remove a menu item, we need to use another member function of CMenu:
+\par 
+\par BOOL CMenu::RemoveMenu(UINT nPosition, UINT nFlags);
+\par 
+\par The meanings of nPosition and nFlags parameters are similar to those of function CMenu:: InsertMenu(...).
+\par 
+\par There is another similar function: CMenu::DeleteMenu(...), which can also remove a menu item or sub- menu. However, if we use this function to delete a sub-menu, the menu resource will be released from the memory. In this case, if we wand to use the sub-menu again, we need to reload the menu resource.
+\par 
+\par Sample Implementation
+\par 
+\par Sample 2.3\\Menu demonstrates how to add and delete menu items dynamically. It is a standard SDI application generated by Application Wizard, with all the default settings. In this sample, there are two commands Edit | Insert Dynamic Menu and Edit | Delete Dynamic Menu. If we execute the first command, a new sub-menu will be added between File and Edit sub-menus. We can use the second command to remove this dynamically added sub-menu.
+\par 
+\par The first step is to add two menu items to IDR_MAINFRAME menu resource. In the sample, two commands are added to Edit sub-menu, their description text are "Insert Dynamic Menu" and "Delete Dynamic Menu" respectively, and their command IDs are ID_EDIT_INSERTDYNAMICMENU and ID_EDIT_DELETEDYNAMICMENU. Both of them have WM_COMMAND and UPDATE_COMMAND_UI message handlers in class CMenuDoc, whose function names are OnEditInsertDynamicMenu, OnUpdateEditInsertDynamicMenu, OnEditDeleteDynamicMenu and OnUpdateEditDeleteDynamicMenu.
+\par 
+\par Because we want to disable command ID_EDIT_DELETEDYNAMICMENU and enable command ID_EDIT_INSERTDYNAMICMENU before the sub-menu is inserted, and reverse this after the menu is inserted, another Boolean type variable m_bSubMenuOn is declared in class CMenuDoc, which will be used to indicate the state of the inserted menu. It is initialized to FALSE in the constructor.
+\par 
+\par Preparing the menu resource that will be used to implement dynamic sub-menu is the same with what we did in the previous sample. Here a resource IDR_MENU_POPUP is added to the application, whose content is the same with the resource created in sample 2.2\\Menu.
+\par 
+\par In this case, we could not use a local variable to load the menu, because once the menu is inserted, it may exist for a while before the user removes it. If we still use a local variable, it will go out of scope after the messagae hander returns. In the sample, a CMenu type variable is declared in class CMenuDoc, which is used to load the menu resource in the constructor.
+\par 
+\par The following shows the modified class CMenuDoc:
+\par 
+\par class CMenuDoc : public CDocument
+\par \{
+\par protected: // create from serialization only
+\par     CMenu m_menuSub;
+\par     BOOL m_bSubMenuOn;
+\par ......
+\par protected:
+\par     //\{\{AFX_MSG(CMenuDoc)
+\par     afx_msg void OnEditInsertDynamicMenu();
+\par     afx_msg void OnUpdateEditInsertDynamicMenu(CCmdUI* pCmdUI);
+\par     afx_msg void OnEditDeleteDynamicMenu();
+\par     afx_msg void OnUpdateEditDeleteDynamicMenu(CCmdUI* pCmdUI);
+\par     //\}\}AFX_MSG
+\par     DECLARE_MESSAGE_MAP()
+\par \};
+\par 
+\par The following is the constructor within which the menu resource is loaded and m_bSubMenuOn is initialized:
+\par 
+\par CMenuDoc::CMenuDoc()
+\par \{
+\par     m_menuSub.LoadMenu(IDR_MENU_POPUP);
+\par     m_bSubMenuOn=FALSE;
+\par \}
+\par 
+\par The following shows two UPDATE_COMMAND_UI message handlers where two menu commands are enabled or disabled:
+\par 
+\par void CMenuDoc::OnUpdateEditInsertDynamicMenu(CCmdUI* pCmdUI) 
+\par \{
+\par     pCmdUI->Enable(m_bSubMenuOn == FALSE);\tab 
+\par \}
+\par 
+\par void CMenuDoc::OnUpdateEditDeleteDynamicMenu(CCmdUI* pCmdUI) 
+\par \{
+\par     pCmdUI->Enable(m_bSubMenuOn == TRUE);
+\par \}
+\par 
+\par At last, we must implement two WM_COMMAND message handlers. First, we need to find a way of accessing mainframe menu IDR_MAINFRAME of the application. In MFC, a menu associated with a window can be accessed by calling function CWnd::GetMenu(), which will return a CMenu type pointer. Once we get this pointer, we can use it to access any of its sub-menus.
+\par 
+\par The mainframe window pointer can be obtained by calling function AfxGetMainWnd() anywhere in the program. An alternate way is to call AfxGetApp() to obtain a CWinApp type pointer, then access its public member m_pMainWnd. We could use CMenu type pointer to insert or remove a sub-menu dynamically.
+\par 
+\par The following shows two message handlers that are used to insert or remove the sub-menu:
+\par 
+\par void CMenuDoc::OnEditInsertDynamicMenu() 
+\par \{
+\par     CMenu *pTopMenu=AfxGetMainWnd()->GetMenu();
+\par     CMenu *ptrMenu=m_menuSub.GetSubMenu(0);
+\par     pTopMenu->InsertMenu
+\par     (
+\par         1, MF_BYPOSITION | MF_POPUP, (UINT)ptrMenu->GetSafeHmenu(),         "&Dynamic Menu"
+\par     );
+\par     AfxGetMainWnd()->DrawMenuBar();
+\par     m_bSubMenuOn=TRUE;
+\par \}
+\par 
+\par void CMenuDoc::OnEditDeleteDynamicMenu() 
+\par \{
+\par     CMenu *pTopMenu=AfxGetMainWnd()->GetMenu();
+\par     pTopMenu->RemoveMenu(1, MF_BYPOSITION);
+\par     AfxGetMainWnd()->DrawMenuBar();
+\par     m_bSubMenuOn=FALSE;
+\par \}
+\par 
+\par When inserting sub-menu, flag MF_BYPOSITION is used. This is because the first level menu items do not have command IDs.
+\par 
+\par After the menu is inserted or removed, we must call function CWnd::DrawMenuBar() to let the menu be updated. Otherwise although the content of the menu is actually changed, it will not be reflected to the user interface until the update is triggered by some other reasons.
+\par 
+\par 2.4\tab Bitmap Check
+\par 
+\par The default menu check provided by MFC is a tick mark, and nothing is displayed when the check is removed. With a little effort, we can prepare our own bitmaps and use them to implement the checked and unchecked state (Figure 2-3).
+\par 
+\par To implement the checked and unchecked states of menu items using bitmaps, we need to call the following member function of CMenu:
+\par 
+\par BOOL CMenu::SetMenuItemBitmaps
+\par (
+\par     UINT nPosition, UINT nFlags, const CBitmap* pBmpUnchecked,
+\par     const CBitmap* pBmpChecked
+\par );
+\par 
+\par The first two parameters of this function indicate which menu item we are working with. Their meanings are the same with that of functions such as CMenu::EnableMenuItem(...). When calling this function, we can use either a command ID or an absolute position to identify a menu item. The third and fourth parameters are pointers to bitmaps (CBitmap type objects), one for checked state, one for unchecked state.
+\par 
+\par Like menu, bitmap can also be prepared as resource then be loaded at program's runtime. We can edit a bitmap in Developer Studio, and save it as application's resource. Adding a bitmap resource is the same with adding other types of resources: we can execute Insert | Resource... command, then select Bitmap from the popped up dialog box. The newly added resource will be assigned a default ID, it could also be changed by the programmer.
+\par 
+\par To load a bitmap resource into the memory, we need to use class CBitmap. This procedure is similar to loading a menu resource: first we need to use CBitmap to declare a variable, then call function CBitmap::LoadBitmap(...) to load the resource. For example, if we have a CBitmap type variable bmp, and our bitmap resource's  ID is IDB_BITMAP, we can load the bitmap as follows:
+\par 
+\par bmp.LoadBitmap(IDB_BITMAP);
+\par 
+\par When calling function CMenu::SetMenuItemBitmaps(...), we can pass the pointers of CBitmap type variables to its parameters.
+\par Sample 2.4\\Menu demonstrates bitmap check implementation. It is based on sample 2.3\\Menu, which adds check bitmaps to menu item ID__POPUPITEM1 and ID__POPUPITEM2. Two bitmap resources IDB_BITMAP_CHECK and IDB_BITMAP_UNCHECK are used to indicate menu item's checked and unchecked states respectively. Both bitmaps have a size of 15(15, which is a suitable size for normal menu items. If we use bigger bitmaps, they might be chopped to fit into the area of menu item.
+\par 
+\par In the sample, two new CBitmap type variables m_bmpCheck and m_bmpUnCheck are declared in class CMenuDoc, which are used to load the bitmap resources:
+\par 
+\par class CMenuDoc : public CDocument
+\par \{
+\par protected: 
+\par     CMenu m_menuSub;
+\par     CBitmap m_bmpCheck;
+\par     CBitmap m_bmpUnCheck;
+\par     BOOL m_bSubMenuOn;
+\par ......
+\par \}
+\par 
+\par In the constructor of CMenuDoc, bitmap resources IDB_BITMAP_CHECK and IDB_BITMAP_UNCHECK are loaded using two variables.  Also, after we load the pop up menu resource, function CMenu:: SetMenuItemBitmap(...) is called for both ID__POPUPITEM1 and ID__POPITEM2. We use bitmaps to indicate both checked and unchecked states. The following code fragment shows how it is implemented:
+\par 
+\par CMenuDoc::CMenuDoc()
+\par \{
+\par     CMenu *ptrMenu;
+\par 
+\par     m_menuSub.LoadMenu(IDR_MENU_POPUP);
+\par     m_bmpCheck.LoadBitmap(IDB_BITMAP_CHECK);
+\par     m_bmpUnCheck.LoadBitmap(IDB_BITMAP_UNCHECK);
+\par     ptrMenu=m_menuSub.GetSubMenu(0);
+\par     ptrMenu->SetMenuItemBitmaps(0, MF_BYPOSITION, &m_bmpUnCheck, &m_bmpCheck);
+\par     ptrMenu->SetMenuItemBitmaps(1, MF_BYPOSITION, &m_bmpUnCheck, &m_bmpCheck);
+\par     m_bSubMenuOn=FALSE;
+\par \}
+\par 
+\par When calling function CMenu::SetMenuItemBitmap(...), we use absolute position instead of command ID to identify a menu item. So the second parameter passed to the function is MF_BYPOSITION.
+\par 
+\par Besides these, two UPDATE_COMMAND_UI message handlers are also added to CMenuDoc to set item ID__POPUPITEM1 to checked state and set ID_POPUPITEM2 to unchecked state permenently. The following two functions show the implementation of the messages handlers:
+\par 
+\par void CMenuDoc::OnUpdatePopUpItem1(CCmdUI *pCmdUI)
+\par \{
+\par     if(m_bSubMenuOn)pCmdUI->SetCheck(TRUE);
+\par \}
+\par 
+\par void CMenuDoc::OnUpdatePopUpItem2(CCmdUI *pCmdUI)
+\par \{
+\par     if(m_bSubMenuOn)pCmdUI->SetCheck(FALSE);
+\par \}
+\par 
+\par In the sample, bitmaps are prepared for both checked and unchecked states for a menu item. When calling function CMenu::SetMenuItemBitmaps(...), if either of the bitmaps is not provided (the corresponding parameter is NULL), nothing will be displayed for that state. If both parameters are NULL, the default tick mark will be used for the checked state.
+\par 
+\par 2.5\tab System Menu and Bitmap Menu Item
+\par 
+\par System Menu
+\par 
+\par By default, every application has a system menu, which is accessible through left clicking on the small icon located at the left side of application's caption bar, or right clicking on the application when it is in icon state. The system menu can be customized to meet special requirement. Especially, we can add and delete menu items dynamically just like a normal menu. 
+\par 
+\par We already know how to access an application's standard menu. Once we obtained a CMenu type pointer to the application's standard menu, we can feel free to add new menu items, remove menu items, and change their attributes dynamically.
+\par 
+\par System menu is different from a standard menu. We need to call another function to obtain a pointer to it. In MFC, the function that can be used to access system menu is CWnd::GetSystemMenu(...). Please note that we must call this function for a window that has an attached system menu. For an SDI or MDI application, system menu is attached to the mainframe window. For a dialog box based application, the system menu is attached to the dialog window.
+\par 
+\par Unlike user implemented commands, system commands (commands on the system menu) are sent through WM_SYSCOMMAND rather than WM_COMMAND message. If we implement message handlers to receive system commands, we need to use ON_WM_SYSCOMMAND macro.
+\par 
+\par Bitmap Menu Item
+\par 
+\par From the samples in the previous sections, we already know how to customize a menu item: we can set check, remove check, change text dynamically. We can also use bitmaps to represent its checked and unchecked states. Besides above features, a menu item can be modified to display a bitmap instead of a text string. This can make the application more attractive, because sometimes images are more intuitive than text strings.
+\par 
+\par Sample 2.5\\Menu demonstrates the two techniques described above, it is based on sample 2.4\\Menu.  In this sample, one of the system menu items (a separator) is changed to bitmap menu item. If we execute this "bitmap command", a message box will pop up. Also, another new command is added to the system menu, it allows the user to resume the original system menu.
+\par 
+\par New Functions
+\par 
+\par Function CWnd::GetSystemMenu(...) has only one Boolean type parameter: 
+\par 
+\par CMenu *CWnd::GetSystemMenu(BOOL bRevert);
+\par 
+\par Although we can call this function to obtain a pointer to the system menu and manipulate it, the original default system menu can be reverted at any time by calling this function and passing a TRUE value to its bRevert parameter. In this case, function's returned value has no meaning and should not be treated as a pointer to a menu object. We need to pass FALSE to this parameter in order to obtain a valid pointer to the system menu.
+\par 
+\par Function CMenu::ModifyMenu(...) allows us to change any menu item to a separator, a sub-menu, a bitmap menu item. It can also be used to modify a menu item's text. This member function has two versions:
+\par 
+\par BOOL CMenu::ModifyMenu
+\par (
+\par     UINT nPosition, UINT nFlags, UINT nIDNewItem=0, LPCTSTR lpszNewItem     = NULL
+\par );
+\par BOOL CMenu::ModifyMenu
+\par (
+\par     UINT nPosition, UINT nFlags, UINT nIDNewItem, const CBitmap* pBmp
+\par );
+\par 
+\par The first version of this function allows us to change a menu item to a text item, a separator, or a sub-menu. The second version allows us to change a menu item to a bitmap item. For the second version, parameter nIDNewItem specifies the new command ID, and parameter pBmp is a pointer to a CBitmap object, which must contain a valid bitmap resource.
+\par 
+\par Menu Modification
+\par 
+\par In the sample application, a bitmap resource ID_BITMAP_QUESTION is prepared for implementing bitmap menu item. This bitmap contains a question mark. There is no restriction on the bitmap size, because the size of menu item will be adjusted automatically to let the image fit in.
+\par 
+\par To load the image, a new CBitmap type variable m_bmpQuestion is declared in class CMainFrame, and bitmap resource ID_BITMAP_QUESTION is loaded in the constructor of class CMainFrame:
+\par 
+\par class CMainFrame : public CFrameWnd
+\par \{
+\par ......
+\par protected:
+\par     CStatusBar  m_wndStatusBar;
+\par     CToolBar    m_wndToolBar;
+\par     CBitmap m_bmpQuestion;
+\par ......
+\par \};
+\par 
+\par CMainFrame::CMainFrame()
+\par \{
+\par     m_bmpQuestion.LoadBitmap(IDB_BITMAP_QUESTION);
+\par \}
+\par 
+\par The pointer to the system menu is obtained in function CMainFrame::OnCreate(...). First, system menu's fifth item (a separator) is modified to a bitmap menu item, then another new command "Resume standard system menu" is inserted before this bitmap menu item. The IDs of the two commands are ID_QUESTION and ID_RESUME respectively.
+\par 
+\par Although we can use any numerical values as the command IDs of the newly added menu items, they should not be used by other resources of the application. The best way to prevent this from happening is to generate two new string resources in the application, and use ID_QUESTION and ID_RESUME as their symbolic IDs. Because Developer Studio will always allocate unused values for new resources, we can avoid sharing IDs with other resources by using this method.
+\par The following shows how we access the system menu and make changes to its items:
+\par 
+\par int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
+\par \{
+\par     CMenu *ptrMenu;
+\par ......
+\par     ptrMenu=GetSystemMenu(FALSE);
+\par     ptrMenu->ModifyMenu(5, MF_BYPOSITION, ID_QUESTION, &m_bmpQuestion);
+\par     ptrMenu->InsertMenu(5, MF_BYPOSITION, ID_RESUME, "Resume standard system menu");
+\par 
+\par     return 0;
+\par \}
+\par 
+\par Message Mapping for System Command
+\par 
+\par In order to trap events for the system menu, we need to handle message WM_SYSCOMMAND. We can map this message to our member function by using macro ON_WM_SYSCOMMAND. The format of the message handler is:
+\par 
+\par afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+\par 
+\par And the format of mapping macro is:
+\par 
+\par ON_WM_SYSCOMMAND()
+\par 
+\par Of course, we can ask Class Wizard to do the mapping for us. Before using it to add the above message handler to CMainFrame class, we need to make following changes to the settings of Class Wizard: first click "Class info" tab of the Class Wizard, then select "Window" from the window "Message filter" (Figure 2-4). The default message filter for CMainFrame frame window is "Topmost frame", and WM_SYSCOMMAND will not be listed in the message list. After this modification, we can go back to "Message Maps" page, and choose "WM_SYSCOMMAND" from messages window. To add the message handler, we simply need to click "Add function" button (make sure the settings in other windows are correct). After this, the new function OnSysCommand(...) will be added to the application.
+\par 
+\par Here is how this function is declared in class CMainFrame:
+\par 
+\par class CMainFrame
+\par \{
+\par ......
+\par     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+\par ......
+\par \};
+\par 
+\par The message mapping is as follows:
+\par 
+\par BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
+\par ......
+\par     ON_WM_SYSCOMMAND()
+\par     //\}\}AFX_MSG_MAP
+\par END_MESSAGE_MAP()
+\par 
+\par Message handler CMainFrame::OnSysCommand(...) has two parameters, first of which is the command ID, and the second is LPARAM message parameter. In our case, we only need to use the first parameter, because it tells us which command is being executed. If the command is ID_RESUME, we need to call function CMenu::GetSystemMenu(...) to resume the default system menu; if the command is ID_QUESTION, we pop up a message box:
+\par 
+\par void CMainFrame::OnSysCommand(UINT nID, LPARAM lParam) 
+\par \{
+\par     if(nID == ID_RESUME)GetSystemMenu(TRUE);
+\par     if(nID == ID_QUESTION)AfxMessageBox("Question");
+\par     CFrameWnd::OnSysCommand(nID, lParam);
+\par \}
+\par 
+\par 2.6\tab Owner-Draw Menu
+\par 
+\par When we highlight a bitmap menu item by selecting it using mouse, the bitmap will be inversed. We have no way of modifying this property because function CMenu::ModifyMenu(...) requires only one bitmap, which will be used to implement menu item's normal state. The other states of a bitmap menu item will be drawn using the default implementations. Normally this is good enough. However, sometimes we may want to use different bitmaps to represent a menu item's different states: selected, unselected, checked, unchecked, grayed or enabled.
+\par 
+\par Also, sometimes we may want to paint a menu item dynamically. Suppose we need to create a "Color" menu item: the menu item represents a color that the user can use, and this color can be modified to represent any available color in the system. To implement this type of menu item, we can paint it using the currently selected color. In this case it is not appropriate to create the menu item using bitmap resources: there may exist thousands of available colors in the system, and it is just too inconvenient to prepare a bitmap resource for each possible color.
+\par 
+\par The owner-draw menu can help us build more powerful user interface. With this type of menu, we can draw the menu items dynamically, using different bitmaps to represent different states of the menu item. We can also change the associated bitmaps at any time.
+\par 
+\par Overriding Two Functions
+\par 
+\par The implementation of owner draw menu is not very difficult, all we need is to override two member functions of class CMenu: CMenu::MeasureItem(...) and CMenu::DrawItem(...).
+\par 
+\par By default, the menu is drawn by the system. We can change this attribute by specifying MF_OWNERDRAW style for a menu. Any menu with this style will be drawn by its owner. Since a menu's owner is usually the mainframe window (in SDI and MDI applications), we can add code to class CMainFrame to implement dynamic menu drawing. Actually, the menu drawing has two associated messages: WM_MEASUREITEM and WM_DRAWITEM. When a menu item with MF_OWNERDRAW style needs to be drawn, the menu sends out the above two messages to the mainframe window. The mainframe window finds out the pointer to the corresponding menu and calls functions CMenu::MeasureItem(...) and CMenu::DrawItem(...). Here, the first function is used to retrieve the dimension of the menu item, which can be used to calculate its layout. The second function implements menu drawing. We need to override it in order to implement custom interface.
+\par 
+\par One simple and most commonly used way to provide graphic interface is to prepare a bitmap resource then load and draw it at run time. Please note that this is different from preparing a bitmap resource and calling CMenu::ModifyMenu(...) to associate the bitmap with a menu item. If we implement drawing by ourselves, we can manipulate drawing details. For example, when drawing the bitmap, we can change the size of the image, add a text over it. If we assign the bitmap to the menu item, we lose the control over the details of painting the bitmap.
+\par 
+\par Drawing a Bitmap
+\par 
+\par To draw a bitmap, we need to understand some basics on graphic device interface (GDI). This topic will be thoroughly discussed from chapter 8 through 12, here is just a simple discussion on bitmap drawing. In Windows( operating system, when we want to output objects (a pixel, a line or a bitmap) to the screen, we can not write directly to the screen. Instead, we must write to the device context (DC). A device context is a data structure containing information about the drawing attributes of a device (typically a display or a printer).  We can use DC to write text, draw pixels, lines and bitmaps to the devices. In MFC the device context is supported by class CDC, which has many functions that can let us draw different types of objects.
+\par 
+\par We can implement bitmap drawing by obtaining a target DC and calling member functions of CDC. The target DC is usually obtained from a window.
+\par 
+\par A DC can select a lot of GDI objects, such pen, brush, font and bitmap. Pen can be different type of pens, and brush can be different types of brushes. A DC can select any pen or brush as its current tool, but at any time, a DC can select only one pen and one brush. If we want to draw a pixel or a line, we can select the appropriate pen into the target DC and use it to implement drawing. A DC can also select bitmap for drawing. However, to paint a bitmap, we can not select it into the target DC and draw it directly. The normal way of painting a bitmap is to prepare a compatible memory DC (which is a block of memory with the same attributes of the target DC), select the bitmap into the memory DC, and copy the bitmap from the memory DC to the target DC.
+\par 
+\par We will learn more about DC and bitmap drawing in later chapters. For the time being, we can neglect the drawing details.
+\par 
+\par Deriving a New Class from CMenu
+\par 
+\par Sample 2.6\\Menu demonstrates owner-draw menu implementation. It is base on sample 2.5\\Menu. In this sample menu items ID__POPUPITEM1 and ID__POPUPITEM2 of the dynamic menu are implemented as owner-draw menu, their menu items are painted using different bitmaps. 
+\par Like sample 2.5\\Menu, some new images are prepared as bitmap resources. In the sample, the newly added bitmaps are IDB_BITMAP_QUESTIONSEL, IDB_BITMAP_SMILE and IDB_BITMAP_SMILESEL. We will use IDB_BITMAP_SMILE and IDB_BITMAP_SMILESEL to implement owner-draw menu item ID__POPITEM1, and use IDB_BITMAP_QUESTION to implement ID__POPITEM2.
+\par 
+\par First, we need to override class CMenu. In the sample, a new class MCMenu is derived from CMenu, in this class, we declare four CBitmap type variables that will be used to load bitmaps for menu drawing. Also, functions CMenu::MeasureItem(...) and CMenu::DrawItem(...) are overridden:
+\par 
+\par class MCMenu : public CMenu
+\par \{
+\par protected:
+\par     CBitmap m_bmpQuestion;
+\par     CBitmap m_bmpQuestionSel;
+\par     CBitmap m_bmpSmile;
+\par     CBitmap m_bmpSmileSel;
+\par 
+\par public:
+\par     MCMenu();
+\par     virtual ~MCMenu();
+\par     virtual void MeasureItem(LPMEASUREITEMSTRUCT);
+\par     virtual void DrawItem(LPDRAWITEMSTRUCT);
+\par \};
+\par 
+\par In the constructor of class MCMenu, four bitmaps are loaded:
+\par 
+\par MCMenu::MCMenu() : CMenu()
+\par \{
+\par     m_bmpQuestion.LoadBitmap(IDB_BITMAP_QUESTION);
+\par     m_bmpQuestionSel.LoadBitmap(IDB_BITMAP_QUESTIONSEL);
+\par     m_bmpSmile.LoadBitmap(IDB_BITMAP_SMILE);
+\par     m_bmpSmileSel.LoadBitmap(IDB_BITMAP_SMILESEL);
+\par \}
+\par 
+\par Overriding Function CMenu::MeasureItem(...)
+\par 
+\par Next we need to override function CMenu::MeasureItem(...). It has only one parameter, which is a pointer to MEASUREITEMSTRUCT type object. Structure MEASUREITEMSTRUCT is used to inform system the dimension of the owner-draw menu and other controls. There are three important members that will be used: itemWidth and itemHeight, which represent width and height of the menu item; itemData, from which we know the type of the menu item that is being inquired.
+\par The program can assign special data to an owner-draw menu item when it is being created. When the mainframe window calls the overridden functions to inquire the item's attributes or paint the menu, the data will be passed through itemData member of structure MEASUREITEMSTRUCT or DRAWITEMSTRUCT (DRAWITEMSTRUCT will be passed to function CMenu::DrawItem(...)). By examining this member in the overriden functions, we know what type of menu item we are working with.
+\par 
+\par Class CBitmap has a member function that can be used to obtain the size of a bitmap: CBitmap::GetBitmap(...).  We need to prepare a BITMAP type object and pass its pointer to this function. After calling this function, the structure will be filled with a lot of information about the bitmap (not only the image dimension). In this sample, we need to use only two members of BITMAP structure: bmWidth and bmHeight, which represent a bitmap's width and height.
+\par 
+\par The following is the overridden function of CMenu::MeasureItem(...):
+\par 
+\par void MCMenu::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
+\par \{
+\par     BITMAP bm;
+\par 
+\par     switch(lpMeasureItemStruct->itemData)
+\par     \{
+\par         case MENUTYPE_SMILE:
+\par         \{
+\par \tab     m_bmpSmile.GetBitmap(&bm);
+\par             break;
+\par         \}
+\par         case MENUTYPE_QUESTION:
+\par         \{
+\par \tab     m_bmpQuestion.GetBitmap(&bm);
+\par             break;
+\par         \}
+\par     \}
+\par     lpMeasureItemStruct->itemWidth=bm.bmWidth;
+\par     lpMeasureItemStruct->itemHeight=bm.bmHeight;
+\par \}
+\par 
+\par In this function, MENUTYPE_SMILE and MENUTYPE_QUESTION are user-defined macros that represent the type of menu items. First we examine member itemData and decide the type of the menu item. For different types of menu items, the corresponding bitmap sizes are retrieved and set to members itemWidth and itemHeight of structure MEASUREITEMSTRUCT. This size will be sent to the system and be used to calculate the layout of the whole sub-menu.
+\par 
+\par Overriding Function CMenu::DrawItem(...)
+\par 
+\par ow we need to override another member function of CMenu: CMenu::DrawItem(...). This function uses a different structure, DRAWITEMSTRUCT. It is used to inform us the state of the menu item, pass the target DC, and tell us the position where we can draw the customized menu. The following table lists some of its important members:
+\par 
+\par (Table omitted)
+\par 
+\par The following is the overridden function:
+\par 
+\par void MCMenu::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+\par \{
+\par     CDC *ptrDC;
+\par     CDC dcMem;
+\par     CBitmap *ptrBmpOld;
+\par     CBitmap *ptrBmp;
+\par     CRect rect;
+\par 
+\par     if(!(lpDrawItemStruct->CtlType & ODT_MENU))
+\par     \{
+\par         CMenu::DrawItem(lpDrawItemStruct);
+\par         return;
+\par     \}
+\par 
+\par     ptrDC=CDC::FromHandle(lpDrawItemStruct->hDC);
+\par     dcMem.CreateCompatibleDC(ptrDC);
+\par 
+\par     if(lpDrawItemStruct->itemState & ODS_SELECTED)
+\par     \{
+\par         switch(lpDrawItemStruct->itemData)
+\par         \{
+\par \tab     case MENUTYPE_SMILE:
+\par \tab     \{
+\par                 ptrBmp=&m_bmpSmileSel;
+\par                 break;
+\par             \}
+\par             case MENUTYPE_QUESTION:
+\par             \{
+\par                 ptrBmp=&m_bmpQuestionSel;
+\par                 break;
+\par             \}
+\par         \}
+\par     \}
+\par     else
+\par     \{
+\par         switch(lpDrawItemStruct->itemData)
+\par         \{
+\par \tab     case MENUTYPE_SMILE:
+\par \tab     \{
+\par                 ptrBmp=&m_bmpSmile;
+\par                 break;
+\par \tab     \}
+\par             case MENUTYPE_QUESTION:
+\par             \{
+\par                 ptrBmp=&m_bmpQuestion;
+\par                 break;
+\par             \}
+\par         \}
+\par     \}\tab 
+\par 
+\par     ptrBmpOld=dcMem.SelectObject(ptrBmp);
+\par     rect=lpDrawItemStruct->rcItem;
+\par     ptrDC->BitBlt
+\par     (
+\par         rect.left,
+\par         rect.top,
+\par         rect.Width(),
+\par         rect.Height(),
+\par         &dcMem,
+\par         0,
+\par         0,
+\par         SRCCOPY
+\par     );
+\par     dcMem.SelectObject(ptrBmpOld);
+\par \}
+\par 
+\par First, we check if the item is a menu. If not, we call the same function implemented by the base class and return. If so, first we obtain a CDC type pointer to the target device by calling function CDC::FromHandle(...). Then, we create a compatible memory DC with target DC, which will be used to draw the bitmap. Next, we check the menu item's state and type by looking at itemState and itemData members of structure DRAWITEMSTRUCT, and choose different bitmaps according to different situations. At last we select the appropriate bitmap into the memory DC, copy the bitmap to target device using function CDC::BitBlt(...). This function has many parameters: the first four are position and size on the target device; the fifth parameter is the pointer to the memory DC; the last parameter specifies drawing mode (SRCCOPY will copy the source bitmap to the target device). Finally, we must select the bitmap out of the memory DC, and resume its original state.
+\par 
+\par Using the New Class
+\par 
+\par Now we can use this class to implement owner-draw menu. In the sample application, the first two items of dynamic menu IDR_MENU_POPUP are implemented with this style.
+\par 
+\par First a new MCMenu type variable m_menuModified is declared in class CMenuDoc (the original m_menuSub variable remain unchanged):
+\par 
+\par class CMenuDoc : public CDocument
+\par \{
+\par protected:
+\par     CMenu m_menuSub;
+\par     MCMenu m_menuModified;
+\par ......
+\par \}
+\par 
+\par The original variable m_menuSub is used to load the menu resource, whose first sub-menu is obtained by calling function CMenu::GetSubMenu(...) and attached to variable m_menuModified. By doing this, the system will call the member functions of class MCMenu instead of CMenu when the owner-draw menu needs to be painted. To change a menu item's default style, function CMenu::ModifyMenu(...) is called and MF_OWNERDRAW flag is specified:
+\par 
+\par CMenuDoc::CMenuDoc()
+\par \{
+\par     CMenu *ptrMenu;
+\par 
+\par     m_menuSub.LoadMenu(IDR_MENU_POPUP);
+\par     m_bmpCheck.LoadBitmap(IDB_BITMAP_CHECK);
+\par     m_bmpUnCheck.LoadBitmap(IDB_BITMAP_UNCHECK);
+\par     ptrMenu=m_menuSub.GetSubMenu(0);
+\par     m_menuModified.Attach(ptrMenu->GetSafeHmenu());
+\par     ptrMenu->ModifyMenu
+\par     (
+\par         0,
+\par         MF_BYPOSITION | MF_ENABLED | MF_OWNERDRAW, ID__POPUPITEM1,
+\par         (LPCTSTR)MENUTYPE_SMILE
+\par     );
+\par     ptrMenu->ModifyMenu
+\par     (
+\par         1,
+\par         MF_BYPOSITION | MF_ENABLED | MF_OWNERDRAW, ID__POPUPITEM2,
+\par         (LPCTSTR)MENUTYPE_QUESTION
+\par     );
+\par     m_bSubMenuOn=FALSE;
+\par \}
+\par 
+\par In the above code, menu IDR_MENU_POPUP is loaded into m_menuSub, then the first sub-menu is obtained and attached to variable m_menuModified. Here, function CMenu::Attach(...) requires a HMENU type parameter, which can be obtained by calling function CMenu::GetSafeHmenu(). When calling function CMenu::ModifyMenu(...), we pass integer instead of string pointer to its last parameter. This does not matter because the integer provided here will not be treated as memory address, instead, it will be passed to itemData member of structure MEASUREITEMSTRUCT (and DRAWITEMSTRUCT) to indicate the type of the owner-drawn menu items.
+\par 
+\par Because the popup menu is attached to variable CMenuDoc::m_menuModified, we need to detach it before application exits. The best place of implementing this is in class MCMenu's destructor, when the menu object is about to be destroyed:
+\par 
+\par MCMenu::~MCMenu()
+\par \{
+\par     Detach();
+\par \}
+\par 
+\par Now we can compile the sample project and execute it. By executing command Edit | Insert Dynamic Menu and expanding Dynamic Menu then selecting the first two menu items, we will see that both selected and unselected states of them will be implemented by our own bitmaps.
+\par 
+\par Bitmap is not restricted to only indicating selected and normal menu states. With a little effort, we could also use bitmap to implement other menu states: grayed, checked, and unchecked. This will make our menu completely different from a menu implemented by plain text.
+\par 
+\par 2.7\tab Changing the Whole Menu Dynamically
+\par 
+\par If we write MDI application, we can see that the main menu may change with different type of views. Generally, when there is no client window opened, the mainframe menu will have only three sub-menus (File, View, Help). After the user opens a client window, the mainframe menu will be replaced with a new menu that has more sub-menus. Although we could call CMenu::ModifyMenu(...) to implement this, it is not efficient because with this method, we have to the change menu items one by one. Actually, there is another easy way to change the whole menu dynamically: we can prepare a new menu resource, use it to replace the menu currently associated with the window at run time.
+\par 
+\par Class CWnd has a member function that can be used to set a window's menu dynamically: CWnd::SetMenu(...). The function has only one parameter, which is a CMenu type pointer. By using this function, we can change an application's mainframe menu at any time we want. Sample 2.7\\Menu demonstrates this technique. It is a standard SDI application generated by Application Wizard with all default settings. In the sample, besides mainframe menu IDR_MAINFRAME, a new menu resource IDR_MAINFRAME_ACTIVE  is prepared in the application. This menu has some new sub-menus (Options, Properties, Settings). For the purpose of demonstration, none of these sub-menus contains menu items. The default menu will be changed to this menu after we execute File | New or File | Open command. If we execute File | Close command from menu IDR_MAINFRAME_ACTIVE, the default menu will be resumed.
+\par 
+\par Three WM_COMMAND message handlers for commands ID_FILE_NEW, ID_FILE_OPEN and ID_FILE_CLOSE are generated using class wizard. The member functions are named OnFileNew, OnFileOpen and OnFileClose. In the first two functions, we change the mainframe menu to IDR_MAINFRAME_ACTIVE, and in the third function, we change the menu back to IDR_MAINFRAME:
+\par 
+\par void CMenuDoc::OnFileNew() 
+\par \{
+\par     CMenu menu;
+\par 
+\par     menu.LoadMenu(IDR_MAINFRAME_ACTIVE);
+\par     AfxGetMainWnd()->SetMenu(&menu);
+\par     AfxGetMainWnd()->DrawMenuBar();
+\par     menu.Detach();
+\par \}
+\par 
+\par void CMenuDoc::OnFileOpen() 
+\par \{
+\par     CMenu menu;
+\par 
+\par     menu.LoadMenu(IDR_MAINFRAME_ACTIVE);
+\par     AfxGetMainWnd()->SetMenu(&menu);
+\par     AfxGetMainWnd()->DrawMenuBar();
+\par     menu.Detach();
+\par \}
+\par 
+\par void CMenuDoc::OnFileClose() 
+\par \{
+\par     CMenu menu;
+\par 
+\par     menu.LoadMenu(IDR_MAINFRAME);
+\par     AfxGetMainWnd()->SetMenu(&menu);
+\par     AfxGetMainWnd()->DrawMenuBar();
+\par     menu.Detach();
+\par \}
+\par 
+\par In the above three member functions, we use a local variable menu to load the menu resource. It will be destroyed after the function exits. So before the variable goes out of scope, we must call function CMenu::Detach() to release the loaded menu resource so that it can continue to be used by the application. Otherwise, the menu resource will be destroyed automatically.
+\par 
+\par Summary
+\par 
+\par 1)  In order to execute commands, we need to handle message WM_COMMAND. In order to update user interfaces of menu, we need to handle message UPDATE_COMMAND_UI.
+\par 
+\par 2)  To implement right-click menu, we need to first prepare a menu resource, then trap WM_RBUTTONDOWN message. Within the message handler, we can use CMenu type variable to load the menu resource, and call CMenu::TrackPopupMenu(...) to activate the menu and track mouse activities. Before the menu is shown, we can call functions CMenu::EnableMenuItem(...) and CMenu::CheckMenuItem(...) to set the states of the menu items.
+\par 
+\par 3)  To add or remove a menu item dynamically, we need to call functions CMenu::InsertMenu(...) and CMenu::RemoveMenu(...).
+\par 
+\par 4)  With function CMenu::SetMenuItemBitmaps(...), we can use bitmap images to implement checked and unchecked states for a menu item.
+\par 
+\par 5)  A window's standard menu can be obtained by calling function CWnd::GetMenu(), and the application's system menu can be obtained by calling function CWnd::GetSysMenu(...).
+\par 
+\par 6)  We can change a normal menu item to a bitmap menu item, a separator, or a sub-menu by calling function CMenu::ModifyMenu(...).
+\par 
+\par 7)  Owner-draw menu can be implemented by setting MF_OWNERDRAW style then overriding functions CMenu::MeasureItem(...) and CMenu::DrawItem(...).
+\par 
+\par 8)  We can change the whole menu attached to a window by calling function CWnd::SetMenu(...).
+\par 
+\par }
+ 

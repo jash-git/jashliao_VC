@@ -1,0 +1,626 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Sequence</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Prefix Sum / Finite Difference</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">前綴和</p>
+<p>從頭開始的連續數字和。</p>
+<textarea>
+int array[5] = {4, -1, 6, 0, 9};
+int sum[5];	// 前綴和
+
+void prefix_sum()
+{
+	sum[0] = array[0];
+	for (int i=1; i<5; i++)
+		sum[i] = sum[i-1] + array[i];
+}
+
+// [i,j]區間和。
+// 預先以O(N)計算前綴和，便能以O(1)計算區間和。
+int range_sum(int i, int j)
+{
+	if (i > j) swap(i, j);
+	if (j <= 0) return sum[0];
+	return sum[i] - sum[j - 1];
+}
+</textarea>
+<p>實作時，原本陣列開頭加一空格，程式碼更簡潔。</p>
+<p class="e">UVa 10324 10994</p>
+<p class="t">差分</p>
+<p>相鄰數字差。</p>
+<textarea>
+int array[5] = {4, -1, 6, 0, 9};
+int diff[5];	// 差分
+
+void finite_difference()
+{
+	diff[0] = array[0];
+	for (int i=1; i<5; i++)
+		diff[i] = array[i] - array[i-1];
+}
+</textarea>
+<p class="e">UVa 10038</p>
+<p class="t">前綴和與差分互為反運算</p>
+<p>前綴和就是數列積分，差分就是數列微分。</p>
+<p>先做一次前綴和、再做一次差分，就得到原數列。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Range Query資料結構: “Variant” Segment Tree</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">註記</p>
+<p>此資料結構由競賽選手發明，沒有發表為正式的學術論文。目前網路上普遍稱呼為Segment Tree。</p>
+<p>然而「<a href="PointInterval.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PointInterval.html">Segment Tree</a>」已經是知名的資料結構，所以此資料結構勢必另取他名，以免產生混淆。筆者認為也許Sequence Tree之類的稱呼比較妥當。</p>
+<p>此資料結構已經衍生兩種實作方式，來源考察如下。</p>
+<p>一、Top-down “Variant” Segment Tree：</p>
+<p>目前發現最早出現於<a href="javascript:if(confirm('http://www.oi.edu.pl/static/attachment/20110713/boi-2001.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.oi.edu.pl/static/attachment/20110713/boi-2001.pdf'" tppabs="http://www.oi.edu.pl/static/attachment/20110713/boi-2001.pdf">Baltic
+OI 2001: Mars Maps</a>，官方解答提供了此資料結構的程式碼，但是完全沒有提及線段樹。</p>
+<p>之後英文網路傾向稱作range tree、interval tree，而中文網路傾向稱作線段樹。這些稱呼都是既有的資料結構名稱。</p>
+<p>二、Bottom-up “Variant” Segment Tree：</p>
+<p>2010年，出現於清华大学张昆玮「<a href="javascript:if(confirm('http://www.slideshare.net/DanielChou/ss-7792670  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.slideshare.net/DanielChou/ss-7792670'" tppabs="http://www.slideshare.net/DanielChou/ss-7792670">统计的力量——线段树全接触</a>」投影片，由上述的Top-down “Variant” Segment Tree發展而來。作者明確表示此資料結構並非是原始的線段樹。</p>
+<p>筆者推測此資料結構傳入中國後，被不明所以的網友譯作線段樹。之後因為中國創造大量相關題型，例如<a href="javascript:if(confirm('http://www.spoj.com/problems/GSS3/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.spoj.com/problems/GSS3/'" tppabs="http://www.spoj.com/problems/GSS3/">SPOJ: GSS3</a>，使得線段樹之名稱被發揚光大。英文網路亦開始傾向稱作segment tree。</p>
+<p class="t">Top-down “Variant” Segment Tree【尚無正式名稱】</p>
+<p>存放一串數列，支援修改數值，不支援插入、刪除數值。</p>
+<p>遞迴二分區間，樹葉存放數列，一個樹葉儲存一項；內部節點存放擴充資訊，例如數列區間和、區間最大值、區間最小值。</p>
+<p>節點最多是2N-1個，空間複雜度為O(N)，時間複雜度為O(N)，N為數列長度。</p>
+<img src="VariantSegmentTree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VariantSegmentTree1.png">
+<p>偽線段樹還可以推廣到高維度，存放二維陣列、三維陣列。二維偽線段樹，是先製作一棵第一維度的偽線段樹（稱作X樹），然後每個節點各自接上一棵第二維度的偽線段樹（稱作Y樹）。</p>
+<img src="VariantSegmentTree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VariantSegmentTree2.png">
+<p class="t">Bottom-up “Variant” Segment Tree【尚無正式名稱】</p>
+<p>請參考「<a href="javascript:if(confirm('http://www.slideshare.net/DanielChou/ss-7792670  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.slideshare.net/DanielChou/ss-7792670'" tppabs="http://www.slideshare.net/DanielChou/ss-7792670">统计的力量——线段树全接触</a>」投影片。</p>
+<p>讀者須具備「<a href="language.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/language.html">Bitwise Operation</a>」基礎。</p>
+<p class="t">偽線段樹的功能</p>
+<p>偽線段樹的特色是處理區域，主要有三種題型：</p>
+<pre>
+1. 更新一個元素，查詢一塊區域。（可以推廣到高維度）
+2. 更新一塊區域，查詢一個元素。（僅有一維可行）
+3. 更新一塊區域，查詢一塊區域。（僅有一維可行）
+</pre>
+<p class="t">更新元素、查詢區域</p>
+<p>更新元素、查詢區域，類似二元搜尋樹，時間複雜度為樹的深度O(logN)。</p>
+<img src="VariantSegmentTree3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VariantSegmentTree3.png">
+<textarea t="top-down">
+int array[1<<9];	// 數列
+
+struct Node
+{
+//	int L, R;	// 其下所有樹葉的索引值範圍
+	int sum;	// 其下所有樹葉的數值總和
+} node[1<<10];	// 用陣列模擬二元樹
+
+//int sum[1<<10];	// 更簡便的寫法
+
+int LC(int i) {return i*2;}		// 左小孩索引值
+int RC(int i) {return i*2+1;}	// 右小孩索引值
+
+void build(int L, int R, int i)
+{
+	if (L == R)
+	{
+		// 設定樹葉的數值
+		node[i].sum = array[L];
+		return;
+	}
+
+	int M = (L + R) / 2;
+	build(L  , M, LC(i));	// 遞迴建立左子樹
+	build(M+1, R, RC(i));	// 遞迴建立右子樹
+
+	// 回溯時順便計算總和
+	node[i].sum = node[LC(i)].sum + node[RC(i)].sum;
+}
+
+int x, n;	// 更新位置、數值大小
+void update(int L, int R, int i)
+{
+	if (L == R)
+	{
+		node[i].sum = n;
+		return;
+	}
+
+	int M = (L + R) / 2;
+	if (x <= M) update(L  , M, LC(i));	// 遞迴更新左子樹
+	if (x >  M) update(M+1, R, RC(i));	// 遞迴更新右子樹
+
+	// 回溯時順便更新總和
+	node[i].sum = node[LC(i)].sum + node[RC(i)].sum;
+}
+
+int x1, x2, total;	// 查詢範圍[x1,x2]並且累計總和
+void query(int L, int R, int i)
+{
+	if (x1 <= L && R <= x2)
+	{
+		total += node[i].sum;
+		return;
+	}
+
+	int M = (L + R) / 2;
+	if (x1 <= M) query(L  , M, LC(i));	// 遞迴查詢左子樹
+	if (x2 >  M) query(M+1, R, RC(i));	// 遞迴查詢右子樹
+}
+
+void update_1_query_n()
+{
+	// 建立索引值0到99的偽線段樹。
+	for (int i=0; i<100; ++i) cin >> value[i];
+	build(0, 99, 1);
+
+	// 索引值為5的元素，更新為7。
+	x = 5; n = 7;
+	update(0, 99, 1);
+
+	// 查詢區間[3,3]的總和。
+	x1 = 3; x2 = 3; total = 0;
+	query(0, 99, 1);
+	cout << total;
+}
+</textarea>
+<textarea t="bottom-up">
+int array[(1<<9)-2];	// 數列
+int sum[1<<10], T;
+
+void build(int N)
+{
+	int i;
+	for (T=1; T<N+2; T<<=1) ;
+	sum[T] = 0;
+	for (i=0; i<N; ++i) sum[T+1+i] = array[i];
+	for (++i; i<T; ++i) sum[T+i] = 0;
+	for (i=T-1; i; --i) sum[i] = sum[2*i] + sum[2*i+1];
+}
+
+// 更新範圍[i,i]、更新為數值n
+void update(int i, int n)
+{
+	sum[i += T] = n;
+	for (; i^1; i>>=1)
+		sum[i>>1] = sum[i] + sum[i^1];
+}
+
+// 查詢範圍[i,j]並且累計總和
+int query(int i, int j)
+{
+	int n = 0;
+	for (i+=T-1, j+=T+1; i^j^1; i>>=1, j>>=1)
+	{
+		if (~i & 1) n += sum[i^1];
+		if (j & 1) n += sum[j^1];
+	}
+	return n;
+}
+</textarea>
+<p>推廣到高維度之後，更新元素時，要小心處理。</p>
+<p class="e">UVa 11297 12299</p>
+<p class="t">更新區域、查詢元素</p>
+<p>更新區域有兩種類型：統統改為一數值、統統增減一數值。</p>
+<p>統統改為一數值。更新區域時，若遭遇已改值的區域，則細部劃分之後挪至下層。查詢元素時，凡遭遇已改值的區域，即得答案；不用理會其餘子孫。</p>
+<img src="VariantSegmentTree4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VariantSegmentTree4.png">
+<textarea t="top-down">
+void build(int L, int R, int i)
+{
+	if (L == R)
+	{
+		node[i].set = array[L];
+		return;
+	}
+
+	// 內部節點初始化為沒有設值
+	node[i].set = 1e9;
+
+	int M = (L + R) >> 1;
+	build(L  , M, LC(i));
+	build(M+1, R, RC(i));
+
+	// 左右相同，合而為一。可不寫。
+	if (node[LC(i)].set == node[RC(i)].set)
+		node[i].set = node[LC(i)].set;
+}
+
+int x1, x2, set;
+void update(int L, int R, int i)
+{
+	if (x1 <= L && R <= x2)
+	{
+		node[i].set = set;
+		return;
+	}
+
+	// 已經設值，恰好相同。可不寫。
+	if (node[i].set == set) return;
+
+	// 一分為二，撥草找路。
+	if (node[i].set != 1e9)
+	{
+		node[LC(i)].set = node[RC(i)].set = node[i].set;
+		node[i].set = 1e9;
+	}
+
+	int M = (L + R) / 2;
+	if (x1 <= M) update(L  , M, LC(i));
+	if (x2 >  M) update(M+1, R, RC(i));
+}
+
+int x, n;
+void query(int L, int R, int i)
+{
+/*
+	// 已被下方程式碼處理掉，不必寫。
+	if (L == R)
+	{
+		n = node[i].set;
+		return;
+	}
+*/
+	if (node[i].set != 1e9)
+	{
+		n = node[i].set;
+		return;
+	}
+
+	int M = (L + R) / 2;
+	if (x <= M) query(L  , M, LC(i));
+	if (x >  M) query(M+1, R, RC(i));
+}
+
+void update_n_query_1()
+{
+	// 建立索引值0到99的偽線段樹。
+	for (int i=0; i<100; ++i) cin >> value[i];
+	build(0, 99, 1);
+
+	// 區間[3,3]所有數值改為5。
+	x1 = 3; x2 = 3; total = 5;
+	update(0, 99, 1);
+
+	// 查詢第5個元素。
+	x = 5;
+	query(0, 99, 1);
+	cout << n;
+}
+</textarea>
+<textarea t="bottom-up">
+略
+</textarea>
+<p>統統增減一數值。更新區域時，直接在對應區域上累計增減值，完全不必細部劃分、挪往下層。查詢元素時，只需累加路線上的增減值。</p>
+<textarea t="top-down">
+略
+</textarea>
+<textarea t="bottom-up">
+略
+</textarea>
+<p>無法推廣到二維以上。會有區域不包含但是相交的情況。</p>
+<p class="t">更新區域、查詢區域</p>
+<p><a href="javascript:if(confirm('http://pisces.ck.tp.edu.tw/~peng/index.php?action=showfile&file=f220f2d6b33ae091978ebf59d2af5908bc8190b51  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://pisces.ck.tp.edu.tw/~peng/index.php?action=showfile&file=f220f2d6b33ae091978ebf59d2af5908bc8190b51'" tppabs="http://pisces.ck.tp.edu.tw/~peng/index.php?action=showfile&file=f220f2d6b33ae091978ebf59d2af5908bc8190b51">http://pisces.ck.tp.edu.tw/~peng/index.php?action=showfile&file=f220f2d6b33ae091978ebf59d2af5908bc8190b51</a></p>
+<p>更新區域時，找到對應區域設值、增減值，也更新對應區域所有祖先的總和、最小值、最大值。查詢區域時，便無大礙。</p>
+<p>無法推廣到二維以上，會導致區域部分相交的問題。</p>
+<p class="e">UVa 11402 11992</p>
+<p class="t">更新區域（統統增減一數值）、查詢區域（總和）</p>
+<p><a href="javascript:if(confirm('http://www.notonlysuccess.com/index.php/segment-tree/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.notonlysuccess.com/index.php/segment-tree/'" tppabs="http://www.notonlysuccess.com/index.php/segment-tree/">http://www.notonlysuccess.com/index.php/segment-tree/</a></p>
+<p>原陣列a[i]先算差分d[i]。維護兩棵偽線段樹，分別是d[i]與i*d[i]。</p>
+<pre>
+a[i]的差分d[i]，維護d[i]前綴和、i*d[i]前綴和
+d[i]的兩元素+n　    ---> 區間+n     logN
+d[i]的前綴和        ---> 原數字　　 logN
+前綴和的前綴和      ---> 區間和     logN
+用d[i]和i*d[i]算
+(功能是區間查詢總和＋區間修改)
+</pre>
+<p class="e">PKU 3468</p>
+<p class="t">查詢區間內極大區間</p>
+<p class="e">ICPC 3938</p>
+<p class="t">前綴和、二分搜尋，取代二元搜尋樹</p>
+<pre>
+freq[n]++，維護freq[i]前綴和
+元素+1/-1     ---> 動態插入/刪除數字
+前綴和　　　  ---> 得到n的名次  logN
+前綴和二分搜k ---> 第k大的數　　logNlogN
+</pre>
+<p class="e">UVa 11525 11990 ICPC 4329</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Partial Sum Query資料結構: Binary Indexed Tree</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Binary Indexed Tree（Fenwick Tree）</p>
+<p>存放一串數列，可以快速算出任意區間的總和。</p>
+<p>可以修改數值，但是不能插入、刪除數值。</p>
+<p>Binary Indexed Tree其實是儲存數列第1項到第N項的總和，每一種N值的總和都有儲存。</p>
+<p>儲存第1項到第N項的總和，是把第1項到第N項被切割成好幾個區段，分別儲存這些區段的總和。切割的方法，是以二的次方來分段，先分出數量級最大的區段，再逐步分出數量級次小的區段。由項次小往項次大的方向切割。</p>
+<img src="BinaryIndexedTree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryIndexedTree1.png">
+<p>用另一種角度來看，是把N化作二進位，逐次刪去最低位的1來分段。由項次大往項次小的方向切割。</p>
+<pre>
+10的二進位是1010。
+刪去最低位的bit，分割成 1010 ~ 1000+1，剩下1000。
+刪去最低位的bit，分割成 1000 ~ 0000+1，剩下0000，結束。
+
+7的二進位是111。
+刪去最低位的bit，分割成 111 ~ 110+1，剩下110。
+刪去最低位的bit，分割成 110 ~ 100+1，剩下100。
+刪去最低位的bit，分割成 100 ~ 000+1，剩下000，結束。
+</pre>
+<p>由於每一種N值，都可以分割成形形色色的區段，於是就產生了很多種不同的區段。就是那麼碰巧，所有不同的區段剛好共是N種，可以擠在N個格子的表格裡面！</p>
+<p>本體是一條陣列，存著不同區段的總和。區段大小像是碎形。</p>
+<img src="BinaryIndexedTree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryIndexedTree2.png">
+<p>Binary Indexed Tree可以視作偽線段樹的精簡版本，附加紀錄總和，並且移除樹根及全部右小孩。</p>
+<img src="BinaryIndexedTree3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryIndexedTree3.png">
+<p class="t">計算第1項到第N項的總和</p>
+<p>從表格當中挑出各個對應的區段，進行累加即可。</p>
+<p>外觀像是爬樓梯，往項次小的方向爬，越爬越高。</p>
+<img src="BinaryIndexedTree4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryIndexedTree4.png">
+<p class="t">修改一項數值</p>
+<p>看看表格中有哪些區段是包含這一項的，修正差值即可。</p>
+<p>外觀像是往右爬樓梯，往項次大的方向爬，越爬越高。</p>
+<img src="BinaryIndexedTree5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BinaryIndexedTree5.png">
+<p class="t">複雜度</p>
+<p>建立時間為O(NlogN)，建立空間為O(N)，修改一項數值的時間是O(logN)，計算任意區間總和的時間是O(logN)。</p>
+<p>註：採用偽線段樹的建立手法，建立時間變為O(N)。</p>
+<textarea>
+const int N = 10000000;
+int t[N+1];	// 第零格無作用，數列是從第一項到第N項。
+
+// 快速求出最低位的bit。這是其中一種方式。
+int lower_bit(int n)
+{
+	return n & -n;
+}
+
+// value[1] + value[2] + ... + value[n]
+int sum(int n)
+{
+	int s = 0;
+	while (n > 0)
+	{
+		s += t[n];
+		n -= lower_bit(n);
+	}
+	return s;
+}
+
+// value[n] += d
+void add(int n, int d)
+{
+	while (n <= N)
+	{
+		t[n] += d;
+		n += lower_bit(n);
+	}
+}
+
+// value[a] + value[a+1] + ... + value[b]
+int query(int a, int b)
+{
+	if (a > b) swap(a, b);
+	return sum(b) - sum(a-1);
+}
+</textarea>
+<textarea>
+const int N = 10000000;
+int t[N];	// 數列是從第零項到第N-1項。
+
+// value[0] + value[1] + ... + value[n]
+int sum(int n)
+{
+	int s = 0;
+	while (n >= 0) {s += t[n]; n = (n & (n+1)) - 1;}
+	return s;
+}
+
+// value[n] += d
+void add(int n, int d)
+{
+	while (n < N) {t[n] += d; n |= n + 1;}
+}
+
+// value[a] + value[a+1] + ... + value[b]
+int query(int a, int b)
+{
+	if (a > b) swap(a, b);
+	return sum(b) - sum(a-1);
+	// 小心a-1可能是-1，會超過陣列邊界。
+}
+</textarea>
+<p class="e">UVa 11423 11610</p>
+<p class="t">推廣到高維度</p>
+<p>Binary Indexed Tree可以推廣到高維度，建立方法是逐次處理各維度即可。以二維為例，先把矩陣切成一條一條的橫條，每個橫條都建立Binary Indexed Tree；然後以第一條橫條的表格為基礎，表格中的每一種區段，都建立垂直方向的Binary Indexed Tree，如此便完成了二維的版本。</p>
+<p>簡單的來說，就是先橫向加總一個個數值，形成一段段區間，然後再垂直加總一段段等寬區間，形成一塊塊長方形區域。</p>
+<p>建立時間為O(XlogX * YlogY * ...)，建立空間為O(XY...)，修改一項數值的時間是O(logX * logY * ...)，計算任意矩形區域總和的時間是O(2^D * logX * logY * ...)。</p>
+<textarea>
+const int X = 10000000, Y = 10000000;
+int t[X][Y];
+
+// value[x][y] += d
+void add(int x, int y, int d)
+{
+	// 找出 t[x] 這個橫條
+	while (x < X) {addy(x, y, d); x |= x + 1;}
+}
+
+void addy(int x, int y, int d)
+{
+	while (y < Y) {t[x][y] += d; y |= y + 1;}
+}
+
+// sigma value[0~x][0~y]
+int sum(int x, int y)
+{
+	int s = 0;
+	while (x >= 0) {s += sumy(x, y); x = (x & (x+1)) - 1;}
+	return s;
+}
+
+int sumy(int x, int y)
+{
+	int s = 0;
+	while (y >= 0) {s += t[x][y]; y = (y & (y+1)) - 1;}
+	return s;
+}
+
+int sum(int x1, int x2, int y1, int y2)
+{
+	if (x1 > x2) swap(x1, x2);
+	if (y1 > y2) swap(y1, y2);
+
+	// 切成四個長方形，然後使用排容原理。
+	return sum(x2, y2) - sum(x1-1, y2) - sum(x2, y1-1) + sum(x1-1, y1-1);
+	// 小心x1-1、y1-1可能是-1，會超過陣列邊界。
+}
+</textarea>
+<p class="e">UVa 11601</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Range Minimum Query資料結構: Sparse Table</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Sparse Table<br>【註：古代人取的名稱，今日看來有點詞不達意。】</p>
+<p>存放一串數列，可以快速算出任意區間，其中一個最小（大）值的所在位置。</p>
+<p>不能修改、插入、刪除數值。</p>
+<p>計算方式是依序求出寬度為1、2、4、8、……的區間最小值，區間的各種可能位置都要算一遍。兩個窄區間可以快速合成出一個寬區間。</p>
+<img src="SparseTable1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SparseTable1.png">
+<p>將寬度為1、2、4、8、……的區間最小值，儲存於表格。</p>
+<pre>
+t(i, j) =
+ { min{ t(i-1, j), t(i-1, j+2^(i-1) }  , if i > 0
+ { value[j]                            , if i = 0
+</pre>
+<img src="SparseTable2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SparseTable2.png">
+<p>實作時，通常表格中紀錄的是索引值、指標，而不是直接紀錄數值的最小值。</p>
+<p class="t">計算第1項到第N項的最小值（的索引值）</p>
+<p>查詢時，先從表格中找到寬度略短於（相等於）查詢區間的區間，以靠左、靠右的兩條等寬區間，求得查詢區間的最小值：</p>
+<img src="SparseTable3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SparseTable3.png">
+<p class="t">複雜度</p>
+<p>建立時間為O(NlogN)，建立空間為O(NlogN)，計算任意區間最小值的時間是O(1)。</p>
+<textarea t="1D RMQ，找出最小值的索引值">
+const int N = 1000000;
+const int logN = ceil(log(N));
+
+int value[N];
+int t[logN][N];	// t[i][j]儲存區間[j, j+(2^i)-1]的最小值的索引值
+
+void construct()
+{
+	// 寬度為1的區間最小值
+	for (int i=0; i<N; ++i)
+		t[0][i] = i;
+
+	// 寬度為2、4、8、……的區間最小值
+	for (int i=1; (1<<i)-1<N; ++i)	// i < logN
+		for (int j=0; j+(1<<i)-1<N; ++j)
+		{
+			int& L = t[i-1][j];
+			int& R = t[i-1][j+(1<<(i-1))];
+			t[i][j] = (value[L] <= value[R] ? L : R);
+		}
+}
+
+int query(int a, int b)
+{
+	int d = abs(b - a) + 1;
+	int p = 31 - __builtin_clz(d);	// evil O(1)
+
+	int& L = t[p][a];
+	int& R = t[p][b-(1<<p)+1];
+	return value[L] <= value[R] ? L : R;
+}
+</textarea>
+<textarea t="1D RMQ，僅找出最小值">
+const int N = 1000;
+const int logN = ceil(log2(N));
+
+int value[N];
+int t[logN][N];	// t[i][j]儲存區間[j, j+(2^i)-1]的最小值的索引值
+
+void construct()
+{
+	for (int i=0; i<N; ++i)
+		t[0][i] = value[i];	// 此處有異
+
+	// 減一、小於，可以改成小於等於。
+	for (int i=1; (1<<i)<=N; ++i)
+		for (int j=0; j+(1<<i)<=N; ++j)
+			t[i][j] = min(t[i-1][j], t[i-1][j+(1<<(i-1))]);
+}
+
+int query(int a, int b)
+{
+	int p = 31 - __builtin_clz(abs(b - a) + 1);
+	return min(t[p][a], t[p][b-(1<<p)+1]);
+}
+</textarea>
+<p class="e">UVa 11235</p>
+<p class="t">推廣到高維度</p>
+<p>這個資料結構可以推廣到高維度，建立方法是逐次處理各維度即可。以二維為例，先把矩陣切成一條一條的橫條，每個橫條都建立1D RMQ；然後以第一條橫條的表格為基礎，表格中的每一個子問題，都建立垂直方向的1D RMQ，如此便完成了二維的版本。</p>
+<p>建立時間為O(XlogX * YlogY * ...)，建立空間為O(XlogX * YlogY * ...)，計算任意矩形區域最小值的時間是O(2^D)。</p>
+<textarea t="2D RMQ，僅找出最小值">
+const int X = 1000, Y = 2000;
+const int logX = ceil(log(X)), logY = ceil(log(Y));
+
+int value[X][Y];
+int t[logX][X][logY][Y];
+
+void construct()
+{
+	for (int i=0; i<X; ++i)
+		for (int j=0; j<Y; ++j)
+			t[0][i][0][j] = value[i][j];
+
+	// 先計算水平方向
+	for (int k=0; k<Y; ++k)
+		for (int i=1; (1<<i)<=X; ++i)
+			for (int j=0; j+(1<<i)<=X; ++j)
+				t[0][k][i][j] = min(
+					t[0][k][i-1][j],
+					t[0][k][i-1][j+(1<<(i-1))]
+				);
+
+	// 再整合垂直方向
+	for (int i=0; (1<<i)<=X; ++i)
+		for (int j=0; j<X; ++j)
+			for (int p=1; (1<<p)<=Y; ++p)
+				for (int q=0; q+(1<<p)<=Y; ++q)
+					t[p][q][i][j] = min(
+						t[p-1][q][i][j],
+						t[p-1][q+(1<<(p-1))][i][j]
+					);
+}
+
+int query(int x1, int x2, int y1, int y2)
+{
+	int x = 31 - __builtin_clz(abs(x2 - x1) + 1);
+	int y = 31 - __builtin_clz(abs(y2 - y1) + 1);
+
+	// 四個位於角落的矩形，大小都是(1<<x) * (1<<y)。
+	return min(
+		t[x][x1         ][y][y1         ],
+		t[x][x2-(1<<x)+1][y][y1         ],
+		t[x][x1         ][y][y2-(1<<y)+1],
+		t[x][x2-(1<<x)+1][y][y2-(1<<y)+1]
+	);
+}
+</textarea>
+<p class="e">UVa 11263</p>
+<p class="t">延伸閱讀：±1 Range Minimum Query</p>
+<p>以O(N)時間建立Cartesian Tree，RMQ問題就轉換成LCA問題。</p>
+<p>以O(N)時間用DFS遍歷，記下到訪次序（作為索引值）、深度（作為元素值），LCA問題就轉換成±1RMQ問題。</p>
+<p>一維的±1RMQ問題，有著相當複雜的O(N)時間演算法，此處省略之。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Range Equality Query資料結構: Quadtree</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Bitree / Quadtree / Octree / Hextree</p>
+<p>二元樹、四元樹、八元樹、十六元樹分別是一二三四維的版本。以下文章以二元樹作為樣例，進行說明。</p>
+<p>如果區間不是相同顏色，就繼續遞迴對半分割下去。區間長度只能是2的次方。</p>
+<p>更新元素有三大步驟。一、搜尋之時，原有顏色分離，挪往下層。二、就位之時，直接覆蓋顏色，刪除子樹（或者無視子樹）。三、回溯之時，相同顏色合併，挪往上層。</p>
+<p>此番技巧，英文網路稱作「lazy propagation」，中文網路稱作「延遲標記」。筆者尚未查出正式的學術名稱。</p>
+<p>更新區域，視情況左右子樹都得走。</p>
+<img src="Bitree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Bitree1.png">
+<img src="Bitree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Bitree2.png">
+<img src="Bitree3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Bitree3.png">
+<img src="Bitree4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Bitree4.png">
+<p>更新元素、查詢元素，時間複雜度為O(logN)。更新區域、查詢區域，時間複雜度為O(N)。</p>
+<p class="e">UVa 297 11941 11948</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

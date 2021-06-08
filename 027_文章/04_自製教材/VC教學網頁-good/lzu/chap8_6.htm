@@ -1,0 +1,150 @@
+<html>
+
+<head>
+<title>8.6 打印和打印预览</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="5">8.6 </font><font color="#3973DE" size="5">打印和打印预览</font><font size="4"></p>
+    <p></font><font SIZE="3">最后，我们要给绘图程序增加打印和打印预览功能。我们希望文档分两页打印，第一页为封面，打印文档名字。第二页输出文档内容，并在页眉上打印文档名字。虽然</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">已经自动生成了打印和打印预览的代码，但是许多情况下，并不能符合要求。</p>
+    <blockquote>
+      <p>这是因为：</p>
+    </blockquote>
+    <blockquote>
+      <p>1.打印机和窗口（屏幕）显示的分辨率不同：打印机的分辨率用每英寸多少个点来描述，屏幕分辨率用单位面积的像素点来表示。对于同样的Arial字体下的一个字符，在屏幕上用20个像素表示，而在打印机上则需要50点。在编辑器程序中，使用的映射模式为MM_TEXT，在这种模式下，一个逻辑单位对应于一个像素点。我们已经知道，Windows是按照逻辑单位来绘图的。这样，根据MM_TEXT模式的逻辑单位（实际上也就是像素数目）决定比例的原则打印出来得内容自然要比屏幕上看到的要小的多。因此，前面在初始化视图OnInitialUpdate时候，在选择绘图的映射模式上，没有采用以前使用的缺省的MM_TEXT模式，而是采用了MM_LOENGLISH。</p>
+      <p>2.窗口和打印机对边界的处理不同：窗口可以看作是无边界的，可以在窗口外面画，而不会引起错误，窗口会自动剪裁超出边界的图形。但打印机却不同，它是按页打印的。打印输出时必须自己处理分页和换页，如果不作这样的处理的话，行和行之间就会叠加起来。</p>
+    </blockquote>
+    <p>要正确打印输出屏幕上的内容，就必须解决以上两个问题。对于第一个问题，有两种方法：一是利用SetMapMode(int 
+    nMode) 设置别的映射模式，比如采用MM_LOENGLISH，不用像素而是采用0.01inch来衡量。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">要处理打印分页、换页，就必须修改框架处理打印消息的缺省行为，在其中计算和换页。此外，我们还希望在打印时在页眉处能够输出标题（使用文件名作为标题）、在页脚处输出页码。</p>
+    <p>为了实现打印和打印预览功能，首先需要了解MFC的打印体系结构，即框架是如何处理打印文档的要求的。</p>
+    <p>MFC的打印工作大致上是这样进行的：</p>
+    <p>1.显示Print对话框</p>
+    <p>2.创建一个与当前打印机设置相匹配的设备上下文（CDC）对象。</p>
+    <p>3.设置要打印的页数</p>
+    <p>4.调用CDC::StartDoc开始打印</p>
+    <p>5.用CDC::StartPage开始打印一页</p>
+    <p>6.调用视图的OnDraw()方法打印输出一页内容</p>
+    <p>7.用CDC::EndPage结束一页的打印</p>
+    <p>8.循环输出全部内容</p>
+    <p>9.用CDC::EndDoc结束打印</p>
+    <p>10.视图作打印的清理工作</p>
+    <p>框架的打印文档功能是从OnPreparePrinting(CPrintInfo* pInfo)开始的，在缺省的情况下，它只是简单的调用视图的DoPreparePrinting()函数。DoPreparePrinting()显示Print对话框，并创建与打印机相匹配的设备上下文。如果要想改变打印机初始设置，可以在这里改。缺省设置下，使用1作为第一页编号（注意：打印的页号是从1开始编号而不是0），用0xFFFF作为文档的最后一页编号。因为Draw要求分两页打印输出，因此要在这里设置打印页数。要设置打印页数，可以调用CPrintInfo::SetMaxPage(nMaxPage)。同时还将预览页数也设置为两页。</p>
+    <p>BOOL CDrawView::OnPreparePrinting(CPrintInfo* pInfo)</p>
+    <p>{</p>
+    <p><b>　</p>
+    <p>pInfo-&gt;SetMaxPage(2); // the document is two pages long:</p>
+    <p>// the first page is the title page</p>
+    <p>// the second is the drawing</p>
+    <p>BOOL bRet = DoPreparePrinting(pInfo); // default preparation</p>
+    <p>pInfo-&gt;m_nNumPreviewPages = 2; // Preview 2 pages at a time</p>
+    <p>// Set this value after calling DoPreparePrinting to override</p>
+    <p>// value read from .INI file</p>
+    <p>return bRet;</b></p>
+    <p>}</p>
+    <p>DoPreparePrinting显示Print对话框。返回时，CPrintInfo结构包含了用户所指定的值，包括起止页号、最大页号、最小页号等。</p>
+    <p>OnBeginPrinting()在OnPreparePrinting()被调用之后实际打印之前调用。OnBeginPrinting()用于分配GDI资源，这里使用缺省行为。</p>
+    <p>OnPrepareDC用作屏幕显示时，在绘图前调整DC。在用于打印时，OnPrepareDC也完成类似功能。</p>
+    <p>OnPrint完成真正的打印一页文档的工作。它把一个打印机设备上下文传给OnDraw，由OnDraw负责打印输出。可以把那些适合于打印但是不适合于屏幕输出的工作，如打印页眉和页脚，放在OnPrint()的重载中完成，然后再调用OnDraw完成打印和显示都需要的工作。现在，我们就在OnPrint中加入打印页眉和页脚的代码。OnPrint不是由AppWizard自动生成的，首先要用ClassWizard为CDrawView增加OnPrint()方法。然后添加绘图程序的特殊打印代码，见清单8.10。</p>
+    <p><b>　</p>
+    <p>清单8.10 OnPrint()成员函数</b></p>
+    <p>void CDrawView::OnPrint(CDC* pDC, CPrintInfo* pInfo) </p>
+    <p>{</p>
+    <p><b>　</p>
+    <p>// TODO: Add your specialized code here and/or call the base class</p>
+    <p>if (pInfo-&gt;m_nCurPage == 1) // page no. 1 is the title page</p>
+    <p>{</p>
+    <p>PrintTitlePage(pDC, pInfo);</p>
+    <p>return; // nothing else to print on page 1 but the page title</p>
+    <p>}</p>
+    <p>CString strHeader = GetDocument()-&gt;GetTitle();</p>
+    <p>PrintPageHeader(pDC, pInfo, strHeader);</p>
+    <p>// PrintPageHeader() subtracts out from the pInfo-&gt;m_rectDraw the</p>
+    <p>// amount of the page used for the header.</p>
+    <p>pDC-&gt;SetWindowOrg(pInfo-&gt;m_rectDraw.left,-pInfo-&gt;m_rectDraw.top);</p>
+    <p>// Now print the rest of the page</p>
+    <p>OnDraw(pDC); </b></p>
+    <p>}</p>
+    <p>　</p>
+    <p>OnPrint()首先根据CPrintInfo类型的pInfo中m_nCurPage（保存当前打印页号信息）判断当前打印的是不是第一页。如果是第一页，就打印输出封面。否则，首先调用PrintPageHeader打印页眉。然后用SetWindowOrg调整打印输出原点位置。m_rectDraw又是CPrintInfo结构的一个重要数据成员，它保存的是打印输出的矩形边界。最后将与打印机匹配的设备上下文传给OnDraw，由OnDraw在打印机上输出。注意这里使用的映射模式为MM_LOENGLISH，它的y轴方向是向上递增的。</p>
+    <p>PrintTitlePage打印输出文档的封面。它首先定义一种逻辑字体，设置逻辑字体属性，然后由调用CreateFontIndirect由逻辑字体创建字体。SetTextAlign(TA_CENTER)将文本设置为居中输出。然后调用TextOut在打印矩形m_rectDraw上输出封面。PrintTitlePage函数定义见清单8.11。</p>
+    <p><b>　</p>
+    <p>清单8.11 PrintTitlePage成员函数</p>
+    <p>void CDrawView::PrintTitlePage(CDC* pDC, CPrintInfo* pInfo)</p>
+    <p>{</p>
+    <p>// Prepare a font size for displaying the file name</p>
+    <p>LOGFONT logFont;</p>
+    <p>memset(&amp;logFont, 0, sizeof(LOGFONT));</p>
+    <p>logFont.lfHeight = 75; // 3/4th inch high in MM_LOENGLISH</p>
+    <p>// (1/100th inch)</p>
+    <p>CFont font;</p>
+    <p>CFont* pOldFont = NULL;</p>
+    <p>if (font.CreateFontIndirect(&amp;logFont))</p>
+    <p>pOldFont = pDC-&gt;SelectObject(&amp;font);</p>
+    <p>// Get the file name, to be displayed on title page</p>
+    <p>CString strPageTitle = GetDocument()-&gt;GetTitle();</p>
+    <p>// Display the file name 1 inch below top of the page,</p>
+    <p>// centered horizontally</p>
+    <p>pDC-&gt;SetTextAlign(TA_CENTER);</p>
+    <p>pDC-&gt;TextOut(pInfo-&gt;m_rectDraw.right/2, -100, strPageTitle);</p>
+    <p>if (pOldFont != NULL)</p>
+    <p>pDC-&gt;SelectObject(pOldFont);</p>
+    <p>}</b></p>
+    <p>PrintPageHeader在页眉位置输出文件名，然后从m_rectDraw扣除页眉的大小。</p>
+    <p><b>　</p>
+    <p>void CDrawView::PrintPageHeader(CDC* pDC, CPrintInfo* pInfo,</p>
+    <p>CString&amp; strHeader)</p>
+    <p>{</p>
+    <p>// Print a page header consisting of the name of</p>
+    <p>// the document and a horizontal line</p>
+    <p>pDC-&gt;SetTextAlign(TA_LEFT);</p>
+    <p>pDC-&gt;TextOut(0,-25, strHeader); // 1/4 inch down</p>
+    <p>// Draw a line across the page, below the header</p>
+    <p>TEXTMETRIC textMetric;</p>
+    <p>pDC-&gt;GetTextMetrics(&amp;textMetric);</p>
+    <p>int y = -35 - textMetric.tmHeight; // line 1/10th inch below text</p>
+    <p>pDC-&gt;MoveTo(0, y); // from left margin</p>
+    <p>pDC-&gt;LineTo(pInfo-&gt;m_rectDraw.right, y); // to right margin</p>
+    <p>// Subtract out from the drawing rectange the space used by the header.</p>
+    <p>y -= 25; // space 1/4 inch below (top of) line</p>
+    <p>pInfo-&gt;m_rectDraw.top += y;</p>
+    <p>}</b></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">作为一个练习，读者可以修改</font><font FACE="Times New Roman" SIZE="3">OnPrint()</font><font SIZE="3">并增加一个</font><font FACE="Times New Roman" SIZE="3">PrintPageFooter()</font><font SIZE="3">函数，在每一页的页脚处输出打印的页号。注意调用</font><font FACE="Times New Roman" SIZE="3">OnDraw</font><font SIZE="3">之前，要从</font><font FACE="Times New Roman" SIZE="3">m_rectDraw</font><font SIZE="3">中扣除页脚的高度。</font><font FACE="Times New Roman" SIZE="4"><b></p>
+    </b></font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap2_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap2/chap2_4.htm">上一页</a></td>
+        <td><p align="right"><a href="chap2_6.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap2/chap2_6.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

@@ -1,0 +1,2439 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb_2312-80">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>第五章 使用Windows标准控件</TITLE>
+<META NAME="Template" CONTENT="E:\Office95\Template\Manuscripts\16 开图书模板.dot">
+</HEAD>
+<BODY>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=5><P ALIGN="CENTER"><A NAME="_Toc425698468">第九章</FONT><FONT FACE="Arial" SIZE=5> </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=5>图形设备接口</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">事实上，图形设备接口</FONT><FONT SIZE=3>(Graphics Device Interface</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>GDI)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是指这样的一个可执行程序，它处理来自</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序的图形函数调用，然后把这些调用传递给合适的设备驱动程序，由设备驱动程序来执行与硬件相关的函数并产生最后的输出结果。</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以看作是一个应用程序与输出设备之间的中介，一方面，</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>向应用程序提供了一个设备无关的编程环境，另一方面，它又以设备相关的格式和具体的设备打交道。</P>
+<P ALIGN="JUSTIFY">经常同图形设备接口相提并论的另一个概念是设备上下文</FONT><FONT SIZE=3>(Device Context</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>DC)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。设备上下文是一种</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>数据结构，它包括了与一个设备</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>如显示器或打印机</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的绘制属性相关的信息。所有的绘制操作通过一个设备上下文对象进行，该对象封装了实现绘制线条、形状和文本的</FONT><FONT SIZE=3>Windows API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。设备上下文可以用来向屏幕、打印机和图元文件输出结果。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序中，我们通常在绘制之前调用</FONT><FONT SIZE=3>BeginPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数，然后在设备上下文中进行一系列的绘制操作，最后调用</FONT><FONT SIZE=3>EndPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数结束绘制。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类</FONT><FONT SIZE=3>CPaintDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>封装了这一过程。在构造</FONT><FONT SIZE=3>CPaintDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的同时，其构造函数自动调用</FONT><FONT SIZE=3>BeginPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数；在消毁</FONT><FONT SIZE=3>CPaintDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的同时，其析构函数自动调用</FONT><FONT SIZE=3>EndPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。因此前面所讲述的过程可以对应于下面的三个步骤：构造一个</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，进行绘制操作，消毁该</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。在基于文档</FONT><FONT SIZE=3>/</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>视结构的应用程序框架中，这个过程被进一步的简化。回忆前几章中讲述的内容，我们一般在视类的</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数中处理有关重绘的操作。通过</FONT><FONT SIZE=3>OnPrepareDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数，框架自动的向</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数传递一个类型为</FONT><FONT SIZE=3>CPaintDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的设备上下文对象。我们只需简单的通过该对象进行绘制，而不需要关心这一对象的构造和消毁。这一过程由框架自动的完成，而且，隐藏在背后的设备上下文在对</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的调用返回时由框架进行释放。</P>
+<P ALIGN="JUSTIFY">除了上面的</FONT><FONT SIZE=3>CPaintDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类外，</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>还提供了其它的一些封装不同设备上下文的类。如</FONT><FONT SIZE=3>CClientDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类，它所封装的设备上下文仅代表了一个窗口的客户区。在</FONT><FONT SIZE=3>CClientDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的构造函数中调用的不是</FONT><FONT SIZE=3>BeginPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数，而是</FONT><FONT SIZE=3>GetDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数；相应的，</FONT><FONT SIZE=3>ReleaseDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数在类</FONT><FONT SIZE=3>CClientDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的析构函数被自动调用。与此对应的还有另一个类</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，它所封装的设备上下文代表的是整个窗口，不仅包括其客户区，也同时包括窗口的边框及其它非客户区对象。</P>
+<P ALIGN="JUSTIFY">所有的设备上下文类中比较特殊的是类</FONT><FONT SIZE=3>CMetaFileDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，通过</FONT><FONT SIZE=3>CMetaFileDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象所进行的绘制操作不是对一个实在的设备来进行的，这些操作都被记录到一个</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>图元文件中。不象自动传递给</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数的</FONT><FONT SIZE=3>CPaintDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，如果要在这种情况下使用</FONT><FONT SIZE=3>CMetaFileDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的话，我们必须自己调用</FONT><FONT SIZE=3>OnPrepareDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">所有的这些设备上下文类都以类</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>作为其基类。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">一般情况下，很多绘制操作都是在应用程序的视类的</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数中进行的，前面说到过，当视类窗口收到消息</FONT><FONT SIZE=3>WM_PAINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时，该消息对应的处理函数</FONT><FONT SIZE=3>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>被调用，该处理函数构造一个</FONT><FONT SIZE=3>CPaintDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，并将指向该对象的指针传递给</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数。这里我们考虑这样一种情况，如果我们正在编写的是一个通过鼠标在屏幕上绘图的应用程序。这时我很显然需要为鼠标的移动消息添加消息处理函数，而且，我们希望用户在移动鼠标的过程中立即就可以看到所绘制的内容，而不是等到窗口收到</FONT><FONT SIZE=3>WM_PAINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>即发生重绘事件</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>才调用成员函数</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>绘制窗口。在这种情况下，我们更倾向于直接在鼠标消息处理函数中进行绘制，这时，就需要创建一个设备上下文对象，然后通过该对象调用一系列的绘制方法。</P>
+<P ALIGN="JUSTIFY"></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>本身是一个图形界面的操作系统，进行</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序设计随时都会同设备上下文打交道，甚至在本书前面的章节中的一些示例程序中我们也已经用到了设备上下文，只不过在当时我们回避了与设备上下文有关的很多复杂东西。本章的目的之一就是系统的讨论这些前面已经用到但没有加以阐述的概念和技巧，并补充一些尚未涉及的内容，这些内容包括：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>使用设备上下文进行绘制</LI></P>
+<P ALIGN="JUSTIFY"><LI>绘图对象</LI></P>
+<P ALIGN="JUSTIFY"><LI>直线与曲线</LI></P>
+<P ALIGN="JUSTIFY"><LI>填充形状</LI></P>
+<P ALIGN="JUSTIFY"><LI>字体和文本</LI></P>
+<P ALIGN="JUSTIFY"><LI>颜色</LI></P>
+<P ALIGN="JUSTIFY"><LI>坐标空间及变换</LI></P></UL>
+
+<P ALIGN="JUSTIFY">这些概念往往是交织起来的，哪怕是一个很简单的绘制操作，往往都需要用到不只一个绘图对象，因此我们很难将它们人为的分割开来进行讲述。在本章上，各节的标题只代表了本节的侧重点，而对于某一个概念的叙述或使用，则有可能分散在不只一个小节中。事实上，一个应用程序是一个整体，它常常需要很多个部件共同协调工作才可以正常工作。因此，出现这种情况是很自然的。</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698469">第一节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>设备上下文</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序中，绘制操作通常涉及三类对象，一类是输出对象，亦即设备上下文对象，包括</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>及其派生类；一类是绘制工具对象，亦即前面所说的图形对象，如果</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CPen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>等；另一类属于</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>编程中需要用到的的基本数据类型，如</FONT><FONT SIZE=3>CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>等。</P>
+<P ALIGN="JUSTIFY">不同的设备上下文类封装了不同类型的设备上下文类对象，如表</FONT><FONT SIZE=3>9.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">除了设备上下文以外，在</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中进行绘制通常还需要各种绘制工具，如用来绘制线条的笔、用来填充一个图形内部的刷子以及用来绘制文本的字体等。这些工具称作图形对象，它们由</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>系统提供，</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供的图形对象类对它们进行了封装，表</FONT><FONT SIZE=3>9.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给出了这些图形对象以及与它们等价的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>图形设备句柄类型。</P>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">表</FONT><FONT FACE="Arial" SIZE=1>9. 1 MFC</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>中的设备上下文类</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=483>
+<TR><TD WIDTH="20%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设备上下文类</FONT></TD>
+<TD WIDTH="80%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="20%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CDC</FONT></TD>
+<TD WIDTH="80%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">所有设备上下文类的基类。可用来直接访问整个显示器或如打印机之类的非显示设备上下文。</FONT></TD>
+</TR>
+<TR><TD WIDTH="20%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CPaintDC</FONT></TD>
+<TD WIDTH="80%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在窗口的</FONT><FONT SIZE=1>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>成员函数中使用的一种显示上下文。在其构造过程中自动调用</FONT><FONT SIZE=1>BeginPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>，在其析构过程中自动调用</FONT><FONT SIZE=1>EndPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>。</FONT></TD>
+</TR>
+<TR><TD WIDTH="20%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CClientDC</FONT></TD>
+<TD WIDTH="80%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">代表窗口的客户区的显示上下文。通常在需要直接在窗口客户区进行绘制时使用。</FONT></TD>
+</TR>
+<TR><TD WIDTH="20%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CWindowDC</FONT></TD>
+<TD WIDTH="80%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">代表整个窗口的显示上下文，包括客户区和非客户区。</FONT></TD>
+</TR>
+<TR><TD WIDTH="20%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CMetaFileDC</FONT></TD>
+<TD WIDTH="80%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">代表</FONT><FONT SIZE=1>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>图元文件的设备上下文。一个</FONT><FONT SIZE=1>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>图元文件包括一系列的图形设备接口命令，可以通过重放这些命令来创建图形。向</FONT><FONT SIZE=1>CMetaFileDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象进行的各种绘制操作可以被记录到一个图元文件中。</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">　</P>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">表</FONT><FONT FACE="Arial" SIZE=1>9. 2 MFC</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>中的</FONT><FONT FACE="Arial" SIZE=1>Windows GDI</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>对象类</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=475>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">图形对象类</FONT></TD>
+<TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">等价的</FONT><FONT SIZE=1>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>图形设备句柄</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CBrush</FONT></TD>
+<TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">HBRUSH</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">用来填充正在绘制的对象的内部</FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CPen</FONT></TD>
+<TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">HPEN</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">用来绘制对象的边线</FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CFont</FONT></TD>
+<TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">HFONT</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">用来绘制文本</FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CBitmap</FONT></TD>
+<TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">HBITMAP</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">用来提供操作位图的接口</FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CPalette</FONT></TD>
+<TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">HPALETTE</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">用作应用程序和色彩输出设备</FONT><FONT SIZE=1>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>如显示器</FONT><FONT SIZE=1>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>之间的接口</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">　</P>
+</FONT><FONT FACE="Arial"><P>9.1.1 </FONT><FONT FACE="黑体" LANG="ZH-CN">几个与图形绘制有关的简单数据类型</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在讲述设备上下文和图形对象之前，我们来介绍几个常用的数据结构类。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(1) CPoint</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>类</P></DIR>
+
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类封装了一个点的坐标。它事实上是从</FONT><FONT SIZE=3>POINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构派生而来的。结构</FONT><FONT SIZE=3>POINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>Win32 SDK</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中定义。因此，</FONT><FONT SIZE=3>CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>也继承了</FONT><FONT SIZE=3>POINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构的数据成员</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</FONT><FONT SIZE=3>CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象可以用在任何使用</FONT><FONT SIZE=3>POINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构的场合。</FONT><FONT SIZE=3>CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象还可以和另一种简单数据类型</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或</FONT><FONT SIZE=3>SIZE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构相互进行转换。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类具有多种形式的构造函数：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CPoint( );</P>
+<P>CPoint( int initX, int initY );</P>
+<P>CPoint( POINT initPt );</P>
+<P>CPoint( SIZE initSize );</P>
+<P>CPoint( DWORD dwPoint );</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">当使用</FONT><FONT SIZE=3>DWORD</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的值来构造</FONT><FONT SIZE=3>CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象时，其低位字将被赋值给</FONT><FONT SIZE=3>CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的成员</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，高位字将被赋值给成员</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>Offset</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以设置点的偏移量，同时，在类中定义的一些运算符，如</FONT><FONT FACE="Symbol" SIZE=3>?</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT FACE="Symbol" SIZE=3>?</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>等大大的简化了对点坐标的各种运算和比较。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(2) CSize</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>类</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">如果要表示距离以及相对位置，可以使用</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>事实上是从</FONT><FONT SIZE=3>SIZE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>派生而来的，因此，</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>继承了</FONT><FONT SIZE=3>SIZE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构的数据成员</FONT><FONT SIZE=3>cx</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>cy</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。构造一个</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象与用对应的方法构造</FONT><FONT SIZE=3>CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象非常相似，因此我们不需讲述。同样，我们可以使用一个</FONT><FONT SIZE=3>DWORD</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>值来构造</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，这时，其低位字被赋值给</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的成员</FONT><FONT SIZE=3>cx </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，高位字被赋值给成员</FONT><FONT SIZE=3>cy</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。在类</FONT><FONT SIZE=3>Size</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中定义了六个运算符：</FONT><FONT FACE="Symbol" SIZE=3>?</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT FACE="Symbol" SIZE=3>?</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT FACE="Symbol" SIZE=3>??</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(3) CRect</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>类</P></DIR>
+
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类是编程时经常使用的几个简单数据结构之一，它从</FONT><FONT SIZE=3>RECT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构派生，因此，</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类继承了</FONT><FONT SIZE=3>RECT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构的数据成员</FONT><FONT SIZE=3>left</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>top</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>right</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>bottom</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。它们是</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的公有成员。</P>
+<P ALIGN="JUSTIFY">一个</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象可以传递给任何以</FONT><FONT SIZE=3>RECT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构或</FONT><FONT SIZE=3>LPCRECT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>LPRECTW</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>指针为参数的函数。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>在指定一个</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象时，一般情况下我们需要使它的左边界的坐标小于右边界的坐标和上边界的坐标小于下边界的坐标。我们称满足该条件的矩形为常态矩形。很多函数要求传递给它的</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象表示一个常态矩形，否则这些函数将有可能返回一个错误的结果。我们可以通过调用成员函数</FONT><FONT SIZE=3>NormalizeRect</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>来将一个非常态矩形转换为一个常态矩形。在程序中出现非常态矩形并不一定的程序员的疏忽大意。这里举一个例子，如果当前显示上下文的映射模式为</FONT><FONT SIZE=3>MM_LOENGLISH</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>，将一个表示常态矩形的</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象传递给成员函数</FONT><FONT SIZE=3>CDC::DPtoLP</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>，将得到一个非常态矩形，该矩形的高度将成为一个负值。这是因为在</FONT><FONT SIZE=3>MM_LOENGLISH</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>映射模式中，纵坐标的方向是向上的。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">相比我们在前面所讲述的</FONT><FONT SIZE=3>CPoint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类和</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类来说，类</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>要庞大得多。表列出了在类</FONT><FONT SIZE=3>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中定义的成员函数。</P>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">表</FONT><FONT FACE="Arial" SIZE=1>9. 3 </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>类</FONT><FONT FACE="Arial" SIZE=1>CRect</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>的成员函数</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=469>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">成员函数</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Width</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">计算矩形的宽度</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Height</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">计算矩形的高度</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Size</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">计算矩形的大小</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="RIGHT">续表</FONT><FONT FACE="Arial" SIZE=1>9.3</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=469>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">成员函数</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">TopLeft</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">返回矩形的左上角</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">BottomRight</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">返回矩形的右下角</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CenterPoint</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">返回矩形的中点</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IsRectEmpty</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">判断矩形是否为空。空的矩形的宽和高都为</FONT><FONT SIZE=1>0</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IsRectNull</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">判断矩形的</FONT><FONT SIZE=1>top</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>、</FONT><FONT SIZE=1>bottom</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>、</FONT><FONT SIZE=1>left</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>和</FONT><FONT SIZE=1>right</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>成员变量是否全都为</FONT><FONT SIZE=1>0</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">PtInRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">判断指定点是否的矩形内</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">SetRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设置矩形的大小</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">SetRectEmpty</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">将矩形设置为空</FONT><FONT SIZE=1>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>所有坐标均为</FONT><FONT SIZE=1>0)</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">CopyRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从源矩形中拷贝维度到矩形中</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">EqualRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">判断两个矩形是否相等</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">InflateRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">扩大矩形的宽和高</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">DeflateRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">减小矩形的宽和高</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">NormalizeRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">使用矩形的宽和高标准化</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">OffsetRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">按指定的偏移量移动矩形</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">SubtractRect </FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从一个矩形中减去另一个矩形</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IntersectRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设置矩形为两个矩形的交</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">UnionRect</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设置矩形为两个矩形的并</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">LPCRECT</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">转换</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象为</FONT><FONT SIZE=1>LPCRECT</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">LPRECT</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">转换</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象为</FONT><FONT SIZE=1>LPRECT</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">=</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">拷贝一个矩形的维度到</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">==</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">判断两个矩形的维度是否相等</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">!=</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">判断两个矩形是否不等</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">+=</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">将指定的偏移量添加到</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象或扩展</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">-=</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象中减去指定的偏移量或缩小</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">&amp;=</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设置</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象为</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象和另一矩形的交</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">|=</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设置</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象为</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象和另一矩形的并</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">+</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">将指定的偏移量添加到</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象或扩展</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象，并返回一个</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">-</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象减去指定的偏移量或缩小</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象，并返回一个</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="RIGHT">续表</FONT><FONT FACE="Arial" SIZE=1>9.3</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=469>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">成员函数</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">&amp;</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">返回</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象和另一矩形的共同部分</FONT></TD>
+</TR>
+<TR><TD WIDTH="21%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">|</FONT></TD>
+<TD WIDTH="79%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">返回</FONT><FONT SIZE=1>CRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>对象和另一矩形的并</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="Arial"><P>9.1.2 </FONT><FONT FACE="黑体" LANG="ZH-CN">显示设备上下文</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">对于在视类的</FONT><FONT SIZE=3>OnDraw</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数中使用设备上下文进行输出的这种情况，我们已经以前面讲述文档和视时给出了一些示例，因此这里就不再重复叙述，读者可以参考前面所讲述的内容。下面我们来看一下如何自己构造设备上下文，并通过该设备上下文来进行绘制。</P>
+<P ALIGN="JUSTIFY">在示例程序</FONT><FONT SIZE=3>MulticlrdCaption</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中，我们通过</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象获得包括客户区和非客户区的显示设备上下文，然后将窗口的标题绘制为五彩的。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;afxwin.h&gt;</P>
+<P>#include &lt;afxext.h&gt;</P>
+
+<P>// 派生自己的应用程序类</P>
+<P>class CMyApp : public CWinApp</P>
+<P>{</P>
+<P>public:</P>
+<P>&#9;virtual BOOL InitInstance();</P>
+<P>};</P>
+
+<P>// 应用程序主窗口类</P>
+<P>class CMyWnd : public CFrameWnd</P>
+<P>{</P>
+<P>protected:</P>
+<P>&#9;void PaintTitleBar(BOOL bActive);</P>
+<P>&#9;// 声明主窗口的消息处理函数</P>
+<P>&#9;afx_msg void OnNcPaint();</P>
+<P>&#9;afx_msg BOOL OnNcActivate(BOOL bActive);</P>
+<P>&#9;DECLARE_MESSAGE_MAP();</P>
+<P>};</P>
+
+<P>// 初始化应用程序的实例</P>
+<P>BOOL CMyApp::InitInstance()</P>
+<P>{</P>
+<P>&#9;// 创建应用程序主窗口</P>
+<P>&#9;CMyWnd *pWnd=new CMyWnd;</P>
+<P>&#9;pWnd-&gt;Create(NULL, "具有五彩标题条的窗口");</P>
+<P>&#9;// 显示应用程序主窗口，并更新客户区</P>
+<P>&#9;pWnd-&gt;ShowWindow(SW_SHOW);</P>
+<P>&#9;pWnd-&gt;UpdateWindow();</P>
+<P>&#9;m_pMainWnd=pWnd;</P>
+<P>&#9;return TRUE;</P>
+<P>}</P>
+
+<P>// 声明应用程序对象</P>
+<P>CMyApp MyApp;</P>
+
+<P>// 应用程序主窗口的消息映射</P>
+<P>BEGIN_MESSAGE_MAP(CMyWnd, CWnd)</P>
+<P>&#9;ON_WM_NCPAINT()</P>
+<P>&#9;ON_WM_NCACTIVATE()</P>
+<P>END_MESSAGE_MAP()</P>
+
+<P>// 绘制窗口的标题条，参数 bActive 代表窗口的当前激活状态</P>
+<P>void CMyWnd::PaintTitleBar(BOOL bActive)</P>
+<P>{</P>
+<P>&#9;// 创建代表整个窗口的显示设备上下文对象</P>
+<P>&#9;CWindowDC dc(this);</P>
+
+<P>&#9;CRect rc;</P>
+<P>&#9;// 获得窗口矩形及其宽度</P>
+<P>&#9;GetWindowRect(rc);</P>
+<P>&#9;UINT nWidth=rc.Width();</P>
+<P>&#9;// 获得窗口边框的度量</P>
+<P>&#9;UINT nXFrame=GetSystemMetrics(SM_CXSIZEFRAME);</P>
+<P>&#9;UINT nYFrame=GetSystemMetrics(SM_CYSIZEFRAME);</P>
+<P>&#9;// 获得窗口标题条的高度</P>
+<P>&#9;UINT nYCaption=GetSystemMetrics(SM_CYCAPTION);</P>
+
+<P>&#9;COLORREF cr;</P>
+<P>&#9;if (bActive)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;// 获得当窗口处于激活状态时其标题条的颜色</P>
+<P>&#9;&#9;cr=GetSysColor(COLOR_ACTIVECAPTION);</P>
+<P>&#9;&#9;// 按从红到绿，再到蓝的渐变规律绘制标题条</P>
+<P>&#9;&#9;for (UINT j=nYFrame; j&lt;=nYFrame+nYCaption; j++)</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;&#9;for (UINT i=nXFrame; i&lt;=nWidth/2; i++)</P>
+<P>&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;UINT nLen=nWidth/2-nXFrame+1;</P>
+<P>&#9;&#9;&#9;&#9;if (dc.GetPixel(i, j)==cr)</P>
+<P>&#9;&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;&#9;dc.SetPixelV(i, j, </P>
+<P>&#9;&#9;&#9;&#9;&#9;    RGB(255-255*(i-nXFrame)/nLen, 255*(i-nXFrame)/nLen, 0));</P>
+<P>&#9;&#9;&#9;&#9;}</P>
+<P>&#9;&#9;&#9;}</P>
+<P>&#9;&#9;&#9;for (i=nWidth/2+1; i&lt;=nWidth-nXFrame; i++)</P>
+<P>&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;UINT nLen=nWidth/2-nXFrame-1+1;</P>
+<P>&#9;&#9;&#9;&#9;if (dc.GetPixel(i, j)==cr)</P>
+<P>&#9;&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;&#9;dc.SetPixelV(i, j, </P>
+<P>&#9;&#9;&#9;&#9;&#9;    RGB(0, 255-255*(i-nWidth/2-1)/nLen, 255*(i-nWidth/2-1)/nLen));</P>
+<P>&#9;&#9;&#9;&#9;}</P>
+<P>&#9;&#9;&#9;}</P>
+<P>&#9;&#9;}</P>
+<P>&#9;}</P>
+<P>&#9;else</P>
+<P>&#9;{</P>
+<P>&#9;&#9;// 获得窗口处于非激活状态时的标题条颜色</P>
+<P>&#9;&#9;cr=GetSysColor(COLOR_INACTIVECAPTION);</P>
+<P>&#9;&#9;// 按从黑到灰，再到黑的渐变规律绘制标题条</P>
+<P>&#9;&#9;for (UINT j=nYFrame; j&lt;=nYFrame+nYCaption-1; j++)</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;&#9;for (UINT i=nXFrame; i&lt;=nWidth/2; i++)</P>
+<P>&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;UINT nLen=nWidth/2-nXFrame;</P>
+<P>&#9;&#9;&#9;&#9;if (dc.GetPixel(i, j)==cr)</P>
+<P>&#9;&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;&#9;dc.SetPixelV(i, j, RGB(192*(i-nXFrame)/nLen, </P>
+<P>&#9;&#9;&#9;&#9;&#9;    192*(i-nXFrame)/nLen, 192*(i-nXFrame)/nLen));</P>
+<P>&#9;&#9;&#9;&#9;}</P>
+<P>&#9;&#9;&#9;}</P>
+<P>&#9;&#9;&#9;for (i=nWidth/2+1; i&lt;=nWidth-nXFrame; i++)</P>
+<P>&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;UINT nLen=nWidth/2-nXFrame-1;</P>
+<P>&#9;&#9;&#9;&#9;if (dc.GetPixel(i, j)==cr)</P>
+<P>&#9;&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;&#9;dc.SetPixelV(i, j, RGB(192-192*(i-nWidth/2)/nLen, </P>
+<P>&#9;&#9;&#9;&#9;&#9;    192-192*(i-nWidth/2)/nLen, 192-192*(i-nWidth/2)/nLen));</P>
+<P>&#9;&#9;&#9;&#9;}</P>
+<P>&#9;&#9;&#9;}</P>
+<P>&#9;&#9;}</P>
+<P>&#9;}</P>
+<P>}</P>
+
+<P>// 消息 WM_NCPAINT 的处理成员函数</P>
+<P>void CMyWnd::OnNcPaint()</P>
+<P>{</P>
+<P>&#9;CFrameWnd::OnNcPaint();</P>
+<P>&#9;// 检查当前窗口是否为激活窗口</P>
+<P>&#9;if (::GetActiveWindow()==GetSafeHwnd())</P>
+<P>&#9;&#9;PaintTitleBar(TRUE);</P>
+<P>&#9;else</P>
+<P>&#9;&#9;PaintTitleBar(FALSE);</P>
+<P>}</P>
+
+<P>// 消息 WM_NCACTIVATE 的处理成员函数</P>
+<P>BOOL CMyWnd::OnNcActivate(BOOL bActive)</P>
+<P>{</P>
+<P>&#9;CFrameWnd::OnNcActivate(bActive);</P>
+<P>&#9;// 根据不同的激活状态按不同的方式绘制窗口标题条</P>
+<P>&#9;if (bActive)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;PaintTitleBar(TRUE);</P>
+<P>&#9;&#9;return FALSE;</P>
+<P>&#9;}</P>
+<P>&#9;else</P>
+<P>&#9;{</P>
+<P>&#9;&#9;PaintTitleBar(FALSE);</P>
+<P>&#9;&#9;return FALSE;</P>
+<P>&#9;}</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面补充说明一下应用程序</FONT><FONT SIZE=3>MulticlrdCaption</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的创建。由于该应用程序的结构比较简单，因此我们不打算使用</FONT><FONT SIZE=3>AppWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来创建框架应用程序。这里，我们先创建一个</FONT><FONT SIZE=3>Win32 Application</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>工程，然后添加一个</FONT><FONT SIZE=3>C++ source file</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在该源代码文件中输入上面的代码。这个过程已经在本书前面的章节中使用过，因此你应该能够很轻松的完成它。下面我们来分析这个应用程序。首先，我们在类</FONT><FONT SIZE=3>CMyWnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加一个成员函数</FONT><FONT SIZE=3>PaintTitleBar</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。该成员函数用来绘制窗口的标题条，其参数</FONT><FONT SIZE=3>bActive</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给出了窗口的激活状态。如果当前窗口正处于激活状态，我们使用从红色到绿色再到蓝色的渐变颜色来绘制应用程序的标题条，如果当前窗口正处于非激活状态，我们使用从黑色到灰色再到黑色的渐变色来绘制标题条。</P>
+<P ALIGN="JUSTIFY">由于我们需要通过设备上下文在窗口的非客户区</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>这里指窗口的标题条区域</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在进行绘制，所以我们选用了</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类。在类</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>构造函数中自动调用了</FONT><FONT SIZE=3>GetWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数，在其析构函数中自动调用了</FONT><FONT SIZE=3>ReleaseDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。类</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的构造函数使用了一个指向</FONT><FONT SIZE=3>CWnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的指针作为其参数，通过所创建的</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象可以在窗口的非客户区进行图形输出。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在创建了类型为</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的设备上下文对象</FONT><FONT SIZE=3>dc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之后，我们调用</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>GetSystemMetrics</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来获得当前窗口的边框高度和宽度以及标题条的高度。这里我们指出一点，即这些度量值仅适用于具有常规样式的窗口，对于一些特殊的窗口可能不成立，如对于工具条窗口，其标题条高度要小得多。这是上面的应用程序的一个局限，但不可以对一个仅用来讲解</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的使用的示例过于苛求，否则我们就不得不花篇幅去介绍很多完善整个应用程序所需要的额外代码。这种对应用程序的简化的处理方法下面还会遇到。通过使用不同的参数调用</FONT><FONT SIZE=3>GetSystemMetrics</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数可以得到不同的系统度量。我们所使用的仅仅是这些度量值中的很少一部分。</P>
+<P ALIGN="JUSTIFY">如果窗口是处于激活状态，我们使用参数</FONT><FONT SIZE=3>COLOR_ACTIVECAPTION</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>调用</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>GetSysColor</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>得到当前系统颜色设置中激活状态条使用的颜色</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>我们不能假定用户的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>窗口在激活时都使用标准的蓝色标题条，因此用户可以很方便的使用控制面板或通过右击桌面选择“属性”来更改这些设置</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。然后，我们调用在类</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的基类</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中定义的成员函数</FONT><FONT SIZE=3>GetPixel</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来获得标题条上的每一点的颜色值，如果这一点的颜色值等于当前使用的激活标题条颜色的话，就调用函数</FONT><FONT SIZE=3>SetPixelV</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将该点的颜色设置为新的值。这种方式不会不正确的擦除当前标题条上的标题文本、应用程序图标以及窗口右上角最大化、最小化和关闭按钮，但是，由于在新的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>操作系统</FONT><FONT SIZE=3>Windows 98</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以及</FONT><FONT SIZE=3>Windows NT 5.0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中，标题条的颜色在默认情况下是渐变的，因此应用程序将不能正确工作。类</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>GetPixel</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>返回一个</FONT><FONT SIZE=3>COLORREF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>值以指示位于指定坐标的点的颜色值。成员函数</FONT><FONT SIZE=3>SetPixelV</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将位于指定坐标的点的颜色设置为新的值，另一个成员函数</FONT><FONT SIZE=3>SetPixel</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以完成同样的功能，并且更常用。但是，与成员函数</FONT><FONT SIZE=3>SetPixel</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不同，</FONT><FONT SIZE=3>SetPixelV</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不需要返回设置的实际颜色值，因此它要比</FONT><FONT SIZE=3>SetPixel</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>快。尽管如此，上面的程序仍只能作为一个示例程序出现，因为这种一个点一个点的描绘的方法实在是太慢，在作者的具有</FONT><FONT SIZE=3>64M</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>内存和</FONT><FONT SIZE=3>K6/200</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>CPU</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的计算机上，更新一个常规大小的窗口的标题条的颜色需要大约</FONT><FONT SIZE=3>0.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>秒的时间，在这样长的时间段内，用户还是可以清楚的看到标题条一点一点绘制的过程。提高应用程序的绘制速度的一种方案是使用位图来内存中对位图进行变换和处理，然而再使用位图来更新标题条。由于位图的绘制速度要比一个点一个点的描快得多，从而有可能大幅度的提高标题条的重绘速度，但是这种算法要使用到我们在这里不打算深入讲述的一些概念和技巧，为了便于理解，我们还是采用了上面给出的算法。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面要做的事是处理两个重要的非客户区消息，</FONT><FONT SIZE=3>WM_NCPAINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>WM_NCACTIVATE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。第一个消息</FONT><FONT SIZE=3>WM_NCPAINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在非客户区的全部或一部分需要重绘时由操作系统发送。如果试图给窗口绘制特殊的边框或标题条，处理这个消息是必要的。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>CWnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中定义了该消息的默认处理函数</FONT><FONT SIZE=3>OnNcPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，该成员函数对</FONT><FONT SIZE=3>WM_NCPAINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的默认处理绘制了窗口的正常边框。我们在类</FONT><FONT SIZE=3>CMyWnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中重载了该成员函数。由于我们只是绘制了窗口的标题条，因此在此之前有必要调用一下基类中的默认实现绘制窗口的边框。然后，通过判断由</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>GetActiveWindow</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>返回的窗口句柄</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>它代表了当前激活窗口</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和当前窗口的句柄是否相等来以不同的参数调用</FONT><FONT SIZE=3>PaintTitleBar</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数来绘制窗口处于激活状态和非激活状态的标题条。</P>
+<P ALIGN="JUSTIFY">另一个必须考虑的事件是当窗口的激活状态发生改变时正确绘制窗口的标题条以反映窗口的新的激活状态。这时窗口将会收到</FONT><FONT SIZE=3>WM_NCACTIVATE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息，该消息所带的参数给出了窗口新的激活状态。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>CWnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中定义了该消息的默认处理函数</FONT><FONT SIZE=3>OnNcActivate</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。我们在类</FONT><FONT SIZE=3>CMyWnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中重载了该成员函数。该函数根据窗口新的激活状态调用了</FONT><FONT SIZE=3>PaintTitleBar</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来绘制新的窗口标题条以反映激活状态的改变。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">整个应用程序使用了典型的</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的结构，代码也比较简单和清晰，这里我们就不多作的介绍了。你可以根据上面的源代码清单和本书前面章节中讲述的内容来完成该应用程序。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">完成上面的步骤之后我们就可以编译并试运行该应用程序了。在编译之前我们需要做一些额外的工作：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>单击</FONT><FONT SIZE=3>Project</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>菜单下的</FONT><FONT SIZE=3>Settings</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>命令或按下快捷键</FONT><FONT SIZE=3>Alt+F7</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，打开如图</FONT><FONT SIZE=3>9.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的工程设置对话框。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image312.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image312.gif" WIDTH=440 HEIGHT=289></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 1 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>设置应用程序的工程属性</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>General</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选项卡中的</FONT><FONT SIZE=3>Microsoft Foundation Classes</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>下拉列表框中选择</FONT><FONT SIZE=3>Use MFC in a Shared DLL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或</FONT><FONT SIZE=3>Use MFC in a Static Library (</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>仅适用于</FONT><FONT SIZE=3>Visual C++ 5.0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的专业版和企业版</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。你需要对应用程序的调试版本和发行版本各重复一次上面的设置过程。如果忽略此步设置的话，在链接应用程序的过程中会出现错误。</P>
+<P ALIGN="JUSTIFY">现在就可以编译并运行上面的程序了。其运行结果如图</FONT><FONT SIZE=3>9.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image313.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image313.gif" WIDTH=390 HEIGHT=267></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 2 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>具有五彩标题条的窗口</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">上面的程序还有其它的一些局限性。比如当窗口处于非激状态时，如果使用鼠标在窗口上移动其它窗口，窗口的标题条将会变成标准的灰色；还有，如果应用程序通过调用。要完善这些功能需要考虑更多的问题和处理更多的消息。这并不是本书在这里引入上面的示例程序的目的，我们只是为了演示一下</FONT><FONT SIZE=3>CWindowDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的使用，而不是编写一个功能完善的应用程序。当然，你可以使用更好和更完善的方法来实现该应用程序并将它用于你的其它应用程序。一个特殊的标题条常常会给程序带来一些吸引人的东西，但是过分花哨的用户界面可能会使用户感到不适应甚至招至用户的反感。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">使用</FONT><FONT SIZE=3>CClientDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的应用程序与此类似，只不过我们通常在一些需要直接在窗口的客户区进行绘制的场合创建和使用该设置上下文对象。比如在一些使用鼠标绘图的应用程序中，当用户在客户区中单击鼠标时，我们通常需要直接在客户区中绘制出相应的图形，而不必等到</FONT><FONT SIZE=3>WM_PAINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息发送。对于这样的应用程序，我们一般在鼠标的移动和单击事件的处理函数中创建类型为</FONT><FONT SIZE=3>CClientDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的设置上下文对象，并通过该设备上下文对象进行绘制。如果使用了</FONT><FONT SIZE=3>AppWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来生成</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序的话，我们一般使用</FONT><FONT SIZE=3>ClassWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来完成添加这些消息处理成员函数和相应的消息映射项。</P>
+<P ALIGN="JUSTIFY">如前所述，在</FONT><FONT SIZE=3>WM_PAINT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息的处理函数中，我们一般不使用</FONT><FONT SIZE=3>CClientDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，而应该使用</FONT><FONT SIZE=3>CPaintDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在下面的小节中，我们将讲述</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>绘图对象类的使用。</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698470">第二节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>画笔对象</A></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类</FONT><FONT SIZE=3>CPen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>封装了</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的画笔对象，画笔对象代表了进行绘制时所用的线条。我们一般通过两个步骤来创建画笔对象：首先构造一个</FONT><FONT SIZE=3>CPen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，再调用对象的</FONT><FONT SIZE=3>CreatePen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数。成员函数</FONT><FONT SIZE=3>CreatePen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>按指定的样式、宽度等属性创建一个逻辑画笔，然后将该画笔与</FONT><FONT SIZE=3>CPen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象相关联。</P>
+</FONT><FONT FACE="Arial"><P>9.2.1 </FONT><FONT FACE="黑体" LANG="ZH-CN">创建画笔</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">成员函数</FONT><FONT SIZE=3>CreatePen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>有两种形式。第一种形式的如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>BOOL CreatePen( int nPenStyle, int nWidth, COLORREF crColor );</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">参数</FONT><FONT SIZE=3>nPenStyle</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>代表了画笔的样式，可以为下列值之一：</P></FONT>
+<P ALIGN="RIGHT"><TABLE CELLSPACING=0 BORDER=0 CELLPADDING=7 WIDTH=538>
+<TR><TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">PS_SOLID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="73%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">创建一个实线画笔</FONT></TD>
+</TR>
+<TR><TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">PS_DASH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="73%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">创建一个虚线画笔。一个虚线画笔的宽度不能超过一个设备单位。</FONT></TD>
+</TR>
+<TR><TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">PS_DOT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="73%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">创建一个点线画笔。一个点划线画笔的宽度不能超过一个设备单位。</FONT></TD>
+</TR>
+<TR><TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">PS_DASHDOT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="73%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">创建一个点划线画笔。同样，这种样式的画笔宽度也不能超过一个设备单位。</FONT></TD>
+</TR>
+<TR><TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">PS_DASHDOTDOT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="73%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">创建一个双点划线画笔。这种样式的画笔宽度也不能超过一个设备单位</FONT></TD>
+</TR>
+<TR><TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">PS_NULL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="73%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">创建一个空画笔</FONT></TD>
+</TR>
+<TR><TD WIDTH="27%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">PS_INSIDEFRAME</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="73%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">对于那些指定一个边界矩形的</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>输出函数，具有这种样式的画笔将线条绘制到输出形状框架的内侧。而对于那些没有指定边界矩形的</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>输出函数，这种画笔的绘制区域则不受框架的限制。</FONT></TD>
+</TR>
+</TABLE>
+</P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">参数</FONT><FONT SIZE=3>nWidth</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以逻辑单位给出画笔的宽度。如果参数</FONT><FONT SIZE=3>nWidth</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为零，则无论当前使用何种映射模式，所创建和画笔的宽度都为一个象素。参数</FONT><FONT SIZE=3>crColor</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为画笔的颜色，这里可以使用</FONT><FONT SIZE=3>RGB</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>宏来生成合适的颜色值。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">另一种形式的</FONT><FONT SIZE=3>CreatePen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数使用如下的参数：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>BOOL CreatePen( int nPenStyle, int nWidth, const LOGBRUSH* pLogBrush, </P>
+<P>&#9;int nStyleCount = 0, const DWORD* lpStyle = NULL );</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这种形式的</FONT><FONT SIZE=3>CreatePen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以创建一个具有指定的宽度、样式和刷子属性的逻辑修饰</FONT><FONT SIZE=3>(cosmetic)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或几何</FONT><FONT SIZE=3>(geometric)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>画笔。参数</FONT><FONT SIZE=3>nPenStyle</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>指定了画笔的样式，它可以为</FONT><FONT SIZE=3>PS_COSMETIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>PS_GEOMETRIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或它们与一些附加属性的组合，详细的说明这里不进行说明，如果需要的话你可以参考联机文档中对构造函数</FONT><FONT SIZE=3>CPen::CPen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的说明。</FONT><FONT SIZE=3>nWidth</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以逻辑单位指定画笔的宽度，如果</FONT><FONT SIZE=3>nPenStyle</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>参数包括了</FONT><FONT SIZE=3>PS_COSMETIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的话，参数</FONT><FONT SIZE=3>nWidth</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>必须为</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。参数</FONT><FONT SIZE=3>pLogBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为指向一个</FONT><FONT SIZE=3>LOGBRUSH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构的指针，该</FONT><FONT SIZE=3>LOGBRUSH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构定义了画笔的刷子属性。最末两个参数</FONT><FONT SIZE=3>nStyleCount</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>lpStyle</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>定义了画笔的每一划及它们之间的空白的长度。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">画笔对象实际上也可以一步创建，这时所使用的构造函数也使用与函数</FONT><FONT SIZE=3>CreatePen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>相一致的参数。以使用一步创建的方式创建画笔对象时，我们通过捕获一个异常是否发生来判断是否出错。</P>
+</FONT><FONT FACE="Arial"><P>9.2.2 </FONT><FONT FACE="黑体" LANG="ZH-CN">使用画笔在设备上下文中进行输出</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一旦画笔对象创建成功之后，即可使用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>SelectObject</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将其选入设备描述表中进行各种输出。</P>
+<P ALIGN="JUSTIFY">下面的示例程序</FONT><FONT SIZE=3>PenDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>演示了画笔对象的使用。</P>
+<P ALIGN="JUSTIFY">创建工程</FONT><FONT SIZE=3>PenDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的方法同在</FONT><FONT SIZE=3>9.1.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中引入的示例程序</FONT><FONT SIZE=3>MulticlrdCaption</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>相同。您可以参照上一节的讲述来创建工程</FONT><FONT SIZE=3>PenDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。其代码清单如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;afxwin.h&gt;</P>
+<P>#include &lt;afxext.h&gt;</P>
+<P>#include &lt;time.h&gt;</P>
+
+<P>// 派生应用程序类</P>
+<P>class CMyApp : public CWinApp</P>
+<P>{</P>
+<P>public:</P>
+<P>&#9;virtual BOOL InitInstance();</P>
+<P>};</P>
+
+<P>// 派生窗口类</P>
+<P>class CMyWnd : public CFrameWnd</P>
+<P>{</P>
+<P>protected:</P>
+<P>&#9;// 声明消息处理函数</P>
+<P>&#9;afx_msg void OnPaint();</P>
+<P>&#9;DECLARE_MESSAGE_MAP();</P>
+<P>};</P>
+
+<P>// 初始化应用程序实例</P>
+<P>BOOL CMyApp::InitInstance()</P>
+<P>{</P>
+<P>&#9;// 创建应用程序的主窗口</P>
+<P>&#9;CMyWnd *pWnd=new CMyWnd;</P>
+<P>&#9;pWnd-&gt;Create(NULL, "各种画笔的示例");</P>
+
+<P>&#9;// 显示应用程序主窗口并刷新其客户区</P>
+<P>&#9;pWnd-&gt;ShowWindow(SW_SHOW);</P>
+<P>&#9;pWnd-&gt;UpdateWindow();</P>
+
+<P>&#9;// 在主窗口关闭时终止应用程序的执行线程</P>
+<P>&#9;m_pMainWnd=pWnd;</P>
+<P>&#9;return TRUE;</P>
+<P>}</P>
+
+<P>// 声明唯一的应用程序对象</P>
+<P>CMyApp MyApp;</P>
+
+<P>// 应用程序主窗口的消息映射</P>
+<P>BEGIN_MESSAGE_MAP(CMyWnd, CWnd)</P>
+<P>&#9;ON_WM_PAINT()</P>
+<P>END_MESSAGE_MAP()</P>
+
+<P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+<P>&#9;// 定义一个画笔数组</P>
+<P>&#9;CPen pen[8];</P>
+
+<P>&#9;// 创建实线画笔</P>
+<P>&#9;pen[0].CreatePen(PS_SOLID, 10, RGB(255, 0, 0));</P>
+<P>&#9;// 创建虚线画笔</P>
+<P>&#9;pen[1].CreatePen(PS_DASH, 1, RGB(0, 255, 0));</P>
+<P>&#9;// 创建点线画笔</P>
+<P>&#9;pen[2].CreatePen(PS_DOT, 1, RGB(0, 0, 255));</P>
+<P>&#9;// 创建点划线画笔</P>
+<P>&#9;pen[3].CreatePen(PS_DASHDOT, 1, RGB(0, 255, 255));</P>
+<P>&#9;// 创建双点划线画笔</P>
+<P>&#9;pen[4].CreatePen(PS_DASHDOTDOT, 1, RGB(255, 0, 255));</P>
+<P>&#9;// 创建空画笔</P>
+<P>&#9;pen[5].CreatePen(PS_NULL, 1, RGB(255, 255, 0));</P>
+<P>&#9;// 创建内侧实线画笔</P>
+<P>&#9;pen[6].CreatePen(PS_INSIDEFRAME, 10, RGB(0, 0, 0));</P>
+<P>&#9;// 创建具有刷子属性的几何画笔</P>
+<P>&#9;LOGBRUSH lb;</P>
+<P>&#9;lb.lbStyle=BS_HATCHED;</P>
+<P>&#9;lb.lbColor=RGB(128, 128, 128);</P>
+<P>&#9;lb.lbHatch=HS_DIAGCROSS;</P>
+<P>&#9;pen[7].CreatePen(PS_GEOMETRIC, 10, &amp;lb);</P>
+
+<P>&#9;// 保存指向设备上下文原有画笔的指针</P>
+<P>&#9;CPen *pOldPen;</P>
+<P>&#9;// 以实线画笔绘制矩形</P>
+<P>&#9;pOldPen=dc.SelectObject(&amp;pen[0]);</P>
+<P>&#9;dc.Rectangle(10, 10, 110, 110);</P>
+<P>&#9;// 以虚线画笔绘制矩形</P>
+<P>&#9;dc.SelectObject(&amp;pen[1]);</P>
+<P>&#9;dc.Rectangle(130, 10, 230, 110);</P>
+<P>&#9;// 以点线画笔绘制矩形</P>
+<P>&#9;dc.SelectObject(&amp;pen[2]);</P>
+<P>&#9;dc.Rectangle(250, 10, 350, 110);</P>
+<P>&#9;// 以点划线画笔绘制矩形</P>
+<P>&#9;dc.SelectObject(&amp;pen[3]);</P>
+<P>&#9;dc.Rectangle(370, 10, 470, 110);</P>
+<P>&#9;// 以双点划线画笔绘制矩形</P>
+<P>&#9;dc.SelectObject(&amp;pen[4]);</P>
+<P>&#9;dc.Rectangle(10, 130, 110, 230);</P>
+<P>&#9;// 以空画笔绘制矩形，因此该矩形不会被显示出来</P>
+<P>&#9;dc.SelectObject(&amp;pen[5]);</P>
+<P>&#9;dc.Rectangle(130, 130, 230, 230);</P>
+<P>&#9;// 以内侧实线画笔绘制矩形，因此该矩形比使用实线画笔绘制的矩形看起来要小一些</P>
+<P>&#9;dc.SelectObject(&amp;pen[6]);</P>
+<P>&#9;dc.Rectangle(250, 130, 350, 230);</P>
+<P>&#9;// 以具有刷子属性的几何画笔绘制矩形</P>
+<P>&#9;dc.SelectObject(&amp;pen[7]);</P>
+<P>&#9;dc.Rectangle(370, 130, 470, 230);</P>
+<P>&#9;// 恢复设备上下文的原有画笔</P>
+<P>&#9;dc.SelectObject(pOldPen);</P>
+<P>&#9;</P>
+<P>&#9;// 删除所创建的画笔资源</P>
+<P>&#9;for (int i=0; i&lt;8; i++)</P>
+<P>&#9;&#9;pen[i].DeleteObject();</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">上面的代码创建了八个画笔对象，每一个画笔对象对应了一种不同的画笔样式。使用这些不同的画笔样式进行输出的结果如图</FONT><FONT SIZE=3>9.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+<P ALIGN="JUSTIFY">注意第二排的第二个矩形，由于所使用的画笔具有</FONT><FONT SIZE=3>PS_NULL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，所以实际上什么也没有绘制。再看最后一个矩形，具有</FONT><FONT SIZE=3>PS_GEOMETRIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>样式的几何画笔可以具有刷子属性，这样，使用画笔绘制出来的线条就可以不只是单调实心图案或各种虚线和点划线了。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">最后需要提醒的是，各种绘图工具对象是有限的系统资源，因此用过之后最好记得使用</FONT><FONT SIZE=3>DelectObject</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>释放为该</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象分配的系统资源。此外，在完成绘制工作之后，我们应该恢复设备描述表中的原有</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。体现在上面的示例程序中，我们使用了一个</FONT><FONT SIZE=3>CPen</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类型的指针来保存原有的</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。类</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数是将特定的</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象选入设备上下文的同时还返回了设备上下文中的原有对象，以便在以后进行恢复。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image314.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image314.gif" WIDTH=319 HEIGHT=176></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 3 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>不同画笔对象得到的不同输出结果</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>不能删除正被选入设备上下文中的</FONT><FONT SIZE=3>Windows GDI</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象。并且，删除</FONT><FONT SIZE=3>Windows GDI</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象也不等于删除相关联的</FONT><FONT SIZE=3>C++</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象。以上面的例子为例，调用</FONT><FONT SIZE=3>CPen</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象的</FONT><FONT SIZE=3>DelectObject (</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>该成员函数在基类</FONT><FONT SIZE=3>CGdiObject</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中定义</FONT><FONT SIZE=3>)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>只是删除与之相关联的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>画笔对象所占用的系统资源，</FONT><FONT SIZE=3>C++</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>语义上的</FONT><FONT SIZE=3>CPen</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象并没有被删除。你还可以调用其成员函数</FONT><FONT SIZE=3>CreatePen</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>创建一个新的画笔对象并将它们与</FONT><FONT SIZE=3>CPen</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象相关联。在</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>编程中，我们所说的“对象”一词可能指实际的</FONT><FONT SIZE=3>C++</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象，也可能指各种</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>对象，在很多情况下两者之间有着密切的联系，但要注意它们并不是同义语。读者可以根据上下文来判断“对象”一词的真正含义。</LI></P></UL>
+
+</FONT><FONT FACE="Arial"><P>9.2.3 </FONT><FONT FACE="黑体" LANG="ZH-CN">图形输出函数</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">表</FONT><FONT SIZE=3>9.4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给出了在</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在类中定义的一些图形输出函数。</P>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">表</FONT><FONT FACE="Arial" SIZE=1>9. 4 </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>在类</FONT><FONT FACE="Arial" SIZE=1>CDC</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>中定义的图形输出函数</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=487>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">成员函数</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetCurrentPosition</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">获得当前画笔位置的逻辑坐标</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">MoveTo</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">移动当前位置</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">LineTo</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从当前位置向指定绘制一条不包括终点的直线</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Arc</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个椭圆弧</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">ArcTo</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个椭圆弧，该函数与</FONT><FONT SIZE=1>Arc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>类似，但当前位置会被更新</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">AngleArc</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一条线段和一个椭圆弧，并将当前位置移到椭圆弧的终点</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetArcDirection</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">返回设备上下文上当前的画弧方向</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="RIGHT">续表</FONT><FONT FACE="Arial" SIZE=1>9.4</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=487>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">成员函数</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">SetArcDirection</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设置当前弧和矩形函数的绘图方向</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">PolyDraw</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一系列直线段和贝塞尔</FONT><FONT SIZE=1>(Bézier)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>曲线段并更新当前位置</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Polyline</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制连接指定点的一系列直线段</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">PolyPolyline</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制多系列的相连直线段，当前位置既不被使用也不被更新</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">PolylineTo</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一条或多条直线，并移动当前位置到最末一条线的终点</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">PolyBezier</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一条或多条贝塞尔曲线，当前位置既不被使用也不被更新</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">PolyBezierTo</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一条或多条贝塞尔曲线，并将当前位置移动到最后一条曲线的末端</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">FillRect</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">用指定的刷子填充给定的矩形</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">FrameRect</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制矩形的边框</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">InvertRect</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">反转矩形的内容</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">DrawIcon</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个图标</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">DrawDragRect</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在矩形区域被拖动时擦除并重绘它</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">FillSolidRect</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">以原色填充一个矩形区域</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Draw3dRect</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">填充一个三维矩形区域</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">DrawEdge</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制矩形的边界</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">DrawFrameControl</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个框架控件</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">DrawState</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">显示一幅图象并对图象应用表示其状态的可视效果</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Chord</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个“弓形”，一个“弓形”是由一个椭圆弧和一条线段所围成的区域</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">DrawFocusRect</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个矩形以用来表示其焦点</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">成员函数</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Ellipse</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个椭圆</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Pie</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个饼块</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Polygon</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个由多条线段连接而成的多边形</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">PolyPolygon</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个或多个以当前多边形填充模式填充的多边形。这些多边形可能互不相交，也可能互相覆盖</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Polyline</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">绘制一个包括一系列连接指定点的线段的多边形</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Rectangle</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">使用当前笔和刷子绘制并填充一个矩形</FONT></TD>
+</TR>
+<TR><TD WIDTH="25%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">RoundRect</FONT></TD>
+<TD WIDTH="75%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">使用当前笔和刷子绘制并填充一个圆角矩形</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">示例程序</FONT><FONT SIZE=3>DrawingDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>演示了表</FONT><FONT SIZE=3>9.4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的一些绘图函数的使用和输出效果。程序中涉及了较多的设备上下文输出函数，但由于这些函数的使用相对比较简单，因此我们仅给出示例程序</FONT><FONT SIZE=3>DrawingDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的代码清单，而不过多的分析各段程序代码。这些代码清单都有比较详细的注释，结构也非常清晰，很容易就可以看懂。同本章中前面的应用程序一样，示例程序</FONT><FONT SIZE=3>DrawingDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用了</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的应用程序框架，但我们没有使用</FONT><FONT SIZE=3>AppWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来生成它。程序中还涉及了一些我们目前还未作系统阐述的内容，在现阶段并不要求读者理解这些内容，尽管实际上它们并不复杂。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;afxwin.h&gt;</P>
+<P>#include &lt;afxext.h&gt;</P>
+<P>#include &lt;math.h&gt;</P>
+
+<P>// 派生应用程序类</P>
+<P>class CMyApp : public CWinApp</P>
+<P>{</P>
+<P>public:</P>
+<P>&#9;virtual BOOL InitInstance();</P>
+<P>};</P>
+
+<P>// 派生窗口类</P>
+<P>class CMyWnd : public CFrameWnd</P>
+<P>{</P>
+<P>protected:</P>
+<P>&#9;// 声明消息处理函数</P>
+<P>&#9;afx_msg void OnPaint();</P>
+<P>&#9;DECLARE_MESSAGE_MAP();</P>
+<P>};</P>
+
+<P>// 初始化应用程序实例</P>
+<P>BOOL CMyApp::InitInstance()</P>
+<P>{</P>
+<P>&#9;// 创建应用程序的主窗口</P>
+<P>&#9;CMyWnd *pWnd=new CMyWnd;</P>
+<P>&#9;pWnd-&gt;Create(NULL, "CDC 绘图函数示例");</P>
+<P>&#9;// 显示应用程序主窗口并刷新其客户区</P>
+<P>&#9;pWnd-&gt;ShowWindow(SW_SHOW);</P>
+<P>&#9;pWnd-&gt;UpdateWindow();</P>
+<P>&#9;// 在主窗口关闭时终止应用程序的执行线程</P>
+<P>&#9;m_pMainWnd=pWnd;</P>
+<P>&#9;return TRUE;</P>
+<P>}</P>
+
+<P>// 声明唯一的应用程序对象</P>
+<P>CMyApp MyApp;</P>
+
+<P>// 应用程序主窗口的消息映射</P>
+<P>BEGIN_MESSAGE_MAP(CMyWnd, CWnd)</P>
+<P>&#9;ON_WM_PAINT()</P>
+<P>END_MESSAGE_MAP()</P>
+
+<P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+<P>&#9;CPen pen1(PS_SOLID, 1, RGB(192, 192, 192)), pen2(PS_SOLID, 1, RGB(0, 0, 255)), *pOldPen;</P>
+<P>&#9;// 更改设备上下文所使用的当前字体，使之更适合于文本输出</P>
+<P>&#9;LOGFONT lf;</P>
+<P>&#9;dc.GetCurrentFont()-&gt;GetLogFont(&amp;lf);</P>
+<P>&#9;lf.lfHeight=-12;</P>
+<P>&#9;lf.lfWidth=0;</P>
+<P>&#9;strcpy(lf.lfFaceName, "宋体");</P>
+<P>&#9;CFont font, *pOldFont;</P>
+<P>&#9;font.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;pOldFont=dc.SelectObject(&amp;font);</P>
+
+<P>&#9;// 使用函数 Arc 和 ArcTo 输入弧形</P>
+<P>&#9;{</P>
+<P>&#9;&#9;pOldPen=dc.SelectObject(&amp;pen1);</P>
+<P>&#9;&#9;dc.Rectangle(10, 10, 160, 110);</P>
+<P>&#9;&#9;dc.MoveTo(85, 60);</P>
+<P>&#9;&#9;dc.LineTo(160, 60);</P>
+<P>&#9;&#9;dc.MoveTo(85, 60);</P>
+<P>&#9;&#9;dc.LineTo(10, 10);</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen2);</P>
+<P>&#9;&#9;dc.MoveTo(10,10);</P>
+<P>&#9;&#9;dc.ArcTo(10, 10, 160, 110, 160, 60, 10, 10);</P>
+<P>&#9;&#9;dc.Arc(10, 10, 160, 110, 10, 30, 160, 110);</P>
+<P>&#9;&#9;dc.TextOut(10, 115, "Arc &amp; ArcTo");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 使用函数 PolyPolyline 输出多段折线</P>
+<P>&#9;{</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen1);</P>
+<P>&#9;&#9;dc.Rectangle(180, 10, 330, 110);</P>
+<P>&#9;&#9;CPoint pts[]={CPoint(190, 20), CPoint(200, 60), CPoint(270, 40), CPoint(210, 80), </P>
+<P>&#9;&#9;&#9;CPoint(250, 100), CPoint(300, 30), CPoint(310, 80), CPoint(320, 50)};</P>
+<P>&#9;&#9;DWORD pps[]={5, 3};</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen2);</P>
+<P>&#9;&#9;dc.PolyPolyline(pts, pps, 2);</P>
+<P>&#9;&#9;CRect rc(200, 30, 310, 90);</P>
+<P>&#9;&#9;dc.TextOut(180, 115, "PolyPolyline");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 使用函数 DrawFocusRect 和 Draw3dRect 输出特殊样式的矩形</P>
+<P>&#9;{</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen1);</P>
+<P>&#9;&#9;dc.Rectangle(350, 10, 500, 110);</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen2);</P>
+<P>&#9;&#9;dc.DrawFocusRect(CRect(370, 25, 480, 95));</P>
+<P>&#9;&#9;dc.Draw3dRect(CRect(390, 40, 460, 80), RGB(192, 192, 192), RGB(64, 64, 64));</P>
+<P>&#9;&#9;dc.SetBkColor(RGB(255, 255, 255));</P>
+<P>&#9;&#9;dc.TextOut(350, 115, "Draw3dRect &amp; DrawFocusRect");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 使用 Pie 和 Chord 输出弓形和扇形</P>
+<P>&#9;{</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen1);</P>
+<P>&#9;&#9;dc.Rectangle(10, 140, 160, 240);</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen2);</P>
+<P>&#9;&#9;dc.Ellipse(10, 140, 160, 240);</P>
+<P>&#9;&#9;dc.Pie(20, 150, 150, 230, 160, 160, 10, 160);</P>
+<P>&#9;&#9;dc.Chord(20, 150, 150, 230, 10, 220, 160, 220);</P>
+<P>&#9;&#9;dc.TextOut(10, 245, "Ellipse, Pie &amp; Chord");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 使用 PolyDraw 输出贝塞尔曲线</P>
+<P>&#9;{</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen1);</P>
+<P>&#9;&#9;dc.Rectangle(180, 140, 330, 240);</P>
+<P>&#9;&#9;dc.MoveTo(180, 140);</P>
+<P>&#9;&#9;dc.LineTo(330, 160);</P>
+<P>&#9;&#9;dc.MoveTo(330, 240);</P>
+<P>&#9;&#9;dc.LineTo(180, 220);</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen2);</P>
+<P>&#9;&#9;CPoint pts[]={CPoint(330, 160), CPoint(180, 220), CPoint(330, 240)};</P>
+<P>&#9;&#9;BYTE typs[]={PT_BEZIERTO, PT_BEZIERTO, PT_BEZIERTO|PT_CLOSEFIGURE};</P>
+<P>&#9;&#9;dc.MoveTo(180, 140);</P>
+<P>&#9;&#9;dc.PolyDraw(pts, typs, 3);</P>
+<P>&#9;&#9;dc.TextOut(180, 245, "PolyDraw");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 使用 Polygon 输出多边形</P>
+<P>&#9;{</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen1);</P>
+<P>&#9;&#9;dc.Rectangle(350, 140, 500, 240);</P>
+<P>&#9;&#9;dc.Ellipse(375, 140, 475, 240);</P>
+<P>&#9;&#9;dc.SelectObject(&amp;pen2);</P>
+<P>&#9;&#9;CPoint pts1[5];</P>
+<P>&#9;&#9;for (int i=0; i&lt;=4; i++)</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;&#9;pts1[i].x=425+int(50.*cos(3.14159/2.5*i+3.14159/10.));</P>
+<P>&#9;&#9;&#9;pts1[i].y=190-int(50.*sin(3.14159/2.5*i+3.14159/10.));</P>
+<P>&#9;&#9;}</P>
+<P>&#9;&#9;CPoint pts2[]={pts1[0], pts1[2], pts1[4], pts1[1], pts1[3]};</P>
+<P>&#9;&#9;dc.Polygon(pts2, 5);</P>
+<P>&#9;&#9;dc.TextOut(350, 245, "Polygon");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 恢复设备上下文原有的 GDI 绘图对象</P>
+<P>&#9;dc.SelectObject(pOldPen);</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;font.DeleteObject();</P>
+<P>&#9;pen1.DeleteObject();</P>
+<P>&#9;pen2.DeleteObject();</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image315.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image315.gif" WIDTH=340 HEIGHT=191></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 4 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>示例程序</FONT><FONT SIZE=1>DrawingDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>的运行结果</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">程序</FONT><FONT SIZE=3>DrawingDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的运行结果如图</FONT><FONT SIZE=3>9.4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698471">第三节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>刷子对象</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">刷子对象用来在</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>输出时填充一个封闭图形的内部，它事实上定义一个</FONT><FONT SIZE=3>8</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>像素<FONT FACE="Symbol">&#180;</FONT>
+</FONT><FONT SIZE=3>8</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>像素大小的位图。在绘制时，</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将多个这样的位图平铺起来填充封闭图形的内部。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类</FONT><FONT SIZE=3>CBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>封装了标准的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>刷子对象。在创建刷子时，我们通常先定义一个</FONT><FONT SIZE=3>CBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，然后调用</FONT><FONT SIZE=3>CreateSolidBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CreateaHatchBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或者</FONT><FONT SIZE=3>CreatePatternBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之一来定义该刷子对象的属性。</FONT><FONT SIZE=3>CBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象可以用作任何使用</FONT><FONT SIZE=3>HBRUSH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>句柄的函数的参数。</P>
+<P ALIGN="JUSTIFY">以创建一个刷子之后，我们可以使用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>SelectObject</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将它选入当前设备上下文作为当前绘图输出所使用的刷子。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">成员函数</FONT><FONT SIZE=3>CreateSolidBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个原色刷子，它仅带有一个类型为</FONT><FONT SIZE=3>COLORREF</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的参数，该参数指定了刷子所使用的</FONT><FONT SIZE=3>RGB</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>颜色值。</P>
+<P ALIGN="JUSTIFY">成员函数</FONT><FONT SIZE=3>CreateHatchBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个阴影刷子，其原型如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>BOOL CreateHatchBrush( int nIndex, COLORREF crColor );</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">参数</FONT><FONT SIZE=3>nIndex</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>指定了刷子的样式，它可以为以下常量之一：</P></FONT>
+<P ALIGN="LEFT"><TABLE CELLSPACING=0 BORDER=0 CELLPADDING=7 WIDTH=329>
+<TR><TD WIDTH="41%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">HS_BDIAGONAL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="59%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">由左向右下斜</FONT><FONT SIZE=3>45</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>度的阴影线</FONT></TD>
+</TR>
+<TR><TD WIDTH="41%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">HS_CROSS</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="59%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">水平和垂直的交叉线</FONT></TD>
+</TR>
+<TR><TD WIDTH="41%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">HS_DIAGCROSS</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="59%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">45</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>度的斜交叉线</FONT></TD>
+</TR>
+<TR><TD WIDTH="41%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">HS_FDIAGONAL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="59%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">由左向右上斜</FONT><FONT SIZE=3>45</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>度的阴影线</FONT></TD>
+</TR>
+<TR><TD WIDTH="41%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">HS_VERTICAL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="59%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">垂直阴影线</FONT></TD>
+</TR>
+</TABLE>
+</P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">参数</FONT><FONT SIZE=3>crColor</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>指定和阴影线所使用的前景色。</P>
+<P ALIGN="JUSTIFY">成员函数</FONT><FONT SIZE=3>CreatePatternBrush</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以一个指向</FONT><FONT SIZE=3>CBitmap</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的指针为参数，它使用该</FONT><FONT SIZE=3>CBitmap</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所代表的位图的左上角</FONT><FONT SIZE=3>8</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>像素<FONT FACE="Symbol">&#180;</FONT>
+</FONT><FONT SIZE=3>8</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>像素的区域来创建一个图案刷子。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>一个刷子所使用的图案的大小总是</FONT><FONT SIZE=3>8</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>像素<FONT FACE="Symbol">&#180;</FONT>
+</FONT><FONT SIZE=3>8</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>像素大小。即使提供给成员函数</FONT><FONT SIZE=3>CreatePatternBrush</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的位图大于这个大小，也仅有左上角的</FONT><FONT SIZE=3>8</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>像素<FONT FACE="Symbol">&#180;</FONT>
+</FONT><FONT SIZE=3>8</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>像素被使用。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">示例程序</FONT><FONT SIZE=3>BrushDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>演示了各种刷子的使用，在工程包括了两个位图资源</FONT><FONT SIZE=3>IDB_BRUSH1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>IDB_BRUSH2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，分别如图</FONT><FONT SIZE=3>9.5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE CELLSPACING=0 BORDER=0 CELLPADDING=7 WIDTH=198>
+<TR><TD WIDTH="50%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image316.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image316.gif" WIDTH=61 HEIGHT=61></FONT></TD>
+<TD WIDTH="50%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image317.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image317.gif" WIDTH=61 HEIGHT=61></FONT></TD>
+</TR>
+<TR><TD WIDTH="50%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="CENTER">IDB_BRUSH1</FONT></TD>
+<TD WIDTH="50%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="CENTER">IDB_BRUSH2</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 5 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>在工程</FONT><FONT SIZE=1>BrushDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>中使用的位图资源</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">程序</FONT><FONT SIZE=3>BrushDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的代码清单如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;afxwin.h&gt;</P>
+<P>#include &lt;afxext.h&gt;</P>
+<P>#include &lt;math.h&gt;</P>
+
+<P>#define IDB_BRUSH1 101</P>
+<P>#define IDB_BRUSH2 102</P>
+
+<P>// 派生应用程序类</P>
+<P>class CMyApp : public CWinApp</P>
+<P>{</P>
+<P>public:</P>
+<P>&#9;virtual BOOL InitInstance();</P>
+<P>};</P>
+
+<P>// 派生窗口类</P>
+<P>class CMyWnd : public CFrameWnd</P>
+<P>{</P>
+<P>protected:</P>
+<P>&#9;// 声明消息处理函数</P>
+<P>&#9;afx_msg void OnPaint();</P>
+<P>&#9;DECLARE_MESSAGE_MAP();</P>
+<P>};</P>
+
+<P>// 初始化应用程序实例</P>
+<P>BOOL CMyApp::InitInstance()</P>
+<P>{</P>
+<P>&#9;// 创建应用程序的主窗口</P>
+<P>&#9;CMyWnd *pWnd=new CMyWnd;</P>
+<P>&#9;pWnd-&gt;Create(NULL, "刷子示例");</P>
+
+<P>&#9;// 显示应用程序主窗口并刷新其客户区</P>
+<P>&#9;pWnd-&gt;ShowWindow(SW_SHOW);</P>
+<P>&#9;pWnd-&gt;UpdateWindow();</P>
+
+<P>&#9;// 在主窗口关闭时终止应用程序的执行线程</P>
+<P>&#9;m_pMainWnd=pWnd;</P>
+<P>&#9;return TRUE;</P>
+<P>}</P>
+
+<P>// 声明唯一的应用程序对象</P>
+<P>CMyApp MyApp;</P>
+
+<P>// 应用程序主窗口的消息映射</P>
+<P>BEGIN_MESSAGE_MAP(CMyWnd, CWnd)</P>
+<P>&#9;ON_WM_PAINT()</P>
+<P>END_MESSAGE_MAP()</P>
+
+<P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+<P>&#9;// 更改设备上下文所使用的当前字体，使之更适合于文本输出</P>
+<P>&#9;LOGFONT lf;</P>
+<P>&#9;dc.GetCurrentFont()-&gt;GetLogFont(&amp;lf);</P>
+<P>&#9;lf.lfHeight=-12;</P>
+<P>&#9;lf.lfWidth=0;</P>
+<P>&#9;strcpy(lf.lfFaceName, "宋体");</P>
+<P>&#9;CFont font, *pOldFont;</P>
+<P>&#9;font.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;pOldFont=dc.SelectObject(&amp;font);</P>
+
+<P>&#9;// 创建一个原色刷子</P>
+<P>&#9;{</P>
+<P>&#9;&#9;CBrush br, *pOldBrush;</P>
+<P>&#9;&#9;br.CreateSolidBrush(RGB(128, 0, 128));</P>
+<P>&#9;&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Rectangle(10, 10, 160, 110);</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;dc.TextOut(10, 115, "原色刷子");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 创建一个具有样式 HS_BDIAGONAL 的刷子</P>
+<P>&#9;{</P>
+<P>&#9;&#9;CBrush br, *pOldBrush;</P>
+<P>&#9;&#9;br.CreateHatchBrush(HS_BDIAGONAL, RGB(128, 0, 128));</P>
+<P>&#9;&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Rectangle(180, 10, 330, 110);</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;dc.TextOut(180, 115, "HS_BDIAGONAL");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 创建一个具有样式 HS_CROSS 的刷子</P>
+<P>&#9;{</P>
+<P>&#9;&#9;CBrush br, *pOldBrush;</P>
+<P>&#9;&#9;br.CreateHatchBrush(HS_CROSS, RGB(128, 0, 128));</P>
+<P>&#9;&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Rectangle(350, 10, 500, 110);</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;dc.TextOut(350, 115, "HS_CROSS");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 创建一个具有样式 HS_DIAGCROSS 的刷子</P>
+<P>&#9;{</P>
+<P>&#9;&#9;CBrush br, *pOldBrush;</P>
+<P>&#9;&#9;br.CreateHatchBrush(HS_DIAGCROSS, RGB(128, 0, 128));</P>
+<P>&#9;&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Rectangle(520, 10, 670, 110);</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;dc.TextOut(520, 115, "HS_DIAGCROSS");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 创建一个具有样式 HS_FDIAGONAL 的刷子</P>
+<P>&#9;{</P>
+<P>&#9;&#9;CBrush br, *pOldBrush;</P>
+<P>&#9;&#9;br.CreateHatchBrush(HS_FDIAGONAL, RGB(128, 0, 128));</P>
+<P>&#9;&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Rectangle(10, 140, 160, 240);</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;dc.TextOut(10, 245, "HS_FDIAGONAL");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 创建一个具有样式 HS_VERTICAL 的刷子</P>
+<P>&#9;{</P>
+<P>&#9;&#9;CBrush br, *pOldBrush;</P>
+<P>&#9;&#9;br.CreateHatchBrush(HS_VERTICAL, RGB(128, 0, 128));</P>
+<P>&#9;&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Rectangle(180, 140, 330, 240);</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;dc.TextOut(180, 245, "HS_VERTICAL");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 创建一个使用位图图案的刷子</P>
+<P>&#9;{</P>
+<P>&#9;&#9;CBitmap bitmap;</P>
+<P>&#9;&#9;bitmap.LoadBitmap(IDB_BRUSH1);</P>
+<P>&#9;&#9;CBrush br, *pOldBrush;</P>
+<P>&#9;&#9;br.CreatePatternBrush(&amp;bitmap);</P>
+<P>&#9;&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Rectangle(350, 140, 500, 240);</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;dc.TextOut(350, 245, "使用位图图案创建的刷子之一");</P>
+<P>&#9;}</P>
+
+<P>&#9;{</P>
+<P>&#9;&#9;CBitmap bitmap;</P>
+<P>&#9;&#9;bitmap.LoadBitmap(IDB_BRUSH2);</P>
+<P>&#9;&#9;CBrush br, *pOldBrush;</P>
+<P>&#9;&#9;br.CreatePatternBrush(&amp;bitmap);</P>
+<P>&#9;&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Rectangle(520, 140, 670, 240);</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;dc.TextOut(520, 245, "使用位图图案创建的刷子之二");</P>
+<P>&#9;}</P>
+
+<P>&#9;// 恢复设备上下文原有的 GDI 绘图对象</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image318.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image318.gif" WIDTH=451 HEIGHT=191></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 6 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>示例程序</FONT><FONT SIZE=1>BrushDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>的运行结果</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以前几节讲述的方法编译并链接上面的应用程序，运行结果如图</FONT><FONT SIZE=3>9.6</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698472">第四节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>字体对象</A></P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>封装了</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>图形设备接口中的字体对象。字体对象决定的设备上下文中进行文本输出的字符样式。在使用字体对象的时候，我们一般先创建一个</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，然后调用</FONT><FONT SIZE=3>CreateFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CreateFontIndirect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>CreatePointFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>及</FONT><FONT SIZE=3>CreatePointFontIndirect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之一的成员函数来对该字体对象进行初始化。</P>
+</FONT><FONT FACE="Arial"><P>9.4.1 </FONT><FONT FACE="黑体" LANG="ZH-CN">创建字体对象</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">创建字体对象的最方便的方法是使用</FONT><FONT SIZE=3>CreatePointFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数，</FONT><FONT SIZE=3>CreatePointFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数仅需三个参数，其原型如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>BOOL CreatePointFont( int nPointSize, LPCTSTR lpszFaceName, CDC* pDC = NULL );</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">第一个参数</FONT><FONT SIZE=3>nPointSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以十分之一磅为单位设置字体的大小，磅是印刷行业中的常用度是单位，</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>磅</FONT><FONT SIZE=3>=1/72</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>英寸≈</FONT><FONT SIZE=3>0.03528</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>厘米。磅这个单位在涉及图形和文本输出的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用程序中被大量的使用，因此我们应该熟知它和其它常用度量单位之间的换算关系。在后面的部分中我们还会讨论到在</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>编程中还会使用到的其它度量单位以及它们之间的换算关系。</P>
+<P ALIGN="JUSTIFY">参数</FONT><FONT SIZE=3>lpszFaceName</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>指定了创建字体对象所使用的字体名，</FONT><FONT SIZE=3>pDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>指向一个设备上下文对象，函数</FONT><FONT SIZE=3>CreatePointFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将以磅表示的字体大小转换为</FONT><FONT SIZE=3>pDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所指向的设备上下文中相应的逻辑单位。如果指针</FONT><FONT SIZE=3>pDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为空，函数</FONT><FONT SIZE=3>CreatePointFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将字体大小以设备单位表示。</P>
+</FONT><FONT FACE="Arial"><P>9.4.2 LOGFONT</FONT><FONT FACE="黑体" LANG="ZH-CN">结构</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>内部，字体是以一个名为</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的结构来表示的。结构</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的定义如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>typedef struct tagLOGFONT { // lf</P>
+<P>    LONG lfHeight;</P>
+<P>    LONG lfWidth; </P>
+<P>    LONG lfEscapement;</P>
+<P>    LONG lfOrientation;</P>
+<P>    LONG lfWeight; </P>
+<P>    BYTE lfItalic; </P>
+<P>    BYTE lfUnderline; </P>
+<P>    BYTE lfStrikeOut; </P>
+<P>    BYTE lfCharSet; </P>
+<P>    BYTE lfOutPrecision; </P>
+<P>    BYTE lfClipPrecision; </P>
+<P>    BYTE lfQuality; </P>
+<P>    BYTE lfPitchAndFamily; </P>
+<P>    TCHAR lfFaceName[LF_FACESIZE]; </P>
+<P>} LOGFONT;</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">各成员的含义如下：</P></FONT>
+<P ALIGN="RIGHT"><TABLE CELLSPACING=0 BORDER=0 CELLPADDING=7 WIDTH=538>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfHeight</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以逻辑单位指定字体字符元</FONT><FONT SIZE=3>(character cell)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或字符的高度。字符高度值为字符元高度值减去内部行距</FONT><FONT SIZE=3>(internal-leading)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>值。当</FONT><FONT SIZE=3>lfHeight</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>大于</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时，字体映射程序将该值转换为设备单位，并将它与可用字体的字符元高度进行匹配；当该参数为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时，字体映射程度将使用一个匹配的默认高度值；如果参数的值小于</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则将其转换为设备单位，并将其绝对值与可用字体的字符高度进行匹配。</P>
+<P ALIGN="JUSTIFY">对于任何一种情况，字体映射程度最终得到的字体高度值不会超过所指定的值。以</FONT><FONT SIZE=3>MM_TEXT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>映射模式下，字体高度值和磅值有如下的换算公式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>lfHeight=-MulDiv(PointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfWidth</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以逻辑单位指定字体字符的平均宽度。如果</FONT><FONT SIZE=3>lfWidth</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的值为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则根据设备的纵横比从可用字体的数字转换纵横中选取最接近的匹配值，该值通过比较两者之间的差异的绝对值得出。</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfEscapement</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以十分之一度为单位指定每一行文本输出时相对于页面底端的角度。</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">ifOrientation</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以十分之一度为单位指定字符基线相对于页面底端的角度。</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfWeight</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">指定字体重量。在</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中，字体重量这个术语用来指代字体的粗细程度。</FONT><FONT SIZE=3>lfWeight</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的范围为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>1000</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，正常情况下的字体重量为</FONT><FONT SIZE=3>400</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，粗体为</FONT><FONT SIZE=3>700</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。如果</FONT><FONT SIZE=3>lfWeight</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则使用默认的字体重量。</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfItalic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">当</FONT><FONT SIZE=3>lfItalic</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>TRUE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时使用斜体</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfUnderline</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">当</FONT><FONT SIZE=3>lfUnderline</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>TRUE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时给字体添加下划线</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfStrikeOut</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">当</FONT><FONT SIZE=3>lfStrikeOut</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>TRUE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时给字体添加删除线</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfCharSet</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">指定字符集。可以使用下面的预定义值：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">ANSI_CHARSET</P>
+<P ALIGN="JUSTIFY">OEM_CHARSET</P>
+<P ALIGN="JUSTIFY">SYMBOL_CHARSET</P>
+<P ALIGN="JUSTIFY">UNICODE_CHARSET</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">其中</FONT><FONT SIZE=3>OEM</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>字符集是与操作系统相关的。</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfOutPrecision</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">指定输出精度。输出精度定义了输出与所要求的字体高度、宽度、字符方向等的接近程度。它可以为下面的值之一：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">OUT_CHARACTER_PRECIS</P>
+<P ALIGN="JUSTIFY">OUT_DEFAULT_PRECIS</P>
+<P ALIGN="JUSTIFY">OUT_STRING_PRECIS</P>
+<P ALIGN="JUSTIFY">OUT_STROKE_PRECIS</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfClipPrecision</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">指定剪辑精度。剪辑精度定义了当字符的一部分超过剪辑区域时对字符的剪辑方式，它可以为下列值之一：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">CLIP_CHARACTER_PRECIS</P>
+<P ALIGN="JUSTIFY">CLIP_DEFAULT_PRECIS</P>
+<P ALIGN="JUSTIFY">CLIP_STROKE_PRECIS</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfQuality</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">定义输出质量。输出质量定义了图形设备接口在匹配逻辑字体属性到实际的物理字体的所使用的方式，它可以为下列值之一：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">DEFAULT_QUALITY (</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>默认质量</FONT><FONT SIZE=3>)</P>
+<P ALIGN="JUSTIFY">DRAFT_QUALITY (</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>草稿质量</FONT><FONT SIZE=3>)</P>
+<P ALIGN="JUSTIFY">PROOF_QUALITY (</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>正稿质量</FONT><FONT SIZE=3>)</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfPitchAndFamily</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">指定字体的字符间距和族。最低两位指定字体的字符间距为以下值之一：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">DEFAULT_PITCH</P>
+<P ALIGN="JUSTIFY">FIXED_PITCH</P>
+<P ALIGN="JUSTIFY">VARIABLE_PITCH</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">第</FONT><FONT SIZE=3>4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>7</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>位指定字体族为以下值之一：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">FF_DECORATIVE</P>
+<P ALIGN="JUSTIFY">FF_DONTCARE</P>
+<P ALIGN="JUSTIFY">FF_MODERN</P>
+<P ALIGN="JUSTIFY">FF_ROMAN</P>
+<P ALIGN="JUSTIFY">FF_SCRIPT</P>
+<P ALIGN="JUSTIFY">FF_SWISS</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这些值的具体含义可以参考</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中关于结构</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的文档。</P>
+<P ALIGN="JUSTIFY">字符间距和字体族可以使用逻辑或</FONT><FONT SIZE=3>(OR)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>运算符来进行组合。</FONT></TD>
+</TR>
+<TR><TD WIDTH="23%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">lfFaceName</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="77%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个指定以</FONT><FONT SIZE=3>NULL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结尾的字符串的指针，它指定的所用的字体名。该字符串的长度不得超过</FONT><FONT SIZE=3>32</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个字符，如果</FONT><FONT SIZE=3>lfFaceName</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>NULL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，图形设备接口将使用默认的字体名。</FONT></TD>
+</TR>
+</TABLE>
+</P>
+
+<FONT FACE="Arial"><P>9.4.3 </FONT><FONT FACE="黑体" LANG="ZH-CN">使用字体对象和枚举系统中的所有字体</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">示例程序</FONT><FONT SIZE=3>FontDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>演示了</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构和</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的使用。此外，在该示例程序中，我们还演示了如何获得当前系统中已安装的所有可用字体，这些信息是通过</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>EnumFontFamilies</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和自定义的字体枚举回调函数</FONT><FONT SIZE=3>EnumFontFamProc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来得到，并放入程序主窗口内的列表框中的。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include &lt;afxwin.h&gt;</P>
+<P>#include &lt;afxext.h&gt;</P>
+<P>#include &lt;math.h&gt;</P>
+
+<P>#define DegToRnd(x) (x/180.*3.14159)</P>
+
+<P>int WINAPI EnumFontFamProc(const LOGFONTA *lplf, </P>
+<P>&#9;&#9;const TEXTMETRICA *lptm, unsigned long FontType, LPARAM lParam);</P>
+<P> </P>
+<P>// 派生应用程序类</P>
+<P>class CMyApp : public CWinApp</P>
+<P>{</P>
+<P>public:</P>
+<P>&#9;virtual BOOL InitInstance();</P>
+<P>};</P>
+
+<P>// 派生窗口类</P>
+<P>class CMyWnd : public CFrameWnd</P>
+<P>{</P>
+<P>public:</P>
+<P>&#9;CListBox lst;</P>
+<P>protected:</P>
+<P>&#9;// 声明消息处理函数</P>
+<P>&#9;afx_msg void OnPaint();</P>
+<P>&#9;afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);</P>
+<P>&#9;DECLARE_MESSAGE_MAP();</P>
+<P>};</P>
+
+<P>// 初始化应用程序实例</P>
+<P>BOOL CMyApp::InitInstance()</P>
+<P>{</P>
+<P>&#9;// 创建应用程序的主窗口</P>
+<P>&#9;CMyWnd *pWnd=new CMyWnd;</P>
+<P>&#9;pWnd-&gt;Create(NULL, "字体示例");</P>
+
+<P>&#9;// 显示应用程序主窗口并刷新其客户区</P>
+<P>&#9;pWnd-&gt;ShowWindow(SW_SHOW);</P>
+<P>&#9;pWnd-&gt;UpdateWindow();</P>
+
+<P>&#9;// 在主窗口关闭时终止应用程序的执行线程</P>
+<P>&#9;m_pMainWnd=pWnd;</P>
+<P>&#9;return TRUE;</P>
+<P>}</P>
+
+<P>// 声明唯一的应用程序对象</P>
+<P>CMyApp MyApp;</P>
+
+<P>// 应用程序主窗口的消息映射</P>
+<P>BEGIN_MESSAGE_MAP(CMyWnd, CWnd)</P>
+<P>&#9;ON_WM_CREATE()</P>
+<P>&#9;ON_WM_PAINT()</P>
+<P>END_MESSAGE_MAP()</P>
+
+<P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+
+<P>&#9;// 设置字体输出背景为透明</P>
+<P>&#9;dc.SetBkMode(TRANSPARENT);</P>
+<P>&#9;// 获得设备上下文所使用的当前字体</P>
+<P>&#9;LOGFONT lf;</P>
+<P>&#9;dc.GetCurrentFont()-&gt;GetLogFont(&amp;lf);</P>
+<P>&#9;CFont font1, font2;</P>
+<P>&#9;CFont *pOldFont;&#9;&#9;// 保存设备上下文最初使用的字体对象</P>
+
+<P>&#9;// 创建 font1 为 12 象素宋体</P>
+<P>&#9;lf.lfCharSet=134;</P>
+<P>&#9;lf.lfHeight=-12;</P>
+<P>&#9;lf.lfWidth=0;</P>
+<P>&#9;strcpy(lf.lfFaceName, "宋体");</P>
+<P>&#9;font1.CreateFontIndirect(&amp;lf);</P>
+
+<P>&#9;// 更改当前字体为 20 象素的 Times New Roman，并且向上倾斜 40 度</P>
+<P>&#9;lf.lfCharSet=0;</P>
+<P>&#9;strcpy(lf.lfFaceName, "Times New Roman");</P>
+<P>&#9;lf.lfEscapement=400;</P>
+<P>&#9;lf.lfHeight=-20;</P>
+<P>&#9;font2.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;pOldFont=dc.SelectObject(&amp;font2);</P>
+<P>&#9;// 获得字符串 "lfEscapement= 400" 在输出时的宽度和高度</P>
+<P>&#9;CSize sz=dc.GetTextExtent("lfEscapement= 400");</P>
+<P>&#9;// 计算字符串合适的输出位置</P>
+<P>&#9;dc.TextOut(10, 10+int(sz.cx*sin(DegToRnd(40))), "lfEscapement= 400");</P>
+
+<P>&#9;// 将字体输出方向更改为向下倾斜 40 度</P>
+<P>&#9;lf.lfEscapement=-400;</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;font2.DeleteObject();</P>
+<P>&#9;font2.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;dc.SelectObject(&amp;font2);</P>
+<P>&#9;// 计算字符串合适的输出位置</P>
+<P>&#9;dc.TextOut(290-int(sz.cx*cos(DegToRnd(40))), 10, "lfEscapement=-400");</P>
+
+<P>&#9;// 将字体输出方向更改为水平方向</P>
+<P>&#9;lf.lfEscapement=0;</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;font2.DeleteObject();</P>
+<P>&#9;font2.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;dc.SelectObject(&amp;font2);</P>
+<P>&#9;// 对称于直线 x=150 输出字符串 "lfEscapement=0"</P>
+<P>&#9;sz=dc.GetTextExtent("lfEscapement=0");</P>
+<P>&#9;dc.TextOut(150-sz.cx/2, 110, "lfEscapement=0");</P>
+
+<P>&#9;// 更改当前字体为最细的 50 象素大小的宋体</P>
+<P>&#9;lf.lfCharSet=134;</P>
+<P>&#9;strcpy(lf.lfFaceName, "宋体");</P>
+<P>&#9;lf.lfEscapement=0;</P>
+<P>&#9;lf.lfWeight=0;</P>
+<P>&#9;lf.lfHeight=-50;</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;font2.DeleteObject();</P>
+<P>&#9;font2.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;dc.SelectObject(&amp;font2);</P>
+<P>&#9;// 输出一个 "细" 字</P>
+<P>&#9;dc.TextOut(330, 10, "细");</P>
+<P>&#9;// 在旁边使用 12 象素大小的宋体字给出当前字体的重量</P>
+<P>&#9;dc.SelectObject(&amp;font1);</P>
+<P>&#9;dc.TextOut(395, 29, "lfWeight=0");</P>
+
+<P>&#9;// 更改当前字体为最粗的 50 象素大小的字体</P>
+<P>&#9;lf.lfWeight=1000;</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;font2.DeleteObject();</P>
+<P>&#9;font2.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;dc.SelectObject(&amp;font2);</P>
+<P>&#9;// 输出一个 "粗" 字</P>
+<P>&#9;dc.TextOut(330, 80, "粗");</P>
+<P>&#9;dc.SelectObject(&amp;font1);</P>
+<P>&#9;// 在旁边使用 12 象素大小的宋体字给出当前字体和重量</P>
+<P>&#9;dc.TextOut(395, 99, "lfWeight=1000");</P>
+<P>&#9;</P>
+<P>&#9;// 恢复设备上下文原有的 GDI 绘图对象</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>}</P>
+
+<P>// 主窗口的 WM_CREATE 消息的处理函数</P>
+<P>int CMyWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)</P>
+<P>{</P>
+<P>&#9;// 调用基类的默认消息处理函数</P>
+<P>&#9;int iResult=CWnd::OnCreate(lpCreateStruct);</P>
+
+<P>&#9;// 创建一个列表框，该列表框中给出了当前系统中安装的所有可用字体</P>
+<P>&#9;lst.Create(LBS_STANDARD | LBS_USETABSTOPS | WS_CHILD | WS_VISIBLE, </P>
+<P>&#9;&#9;CRect(10, 150, 480, 350), this, 1001);</P>
+
+<P>&#9;// 更改列表框所用的字体为 9 磅 (12 象素) 大小的宋体</P>
+<P>&#9;static CFont font;</P>
+<P>&#9;font.CreatePointFont(90, "宋体");</P>
+<P>&#9;lst.SetFont(&amp;font);</P>
+
+<P>&#9;// 设置列表框的制表符位置为 200 个对话框单位</P>
+<P>&#9;lst.SetTabStops(200);</P>
+
+<P>&#9;// 枚举当前系统的所有可用字体，将指向列表框的 CListBox 对象的指针作为应用程序提供的</P>
+<P>&#9;// 参数传递给枚举字体回调函数 EnumFontFamProc</P>
+<P>&#9;EnumFontFamilies(::GetDC(GetSafeHwnd()), NULL, EnumFontFamProc, (LPARAM)(&amp;lst));</P>
+<P>&#9;return iResult;</P>
+<P>}</P>
+
+<P>// 枚举字体时的回调函数，该函数将系统的所有可用字体及其字符集添加到列表框中，</P>
+<P>// 由应用程序提供的参数 lParam 提供了指向该列表框的 CListBox 对象的指针</P>
+<P>int WINAPI EnumFontFamProc(const LOGFONTA * lplf, </P>
+<P>&#9;&#9;const TEXTMETRICA *lptm, unsigned long FontType, LPARAM lParam)</P>
+<P>{</P>
+<P>&#9;CListBox *pList=(CListBox*)lParam;</P>
+<P>&#9;CString str;</P>
+
+<P>&#9;// 将当前字体的字体名 (FaceName) 和字符集 (CharSet) 添加到列表框中</P>
+<P>&#9;str.Format("FACENAME: %s  \tCHARSET: %d", lplf-&gt;lfFaceName, lplf-&gt;lfCharSet);</P>
+<P>&#9;pList-&gt;AddString(str);</P>
+<P>&#9;</P>
+<P>&#9;return TRUE;&#9;// 返回 TRUE 以继续字体枚举的过程，返回 FALSE 将终止字体枚举的过程</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">我们先来看重绘消息处理函数</FONT><FONT SIZE=3>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，一开始时，我们调用了</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>GetCurrentFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，该成员函数返回当前设备上下文所使用的字体，其返回值是一个指向</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的指针，然后，我们通过该指针调用</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>GetLogFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，该成员函数将字体的信息填入到一个</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构中。在下面的步骤中，我们通过修改该结构的成员来创建新的字体对象。首先，我们创建一个</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象</FONT><FONT SIZE=3>font1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>font1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用了</FONT><FONT SIZE=3>12</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个象素大小的宋体字，在程序中它主要用来输出一些标识文本。这里，我们先在</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构对象</FONT><FONT SIZE=3>lf</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在相关成员中填入新的值，再以该结构对象为参数来调用</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>CreateFontIndirect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建相应的</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>字体对象。这里我们将</FONT><FONT SIZE=3>lfCharSet</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员修改为</FONT><FONT SIZE=3>134 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，这个值可以通过本程序的运行结果得出，</FONT><FONT SIZE=3>lfWidth</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员修改为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，这样将使用默认的字符纵横比得到字符的宽度。</P>
+<P ALIGN="JUSTIFY">在下面过程中，我们按照类似的方法创建一大小为</FONT><FONT SIZE=3>20</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个象素的</FONT><FONT SIZE=3>Times New Roman</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>字体，与刚才不同的是，我们将结构对象</FONT><FONT SIZE=3>lf</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>lfEscapement</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员的值设置为</FONT><FONT SIZE=3>400</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，这样，文本将以向上倾斜</FONT><FONT SIZE=3>40</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>度</FONT><FONT SIZE=3>(lfEscapement</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的值的单位为</FONT><FONT SIZE=3>1/10</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>度</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的角度进行输出。接着，我们将该字体对象通过</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>SelectObject</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选入设备上下文中作为设备上下文的当前字体。</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>GetTextExtent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以在输出一个字符串之前得到该输出字符串的大小，以便于我们可以恰当的安排字符串的输出位置。需要注意的是，通过该成员函数得到的度量值不会受到我们在</FONT><FONT SIZE=3>lfEscapement</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中设置的值的影响。在程序示例中，我们通过成员函数</FONT><FONT SIZE=3>GetTextExtent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>得到字符串</FONT><FONT SIZE=3>"lfEscapement= 400"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在输出时的长度和宽度，然后根据所得的结果计算得出以</FONT><FONT SIZE=3>40</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>度角输出文本串的合适的起始位置，最后调用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>TextOut</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以当前字体输出字符串</FONT><FONT SIZE=3>"lfEscapement= 400"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>不管当前的</FONT><FONT SIZE=3>lfEscapement</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>值如何，函数</FONT><FONT SIZE=3>TextOut</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>总是以输出字符串的第一个字符的起始位置的坐标作为其前两个参数。</LI></P>
+<P ALIGN="JUSTIFY"><LI>在</FONT><FONT SIZE=3>Windows 95</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中，</FONT><FONT SIZE=3>lfEscapement</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>lfOrientation</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>总是具有相同的值，而在</FONT><FONT SIZE=3>Windows NT</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中，两者在某些情况下可以不相同。</LI></P>
+<P ALIGN="JUSTIFY"><LI>设置</FONT><FONT SIZE=3>lfFaceName</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>时应该使用库函数</FONT><FONT SIZE=3>strcpy</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>，不要犯这样的错误：</LI></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY"><LI>lfFaceName="</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=1>宋体</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>";</LI></P></UL>
+<DIR>
+<DIR>
+
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">此外，如果为</FONT><FONT SIZE=3>lfFaceName</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>设置了新值，同时也应该将</FONT><FONT SIZE=3>lfCharSet</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的值设置为相匹配的字符集。如果字符集与字体名不相匹配，将会导致设置不起作用。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P></DIR>
+</DIR>
+
+<P ALIGN="JUSTIFY">要使文本向下倾斜输出，我们只需简单的将</FONT><FONT SIZE=3>lfEscapement</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>设置为负值。如下面的代码所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>// 将字体输出方向更改为向下倾斜 40 度</P>
+<P>lf.lfEscapement=-400;</P>
+<P>dc.SelectObject(pOldFont);</P>
+<P>font2.DeleteObject();</P>
+<P>font2.CreateFontIndirect(&amp;lf);</P>
+<P>dc.SelectObject(&amp;font2);</P>
+<P>// 计算字符串合适的输出位置</P>
+<P>dc.TextOut(290-int(sz.cx*cos(DegToRnd(40))), 10, "lfEscapement=-400");</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">上面的代码摘自应用程序</FONT><FONT SIZE=3>FontDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>在调用</FONT><FONT SIZE=3>font2</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>CreateFontIndirect</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>成员函数创建新的字体对象之前，应该先调用其成员函数</FONT><FONT SIZE=3>DeleteObject</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>删除该字体对象，而当一个</FONT><FONT SIZE=3>GDI</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>图形对象正为设备上下文所使用时，我们不能删除该图形对象，因此在前面的代码中，我们在删除在</FONT><FONT SIZE=3>font2</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>原有的字体对象之前先将设备上下文的字体对象进行复原。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">接着在消息处理函数</FONT><FONT SIZE=3>CMyWnd::OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中，我们又将</FONT><FONT SIZE=3>lfEscapement</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员的值设置为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，输出字符串</FONT><FONT SIZE=3>"lfEscapement=0"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以示对比。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在随后的代码中，我们演示了</FONT><FONT SIZE=3>lfWeight</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员的不同值对字体的笔划粗细的影响。我们先将</FONT><FONT SIZE=3>lfWeight</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>值设置为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，以</FONT><FONT SIZE=3>50</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>象素的宋体字绘制了一个“细”字，然后再将</FONT><FONT SIZE=3>lfWeight</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>值设置为</FONT><FONT SIZE=3>1000</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，以同样大小和同种字体绘制了一个“粗”字。通过如图</FONT><FONT SIZE=3>9.7</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的输出结果，我们看到字体笔划的粗细发生的明显的变化。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数返回之前，不要忘记恢复设备上下文的原有字体对象，指向该对象的</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>指针在前面被保存到了名为</FONT><FONT SIZE=3>pOldFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的指针变量中。我们仍然使用</FONT><FONT SIZE=3>SelectObject</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将其选入当前设备上下文。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">上面我们来看示例程序</FONT><FONT SIZE=3>FontDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的另一个主要的功能板块，即枚举当前系统中所安装的所有字符并将它添加到一个列表框中。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">首先我们在窗口</FONT><FONT SIZE=3>CMyWnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>WM_CREATE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息的处理函数</FONT><FONT SIZE=3>OnCreate</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中调用</FONT><FONT SIZE=3>CListBox</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象</FONT><FONT SIZE=3>lst (</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>该对象被定义为类</FONT><FONT SIZE=3>CMyWnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员变量</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>Create</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数。在</FONT><FONT SIZE=3>Create</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数中，我们指定了列表框的样式包括了</FONT><FONT SIZE=3>LBS_USETABSTOPS</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，该样式允许在列表项中使用制表符，这些制表符在显示时会被扩展到指定的位置。</P>
+<P ALIGN="JUSTIFY">接着，我们将列表框所使用的字体设置为</FONT><FONT SIZE=3>9</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>磅大小的宋体字。这里我们调用的是</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的</FONT><FONT SIZE=3>CreatePointFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数来创建字体。当需要创建的指定磅值大小的某种字体时，使用</FONT><FONT SIZE=3>CreatePointFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数要方便得多，因此该函数仅需要三个参数，并且，第三个参数在很多情况下可以省略。这样，我们就可以避开填写复杂的</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构。</P>
+<P ALIGN="JUSTIFY">在改变列表框字体的同时，我们将列表框中的当前制表位设置为</FONT><FONT SIZE=3>200</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个对话框单位，对话框单位是一种在控件和对话框使用的度量单位。每</FONT><FONT SIZE=3>4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个水平对话框单位等于以系统字体显示的字符的平均宽度，我们还将这个宽度称作对话框基本单位。对话框基本单位的具体量值可以通过</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>GetDialogBaseUnits</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>得到，该函数返回值的低位字代表对话框水平基本单位，高位字代表对话框垂直基本单位。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">紧接着我们调用了</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>EnumFontFamilies</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来枚举系统中的所有可用字体，该函数使用</FONT><FONT SIZE=3>4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个参数，第一个参数为枚举所使用设备上下文句柄，我们使用</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>GetDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来得到代表当前窗口的客户区；为了枚举系统中的所有字体，我们将第二个参数设置为</FONT><FONT SIZE=3>NULL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>；第三个参数为枚举字体回调函数，这里为</FONT><FONT SIZE=3>EnumFontFamProc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，我们将在下面定义该回调函数；第四个参数为指向列表框的指针，这个参数将被传递给回调函数，由于我们需要将可用的字体添加到列表框中，因此我们可以很自然的将指向该列表框指针当前应用程序提供的参数传递给枚举字体回调函数。</P>
+<P ALIGN="JUSTIFY">枚举字体回调函数的原型在程序中被声明为</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>int WINAPI EnumFontFamProc(const LOGFONTA *lplf, </P>
+<P>&#9;&#9;const TEXTMETRICA *lptm, unsigned long FontType, LPARAM lParam);</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>在随</FONT><FONT SIZE=3>Visual C++ 5.0</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>提供的</FONT><FONT SIZE=3>Platform SDK (</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>即</FONT><FONT SIZE=3>Win32 SDK)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中所给出的</FONT><FONT SIZE=3>EnumFontFamProc</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>的原型为</LI></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY"><LI>int CALLBACK EnumFontFamProc( ENUMLOGFONT FAR *lpelf, // pointer to logical-font data </LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY"><LI>&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>NEWTEXTMETRIC FAR *lpntm, // pointer to physical-font data </LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY"><LI>&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>int FontType, // type of font </LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY"><LI>&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>LPARAM lParam // address of application-defined data </LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY"><LI>&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>); </LI></P></UL>
+<DIR>
+<DIR>
+
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">然而在本程序中使用上面所给的原型将会在编译时导致类型不匹配。正确的回调函数的原型应该如代码清单中所给的那样。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">　</P></DIR>
+</DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image319.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image319.gif" WIDTH=323 HEIGHT=247></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 7 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>示例程序</FONT><FONT SIZE=1>FontDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>的运行结果</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在本程序中，传递给回调函数的第一个参数</FONT><FONT SIZE=3>lplf</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为该字体对应的</FONT><FONT SIZE=3>LOGFONTA</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构，最后一个参数为指向列表框的</FONT><FONT SIZE=3>CListBox</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>指针。第二个参数和第三个参数在本程序中没有使用。在本程序中，枚举字体回调函数的结构很简单，它只是将字体的字体名和相应的字符集格式化之后添加到列表框中。为了使枚举继续进行，回调函数应该返回真值，如果回调函数返回了</FONT><FONT SIZE=3>FALSE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则枚举的过程将被终止。</P>
+<P ALIGN="JUSTIFY">示例程序</FONT><FONT SIZE=3>FontDemo</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的运行结果如图</FONT><FONT SIZE=3>9.7</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+<P ALIGN="JUSTIFY">在类</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中定义的字体和文本函数如表所示。</P>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">表</FONT><FONT FACE="Arial" SIZE=1>9. 5 </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>在类</FONT><FONT FACE="Arial" SIZE=1>CDC</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>中定义的字体和文本函数</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=513>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">成员函数</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">TextOut</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在指定位置以当前选定字体绘制字符串</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">ExtTextOut</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在指定的矩形区域内使用当前选定字体绘制字符串</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">TabbedTextOut</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">以指定的位置绘制字符串，并按指定的制表符位置扩展字符串的制表符</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">DrawText</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在指定的矩形区域内绘制格式化文本</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetTextExtent</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">使用当前字体中属性设备上下文中计算一行文本的宽度和高度</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetOutputTextExtent</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在输出设备上下文中计算一字符串的宽度和高度</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetTabbedTextExtent</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在属性设备上下文中计算一字符串的宽度和高度</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetOutputTabbedTextExtent</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在输出设备上下文中计算一字符串的宽度和高度</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GrayString</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在指定位置绘制变灰的文本</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetTextAlign</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">获得文本对齐标志</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">SetTextAlign</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设置文本对齐标志</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetTextFace</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">将当前字体的字体名拷贝到缓冲区</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetTextMetrics</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从属性设备上下文中获得当前字体的度量值</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetOutputTextMetrics</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从输出设备上下文中获得当前字体的度量值</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">SetTextJustification</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在字符串的分隔字符处添加空白</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetTextCharacterExtra</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">获得字符间空白的当前设置</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">SetTextCharacterExtra</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">设置字符间空白的当前设置</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetFontData</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从可缩放字体文件中获取字体信息。所获取的信息通过指定字体文件中的偏移量和返回信息的长度来确定</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetKerningPairs</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">在选定的设备上下文中获得当前选定字体的字距调整字符对</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetOutlineTextMetrics</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">获得</FONT><FONT SIZE=1>TrueType</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>字体的字体度量信息</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetGlyphOutline</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">返回当前字体的字符的轮廓曲线或位图</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetCharABCWidths</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从当前字体中以逻辑单位返回给定范围的连续字符的宽度</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetCharWidth</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从当前字体中返回给定范围的连续字符的相对宽度</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetOutputCharWidth</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">从输出设备上下文中的当前字体返回连续字符组中若干单个字符的宽度</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="RIGHT">续表</FONT><FONT FACE="Arial" SIZE=1>9.5</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=513>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">成员函数</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">描述</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">SetMapperFlags</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">改变字体映射程序中从逻辑字符到物理字体的映射过程中所使用的算法</FONT></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">GetAspectRatioFilter</FONT></TD>
+<TD WIDTH="67%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">获得当前纵横比过滤器的设定</FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在一些应用程序</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>如字处理应用程序</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中，我们一般需要由用户来指定所使用的字体。这时常使用的方法是弹出一个字体对话框，用户通过该字体对话框来设置应用程序所使用的字体。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类</FONT><FONT SIZE=3>CFontDialog</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>封装了标准的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>字体对话框。在最简单的情况下，我们只需要声明一个类的实例对象</FONT><FONT SIZE=3>CFontDialog</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，然后通过该对象调用类</FONT><FONT SIZE=3>CFongDialog</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>DoModal</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，如果该成员函数返回</FONT><FONT SIZE=3>IDOK</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则通过成员函数</FONT><FONT SIZE=3>GetCurrentFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将用户所选择的字体信息填入一个</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构中，在下面的过程中即可通过该结构创建</FONT><FONT SIZE=3>CFont</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。在很多情况下，我们需要为字体对话框设置一些初始值，一种很简单的方式在其构造函数中传递一个指向</FONT><FONT SIZE=3>LOGFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构对象的指针。我们可以在创建</FONT><FONT SIZE=3>CFontDialog</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象之后，调用</FONT><FONT SIZE=3>DoModal</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员之前改变其类型为</FONT><FONT SIZE=3>CHOOSEFONT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员结构</FONT><FONT SIZE=3>m_cf</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的各成员的值来为字体对话框进行初始设置。</P>
+</FONT><FONT FACE="Arial"><P>9.4.4 </FONT><FONT FACE="黑体" LANG="ZH-CN">创建特殊的字体效果</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在一般的应用程序中，我们可以使用</FONT><FONT SIZE=3>SetBkMode</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>SetBkColor</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来设置绘制文本所使用的颜色和模式，但是，这两个函数所设置的效果是很有限的。有时候我们可能希望得到一些特殊的文本输出效果。这时我们就应该考虑其它特殊的实现方式。使用路径是其中的一种方法。下面我们讲述一些使用路径得到的特殊的字体效果。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(1)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>空心字</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在开始一个路径前，我们先调用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>BeginPath</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，然后调用一系列的输出函数，在完成绘制之后，我们可以调用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>EndPath</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。在完成一个路径之后，我们可以调用</FONT><FONT SIZE=3>StrokePath</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来绘制该路径。为了简单起见，我们仅给出应用程序的</FONT><FONT SIZE=3>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+
+<P>&#9;// 更改当前字体</P>
+<P>&#9;LOGFONT lf;</P>
+<P>&#9;dc.GetCurrentFont()-&gt;GetLogFont(&amp;lf);</P>
+<P>&#9;CFont font;</P>
+<P>&#9;CFont *pOldFont;&#9;&#9;// 保存设备上下文最初使用的字体对象</P>
+<P>&#9;lf.lfCharSet=134;</P>
+<P>&#9;lf.lfHeight=-150;</P>
+<P>&#9;lf.lfWidth=0;</P>
+<P>&#9;strcpy(lf.lfFaceName, "隶书");</P>
+<P>&#9;font.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;pOldFont=dc.SelectObject(&amp;font);</P>
+<P>&#9;dc.SetBkMode(TRANSPARENT);</P>
+
+<P>&#9;// 更改当前画笔</P>
+<P>&#9;CPen pen(PS_SOLID, 1, RGB(255, 0, 0));</P>
+<P>&#9;CPen *pOldPen;</P>
+<P>&#9;pOldPen=dc.SelectObject(&amp;pen);</P>
+
+<P>&#9;// 开始一个路径</P>
+<P>&#9;dc.BeginPath();</P>
+<P>&#9;&#9;dc.TextOut(10, 10, "空心字");</P>
+<P>&#9;dc.EndPath();</P>
+
+<P>&#9;// 绘制路径</P>
+<P>&#9;dc.StrokePath();</P>
+
+<P>&#9;// 恢复设备上下文的原有设置</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;dc.SelectObject(pOldPen);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">上面的程序的运行结果如图</FONT><FONT SIZE=3>9.8</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image320.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image320.gif" WIDTH=314 HEIGHT=144></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 8 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>绘制空心字</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">函数</FONT><FONT SIZE=3>FillPath</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以使用当前刷子填充路径的内部。按下面的代码修改前面的</FONT><FONT SIZE=3>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+
+<P>&#9;// 更改当前字体</P>
+<P>&#9;LOGFONT lf;</P>
+<P>&#9;dc.GetCurrentFont()-&gt;GetLogFont(&amp;lf);</P>
+<P>&#9;CFont font, *pOldFont;</P>
+<P>&#9;lf.lfCharSet=134;</P>
+<P>&#9;lf.lfHeight=-150;</P>
+<P>&#9;lf.lfWidth=0;</P>
+<P>&#9;strcpy(lf.lfFaceName, "隶书");</P>
+<P>&#9;font.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;pOldFont=dc.SelectObject(&amp;font);</P>
+<P>&#9;dc.SetBkMode(TRANSPARENT);</P>
+
+<P>&#9;// 更改当前画笔</P>
+<P>&#9;CPen pen(PS_SOLID, 1, RGB(255, 0, 0)), *pOldPen;</P>
+<P>&#9;pOldPen=dc.SelectObject(&amp;pen);</P>
+
+<P>&#9;// 更改当前刷子</P>
+<P>&#9;CBrush br(HS_DIAGCROSS, RGB(0, 255, 255)), *pOldBrush;</P>
+<P>&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+
+<P>&#9;// 开始一个路径</P>
+<P>&#9;dc.BeginPath();</P>
+<P>&#9;&#9;dc.TextOut(10, 10, "空心字");</P>
+<P>&#9;dc.EndPath();</P>
+
+<P>&#9;// 绘制路径</P>
+<P>&#9;dc.StrokeAndFillPath();</P>
+<P>　</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image321.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image321.gif" WIDTH=314 HEIGHT=141></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 9 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>使用刷子填充空心字的内部</P>
+<P>&#9;// 恢复设备上下文的原有设置</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;dc.SelectObject(pOldPen);</P>
+<P>&#9;dc.SelectObject(pOldBrush);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">上面的程序的运行结果如图</FONT><FONT SIZE=3>9.9</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P> (2) </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>渐变字</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在完成一个路径之后，如前所述，我们可以调用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>FillPath</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>StrokePath</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或</FONT><FONT SIZE=3>StrokeAndFillPath</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来绘制和填充路径。这只是最初级的技巧。更进一步，我们可以使用成员函数</FONT><FONT SIZE=3>SelectClipPath</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将路径选入当前剪辑区域，这样，所有的绘制操作都将只作用于这个剪辑区域。</P>
+<P ALIGN="JUSTIFY">使用此技巧可以绘制具有渐变颜色效果的字体。如下面的</FONT><FONT SIZE=3>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+
+<P>&#9;// 更改当前字体</P>
+<P>&#9;LOGFONT lf;</P>
+<P>&#9;dc.GetCurrentFont()-&gt;GetLogFont(&amp;lf);</P>
+<P>&#9;CFont font, *pOldFont;</P>
+<P>&#9;lf.lfCharSet=134;</P>
+<P>&#9;lf.lfHeight=-150;</P>
+<P>&#9;lf.lfWidth=0;</P>
+<P>&#9;strcpy(lf.lfFaceName, "隶书");</P>
+<P>&#9;font.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;pOldFont=dc.SelectObject(&amp;font);</P>
+<P>&#9;dc.SetBkMode(TRANSPARENT);</P>
+
+<P>&#9;// 更改当前画笔为空</P>
+<P>&#9;CPen pen(PS_NULL, 1, RGB(255, 0, 0)), *pOldPen;</P>
+<P>&#9;pOldPen=dc.SelectObject(&amp;pen);</P>
+
+<P>&#9;// 更改当前刷子</P>
+<P>&#9;CBrush br(0), *pOldBrush;</P>
+<P>&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+
+<P>&#9;// 开始一个路径</P>
+<P>&#9;dc.BeginPath();</P>
+<P>&#9;&#9;dc.TextOut(10, 10, "渐变字");</P>
+<P>&#9;dc.EndPath();</P>
+
+<P>&#9;// 绘制渐变效果</P>
+<P>&#9;dc.SelectClipPath(RGN_COPY);</P>
+<P>&#9;for (int i=255; i&gt;0; i--)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;int iRadius=(600*i)/255;</P>
+<P>&#9;&#9;dc.SelectObject(pOldBrush);</P>
+<P>&#9;&#9;br.DeleteObject();</P>
+<P>&#9;&#9;br.CreateSolidBrush(RGB(255, i, 0));</P>
+<P>&#9;&#9;dc.SelectObject(&amp;br);</P>
+<P>&#9;&#9;dc.Ellipse(-iRadius, -iRadius/3, iRadius, iRadius/3);</P>
+<P>&#9;}</P>
+
+<P>&#9;// 恢复设备上下文的原有设置</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;dc.SelectObject(pOldPen);</P>
+<P>&#9;dc.SelectObject(pOldBrush);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在上面的示例中，我们以</FONT><FONT SIZE=3>RGN_COPY</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方式将路径选作当前剪辑区域，然后，在该剪辑区域上进行一系列的绘制操作，这些绘制操作以不同的颜色绘制了一系列的同心椭圆，这些同心椭圆有视觉上给用户以渐变的感觉。上面的程序的运行结果如图。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image322.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image322.gif" WIDTH=318 HEIGHT=139></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 10 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>绘制渐变字</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(3)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用不同的光栅模式创建特殊效果</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">光栅模式决定了画笔的颜色和屏幕上原有的点的颜色值在进行绘制时的组合方式。可以使用类</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>SetROP2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来设置设备上下文所使用的光栅绘制模式。该操作仅对光栅设备起作用。通过指定不同的光栅模式，我们可以制造一些特殊的效果，比如说反色字等。</P>
+<P ALIGN="JUSTIFY">下面的</FONT><FONT SIZE=3>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>处理函数演示了</FONT><FONT SIZE=3>16</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>种不同的光栅模式，需要注意的是，即使是同一种光栅模式，在当前画笔的颜色不同时所产生的结果也可能有很大差异。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+
+<P>&#9;// 更改当前字体</P>
+<P>&#9;LOGFONT lf;</P>
+<P>&#9;dc.GetCurrentFont()-&gt;GetLogFont(&amp;lf);</P>
+<P>&#9;CFont font1, font2, *pOldFont;</P>
+<P>&#9;lf.lfCharSet=134;</P>
+<P>&#9;lf.lfWidth=0;</P>
+<P>&#9;lf.lfHeight=-12;</P>
+<P>&#9;strcpy(lf.lfFaceName, "宋体");</P>
+<P>&#9;font2.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;lf.lfHeight=-50;</P>
+<P>&#9;lf.lfWeight=1000;</P>
+<P>&#9;strcpy(lf.lfFaceName, "黑体");</P>
+<P>&#9;font1.CreateFontIndirect(&amp;lf);</P>
+<P>&#9;pOldFont=dc.SelectObject(&amp;font1);</P>
+<P>&#9;dc.SetBkMode(TRANSPARENT);</P>
+
+<P>&#9;// 更改当前画笔为空</P>
+<P>&#9;CPen pen1(PS_NULL, 1, RGB(0, 0, 0)), pen2(PS_SOLID, 1, RGB(0, 0, 0)), *pOldPen;</P>
+<P>&#9;pOldPen=dc.SelectObject(&amp;pen1);</P>
+
+<P>&#9;// 更改当前刷子</P>
+<P>&#9;CBrush br(RGB(0, 0, 255)), *pOldBrush;</P>
+<P>&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+
+<P>&#9;// 绘制背景</P>
+<P>&#9;for (int i=0; i&lt;1000; i+=20)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;for (int j=0; j&lt;1000; j+=20)</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;&#9;dc.Rectangle(i, j, i+10, j+10);</P>
+<P>&#9;&#9;&#9;dc.Rectangle(i+10, j+10, i+20, j+20);</P>
+<P>&#9;&#9;}</P>
+<P>&#9;}</P>
+
+<P>&#9;dc.SelectObject(&amp;pen2);</P>
+
+<P>&#9;int nDrawModes[]={R2_BLACK, R2_WHITE, R2_NOP,</P>
+<P>&#9;&#9;R2_NOT, R2_COPYPEN, R2_NOTCOPYPEN,</P>
+<P>&#9;&#9;R2_MERGEPENNOT, R2_MASKPENNOT, R2_MERGENOTPEN,</P>
+<P>&#9;&#9;R2_MASKNOTPEN, R2_MERGEPEN, R2_NOTMERGEPEN, </P>
+<P>&#9;&#9;R2_MASKPEN, R2_NOTMASKPEN, R2_XORPEN,</P>
+<P>&#9;&#9;R2_NOTXORPEN};</P>
+
+<P>&#9;char *szDrawModes[]={"R2_BLACK", "R2_WHITE", "R2_NOP",</P>
+<P>&#9;&#9;"R2_NOT", "R2_COPYPEN", "R2_NOTCOPYPEN",</P>
+<P>&#9;&#9;"R2_MERGEPENNOT", "R2_MASKPENNOT", "R2_MERGENOTPEN",</P>
+<P>&#9;&#9;"R2_MASKNOTPEN", "R2_MERGEPEN", "R2_NOTMERGEPEN", </P>
+<P>&#9;&#9;"R2_MASKPEN", "R2_NOTMASKPEN", "R2_XORPEN",</P>
+<P>&#9;&#9;"R2_NOTXORPEN"};</P>
+
+<P>&#9;for (i=0; i&lt;16; i++)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;// 更改当前光栅模式，绘制字体的前景</P>
+<P>&#9;&#9;dc.SetBkMode(TRANSPARENT);</P>
+<P>&#9;&#9;dc.SetROP2(nDrawModes[i]);</P>
+<P>&#9;&#9;dc.BeginPath();</P>
+<P>&#9;&#9;&#9;dc.SelectObject(&amp;font1);</P>
+<P>&#9;&#9;&#9;dc.TextOut((i%4)*200+10, (i/4)*80+10, "光栅字");</P>
+<P>&#9;&#9;dc.EndPath();</P>
+<P>&#9;&#9;dc.FillPath();</P>
+
+<P>&#9;&#9;// 以 R2_BLACK 光栅模式绘制字体的轮廓</P>
+<P>&#9;&#9;dc.SetROP2(R2_BLACK);</P>
+<P>&#9;&#9;dc.BeginPath();</P>
+<P>&#9;&#9;&#9;dc.TextOut((i%4)*200+10, (i/4)*80+10, "光栅字");</P>
+<P>&#9;&#9;dc.EndPath();</P>
+<P>&#9;&#9;dc.StrokePath();</P>
+
+<P>&#9;&#9;// 显示所使用的光栅模式</P>
+<P>&#9;&#9;dc.SelectObject(&amp;font2);</P>
+<P>&#9;&#9;dc.SetBkMode(OPAQUE);</P>
+<P>&#9;&#9;dc.TextOut((i%4)*200+10, (i/4)*80+70, szDrawModes[i]);</P>
+<P>&#9;}</P>
+
+<P>&#9;// 恢复设备上下文的原有设置</P>
+<P>&#9;dc.SelectObject(pOldFont);</P>
+<P>&#9;dc.SelectObject(pOldPen);</P>
+<P>&#9;dc.SelectObject(pOldBrush);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">该程序的运行结果如图</FONT><FONT SIZE=3>9.11</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">这里再强调一下，除了</FONT><FONT SIZE=3>R2_BLACK</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>R2_WHITE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>R2_NOP</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>R2_NOT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以外，其作光栅模式的效果都同当前画笔的颜色有关。比如在上面的示例中，如果当前画笔</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>刷子</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的颜色值为背景方格相同，即都为蓝色，那么光栅模式</FONT><FONT SIZE=3>R2_MERGEPENNOT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>R2_NOTXORPEN</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>都将屏幕上的蓝色区域绘制为白色，白色区域绘制为蓝色。但是，如果当前画笔</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>刷子</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的颜色不同蓝色，则得到的结果则可能不是这样。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image323.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image323.gif" WIDTH=510 HEIGHT=235></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 11 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>使用不同的光栅模式的绘制效果</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">各种不同的光栅模式实际上是将背景颜色和画笔或刷子的颜色进行某种位运算来得到实际输出的颜色值，关于每一种光栅模式的具体含义可以参考</FONT><FONT SIZE=3>Visual C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中关于函数</FONT><FONT SIZE=3>CDC::SetROP2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>SetROP2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的联机文档。</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425698473">第五节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>映射模式</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">作为本章的末尾，我们来讲述一个以前一直没有涉及的问题。这就是在设备上下文中绘制时所使用的坐标系统。在前面的示例中，我们在绘图时使用了如图</FONT><FONT SIZE=3>9.12</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的坐标系统。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image324.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image324.gif" WIDTH=307 HEIGHT=220></P>
+<P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 12 MM_TEXT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>映射模式</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这种映射模式称作</FONT><FONT SIZE=3>MM_TEXT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>映射模式。在这样的坐标系统中，向右的方向为</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴的正方向，向下的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴的正方向。无论是</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方向还是</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方向，每一个单位长度都代表设备上的一个象素。这种映射模式对于很多绘制操作是合理的，由于它以象素为单位，所以我们可以很直观的控制图形在屏幕上输出的大小。但是，其缺陷也是明显的。考虑不同的设备，如屏幕和打印机，它们所对应的象素的大小是不同的，因此，在不同的设备上输出的相同象素大小的图形，其实际大小可能有很大的差异。</P>
+<P ALIGN="JUSTIFY">为了解决这个问题，</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供了设备无关的映射模式。这些模式使用了诸如</FONT><FONT SIZE=3>1/1000</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>英寸、</FONT><FONT SIZE=3>1/100</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>毫米之类的单位长度。在不同的设备上进行输出的时候，</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>自动将逻辑单位换算成对应的设备单位。这样，你在屏幕上输出的</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>厘米的正方形和在打印机上输出的</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>厘米的正方形，它们的实际大小的一样的，尽管由于设备在分辨率上的差异，它们所包括的象素的数目可能不一样。</P>
+</FONT><FONT FACE="Arial"><P>9.5.1 </FONT><FONT FACE="黑体" LANG="ZH-CN">预定义的映射模式</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">对当前映射模式的操作是在设备上下文中进行的，因此，</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类中提供了成员函数</FONT><FONT SIZE=3>SetMapMode</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来改变当前所使用的映射模式。</P>
+<P ALIGN="JUSTIFY">函数</FONT><FONT SIZE=3>SetMapMode</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用一个整型量作为其参数，该参数可以取以下的常量之一：</P></FONT>
+<P ALIGN="RIGHT"><TABLE CELLSPACING=0 BORDER=0 CELLPADDING=7 WIDTH=538>
+<TR><TD WIDTH="28%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">MM_ANISOTROPIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="72%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">使用自定义的映射模式，这种映射模式在</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方向和</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方向均使用自定义的单位长度，并且两个方向上的单位长度可以不一样。如果将映射模式设置为</FONT><FONT SIZE=3>MM_ANISOTROPIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，需要调用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>SetWindowExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>SetViewportExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来设置其单位长度、坐标轴的方向等</FONT></TD>
+</TR>
+<TR><TD WIDTH="28%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">MM_HIENGLISH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="72%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以</FONT><FONT SIZE=3>0.001</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>英寸为逻辑单位长度、向右的方向为</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向，向上的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向</FONT></TD>
+</TR>
+<TR><TD WIDTH="28%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">MM_HIMETRIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="72%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以</FONT><FONT SIZE=3>0.01</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>毫米为逻辑单位长度、向右的方向为</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向，向上的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向</FONT></TD>
+</TR>
+<TR><TD WIDTH="28%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">MM_ISOTROPIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="72%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">使用自定义的映射模式，这种映射模式在</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方向和</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方向上使用相同的单位长度。如果将映射模式设置为</FONT><FONT SIZE=3>MM_ISOTROPIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，需要调用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>SetWindowExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>SetViewportExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来设置其单位长度、坐标轴的方向等</FONT></TD>
+</TR>
+<TR><TD WIDTH="28%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">MM_LOENGLISH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="72%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以</FONT><FONT SIZE=3>0.01</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>英寸为逻辑单位长度、向右的方向为</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向，向上的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向</FONT></TD>
+</TR>
+<TR><TD WIDTH="28%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">MM_LOMETRIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="72%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以</FONT><FONT SIZE=3>0.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>毫米为逻辑单位长度、向右的方向为</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向，向上的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向</FONT></TD>
+</TR>
+<TR><TD WIDTH="28%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">MM_TEXT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="72%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>设备象素为逻辑单位长度、向右的方向为</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向，向下的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向</FONT></TD>
+</TR>
+<TR><TD WIDTH="28%" VALIGN="TOP">
+<FONT SIZE=3><P ALIGN="JUSTIFY">MM_TWIPS</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</FONT></TD>
+<TD WIDTH="72%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">以</FONT><FONT SIZE=3>1/20</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>磅</FONT><FONT SIZE=3>(</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>每一磅为</FONT><FONT SIZE=3>1/72</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>英寸</FONT><FONT SIZE=3>)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为逻辑单位长度、向右的方向为</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>正方向，向上的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴正方向</FONT></TD>
+</TR>
+</TABLE>
+</P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在上面的映射模式中，除了</FONT><FONT SIZE=3>MM_ANISOTROPIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>MM_ISOTROPIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>MM_TEXT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>以外，其它映射模式都使用向上的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴的正方向，而设备上下文的默认映射模式为</FONT><FONT SIZE=3>MM_TEXT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，它在向下的方向为</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴的正方向，因此，如果我们在程序中将映射模式更改为其它的映射模式，需要注意应该随</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴的正方向的不同而更改图形输出函数所使用的坐标值的正负。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">SetMapMode</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将映射模式设置为指定的映射模式，同时返回原有的映射模式。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面我们来编写一个实用工具</FONT><FONT SIZE=3>MappingConverter</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，该工具在不同的逻辑单位之间进行转换。需要注意的是，这种转换有两种不同的方式，即逻辑的还是物理的。如果当前映射模式为</FONT><FONT SIZE=3>MM_TEXT</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，这时一英寸所对应的象素值大小是一定的，我们称这种映射方式的逻辑的；如果当前映射模式为</FONT><FONT SIZE=3>MM_HIENGLISH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>MM_LOENGLISH</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>等，则屏幕上的一英寸对应的象素值依赖于屏幕的实际分辨率，在这种模式下，</FONT><FONT SIZE=3>800<FONT FACE="Symbol">&#180;</FONT>
+600</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的屏幕分辨率下一英寸所对应的象素值要比在</FONT><FONT SIZE=3>640<FONT FACE="Symbol">&#180;</FONT>
+480</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的屏幕分辨率多。工具</FONT><FONT SIZE=3>MappingConverter</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>考虑到了这种差异，允许用户指定转换是基于逻辑英寸进行还是基于物理英寸进行。对于实际的转换过程，则通过调用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>DPtoHIMETRIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来实现的，该成员函数将设备坐标值转换为相应的</FONT><FONT SIZE=3>HIMETRIC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>度量。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">由于使用的方便考虑，我们还在工具</FONT><FONT SIZE=3>MappingConverter</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加了其它几种度量单位的转换，这些度量单位包括：磅</FONT><FONT SIZE=3>(point)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、英寸</FONT><FONT SIZE=3>(inch)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、厘米</FONT><FONT SIZE=3>(centimeter)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、水平对话框单位</FONT><FONT SIZE=3>(horizontal dialog units)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和垂直对话框单位</FONT><FONT SIZE=3>(vertical dialog units)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。这里需要说明的是水平对话框单位和垂直对话框单位。这两种度量单位在对话框模板中用于对话框和控件的度量，此外，在编辑控件和列表框以及组合框控件设置制表位的函数</FONT><FONT SIZE=3>SetTabStops</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>也使用对话框单位。水平对话框单位等于当前系统字体的半角字符的平均宽度的</FONT><FONT SIZE=3>1/4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，而垂直对话框单位则等于当前系统字体的字符的高度的</FONT><FONT SIZE=3>1/8</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>GetDialogBaseUnits</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>返回了当前系统所使用的对话框基本单位，由此可以导出当前使用的水平对话框单位和垂直对话框单位。但是要注意的是，实际使用的对话框单位依赖于当前对话框所使用的字体。</FONT><FONT SIZE=3>CDialog</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>MapDialogRect</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以将一个以对话框单位表示的矩形转换为相应的屏幕象素单位。在工具</FONT><FONT SIZE=3>MappingConverter</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，对话框单位是通过函数</FONT><FONT SIZE=3>GetDialogBaseUnits</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的返回值计算得到的，也就是说，该单位是基于默认的系统字体，而不是对话框实际所选用的字体的。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image325.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image325.gif" WIDTH=257 HEIGHT=177></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 13 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>应用程序</FONT><FONT SIZE=1>MappingConverter</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>的主对话框</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">下面的步骤讲述了工具</FONT><FONT SIZE=3>MappingConverter</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的创建。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>AppWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个基于对话框的</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>应用应用程序，按图修改应用程序的主对话框。</P>
+<P ALIGN="JUSTIFY">各主要控件的</FONT><FONT SIZE=3>ID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>如表</FONT><FONT SIZE=3>9.6</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">表</FONT><FONT FACE="Arial" SIZE=1>9. 6 </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=1>控件属性列表</P></FONT>
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#808080" CELLPADDING=7 WIDTH=346>
+<TR><TD WIDTH="35%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">控件</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">ID</FONT></TD>
+<TD WIDTH="34%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">属性</FONT></TD>
+</TR>
+<TR><TD WIDTH="35%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">“单位”组合框</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IDC_COMBO1</FONT></TD>
+<TD WIDTH="34%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Type</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>：</FONT><FONT SIZE=1>Drop List<BR>
+Sort</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>：假</FONT></TD>
+</TR>
+<TR><TD WIDTH="35%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">“值”文本编辑框</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IDC_EDIT1</FONT></TD>
+<TD WIDTH="34%" VALIGN="TOP">　</TD>
+</TR>
+<TR><TD WIDTH="35%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">“转换”按钮</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IDOK</FONT></TD>
+<TD WIDTH="34%" VALIGN="TOP">　</TD>
+</TR>
+<TR><TD WIDTH="35%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">列表控件</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IDC_LIST1</FONT></TD>
+<TD WIDTH="34%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">View</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>：</FONT><FONT SIZE=1>Report<BR>
+Sort</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>：</FONT><FONT SIZE=1>None</FONT></TD>
+</TR>
+<TR><TD WIDTH="35%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">“物理的”单选钮</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IDC_RADIO1</FONT></TD>
+<TD WIDTH="34%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">Group</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>：真</FONT></TD>
+</TR>
+<TR><TD WIDTH="35%" VALIGN="TOP">
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="JUSTIFY">“逻辑的”单选钮</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT SIZE=1><P ALIGN="JUSTIFY">IDC_RADIO2</FONT></TD>
+<TD WIDTH="34%" VALIGN="TOP">　</TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">按图</FONT><FONT SIZE=3>9.14</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>设置各控件的</FONT><FONT SIZE=3>Tab Order</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image326.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image326.gif" WIDTH=257 HEIGHT=177></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 14 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>各控件的</FONT><FONT SIZE=1>Tab Order</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在组合框</FONT><FONT SIZE=3>IDC_COMBO1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的属性对话框的</FONT><FONT SIZE=3>Data</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>选项卡内输入以下的列表项：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>&#9;MM_HIENGLISH (0.001英寸)</P>
+<P>&#9;MM_LOENGLISH (0.01英寸)</P>
+<P>&#9;MM_HIMETRIC (0.01毫米)</P>
+<P>&#9;MM_LOMETRIC (0.1毫米)</P>
+<P>&#9;MM_TEXT (象素)</P>
+<P>&#9;MM_TWIPS (缇)</P>
+<P>&#9;磅</P>
+<P>&#9;英寸</P>
+<P>&#9;厘米</P>
+<P>&#9;水平对话框单位 (系统字体)</P>
+<P>&#9;垂直对话框单位 (系统字体)</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">注意各列表项的排列顺序，如果顺序出错，将导致在单位转换是进行不正确的换算，这也是将组合框的</FONT><FONT SIZE=3>Sort</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>属性设置为假的缘故。</P>
+<P ALIGN="JUSTIFY">按图</FONT><FONT SIZE=3>9.15</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>映射对话框的控件到类</FONT><FONT SIZE=3>CMappingConverterDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员变量。由于我们仅使用编辑框</FONT><FONT SIZE=3>IDC_EDIT1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来输入数值，因此我们将它映射到类型为</FONT><FONT SIZE=3>float</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员变量</FONT><FONT SIZE=3>m_fValue</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>；同时，我们将单选钮组</FONT><FONT SIZE=3>IDC_RADIO1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>映射为类型为</FONT><FONT SIZE=3>int</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员变量</FONT><FONT SIZE=3>m_nradio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，当变量</FONT><FONT SIZE=3>m_nradio</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的值为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时表示单选钮“逻辑的”被选中，变量值为</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时表示单选钮“物理的”被选中。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image327.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image327.gif" WIDTH=481 HEIGHT=314></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 15 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>映射成员变量到对话框控件</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">按下面的代码修改类</FONT><FONT SIZE=3>CMappingConverterDlg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>OnInitDialog</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>/////////////////////////////////////////////////////////////////////////////</P>
+<P>// CMappingConverterDlg 消息处理函数</P>
+
+<P>BOOL CMappingConverterDlg::OnInitDialog()</P>
+<P>{</P>
+<P>&#9;// 设置默认选中的单选钮为“逻辑的”</P>
+<P>&#9;m_nradio=0;</P>
+<P>&#9;CDialog::OnInitDialog();</P>
+
+<P>&#9;// 在系统菜单中添加“关于”菜单项</P>
+
+<P>&#9;// IDM_ABOUTBOX 必须在系统命令的范围内</P>
+<P>&#9;ASSERT((IDM_ABOUTBOX &amp; 0xFFF0) == IDM_ABOUTBOX);</P>
+<P>&#9;ASSERT(IDM_ABOUTBOX &lt; 0xF000);</P>
+
+<P>&#9;CMenu* pSysMenu = GetSystemMenu(FALSE);</P>
+<P>&#9;if (pSysMenu != NULL)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;CString strAboutMenu;</P>
+<P>&#9;&#9;strAboutMenu.LoadString(IDS_ABOUTBOX);</P>
+<P>&#9;&#9;if (!strAboutMenu.IsEmpty())</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;&#9;pSysMenu-&gt;AppendMenu(MF_SEPARATOR);</P>
+<P>&#9;&#9;&#9;pSysMenu-&gt;AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);</P>
+<P>&#9;&#9;}</P>
+<P>&#9;}</P>
+
+<P>&#9;// 设置对话框的图标。当应用程序的主窗口不是对话框时框架会自动进行这个过程</P>
+<P>&#9;SetIcon(m_hIcon, TRUE);&#9;&#9;&#9;// Set big icon</P>
+<P>&#9;SetIcon(m_hIcon, FALSE);&#9;&#9;// Set small icon</P>
+<P>&#9;</P>
+<P>&#9;// TODO: 添加额外的初始化代码</P>
+<P>&#9;// 在列表控件中添加两列：“单位”和“值”</P>
+<P>&#9;m_lst.InsertColumn(0, "单位", LVCFMT_LEFT, 180, 0);</P>
+<P>&#9;m_lst.InsertColumn(1, "值", LVCFMT_LEFT, 100, 1);</P>
+<P>&#9;// 初始化列表控件中的项所用的字符串数组</P>
+<P>&#9;char *szItemTexts[]={"MM_HIENGLISH (0.001英寸)",</P>
+<P>&#9;&#9;"MM_LOENGLISH (0.01英寸)",</P>
+<P>&#9;&#9;"MM_HIMETRIC (0.01毫米)",</P>
+<P>&#9;&#9;"MM_LOMETRIC (0.1毫米)",</P>
+<P>&#9;&#9;"MM_TEXT (象素)",</P>
+<P>&#9;&#9;"MM_TWIPS (缇)",</P>
+<P>&#9;&#9;"磅",</P>
+<P>&#9;&#9;"英寸",</P>
+<P>&#9;&#9;"厘米",</P>
+<P>&#9;&#9;"水平对话框单位 (系统字体)",</P>
+<P>&#9;&#9;"垂直对话框单位 (系统字体)"};</P>
+<P>&#9;// 初始化列表控件中的项</P>
+<P>&#9;for (int i=0; i&lt;11; i++)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;m_lst.InsertItem(i, szItemTexts[i]);</P>
+<P>&#9;}</P>
+<P>&#9;// 设置组合框控件中的当前选择项为 MM_HIENGLISH</P>
+<P>&#9;m_cbo.SetCurSel(0);</P>
+
+<P>&#9;return TRUE;  // 除非将输入焦点设置为某一控件，否则消息处理函数 </P>
+<P>&#9;              // OnInitDialog 应该返回真值</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">为按钮</FONT><FONT SIZE=3>IDOK</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的</FONT><FONT SIZE=3>BN_CLICKED</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>通知消息添加命令处理函数</FONT><FONT SIZE=3>OnOK</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CMappingConverterDlg::OnOK() </P>
+<P>{</P>
+<P>&#9;// 获得当前在组合框中的选择项</P>
+<P>&#9;int nCurSel=m_cbo.GetCurSel();</P>
+<P>&#9;// 如果选择项不为空...</P>
+<P>&#9;if (nCurSel!=LB_ERR)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;// 更新映射到控件的成员变量</P>
+<P>&#9;&#9;UpdateData();</P>
+<P>&#9;&#9;// 获得对话框的当前设备上下文，该设备上下文用于不同映射模式的单位转换</P>
+<P>&#9;&#9;CClientDC dc(this);</P>
+<P>&#9;&#9;if (m_nradio==0) </P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;&#9;// 如果选择了“逻辑英寸”，则将映射模式设置为 MM_TEXT</P>
+<P>&#9;&#9;&#9;dc.SetMapMode(MM_TEXT);</P>
+<P>&#9;&#9;}</P>
+<P>&#9;&#9;else</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;&#9;// 如果选择了“物理英寸”，则将映射模式设置为 MM_HIENGLISH</P>
+<P>&#9;&#9;&#9;dc.SetMapMode(MM_HIENGLISH);</P>
+<P>&#9;&#9;}</P>
+<P>&#9;&#9;// 获得每英寸长度的象素值</P>
+<P>&#9;&#9;CSize sz(10000, 10000);</P>
+<P>&#9;&#9;dc.DPtoHIMETRIC(&amp;sz);</P>
+<P>&#9;&#9;double fPixelPerInch=10000./sz.cx*100*25.4;</P>
+<P>&#9;&#9;// 获得用户需要进行转换的单位值</P>
+<P>&#9;&#9;double fValue=m_fValue;</P>
+<P>&#9;&#9;// 获取当前对话框基本单位，其高位字为垂直对话框基本单位，</P>
+<P>&#9;&#9;// 低位字为水平对话框基本单位</P>
+<P>&#9;&#9;long lDbUnits=GetDialogBaseUnits();</P>
+<P>&#9;&#9;// nType 为 1 表示经过初步转换的单位为英寸，</P>
+<P>&#9;&#9;// nType 为 2 表示经过初步转换的单位为象素</P>
+<P>&#9;&#9;int nType;</P>
+<P>&#9;&#9;// 根据用户所选择的当前单位对输入的值进行初步的转换</P>
+<P>&#9;&#9;switch (nCurSel)</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;case 0:&#9;&#9;// MM_HIENGLISH</P>
+<P>&#9;&#9;&#9;nType=1;</P>
+<P>&#9;&#9;&#9;fValue/=1000;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 1:&#9;&#9;// MM_LOENGLISH</P>
+<P>&#9;&#9;&#9;nType=1;</P>
+<P>&#9;&#9;&#9;fValue/=100;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 2:&#9;&#9;// MM_HIMETRIC</P>
+<P>&#9;&#9;&#9;nType=1;</P>
+<P>&#9;&#9;&#9;fValue/=2540;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 3:&#9;&#9;// MM_LOMETRIC</P>
+<P>&#9;&#9;&#9;nType=1;</P>
+<P>&#9;&#9;&#9;fValue/=254;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 4:&#9;&#9;// MM_TEXT</P>
+<P>&#9;&#9;&#9;nType=2;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 5:&#9;&#9;// MM_TWIPS</P>
+<P>&#9;&#9;&#9;nType=1;</P>
+<P>&#9;&#9;&#9;fValue/=1440;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 6:&#9;&#9;// 磅</P>
+<P>&#9;&#9;&#9;nType=1;</P>
+<P>&#9;&#9;&#9;fValue/=72;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 7:&#9;&#9;// 英寸</P>
+<P>&#9;&#9;&#9;nType=1;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 8:&#9;&#9;// 厘米</P>
+<P>&#9;&#9;&#9;nType=1;</P>
+<P>&#9;&#9;&#9;fValue/=2.54;</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 9:&#9;&#9;// 水平对话框单位</P>
+<P>&#9;&#9;&#9;nType=2;</P>
+<P>&#9;&#9;&#9;fValue=fValue/4.*LOWORD(lDbUnits);</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;case 10:&#9;// 垂直对话框单位</P>
+<P>&#9;&#9;&#9;nType=2;</P>
+<P>&#9;&#9;&#9;fValue=fValue/8.*HIWORD(lDbUnits);</P>
+<P>&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;}</P>
+<P>&#9;&#9;// 列表控件中第二列的输出项对应的字符串</P>
+<P>&#9;&#9;CString str[11];</P>
+<P>&#9;&#9;// 根据初步转换得到的结果生成在列表控件中给出的转换后的值</P>
+<P>&#9;&#9;switch (nType)</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;case 1:&#9;&#9;// 英寸</P>
+<P>&#9;&#9;&#9;{</P>
+<P>&#9;&#9;&#9;&#9;// 得到对应的象素值</P>
+<P>&#9;&#9;&#9;&#9;double fPixel=fValue*fPixelPerInch;</P>
+<P>&#9;&#9;&#9;&#9;str[0].Format("%g", fValue*1000);</P>
+<P>&#9;&#9;&#9;&#9;str[1].Format("%g", fValue*100);</P>
+<P>&#9;&#9;&#9;&#9;str[2].Format("%g", fValue*25.4*100);</P>
+<P>&#9;&#9;&#9;&#9;str[3].Format("%g", fValue*25.4*10);</P>
+<P>&#9;&#9;&#9;&#9;str[4].Format("%g", fPixel);</P>
+<P>&#9;&#9;&#9;&#9;str[5].Format("%g", fValue*72.*20);</P>
+<P>&#9;&#9;&#9;&#9;str[6].Format("%g", fValue*72);</P>
+<P>&#9;&#9;&#9;&#9;str[7].Format("%g", fValue);</P>
+<P>&#9;&#9;&#9;&#9;str[8].Format("%g", fValue*2.54);</P>
+<P>&#9;&#9;&#9;&#9;str[9].Format("%g", fPixel*4./LOWORD(lDbUnits));</P>
+<P>&#9;&#9;&#9;&#9;str[10].Format("%g", fPixel*8./HIWORD(lDbUnits));</P>
+<P>&#9;&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;&#9;}</P>
+<P>&#9;&#9;case 2:&#9;&#9;// 象素</P>
+<P>&#9;&#9;&#9;{&#9;</P>
+<P>&#9;&#9;&#9;&#9;// 得到对应的英寸值</P>
+<P>&#9;&#9;&#9;&#9;double fInch=fValue/fPixelPerInch;</P>
+<P>&#9;&#9;&#9;&#9;str[0].Format("%g", fInch*1000);</P>
+<P>&#9;&#9;&#9;&#9;str[1].Format("%g", fInch*100);</P>
+<P>&#9;&#9;&#9;&#9;str[2].Format("%g", fInch*25.4*100);</P>
+<P>&#9;&#9;&#9;&#9;str[3].Format("%g", fInch*25.4*10);</P>
+<P>&#9;&#9;&#9;&#9;str[4].Format("%g", fValue);</P>
+<P>&#9;&#9;&#9;&#9;str[5].Format("%g", fInch*72*20);</P>
+<P>&#9;&#9;&#9;&#9;str[6].Format("%g", fInch*72);</P>
+<P>&#9;&#9;&#9;&#9;str[7].Format("%g", fInch);</P>
+<P>&#9;&#9;&#9;&#9;str[8].Format("%g", fInch*2.54);</P>
+<P>&#9;&#9;&#9;&#9;str[9].Format("%g", fValue*4./LOWORD(lDbUnits));</P>
+<P>&#9;&#9;&#9;&#9;str[10].Format("%g", fValue*8./HIWORD(lDbUnits));</P>
+<P>&#9;&#9;&#9;&#9;break;</P>
+<P>&#9;&#9;&#9;}</P>
+<P>&#9;&#9;}</P>
+<P>&#9;&#9;// 将转换后的值写到列表控件中对应项的第二列中</P>
+<P>&#9;&#9;for (int i=0; i&lt;11; i++)</P>
+<P>&#9;&#9;{</P>
+<P>&#9;&#9;&#9;m_lst.SetItem(i, 1, LVIF_TEXT, str[i], 0, 0, 0, LPARAM(0));</P>
+<P>&#9;&#9;}</P>
+<P>&#9;}</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">编辑并运行应用程序</FONT><FONT SIZE=3>MappingConverter</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，其结果如图</FONT><FONT SIZE=3>9.16</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image328.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image328.gif" WIDTH=257 HEIGHT=177></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 16 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>示例程序</FONT><FONT SIZE=1>MappingConverter</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>的运行结果</P>
+</FONT><FONT FACE="Arial"><P>9.5.2 </FONT><FONT FACE="黑体" LANG="ZH-CN">自定义的坐标系统</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在很多情况下使用系统预定义的映射系统非常的恰当，但并非总是这样。假设我们需要编写一个绘制函数图形的应用程序，把整个屏幕映射为一个平面直角坐标系会更加的恰当。在本节的后面我们举了一个这样的例子。</P>
+<P ALIGN="JUSTIFY">前面提到过，使用下面的函数调用可以自定义设备上下文对象</FONT><FONT SIZE=3>dc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的坐标映射。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>dc.SetMapMode(MM_ANISOTROPIC)；</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">但是，在使用了上面的代码之后，还需要具体的指定自定义坐标系统在</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方向和</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>方向上的单位长度、坐标轴正方向以及视口左上角的位置在坐标映射中所对应的坐标值等。这个操作是通过调用</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>SetWindowExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>SetViewportExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来实现的。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image329.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image329.gif" WIDTH=398 HEIGHT=304></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 17 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>设备上下文中窗口和视口的关系</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">图</FONT><FONT SIZE=3>9.17</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>说明了在设备上下文中窗口</FONT><FONT SIZE=3>(Window)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和视口</FONT><FONT SIZE=3>(ViewportExt)</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的关系。视口度量的设置以设备象素为单位，而窗口度量的设置则几乎的任意的。所谓的自定义坐标系统即是将由窗口定义的坐标系统映射到由视口定义的设备上下文中的区域。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>上面的术语“窗口”并不是指</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中的窗口对象，而是在设备上下文中进行坐标映射时使用的一个抽象概念。在本节中，具有上述意义的术语“窗口”有可能和通常意义中的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>术语“窗口”混用，读者应根据具体的上下文明确其含义。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在调用</FONT><FONT SIZE=3>SetViewportExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>设置视口之前必须先调用</FONT><FONT SIZE=3>SetWindowExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>设置窗口。</P>
+<P ALIGN="JUSTIFY">函数</FONT><FONT SIZE=3>SetWindowExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>可以使用两个整型量作为其参数，也可以使用一个</FONT><FONT SIZE=3>CSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象作为其参数。它指定了窗口的横向度量和纵向度量。当所指定的横向度量为负值时，表示</FONT><FONT SIZE=3>x</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴的正方向向左；当所指定的纵向度量为负值时，表示</FONT><FONT SIZE=3>y</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>轴的正方向向上。</P>
+<P ALIGN="JUSTIFY">同时还可以使用函数</FONT><FONT SIZE=3>SetWindowOrg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来设置窗口左上角对应的坐标。这样就可以实现坐标平面原点的平移。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在设置了窗口之后，我们还需要调用</FONT><FONT SIZE=3>SetViewportExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数设置视口。</P>
+<P ALIGN="JUSTIFY">函数</FONT><FONT SIZE=3>SetViewportExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用了与</FONT><FONT SIZE=3>SetWindowExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>相类似的参数。它们指定了视口的横向度量和纵向度量。类似的，我们还可以使用函数</FONT><FONT SIZE=3>SetViewportOrg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来设置视口的左上角的屏幕坐标。这里需要注意的是，在函数</FONT><FONT SIZE=3>SetViewportExt</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>SetViewportOrg</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中所使用的参数的量值是以设备象素为单位的。</P>
+<P ALIGN="JUSTIFY">上面所提到的这些函数都是</FONT><FONT SIZE=3>CDC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面所给的示例程序</FONT><FONT SIZE=3>FuncGraphy</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>输出一个函数</FONT><FONT SIZE=3>[</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>示例中是<IMG SRC="Image330.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image330.gif" WIDTH=52 HEIGHT=41></FONT><FONT SIZE=3>]</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的图象。为了方便起见，我们使用了自定义的坐标系统。在该坐标系统中，原点的窗口客户区中的中心，横坐标的范围为</FONT><FONT FACE="Symbol" SIZE=3>?</FONT><FONT SIZE=3>31.006</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT SIZE=3>31.006</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在这个范围内恰好包括函数的一个完整的图象范围。其纵坐标的范围为</FONT><FONT SIZE=3>1.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>到</FONT><FONT FACE="Symbol" SIZE=3>?</FONT><FONT SIZE=3>1.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">为了节省篇幅，我们这里仅给出应用程序主窗口的</FONT><FONT SIZE=3>OnPaint</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>// 应用程序主窗口的重绘函数</P>
+<P>void CMyWnd::OnPaint()</P>
+<P>{</P>
+<P>&#9;// 获得窗口的客户区设备上下文句柄</P>
+<P>&#9;CPaintDC dc(this);</P>
+
+<P>&#9;// 设置映射模式为 MM_ANISOTROPIC</P>
+<P>&#9;dc.SetMapMode(MM_ANISOTROPIC);</P>
+<P>&#9;// 设置窗口左上角的坐标为</P>
+<P>&#9;dc.SetWindowOrg(-31006, 1200);</P>
+<P>&#9;// 设置窗口度量</P>
+<P>&#9;dc.SetWindowExt(int(2000*31.006), -2400);</P>
+
+<P>&#9;// 获得客户区矩形</P>
+<P>&#9;CRect rc;</P>
+<P>&#9;GetClientRect(rc);</P>
+<P>&#9;// 设置视口左上角的坐标</P>
+<P>&#9;dc.SetViewportOrg(0, 0);</P>
+<P>&#9;// 设置视口度量</P>
+<P>&#9;dc.SetViewportExt(rc.Width(), rc.Height());</P>
+
+<P>&#9;// 创建蓝色实线画笔</P>
+<P>&#9;CPen pen(PS_SOLID, 1, RGB(0, 0, 255)), *pOldPen;</P>
+<P>&#9;pOldPen=dc.SelectObject(&amp;pen);</P>
+<P>&#9;// 创建蓝色斜线刷子</P>
+<P>&#9;CBrush br(HS_BDIAGONAL, RGB(0, 0, 255)), *pOldBrush;</P>
+<P>&#9;pOldBrush=dc.SelectObject(&amp;br);</P>
+<P>&#9;// 开始一个路径</P>
+<P>&#9;dc.BeginPath();</P>
+<P>&#9;dc.MoveTo(-31006, 0);</P>
+<P>&#9;for (double x=-31.006; x&lt;=0; x+=0.02)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;dc.LineTo(int(1000*x), int(1000*sin(-pow(-x, 1./3))));</P>
+<P>&#9;}</P>
+<P>&#9;for (x=0; x&lt;=31.006; x+=0.02)</P>
+<P>&#9;{</P>
+<P>&#9;&#9;dc.LineTo(int(1000*x), int(1000*sin(pow(x, 1./3))));</P>
+<P>&#9;}</P>
+<P>&#9;dc.LineTo(3142, 0);</P>
+<P>&#9;dc.MoveTo(0, -1200);</P>
+<P>&#9;dc.LineTo(0, 1200);</P>
+<P>&#9;dc.EndPath();</P>
+<P>&#9;// 绘制路径并填充路径的内部</P>
+<P>&#9;dc.StrokeAndFillPath();</P>
+<P>&#9;// 恢复设备上下文原有的画笔和刷子</P>
+<P>&#9;dc.SelectObject(pOldPen);</P>
+<P>&#9;dc.SelectObject(pOldBrush);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">完成并编译上面的程序，其运行结果如图所示。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER"><IMG SRC="Image331.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image331.gif" WIDTH=390 HEIGHT=267></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>9. 18 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>示例程序</FONT><FONT SIZE=1>FuncGraphy - </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>使用自定义的坐标系统</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>技巧：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>下面我们讨论在应用程序</FONT><FONT SIZE=3>FuncGraphy</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>中所用到的一些技巧。首先，我们不是直接使用</FONT><FONT SIZE=3>LineTo</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>来一段一段的绘制曲线，而是先创建一个路径，然后再来填充该路径。这至少有两个好处：一是如果曲线需要使用如虚线等线型时，如果还一段一段的使用</FONT><FONT SIZE=3>LineTo</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>来绘制的话，事实上不可能得到虚线</FONT><FONT SIZE=3>(</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>读者可以自行验证这一点</FONT><FONT SIZE=3>)</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>，这时我们只能先创建一个路径，再使用</FONT><FONT SIZE=3>StrokePath</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>之类的函数来绘制出这个路径；第二，如果使用路径的话，我们还可以使用当前刷子来填充曲线的内部，如示例代码中所示。</LI></P>
+<P ALIGN="JUSTIFY"><LI>在自定义坐标系统时，一定要记住一点，这就是所有的图形输出函数在指定输出位置的坐标时都使用了整型参量。这说明一点，我们必须使坐标系统的单位长度具有一定的区分度。简单的说，坐标系统的单位长度应该小于一个设备象素的大小，否则你将不能通过该坐标系统准确的定位到输出设备上的每一个设备象素。如果坐标系统的单位长度过大，一个很常见的结果就是导致图形输出发生失真和变形。读者可以使用上面的示例程序</FONT><FONT SIZE=3>FuncGraphy</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>直接验证这一点。一般来说，对于屏幕输出设备，我们只需要使横坐标和纵坐标的跨度在</FONT><FONT SIZE=3>2000</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>以上，就可以有效的避免这个问题。同样的，考虑示例程序</FONT><FONT SIZE=3>FuncGraphy</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>，在绘制输出图形时考虑合理的步长也是很重要的。步长大小将会导致程序进行过多的不必要运算，从而明显的降低曲线的绘制速度，而大太的步长又会导致曲线不够精确。</LI></P></UL>
+</FONT></BODY>
+</HTML>

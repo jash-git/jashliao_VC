@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>第六章 控件</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" size="5">第六课 控件</font><font FACE="Times New Roman" size="5"></p>
+    </font><font FACE="Times New Roman" size="4"><p ALIGN="JUSTIFY"></font><font SIZE="3">在上一课中，同学们已经接触到了一些常用的控件。控件实际上是子窗口，在应用程序与用户进行交互的过程中，控件是主要角色。因此，有必要对控件进行详细的讨论。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Windows</font><font SIZE="3">提供了五花八门的标准控件，这些控件可粗分为两类。一类是在</font><font FACE="Times New Roman" SIZE="3">Windows 3.x</font><font SIZE="3">就已支持的传统控件，一类是</font><font FACE="Times New Roman" SIZE="3">Windows 95/NT</font><font SIZE="3">支持的新型</font><font FACE="Times New Roman" SIZE="3">Win32</font><font SIZE="3">控件。</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">提供控件的目的就是方便程序与用户的交互。应用程序应该根据自己的实际情况，选择合适的控件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">不管是什么类型的控件，一般都具有</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WS_VISIBLE</font><font SIZE="3">窗口风格．</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">指定窗口为子窗口，</font><font FACE="Times New Roman" SIZE="3">WS_VISIBLE</font><font SIZE="3">使窗口是可见的．另外，大部分控件还具有</font><font FACE="Times New Roman" SIZE="3">WS_TABSTOP</font><font SIZE="3">风格，</font><font FACE="Times New Roman" SIZE="3">WS_TABSTOP</font><font SIZE="3">使控件具有</font><font FACE="Times New Roman" SIZE="3">Tabstop</font><font SIZE="3">属性．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">提供了大量的控件类，它们封装了控件的功能。通过这些控件类，程序可以方便地创建控件，对控件进行查询和控制。所有的控件类都是</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的直接或间接派生类．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在学习这一讲之前，有几个问题需要先行说明：</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY">在本节中，同学们会经常遇到控件类的<font FACE="Times New Roman" SIZE="3">Create</font>成员函数，该函数负责创建控件．在上一章中同学们已经试验过，只要把控件放入对话框模板中，在调用<font FACE="Times New Roman" SIZE="3">DoModal</font>或<font FACE="Times New Roman" SIZE="3">Create</font>创建对话框时，框架会根据模板资源中的信息自动地创建控件。但有时需要用手工动态地创建控件，这通常需要按下面的步骤进行：</p>
+      <blockquote>
+        <p ALIGN="JUSTIFY">构建一个控件对象。</p>
+        <p ALIGN="JUSTIFY">调用控件对象的成员函数<font FACE="Times New Roman" SIZE="3">Create</font>来创建控件。</p>
+      </blockquote>
+      <p ALIGN="JUSTIFY">在<font FACE="Times New Roman" SIZE="3">6.3</font>节中将对控件的创建进行详细讨论。</p>
+      <p ALIGN="JUSTIFY">在上一章中，介绍了用<font FACE="Times New Roman" SIZE="3">ClassWizard</font>为对话框类创建与传统控件对应的成员变量的方法．成员变量可以是数据变量或控件对象．需要指出的是，对于新的<font FACE="Times New Roman" SIZE="3">Win32</font>控件，只能创建控件对象，不能创建数据变量．</p>
+      <p ALIGN="JUSTIFY">在控件类的函数说明中，读者会经常看到<font FACE="Times New Roman" SIZE="3">LPCTSTR</font>参数类型，<font FACE="Times New Roman" SIZE="3">LPCTSTR</font>是一个宏，相当于<font FACE="Times New Roman" SIZE="3">const 
+      char far *</font>，它用来说明指向常量字符串的指针．<font FACE="Times New Roman" SIZE="3">MFC</font>的字符串类<font FACE="Times New Roman" SIZE="3">CString</font>定义了一个与<font FACE="Times New Roman" SIZE="3">LPCTSTR</font>同名的操作符，该操作符可以把一个<font FACE="Times New Roman" SIZE="3">CString</font>对象转换成一个常量字符串．因此，如果函数的参数是用<font FACE="Times New Roman" SIZE="3">LPCTSTR</font>来说明的，则既可以向该参数传递一个指向常量字符串的指针，也可以传递一个<font FACE="Times New Roman" SIZE="3">CString</font>对象．</p>
+      </font>
+    </blockquote>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">这一讲将对一些常用的控件及其控件类进行较详细的讨论，讨论的侧重点包括控件的创建、控件类的成员函数以及控件的通知消息。具体讲，本章主要包括以下主要内容：</p>
+    <blockquote>
+      <p ALIGN="JUSTIFY"><a href="chap6_1.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_1.htm">传统控件</a></p>
+      <p ALIGN="JUSTIFY"><a href="chap6_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_2.htm">新型<font FACE="Times New Roman" SIZE="3">Win32</font>控件</a></p>
+      <p ALIGN="JUSTIFY"><a href="chap6_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_3.htm">控件的技术总结</a></p>
+      <p ALIGN="JUSTIFY"><a href="chap6_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_4.htm">在非对话框窗口中使用控件</a></p>
+      <p ALIGN="JUSTIFY"><a href="chap6_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_5.htm">如何设计新的控件</a></p>
+      <p ALIGN="JUSTIFY"><a href="chap6_6.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_6.htm">小结</a></p>
+      </font><font FACE="Times New Roman" SIZE="3">
+    </blockquote>
+    </font><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

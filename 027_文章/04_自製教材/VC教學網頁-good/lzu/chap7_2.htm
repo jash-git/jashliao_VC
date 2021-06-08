@@ -1,0 +1,615 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>7.2文档视结构程序实例</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><p ALIGN="CENTER"><font color="#3973DE"><big><big>7.2文档视结构程序实例</big></big></font><font size="5"></p>
+    <p></font><font SIZE="3">下面，我们以一个简单的文本编辑器为例，说明文档/视结构的原理及应用。由于我们重在讨论文档/视结构而不是编辑器的实现，因此这个编辑器设计的非常简单：用户只能逐行输入字符，以回车结束一行并换行，不支持字符的删除和插入，也没有光标指示当前编辑位置。另外，用户可以选择编辑器显示文本时所使用的字体。</p>
+    <p align="center"></font><img src="T7_4.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_4.gif" alt="T7_4.tif (297712 bytes)" WIDTH="508" HEIGHT="388"><font SIZE="3"></p>
+    <p align="center">图7-4</p>
+    <p ALIGN="JUSTIFY">首先，使用AppWizard生成编辑器程序的框架：在New对话框的Project 
+    Name编辑框中输入项目名为Editor。在AppWizard的第一步选择Single document 
+    ，这将创建一个SDI应用程序。AppWizard第二和第三步选项使用缺省值。在AppWizard 
+    Step 4 of 6对话框中，如图7-4所示，细心的读者或许会注意到在这一页里，有一个Advanced按钮，以前没有提到过。现在揿击该按钮，弹出Advanced 
+    Option对话框，如图7-5所示。Advanced Option对话框是用来设置文档视结构和主框架窗口的一些属性的。</p>
+    <p align="center"></font><img src="T7_5.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_5.gif" alt="T7_5.tif (216970 bytes)" WIDTH="439" HEIGHT="466"><font SIZE="3"></p>
+    <p align="center">图7-5</p>
+    <p>该对话框提供两个标签页，一页是Document Template String(文档模板字符串，有关文档模板字符串，我们还将在后面作详细介绍)，用于设置文档视结构的一些属性。它包括以下几个编辑框：</p>
+    <p>File Extension：指定应用程序创建的文档所用的文件名后缀。输入后缀名txt（不需要&middot;号。），表明Editor使用文本文件的后缀名TXT。</p>
+    <p>File ID：用于在Windows95的注册数据库中标识应用程序的文档类型。</p>
+    <p>MainFrame Caption：主框架窗口使用得标题，缺省情况下与项目名相一致，你当然可以将它改为任何你喜欢的名字，如Editor 
+    for Windows等。</p>
+    <p>Doc Type name：文档类型名，指定与一个从CDocument派生的文档类相关的文档类型名。</p>
+    <p>Filter Name：用作“打开文件”、“保存文件”对话框中的过滤器。当你在File 
+    Extension中输入后缀名是，Visual Studio会自动给你生成一个过滤器：Editor 
+    Files(*.txt)。这样，当你在Open File对话框中选择Editor Files(*.txt)时，只有以txt为后缀名的文件名显示在文件名列表中。</p>
+    <p>File new name(short name)：用于指定在new对话框中使用的文档名。当应用程序支持多种文档类型时，选择File-New菜单项会弹出一个对话框，列出应用程序所支持的所有文档类型，供用户选择。选择一种文档类型后，自动创建相应类型的文档。这里我们只支持编辑器这一种文档类型，故使用缺省值。</p>
+    <p>File Type name(long name)：用于指定当应用程序作为OLE Automation服务器时使用的文档类型名。使用缺省值。 
+    </p>
+    <p>另一页是Window Styles，用于设置主框架窗口的一些属性，包括框架窗口是否使用最大化按钮、最小化按钮，窗口启动时是否最大化或最小化等。这里我们使用缺省值，不需要作任何修改。</p>
+    <p>按OK按钮，关闭Advanced Option对话框。</p>
+    <p>AppWizard后面的几页对话框都使用缺省值。创建完Editor框架程序后，Visual 
+    Studio自动打开Editor工程。现在要修改Editor框架程序，往程序中添加代码，实现编辑器功能。</p>
+    <p></font><font color="#3973DE" SIZE="3">7.2.1 </font><font SIZE="3"><font color="#3973DE">文档/视结构中的主要类</font></p>
+    <p>　</p>
+    <p>在Editor框架程序中，与文档视结构相关的类有CEditorApp、CMainFrame、CEditorView和CEditorDoc，它们分别是应用程序类CWinApp、框架窗口类CFrameWnd、视图类CView和文档类CDocument的派生类。</p>
+    <p><font color="#3973DE">应用程序对象</font></p>
+    <p>其中，应用程序类负责一个且唯一的一个应用程序对象的创建、初始化、运行和退出清理过程。如果在AppWizard生成框架时指定使用单文档或多文档，AppWizard会自动将File菜单下的New、Open和Printer 
+    Setup(打印机设置)自动映射到CWinApp的OnFileNew、OnFileOpen、OnFilePrintSetup成员函数，让CWinApp来处理以上这些消息。如清单7.1，浏览CEditorApp类的定义文件有关消息映射的代码。</p>
+    <p>清单7.1 CEditorApp的消息映射</p>
+    <p>BEGIN_MESSAGE_MAP(CEditorApp, CWinApp)</p>
+    <p>//{{AFX_MSG_MAP(CEditorApp)</p>
+    <p>ON_COMMAND(ID_APP_ABOUT, OnAppAbout)</p>
+    <p>// NOTE - the ClassWizard will add and remove mapping macros here.</p>
+    <p>// DO NOT EDIT what you see in these blocks of generated code!</p>
+    <p>//}}AFX_MSG_MAP</p>
+    <p>// Standard file based document commands</p>
+    <p>　</p>
+    <p>ON_COMMAND(ID_FILE_NEW, CWinApp::OnFileNew)</p>
+    <p>ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)</p>
+    <p>// Standard print setup command</p>
+    <p>　</p>
+    <p>ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)</p>
+    <p>END_MESSAGE_MAP()</p>
+    <p>这表明，框架已经给我们生成了有关新建文档、打开文档以及打印设置的标准代码，我们不必再去做这些重复的工作了。那么，当我们新建或打开一个文档时，应用程序怎么知道要创建什么样的文档以及创建什么样的视图、框架窗口来显示该文档的呢？在文档/视结构中，应用程序通过为应用程序所支持的每一种文档创建一个文档模板，来创建和管理所有的文档类型并为它们生成相应的视图和框架窗口。</p>
+    <p><font color="#3973DE">文档模板</font></p>
+    <p>文档模板负责创建文档、视图和框架窗口。一个应用程序对象可以管理一个或多个文档模板，每个文档模板用于创建和管理一个或多个同种类型的文档（这取决于应用程序是单文档SDI程序还是多文档MDI程序）。那些支持多种文档类型（如电子表格和文本）的应用程序，有多种文档模板对象。应用程序中的每一种文档，都必需有一种文档模板和它相对应。比如，如果应用程序既支持绘图又支持文本编辑，就需要一种一种绘图文档模板和文本编辑模板。在下一章里，我们举了一个这样的例子，来说明多种文档模板的实现技术。</p>
+    <p>MFC提供了一个文档模板类CDocTemplate支持文档模板。文档模板类是一个抽象的基类，它定义了文档模板的基本处理函数接口。由于它是一个抽象基类，因此不能直接用它来定义对象而必需用它的派生类。对一个单文档界面程序，使用CSingleDocTemplate(单文档模板类)，而对于一个多文档界面程序，使用CMultipleDocTemplate。</p>
+    <p>文档模板定义了文档、视图和框架窗口这三个类的关系。通过文档模板，我们可以知道在创建或打开一个文档时，需要用什么样的视图、框架窗口来显示它。这是因为文档模板保存了文档和对应的视图和框架窗口的CRuntimeClass对象的指针。此外，文档模板还保存了所支持的全部文档类的信息，包括这些文档的文件扩展名信息、文档在框架窗口中的名字、代表文档的图标等信息。</p>
+    <div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#ACE4FF">
+      <tr>
+        <td width="100%">提示：每个从CObject派生的类都与一个CRuntimeClass结构相关联。通过这个结构，你可以在程序运行时刻获得关于一个对象和它的基类的信息。在函数参数需要作附加类型检查时，这种运行时刻判别对象类型的能力是非常重要的。C++本身并不支持运行时刻类信息。CRuntimeClass结构包含一个以\0结尾的字符串类名、整型的该类对象大小、基类的运行时刻信息等。</font></td>
+      </tr>
+    </table>
+    </center></div><p><font SIZE="3">　</p>
+    <p>一般在应用程序的InitInstance成员函数实现中创建一个或多个文档模板，如清单7.2。</p>
+    <p>清单7.2 CEditorApp的InitInstance成员函数定义</p>
+    <p>BOOL CEditorApp::InitInstance()</p>
+    <p>{</p>
+    <p>//标准的初始化代码</p>
+    <p>//......</p>
+    <p>// Register the application's document templates. Document templates</p>
+    <p>// serve as the connection between documents, frame windows and views.</p>
+    <p>CSingleDocTemplate* pDocTemplate；</p>
+    <p>pDocTemplate = new CSingleDocTemplate(</p>
+    <p>IDR_MAINFRAME,</p>
+    <p>RUNTIME_CLASS(CEditorDoc),</p>
+    <p>RUNTIME_CLASS(CMainFrame), // main SDI frame window</p>
+    <p>RUNTIME_CLASS(CEditorView))；</p>
+    <p>AddDocTemplate(pDocTemplate)；</p>
+    <p>//其他的初始化代码和主框架窗口显示过程</p>
+    <p>//......</p>
+    <p>// Enable DDE Execute open</p>
+    <p>EnableShellOpen();</p>
+    <p>RegisterShellFileTypes(TRUE);</p>
+    <p>// Parse command line for standard shell commands, DDE, file open</p>
+    <p>CCommandLineInfo cmdInfo;</p>
+    <p>ParseCommandLine(cmdInfo);</p>
+    <p>// Dispatch commands specified on the command line</p>
+    <p>if (!ProcessShellCommand(cmdInfo))</p>
+    <p>return FALSE;</p>
+    <p>// The one and only window has been initialized, so show and update it.</p>
+    <p>m_pMainWnd-&gt;ShowWindow(SW_SHOW);</p>
+    <p>m_pMainWnd-&gt;UpdateWindow();</p>
+    <p>// Enable drag/drop open</p>
+    <p>m_pMainWnd-&gt;DragAcceptFiles();</p>
+    <p>}</p>
+    <p>　</p>
+    <p>在InitInstance中，首先声明一个CSingleDocTemplate*类型的单文档模板对象指针（因为这里的文本编辑器使用单文档界面）。然后创建该类型的模板对象。如果要使用多文档界面，只需要将这里的CSingleDocTemplate改为CMultiDocTemplate，当然CMainFrame也要改为从CFrameWnd改为CMDIChildWnd或其派生类。</p>
+    <p>在CSingleDocTemplate构造函数中，还包含一个IDR_MAINFRAME参数。它指向一个字符串资源，这个字符串给出了文档所使用及显示时所要求的几个选项，包括文档名字、文档的文件扩展名、在框架窗口上显示的名字等等，我们称之为文档模板字符串。有关文档模板字符串还将在下一章使用多个文档模板这一节作详细阐述，因此这里就不展开讲了。</p>
+    <p>然后InitInstance调用AddDocTemplate将创建好的文档模板加入到应用程序可用的文档模板链表中去。这样，如果用户选择了File-New或File-Open菜单要求创建或打开一个文档时，应用程序类的OnNewDocument成员函数和OnOpenDocument()成员函数就可以从文档模板链表中检索出文档模板提示用户选择适当的文档类型并创建文档及相关的视图、框架窗口。</p>
+    <p><font color="#3973DE">文档</font></p>
+    <p>Editor的文档类CEditorDoc从CDocument派生下来，它规定了应用程序所用的数据。如果需要在应用程序中提供OLE功能，则需要从COleDocument或其派生类派生出自己的文档类。</p>
+    <p><font color="#3973DE">视图</font></p>
+    <p>Editor的视图类从CView派生，它是数据的用户窗口。视图规定了用户查看文档数据以及同数据交互的方式。有时一个文档可能需要多个视图。</p>
+    <p ALIGN="JUSTIFY">如果文档需要卷滚，需要从CScrollView派生出视图类。如果希望视图按一个对话框模板资源来布置用户界面，可以从CFormView派生。由于CFormView经常同数据库打交道，因此我们把它放在第十章“数据库技术”中结合数据库技术讲解。感兴趣的读者可以先看看Visual 
+    C++ MFC例子CHKBOOK(在SAMPLES\MFC\GENERAL\CHKBOOK目录下)。</p>
+    <p><font color="#3973DE">框架窗口</font></p>
+    <p>视图在文档框架窗口中显示，它是框架窗口的子窗口。框架窗口作用有二：一是为视图提供可视的边框，还包括标题条、一些标准的窗口组件（最大、最小化按钮、关闭按钮），象一个容器一样把视图装起来。二是响应标准的窗口消息，包括最大化、最小化、调整尺寸等。当框架窗口关闭时，在其中的视图也被自动删除。视图和框架窗口关系如图7-6所示：</p>
+    <p align="center"></font><img src="T7_6.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_6.gif" alt="T7_6.tif (129540 bytes)" WIDTH="440" HEIGHT="273"><font SIZE="3"></p>
+    <p align="center">图7-6 视图和框架窗口的关系</p>
+    <p>对于SDI程序，文档框架窗口也就是应用程序的主框架窗口。在MDI应用程序中，文档框架窗口是显示在主框架窗口中的子窗口（通常是CMDIChildWnd或其派生类）。</p>
+    <p>可以从主框架窗口类派生出新类来包含你的视图，并指定框架的风格和其他特征。如果是SDI程序，则从CFrameWnd派生出文档框架窗口：</p>
+    <p>class CMainFrame:public CFrameWnd</p>
+    <p>{</p>
+    <p>...</p>
+    <p>}；</p>
+    <p>如果是MDI窗口，则需要从CMDIFrameWnd派生出主框架窗口，同时在从CMDIChildWnd或其派生类派生出一个新类，来定制特定文档窗口的属性和功能。</p>
+    <p>在应用程序运行过程中，以上几种类型的对象相互协作，来处理命令和消息。一个且唯一的一个应用程序对象管理一个或多个文档模板，每个文档模板创建和管理一个（SDI）或多个文档（MDI）。用户通过包含在框架窗口中的视图来浏览和操作文档中的数据。在SDI应用程序中，以上对象关系如图7-7所示。</p>
+    <p align="center"></font><img src="T7_7.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_7.gif" alt="T7_7.tif (117560 bytes)" WIDTH="344" HEIGHT="237"></p>
+    <p align="center"><font SIZE="3">图7-7 在SDI程序中各对象的关系</font></p>
+    <p><font color="#3973DE">7.2.2 设计文本编辑器的文档类</font><font SIZE="3"></p>
+    <p>弄清这些对象的关系以后，就可以着手往框架里填写代码，实现我们的文本编辑器程序了。从以上分析可以看出，文档视结构程序的主要工作在于文档和视图的设计。</p>
+    <p>首先设计文档。程序=数据+算法，在MFC文档/视结构中，最关键的就是文档的设计。怎样保存用户输入的文本行？方法之一是保存一组指针，每个指针指向一个文本行。如果使用C语言来写这个程序的话，需要分配内存来存放这些指针，还要自己编写文本行的动态分配、增加、删除等例程。但是MFC简化这些工作，它提供了集合类（collection 
+    classes）。</p>
+    <p>集合类是用来容纳和处理一组对象或标准数据类型变量的C++类。每个集合类对象可以看作一个单独的对象。类成员函数可作用于集合的所有元素。MFC提供两种类型的集合类：</p>
+    <blockquote>
+      <p>基于模板的集合类</p>
+      <p>非基于模板的集合类</p>
+    </blockquote>
+    <p>这两种集合类 
+    对用户来说非常相似。基于模板的集合所包含的元素是用户自定义的数据结构或者说是抽象的数据结构，它以数组、链表和映射表三种方式组织用户自定义的数据结构。使用基于模板的集合类需要用户作一些类型转换工作。非基于 
+    模板的集合类提供的是一组现成的、用于某种预定义的数据类型（如CObject、WORD、BYTE、DWORD、字符串等）的集合。在设计程序时，如果所用的数据类型是预定义的，如下面的编辑要用到的字符串，则使用非基于模板的集合类；如果所用得数据类型是用户自定义的数据结构类型，那就要用到基于模板的集合类。</p>
+    <p>根据对象在集合中的组织合存储方式，集合类又可分为三种类型：链表、数组、映射（或字典）。应当根据特定的编程问题，选择适当的类型。</p>
+    <p>链表：链表类用双向链表实现有序的、非索引的元素链表。链表有一个头或尾。很容易从头或尾增加或删除元素、遍历所有元素，在中间插入或删除元素。链表在需要增加、删除元素的场合效率很高。非基于模板的链表有三种：CObList、CPtrList、CStringList，分别用于管理对象指针、无类型指针和字符串。可以使用链表创建堆栈和队列。</p>
+    <p>要访问链表的成员，可以使用GetNext和GetHeadPosition()。</p>
+    <p>要删除链表的成员，可以用GetHeadPosition()和GetNext()来遍历链表，然后用delete删除其中的对象，最后调用RemoveAll删除链表所包含的指针。</p>
+    <p>数组类提供一个可动态调整数组大小的、有序的、按整数索引的对象数组。数组在内存中连续的存放固定长度的数组元素。数组的最大优点是可以随时存取任一元素。数组类包括基于模板的CArray，它可以存放任何类型的数据；MFC还为字节、字、双字、CString对象、CObject指针和无类型指针提供了预定义的类。数组的元素可以通过一个以零为基础的整数下标直接进行访问。下标操作符([])可用于设置或检取数组元素。如果要设置一个超过数组当前范围的元素，可以指定该数组是否自动增大。但是如果要调整数组大小时，则数组占用的内存块需要重新移动，效率很低。如果不要求调整数组大小，则对数组集合的访问和对标准C数组的访问一样快。在使用数组之前，应使用SetSize建立其大小，并分配内存。若不用SetSize，象数组添加元素时会导致频繁的再分配内存和拷贝数据。数组类适用于那些需要快速检索、很少需要增加或删除元素的集合。</p>
+    <p>数组通过GetAt(索引值)来访问数组中的成员。</p>
+    <p>要删除数组中的成员，可以用GetSize()取得大小，然后遍历数组中成员，用delete删除，然后调用RemoveAll()清除其中的指针数据。</p>
+    <p>下面是使用数组模板类的例子：</p>
+    <p>CArray&lt;CMyClass,CMyClass&amp;&gt; myArray;</p>
+    <p>CMyClass myClass;</p>
+    <p>myArray-&gt;Add(myClass);</p>
+    <p ALIGN="JUSTIFY">映射类以一种字典的方式组织数据。每个元素由一个关键字和一个数值项组成，关键字用作数值项的标识符，在集合中不允许重复，必须是唯一的。如果给出一个关键字，映射类会很快找到对应的数值项。映射查找是以哈希表的方式进行的，因此在映射中查找数值项的速度很快。除了映射类模板外，预定义的映射类能支持CString对象、字、CObject指针和无类型指针。比如，CMapWordToOb类创建一个映射表对象后，就可以用WORD类型的变量作为关键字来寻找对应的CObject指针。映射类最适用于需要根据关键字进行快速检索的场合。</p>
+    <p>要访问映射中的数据，可以用GetStartPosition()定位到开始处，再用GetNextAssoc访问映射表中的成员。</p>
+    <p>要删除映射中的数据，可以用GetStartPosition和GetNextAssoc遍历并用delete删除对象，然后调用RemoveAll。</p>
+    <p>下面是使用CMap模板类的例子：</p>
+    <p>CMap&lt;CString,LPCSTR,CPerson,CPerson&amp;&gt; myMap;</p>
+    <p>CPerson person;</p>
+    <p>LPCSTR lpstrName=“Tom”;</p>
+    <p>myMap-&gt;SetAt(lpstrName,person);</p>
+    <p>有关集合类的使用可以参见MFC的例子COLLECT。</p>
+    <p>对于文本编辑器，由于需要动态增加和删除每一行字符串，因此使用CStringList来保存文本编辑器的数据，CStringList中的每一个元素是CString类型的，它代表一行字符。可以把CString看作一个字符数组，但它提供了丰富的成员函数，比字符数组功能强大的多。</p>
+    <p>另外，还需要增加一个数据成员nLineNum，用于指示当前编辑行行号。如清单7.3，在文档类的头文件EditorDoc.h中，加入以下代码：</p>
+    <p>清单7.3 CEditorDoc.h</p>
+    <p>class CEditorDoc : public CDocument</p>
+    <p>{</p>
+    <p>protected: // create from serialization only</p>
+    <p>CEditorDoc();</p>
+    <p>DECLARE_DYNCREATE(CEditorDoc)</p>
+    <p>// Attributes</p>
+    <p>public:</p>
+    <p>　</p>
+    <p>CStringList lines;</p>
+    <p>int nLineNum;</p>
+    <p>...</p>
+    <p>};</p>
+    <p>在定义了文档数据成员后，还要对文档数据成员进行初始化。</p>
+    <p><font color="#3973DE">初始化文档类的数据成员</font></p>
+    <p>当用户启动应用程序，或从应用程序的File菜单种选择New选项时，都需要对文档类的数据成员进行初始化。一般的，类的数据成员的初始化都是在构造函数中完成的，在构造函数调用结束时对象才真正存在。但对于文档来说却不同，文档类的数据成员初始化工作是在OnNewDocument成员函数中完成的，此时文档对象已经存在。为什么呢？这是因为：在单文档界面(SDI)应用程序中，在应用程序启动时，文档对象就已经被创建。文档对象直到主框架窗口被关闭时才被销毁。在用户选择File-New菜单时，应用程序对象并不是销毁原来的文档对象然后重建新的文档对象，而只是重新初始化(Re-Initialization)文档对象的数据成员，这个初始化工作就是应用程序对象的OnFileNew()消息处理成员函数通过调用OnNewDocument()函数来完成的。试想，如果把初始化数据成员的工作放在构造函数中的话，由于对象已经存在，构造函数就无法被调用，也就无法完成初始化数据成员的工作。为了避免代码的重复，在应用程序启动时，应用程序对象也是通过调用OnNewDocument成员函数来初始化文档对象的数据成员的。如果是多文档界面（MDI）程序，则数据成员的初始化也可以放到构造函数中完成。因为在MDI中，选择File-&gt;New菜单时，应用程序对象就让文档模板创建一个新文档并创建对应的框架窗口和视图。但是，为了保证应用程序在单文档和多文档界面之间的可移植性，我们还是建议将文档数据成员的初始化工作放在OnNewDocument()中完成，因为在MDI的应用程序对象的OnFileNew成员函数中，同样会调用文档对象的OnNewDocument成员函数。</p>
+    <p>在OnNewDocument成员函数中手工加入代码，如清单7.4。</p>
+    <p>清单7.4 OnNewDocument成员函数</p>
+    <p>BOOL CEditorDoc::OnNewDocument()</p>
+    <p>{</p>
+    <p>if (!CDocument::OnNewDocument())</p>
+    <p>return FALSE;</p>
+    <p>// TODO: add reinitialization code here</p>
+    <p>// (SDI documents will reuse this document)</p>
+    <p>　</p>
+    <p>nLineNum=0;</p>
+    <p>POSITION pos;</p>
+    <p>pos=lines.GetHeadPosition();</p>
+    <p>while(pos!=NULL)</p>
+    <p>{</p>
+    <p>((CString)lines.GetNext(pos)).Empty();</p>
+    <p>}</p>
+    <p>lines.RemoveAll();</p>
+    <p>return TRUE;</p>
+    <p>}</p>
+    <p>其中pos类型为POSITION，相当于链表的指针，指向链表当前元素。CStringList的成员函数GetHeadPosition()返回链表头指针。链表的GetNext()函数以当前指针为参数，返回下一个元素指针，同时修改pos，使它指向下一个元素。使用强制类型转换将GetNext()函数返回的元素指针转化为CString类型，然后调用CString::Empty()方法清除该行中的所有字符。通过一个while循环，清除所有文本行的数据。最后调用CStringList的RemoveAll()成员函数，清除链表中的所有指针（注意：此时这些指针指向的元素已经被清除）。</p>
+    <div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#95DDFF">
+      <tr>
+        <td width="100%">提示：应用程序对象的成员函数CWinApp::OnFileNew()在选择File菜单的New命令时被调用，缺省时在InitInstance()中也会被调用。原理是在InitInstance()中有一个命令行参数的执行过程，当命令行上没有参数时，函数ParseCommandLine(cmdInfo)会调用CCommandLineInfo 
+        :: 把m_nShellCommand成员置为CCommandLineInfo::FileNew，这导致ProcessShellCommand成员函数调用OnFileNew。用户可在InitInstance()中显式的调用OnFileNew()。</font></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="3"><p ALIGN="JUSTIFY">应用程序对象的OnFileNew消息处理流程如下：首先判断应用程序是否有多个文档模板，若是，则显示一个对话框让用户选择创建哪种类型的文档（模板）。对话框中显示的字符串是与文档模板对象的构造函数的第一个参数相对应的字符串（若资源中无相应字符串则不显示）。然后该函数调用CDocManager::OpenDocumentFile（NULL）成员函数，打开一个新文件。CDocManager::OpenDocumentFile函数调用了CSingleDocTemplate的OpenDocumentFile，后者完成实际的创建文档、框架、视图工作。文档模板的OpenDocumentFile首先判断文档是否已经被创建，若未创建，则创建一个新文档。然后根据文件名参数是否为空，分别调用CDocument的OnNewDocument( 
+    )和CDocument的OnOpenDocument（）函数。CDocument的OnNewDocument首先调用DeleteContents()，并将文档修改标志该为FALSE（关闭窗口时将根据文档修改标志决定是否提示用户保存文档）。</p>
+    <p>　</p>
+    <p><font color="#3973DE">清理文档类的数据成员</font></p>
+    <p>在关闭应用程序删除文档对象时，或用File-&gt;Open菜单打开一个文档时，需要清理文档中的数据。同文档的初始化一样，文档的清理也不是在文档的析构函数中完成，而是在文档的CDocument::DeleteContents()成员函数中完成的(想想为什么？)。析构函数只用于清除那些在对象生存期都将存在的数据项。DeleteContents()成员函数的调用有两个作用：</p>
+    <blockquote>
+      <p>1.删除文档的数据；</p>
+      <p>2确信一个文档在使用前为空。</p>
+    </blockquote>
+    <p>前面已经说到，OnNewDocument函数会调用DeleteContents()函数。在用户选择File-&gt;Open菜单时，应用程序对象调用应用程序类的OnFileOpen成员函数，CWinApp::OnFileOpen调用内部的文档管理类CDocManager::OnFileOpen()成员函数，提示用户输入文件名。然后调用CWinApp::OpenDocumentFile打开一个文件。OpenDocumentFile在打开文件后首先调用DeleteContents成员函数清理文档中的数据，确保消除以前打开的文档的数据被清理掉。</p>
+    <p>缺省的DeleteContents函数什么也不做。你需要重载DeleteContents函数，并编写自己的文档清理代码。要重载DeleteContents成员函数：</p>
+    <p ALIGN="JUSTIFY">从View菜单下选择ClassWizard，启动ClassWizard，选择Message 
+    Maps页。在ClassName下拉列表框中选择CEditorDoc，从ObjectIDs列表框选择CEditorDoc，在Message列表框双击DeleteContents。此时DeleteContents出现在Member 
+    functions列表框中，并被选中。点Edit Code按钮，开始编辑DeleteContents函数定义。在DeleteContents函数体中加入代码后，如清单7.5所示：</p>
+    <p ALIGN="JUSTIFY">　</p>
+    <p ALIGN="JUSTIFY">清单7.5 CEditorDoc的DeleteContents成员函数</p>
+    <p>void CEditorDoc::DeleteContents() </p>
+    <p>{</p>
+    <p>// TODO: Add your specialized code here and/or call the base class</p>
+    <p>　</p>
+    <p>nLineNum=0;</p>
+    <p>/*删除集合类的数据：</p>
+    <p>用GetHeadPosition和GetNext遍历并用delete删除其中的数据，然后调 用RemoveAll()删除链表所包含的指针</p>
+    <p>*/</p>
+    <p>POSITION pos;</p>
+    <p>pos=lines.GetHeadPosition();</p>
+    <p>while(pos!=NULL)</p>
+    <p>{</p>
+    <p>((CString)lines.GetNext(pos)).Empty();</p>
+    <p>//调用CString的Empty()方法清除文本行的数据，对于其它类型的对 //象，应当调用delete 
+    删除该对象</p>
+    <p>}</p>
+    <p>lines.RemoveAll();</p>
+    <p>CDocument::DeleteContents();</p>
+    <p>}</p>
+    <p>　</p>
+    <p>编辑器的DeleteContents()实现与OnNewDocument()基本相同，别的程序则可能会有所不同。</p>
+    <p>CDocument::OnOpenDocument成员函数在调用DeleteContents()函数后，将文档修改标记设置为FALSE（未修改），然后调用Serialize进行文档的串行化工作。</p>
+    <p>　</p>
+    <p></font><font color="#3973DE" size="3">读写文档——串行化</font><font SIZE="3"></p>
+    <p>文档对象的串行化是指对象的持续性，即对象可以将其当前状态，由其成员变量的值表示，写入到永久性存储体（通常是指磁盘）中。下次则可以从永久性存储体中读取对象的状态，从而重建对象。这种对象的保存和恢复的过程称为串行化。对象的可持续性允许你将一个复杂的对象网络保存到永久性存储体中，从而在对象从内存中删去后仍保持它们的状态。以后，可以从永久性存储器中载入对象并在内存中重载。保存和载入可持续化、串行化的数据通过CArchive对象作为中介来完成。</p>
+    <p>文档的串行化在Serialize成员函数中进行。当用户选择File Save、Save 
+    As或Open命令时，都会自动执行这一成员函数。AppWizard只给出了一个Serialze()函数的框架，读者要做的时定制这个Serialize函数。Serialize()函数由一个简单的if-else语句组成：</p>
+    <p>void CEditorDoc::Serialze(CArchive&amp; ar)</p>
+    <p>{</p>
+    <p>if(ar.IsStoring())</p>
+    <p>{</p>
+    <p>//TODO: add storing code here.</p>
+    <p>}</p>
+    <p>else</p>
+    <p>{</p>
+    <p>//TODO: add loading code here.</p>
+    <p>}</p>
+    <p>}</p>
+    <p>在框架中，Serialize函数的参数ar是一个CArchive类型对象，它包含一个CFile类型的文件指针（类似于C语言的文件指针），执行一个文件。CArchive对象为读写CFile(文件类)对象中的可串行化数据提供了一种类型安全的缓冲机制。通常CFile代表一个磁盘文件；但它也可以是一个内存文件（CMemFile对象）或剪贴板。一个给定的CArchive对象只能读数据或写数据，而不能同时读写数据。当保存数据到archive对象中时，archive把它放在一个缓冲区中。直到缓冲区满，才把数据写入它所包含的文件指针指向的CFile对象中。同样的，当从archive对象读数据时，archive对象从文件中读取内容到缓冲区，然后再从缓冲区读入到可串行化的对象中。这种缓冲机制减少了访问物理磁盘的次数，从而提高了应用程序的性能。</p>
+    <p>在创建和使用一个CArchive对象之前，必须先创建一个CFile文件类对象。而且还必须确保archive的载入和保存状态同文件打开模式相兼容。幸运的是，应用程序框架已经为我们做好了这些工作。</p>
+    <p ALIGN="JUSTIFY">当应用程序响应File-&gt;Open、File-Save和File-Save As命令时，应用程序框架都会通过调用CDocument成员函数（对于File-&gt;Open调用OnOpenDocument，对于File-&gt;Save和File-&gt;Save 
+    As调用OnSaveDocument）创建CFile对象，并以适当的方式打开文件，对于File-&gt;Open是打开文件并读，对于Save和SaveAs是打开文件并写。然后框架会自动把文件对象连接到一个CArchive对象上，并设置CArchive的读写方式。</p>
+    <p>在Editor的Serialize()函数体内，我们看到CArchive对象有一个IsStoring()成员函数。该成员函数告诉串行化函数是需要写入还是读取串行数据。如果数据要写入（Save或Save 
+    As），IsStoring()返回布尔值TRUE；如果数据是被读取，则返回FALSE。</p>
+    <p>现在添加串行化操作代码，实现编辑器文档的读写功能。修改后的Serialize()函数形式如清单7.6。</p>
+    <p>清单7.6 CEditorDoc的串行化方法</p>
+    <p>/////////////////////////////////////////////////////////////////////////////</p>
+    <p>// CEditorDoc serialization</p>
+    <p>void CEditorDoc::Serialize(CArchive&amp; ar)</p>
+    <p>{</p>
+    <p>　</p>
+    <p>CString s(&quot;&quot;);</p>
+    <p>int nCount=0;</p>
+    <p>CString item(&quot;&quot;);</p>
+    <p>　</p>
+    <p>if (ar.IsStoring())</p>
+    <p>{</p>
+    <p>　</p>
+    <p>POSITION pos;</p>
+    <p>　</p>
+    <p>pos=lines.GetHeadPosition();</p>
+    <p>　</p>
+    <p>if(pos==NULL)</p>
+    <p>{</p>
+    <p>return;</p>
+    <p>}</p>
+    <p>while(pos!=NULL)</p>
+    <p>{</p>
+    <p>item=lines.GetNext(pos);</p>
+    <p>ar&lt;&lt;item;</p>
+    <p>item.Empty();//clear the line buffer</p>
+    <p>}</p>
+    <p>}</p>
+    <p>else</p>
+    <p>{</p>
+    <p>// TODO: add loading code here</p>
+    <p>　</p>
+    <p>while(1)</p>
+    <p>{</p>
+    <p>try{</p>
+    <p>ar&gt;&gt;item;</p>
+    <p>lines.AddTail(item);</p>
+    <p>nCount++;</p>
+    <p>}</p>
+    <p>catch(CArchiveException *e)</p>
+    <p>{</p>
+    <p>if(e-&gt;m_cause!=CArchiveException::endOfFile)</p>
+    <p>{</p>
+    <p>TRACE0(&quot;Unknown exception loading file!\n&quot;);</p>
+    <p>throw;</p>
+    <p>}else</p>
+    <p>{</p>
+    <p>TRACE0(&quot;End of file reached...\n&quot;);</p>
+    <p>e-&gt;Delete();</p>
+    <p>}</p>
+    <p>break;</p>
+    <p>}</p>
+    <p>}</p>
+    <p>nLineNum=nCount;</p>
+    <p>}</p>
+    <p>}</p>
+    <p>　</p>
+    <p>在If子句中，从字符串链表中逐行读取字符串，然后通过调用CArchive对象的&lt;&lt;操作符，将文本行写入ar对象中。在else子句中，从CArchive对象逐一读入字符串对象，然后加入到链表中。由于在Serialize（）函数的载入文档调用之前，框架已经调用CDocument的DeleteContents()成员函数作好了清理工作，这里不必再重复清理字符串链表。在载入字符串对象的同时，统计了字符串的个数即文本行数。由于这里使用CString的串行化，因此获得的文件不同于普通的文本文件。</p>
+    <p>文档串行化与一般文件处理方式最大的不同在于：在串行化中，对象本身对读和写负责。在上面的例子中，CArchive并不知道也不需要知道CString类的文本行内部数据结构，它只是调用CString类的串行化方法实现对象到文件的读写操作，也就是说，实际完成读写操作的是CString类，CArchive只是对象到CFile类的对象的一个中介。而文档的串行化正是通过调用文档中需要保存的各个对象的串行化方法来完成的。这几个对象的关系如图7-8所示。这里的对象必须是MFC对象，如果想让自己设计的对象也具有串行化能力，就必须定制该对象的串行化方法。有关定制串行化对象的技术在后面再作详细介绍。</p>
+    <p align="center"></font><img src="T7_8.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_8.gif" alt="T7_8.tif (124988 bytes)" WIDTH="405" HEIGHT="208"><font SIZE="3"></p>
+    <p align="center">图7-8 文档对象和文件对象</p>
+    <p>CArchive对象使用重载的插入（&lt;&lt;）和提取（&gt;&gt;）操作符执行读和写操作。有人会说，这种方式很象C++的输入输出流。其实，一个archive对象就是可以理解成一种二进制流。象输入/输出流一样，一个archive对象与一个文件相关联，并提供缓冲读写机制。但是，一个输入/输出流处理的是ASCII字符，而一个archive对象处理的是二进制对象。</p>
+    <p>如果不是使用框架创建和希望自己创建CArchive的话，可以这么做：</p>
+    <blockquote>
+      <p>CFile file;//声明一个CFile类对象</p>
+      <p>file.Open(“c:\\readme.txt”,CFile::modeCreate|CFile::modeWrite);//打开文件</p>
+      <p>CArchive ar(&amp;file,CArchive::store);//用指向file的指针创建CArchive类对</p>
+      <p>//象，指定模式为store即存储，如果需要从CArchive //中载入，可设为load</p>
+      <p>...//一些串行化工作</p>
+      <p>ar.Close();//首先关闭CArchive，然后关闭file</p>
+      <p>file.Close();</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p><font color="#3973DE">在文档中引用视图类</font></p>
+    <p>有时要在文档对象中访问视图对象，而一个文档可能会对应多个视图，此时可以采用如下方法：</p>
+    <p>POSITION pos=GetFirstViewPosition();//获取视图链表的头指针</p>
+    <p>CEditorView *MyView=(CMyView*)GetNextView(pos)；</p>
+    <p></font><font SIZE="4">　</p>
+    <p></font><font SIZE="4" color="#3973DE">7.2.3 文本编辑器的视图类</font><font SIZE="3"></p>
+    <p><font color="#3973DE">视图类数据成员设计</font></p>
+    <p>现在设计文本编辑器的视图类。由于编辑器需要提供显示字体选择功能，因此在编辑器内增加一个数据成员代表当前所用的字体。另外，还需要两个变量lHeight和cWidth分别代表所用字体的高度和宽度，以便控制输出，因为Windows以图形方式输出，输出文本也需要程序员自己计算坐标。修改后的视图类如下面的片段所示：</p>
+    <p>class CEditorView : public CView</p>
+    <p>{</p>
+    <p>protected: // create from serialization only</p>
+    <p>CEditorView();</p>
+    <p>DECLARE_DYNCREATE(CEditorView)</p>
+    <p>　</p>
+    <p>CFont* pFont;</p>
+    <p>int lHeight;</p>
+    <p>int cWidth;</p>
+    <p>...</p>
+    <p>}</p>
+    <p>也许有人会问：既然文档类包含应用程序的数据，而视图只负责输出，为什么不把数据全部放在文档类之中呢？从应用程序角度来看，视图是不包含数据的，显示文档的所有数据都是从文档对象中读取的。但这并不意味着视图不能包含数据成员。视图是从CView派生出来的类，作为类，它当然可以包含数据成员。而且，为了显示输出的需要，它经常包含一些与显示相关的数据成员。设计文档视结构的关键就是确切的定义用户文档应当包含哪些信息。那么，如何合理分配文档和视图的数据成员呢？一条简单的原则是：如何使用更方便，就如何分配数据成员。另外，还要看该数据成员是否需要保存到文档中，如果要保存到文档中，就必须放在文档中。因为文档可以对应多个视图，如果放在视图中，由于不同的视图的数据成员可以有不同的数值，这样文档保存时就不知道该使用哪一个数值了。一般的，与显示相关的数据成员都可以放在视图类中。在上面的文本编辑器中，我们并不需要保存编辑器使用何种字体这一信息，而这一信息又与文档显示密切相关，因此把它放在视图类中是很恰当的。这样的话，还可以用多个使用不同字体的视图观察同一文档。但是，如果编辑器是一个类似于Microsoft 
+    WORD之类的字处理器，在显示中支持多种字体的同一屏幕输出，这时需要保存字体信息，就要把字体信息放在文档类中了。</p>
+    <p>　</p>
+    <p>视图数据成员的初始化</p>
+    <p>在文档类中，通过成员函数OnNewDocument()来完成文档类数据成员的初始化工作。视图类也提供了一个CView::OnInitialUpdate()成员函数来初始化视图类的数据成员。</p>
+    <p>在以下情况下，应用程序将自动执行视图类的OnInitialUpdate()来初始化视图类数据成员：</p>
+    <blockquote>
+      <p>用户启动应用程序</p>
+      <p>从File菜单选择New菜单项，CWinApp::OnFileNew在调用CDocument::OnNewDocument后即调用OnInitialUpdate准备绘图输出；</p>
+      <p>用File-&gt;Open命令打开一个文件，此时希望清除视图原有的显示内容 
+      </p>
+    </blockquote>
+    <p>在编辑器中要做的主要工作是对编辑器使用的字体的初始化，见清单7.7。</p>
+    <p>清单7.7 视图的OnInitialUpdate方法</p>
+    <p>void CEditorView::OnInitialUpdate() </p>
+    <p>{</p>
+    <p>// TODO: Add your specialized code here and/or call the base class</p>
+    <p>　</p>
+    <p>CDC *pDC=GetDC();</p>
+    <p>pFont=new CFont();</p>
+    <p>if(!(pFont-&gt;CreateFont(0,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,</p>
+    <p>ANSI_CHARSET,OUT_TT_PRECIS,CLIP_TT_ALWAYS,</p>
+    <p>DEFAULT_QUALITY,DEFAULT_PITCH,&quot;Courier New&quot;)))</p>
+    <p>{</p>
+    <p>pFont-&gt;CreateStockObject(SYSTEM_FONT);</p>
+    <p>}</p>
+    <p>　</p>
+    <p>CFont* oldFont=pDC-&gt;SelectObject(pFont);</p>
+    <p>TEXTMETRIC tm;</p>
+    <p>pDC-&gt;GetTextMetrics(&amp;tm);</p>
+    <p>lHeight=tm.tmHeight+tm.tmExternalLeading;</p>
+    <p>cWidth=tm.tmAveCharWidth;</p>
+    <p>pDC-&gt;SelectObject(oldFont);</p>
+    <p>CView::OnInitialUpdate();</p>
+    <p>}</p>
+    <p>OnInitialUpdate()首先调用GetDC()取得当前窗口的设备上下文指针并存放在pDC中。设备上下文(简称DC，英文全称是device 
+    context)Windows数据结构，它描述了在一个窗口中绘图输出时所需的信息，包括使用的画笔、画刷、当前选用的字体及颜色（前景色和背景色）、绘图模式，以及其它所需要的绘图信息。MFC提供一个CDC类封装设备上下文，以简化存取DC的操作。</p>
+    <p>然后OnInitialUpdate()创建视图显示时所用的字体。同前面提到的其他MFC对象如框架窗口一样，字体对象的创建也分为两步：第一步，创建一个C++对象，初始化CFont的实例；第二步，调用CreateFont()创建字体。除了CreateFont之外，还有两个创建字体的函数：CreateFontIndirect和FromHandle()，前者要求一个指向所需字体的LOGFONT（逻辑字体）的指针作参数，后者需要一个字体句柄作参数。如果CreateFont()因为某种原因失败，那么就调用CreateStockObject()从预定义的GDI对象中创建字体。</p>
+    <div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#8EDBFF">
+      <tr>
+        <td width="100%">注意：在Windows的GDI中，包含一些预定义的GDI对象，无需用户去创建，马上就可以拿来使用。这些对象称作库存（Stock）对象。库存对象包括BLACK_BRUSH(黑色画刷)、DKGRAY_BRUSH（灰色画刷）、HOLLOW_BRUSH(空心画刷)、WHITE_BRUSH(白色画刷)、空画刷、黑色画笔、白色画笔以及一些字体和调色板等。</font><font SIZE="2">C</font><font SIZE="3">GdiObject:: CreateStockObject()并不真正创建对象，而只是取得库存对象的句柄，并将该句柄连到调用该函数的GDI对象上。</font></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="3"><p>然后调用CDC的SelectObject()方法，将字体选入到设备上下文中。SelectObject()函数原型如下：</p>
+    <blockquote>
+      <blockquote>
+        <p>CPen* SelectObject( CPen* pPen );</p>
+        <p>CBrush* SelectObject( CBrush* pBrush );</p>
+        <p>virtual CFont* SelectObject( CFont* pFont );</p>
+        <p>CBitmap* SelectObject( CBitmap* pBitmap );</p>
+        <p>int SelectObject( CRgn* pRgn );</p>
+      </blockquote>
+    </blockquote>
+    <p>　</p>
+    <p>SelectObject的参数可以是一个画笔、画刷、字体、位图或区域，它们统称为GDI（图形设备接口）对象。SelectObject将一个GDI对象选入到一个设备上下文中，新选中的对象将替换原有的同类型对象，然后返回指向被替换的对象的指针。SelectObject()知道它所选中的对象的类型，且总是返回同类的旧对象的指针。还要存储返回的CFont指针，在退出OnInitialUpdate之前调用pDC-&gt;SelectObject(oldFont)，将CDC重新设置成原来的初始状态。</p>
+    <p>读者以后编程也应当养成这样一个习惯：在用SelectObject选择新的GDI对象时，应当保存指向原先使用的GDI对象的指针，在绘图结束后，再用SelectObject选择原来的对象，设置CDC为其初始状态。否则的话，会有非法句柄留在设备上下文对象中，积累下去将导致无法预见的错误。但是，如果该设备上下文是自己创建而不是用参数传递过来的，则不必恢复画笔或刷子。象上面的例子，其实用户不必在退出时恢复原来的字体。而在下面要讲的OnDraw函数中，由于pDC是框架传给OnDraw的，因此在退出时必须恢复设备上下文中原来的字体设置。总之，如果用户能肯定画笔或刷子等GDI对象废弃以前设备对象会被销毁，则不必恢复设备上下文中GDI对象的设置。不过，为概念上的明确，还是建议调用恢复过程。</p>
+    <p>TEXTMETRIC是一个数据结构，它包含字体的宽度、高度、字的前后空白等字段。调用CDC::GetTextMetrics()获取字体的TEXTMETRIC，从而取得字体的宽度和高度等信息。最后调用CView类的OnInitialUpdate()函数来画视图。</p>
+    <p>由于在堆栈上创建了视图所用的字体对象pFont，在关闭视图时就需要删除该字体对象。这部分工作在视图的析构函数中完成。修改视图的析构函数：</p>
+    <p>CEditorView::~CEditorView()</p>
+    <p>{</p>
+    <p>　</p>
+    <p>if(pFont!=NULL)</p>
+    <p>delete pFont;</p>
+    <p>}</p>
+    <p>视图的绘制</p>
+    <p>现在要让视图显示编辑器中的文本。AppWizard为视图类CEditorView生成了一个OnDraw()方法，当需要重画视图时，该函数就会被调用。清单7.8是编辑器的OnDraw函数定义：</p>
+    <p>清单7.8 视图的OnDraw方法</p>
+    <p>/////////////////////////////////////////////////////////////////////////////</p>
+    <p>// CEditorView drawing</p>
+    <p>void CEditorView::OnDraw(CDC* pDC)</p>
+    <p>{</p>
+    <p>CEditorDoc* pDoc = GetDocument();</p>
+    <p>ASSERT_VALID(pDoc);</p>
+    <p>// TODO: add draw code for native data here</p>
+    <p>CFont *oldFont;</p>
+    <p>//选择新字体</p>
+    <p>oldFont=pDC-&gt;SelectObject(pFont);</p>
+    <p>　</p>
+    <p>//纵向yval坐标为0</p>
+    <p>int yval=0;</p>
+    <p>POSITION pos;</p>
+    <p>CString line;</p>
+    <p>//取得文本行链表的头指针</p>
+    <p>if(!(pos=pDoc-&gt;lines.GetHeadPosition()))</p>
+    <p>{</p>
+    <p>return;</p>
+    <p>}</p>
+    <p>//循环输出各文本行</p>
+    <p>while(pos!=NULL)</p>
+    <p>{</p>
+    <p>line=pDoc-&gt;lines.GetNext(pos);</p>
+    <p>pDC-&gt;TextOut(0,</p>
+    <p>yval,</p>
+    <p>line,</p>
+    <p>line.GetLength());</p>
+    <p>//更新y坐标值，让它加上文本行所用字体的高度</p>
+    <p>yval+=lHeight;</p>
+    <p>}</p>
+    <p>//恢复原来DC所用的字体</p>
+    <p>pDC-&gt;SelectObject(pFont);</p>
+    <p>}</p>
+    <p>框架调用视图的CView::OnDraw(CDC* pDC)方法完成屏幕显示、打印、打印预览功能，对于不同的输出功能它会传递不同的DC指针给OnDraw()函数。</p>
+    <p>在OnDraw()函数中，首先调用GetDocument()函数，取得指向当前视图所对应的文档的指针。通过这个指针，来访问文档中的数据。以后在视图中修改文档中的数据，也是通过GetDocument()来取得文档指针，再通过该文档指针修改文档中的数据。</p>
+    <p>在绘图时，可以通过传给OnDraw函数的一个设备上下文DC的指针pDC进行GDI调用。开始绘图之前，往往需要选择GDI资源（或GDI对象，包括画笔、刷子、字体等），将它选入到设备上下文中。在文本编辑器中，我们选择一种字体pFont到设备上下文中，以后在窗口客户区的文本输出就都会使用该字体绘制。在绘制过程中，绘图代码是设备无关的，也就是说它并不需要知道目前使用的是什么设备（屏幕、打印机或其他绘图设备）。</p>
+    <p>读者以前如果用Borland C++或SDK编写过Windows程序的话，都会知道：当窗口或窗口的一部分变成无效的话（比如其他窗口从本窗口上拖过、窗口调整大小等），操作系统就会向窗口发送一条WM_PAINT消息。窗口接收到该消息之后，调用Borland 
+    C++的EvPaint()或Visual C++的OnPaint()完成窗口绘制工作。这里OnDraw()函数也同样完成窗口绘图输出，这两者有什么关系呢？</p>
+    <p>我们先看一下OnPaint()函数：</p>
+    <p>void CMyWindow::OnPaint()</p>
+    <p>{</p>
+    <p>CPaintDC dc(this); //用于窗口绘制的设备上下文</p>
+    <p>CString str(“Hello,world!”);</p>
+    <p>...</p>
+    <p>//绘图输出代码</p>
+    <p>dc.TextOut(10,10,str,str.GetLength());</p>
+    <p>}</p>
+    <p>在OnPaint()函数中，首先创建一个CPaintDC类的对象dc。CPaintDC必需也只能用在WM_PAINT消息处理中。在CPaintDC类对象dc的构造函数中，调用了在SDK下需要显式调用的BeginPaint函数，取得处理WM_PAINT消息时所需的设备上下文。然后OnPaint()函数使用该设备上下文完成各种输出。在OnPaint()函数退出时，dc对象被删除。在dc对象的析构函数中，包含了对EndPaint函数的调用。EndPaint一方面释放设备上下文，另一方面还从应用消息队列中删除WM_PAINT消息。如果在处理WM_PAINT时不使用CPaintDC，则WM_PAINT不被消除，会产生不断重画的现象。</p>
+    <p>视图是一个子窗口，它自然也从窗口类继承了OnPaint()成员函数，用以响应WM_PAINT消息。类似于上面的例子，视图OnPaint处理函数首先创建一个与显示器相匹配的CPaintDC类的设备上下文对象dc，但是OnPaint不再直接完成窗口输出，而是将设备上下文传给OnDraw()成员函数，由OnDraw()函数去完成窗口输出。当打印输出时，框架会调用视图的DoPreparePrinting创建一个与打印机相匹配的设备上下文并将该DC传递给OnDraw()函数，由OnDraw函数完成打印输出。这样，OnDraw()函数就把用于屏幕显示和打印机输出的工作统一起来，真正体现了设备无关的思想。如果想知道当前OnDraw函数是在用于屏幕显示还是打印输出，可以调用CView::IsPrinting()函数。当处于打印状态时，IsPrinting()返回TRUE；在用于屏幕显示时，返回FALSE。</p>
+    <p><font color="#3973DE">文档修改时通知视图的更新</font></p>
+    <p>当文档以某种方式变化时，必须通知视图作相应的更新即重绘，以反应文档的变化。这种情况通常发生在用户通过视图修改文档时。此时，视图将调用文档的UpdateAllViews成员函数通知同一文档的所有视图对自己进行更新。UpdateAllViews将调用每个视图的OnUpdate成员函数，使视图的客户区无效。</font></p>
+    <p><font color="#3973DE">5 视图的消息处理</font><font SIZE="3"></p>
+    <p>视图作为一个子窗口，当然可以处理消息。但是应用程序运行时，除了视图外，还有应用程序对象、主框架窗口、文档等，它们都是可以处理消息的。那么消息传递过程是什么样的呢？</p>
+    <p>MFC的命令消息按以下方式传递：</p>
+    <p align="center"></font><img src="T7_9.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_9.gif" alt="T7_9.tif (83342 bytes)" WIDTH="473" HEIGHT="130"><font SIZE="3"></p>
+    <p align="center">图<font SIZE="3">7-9 </font>文档视结构中的消息传递</p>
+    <p><font color="#3973DE">键盘消息处理</font></p>
+    <p>前面的视图绘制就是完成窗口消息WM_PAINT的处理。编辑器要接收用户的键盘输入，就必须处理键盘消息；另外，在用户输入字符时，还必须马上就把用户输入的内容在屏幕上显示出来。</p>
+    <p>用ClassWizard生成处理WM_CHAR消息的函数OnChar()，然后打开该函数进行编辑。修改后的OnChar函数如清单7.9：</p>
+    <p>清单7.9 CEditorView的OnChar()成员函数</p>
+    <p>void CEditorView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)</p>
+    <p>{</p>
+    <p>　</p>
+    <p>CEditorDoc* pDoc=GetDocument();</p>
+    <p>CClientDC dc(this);</p>
+    <p>　</p>
+    <p>CFont *oldFont;</p>
+    <p>//选择新字体</p>
+    <p>oldFont=dc.SelectObject(pFont);</p>
+    <p>　</p>
+    <p>CString line(&quot;&quot;);//存放编辑器当前行字符串</p>
+    <p>POSITION pos=NULL;//字符串链表位置指示</p>
+    <p>if(nChar=='\r')</p>
+    <p>{</p>
+    <p>pDoc-&gt;nLineNum++;</p>
+    <p>}</p>
+    <p>else</p>
+    <p>{</p>
+    <p>//按行号返回字符串链表中位置值</p>
+    <p>pos=pDoc-&gt;lines.FindIndex(pDoc-&gt;nLineNum);</p>
+    <p>if(!pos)</p>
+    <p>{</p>
+    <p>//没有找到该行号对应的行，因此它是一个空行，</p>
+    <p>//我们把它加到字符串链表中。</p>
+    <p>line+=(char)nChar;</p>
+    <p>pDoc-&gt;lines.AddTail(CString(line));</p>
+    <p>}</p>
+    <p>else{</p>
+    <p>//当前文本行还没有换行结束，因此将文本加入到行末</p>
+    <p>line=pDoc-&gt;lines.GetAt(pos);</p>
+    <p>line+=(char)nChar;</p>
+    <p>pDoc-&gt;lines.SetAt(pos,line);</p>
+    <p>}</p>
+    <p>　</p>
+    <p>TEXTMETRIC tm;</p>
+    <p>dc.GetTextMetrics(&amp;tm);</p>
+    <p>dc.TextOut(0,</p>
+    <p>(int)pDoc-&gt;nLineNum*tm.tmHeight,</p>
+    <p>line,</p>
+    <p>line.GetLength());</p>
+    <p>}</p>
+    <p>pDoc-&gt;SetModifiedFlag();</p>
+    <p>dc.SelectObject(oldFont);</p>
+    <p>CView::OnChar(nChar,nRepCnt,nFlags);</p>
+    <p>}</p>
+    <p>因为编辑器要将用户输入内容加入到文本行缓冲区中，因此首先调用GetDocument()获取指向文档的指针，以便对文档中的数据进行修改。</p>
+    <p>为了在收到键盘输入消息后在窗口中输入字符，需要定义一个CClientDC类的对象dc。CClientDC是用于管理窗口客户区的设备上下文对象，它在构造函数中调用GetDC()取得窗口客户区设备上下文，在析构函数中调用ReleaseDC()释放该设备上下文。CClientDC同样用于在窗口客户区的输出，它与CPaintDC不同之处在于：</p>
+    <p>CPaintDC专门用于在窗口OnPaint()中的输出，而不能用于其它非窗口重画消息的处理。如果不是在OnDraw或OnPaint()中绘图，则需要创建一个CClientDC对象，然后调用CClientDC的方法来完成绘图输出。</p>
+    <p>OnChar()接下去处理用户输入。如果输入是一个回车，则将总行数nLineNum加一，否则将输入字符加到当前行行末。最后调用TextOut函数输出当前编辑中的文本行。</p>
+    <p>最后调用文档的SetModifiedFlag()方法设置文档的修改标志。SetModifiedFlag()函数原型如下：</p>
+    <blockquote>
+      <blockquote>
+        <p>void SetModifiedFlag( BOOL bModified = TRUE );</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="2">　</p>
+    <p></font><font SIZE="3">从函数原型可以看出,函数缺省参数为TRUE。当调用SetModifiedFlag时，将文档内的修改标志置为真。如果用户执行了Save或Save 
+    As操作，则将文档的修改标志置为假。这样，当用户关闭文档的最后一个视图时，框架根据该修改标记决定是否提示用户保存文档中的数据到文件。如果用户上次作了修改还没有存盘，则弹出一个消息框，提示是否保存文件。这些都是框架程序来完成的。</p>
+    <p>用户如果在视图的其它任何地方修改了文档，也必须调用SetModifiedFlag来设置文档修改标记，以便关闭窗口时让框架提示保存文档。</p>
+    <p></font><font SIZE="3" color="#3973DE">菜单消息处理 </font><font SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+      </blockquote>
+    </blockquote>
+    <font SIZE="3"><p>　</p>
+    <p>现在还要增加一个菜单，用户选择菜单时会弹出一个字体选择对话框，让用户选择视图输出文档时所用的字体。用菜单编辑器在View菜单下增加一个菜单项“Select 
+    Font”，菜单项相关参数如下：</p>
+    <p>菜单名：Select &amp;Font</p>
+    <p>菜单ID：ID_SELECT_FONT</p>
+    <p>提示文字：Select a font for current view</p>
+    <p>然后用ClassWizard为该菜单项生成消息处理函数SelectFont。在选择消息响应的类时，用户可以选择文档、视图、框架或应用程序类，这根据具体情况而定。如果操作是针对某一视图（比如象本例中改变字体操作），则消息处理放在视图中比较合适。如果操作是针对文档的（比如要显示文档中对象的属性等），则放在文档中处理比较合适。如果选项对应用程序中的所有文档和视图都有效（即是全局的选项），那么可以把它放在框架窗口中。</p>
+    <p ALIGN="JUSTIFY">修改OnSelectFont()函数，使它能显示字体选择对话框,修改后的OnSelect函数见清单7.10：</p>
+    <p ALIGN="JUSTIFY">　</p>
+    <p>　</p>
+    <p ALIGN="JUSTIFY">清单7.10 OnSelectFont()函数</p>
+    <p>void CEditorView::OnSelectFont()</p>
+    <p>{</p>
+    <p>　</p>
+    <p>CFontDialog dlg;</p>
+    <p>　</p>
+    <p>if(dlg.DoModal()==IDOK)</p>
+    <p>{</p>
+    <p>LOGFONT LF;</p>
+    <p>　</p>
+    <p>//获取所选字体的信息</p>
+    <p>dlg.GetCurrentFont(&amp;LF);</p>
+    <p>//建立新的字体</p>
+    <p>pFont-&gt;DeleteObject();</p>
+    <p>pFont-&gt;CreateFontIndirect(&amp;LF);</p>
+    <p>　</p>
+    <p>Invalidate();</p>
+    <p>UpdateWindow();</p>
+    <p>}</p>
+    <p>}</p>
+    <p>在OnSelectFont()消息处理函数中，首先定义一个选择字体公用对话框，然后显示该对话框，返回所选的字体。有关选择字体公用对话框的知识参见第五章对话框技术。字体对话框通过GetCurrentFont()返回逻辑字体信息。所谓逻辑字体是一种结构，它包含了字体的各种属性的描述，包括字体的名字、宽度、高度和是否斜体、加粗等信息。字体对象首先通过DeleteObject删除原来的字体对象，然后通过CreateFontIndirect、利用逻辑字体的属性来创建字体。由于我们选择了一种新的字体，所以要用新的字体来重绘视图。为此，调用Invalidate()函数向视图发送WM_PAINT消息。由于WM_PAINT消息级别比较低，不会立即被处理。因此，再调用UpdateWindow()强制窗口更新。这也是一种常用的技巧。</p>
+    <p>现在已经完成了编辑器文档类和视图类的设计，对主框架窗口类不需要修改。编译、链接并运行程序，弹出文本编辑器窗口。试着输入几行文本，存盘。然后再载入刚才保存的文件，如图7-10。在File-Exit菜单项上面，有一个文件名列表，列出最近打开过的文件，这个表称作MRU表(MRU是英文Most 
+    Recently Used的缩写)。可以从MRU中选择一个文件名，打开该文件。</p>
+    <p align="center"></font><img src="T7_10.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_10.gif" alt="T7_10.tif (267820 bytes)" WIDTH="515" HEIGHT="368"><font SIZE="3"></p>
+    </font><p align="center"></font><font size="2">图7-10 一个简单的文本编辑器</font><font SIZE="3"></p>
+    <div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap7_1.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/chap7_1.htm">上一页</a></td>
+        <td><p align="right"><a href="chap7_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/chap7_3.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></font></td>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"><font SIZE="5">　</p>
+</font><font SIZE="3">
+
+<p>　</p>
+</font>
+
+<p><font SIZE="3">　</p>
+
+<p></font>　</p>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<html>
+
+<head>
+<title>6.5 设计新的控件类</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.5 </font><font SIZE="3" color="#3973DE">设计新的控件类</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">虽然</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">提供了大量的控件，但不一定总能满足用户的需要．有时，用户需要一些有特殊功能的控件．例如，有时希望编辑框控件只能接受数字输入，当用户输入非数字字符时，编辑框控件会发出声响来提醒用户．在这种情况下，标准的</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">类就无能为力了．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当控件无法满足需要时，用户可以从原来的控件类派生一个新类．通过合理地设计派生类，可以修改控件的行为和属性以达到用户的要求．利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">的强大功能，读者可以方便地创建和设计控件类的派生类．</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.5.1 </font><font SIZE="3" color="#3973DE">创建标准控件类的派生类</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">这个任务可以用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">完成，其具体步骤如下：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">按</font><font FACE="Times New Roman" SIZE="3">Ctrl+W</font><font SIZE="3">进入</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">．</p>
+        <p ALIGN="JUSTIFY">单击</font><font FACE="Times New Roman" SIZE="3">Add Class</font><font SIZE="3">按钮并选择</font><font FACE="Times New Roman" SIZE="3">New...</font><font SIZE="3">菜单项，则打开</font><font FACE="Times New Roman" SIZE="3">Create New 
+        Class</font><font SIZE="3">对话框．</p>
+        <p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">Create New Class</font><font SIZE="3">对话框的</font><font FACE="Times New Roman" SIZE="3">Name</font><font SIZE="3">栏中输入派生类的名字，在</font><font FACE="Times New Roman" SIZE="3">Base 
+        class</font><font SIZE="3">栏中选择一个标准的控件类做为基类，然后按</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">按钮即可．</p>
+        </font><font FACE="Times New Roman" SIZE="3">
+      </blockquote>
+    </blockquote>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.5.2 
+    </font><font color="#3973DE"><font SIZE="3">利用</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的控件通知消息反射机制完善派生类的功能</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">创建好派生类后，接下来的任务就是修改新类的代码以完善其功能．例如，为新类添加必要的成员变量，提供新的成员函数以及消息处理函数等等．其中为控件添加消息处理函数是最重要的，因为这直接关系着控件新功能的实现．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">与控件有关的消息包括控件本身接收的消息和发给父窗口的通知消息两种．利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">可以方便地为派生类创建这两类消息的处理函数．读者也许会感到奇怪，控件通知消息不是由父窗口处理的吗，难道控件本身也有机会处理通知消息？</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">答案是肯定的．从</font><font FACE="Times New Roman" SIZE="3">4.0</font><font SIZE="3">版开始，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">提供了一种消息反射机制</font><font FACE="Times New Roman" SIZE="3">(Message Reflection)</font><font SIZE="3">，可以把控件通知消息反射回控件．具体地讲，当父窗口收到控件通知消息时，如果父窗口有该消息的处理函数，那么就由父窗口处理该消息，如果父窗口不处理该消息，则框架会把该消息反射给控件，这样控件就有机会处理该消息了．由此可见，新的消息反射机制并不破坏原来的通知消息处理机制．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">消息反射机制为控件提供了处理通知消息的机会，这在有些情况下是很有用的．例如，如果派生类想改变控件的背景色，就需要处理</font><font FACE="Times New Roman" SIZE="3">WM_CTLCOLOR</font><font SIZE="3">通知消息．大多数控件在需要重绘时，会向父窗口发送</font><font FACE="Times New Roman" SIZE="3">WM_CTLCOLOR</font><font SIZE="3">消息，父窗口在处理该消息时会返回一个刷子用来画控件的背景．如果按传统的方法，由父窗口来处理这个消息，则加重了控件对象对父窗口的依赖程度，每当使用这样一个新控件时，都要在父窗口中提供控件的</font><font FACE="Times New Roman" SIZE="3">WM_CTLCOLOR</font><font SIZE="3">消息处理函数，这显然违背了面向对象的原则．若由控件自己处理</font><font FACE="Times New Roman" SIZE="3">WM_CTLCOLOR</font><font SIZE="3">消息，则使得控件对象具有更大的独立性，而父窗口也可以省去一些不必要的工作．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者可以在自己的程序中用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">创建一个</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">类的派生类试试．在派生类的消息列表中，在有些消息前面有一个＂＝＂符号，这表明这些消息是可以反射的通知消息．读者可以按照通常的方法创建反射消息的处理函数．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.5.3 
+    </font><font color="#3973DE"><font SIZE="3">利用</font><font FACE="Times New Roman" SIZE="3">SubclassDlgItem</font><font SIZE="3">函数动态连接控件和控件对象</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要在程序中创建新设计的控件，显然不能用自动创建的办法，因为对话框模板对新控件的特性一无所知．程序可以用手工方法创建控件，在调用派生类的</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">函数时，派生类会调用基类的</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">函数创建控件．用</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">函数创建控件是一件比较麻烦的工作，程序需要为函数指定一大堆的控件风格以及控件的坐标和</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">．特别是控件的坐标，没有经验的程序员很难确切地安排控件的位置和大小，往往需要反复调整．利用</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CWnd::SubclassDlgItem</font><font SIZE="3">提供的动态连接功能，可以避免</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">函数的许多麻烦，该函数大大简化了在对话框中创建派生控件的过程．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">大家知道，在用手工方法创建控件时，先要构建一个控件对象，然后再用</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">函数在屏幕上创建控件窗口，也就是说，控件的创建工作是由控件对象完成的．动态连接的思路则不同，</font><font FACE="Times New Roman" SIZE="3">SubclassDlgItem</font><font SIZE="3">可以把对话框中已有的控件与某个窗口对象动态连接起来，该窗口对象将接管控件的消息处理，从而使控件具有新的特性．</font><font FACE="Times New Roman" SIZE="3">SubclassDlgItem</font><font SIZE="3">函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL SubclassDlgItem( UINT 
+          nID, CWnd* pParent );</font></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">是控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">pParent</font><font SIZE="3">是指向父窗口的指针．若连接成功则函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">综上所述，要在程序中使用派生控件，应该按下面两步进行：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">在对话框模板中放置好基类控件．</p>
+        <p ALIGN="JUSTIFY">在对话框类中嵌入派生控件类的对象．</p>
+        <p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">中调用</font><font FACE="Times New Roman" SIZE="3">SubclassDlgItem</font><font SIZE="3">将派生类的控件对象与对话框中的基类控件相连接，则这个基类控件变成了派生控件．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">例如，如果要在对话框中使用新设计的编辑框控件，应先在对话框模板中的合适位置放置一个普通的编辑框，然后，在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">函数中按下面的方式调用</font><font FACE="Times New Roman" SIZE="3">SubclassDlgItem</font><font SIZE="3">即可：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL 
+      CMyDialog::OnInitDialog()</p>
+      <p ALIGN="JUSTIFY">{</p>
+      <p ALIGN="JUSTIFY">CDialog::OnInitDialog();</p>
+      <p ALIGN="JUSTIFY">m_MyEdit.SubclassDlgItem(IDC_MYEDIT, this);</p>
+      <p ALIGN="JUSTIFY">return TRUE;</p>
+      <p ALIGN="JUSTIFY">}</p>
+      </font>
+    </blockquote>
+    <div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap6_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_4.htm">上一页</a></td>
+        <td><p align="right"><a href="chap6_6.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_6.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

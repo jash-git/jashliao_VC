@@ -1,0 +1,476 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Hidden Markov Model</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Markov Model</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">First-order Markov Model</p>
+<img src="MarkovModel1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MarkovModel1.png">
+<p>馬可夫模型大意是：選一個狀態作為起點，然後沿著邊隨意走訪任何一個狀態，一直走一直走，沿途累計機率，走累了就停在某個狀態。</p>
+<p>熟悉「<a href="Graph.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Graph.html">圖論</a>」的讀者應該很快就能上手，馬可夫模型的外觀看起來就是圖──只不過代數符號多得令人生厭。</p>
+<p>建議閱讀：L. Rabiner, A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition, Proceedings of the IEEE, vol. 77, No. 2, February 1989.</p>
+<p class="t">State, S</p>
+<img src="MarkovModel2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MarkovModel2.png">
+<p>圖片中，每一個圓圈叫做一個「狀態」。馬可夫模型一共有N個狀態，通常標作s<sub>1</sub>到s<sub>N</sub>。N是我們自行設定的常數。</p>
+<p>全部狀態構成的集合，標作大寫S。</p>
+<p class="t">Transition Probability, A</p>
+<img src="MarkovModel3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MarkovModel3.png">
+<p>每一個狀態都會射出N條邊，這N條邊分別連向每一個狀態，這N條邊的數值都是機率，這N條邊的數值皆介於0到1，這N條邊的數值總和必為1，滿足機率公設。</p>
+<img src="MarkovModel4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MarkovModel4.png">
+<p>一條由狀態s<sub>i</sub>到狀態s<sub>j</sub>的邊，其數值通常標作a<sub>ij</sub>。亦可標作條件機率P( s<sub>j</sub> | s<sub>i</sub> )，意思是現在在狀態s<sub>i</sub>、要來去狀態s<sub>j</sub>。亦可套用稍後提到的狀態序列，標作P( q<sub>t+1</sub> = j | q<sub>t</sub> = i )。</p>
+<p>全部邊構成的集合，標作A。通常把A看作一個N×N矩陣。</p>
+<p>寫程式時，我們可以利用圖的資料結構adjacency matrix儲存全部的數值。當A有很多數值是零，去掉一些邊之後，也可以改用adjacency lists。</p>
+<p class="t">Initial Probability, Π</p>
+<img src="MarkovModel5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MarkovModel5.png">
+<p>我們可以選擇任何一個狀態作為起點。機率總和為1。</p>
+<p>繪製圖片時，我們可以設計一個虛幻狀態s<sub>0</sub>，讓s<sub>0</sub>射出N條虛幻邊，分別連向每一個狀態，其數值滿足機率公設。如此一來我們就可以從冥冥之中的s<sub>0</sub>開始行動。</p>
+<p>這N條虛幻邊的數值通常標作π<sub>1</sub>到π<sub>N</sub>。亦可標作機率P( s<sub>1</sub> )到P( s<sub>N</sub> )。亦可套用稍後提到的狀態序列，標作P( q<sub>1</sub> = 1 )到P( q<sub>1</sub> = N )。</p>
+<p>這N條虛幻邊構成的集合，標作Π。通常把Π看作一個N維向量、一個N×1矩陣。</p>
+<p>寫程式時，通常我們不會設計一個虛幻的狀態S<sub>0</sub>，而是把狀態s<sub>1</sub>到s<sub>N</sub>重新標作s<sub>0</sub>到s<sub>N-1</sub>。</p>
+<textarea>
+const int N = 3;
+double a[N][N];
+double π[N];
+</textarea>
+<p class="t">State Sequence, q<sub>1</sub> q<sub>2</sub> ...... q<sub>T</sub></p>
+<img src="MarkovModel6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MarkovModel6.png">
+<p>選定起點後，可以沿著邊，到處走來走去，一路走過T個狀態以及T-1條邊之後，就停下來。T是我們自行設定的常數。</p>
+<p>一條路徑，通常標作q<sub>1</sub> q<sub>2</sub> ...... q<sub>T</sub>，為途經的狀態編號。</p>
+<p>一條路徑的機率，可以寫成π<sub>q<sub>1</sub></sub> × a<sub>q<sub>1</sub>q<sub>2</sub></sub> × ...... × a<sub>q<sub>T-1</sub>q<sub>T</sub></sub>，也可以寫成P( s<sub>q<sub>1</sub></sub> ) × P( s<sub>q<sub>2</sub></sub> | s<sub>q<sub>1</sub></sub> ) × ...... × P( s<sub>q<sub>T-1</sub></sub> | s<sub>q<sub>T</sub></sub> )。</p>
+<textarea>
+const int N = 3;
+double π[N], a[N][N];	// Markov Model
+
+double probability(int* q, int T)
+{
+	double p = π[q[0]];
+	for (int i=1; i<T; ++i)
+		p *= a[q[i-1]][q[i]];
+	return p;
+}
+</textarea>
+<p class="t">延伸閱讀：time variant</p>
+<img src="MarkovModel7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MarkovModel7.png">
+<p>馬可夫模型的A的數值，會隨時間而改變。</p>
+<p>時刻t，一條由狀態s<sub>i</sub>到狀態s<sub>j</sub>的邊，其數值通常標作a<sub>tij</sub>。</p>
+<p>平常不會搞到這麼複雜啦。一般只用time invariant。</p>
+<p class="t">延伸閱讀：order</p>
+<img src="MarkovModel8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/MarkovModel8.png">
+<p>馬可夫模型的A的數值，會受到來源狀態影響。</p>
+<p>如果只受到上一個狀態影響，稱做first-order，也就是我們慣用的：一條由狀態s<sub>i</sub>到狀態s<sub>j</sub>的邊，其數值標作a<sub>ij</sub>，亦可標作P( s<sub>j</sub> | s<sub>i</sub> )，亦可標作P( q<sub>t+1</sub> = j | q<sub>t</sub> = i )。</p>
+<p>如果受到上一個狀態、上上個狀態影響，稱做second-order：其數值標作a<sub>ijk</sub>，亦可標作P( s<sub>k</sub> | s<sub>i</sub> s<sub>j</sub> )，亦可標作P( q<sub>t+1</sub> = k | q<sub>t</sub> = j , q<sub>t-1</sub> = i )。</p>
+<p>如果受到以前所有狀態影響，我不知道要稱做甚麼：可標示成條件機率P( q<sub>t+1</sub> = j | q<sub>t</sub> = i<sub>t</sub> , q<sub>t-1</sub> = i<sub>t-1</sub> , ...... , q<sub>0</sub> = i<sub>0</sub> )。高中數學提到的Markov Model其實是這個版本。</p>
+<p>平常不會搞到這麼複雜啦。一般只用first-order。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Hidden Markov Model</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Observation, V</p>
+<img src="HiddenMarkovModel1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel1.png">
+<p>隱藏馬可夫模型添加了一個新要素：每當造訪一個狀態，就立刻從M個值當中，噴出其中一個值。每一個狀態都是噴出相同的M種值，這M個值通常標作v<sub>1</sub>到v<sub>M</sub>。M是我們自行設定的常數。</p>
+<p>全部觀察構成的集合，標作大寫V。</p>
+<p class="t">Observation Probability, B</p>
+<img src="HiddenMarkovModel2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel2.png">
+<p>每一個狀態噴出這M種值的機率都不相同。</p>
+<p>狀態s<sub>i</sub>噴出v<sub>k</sub>的機率，通常標作b<sub>i</sub>( k )或者簡單標作b<sub>ik</sub>。亦可標作條件機率P( v<sub>k</sub> | s<sub>i</sub> )，意思是現在在狀態s<sub>i</sub>、噴出觀察v<sub>k</sub>。亦可套用狀態序列與觀察序列，標作P( o<sub>t</sub> = k | q<sub>t</sub> = i )。</p>
+<p>每個狀態各自的噴出機率構成的集合，標作B。通常把B看作N個函數，或者簡單地看作一個N×M矩陣。</p>
+<p class="t">Observation Sequence, o<sub>1</sub> o<sub>2</sub> ...... o<sub>T</sub></p>
+<img src="HiddenMarkovModel3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel3.png">
+<p>走T步後，一路上T個狀態個別噴出的值的編號。</p>
+<p>有了狀態序列與觀察序列，一條路徑的機率，可以寫成π<sub>q<sub>1</sub></sub> × b<sub>q<sub>1</sub></sub>( o<sub>1</sub> ) × a<sub>q<sub>1</sub>q<sub>2</sub></sub> × b<sub>q<sub>2</sub></sub>( o<sub>2</sub> ) × ...... × a<sub>q<sub>T-1</sub>q<sub>T</sub></sub> × b<sub>q<sub>T</sub></sub>( o<sub>T</sub> )，也可以寫成P( s<sub>q<sub>1</sub></sub> ) × P( v<sub>o<sub>1</sub></sub> | s<sub>q<sub>1</sub></sub> ) × P( s<sub>q<sub>2</sub></sub> | s<sub>q<sub>1</sub></sub> ) × P( v<sub>o<sub>2</sub></sub> | s<sub>q<sub>2</sub></sub> ) × ...... × P( s<sub>q<sub>T-1</sub></sub> | s<sub>q<sub>T</sub></sub> ) × P( v<sub>o<sub>T</sub></sub> | s<sub>q<sub>T</sub></sub> )。我想各位差不多眼花撩亂了。名可名，非常名，若能領會原理就不用刻意背誦代數了。</p>
+<textarea>
+const int N = 3, M = 3, T = 15;
+double π[N], a[N][N], b[N][M];	// HMM
+
+double probability(int* q, int* o, int T)
+{
+	double p = π[q[0]] * b[q[0]][o[0]];
+	for (int i=1; i<T; ++i)
+		p *= a[q[i-1]][q[i]] * b[q[i]][o[i]];
+	return p;
+}
+</textarea>
+<img src="HiddenMarkovModel4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel4.png">
+<p>隱藏馬可夫模型的特色就是：我們只看到了觀察序列（果），但是我們看不到狀態序列（因）；我們只看到了依序噴出的T個值，但是我們看不到一路走過的是哪T個狀態。</p>
+<p>「隱藏」二字便是指行蹤被隱藏了，狀態序列被隱藏了。</p>
+<p>接下來要討論隱藏馬可夫模型的三個基本問題，以及演算法。</p>
+<p class="t">1. Evaluation Problem: Forward-backward Algorithm</p>
+<img src="HiddenMarkovModel5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel5.png">
+<p>看到一個觀察序列o<sub>1</sub> o<sub>2</sub> ...... o<sub>T</sub>，但是看不到狀態序列s<sub>1</sub> s<sub>2</sub> ...... s<sub>T</sub>的情況下，找出所有可能的路徑的機率的總和。</p>
+<img src="HiddenMarkovModel6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel6.png">
+<img src="HiddenMarkovModel7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel7.png">
+<p>對於一個觀察序列來說，狀態序列有各式各樣的可能性，一共有N<sup>T</sup>種可能性。</p>
+<p>運用窮舉法，時間複雜度為O(N<sup>T</sup> * T)。運用「<a href="DynamicProgramming.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DynamicProgramming.html">動態規劃</a>」，時間複雜度降低為O(N<sup>2</sup> * T)。</p>
+<p>原理是結合律，比如x×b×c + y×b×c + z×b×c = (x+y+z)×b×c，能加的先加一加。左端結合是forward，右端結合是backward；使用其中一種即可，計算結果都一樣。</p>
+<img src="HiddenMarkovModel8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel8.png">
+<img src="HiddenMarkovModel9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel9.png">
+<pre>
+forward:
+α<sub>1  </sub>(j) = π<sub>j</sub> × b<sub>j</sub>(o<sub>1</sub>)
+α<sub>t+1</sub>(j) = Σ<sub>i=1~N</sub>[ α<sub>t</sub>(i) × a<sub>ij</sub> ] × b<sub>j</sub>(o<sub>t+1</sub>)
+
+backward:
+β<sub>T</sub>(i) = 1
+β<sub>t</sub>(i) = Σ<sub>j=1~N</sub>[ a<sub>ij</sub> × b<sub>j</sub>(o<sub>t+1</sub>) × β<sub>t+1</sub>(j) ]
+</pre>
+<textarea>
+const int N = 3, M = 3, T = 15;
+double π[N], a[N][N], b[N][M];	// HMM
+double α[T][N];	// 可以簡化成α[2][N]
+double β[T][N];	// 可以簡化成β[2][N]
+
+double forward(int* o, int T)
+{
+	for (int t=0; t<T; ++t)
+		for (int j=0; j<N; ++j)
+			if (t == 0)
+				α[t][j] = π[j] * b[j][o[t]];
+			else
+			{
+				double p = 0;
+				for (int i=0; i<N; ++i)
+					p += α[t-1][i] * a[i][j];
+				α[t][j] = p * b[j][o[t]];
+			}
+
+	double p = 0;
+	for (int i=0; i<N; ++i)
+		p += α[T-1][i];
+	return p;
+}
+
+double backward(int* o, int T)
+{
+	for (int t=T-1; t>=0; --t)
+		for (int i=0; i<N; ++i)
+			if (t == T-1)
+				β[t][i] = 1.0;
+			else
+			{
+				double p = 0;
+				for (int j=0; j<N; ++j)
+					p += a[i][j] * b[j][o[t+1]] * β[t+1][j];
+				β[t][i] = p;
+			}
+
+	double p = 0;
+	for (int j=0; j<N; ++j)
+		p += π[j] * b[j][o[0]] * β[0][j];
+	return p;
+}
+</textarea>
+<p class="t">2. Decoding Problem: Viterbi Algorithm</p>
+<img src="HiddenMarkovModel7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel7.png">
+<p>看到一個觀察序列o<sub>1</sub> o<sub>2</sub> ...... o<sub>T</sub>，但是看不到狀態序列s<sub>1</sub> s<sub>2</sub> ...... s<sub>T</sub>的情況下，從所有可能的路徑當中，找出機率最大的一條路徑，以及其機率。</p>
+<p>這跟上一個問題如出一轍，運用「<a href="DynamicProgramming.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DynamicProgramming.html">動態規劃</a>」就可以解決。唯一的差別就是把Σ換成max而已。</p>
+<img src="HiddenMarkovModel10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel10.png">
+<pre>
+forward:
+δ<sub>1  </sub>(j) = π<sub>j</sub> × b<sub>j</sub>(o<sub>1</sub>)
+δ<sub>t+1</sub>(j) = max<sub>i=1~N</sub>[ δ<sub>t</sub>(i) × a<sub>ij</sub> ] × b<sub>j</sub>(o<sub>t+1</sub>)
+
+path tracing:
+ψ<sub>t</sub>(j) = arg max<sub>i=1~N</sub>[ δ<sub>t-1</sub>(i) × a<sub>ij</sub> ] × b<sub>j</sub>(o<sub>t</sub>)
+      = arg max<sub>i=1~N</sub>[ δ<sub>t-1</sub>(i) × a<sub>ij</sub> ]
+</pre>
+<textarea>
+const int N = 3, M = 3, T = 15;
+double π[N], a[N][N], b[N][M];	// HMM
+double δ[T][N];	// 可以簡化成δ[2][N]
+int ψ[T][N];
+
+double decode(int* o, int T, int* q)
+{
+	for (int t=0; t<T; ++t)
+		for (int j=0; j<N; ++j)
+			if (t == 0)
+				δ[t][j] = π[j] * b[j][o[t]];
+			else
+			{
+				double p = -1e9;
+				for (int i=0; i<N; ++i)
+				{
+					double w = δ[t-1][i] * a[i][j];
+					if (w > v) p = w, ψ[t][j] = i;
+				}
+				δ[t][j] = p * b[j][o[t]];
+			}
+
+	double p = -1e9;
+	for (int j=0; j<N; ++j)
+		if (δ[T-1][j] > v)
+			p = δ[T-1][j], q[T-1] = j;
+
+	for (int t=T-1; t>0; --t)
+		q[t-1] = ψ[t][q[t]];
+
+	return p;
+}
+</textarea>
+<p class="t">3. Learning Problem: EM Algorithm</p>
+<p>給定一個觀察序列o<sub>1</sub> o<sub>2</sub> ...... o<sub>T</sub>，更新ABΠ使得Evaluation Problem算得的機率盡量大。</p>
+<p>更新的原理，採用了「Maximum Likelihood Estimation」，以樣本平均值作為分布平均值，出現這些樣本的機率就是最大。</p>
+<img src="HiddenMarkovModel11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel11.png">
+<img src="HiddenMarkovModel12.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel12.png">
+<pre>
+分子是穿越狀態s<sub>i</sub>的所有路徑的機率的總和：
+
+              α<sub>t</sub>(i) × β<sub>t</sub>(i)
+γ<sub>t</sub>(i) = ————————————————————————— = Σ<sub>j=1~N</sub> ξ<sub>t</sub>(i,j)
+         Σ<sub>i=1~N</sub> [ α<sub>t</sub>(i) × β<sub>t</sub>(i) ]
+
+分子是穿越邊a<sub>ij</sub>的所有路徑的機率的總和：
+
+                  α<sub>t</sub>(i) × a<sub>ij</sub> × b<sub>j</sub>(o<sub>t+1</sub>) × β<sub>t+1</sub>(j)
+ξ<sub>t</sub>(i,j) = —————————————————————————————————————————————————
+           Σ<sub>i=1~N</sub> Σ<sub>j=1~N</sub> [ α<sub>t</sub>(i) × a<sub>ij</sub> × b<sub>j</sub>(o<sub>t+1</sub>) × β<sub>t+1</sub>(j) ]
+
+更新：
+
+<span style="text-decoration:overline">π</span><sub>i</sub>    = γ<sub>1</sub>(i)
+<span style="text-decoration:overline">a</span><sub>ij</sub>   = Σ<sub>t=1~T-1</sub> [ ξ<sub>t</sub>(i,j) ] ÷ Σ<sub>t=1~T-1</sub> [ γ<sub>t</sub>(i) ]
+<span style="text-decoration:overline">b</span><sub>j</sub>(k) = Σ<sub>t=1~T, o<sub>t</sub>=k</sub> [ γ<sub>t</sub>(i) ] ÷ Σ<sub>t=1~T</sub> [ γ<sub>t</sub>(i) ]
+</pre>
+<textarea>
+const int N = 3, M = 3, T = 15;
+double π[N], a[N][N], b[N][M];	// HMM
+double α[T][N], β[T][N];		// evaluation problem
+double δ[T][N]; int ψ[T][N];	// decoding problem
+double γ[T][N], ξ[T][N][N];		// learning problem
+
+void learn(int* o, int T)
+{
+	forward(o, T);
+	backward(o, T);
+
+	for (int t=0; t<T; ++t)
+	{
+		double p = 0;
+		for (int i=0; i<N; ++i)
+			p += α[t][i] * β[t][i];
+		assert(p != 0);
+
+		for (int i=0; i<N; ++i)
+			γ[t][i] = α[t][i] * β[t][i] / p;
+	}
+
+	for (int t=0; t<T-1; ++t)
+	{
+		double p = 0;
+		for (int i=0; i<N; ++i)
+			for (int j=0; j<N; ++j)
+				p += α[t][i] * a[i][j] * b[j][o[t+1]] * β[t+1][j];
+		assert(p != 0);
+
+		for (int i=0; i<N; ++i)
+			for (int j=0; j<N; ++j)
+				ξ[t][i][j] = α[t][i] * a[i][j] * b[j][o[t+1]] * β[t+1][j] / p;
+	}
+
+	// 更新Π
+	for (int i=0; i<N; ++i)
+		π[i] = γ[0][i];
+
+	// 更新A
+	for (int i=0; i<N; ++i)
+	{
+		double p2 = 0;
+		for (int t=0; t<T-1; ++t)
+			p2 += γ[t][i];
+		assert(p2 != 0);
+
+		for (int j=0; j<N; ++j)
+		{
+			double p1 = 0;
+			for (int t=0; t<T-1; ++t)
+				p1 += ξ[t][i][j];
+			a[i][j] = p1 / p2;
+		}
+	}
+
+	// 更新B
+	for (int i=0; i<N; ++i)
+	{
+		double p[M] = {0}, p2 = 0;
+		for (int t=0; t<T; ++t)
+		{
+			p[o[t]] += γ[t][i];
+			p2 += γ[t][i];
+		}
+		assert(p2 != 0);
+
+		for (int k=0; k<M; ++k)
+			b[i][k] = p[k] / p2;
+	}
+}
+</textarea>
+<p class="t">延伸閱讀：取log</p>
+<p>寫程式時，機率都是小於一的數字，連乘之後數字越來越小。然而，計算機的浮點數，精確度是有極限的，當T很大時，連乘之後那就變成零了。所以實作時我們會取log，連乘也就變成了連加，避免連乘之後變成零的窘境。</p>
+<p>舉例來說，一條路徑的機率，取log之後，可以寫成：log( π<sub>q<sub>1</sub></sub> × a<sub>q<sub>1</sub></sub><sub>q<sub>2</sub></sub> × b<sub>q<sub>1</sub></sub>( o<sub>1</sub> ) × ...... ) = log( π<sub>q<sub>1</sub></sub> ) + log( a<sub>q<sub>1</sub></sub><sub>q<sub>2</sub></sub> ) +  log( b<sub>q<sub>1</sub></sub>( o<sub>1</sub> ) ) + ......。預先把ABΠ的每個數值取log即可。</p>
+<p>取log之後，處理decoding problem沒有什麼大問題，比較麻煩的是evaluation problem與learning problem，除了乘法運算還有加法運算。實數乘法化作了log加法，那麼實數加法怎麼辦呢？可以使用下列公式：</p>
+<pre>
+利用log(p)與log(q)，求出log(p+q)，一般讓底數等於10。b可以是任意數。
+
+if p ≥ q
+  log<sub>b </sub>(p + q)  = log p + log<sub>b </sub>(1 + b<sup>log<sub>b </sub>q - log<sub>b </sub>p</sup>)
+else
+  log<sub>b </sub>(p + q)  = log q + log<sub>b </sub>(1 + b<sup>log<sub>b </sub>p - log<sub>b </sub>q</sup>)
+</pre>
+<p>知名的隱藏馬可夫模型套件HTK是這麼實作的：</p>
+<textarea>
+#define LZERO  (-1.0E10) // log(0)
+#define LSMALL (-0.5E10) // log values < LSMALL are set to LZERO
+#define minLogExp -log(-LZERO) // ~=-23
+
+double LogAdd(double x, double y)
+{
+	double temp, diff, z;
+	if (x < y)
+	{
+		temp = x; x = y; y = temp;
+	}
+	diff = y-x;	// notice that diff <= 0
+	if (diff < minLogExp)	// if y' is far smaller than x'
+		return (x < LSMALL) ? LZERO : x;
+	else
+	{
+		z = exp(diff);
+		return x + log(1.0 + z);
+	}
+}
+</textarea>
+<p class="t">延伸閱讀：smoothing</p>
+<p>Learning Problem針對沒出現的觀察值，更新之後機率是零。往後，Evaluation Problem與Decoding Problem針對此觀察值，算得機率均是零。也就是說，一旦變成零，就無法恢復成非零了。</p>
+<p>更新為零，可以改成更新為一個很小但是不等於零的數字，記得維持機率總和等於一。</p>
+<p>只有離散版本HMM有此問題，稍後介紹的連續版本HMM就無此問題。</p>
+<p class="t">Pattern Recognition</p>
+<img src="HiddenMarkovModel13.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel13.png">
+<pre>
+   兩組調性不同的資料集
+   Data Set 1    Data Set 2
+1. ABBCABCAABC   BBBCCBC
+2. ABCABC        CCBABB
+3. ABCAABC       AACCBBB
+4. BBABCAB       BBABBAC
+5. BCAABCCAB     CCAABAB
+6. CACCABCA      BBBCCBAA
+7. CABCABCA      ABBBBABA
+8. CABCA         CCCCC
+9. CABCA         BBAAA
+</pre>
+<p>每一個資料集各自建立一個HMM，實施Training Problem訓練旗下所有資料，每筆資料輪流訓練一次，然後循環L次。如果不採輪流訓練，每筆資料都是連著訓練L次的話，HMM熟記了後面幾個，反而淡忘了前面幾個。</p>
+<textarea>
+const int N = 3, M = 3, T = 15, L = 20;
+
+struct HMM
+{
+	double π[N], a[N][N], b[N][M];
+	double forward(int* o, int T);
+	double backward(int* o, int T);
+	double decode(int* o, int T, int* q);
+	void learn(int* o, int T);
+} hmm[2];
+
+// 每個HMM可以共用的記憶體。
+double α[2][N], β[2][N];		// evaluation problem
+double δ[2][N]; int ψ[T][N];	// decoding problem
+double γ[T][N], ξ[T][N][N];		// learning problem
+
+void train(string dataset[2][9])
+{
+	for (int i=0; i<2; ++i)
+		for (int l=0; l<L; ++l)
+			for (int j=0; j<9; ++j)
+			{
+				// 把資料轉換成離散數值。最好可以預先轉換好。
+				int o[T];
+				for (int k=0; k<dataset[i][j].size(); ++k)
+					o[k] = dataset[i][j][k] - 'A';
+				hmm[i].learn(o, dataset[i][j].size());
+			}
+}
+</textarea>
+<p>如果每筆資料是不定期收到的、訓練好的HMM隨時要用於辨識，就無法輪流訓練。解決方式是記住之前的Training Problem表格，以比重求得這次Training Problem的平均值。</p>
+<pre>
+          1 × γ<sub>1</sub>(i) + n × γ<sub>1</sub><sup>(n)</sup>(i)
+<span style="text-decoration:overline">π</span><sub>i</sub><sup>(n+1)</sup> = ——————————————————————————
+                   1 + n
+
+           1 × Σ<sub>t=1~T-1</sub> [ ξ<sub>t</sub>(i,j) ] + n × Σ<sub>t=1~T-1</sub> [ ξ<sub>t</sub><sup>(n)</sup>(i,j) ]
+<span style="text-decoration:overline">a</span><sub>ij</sub><sup>(n+1)</sup> = ——————————————————————————————————————————————————————
+               1 × Σ<sub>t=1~T</sub> [ γ<sub>t</sub>(i) ] + n × Σ<sub>t=1~T</sub> [ γ<sub>t</sub><sup>(n)</sup>(i) ]
+
+             1 × Σ<sub>t=1~T, o<sub>t</sub>=k</sub> [ γ<sub>t</sub>(i) ] + n × Σ<sub>t=1~T, o<sub>t</sub>=k</sub> [ γ<sub>t</sub><sup>(n)</sup>(i) ]
+<span style="text-decoration:overline">b</span><sub>j</sub><sup>(n+1)</sup>(k) = ———————————————————————————————————————————————————————
+                  1 × Σ<sub>t=1~T</sub> [ γ<sub>t</sub>(i) ] + n × Σ<sub>t=1~T</sub> [ γ<sub>t</sub><sup>(n)</sup>(i) ]
+</pre>
+<p class="t">Pattern Recognition</p>
+<img src="HiddenMarkovModel14.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/HiddenMarkovModel14.png">
+<p>訓練好的HMM馬上可用於辨識。要辨識一筆資料，就窮舉每一個HMM，看看該筆資料最符合哪個HMM。所謂最符合，就是實施Evaluation Problem，取機率最大者，作為辨識結果。</p>
+<p>為了加速，通常改用Decoding Problem。取log的情況下，Evaluation Problem要處理對數相加，而Decoding Problem不必，因此Decoding Problem效率略勝一籌。</p>
+<p>經實驗觀察，採用Evaluation Problem與採用Decoding Problem的辨識結果幾乎相同。至於你信不信，我反正信了。</p>
+<textarea>
+int recognize(int* o, int T)
+{
+	int ans = -1;
+	double p = -1e9;
+	for (int i=0; i<2; ++i)
+	{
+		double pp = hmm[i].decode(o, T, q);
+		if (pp > p) p = pp, ans = i;
+	}
+	return ans;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Continuous Hidden Markov Model</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Guassian Mixture Model</p>
+<p>之前說，每個狀態都會噴出M種固定的值。然而現實生活中，觀察值通常是實數，也通常有誤差，不見得恰好就是這M種值。</p>
+<img src="GaussianFunction1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GaussianFunction1.png">
+<img src="ContinuousHMM1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ContinuousHMM1.png">
+<p>一個直覺的解決方案是假設誤差呈常態分布：以常態分布的平均值μ，代表正確的噴出數值；以常態分布的變異數σ<sup>2</sup>，控制誤差範圍。M個觀察值分別製作M個常態分布，標作N( v , μ<sub>1</sub> , σ<sub>1</sub><sup>2</sup> )到N( v , μ<sub>M</sub> , σ<sub>M</sub><sup>2</sup> )。</p>
+<img src="ContinuousHMM2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ContinuousHMM2.png">
+<p>狀態不再噴出k種值，而是有k種噴出管道。觀察值不再是固定的、離散的數值v<sub>1</sub>到v<sub>M</sub>，而是變動的、連續的數值v。</p>
+<p>使用第k個噴出管道的機率，仍標作b<sub>i</sub>( k )。在第k個噴出管道，噴出數值v的機率，是一個常態分布函數N( v , μ<sub>k</sub> , σ<sub>k</sub><sup>2</sup> )；v代入一個實際數值，就能計算其噴出機率。</p>
+<p>當各個常態分布的平均值很接近，或者變異數很大時，不同的噴出管道可能噴出相同數值。狀態s<sub>i</sub>噴出數值v的機率，M個噴出管道都必須累計，為Σ<sub>i=1~M</sub> [ b<sub>i</sub>( k ) × N( v , μ<sub>k</sub> , σ<sub>k</sub><sup>2</sup> ) ]。</p>
+<img src="ContinuousHMM3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ContinuousHMM3.png">
+<p>綜觀整個過程，是把M個常態分布以不同比重疊加起來，合成一個分布──此概念稱作高斯混合模型，可以應用在許多地方，連續版本的HMM便是一例。另外，通常會將b<sub>i</sub>( k )重新標作c<sub>ik</sub>，以呼應加權比重的概念。</p>
+<p>寫程式時，我們不會真的疊加起來，而是分別紀錄M個高斯混合模型的平均值和變異數。</p>
+<p class="t">每個狀態噴出不同的觀察值</p>
+<img src="ContinuousHMM4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ContinuousHMM4.png">
+<p>套用高斯混合模型，觀察值從原先的離散數值變成了連續數值。換個角度想，套用高斯混合模型，就能製造任何一種我們想要的連續分布。</p>
+<p>每個狀態可以使用不同平均值、不同變異數的常態分布，甚至可以使用不同數量的常態分布。狀態s<sub>i</sub>使用的常態分布，標作N( v , μ<sub>ik</sub> , σ<sub>ik</sub><sup>2</sup> )。</p>
+<p class="t">觀察值推廣到高維度</p>
+<p>觀察值可以從一個值推廣為一個向量。其實也就是每個維度分開處理罷了。</p>
+<img src="GaussianFunction2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/GaussianFunction2.png">
+<p>至於Learning Problem，則要額外更新常態分布的平均值、變異數、加權比重了：</p>
+<pre>
+　　　路徑第一步，穿過狀態s<sub>i</sub>。
+<span style="text-decoration:overline">π</span><sub>i</sub>  =  γ<sub>1</sub>(i)
+
+　　　分子是穿過邊a<sub>ij</sub>。分母是穿過狀態s<sub>i</sub>。
+       Σ<sub>t=1~T-1</sub> [ ξ<sub>t</sub>(i,j) ]
+<span style="text-decoration:overline">a</span><sub>ij</sub> = —————————————————————
+         Σ<sub>t=1~T</sub> [ γ<sub>t</sub>(i) ]
+
+　　　分子是穿過狀態s<sub>i</sub>、使用第k個噴出管道。分母是穿過狀態s<sub>i</sub>。
+          Σ<sub>t=1~T</sub> [ γ<sub>tk</sub>(i) ]
+<span style="text-decoration:overline">c</span><sub>ik</sub> = ————————————————————————
+       Σ<sub>t=1~T</sub> Σ<sub>k=1~M</sub> [ γ<sub>tk</sub>(i) ]
+
+　　　分子是穿過狀態s<sub>i</sub>、使用第k個噴出管道、噴出數值的平均值。
+       Σ<sub>t=1~T</sub> [ γ<sub>tk</sub>(i) ] * o<sub>t</sub>
+<span style="text-decoration:overline">μ</span><sub>ik</sub> = ————————————————————————
+          Σ<sub>t=1~T</sub> [ γ<sub>tk</sub>(i) ]
+
+　　　分子是穿過狀態s<sub>i</sub>、使用第k個噴出管道、噴出數值的共變異矩陣。
+       Σ<sub>t=1~T</sub> [ γ<sub>tk</sub>(i) ] * (o<sub>t</sub> - μ<sub>ik</sub>)(o<sub>t</sub> - μ<sub>ik</sub>)<sup>T</sup>
+<span style="text-decoration:overline">Σ</span><sub>ik</sub> = ——————————————————————————————————————————
+                  Σ<sub>t=1~T</sub> [ γ<sub>tk</sub>(i) ]
+</pre>
+<p>至此產生了連續版本的HMM，已經可以應付各種情況了！</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

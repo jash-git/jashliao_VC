@@ -1,0 +1,859 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - C/C++ Programming Language</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Bitwise Operation</p>
+</div><div class="c">
+<p class="t">Bitwise Operator</p>
+<p>歡迎來到二進位的世界。電腦資料都是以二進位儲存，想當然程式語言的變數也都是以二進位儲存。在C/C++當中有幾個位元運算子：<< SHIFT LEFT、>> SHIFT RIGHT、& AND、| OR、^ XOR、~ NOT，可以對變數進行位元運算。接下來要介紹位元運算的一些用途。</p>
+<p class="e">UVa 10469 10264</p>
+<p class="t"><< SHIFT LEFT<br>>> SHIFT RIGHT</p>
+<p>這兩個運算子的功能主要是移動一個變數中的所有位元，位元向左/向右移動之後，最高位/最低位的位元會消失，最低位/最高位的位元補0：</p>
+<pre>
+5 << 1 = 10	// 00101 的全部位元向左移動一位數變成 01010。
+5 << 2 = 20	// 00101 的全部位元向左移動兩位數變成 10100。
+5 >> 1 = 2	// 00101 的全部位元向右移動一位數變成 00010。
+5 >> 2 = 1	// 00101 的全部位元向右移動一位數變成 00001。
+</pre>
+<p>在十進位當中，當全部位數向左移動一位時，數值大小會變成原來的十倍，向左移動兩位時，會變成原來的百倍。這種情形在二進位也是成立的，當全部位元向左移動一位時，會變成原來的兩倍，向左移動兩位時，會變成原來的四倍。至於往右移動也是類似道理，變成了除法而已。</p>
+<p>由於電腦進行位元運算比乘法、除法運算快上許多，所以有很多專業的程式設計師，會利用位元運算來取代乘法、除法運算。優點是程式執行效率增加，缺點是程式碼可讀性變低：</p>
+<textarea>
+int n = 5;
+n = n >> 1;	// 即是 n = n / 2 之意。
+/* 該式子也可寫成 n >>= 1 或 n /= 2。 */
+</textarea>
+<p class="t">& AND</p>
+<pre>
+0 & 0 = 0
+0 & 1 = 0
+1 & 0 = 0
+1 & 1 = 1
+</pre>
+<p>&的功能是將兩個變數對應的位元進行AND邏輯運算，然後產生新變數。</p>
+<pre>
+   00000000000000000000000001110100 -> 116
+ & 00000000000000000000000000101001 -> 41
+ ----------------------------------
+   00000000000000000000000000100000 -> 32
+</pre>
+<p>&的特色，就是可以判斷出位元是不是1。例如我們想要數一個變數有幾個位元是1：</p>
+<textarea>
+int count_bit_1(int n)
+{
+	// 由右往左看n的每一個位元。
+	int c = 0;
+	for (int i=0; i<32; ++i)	// int變數有32個位元
+		if (n & (1 << i))
+			c++;
+	return c;
+}
+</textarea>
+<textarea>
+int count_bit_1(int n)
+{
+	// 一樣是由右往左，但是每次都刪掉n的最左邊位元。
+	int c = 0;
+	for (; n; n>>=1)
+		if (n & 1)
+			c++;
+	return c;
+}
+</textarea>
+<p class="t">| OR</p>
+<pre>
+0 | 0 = 0
+0 | 1 = 1
+1 | 0 = 1
+1 | 1 = 1
+</pre>
+<p>|的功能是將兩個變數對應的位元進行OR邏輯運算，然後產生新變數。</p>
+<pre>
+   00000000000000000000000001110100 -> 116
+ | 00000000000000000000000000101001 -> 41
+ ----------------------------------
+   00000000000000000000000001111101 -> 125
+</pre>
+<p>|的特色，就是把位元強制標記成1。例如我們想要把五位數標成1：</p>
+<textarea>
+int mark_5th_bit(int n)
+{
+	return n | (1 << 4);
+}
+</textarea>
+<p class="t">^ XOR</p>
+<pre>
+0 ^ 0 = 0
+0 ^ 1 = 1
+1 ^ 0 = 1
+1 ^ 1 = 0
+</pre>
+<p>^的功能是將兩個變數對應的位元進行XOR邏輯運算，然後產生新變數。</p>
+<pre>
+   00000000000000000000000001110100 -> 116
+ ^ 00000000000000000000000000101001 -> 41
+ ----------------------------------
+   00000000000000000000000001011101 -> 93
+</pre>
+<p>^的特色，就是把位元的0和1顛倒。例如我們想要顛倒第五位數：</p>
+<textarea>
+int reverse_5th_bit(int n)
+{
+	return n ^ (1 << 4);
+}
+</textarea>
+<p class="t">~ NOT</p>
+<pre>
+~ 0 = 1
+~ 1 = 0
+</pre>
+<p>~的功能是顛倒一個變數每一個位元的0和1。</p>
+<pre>
+ ~ 00000000000000000000000000000011 -> 3
+ ----------------------------------
+   11111111111111111111111111111100 -> -4
+</pre>
+<p class="t">延伸閱讀：unsigned</p>
+<p>實施位元運算時，使用unsigned變數是最理想的。</p>
+<p>unsigned變數與singed變數實施位元運算，其實沒有太大差異。唯一的差異之處，在於位移運算。</p>
+<pre>
+當signed變數為負值，實施左移運算：
+Undefined Behavior
+
+當signed變數為負值，實施右移運算，最高位補零還是補一：
+Implementation-defined Behavior
+</pre>
+<p>當用到最高位元、也用到<<和>>的時候，必須改用unsigned int、unsigned long long int等變數型態，才會得到正確結果。</p>
+<p class="t">延伸閱讀：unsigned的陷阱</p>
+<p>勿將unsigned與signed變數一起進行計算，非常容易出現意想不到的事情。例如拿unsigned與signed變數進行加減法、比大小；例如把unsigned變數傳入函數，但是函數參數卻是signed變數。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Bitwise Trick</p>
+</div><div class="c">
+<p class="t">Bitwise Trick</p>
+<p><a href="javascript:if(confirm('http://kuoe0.ch/1436/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://kuoe0.ch/1436/'" tppabs="http://kuoe0.ch/1436/">http://kuoe0.ch/1436/</a></p>
+<p><a href="javascript:if(confirm('http://kuoe0.ch/1503/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://kuoe0.ch/1503/'" tppabs="http://kuoe0.ch/1503/">http://kuoe0.ch/1503/</a></p>
+<p><a href="javascript:if(confirm('http://www.aggregate.org/MAGIC/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.aggregate.org/MAGIC/'" tppabs="http://www.aggregate.org/MAGIC/">http://www.aggregate.org/MAGIC/</a></p>
+<p><a href="javascript:if(confirm('http://graphics.stanford.edu/~seander/bithacks.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://graphics.stanford.edu/~seander/bithacks.html'" tppabs="http://graphics.stanford.edu/~seander/bithacks.html">http://graphics.stanford.edu/~seander/bithacks.html</a></p>
+<p>實作時要特別小心運算子優先次序。沒有特地括括號的情況下，次序高的先結合。</p>
+<p class="t">gcc內建函式</p>
+<p><a href="javascript:if(confirm('http://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html'" tppabs="http://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html">http://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html</a></p>
+<pre>
+__builtin_clz        count leading 0. find leading 1. log2(n).
+__builtin_ctz        count tailing 0. divide by 2^n.
+__builtin_popcount   count bit 1.
+</pre>
+<p class="t">交換兩個int變數</p>
+<textarea>
+// 注意：比直接交換還要慢。
+void swap(int& x, int& y)
+{
+	x = x ^ y;
+	y = x ^ y;
+	x = x ^ y;
+}
+
+// 下面的寫法有暫存變數存取順序問題。
+// Unspecified Behavior，不同的編譯器可能產生不同結果。
+// 千萬不要如此取巧。
+void swap(int& x, int& y)
+{
+	x ^= y ^= x ^= y;
+}
+</textarea>
+<p class="t">計算有幾個位元是1（僅適用32位元無號整數）</p>
+<textarea>
+// __builtin_popcount
+unsigned int count_bits(unsigned int x)
+{
+	x = (x & 0x55555555) + ((x & 0xaaaaaaaa) >> 1);
+	x = (x & 0x33333333) + ((x & 0xcccccccc) >> 2);
+	x = (x & 0x0f0f0f0f) + ((x & 0xf0f0f0f0) >> 4);
+	x = (x & 0x00ff00ff) + ((x & 0xff00ff00) >> 8);
+	x = (x & 0x0000ffff) + ((x & 0xffff0000) >> 16);
+	return x;
+}
+</textarea>
+<p class="t">顛倒位元順序（僅適用32位元無號整數）</p>
+<textarea>
+unsigned int reverse_bits(unsigned int x)
+{
+	x = ((x >> 1) & 0x55555555) | ((x << 1) & 0xaaaaaaaa);
+	x = ((x >> 2) & 0x33333333) | ((x << 2) & 0xcccccccc);
+	x = ((x >> 4) & 0x0f0f0f0f) | ((x << 4) & 0xf0f0f0f0);
+	x = ((x >> 8) & 0x00ff00ff) | ((x << 8) & 0xff00ff00);
+	x = ((x >> 16) & 0x0000ffff) | ((x << 16) & 0xffff0000);
+	return x;
+}
+</textarea>
+<p class="t">檢查缺少的正整數</p>
+<p>陣列裡放入1到10的正整數，最後發現少了一個，請找出少了哪一個。</p>
+<p>使用Counting Sort雖然時間複雜度低，但是空間複雜度高。</p>
+<textarea>
+int array[9] = {2, 3, 5, 9, 4, 6, 10, 8, 1};
+
+int find_lack_number()
+{
+	int n = 0;
+
+	// 1到10全部xor起來
+	for (int i=0; i<10; ++i) n ^= i;
+
+	// 陣列裡的數字全部xor起來，與先前結果做xor。
+	for (int i=0; i<9; ++i) n ^= array[i];
+
+	return n;
+}
+</textarea>
+<p class="t">8 Queen Problem（八皇后問題）</p>
+<p><a href="javascript:if(confirm('http://www.matrix67.com/blog/archives/266  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.matrix67.com/blog/archives/266'" tppabs="http://www.matrix67.com/blog/archives/266">http://www.matrix67.com/blog/archives/266</a></p>
+<p>使用回溯法。變數代替陣列，位元代替陣列元素。</p>
+<textarea>
+const int N = 8;				// 皇后數目
+const int mask = (1 << N) - 1;	// 弄出8個1
+int ans = 0;					// 合理的排列數目
+
+void eight_queen()
+{
+	backtrack(0, 0, 0);	// 以橫線為單位遞迴
+}
+
+// 皇后已占據的直線們、左斜線們、右斜線們。占據為1。
+void backtrack(int col, int ld, int rd)
+{
+	if (col == mask) {ans++; return;}	// 找到一組解
+
+	int pos = mask & ~(col | ld | rd);	// 可以放皇后的空位。空位為1。
+
+	while (pos /*!= 0*/)	// 依序嘗試各個空位。
+	{
+		int p = pos & -pos;	// 最低位的1。一個可以放皇后的空位。
+		pos = pos - p;		// 該空位消失，待會放皇后。
+
+		// 放上皇后，算好皇后占據的位置，然後遞迴至下一條橫線。
+		backtrack(col+p, (ld+p)<<1, (rd+p)>>1);
+	}
+}
+</textarea>
+<p class="e">UVa 11195</p>
+<p class="t">Nim（捻）</p>
+<p>這是兩個人玩的小遊戲。桌面上有N堆石子，兩個人輪流從桌上取走石子，每人每次只能取其中一堆石子，至少取一顆，至多搬走整堆。最後淨空桌面的人勝利，請判斷誰會勝利。</p>
+<p>這個問題的解答，跟每堆石子的數量多寡有關。神奇的是，竟然跟二進位表示法有很大關連：
+<a href="javascript:if(confirm('http://oddest.nc.hcc.edu.tw/math152.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://oddest.nc.hcc.edu.tw/math152.htm'" tppabs="http://oddest.nc.hcc.edu.tw/math152.htm" class="l">http://oddest.nc.hcc.edu.tw/math152.htm</a>。</p>
+<textarea>
+int stone[10] = {2, 3, 4, 6, 6, 2, 3, 4, 8, 9};
+
+void nim()
+{
+	int x = 0;
+	for (int i=0; i<10; ++i)
+		x ^= stone[i];
+
+	if (x)
+		cout << "先手贏";
+	else
+		cout << "後手贏";
+}
+</textarea>
+<p class="e">UVa 10165</p>
+<p class="t">Josephus Problem</p>
+<p>模數為二的時候，答案為：去除n的最高位元，然後整體左移一位，最後加上一。</p>
+<p class="t">Fast Inverse Square Root（平方根倒數）</p>
+<p>原理是牛頓法，避開了開根號和除法運算，節省了很多計算時間。除此之外還使用了很多神奇的技巧，包括電腦結構和程式語言的冷知識。</p>
+<p>3D繪圖經常要計算平方根倒數。相傳是原作者在開發電腦遊戲「雷神之鎚」時，所發明的方法。</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Fast_inverse_square_root  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Fast_inverse_square_root'" tppabs="http://en.wikipedia.org/wiki/Fast_inverse_square_root">http://en.wikipedia.org/wiki/Fast_inverse_square_root</p>
+<p><a href="javascript:if(confirm('http://www.lomont.org/Math/Papers/2003/InvSqrt.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lomont.org/Math/Papers/2003/InvSqrt.pdf'" tppabs="http://www.lomont.org/Math/Papers/2003/InvSqrt.pdf">http://www.lomont.org/Math/Papers/2003/InvSqrt.pdf</a></p>
+<textarea>
+// 1.0 / sqrt(x)
+float InvSqrt(float x)
+{
+	float xhalf = 0.5f * x;
+	int i = *(int*)&x;
+	i = 0x5f3759df - (i >> 1);
+	x = *(float*)&i;
+	x = x * (1.5f - xhalf * x * x);
+	return x;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Pointer</p>
+</div><div class="c">
+<p class="t">前言</p>
+<p>我自己有一套簡單的解讀方式，儘管這不一定是C/C++設計者的原意，但是應該能讓大家確實的掌握指標的概念。</p>
+<p class="t">記憶體與位址</p>
+<p>談指標之前，必須簡述一下記憶體與位址的概念。我們可以把記憶體簡單地想成一條很長很長的0與1字串，總長度是固定的。</p>
+<p>接著我們要替這條長長的字串訂立位址，就像是替一條公路設立里程碑。一開始是位址是零，然後每八個字，就讓位址增加一單位。</p>
+<p>註：早期的CPU一次可讀八個字，所以設定八個字為一單位。而現在的CPU一次可讀三十二字，更新穎的CPU一次可讀六十四字，但是都仍然維持八個字為一單位。</p>
+<img src="Pointer1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer1.png">
+<p>位址通常都會用16進位表示，數值開頭再加個0x，表示是16進位數字。</p>
+<img src="Pointer2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer2.png">
+<p class="t">變數</p>
+<p>程式當中所有宣告的變數均會存放到記憶體當中的某一段，變數的數值會轉換成二進位，以0與1字串形式儲存。</p>
+<p>編譯器和作業系統會幫我們安排適當的地點，讓這些變數不會重疊在一起。另外，如果是宣告陣列，在記憶體當中一定是連續的一段，中間不會被隔開。</p>
+<textarea>
+int a    = 10;			// 4 bytes = 32 bits
+int b[3] = {5, 6, 7};	// 12 bytes，陣列會連續
+char c   = 'a';			// 1 byte
+char d;					// 1 byte
+</textarea>
+<img src="Pointer3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer3.png">
+<p>沒有變數的地方，我們不能隨意取值和設值，否則會讓程式立刻中止。</p>
+<p>至於有變數但是沒有設定初始值的地方，無法預測是0或1，我們不能隨意取值，否則會產生不可預期的結果，甚至讓程式當掉。</p>
+<img src="Pointer4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer4.png">
+<p>想要取得變數儲存的數值，只要直接用變數名稱就行了。</p>
+<textarea>
+int a = 5;
+cout << a;				// 印出5
+</textarea>
+<img src="Pointer5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer5.png">
+<p>想要獲得變數所在的位址，只要在變數名稱前面加&，就能算出變數的位址。</p>
+<textarea>
+int a;
+cout << &a;				// 印出變數的位址，是看不懂的亂碼。
+cout << (int)&a;		// 轉型成int，這樣才會印成整數數字。
+cout << hex << int(&a);	// 印成十六進位數字。
+cout << (void*)&a;		// 正式的寫法是轉換成void*型態，
+						// 並且自動印成十六進位數字。
+printf("%p", &a);		// C語言則是使用%p。
+</textarea>
+<p class="t">儲存位址的變數型態</p>
+<p>我們假設C/C++有一種變數型態叫做address，此變數型態儲存的數值，是一個位址。</p>
+<textarea>
+// 假設位址是32位元
+address a = 0x00000010;
+address b = 0x00000014;
+address c;
+address d[2] = {0x00000010, 0x00000014};
+</textarea>
+<textarea>
+// 也可以改用十進位
+address a = 16;
+address b = 20;
+address c;
+address d[2] = {16, 20};
+</textarea>
+<img src="Pointer6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer6.png">
+<p>C/C++的指標，概念上等同於address變數型態。無論是哪一種型態的指標，儲存的數值，都是一個位址，沒有差別。</p>
+<textarea>
+// 直接把int*連帶星號看作是一種變數型態
+// 設值時要先轉型，不然會變成complie error
+int* a		= (int*) 0x00000010;
+char* b		= (char*) 0x00000014;
+char* c;
+float* d[2]	= {(float*) 0x00000010, (float*) 0x00000014};
+double* e[2][2];
+</textarea>
+<textarea>
+// 也可以改用十進位
+int* a		= (int*) 16;
+char* b		= (char*) 20;
+char* c;
+float* d[2] = {(float*) 16, (float*) 20};
+double* e[2][2];
+</textarea>
+<img src="Pointer7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer7.png">
+<p>現在我們可以把任何一個變數的位址，儲存在指標之中了。這時候指標的型態發揮用處了：編譯器會判斷「指標型態」與「變數型態多一個*」兩者一不一致，當不一致時會告知我們錯誤訊息。</p>
+<textarea>
+int x;
+
+int* a;
+a = &x;	// 一個位址變數a，設定其值是一個位址。
+		// x的型態是int，用&得到位址之後，就多一個*，成為int*。
+		// a的型態是int*。兩者一致。
+
+cout << (int)a;	// 印出a裡面的數值，該數值是x之位址
+</textarea>
+<img src="Pointer8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer8.png">
+<textarea>
+char y;
+
+int* a;
+// a = &y;		// compile error ! 型態不一致
+a = (int*)&y;	// 轉型過後就可以了
+
+cout << (int)a;
+</textarea>
+<p>儲存位址的變數，本身也是一個變數呀，當然它也有位址了。我們也可以把這個位址，用另一個位址變數存起來。</p>
+<textarea>
+// 虛擬碼
+address a;
+address b	= &a;
+
+// C/C++實際上卻得這樣做，因為要滿足型態檢查的規則。
+int* a;
+int** b = &a;	// 為了滿足型態檢查的規則，所以只好把int*多加一個*
+				// 發展出一個int**的變數型態。
+
+char*** c;
+char**** d = &c;	// 同樣道理
+</textarea>
+<img src="Pointer9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer9.png">
+<p class="t">位址進行比大小運算</p>
+<p>我們可以讓兩個位址比大小，比較原則就跟一般的整數比大小一樣。</p>
+<textarea>
+int* a		= (int*) 0x00000010;
+int* b		= (int*) 0x00000014;
+if (a < b) cout << "a < b";
+if (a == b) cout << "a == b";
+if (a >= b) cout << "a >= b";
+</textarea>
+<p class="t">位址進行減法運算</p>
+<p>我們可以讓兩個位址相減，相減的結果是一個int變數。</p>
+<textarea>
+char* a		= (char*) 0x000000A0;
+char* b		= (char*) 0x00000001;
+int c = a - b;
+cout << c;
+</textarea>
+<p>註：我們無法直接讓兩個位址相加，除非自行將位址轉型成整數。</p>
+<p class="t">位址進行加整數、減整數運算</p>
+<p>我們可以讓位址跟整數相加，讓位址減掉整數（但是不能讓整數減掉位址），以及使用加加與減減運算。</p>
+<p>這時候指標的型態總算是有用處了，C/C++很聰明，會根據「指標型態少一個*」的型態所占的記憶體大小，來決定加與減的基本倍率。</p>
+<textarea>
+int* a		= (int*) 0x00000000;
+a = a + 1;	// int是4 byte，C/C++會幫你把倍率弄成四。
+cout << a;	// 0x00000004
+
+char* b		= (char*) 0x00000000;
+b = b + 1;	// char是1 byte，C/C++會幫你把倍率弄成一。
+cout << b;	// 0x00000001
+
+int*** c	= (int***) 0x00000000;
+c = c + 1;	// int**是位址變數是4 byte，C/C++會幫你把倍率弄成四。
+cout << c;	// 0x00000004
+
+int* d		= (int*) 0x00000000;
+d++; --d; ++d;
+cout << d;	// 0x00000004
+</textarea>
+<p class="t">位址進行反運算</p>
+<p>我們可讓位址進行NOT運算，規則與一般整數進行NOT運算一樣，結果是一個int變數。</p>
+<textarea>
+int* a		= (int*) 0x00000010;
+int* b		= (int*) 0x00000000;
+
+int x;
+
+x = !a;
+cout << x;	// 印出整數0
+x = !b;
+cout << x;	// 印出整數1
+</textarea>
+<p class="t">位址進行解參考運算</p>
+<p>我們可以從一個位址開始，抓一段連續的記憶體，當作一個變數。只要在一個位址前面加上*就行了。（這個*與宣告變數時用到的*意義不同，也與乘法運算的*意義不同。）</p>
+<p>這個時候指標型態再度發揮功用，C/C++會根據「指標型態少一個*」的型態，從該位址開始，截取該型態大小的記憶體當作一個變數，並自動設定好變數型態。</p>
+<textarea>
+cout << *((char)0x00000010);
+// compile error，char沒辦法在少掉一個*了。
+
+cout << *((char*)0x00000010);
+// 從0x00000010開始抓1 byte當作變數，變數型態是char*少一個*，也就是char。
+
+cout << *((char***)0x00000010);
+// 從0x00000010開始抓4 byte當作變數，變數型態是char***少一個*，也就是char**。
+
+// 註：沒有變數在0x00000010那裡的話，會產生不可預期結果。程式可能會當掉。
+</textarea>
+<img src="Pointer10.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer10.png">
+<textarea>
+int* a		= (int*) 0x00000010;
+cout << *a;	// int是4 byte，C/C++會從0x00000010抓4 byte。
+			// 沒有變數在那裡的話，會產生不可預期結果。程式可能會當掉。
+
+char* b		= (char*) 0x00000010;
+cout << *a;	// char是1 byte，C/C++會從0x00000010抓1 byte。
+			// 沒有變數在那裡的話，會產生不可預期結果。程式可能會當掉。
+int x = 7;
+int* c		= &x;
+cout << c;	// 印出x的位址
+cout << *c;	// 印出數字7，實際上有變數在那裡，一定抓得到數值。
+
+int* d		= &x;
+*d = 3;		// 把那塊記憶體設值為3
+cout << d;	// 印出x的位址
+cout << *d;	// 印出數字3
+</textarea>
+<img src="Pointer11.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer11.png">
+<p class="t">重點回顧</p>
+<pre>
+1. 在變數前面加&，就能得到變數所在位址。變數型態多一個*。
+2. 不管是哪種指標，其實都是儲存位址的變數型態。
+3. 位址的運算（指標的運算）
+	1. 設值運算（assign）：=
+	2. 比較運算（compare）：< > == >= <= !=
+	3. 減法運算（subtract）：-
+	4. 加整數、減整數：+ - 前++ 後++ 前-- 後--。不能整數減位址。
+	5. 反運算（not）：前面加!
+	6. 解參考（dereference）：前面加*
+	7. 參考（reference）：前面加&。存位址的變數也是個變數，既是變數就有位址。
+	8. 索引（index）: []，請見下面介紹。
+	其他運算，必須自行轉型成整數後，才有辦法算。
+4. 編譯器會做型態檢查，參考與解參考時，會拿「指標型態少一個*」的型態做判斷。
+</pre>
+<p class="t">附錄：Endianness</p>
+<p>下面的程式碼的執行結果，跟0與1在記憶體內排放的順序很有關係，看你使用的電腦系統是使用Big-Endian還是Little-Endian，印出來的結果會不一樣。</p>
+<textarea>
+int x = 7;
+
+char* a = (char*)&x;
+cout << *a;	// 用Little-Endian的電腦系統，結果是7
+			// 用Big-Endian的電腦系統，結果是0
+</textarea>
+<img src="Pointer12.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer12.png">
+<p>Endianness的詳細介紹：<a href="javascript:if(confirm('http://libai.math.ncu.edu.tw/bcc16/pool/1.33.shtml  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://libai.math.ncu.edu.tw/bcc16/pool/1.33.shtml'" tppabs="http://libai.math.ncu.edu.tw/bcc16/pool/1.33.shtml" class="l">http://libai.math.ncu.edu.tw/bcc16/pool/1.33.shtml</a>。</p>
+<p>註：一般家用電腦都是採用Little-Endian。這裡所畫的圖都是Big-Endian，是為了讓各位比較容易理解。</p>
+<p class="t">附錄：memset</p>
+<p>我們都知道C的標準函式庫有一個函式叫做memset，不管要被設值的資料是什麼型態，都是以1 byte為單位來設值。寫成程式碼大概是這樣：</p>
+<textarea>
+void memset(void* array, char value, int size)
+{
+    char* a = array;
+
+    for (int i = 0; i < size; i++)
+        *(a + i) = value;
+}
+</textarea>
+<img src="Pointer13.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer13.png">
+<p class="t">附錄：void*</p>
+<p>C語言有一種特殊的指標是void*。其實他也是儲存一個位址，唯一的差別是它不能進行解參考。C++則已經捨棄亦沒有必要使用void*。</p>
+<textarea>
+void* a = (void*) 0x00000010;
+*a;	// compiler error，型態檢查不會過！
+</textarea>
+<p class="t">附錄：同一行宣告許多指標</p>
+<p>如果想在同一行宣告許多指標，則從第二個變數名稱開始，都要額外加上星號才行。這是一個不太直覺的規定。既然古人發明C時就這樣規定，我們只得依從。</p>
+<textarea>
+int* a, b;	// 以我們的解讀，這樣可以宣告兩個指標，
+			// 不過這是錯誤的方式。
+			// 這被規定成:宣告一個指標和一個int變數。
+
+int* a, *b;	// 於是我們變成要這樣寫...
+
+typedef int* int_star;	// 或是利用typedef關鍵字，自訂一個型態名稱...
+int_star a, b;
+</textarea>
+<p class="t">附錄：指標的指標的指標，解參考再解參考再解參考，取位址。</p>
+<p>各位讀過上面文章之後，應該可以輕易弄清楚這些事情背後的原理，而不是去背記*和&可以相互抵銷這種東西。</p>
+<p>註：有些面試主考官最喜歡問這樣的問題，好似懂了這些東西就是會寫程式。這個問題不是在考驗你會不會寫程式，這是在考驗你眼睛好不好。</p>
+<img src="Pointer14.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer14.png">
+<textarea>
+int x = 1;
+int* a = &x;
+int** b = &a;
+cout << &x;
+cout << &a;
+cout << &b;
+cout << **b;
+cout << *a;
+cout << *b;
+cout << *&x;
+cout << *&&x;	// &只能加在變數名稱前面，左邊的&顯然不是這樣。
+cout << **&&x;	// &只能加在變數名稱前面，左邊的&顯然不是這樣。
+cout << **&a;
+cout << ***&b;
+</textarea>
+<p class="t">附錄：動態記憶體</p>
+<p>宣告動態記憶體，由於實用性與技術上的考量，編譯器沒辦法直接給個變數名字，所以只好給變數的位址，湊合著用。</p>
+<textarea>
+int* a = new int;
+int* b = new int[5];
+int** c = new int*;
+
+*a = 0;			// 挺麻煩的
+*b = 1;
+*(b + 1) = 2;	// 超麻煩的
+</textarea>
+<img src="Pointer15.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Pointer15.png">
+<p class="t">位址加整數、減整數後，進行解參考運算</p>
+<p>a[x]這個語法，表面上看起來是得到a陣列第x格。事實上[]的意思是「指標加減整數後，進行解參考運算」，a[x]其實是*(a+x)的意義，a和x其中之一為整數、另外之一為位址變數。會有這種語法是因為易讀、方便。</p>
+<textarea>
+int* a = new int[5];	// a是一個儲存位址的變數
+
+*a = 8;			// 取陣列第0格，本來必須這樣寫。
+a[0] = 8;		// 其實就是 *(a + 0) = 8;，與上一行結果相同。
+0[a] = 8;		// 其實就是 *(0 + a) = 8;，與上一行結果相同。
+
+*(a+1) = 7;		// 取陣列第1格，本來必須這樣寫。
+a[1] = 7;		// 其實就是 *(a + 1) = 7;，與上一行結果相同。
+1[a] = 7;		// 其實就是 *(1 + a) = 7;，與上一行結果相同。
+
+int* b;
+
+b = &(a[1]);	// 得到陣列第1格的位址
+b = &(*(a+1));	// 與上一行結果相同
+
+*(b-1) = 9;		// 取陣列第0格。
+b[-1] = 9;		// 其實就是 *(b + -1) = 9;，與上一行結果相同。
+(-1)[b] = 9;	// 其實就是 *(-1 + b) = 9;，與上一行結果相同。
+
+-1[b];			// 會變成 -*(1 + b);，最後才取負值，
+				// 而不是 *(-1 + b);，要小心。
+-b[1];			// 與上一行結果相同。
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Array</p>
+</div><div class="c">
+<p class="t">陣列變數型態</p>
+<p>陣列是一種變數型態，要宣告一個陣列變數並不困難。</p>
+<textarea>
+int a[5];		// a是一個陣列變數，型態是int[5]。
+				// a是常數，不能更動其值。
+int b[3][2];	// b是一個陣列變數，型態是int[3][2]。
+				// b是常數，不能更動其值。
+
+int[5] a;		// 不能這樣寫。
+int[3][2] b;	// 不能這樣寫。
+</textarea>
+<p>C/C++宣告陣列變數的語法非常不直覺，造就許多亂象。既然事實已經無法改變，也只能接受它了。</p>
+<p>比較特別的是，一般的變數我們都能知道變數裡所存放的值，只要使用變數的名稱就能得到變數值。然而我們無法得知陣列變數裡所存放的值，事實上我們也不需要用到此值。</p>
+<p class="t">陣列變數的指標</p>
+<p>陣列變數既然是一個變數，當然也擁有記憶體位址了。同樣地，使用&就可以取得記憶體位址。</p>
+<textarea>
+int a[5];
+int (*pa)[5] = &a;
+// 宣告一個位址變數pa，儲存a所在的位址。
+// 變數型態是int[5]加一個*，寫成int(*)[5]。
+
+int b[3][2];
+int (*pb)[3][2] = &b;
+// 宣告一個位址變數pb，儲存b所在的位址。
+// 變數型態是int[3][2]加一個*，寫成int(*)[3][2]。
+</textarea>
+<p class="t">陣列變數會自動改變變數型態</p>
+<p><a href="javascript:if(confirm('http://c-faq.com/aryptr/aryptrequiv.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://c-faq.com/aryptr/aryptrequiv.html'" tppabs="http://c-faq.com/aryptr/aryptrequiv.html">http://c-faq.com/aryptr/aryptrequiv.html</a></p>
+<p>使用陣列變數時，編譯器會自動幫忙把陣列變數改變成另一種型態的變數，並且設定其數值為陣列第零格所在的記憶體位址。</p>
+<textarea>
+int a[5];		// 宣告一個陣列變數a，型態是int[5]。
+cout << a;		// 編譯器將a改變成型態為int*的變數，其值為&(a[0])。
+
+int b[3][2];	// 宣告一個陣列變數b，型態是int[3][2]。
+cout << b;		// 編譯器將b改變成型態為int(*)[2]的變數，其值為&(b[0])。
+</textarea>
+<p>只有三種情況，編譯器會保留陣列變數的原本模樣。</p>
+<textarea>
+int a[5];
+
+sizeof(a);			// 得到a陣列的記憶體使用量。
+cout << sizeof(a);	// 印出 4 x 5 = 20。
+
+&a;					// 得到陣列變數所在的記憶體位址。
+cout << (void*)&a;	// 印出a所在的記憶體位址。
+
+char s[5] = "abcd";	// 用string literal初始化陣列變數。
+					// "abcd"的型態是陣列，不會被轉換成指標。
+</textarea>
+<p>搞得這麼複雜，是因為編譯器想盡辦法讓我們不能更動陣列變數儲存的數值。畢竟陣列是用來規劃大量變數的儲存位置，要是隨便更動陣列變數的話，牽一髮動全身，記憶體就大亂了。</p>
+<p>另一方面，改變成指標型態之後，要存取陣列元素就方便多了。請參考前面Pointer章節提到的各種運算。</p>
+<p class="t">存取陣列元素</p>
+<textarea>
+int a[5];	// 宣告一個陣列變數a，型態是int[5]。
+
+// 注意到以下的a通通被編譯器改變成型態為int*的變數，其值為&(a[0])。
+
+*a = 8;		// 取陣列第0格，本來必須這樣寫。
+a[0] = 8;	// 其實就是 *(a + 0) = 8;，與上一行結果相同。
+0[a] = 8;	// 其實就是 *(0 + a) = 8;，與上一行結果相同。
+
+*(a+1) = 7;	// 取陣列第1格，本來必須這樣寫。
+a[1] = 7;	// 其實就是 *(a + 1) = 7;，與上一行結果相同。
+1[a] = 7;	// 其實就是 *(1 + a) = 7;，與上一行結果相同。
+</textarea>
+<p class="t">初始化陣列變數、初始化陣列元素</p>
+<p>我們不能更動、也看不到陣列變數儲存的數值！只有編譯器和作業系統有權力初始化陣列變數，而我們只能初始化陣列元素。</p>
+<textarea>
+int x;		// 宣告一個變數。
+int x = 5;	// 宣告並且初始化一個變數。
+int x(5);	// 宣告並且用小括號初始化一個變數。
+
+int a[5];				// 宣告一個陣列變數，
+int a[5] = 0x00000014;	// 無法初始化陣列變數！compile error
+int a[5](0x00000014);	// 無法初始化陣列變數！compile error
+						// 況且陣列變數儲存的根本就不是記憶體位址！
+</textarea>
+<textarea>
+int a[5] = {3, 4, 5, 1, 2};
+// 宣告一個陣列變數a，型態是int[5]。
+// 並且用大括號初始化陣列元素。
+
+int a[] = {3, 4, 5, 1, 2};
+// 讓編譯器幫忙數有多少個元素，
+// 讓編譯器幫忙決定變數型態。
+// 型態是int[5]。
+
+int a[5] = {3, 4};
+// 宣告一個陣列變數a，型態是int[5]。
+// 並且用大括號初始化前面兩個陣列元素。
+// 編譯器會幫忙初始化後面三個陣列元素為零。
+</textarea>
+<p>附帶一提，在新版本的C/C++當中，struct、vector也都可以使用大括號初始化元素，相當方便。這就留給讀者自行研究吧。</p>
+<p class="t">陣列元素是字元（也就是字串）</p>
+<p>字串是一個char陣列。</p>
+<textarea>
+// 宣告一個陣列變數s，型態是char[5]。
+char s[5] = {'a', 'b', 'c', 'd', '\0'};
+char s[] = {'a', 'b', 'c', 'd', '\0'};
+</textarea>
+<p>前面提到，陣列變數會自動改變變數型態。凡是使用char[]型態的變數時，編譯器一樣會把變數型態改變為char*。</p>
+<p>另外一定要提的是，C++ I/O遇到char*變數時，會雞婆地處理後續字元；而不是當作一個普通的記憶體位址。</p>
+<textarea>
+char s[5] = {'a', 'b', 'c', 'd', '\0'};
+
+char* t = s;	// 宣告一個變數，型態是char*。
+				// 注意到s會被編譯器改變成型態為char*的變數，
+				// 其值為&(s[0])，所以t的值也是&(s[0])。
+
+cout << t;		// 從第0個字元開始印！
+				// 自動印出後面的字元，直到遇到'\0'。
+				// 而不是印出&(s[0])這個記憶體位址。
+cout << t+1;	// 從第1個字元開始印！
+
+cin >> t;		// 從陣列第0格開始存。
+				// 自動讀入後面的字元，直到遇到space/tab/enter，
+				// 並且自動補'\0'。
+				// 而不是讀入一個記憶體位址。
+cin >> t+1;		// 從陣列第1格開始存。
+
+// 注意到以下的s通通被編譯器改變成型態為char*的變數，其值為&(s[0])。
+
+cout << s;		// 同前
+cout << s+1;
+cin >> s;
+cin >> s+1;
+
+printf("%s", t);	// C語言則是要明確規定印字串，才會印出後面字元。
+printf("%p", t);	// 印出&(s[0])這個記憶體位址。
+printf("%s", s);
+printf("%p", s);
+</textarea>
+<p class="t">附錄：string literal</p>
+<p>說到了字串，就不得不提一下string literal。雙引號括起的字串，稱做string literal，是一個陣列變數，而且編譯器會把陣列元素設定成常數，我們不能更動其值。</p>
+<p><a href="javascript:if(confirm('http://c-faq.com/aryptr/aryptr2.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://c-faq.com/aryptr/aryptr2.html'" tppabs="http://c-faq.com/aryptr/aryptr2.html">http://c-faq.com/aryptr/aryptr2.html</a></p>
+<textarea>
+char* s = "abcd";
+s[0] = 'e';	// runtime error!
+// "abcd"是string literal，變數型態是char[5]。
+// 編譯器會自動幫忙把char[5]型態改變成為char*型態，
+// 其值為陣列第0格的記憶體位址，可以想做是字元'a'的記憶體位址。
+// 不能更動陣列變數，也不能更動陣列元素。
+
+char t[5] = "abcd";
+t[0] = 'e';	// OK!
+// "abcd"是string literal，變數型態是char[5]。
+// 特例：編譯器保留原本的char[5]型態，不會改變為char*型態！
+// 於是就變成一種特殊的初始化語法。
+// 不能更動陣列變數，但是可以更動陣列元素。
+</textarea>
+<textarea>
+// 用string literal初始化陣列變數。
+char s[5] = "abcd";
+
+// 讓編譯器自己數有幾個字元。
+char s[] = "abcd";
+
+// 編譯器會幫忙連接雙印號字串，成為一個string literal。
+char s[5] = "ab" "c" "d";
+</textarea>
+<textarea>
+// "abcd"的變數型態是char[5]。
+// 注意到編譯器會把"abcd"改變成型態為char*的變數，
+// 其值為陣列第0格的記憶體位址，可以想做是字元'a'的記憶體位址。
+
+cout << "abcd";			// 從第0個字元開始印：abcd
+cout << "abcd" + 1;		// 從第1個字元開始印：bcd
+cout << *"abcd";		// 印出第0個字元：a
+cout << *("abcd" + 1);	// 印出第1個字元：b
+cout << "abcd"[2];		// 印出第2個字元：c
+cout << 3["abcd"];		// 印出第3個字元：d
+
+printf("%s", "abcd");		// 從第0個字元開始印：abcd
+printf("%s", "abcd" + 1);	// 從第1個字元開始印：bcd
+printf("%p", "abcd");		// 印出第0個字元的位址：0x00440000
+printf("%p", "abcd" + 1);	// 印出第1個字元的位址：0x00440001
+printf("%c", *"abcd");		// 印出第0個字元：a
+printf("%c", *("abcd" + 1));// 印出第1個字元：b
+</textarea>
+<p class="t">陣列元素是指標</p>
+<p>我們也可以宣告一個存位址的陣列。</p>
+<textarea>
+int*** a[5];	// a的每一個元素的變數型態都是int***。
+				// 至於a本身的變數型態寫成int***[5]。
+
+a[0] = (int***) 0x00000010;
+*a = (int***) 0x0000010;	// 與上一行意義相同
+</textarea>
+<p>這樣的陣列變數，也可以用&得到記憶體位址。然而變數型態相當複雜，不實用，又難背，這裡就略過不提了。</p>
+<p class="t">陣列元素是陣列</p>
+<p>這個太瘋狂了。我一點也不想介紹。反正就是多維陣列。</p>
+<p class="t">得到陣列大小</p>
+<p>使用sizeof關鍵字就可以得到陣列大小。注意到，回傳的變數型態是size_t，一般來說是一個無號整數；回傳的變數型態絕對不是int。</p>
+<textarea>
+int a[5];
+
+sizeof(a);			// 得到a陣列的記憶體使用量。
+cout << sizeof(a);	// 印出 4 x 5 = 20。
+</textarea>
+<p>有一種情況要特別小心：函數的參數寫成陣列變數的模樣，但是編譯器事實上會幫忙改成指標變數。此時用sizeof得到的不是陣列大小而是指標大小。</p>
+<textarea>
+void function(int a[5])	// 小心！a的變數型態其實是int*！
+{
+	cout << sizeof(a);	// 印出 4 而不是 20！
+}
+</textarea>
+<p class="t">附錄：動態記憶體</p>
+<p>上個章節提到，宣告動態記憶體，編譯器給不出變數名稱，只能給個指標將就著用。不過在新版本的C語言當中，已經可以給出變數名稱了。</p>
+<textarea>
+int n;
+cin >> n;
+
+int* a = new[n];	// 給個int*將就著用。
+					// 注意到這完全跟陣列變數無關。
+
+int b[n];	// Variable-length array。C語言才有的功能。
+			// 至於b的變數型態是什麼，我也不知道！
+</textarea>
+<p class="t">附錄：heap與stack</p>
+<p>編譯器進行記憶體管理，有兩個概念稱做heap和stack，分別是指整個記憶體的前端、後端這兩塊區域。heap通常用來存放程式當中一開始就建立好的變數，以及存放動態記憶體；stack用來存放執行過程中新建立的變數。</p>
+<p>然而heap和stack的實際運作情形，在不同的編譯器和作業系統可能有一些差異，似乎沒有一個絕對的說法。</p>
+<p>當記憶體用量過大，造成heap與stack兩塊區域相撞，此時稱做stack overflow，程式會當機。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Function</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://www.newty.de/fpt/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.newty.de/fpt/index.html'" tppabs="http://www.newty.de/fpt/index.html">http://www.newty.de/fpt/index.html</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Thread</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://kheresy.wordpress.com/2012/07/06/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://kheresy.wordpress.com/2012/07/06/'" tppabs="http://kheresy.wordpress.com/2012/07/06/">http://kheresy.wordpress.com/2012/07/06/</a></p>
+<p><a href="javascript:if(confirm('http://kheresy.wordpress.com/2012/07/11/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://kheresy.wordpress.com/2012/07/11/'" tppabs="http://kheresy.wordpress.com/2012/07/11/">http://kheresy.wordpress.com/2012/07/11/</a></p>
+<p><a href="javascript:if(confirm('http://kheresy.wordpress.com/2012/08/20/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://kheresy.wordpress.com/2012/08/20/'" tppabs="http://kheresy.wordpress.com/2012/08/20/">http://kheresy.wordpress.com/2012/08/20/</a></p>
+<p><a href="javascript:if(confirm('http://sourceware.org/pthreads-win32/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://sourceware.org/pthreads-win32/'" tppabs="http://sourceware.org/pthreads-win32/">http://sourceware.org/pthreads-win32/</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Behavior</p>
+</div><div class="c">
+<p class="t">Undefined Behavior</p>
+<p>沒有訂立執行結果，執行結果無法預測，可能發生任何事情，包括程式異常中止。身為程式員，絕對別讓程式碼出現這些行為！</p>
+<p>例如i = i++;，一行敘述當中，一個變數改變兩次。</p>
+<p>例如short i = 30000 + 30000;，整數溢位。</p>
+<p class="t">Unspecified Behavior</p>
+<p>沒有硬性規定執行結果，執行結果已知有許多種，將是其中一種。不同的機器、編譯器、編譯設定，可能導致不同的執行結果。</p>
+<p>編譯器運用此模糊地帶，藉此最佳化程式碼，提升程式執行效率。然而一旦運用了這些語法，程式碼就難以跨平台使用。</p>
+<p>例如f( g(), h() );，無法確定g()和h()誰先處理。</p>
+<p>例如−1.0 * 0.0，無法確定結果是負零、或是普通的零。</p>
+<p class="t">Implementation-defined Behavior</p>
+<p>語言規格書沒有硬性規定執行結果，留待編譯器規格書明確規定執行結果。</p>
+<p>例如-1 >> 1，負數所有位元往右移，編譯器必須明確規定最高位元是補0、還是補1。</p>
+<p class="t">Locale-specific Behavior</p>
+<p>根據當時設定的語系、環境變數，決定執行結果。</p>
+<p>例如puts("讚");，中文語系之下，將印出一個中文字；英文語系之下，將印出兩個ASCII符號。</p>
+<p class="t">附錄</p>
+<p>這是C11正式版之前的最後一個草案，請參考Annex J：</p>
+<p><a href="javascript:if(confirm('http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf'" tppabs="http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf">http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">C</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://www.pvv.org/~oma/DeepC_slides_oct2011.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.pvv.org/~oma/DeepC_slides_oct2011.pdf'" tppabs="http://www.pvv.org/~oma/DeepC_slides_oct2011.pdf">http://www.pvv.org/~oma/DeepC_slides_oct2011.pdf</a></p>
+<p><a href="javascript:if(confirm('http://www.mers.byu.edu/docs/standardC/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mers.byu.edu/docs/standardC/index.html'" tppabs="http://www.mers.byu.edu/docs/standardC/index.html">http://www.mers.byu.edu/docs/standardC/index.html</a></p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

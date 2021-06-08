@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+
+  <title>Map operators</title>
+  <link href="cppreference.css" tppabs="http://www.cppreference.com/cppreference.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<table>
+  <tr>
+  <td>
+  <div class="body-content">
+
+  <div class="header-box">
+    <a href="index.html" tppabs="http://www.cppreference.com/index.html">cppreference.com</a> &gt; <a href=
+    "index-22.html" tppabs="http://www.cppreference.com/cppmap/index.html">C++ Maps</a> &gt; <a href="map_operators.html" tppabs="http://www.cppreference.com/cppmap/map_operators.html">Map
+    operators</a>
+  </div>
+
+  <div class="name-format">
+    Map operators
+  </div>
+
+  <div class="syntax-name-format">
+    Syntax:
+  </div>
+  <pre class="syntax-box">
+  #include &lt;map&gt;
+  <a href="containers.html" tppabs="http://www.cppreference.com/containers.html">TYPE</a>&amp; operator[]( const <a href=
+"containers.html" tppabs="http://www.cppreference.com/containers.html">key_type</a>&amp; key );
+  map operator=(const map&amp; c2);
+  bool operator==(const map&amp; c1, const map&amp; c2);
+  bool operator!=(const map&amp; c1, const map&amp; c2);
+  bool operator&lt;(const map&amp; c1, const map&amp; c2);
+  bool operator&gt;(const map&amp; c1, const map&amp; c2);
+  bool operator&lt;=(const map&amp; c1, const map&amp; c2);
+  bool operator&gt;=(const map&amp; c1, const map&amp; c2);
+</pre>
+
+  <p>Maps can be compared and assigned with the standard comparison
+  operators: ==, !=, &lt;=, &gt;=, &lt;, &gt;, and =. Individual
+  elements of a map can be examined with the [] operator.</p>
+
+  <p>Performing a comparison or assigning one map to another takes
+  <a href="complexity.html" tppabs="http://www.cppreference.com/complexity.html">linear time</a>.</p>
+
+  <p>Two maps are equal if:</p>
+
+  <ol>
+    <li>Their size is the same, and</li>
+
+    <li>Each member in location <em>i</em> in one map is equal to the
+    the member in location <em>i</em> in the other map.</li>
+  </ol>
+
+  <p>Comparisons among maps are done lexicographically.</p>
+
+  <p>For example, the following code defines a map between strings and
+  integers and loads values into the map using the [] operator:</p>
+  <pre class="example-code">
+  struct strCmp {
+    bool operator()( const char* s1, const char* s2 ) const {
+      return strcmp( s1, s2 ) &lt; 0;
+    }
+  };
+
+  map&lt;const char*, int, strCmp&gt; ages;
+  ages["Homer"] = 38;
+  ages["Marge"] = 37;
+  ages["Lisa"] = 8;
+  ages["Maggie"] = 1;
+  ages["Bart"] = 11;
+
+  cout &lt;&lt; "Bart is " &lt;&lt; ages["Bart"] &lt;&lt; " years old" &lt;&lt; endl;
+
+  cout &lt;&lt; "In alphabetical order: " &lt;&lt; endl;
+  for( map&lt;const char*, int, strCmp&gt;::iterator iter = ages.begin(); iter != ages.end(); iter++ ) {
+    cout &lt;&lt; (*iter).first &lt;&lt; " is " &lt;&lt; (*iter).second &lt;&lt; " years old" &lt;&lt; endl;
+  }
+</pre>
+
+  <p>When run, the above code displays this output:</p>
+  <pre class="example-code">
+  Bart is 11 years old
+  In alphabetical order:
+  Bart is 11 years old
+  Homer is 38 years old
+  Lisa is 8 years old
+  Maggie is 1 years old
+  Marge is 37 years old  
+</pre>
+
+  <div class="related-name-format">
+    Related topics:
+  </div>
+
+  <div class="related-content">
+    <a href="insert-6.html" tppabs="http://www.cppreference.com/cppmap/insert.html">insert</a><br>
+    <a href="map_constructors.html" tppabs="http://www.cppreference.com/cppmap/map_constructors.html">Map Constructors &amp; Destructors</a>
+  </div>
+  </div>
+  </td>
+  
+
+
+  </tr>
+  </table>
+</body></html>

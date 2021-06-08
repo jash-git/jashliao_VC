@@ -1,0 +1,455 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb_2312-80">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>第二章 多线程</TITLE>
+</HEAD>
+<BODY>
+
+<FONT FACE="黑体" LANG="ZH-CN" SIZE=5><P ALIGN="CENTER"><A NAME="_Toc425699146">第十二章</FONT><FONT FACE="Arial" SIZE=5> </FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=5>多线程</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">当使用</FONT><FONT SIZE=3>Windows 95</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或者其它现在比较流行的操作系统时，可以同时运行几个程序，这是大家都知道的。操作系统的这种能力称之为多任务处理。现今的许多操作系统也支持线程。一个应用程序能够创建几个线程。线程能够使你在多任务中进行多任务。一般的用户知道他能够在同一时刻运行多个程序，而编程者知道一个程序可以在同一时刻运行几个线程。在本章中，你将学会如何在你的程序中创建和管理线程。具体的说，包含以下内容：</P>
+
+<UL>
+<P ALIGN="JUSTIFY"><LI>创建线程</LI></P>
+<P ALIGN="JUSTIFY"><LI>线程间通信</LI></P>
+<P ALIGN="JUSTIFY"><LI>线程同步</LI></P></UL>
+
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425699147">第一节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>创建线程</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">线程就是操作系统分配处理器时间的最基本单元。在一个多线程的应用程序中，每一个线程都有它自己的堆栈，并且可以独立的操作在同一程序中运行的其它线程。</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>支持两种线程类型：用户接口线程和工人线程。前者有自己的消息泵，可以处理用户接口的任务，而后者则不能，它是最常用的线程。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY"> </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>一个应用程序至少有一个线程，即程序的基本或主线程。你可以根据需要启动和停止其它附加线程，但是一旦主线程停止了，整个程序就被关闭了。只要程序还在运行，主线程就在运行。</P>
+<P ALIGN="JUSTIFY">为了使用</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建一个线程，你所做的就是编写一个你希望的和程序的其它部分同时运行的函数，然后调用</FONT><FONT SIZE=3>AfxBeginThread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）来启动一个用以执行你的函数的线程。只要线程的函数在运行，线程就存活着，当线程函数结束时，线程就被销毁。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">AfxBeginThread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（）函数如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CWinThread* AfxBeginThread( AFX_THREADPROC pfnThreadProc, LPVOID pParam, </P>
+<P>&#9;int nPriority = THREAD_PRIORITY_NORMAL, UINT nStackSize = 0, </P>
+<P>&#9;DWORD dwCreateFlags = 0, LPSECURITY_ATTRIBUTES lpSecurityAttrs = NULL );</P>
+<P>CWinThread* AfxBeginThread( CRuntimeClass* pThreadClass, </P>
+<P>&#9;int nPriority = THREAD_PRIORITY_NORMAL, UINT nStackSize = 0, </P>
+<P>&#9;DWORD dwCreateFlags = 0, LPSECURITY_ATTRIBUTES lpSecurityAttrs = NULL );</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">第一种形式用于创建工人线程，第二种线程用于创建用户接口线程。</P>
+<P ALIGN="JUSTIFY">这两种形式的函数的返回值是新创建的线程对象的指针。</P>
+<P ALIGN="JUSTIFY">参数意义如下：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">pfnThreadProc</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：指向工人线程的控制函数的指针，它不能是</FONT><FONT SIZE=3>NULL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。此控制函数必须声明成如下样式：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>UINT MyControllingFunction( LPVOID pParam );</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">pThreadClass</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：从</FONT><FONT SIZE=3>CWinThread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>派生的</FONT><FONT SIZE=3>RUNTIME_CLASS</P>
+<P ALIGN="JUSTIFY">pParam</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：传递给工人线程的控制函数的参数</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">nPriority</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：线程的期望的优先权。如果这个值为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则新线程和创建线程具有同样的优先级。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">nStackSize</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：以字节为单位定义了新线程的堆栈大小。如果这个值为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则新线程和创建线程具有同样大小的堆栈。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">dwCreateFlags</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：控制线程创建的附加标志。这个值可以是以下两个值中的一个：</FONT><FONT SIZE=3>CREATE_SUSPENDED</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。如果是标志是前者，以挂起数为</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>启动线程。只有在</FONT><FONT SIZE=3>ResumeThread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>被调用时，这个线程才会被执行。如果标志为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则在创建线程后立即执行线程。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">lpSecurityAttrs</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：指向定义了线程安全属性的</FONT><FONT SIZE=3>SECURITY_ATTRIBUTES</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>结构的指针。如果为</FONT><FONT SIZE=3>NULL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则新线程和创建线程具有同样的安全属性。</P>
+<P ALIGN="JUSTIFY">线程可能具有下面的优先级别：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">THREAD_PRIORITY_ABOVE_NORMAL </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比正常优先级高一个级别</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">THREAD_PRIORITY_BELOW_NORMAL </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比正常优先级低一个级别</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">THREAD_PRIORITY_HIGHEST </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比正常优先级高两个级别</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">THREAD_PRIORITY_IDLE </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>基本优先级为</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。对于</FONT><FONT SIZE=3>REALTIME_PRIORITY_CLASS</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>进程，优先级为</FONT><FONT SIZE=3>16</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">THREAD_PRIORITY_LOWEST </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>比正常优先级低两个级别</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">THREAD_PRIORITY_NORMAL </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>正常优先级别</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">THREAD_PRIORITY_TIME_CRITICAL </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>基本优先级为</FONT><FONT SIZE=3>15</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。对于</FONT><FONT SIZE=3>REALTIME_PRIORITY_CLASS</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>进程，优先级别是</FONT><FONT SIZE=3>30</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">一个线程的优先级决定了相对于其它正在运行的线程这个线程控制系统的时间。通常，线程的级别越高，它的运行时间也越长，这也正是</FONT><FONT SIZE=3>THREAD_PRIORITY_TIME_CRITICAL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>如此高的原因。</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">下面用一个简单的例子说明如何创建线程，按照下面的步骤进行：</P>
+<P ALIGN="JUSTIFY">使用</FONT><FONT SIZE=3>MFC AppWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>生成一个单文档应用程序</FONT><FONT SIZE=3>Thread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">使用资源编辑器编辑器给程序的</FONT><FONT SIZE=3>IDR_MAINFRAME</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>菜单添加一个菜单“线程”。</P>
+<P ALIGN="JUSTIFY">在“线程”菜单中添加一个菜单项启动线程，其</FONT><FONT SIZE=3>ID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>ID_STARTTHREAD</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>CThreadView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类中添加消息映射函数</FONT><FONT SIZE=3>OnStartthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>OnStartthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中添加如下代码：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CThreadView::OnStartthread() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your command handler code here</P>
+<P>&#9;HWND hWnd = GetSafeHwnd();</P>
+<P>    AfxBeginThread(ThreadProc, hWnd, THREAD_PRIORITY_NORMAL);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">添加的代码将调用</FONT><FONT SIZE=3>ThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，这个函数是新添加的线程的控制函数，所以还需要在程序中添加这个函数。</P>
+<P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中</FONT><FONT SIZE=3>OnStartthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的上面添加函数</FONT><FONT SIZE=3>ThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+
+<UL>
+</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>注意：</LI></P>
+</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"><LI>这个函数是一个全局函数，而并非是</FONT><FONT SIZE=3>CThreadView</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>类的成员函数，尽管它在</FONT><FONT SIZE=3>CThreadView</FONT><FONT FACE="楷体_GB2312" LANG="ZH-CN" SIZE=3>类的执行文件中。</LI></P></UL>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">在函数</FONT><FONT SIZE=3>ThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加如下代码：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>UINT ThreadProc(LPVOID param)</P>
+<P>{</P>
+<P>    ::MessageBox((HWND)param, "Thread activated.", "Thread", MB_OK);</P>
+<P>    return 0;</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这个线程实际上并没有作什么，它仅仅报告它被启动了。</P>
+<P ALIGN="JUSTIFY">在函数前面的两个冒号表明是在调用全局函数，对于</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序员来说，这通常称为</FONT><FONT SIZE=3>API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或</FONT><FONT SIZE=3>SDK</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>调用。</P>
+<P ALIGN="JUSTIFY">当你运行这个程序后，主窗口出现。选择“线程”菜单中的“启动线程”菜单选项，系统启动一个线程，并且显示一个消息框，如图</FONT><FONT SIZE=3>12.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。</P>
+<P ALIGN="CENTER"><IMG SRC="Image438.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image438.gif" WIDTH=85 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>12. 1 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>线程启动消息框</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425699148">第二节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>线程间通信</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">通常，一个次要的线程为主线程执行一定的任务，这也暗示这在主线程和次要线程之间需要有一个联系的渠道。有几种方法可以完成这些联系任务：使用全局变量、使用</FONT><FONT SIZE=3>CEven</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类或者使用消息。本节将介绍这几种方法。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(1)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用全局变量通信</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">假定你需要你的程序能够停止线程。你需要一个告诉线程何时停止的方法。一种方法是建立一个全局变量，然后让线程监督这个全局变量是否为标志线程终止的值。为了实现这种方法，按照如下步骤修改前面创建的</FONT><FONT SIZE=3>Thread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在“线程”菜单中添加菜单项“停止线程”，</FONT><FONT SIZE=3>ID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>ID_STOPTHREAD</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为“停止线程”添加消息处理函数</FONT><FONT SIZE=3>OnStopthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件中添加一个全局变量</FONT><FONT SIZE=3>threadController</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。添加方法是在</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的最上面，在</FONT><FONT SIZE=3>endif</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>下面添加下面的语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>volatile int threadController;</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">关键字</FONT><FONT SIZE=3>volatile</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>表示你希望这个变量可以被外面使用它的线程修改。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>修改</FONT><FONT SIZE=3>OnStartthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数，代码如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CThreadView::OnStartthread() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your command handler code here</P>
+<P>&#9;threadController = 1;</P>
+<P>&#9;HWND hWnd = GetSafeHwnd();</P>
+<P>    AfxBeginThread(ThreadProc, hWnd, THREAD_PRIORITY_NORMAL);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">现在你可能已经猜到</FONT><FONT SIZE=3>threadController</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的值决定线程是否继续。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>OnStopthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中添加下列代码：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>threadController = 0;</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">6.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>修改</FONT><FONT SIZE=3>ThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数的代码，代码如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>UINT ThreadProc(LPVOID param)</P>
+<P>{</P>
+<P>    ::MessageBox((HWND)param, "Thread activated.", "Thread", MB_OK);</P>
+<P>    while (threadController == 1)</P>
+<P>    {   </P>
+<P>&#9;&#9;；</P>
+<P>    }</P>
+<P>    ::MessageBox((HWND)param, "Thread stopped.", "Thread", MB_OK);</P>
+<P>    return 0;</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">现在线程首先显示一个消息框，告诉用户线程被启动了。然后通过一个</FONT><FONT SIZE=3>while</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>循环检查全局变量</FONT><FONT SIZE=3>threadController</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，等待它的值变成</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。尽管这个</FONT><FONT SIZE=3>while</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>循环微不足道，但是你在这里可以加上执行你希望的任务的代码。</P>
+<P ALIGN="JUSTIFY">现在编译并运行这个程序，选择“线程”菜单中的“启动线程”菜单项启动一个线程，这是弹出如图</FONT><FONT SIZE=3>12.1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框。然后选择“线程”主菜单中的“停止菜单”菜单项，这时弹出如图</FONT><FONT SIZE=3>12.2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的对话框，告诉用户线程已经终止。</P>
+<P ALIGN="CENTER"><IMG SRC="Image439.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image439.gif" WIDTH=77 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>12. 2 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>线程关闭消息框</FONT><FONT SIZE=1> </P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(2)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用用户自定义消息通信</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">现在你有了一个简单的用于从主线程中联系附加线程的方法。反过来，如何从附加线程联系主线程呢？最简单的实现这种联系的方法是在程序中加入用户定义的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息。</P>
+<P ALIGN="JUSTIFY">首先，要定义用户消息。这一步很容易，例如：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>const WM_USERMSG = WM_USER + 100;</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">WM_USER</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>变量是由</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>定义的，它是第一个有效的用户消息数。因为你的程序的其它部分也会使用用户消息，故将新的用户消息</FONT><FONT SIZE=3>WM_USERMSG</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>设置为</FONT><FONT SIZE=3>WM_USER+100</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+<P ALIGN="JUSTIFY">在定义了用户消息之后，你应当在线程中调用</FONT><FONT SIZE=3>::PostMessage()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数来向主线程发送你所需要的消息。一般按照下面的方式调用</FONT><FONT SIZE=3>::PostMessage()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>::PostMessage((HWND)param, WM_USERMSG, 0, 0);</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">PostMessage()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的四个参数分别是接收消息的窗口的句柄、消息的</FONT><FONT SIZE=3>ID</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、消息的</FONT><FONT SIZE=3>WPARAM</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>LPARAM</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>参数。</P>
+<P ALIGN="JUSTIFY">将下面的语句加入到</FONT><FONT SIZE=3>ThreadView.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中</FONT><FONT SIZE=3>CThreadView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类声明的上面。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>const WM_THREADENDED = WM_USER + 100;</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">仍然是在此头文件中，在消息映射中加入下列语句，注意要加到</FONT><FONT SIZE=3>AFX_MSG</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的后面和</FONT><FONT SIZE=3>DECLARE_MESSAGE_MAP</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的前面。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>afx_msg LONG OnThreadended();</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">然后切回到</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，在类的消息映射中加入下列语句，位置在}}</FONT><FONT SIZE=3>AFX_MSG_MAP</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之后。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>ON_MESSAGE(WM_THREADENDED, OnThreadended)</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">再用下面的语句更改</FONT><FONT SIZE=3>ThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>UINT ThreadProc(LPVOID param)</P>
+<P>{</P>
+<P>    ::MessageBox((HWND)param, "Thread activated.", "Thread", MB_OK);</P>
+<P>        while (threadController == 1)</P>
+<P>        {</P>
+<P>          ;</P>
+<P>        }</P>
+<P>    ::PostMessage((HWND)param, WM_THREADENDED, 0, 0);</P>
+<P>    return 0;</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在</FONT><FONT SIZE=3>CThreadView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中添加下面的成员函数。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>LONG CThreadView::OnThreadended(WPARAM wParam, LPARAM lParam)</P>
+<P>{</P>
+<P>    AfxMessageBox("Thread ended.");</P>
+<P>    return 0;</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="CENTER"><IMG SRC="Image440.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image440.gif" WIDTH=99 HEIGHT=74></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>12. 3 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>线程终止对话框</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">当你重新运行这个程序时，选择“线程”主菜单中的“启动线程”菜单选项，弹出一个消息框告诉你线程已经启动。为了结束这个线程，选择“线程”主菜单中的“停止菜单”菜单选项，这将弹出一个如图</FONT><FONT SIZE=3>12.3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的消息框告诉你线程已经停止。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P> (3)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT FACE="Arial" SIZE=3>Event</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>对象通信</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一个比较复杂的在两个线程间通信的方法是使用</FONT><FONT SIZE=3>Event</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>下也就是</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类对象。一个</FONT><FONT SIZE=3>Event</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象可以有两种状态：通信状态和非通信状态。线程监视着</FONT><FONT SIZE=3>Event</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的状态，并由此在合适的时间执行它们的操作。</P>
+<P ALIGN="JUSTIFY">创建一个</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象很简单，如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CEvent threadStart;</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">实际上，</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的构造函数形式如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CEvent( BOOL bInitiallyOwn = FALSE, BOOL bManualReset = FALSE, </P>
+<P>&#9;LPCTSTR lpszName    = NULL, LPSECURITY_ATTRIBUTES lpsaAttribute = NULL );</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个参数含义如下：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">bInitiallyOwn   </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>布尔量。如果值是</FONT><FONT SIZE=3>True</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，用于</FONT><FONT SIZE=3>CMultilock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的线程将被允许。如果值为</FONT><FONT SIZE=3>False</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，所有希望访问资源的线程必须等待。缺省值为</FONT><FONT SIZE=3>False</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">bManualReset   </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>布尔量。如果值为</FONT><FONT SIZE=3>True</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则</FONT><FONT SIZE=3>Event</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象是手动对象。如果值为</FONT><FONT SIZE=3>False</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，则</FONT><FONT SIZE=3>Event</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象是自动对象。缺省值为</FONT><FONT SIZE=3>True</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">lpszName  CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的名称。如果事件对象被多个进程使用时必须提供一个名称。缺省值为</FONT><FONT SIZE=3>NULL</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">lpsaAttribute  CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的安全属性，与在</FONT><FONT SIZE=3>Win32</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的</FONT><FONT SIZE=3>SECURITY_ATTRIBUTES </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>相同。</P>
+<P ALIGN="JUSTIFY">尽管</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的构造函数有</FONT><FONT SIZE=3>4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>个参数，但是经常不加任何参数的创建缺省的对象。当</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象被创建之后，它自动的处在未通信状态。为了使其处在通信状态，可以调用其成员函数</FONT><FONT SIZE=3>SetEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>（），如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>threadStart.SetEvent();</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在执行完上述语句之后，</FONT><FONT SIZE=3>threadStart</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将处在其通信状态。你的线程应当监视它，这样才能知道何时执行。线程是通过调用如下</FONT><FONT SIZE=3>Windows API</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数</FONT><FONT SIZE=3>WaitForSingleObject()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>来监视</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的，形式如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>::WaitForSingleObject(threadStart.m_hObject, INFINITE);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">预定义的常量</FONT><FONT SIZE=3>INFINITE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>告诉</FONT><FONT SIZE=3>WaitForSingleObject()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>直到指定的</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象处在通信状态时才返回。换句话说，如果你把</FONT><FONT SIZE=3>WaitForSingleObject()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>放在线程的开头，系统将挂起线程直到</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象处在通信状态。当主线程准备好后，你应当调用</FONT><FONT SIZE=3>SetEvent()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。</P>
+<P ALIGN="JUSTIFY">一旦线程不再挂起，它就可以运行了。但是，如果此时你还想和线程通信，线程必须监视下一个</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象处在通信状态，故你需要再次调用</FONT><FONT SIZE=3>WaitForSingleObject()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数，此时需要将等待时间设置为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>::WaitForSingleObject(threadend.m_hObject, 0);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在这种情况下，如果</FONT><FONT SIZE=3>WaitForSingleObject()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>返回值为</FONT><FONT SIZE=3>WAIT_OBJECT_0,</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>则</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象处在通信状态。否则，</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象处在非通信状态。</P>
+<P ALIGN="JUSTIFY">下面的例子说明如何使用</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类在两个线程间通信。按照以下步骤进行：</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中</FONT><FONT SIZE=3>#include "ThreadView.h"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句后面加上</FONT><FONT SIZE=3>#include "afxmt.h"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中</FONT><FONT SIZE=3>volatile int threadController</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句后加上下列语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CEvent threadStart;</P>
+<P>CEvent threadEnd;</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">删除语句</FONT><FONT SIZE=3>volatile int threadController</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用下面的代码更换</FONT><FONT SIZE=3>ThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>UINT ThreadProc(LPVOID param)</P>
+<P>{</P>
+<P>    ::WaitForSingleObject(threadStart.m_hObject, INFINITE);</P>
+<P>    ::MessageBox((HWND)param, "Thread activated.", "Thread", MB_OK);</P>
+<P>    BOOL keepRunning = TRUE;</P>
+<P>    while (keepRunning)</P>
+<P>    {</P>
+<P>        int result = ::WaitForSingleObject(threadEnd.m_hObject, 0);</P>
+<P>        if (result == WAIT_OBJECT_0)</P>
+<P>            keepRunning = FALSE;</P>
+<P>    }</P>
+<P>    ::PostMessage((HWND)param, WM_THREADENDED, 0, 0);</P>
+<P>    return 0;</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用下面的语句替换</FONT><FONT SIZE=3>OnStartthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中的内容。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>threadStart.SetEvent();</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用下面的语句替换</FONT><FONT SIZE=3>OnStopthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中的内容。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>threadEnd.SetEvent();</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">6.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>ClassWizard</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为</FONT><FONT SIZE=3>CthreadView</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>处理</FONT><FONT SIZE=3>WM_CREATE</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息的函数</FONT><FONT SIZE=3>OnCreate()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并在</FONT><FONT SIZE=3>TODO</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>后面添加代码。</FONT><FONT SIZE=3>OnCreate()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>int CThreadView::OnCreate(LPCREATESTRUCT lpCreateStruct) </P>
+<P>{</P>
+<P>&#9;if (CView::OnCreate(lpCreateStruct) == -1)</P>
+<P>&#9;&#9;return -1;</P>
+<P>&#9;</P>
+<P>&#9;// TODO: Add your specialized creation code here</P>
+<P>&#9;HWND hWnd = GetSafeHwnd();</P>
+<P>    AfxBeginThread(ThreadProc, hWnd);</P>
+<P>&#9;return 0;</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">编译并运行这个程序，新版本的程序运行起来和旧版本的程序一样，但是，新版本的程序为了实现在主线程和次要线程间通信，既使用了</FONT><FONT SIZE=3>CEvent</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类，又使用了用户定义的</FONT><FONT SIZE=3>Windows</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息。</P>
+<P ALIGN="JUSTIFY">新版本的程序和旧版本的程序的一个大的不同在于次要线程在</FONT><FONT SIZE=3>OnCreate()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中被启动。然而由于线程函数的第一行即调用</FONT><FONT SIZE=3>WaitForSingleObject()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，所以此线程立即被挂起并且等待</FONT><FONT SIZE=3>threadStart</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>处于通信状态。</P>
+<P ALIGN="JUSTIFY">当</FONT><FONT SIZE=3>threadStart</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>处在通信状态时，新线程显示消息框，然后进入</FONT><FONT SIZE=3>while</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>循环。这个</FONT><FONT SIZE=3>while</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>循环继续执行直到</FONT><FONT SIZE=3>threadEnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>处在通信状态，然后线程向主线程发送一个</FONT><FONT SIZE=3>WM_THREADENDED</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>消息并退出。因为此线程是在</FONT><FONT SIZE=3>OnCreate()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数中被创建的</FONT><FONT SIZE=3>,</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>一旦结束，不会被重新启动。</P>
+<P ALIGN="JUSTIFY">　</P>
+</FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4><P ALIGN="CENTER"><A NAME="_Toc425699149">第三节</FONT><FONT SIZE=4> </FONT><FONT FACE="仿宋_GB2312" LANG="ZH-CN" SIZE=4>线程同步</A></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">使用多线程可以带来一些非常有趣的问题。例如，如何防止两个线程在同一时间访问同一数据？例如，假设一个线程正在更新一个数据集，而同时另外一个线程正在读取数据集，结果如何？第二个线程将会读取到错误的数据，因为数据集中只有一部分元素被更新过。</P>
+<P ALIGN="JUSTIFY">保持在同一个进程内的线程工作协调一致称之为线程同步。</FONT><FONT SIZE=3>Event</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象实际上就是线程同步的一种形式。在本节中，你将会学到三种使你的多线程程序更安全的线程同步对象</FONT><FONT SIZE=3>—critical section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、互斥对象（</FONT><FONT SIZE=3>mutex</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）、信号量（</FONT><FONT SIZE=3>semaphore</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>）。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(1)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT FACE="Arial" SIZE=3>Critical Section</P></DIR>
+
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Critical Section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是一种保证在一个时间只有一个线程访问数据集的非常简单的方法。当你使用</FONT><FONT SIZE=3>Critical Section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，你给了线程一个它们必须共享的对象。任何拥有</FONT><FONT SIZE=3>Critical Section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的线程可以访问被保护起来的数据。其它线程必须等待直到第一个线程释放了</FONT><FONT SIZE=3>Critical Section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，此后其它线程可以按照顺序抢占</FONT><FONT SIZE=3>Critical Section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，访问数据。</P>
+<P ALIGN="JUSTIFY">因为线程只有拥有</FONT><FONT SIZE=3>Critical Section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象才能访问数据，而且在一个时刻只有一个线程可以拥有</FONT><FONT SIZE=3>Critical Section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，所以决不会出现一个时刻有多个线程访问数据。</P>
+<P ALIGN="JUSTIFY">为了在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序中创建一个</FONT><FONT SIZE=3>Critical Section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，你应当创建</FONT><FONT SIZE=3>CcriticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象，如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CCriticalSection criticalSection</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">然后，当程序代码准备访问你保护的数据时，你应当调用</FONT><FONT SIZE=3>CCriticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>Lock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>criticalSection.Lock();</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">如果另外一个线程并没有拥有</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>Lock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>将</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给调用它的线程。这个线程便能够访问受保护的数据，此后它调用</FONT><FONT SIZE=3>CcriticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>Unlock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>criticalSection.Unlock();</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">Unlock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>释放了对</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的拥有权，这样其它线程就可以占有它并访问受保护的数据。</P>
+<P ALIGN="JUSTIFY">最好的方法是将数据放在线程安全类中。当你这样做后，你不用担心在主线程中的线程同步，线程安全类会替你处理的。下面的类</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>便是一个线程安全类。</P>
+<P ALIGN="JUSTIFY">以下是</FONT><FONT SIZE=3>COUNTARRAY.H</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>CcountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的头文件。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "afxmt.h"</P>
+<P>class CCountArray</P>
+<P>{</P>
+<P>private:</P>
+<P>    int array[10];</P>
+<P>    CCriticalSection criticalSection;</P>
+<P>public:</P>
+<P>    CCountArray() {};</P>
+<P>    ~CCountArray() {};</P>
+<P>    void SetArray(int value);</P>
+<P>    void GetArray(int dstArray[10]);</P>
+<P>};</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">在该头文件中包含一个</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的头文件</FONT><FONT SIZE=3>afxmt.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，以使程序可以使用</FONT><FONT SIZE=3>CCriticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类。在</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的声明中，头文件声明了一个十个元素的整形数组，这是</FONT><FONT SIZE=3>CCriticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象将要保护的数据，并且声明了一个</FONT><FONT SIZE=3>CCriticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的公共成员函数包含构造和析购函数。后面两个成员函数用于访问数据。</P>
+<P ALIGN="JUSTIFY">下面是</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的执行文件。注意，在每一个成员函数中，</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>都在密切关注着</FONT><FONT SIZE=3>CCriticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的对象的状态。这也意味这任何调用这些成员函数的线程不必担心线程同步。例如，如果线程</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>调用了</FONT><FONT SIZE=3>SetArray(),SetArray()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所做的第一件事就是调用</FONT><FONT SIZE=3>criticalSection.Lock(),</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>这将把</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给线程</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，此后可以完成一个循环而不用担心被其它线程打断。如果线程</FONT><FONT SIZE=3>2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>调用了</FONT><FONT SIZE=3>SetArray()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>或</FONT><FONT SIZE=3>GetArray(),criticalSection.Lock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句将挂起线程</FONT><FONT SIZE=3>2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>直到线程</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>完成循环，执行</FONT><FONT SIZE=3>criticalSection.Unlock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句将对</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的拥有权释放。这时系统唤醒线程</FONT><FONT SIZE=3>2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并将</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给它。通过这种方式，所有线程必须安静的等待它们访问数据的机会到来。</P>
+<P ALIGN="JUSTIFY">下面是</FONT><FONT SIZE=3>COUNTARRAY.CPP</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</FONT><FONT SIZE=3>CcountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的执行文件。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "stdafx.h"</P>
+<P>#include "CountArray.h"</P>
+
+<P>void CCountArray::SetArray(int value)</P>
+<P>{</P>
+<P>    criticalSection.Lock();</P>
+<P>    for (int x=0; x&lt;10; ++x)</P>
+<P>        array[x] = value;</P>
+<P>    criticalSection.Unlock();</P>
+<P>}</P>
+
+<P>void CCountArray::GetArray(int dstArray[10])</P>
+<P>{</P>
+<P>    criticalSection.Lock();</P>
+<P>    for (int x=0; x&lt;10; ++x)</P>
+<P>        dstArray[x] = array[x];</P>
+<P>    criticalSection.Unlock();</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">现在你有机会看到线程安全类是什么样式了，现在可以让这个类工作了。按照以下步骤修改前面的</FONT><FONT SIZE=3>Thread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序来测试</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT SIZE=3>File/New</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>菜单命令添加一个新的</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>头文件</FONT><FONT SIZE=3>CountArray.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并将此头文件加入到</FONT><FONT SIZE=3>Thread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>工程中，并在其中添加代码。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>再次使用</FONT><FONT SIZE=3>File/New</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>菜单命令添加一个新的</FONT><FONT SIZE=3>C++</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>资源文件</FONT><FONT SIZE=3>CountArray.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并在其中添加代码。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件中，在</FONT><FONT SIZE=3>#include "afxmt.h"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>下面加上：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "CountArray.h"</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>文件中，删除</FONT><FONT SIZE=3>CEvent threadStart</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>；和</FONT><FONT SIZE=3>CEvent threadEnd</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句，并加上下列语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CCountArray countArray;</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>从消息映射中删除下列语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>ON_MESSAGE(WM_THREADENDED, OnThreadended)</P>
+<P>ON_COMMAND(ID_STOPTHREAD, OnStopthread)</P>
+<P>ON_WM_CREATE()</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">6.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用下面两个函数更换</FONT><FONT SIZE=3>ThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>UINT WriteThreadProc(LPVOID param)</P>
+<P>{</P>
+<P>    for(int x=0; x&lt;10; ++x)</P>
+<P>    {</P>
+<P>        countArray.SetArray(x);</P>
+<P>        ::Sleep(1000);</P>
+<P>    }</P>
+<P>    return 0;</P>
+<P>}</P>
+
+<P>UINT ReadThreadProc(LPVOID param)</P>
+<P>{</P>
+<P>    int array1[10];</P>
+<P>    for (int x=0; x&lt;20; ++x)</P>
+<P>    {</P>
+<P>        countArray.GetArray(array1);</P>
+<P>        char str[50];</P>
+<P>        str[0] = 0;</P>
+<P>        for (int i=0; i&lt;10; ++i)</P>
+<P>        {</P>
+<P>            int len = strlen(str);</P>
+<P>            wsprintf(&amp;str[len], "%d ", array1[i]);</P>
+<P>        }</P>
+<P>        ::MessageBox((HWND)param, str, "Read Thread", MB_OK);</P>
+<P>    }</P>
+<P>    return 0;</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">7.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用下面的语句替换</FONT><FONT SIZE=3>OnStartthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中的所有语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CThreadView::OnStartthread() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your command handler code here</P>
+<P>&#9;HWND hWnd = GetSafeHwnd();</P>
+<P>    AfxBeginThread(WriteThreadProc, hWnd);</P>
+<P>    AfxBeginThread(ReadThreadProc, hWnd);</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">8.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>删除函数</FONT><FONT SIZE=3>OnStopthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>OnThreadended()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>、</FONT><FONT SIZE=3>OnCreate()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">9.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ThreadView.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>删除下列语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>const WM_THREADENDED = WM_USER + 100；</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">10.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在</FONT><FONT SIZE=3>ThreadView.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中删除下面的语句：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>afx_msg void OnStopthread();</P>
+<P>afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);</P>
+<P>afx_msg LONG OnThreadended();</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">11.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在资源编辑器中删除“线程”主菜单中的“停止线程”菜单选项。</P>
+<P ALIGN="JUSTIFY">现在编译并运行</FONT><FONT SIZE=3>Thread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序的新版本。当运行这个程序后，主窗口首先出现。选择“线程”主菜单中的“启动线程”菜单选项，首先弹出如图</FONT><FONT SIZE=3>12.4</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示的消息框显示当前受保护的数组的值。每次当你单击消息框的“确定”按钮，一个新的消息框又出现。这种消息框要出现</FONT><FONT SIZE=3>20</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>次。在消息框中列出的数组的值取决于单击消息框的“确定”按钮以销毁消息框所花的时间，因为第一个线程每一秒更新一次数组中的数据。</P>
+<P ALIGN="CENTER"><IMG SRC="Image441.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image441.gif" WIDTH=96 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>12. 4 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>读取数据对话框</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">如果没有线程同步，则在消息框中出现的数字将不会相同。</P>
+<P ALIGN="JUSTIFY">如果仔细检查源代码，你会发现第一个线程</FONT><FONT SIZE=3>WriteThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在一个循环类十次调用</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的成员函数</FONT><FONT SIZE=3>SetArray()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。每一次</FONT><FONT SIZE=3>SetArray()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数将</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给这个线程，修改受保护的数组的值，然后又释放对</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的所有权。注意函数</FONT><FONT SIZE=3>Sleep()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，它将这个线程挂起</FONT><FONT SIZE=3>1000</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>毫秒。</P>
+<P ALIGN="JUSTIFY">第二个线程</FONT><FONT SIZE=3>ReadThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>为了构造一个显示数组元素的字符串也在访问</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。但是如果</FONT><FONT SIZE=3>WriteThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>正在用更新数组中元素的值，</FONT><FONT SIZE=3>ReadThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>必须等待。反之也是对的，即</FONT><FONT SIZE=3>WriteThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>不能够访问受保护的数据直到它重新从</FONT><FONT SIZE=3>ReadThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>得到对</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的所有权。</P>
+<P ALIGN="JUSTIFY">如果你希望测试一下</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>是否在起作用，把</FONT><FONT SIZE=3>SetArray()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>函数最后的</FONT><FONT SIZE=3>criticalSection.Unlock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>删除。重新编译并运行该程序，这次没有消息框出现。因为</FONT><FONT SIZE=3>WriteThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>完全占有了</FONT><FONT SIZE=3>criticalSection</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，这将导致系统一致将</FONT><FONT SIZE=3>ReadThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>挂起，直到你退出这个程序。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(2)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用</FONT><FONT FACE="Arial" SIZE=3>Mutex</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>（互斥对象）</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">互斥对象有点象</FONT><FONT SIZE=3>critical section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，但有些复杂，因为它不仅允许同一程序的线程之间，而且允许不同程序的线程之间共享资源。尽管在不同程序之间的线程同步超出了本章的范围，但是你可以通过替换</FONT><FONT SIZE=3>critical section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>获得使用互斥对象的经验。</P>
+<P ALIGN="JUSTIFY">下面是</FONT><FONT SIZE=3>CCountArray2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的头文件。除了名称和互斥对象外，这个文件和原来的</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>完全相同。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "afxmt.h"</P>
+<P>class CCountArray2</P>
+<P>{</P>
+<P>private:</P>
+<P>    int array[10];</P>
+<P>    CMutex mutex;</P>
+<P>public:</P>
+<P>    CCountArray2() {};</P>
+<P>    ~CCountArray2() {};</P>
+<P>    void SetArray(int value);</P>
+<P>    void GetArray(int dstArray[10]);</P>
+<P>};</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">下面是</FONT><FONT SIZE=3>CCountArray2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的执行文件，正如你所看到的，尽管互斥对象和</FONT><FONT SIZE=3>critical section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>提供相同的服务，但是二者使用起来还是有很多不同的。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">#include "stdafx.h"</P>
+<P ALIGN="JUSTIFY">#include "CountArray2.h"</P>
+<P ALIGN="JUSTIFY">void CCountArray2::SetArray(int value)</P>
+<P ALIGN="JUSTIFY">{</P>
+<P ALIGN="JUSTIFY">    CSingleLock singleLock(&amp;mutex);</P>
+<P ALIGN="JUSTIFY">    singleLock.Lock();</P>
+<P ALIGN="JUSTIFY">    for (int x=0; x&lt;10; ++x)</P>
+<P ALIGN="JUSTIFY">        array[x] = value;</P>
+<P ALIGN="JUSTIFY">}</P>
+<P ALIGN="JUSTIFY"></P>
+<P ALIGN="JUSTIFY">void CCountArray2::GetArray(int dstArray[10])</P>
+<P ALIGN="JUSTIFY">{</P>
+<P ALIGN="JUSTIFY">    CSingleLock singleLock(&amp;mutex);</P>
+<P ALIGN="JUSTIFY">    singleLock.Lock();</P>
+<P ALIGN="JUSTIFY">    for (int x=0; x&lt;10; ++x)</P>
+<P ALIGN="JUSTIFY">        dstArray[x] = array[x];</P>
+<P ALIGN="JUSTIFY">}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">为了访问一个互斥对象，你必须创建一个</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象或一个</FONT><FONT SIZE=3>CMultiLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，由它们来执行实际上的访问控制。</FONT><FONT SIZE=3>CCountArray2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类使用</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，因为这个类只处理单一的互斥对象。当代码准备操作受保护的资源，你应当创建一个</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CSingleLock singleLock(&amp;mutex);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">这个构造函数的参数是一个指向你希望控制的线程同步对象的指针。接着为了获得对互斥对象的访问权限，你应当调用</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>Lock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>singleLock.Lock();</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">如果互斥对象不被任何线程拥有，调用上述语句的线程将拥有该互斥对象。如果另外一个程序已经占有了互斥对象，系统将挂起调用上述语句的线程直到互斥对象被释放，此时被挂起的线程被唤醒并且占有互斥对象。</P>
+<P ALIGN="JUSTIFY">为了释放这个互斥对象，你应该调用</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的成员函数</FONT><FONT SIZE=3>Unlock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。然而，如果你是在栈中创建的</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象，就不必调用</FONT><FONT SIZE=3>Unlock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。当函数结束后，该对象超出作用范围，这将使其析构函数执行。析构函数将释放互斥对象。</P>
+<P ALIGN="JUSTIFY">为了在</FONT><FONT SIZE=3>Thread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序中测试新的类</FONT><FONT SIZE=3>CCountArray2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，向工程中添加新的</FONT><FONT SIZE=3>CountArray2.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CountArray2.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，并删除原来的</FONT><FONT SIZE=3>CountArray.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>CountArray.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。最后在</FONT><FONT SIZE=3>ThreadView.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中将有关</FONT><FONT SIZE=3>CcountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的代码全部换成</FONT><FONT SIZE=3>CCountArray2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，编译并运行程序，结果和使用</FONT><FONT SIZE=3>critical section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>一样。</P><DIR>
+
+</FONT><FONT FACE="Arial" SIZE=3><P>(3)&#9;</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>使用信号量（</FONT><FONT FACE="Arial" SIZE=3>Semaphore</FONT><FONT FACE="黑体" LANG="ZH-CN" SIZE=3>）</P></DIR>
+
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">尽管在</FONT><FONT SIZE=3>MFC</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序中使用信号量和使用</FONT><FONT SIZE=3>critical section</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和互斥对象相差不多，但是功能却不大相同。信号量允许多个线程同时访问资源，但必须是同一点。</P>
+<P ALIGN="JUSTIFY">当你创建了信号量。你应当告诉它同一时刻有多少线程访问它。这样，每次一个线程抢占资源，信号量减小它内部的计数器。当计数器为</FONT><FONT SIZE=3>0</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>时，不会再有其它线程被允许访问资源直到有释放了资源使计数器增加。</P>
+<P ALIGN="JUSTIFY">在创建信号量时应当设置计数器的初始值和最大值，如下所示：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CSemaphore Semaphore(2, 2);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">因为在本节中你将使用信号量创建线程安全类，因此需要声明一个</FONT><FONT SIZE=3>CSemaphore</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的指针作为成员变量，并且在类的构造函数中创建一个</FONT><FONT SIZE=3>CSemaphore</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>semaphore = new CSemaphore(2, 2);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">一旦你创建了信号量对象，就开始计算资源访问。为了实现资源访问，首先应当创建一个</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象</FONT><FONT SIZE=3>,</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>给它信号量的指针，如下：</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>CSingleLock singleLock(semaphore);</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">接着，为了减小信号量的计数器，应当调用</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>Lock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>singleLock.Lock();</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">此时，信号量减小了内部的计数器。这个新的数目保持有效直到信号量被释放。通过调用</FONT><FONT SIZE=3>CSingleLock</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>的成员函数</FONT><FONT SIZE=3>Unlock()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>，</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>singleLock.Unlock();</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">下面是一个新的类</FONT><FONT SIZE=3>CSomeResource</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</FONT><FONT SIZE=3>CSomeResource</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用来说明信号量的用法。这个类只有一个成员变量即指向</FONT><FONT SIZE=3>CSemaphore</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象的指针。</P>
+<P ALIGN="JUSTIFY">下面是</FONT><FONT SIZE=3>CSomeResource</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的头文件</FONT><FONT SIZE=3>SOMERESOURCE.H</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "afxmt.h"</P>
+<P>class CSomeResource</P>
+<P>{</P>
+<P>private:</P>
+<P>    CSemaphore* semaphore;</P>
+<P>public:</P>
+<P>    CSomeResource();</P>
+<P>    ~CSomeResource();</P>
+<P>    void UseResource();</P>
+<P>};</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">下面是</FONT><FONT SIZE=3>CSomeResource</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的执行文件</FONT><FONT SIZE=3>SOMERESOURCE.CPP</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。从中可以看出，</FONT><FONT SIZE=3>CSemaphore</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象在构造函数中被创建，在析构函数中被删除。</FONT><FONT SIZE=3>UseResource()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>成员函数通过从信号量获得一个计数器来访问资源，然后当函数退出时释放信号量。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>#include "stdafx.h"</P>
+<P>#include "SomeResource.h"</P>
+<P>CSomeResource::CSomeResource()</P>
+<P>{</P>
+<P>    semaphore = new CSemaphore(2, 2);</P>
+<P>}</P>
+<P>CSomeResource::~CSomeResource()</P>
+<P>{</P>
+<P>    delete semaphore;</P>
+<P>}</P>
+<P>void CSomeResource::UseResource()</P>
+<P>{</P>
+<P>    CSingleLock singleLock(semaphore);</P>
+<P>    singleLock.Lock();</P>
+<P>    Sleep(5000);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">按照下面的步骤修改原来的</FONT><FONT SIZE=3>Thread</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>程序以测试</FONT><FONT SIZE=3>CSomeResource</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>对象。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">1.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>删除</FONT><FONT SIZE=3>CCountArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>类的头文件和执行文件。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">2.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>创建新的</FONT><FONT SIZE=3>SomeResource.h</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>SomeResource.cpp</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">3.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>在新添加的两个文件中加入代码。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">4.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用</FONT><FONT SIZE=3>#include "SomeResource.h"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>语句换掉</FONT><FONT SIZE=3>"CountArray2.h"</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">5.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用</FONT><FONT SIZE=3>CSomeResource someResource;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>替换</FONT><FONT SIZE=3>CCountArray2 countArray</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">6.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>用下面三个函数替换</FONT><FONT SIZE=3>WriteThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和</FONT><FONT SIZE=3>ReadThreadProc()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>UINT ThreadProc1(LPVOID param)</P>
+<P>{</P>
+<P>    someResource.UseResource();</P>
+<P>    ::MessageBox((HWND)param,"Thread 1 had access.", </P>
+<P>"Thread 1", MB_OK);</P>
+<P>    return 0;</P>
+<P>}</P>
+
+<P>UINT ThreadProc2(LPVOID param)</P>
+<P>{</P>
+<P>    someResource.UseResource();</P>
+<P>    ::MessageBox((HWND)param,"Thread 2 had access.",</P>
+<P> "Thread 2", MB_OK);</P>
+<P>    return 0;</P>
+<P>}</P>
+
+<P>UINT ThreadProc3(LPVOID param)</P>
+<P>{</P>
+<P>    someResource.UseResource();</P>
+<P>    ::MessageBox((HWND)param,</P>
+<P>        "Thread 3 had access.", "Thread 3", MB_OK);</P>
+<P>    return 0;</P>
+<P>}</P>
+</FONT><FONT SIZE=3><P ALIGN="JUSTIFY">7.&#9;</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>使用下面的语句替换</FONT><FONT SIZE=3>OnStartthread()</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>中所有的代码。</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P>void CThreadView::OnStartthread() </P>
+<P>{</P>
+<P>&#9;// TODO: Add your command handler code here</P>
+<P>&#9;HWND hWnd = GetSafeHwnd();</P>
+<P>    AfxBeginThread(ThreadProc1, hWnd);</P>
+<P>    AfxBeginThread(ThreadProc2, hWnd);</P>
+<P>    AfxBeginThread(ThreadProc3, hWnd);</P>
+<P>}</P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3><P ALIGN="JUSTIFY">现在编译并运行程序。当主窗口出现后，选择“线程”主菜单中的“启动线程”菜单选项。过</FONT><FONT SIZE=3>5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>秒种后，弹出两个消息框告诉你线程</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和线程</FONT><FONT SIZE=3>2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>拥有访问资源的权限。再过</FONT><FONT SIZE=3>5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>秒钟，第三个消息框弹出告诉你线程</FONT><FONT SIZE=3>3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>也拥有了访问资源的权限。线程</FONT><FONT SIZE=3>3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>之所以</FONT><FONT SIZE=3>5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>秒钟以后才出现，如图</FONT><FONT SIZE=3>12.5</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>所示。因为线程</FONT><FONT SIZE=3>1</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>和线程</FONT><FONT SIZE=3>2</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=3>首先占有了资源的控制权。信号量被设置成同一时刻只能有两个线程访问资源，所以第三个线程必须等待直到前两个线程释放对信号量的所有权。</P>
+<P ALIGN="CENTER"><IMG SRC="Image442.gif" tppabs="http://166.111.167.223/computer/cai/visual_c++_5.0_programming/Image442.gif" WIDTH=96 HEIGHT=62></P>
+</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1><P ALIGN="CENTER">图</FONT><FONT SIZE=1>12. 5 </FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>线程</FONT><FONT SIZE=1>3</FONT><FONT FACE="宋体" LANG="ZH-CN" SIZE=1>拥有访问权限</P></FONT></BODY>
+</HTML>

@@ -1,0 +1,846 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - String Matching</title></head><body>
+<div class="a"><div class="h">
+<p class="b">String Matching</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">運用後綴處理字串匹配問題</p>
+<p>一個字串的每個後綴的開頭，正是字串匹配時，P的每個對齊位置。儘管後綴是指字串的後端，然而後綴用於字串匹配時，思想上是連結到後綴的前端。</p>
+<pre>
+T: mississippi
+P: issi
+
+all suffixes of T:
+   mississippi, ississippi, ssissippi, ...
+   
+string matching:
+   0             1            2
+   mississippi   ississippi   ssissippi   ...
+   issi          issi         issi
+</pre>
+<p>以後綴為觀點，便產生了一種字串匹配的手法：第一步、先列出T的全部後綴，第二步、尋找哪些後綴的前綴恰是P。</p>
+<p>選擇一個適當的資料結構，儲存T的全部後綴，並且預先排序T的全部後綴，如此尋找P的速度就會更快。</p>
+<p class="t">儲存大量後綴的資料結構</p>
+<p>事實上，任何一種儲存大量字串的資料結構，都可用來儲存T的全部後綴，例如二維陣列、Trie、Ternary Tree、甚至是C++ STL提供的set資料結構。</p>
+<p>由於後綴具有一些特性，因此資料結構的大小是可以改進的，排序全部後綴的速度是可以改進的。當今已有數種資料結構，能以O(T)的時間，儲存並且排序全部後綴；能以接近O(P)的時間，進行字串匹配。</p>
+<pre>
+               build    string matching
+---------------------------------------
+suffix array   O(T)     O(PlogT)
+ + lcp array   O(T)     O(P + logT)
+suffix trie    O(T^2)   O(P)
+suffix tree    O(T)     O(P)
+</pre>
+<p class="t">運用後綴處理其他問題</p>
+<p>一個字串的全部後綴，除了能夠處理字串匹配問題，另外也能夠處理比對連續字元的問題。</p>
+<pre>
+Longest Common Prefix of Suffixes
+Longest Common Extension
+Longest Common Substring
+Longest Repeated Substring
+</pre>
+<p>無論採用哪一種資料結構來儲存後綴，都能處理這些問題。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量Suffix資料結構: Suffix Array</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Suffix Array</p>
+<p>一個字串的全部後綴，統統放入陣列，方便管理。然後排序所有後綴，以利之後搜尋，就成了「後綴陣列」。</p>
+<pre>
+string:
+   mississippi
+
+all suffixes:
+   mississippi, ississippi, ssissippi, sissippi, issippi,
+   ssippi, sippi, ippi, ppi, pi, i
+
+suffix array:
+   +---+------+---------+------------+-------------+-     -+
+   | i | ippi | issippi | ississippi | mississippi |  ...  |
+   +---+------+---------+------------+-------------+-     -+
+
+suffix array:
+   +---------+--------+--------+--------+-     -+
+   | [10,10] | [7,10] | [4,10] | [1,10] |  ...  |
+   +---------+--------+--------+--------+-     -+
+
+suffix array:
+   +----+---+---+---+---+---+---+---+---+---+---+
+   | 10 | 7 | 4 | 1 | 0 | 9 | 8 | 6 | 3 | 5 | 2 |
+   +----+---+---+---+---+---+---+---+---+---+---+
+
+horizational presentation of suffix array:
+     | sa | suffix
+  ---+----+------------
+   0 | 10 | i
+   1 |  7 | ippi
+   2 |  4 | issippi
+   3 |  1 | ississippi
+   4 |  0 | mississippi
+   5 |  9 | pi
+   6 |  8 | ppi
+   7 |  6 | sippi
+   8 |  3 | sissippi
+   9 |  5 | ssippi
+  10 |  2 | ssissippi
+
+vertical presentation of suffix array:
+   +------------------------+
+   | 10 7 4 1 0 9 8 6 3 5 2 |
+   +------------------------+
+      i i i i m p p s s s s
+        p s s i i p i i s s
+        p s s s   i p s i i 
+        i i i s     p s p s
+          p s i     i i p s
+          p s s       p i i
+          i i s       p   p
+            p i       i   p
+            p p           i
+            i p
+              i
+</pre>
+<p>只要有兩個索引值就可以表示一個字串，當然也就可以表示一個後綴。由於各個後綴的結尾索引值都一樣，所以可以省略結尾索引值，僅需記下開頭索引值；採用指標也是可以。如此一來後綴陣列的空間複雜度就成為O(T)。</p>
+<p class="t">演算法（Quicksort）</p>
+<p>建立後綴陣列有許多不同的演算法，最簡單的方式就是直接排序所有後綴。</p>
+<p>排序過程當中，兩兩比較次數是O(TlogT)，比較兩個後綴的大小需時O(T)，故時間複雜度為O(TlogT * T) = O(T^2 * logT)。運用內建函式庫，即可輕鬆實作。</p>
+<p>由於每個後綴長度都不同，所以最終名次一定也都不同，毋須特地使用stable sort。</p>
+<textarea>
+char t[11+1] = "mississippi";
+int sa[11];	// t的後綴陣列
+
+int cmp(const void* i, const void* j)
+{
+	return strcmp(t + *(int*)i, t + *(int*)j);
+}
+
+void suffix_array()
+{
+	for (int i=0; i<11; ++i) sa[i] = i;
+	qsort(sa, 11, sizeof(int), cmp);
+}
+</textarea>
+<textarea>
+char t[11+1] = "mississippi";
+char* sa[11];	// 用指標代替索引值
+
+int cmp(const void* i, const void* j)
+{
+	return strcmp(*(char**)i, *(char**)j);
+}
+
+void suffix_array()
+{
+	for (int i=0; i<11; ++i) sa[i] = t + i;
+	qsort(sa, 11, sizeof(char*), cmp);
+}
+</textarea>
+<textarea>
+char t[11+1] = "mississippi";
+char* sa[11];	// 用指標代替索引值
+
+bool cmp(const char* i, const char* j)
+{
+	return strcmp(i, j) < 0;
+}
+
+void suffix_array()
+{
+	for (int i=0; i<11; ++i) sa[i] = t + i;
+	sort(sa, sa+11, cmp);	// C++內建的排序，非常慢。
+}
+</textarea>
+<p class="t">演算法（Radix Sort）</p>
+<p>字串的字母種類範圍有限，得以套用Radix Sort，爭取更好的時間複雜度。</p>
+<p>時間複雜度為O((T+A) * T)，其中A為字元種類數目。A一般是常數，可省略之，時間複雜度可簡單寫成O(T^2)。</p>
+<p class="t">演算法（Prefix-doubling Algorithm）</p>
+<p>Radix Sort和Prefix-doubling Algorithm非常相似，皆是反反覆覆排序許多次。兩者的主要差異在於鍵值。</p>
+<p>Radix Sort每次排序的鍵值，依序是倒數第一個、倒數第二個、倒數第三個、……字元；Prefix-doubling Algorithm每次排序的鍵值，則是前一個、前二個、前四個、前八個、……字元。</p>
+<p>每個後綴開頭，長度為一、二、四、八、……的前綴，依序作為鍵值，實施O(logT)次排序。每次排序，採用Quicksort。並且運用上一回合的排序結果，先比鍵值前半段、才比鍵值後半段。每次排序需時O(TlogT)，總時間複雜度為O(T * (logT)^2)。</p>
+<p>排序過程可以看成是：用相鄰的一個字元的排序結果，拼成兩個字元的排序結果；用相鄰的兩個字元的排序結果，拼成四個字元的排序結果；如此不斷下去，直到字元長度大於等於最長的後綴（即是原字串），此時表示最長的後綴也都排序好了。</p>
+<textarea>
+char t[11+1] = "mississippi";
+int sa[11];
+int temp[2][11];
+
+struct CMP
+{
+	int* rank, n, N;
+	bool operator()(const int& i, const int& j)
+	{
+		// 先比前半段，再比後半段。
+		if (rank[i] != rank[j])
+			return rank[i] < rank[j];
+		int a = (i+n<N) ? rank[i+n] : -1;
+		int b = (j+n<N) ? rank[j+n] : -1;
+		return a < b;
+	}
+};
+
+void suffix_array()
+{
+	int N = 11;	// 字串長度
+	int* rank = temp[0];
+	int* new_rank = temp[1];
+
+	for (int i=0; i<N; i++)
+	{
+		// 各個名次對應的後綴
+		// 隨便初始化一個順序，稍後會重新排序。
+		sa[i] = i;
+		// 各個後綴對應的名次
+		// 偷懶取巧：直接把ASCII數值當作是名次。
+		rank[i] = t[i];
+	}
+
+	// 鍵值長度逐步倍增
+	for (int n=1; n<N; n*=2)
+	{
+		// 運用上一回合求得的名次，排序所有後綴。
+		// 鍵值是每個後綴的前2*n個字元，
+		// 先比前半段、再比後半段。
+		CMP cmp = {rank, n, N};
+		sort(sa, sa+N, cmp);
+
+		// 重新整理名次。
+		// 相異者、排在相異名次，相同者、排在相同名次。
+		int r = 0;
+		new_rank[sa[0]] = r;
+		for (int i=1, r=0; i<N; i++)
+		{
+			if (cmp(sa[i-1], sa[i])) r++;
+			new_rank[sa[i]] = r;
+		}
+		swap(rank, new_rank);
+
+		// 如果名次皆相異，表示排序完畢，可以提早結束。
+		if (r == N-1) break;
+	}
+}
+</textarea>
+<p>每次排序，改用Counting Sort，則時間複雜度降為O(TlogT + A)，其中A為字元種類數目。</p>
+<textarea>
+char t[11+1] = "mississippi";
+int sa[11];		// suffix array，各個名次對應的後綴。
+int c[50000];	// 計數排序法的計數陣列
+int temp[2][50000];
+
+void suffix_array()
+{
+	int N = 11;				// 字串長度
+	int A = 128;			// 計數排序法數值範圍
+	int* rank = temp[0];	// 各個後綴對應的名次
+	int* sa2 = temp[1];		// 各個名次對應的後綴後半段
+
+	// 各個後綴第一個字元，實施計數排序法。
+	// 然後累計次數，直接得到名次。
+	// 從索引值最高的後綴開始處理，得到各個後綴對應的名次。
+	// （偷懶取巧：直接把ASCII數值當作是名次。）
+	for (int i=0; i<A; ++i) c[i] = 0;
+	for (int i=0; i<N; ++i) c[rank[i] = t[i]]++;
+	for (int i=1; i<A; ++i) c[i] += c[i-1];
+	for (int i=N-1; i>=0; --i)
+		sa[--c[t[i]]] = i;
+
+	// 鍵值長度逐步倍增
+	for (int n=1; n<N; n*=2)
+	{
+		// sa 是各個名次對應的後綴前半段
+		// sa2是各個名次對應的後綴後半段
+		// rank是各個後綴前半段對應的名次
+
+		// sa與rank在上一回合就計算好了，現在要計算sa2。
+		// 最後n個後綴的後半段，肯定都是空字串，名次最高。
+		// 各個空字串依照索引值由小到大進行排名。
+		int r = 0;	// 名次
+		for (int i=N-n; i<N; ++i)
+			sa2[r++] = i;
+
+		// 其它的後綴的後半段，運用sa求得。
+		for (int i=0; i<N; ++i)
+			// 位置大於等於k，實際上才有前半段。
+			if (sa[i] >= n)
+				sa2[r++] = sa[i] - n;
+
+		// 使用各個後綴的名次，實施計數排序法。
+		// 從名次最高的後綴後半段開始處理，得到正確名次。
+		for (int i=0; i<A; ++i) c[i] = 0;
+		for (int i=0; i<N; ++i) c[rank[i]]++;
+		for (int i=1; i<A; ++i) c[i] += c[i-1];
+		for (int i=N-1; i>=0; --i)
+			sa[--c[rank[sa2[i]]]] = sa2[i];
+
+		// 暫且以sa2來儲存本回合的rank，
+		// 然後計算下一回合的rank。
+		int*& new_rank = sa2;
+		new_rank[sa[0]] = r = 0;
+		for (int i=1; i<N; ++i)
+		{
+			// 相異者、排在相異名次，相同者、排在相同名次。
+			// （偷懶取巧：因為最後n個後綴，
+			// 上個回合就已經排序完畢，
+			// 這些後綴長度不等、名次一定都相異，
+			// 所以不會遇到sa[i-1]+n和sa[i]+n溢位。）
+			if (!(rank[sa[i-1]] == rank[sa[i]] &&
+				rank[sa[i-1]+n] == rank[sa[i]+n]))
+				r++;
+			new_rank[sa[i]] = r;
+		}
+		swap(rank, sa2);
+
+		// 如果名次皆相異，表示排序完畢，可以提早結束。
+		if (r == N-1) break;
+		// 修正一下計數排序法數值範圍
+		A = r + 1;
+	}
+}
+</textarea>
+<p class="t">演算法（DC3 Algorithm）</p>
+<p>運用Divide and Conquer以及Radix Sort，把全部後綴分成三類，分別處理。時間複雜度為O(T)，可是不太實用。</p>
+<pre>
+一、所有後綴根據開頭位置分成兩堆，
+　　開頭位置模三之後，餘零者為S0，餘一或二者為S12。
+二、用radix sort排序S12，僅排序前三個字元。
+　　平手者，才繼續排序下三個字元。
+　　途中可以隨時利用已經排序好的部份。
+三、利用排序完畢的S12，來排序S0。
+四、合併S12與S0。
+
+時間複雜度為T(n) = O(n) + T(2n/3) = O(N)。
+</pre>
+<p>程式碼不太優雅，這裡就不講解了。原始論文有提供程式碼。</p>
+<p class="t">字串匹配</p>
+<p>由於後綴是放在陣列，而且後綴都排序過了，所以可以使用Binary Search來尋找開頭為P的後綴。時間複雜度為O(PlogT)。</p>
+<textarea>
+char t[11+1] = "mississippi";
+char p[4+1] = "issi";
+int sa[11];	// t的後綴陣列
+
+// 小心，此寫法是編譯器未定義行為。
+// i不見得是bsearch的鍵值，j不見得是已排序陣列的索引值。
+int cmp2(const void* i, const void* j)
+{
+	char* p = (char*)i;
+	char* s = t + *(int*)j;
+	for (; *p; ++p, ++s)
+		if (*p != *s)
+			return *p - *s;
+	return 0;
+}
+
+void string_matching()
+{
+	suffix_array();
+
+	int* i = (int*) bsearch(p, sa, 11, sizeof(int), cmp2);
+	if (!i)
+		cout << "找不到";
+	else
+		cout << "T的第" << *i << "個字元開始為P";
+}
+</textarea>
+<p class="t">大量字串匹配</p>
+<p>所有T連成一串，用字典順序最小、從未出現的字元隔開，例如'\0'。然後計算後綴陣列，後綴排序必然正確。</p>
+<p>每個P各自做二分搜尋即可。</p>
+<p class="e">UVa 10526 10580</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量Suffix資料結構: Longest Common Prefix Array</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Longest Common Prefix（LCP）</p>
+<p>一群字串的「最長共同前綴」，是指每個字串都有出現的前綴之中，最長的那一個前綴，只會有一個，有可能是空字串。</p>
+<pre>
+s1: aabbccc
+s2: aabbbccc
+s3: aabaccc
+
+s1 s2 s3 的 LCP 就是 aab。
+</pre>
+<p>要求「最長共同前綴」很簡單，從字串開頭逐一比對各字串的對應字元即可，應該難不倒各位。</p>
+<p class="t">Longest Common Prefix of Suffixes</p>
+<p>一個字串的所有後綴，它們之間的「最長共同前綴」。</p>
+<pre>
+string:
+   abbbababba
+
+suffixes:
+   s0: abbbababba
+   s1: bbbababba
+   s2: bbababba
+       ......
+   s8: ba
+   s9: a
+
+LCP(s1, s2) = bb
+LCP(s0, s9) = a
+</pre>
+<p class="t">兩個後綴的LCP，<br>就是排序全部後綴之後，兩個後綴涵蓋區間的所有後綴的LCP。</p>
+<p>全部後綴經過排序之後，開頭相近的後綴，會被排在一起；開頭不相近的後綴，會被開頭相近的後綴隔開。</p>
+<pre>
+   +---------------------+
+sa | 9 4 6 0 8 3 5 7 2 1 |
+   +---------------------+
+     0 1 2 3 4 5 6 7 8 9
+    ---------------------
+     a a a a b b b b b b
+       b b b a a a b b b
+       a b b   b b a a b
+       b a b   a b   b a
+       b   a   b a   a b
+       a   b   b     b a
+           a   a     b b
+           b         a b
+           b           a
+           a
+
+LCP(7th, 9th) = LCP(7th, 8th, 9th) = LCP(s7, s2, s1) = bb
+LCP(4th, 8th) = LCP(4th, ..., 8th) = LCP(s8, ..., s2) = b
+</pre>
+<p class="t">排序全部後綴之後，兩個後綴涵蓋區間的所有後綴的LCP，<br>就是兩兩相鄰後綴的LCP們的LCP。</p>
+<pre>
+LCP(7th, 9th) = LCP( LCP(7th, 8th), LCP(8th, 9th) ) = bb
+LCP(4th, 8th) = LCP( LCP(4th, 5th), ..., LCP(7th, 8th) ) = b
+</pre>
+<p>如此一來，以相鄰後綴的LCP，就可以推導出任意後綴的LCP了。</p>
+<p class="t">兩兩相鄰後綴的LCP，表達成數值：<br>Longest Common Prefix Array</p>
+<p>直接紀錄LCP字串會浪費很多記憶體空間，因此改為紀錄LCP長度。LCP長度輔以原本的後綴字串，便可得到LCP字串。</p>
+<p>全部後綴經過排序之後，每一個後綴與前（後）一個後綴的LCP長度，儲存在陣列當中，就成為LCP Array。</p>
+<pre>
+     +---------------------+
+  sa | 9 4 6 0 8 3 5 7 2 1 |
+     +---------------------+
+lcpa | 0 1 2 3 0 2 3 1 3 2 |
+     +---------------------+
+       0 1 2 3 4 5 6 7 8 9
+      ---------------------
+       a a a a b b b b b b
+         b b b a a a b b b
+         a b b   b b a a b
+         b a b   a b   b a
+         b   a   b a   a b
+         a   b   b     b a
+             a   a     b b
+             b         a b
+             b           a
+             a
+
+LCP_length(7th, 9th) = min(lcpa[7+1], ..., lcpa[9]) = 2
+LCP_length(4th, 8th) = min(lcpa[4+1], ..., lcpa[8]) = 1
+</pre>
+<p>兩個後綴的LCP，藉由LCP Array，就變成查詢區間最小值的問題了。可參考「<a href="Sequence.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Sequence.html">Range Minimum Query</a>」。</p>
+<p class="t">普通的演算法</p>
+<p>依序計算兩兩相鄰後綴的LCP，時間複雜度O(N^2)。</p>
+<textarea>
+char s[10 + 1];	// string
+int sa[10];		// suffix array，各個名次對應的後綴。
+int lcpa[10];	// longest common prefix array
+
+int lcp_length(char* s, char* t)
+{
+	int n = 0;
+	while (s[n] && t[n] && s[n] == t[n]) n++;
+	return n;
+}
+
+void lcp_array()
+{
+	lcpa[0] = 0;
+	for (int i=1; i<N; i++)
+		lcpa[i] = lcp_length(s+sa[i], s+sa[i-1]);
+}
+</textarea>
+<p class="t">巧妙的演算法</p>
+<p>運用小技巧，建立LCP Array僅需時O(N)。</p>
+<p>一個字串的後綴，開頭去掉一個字元，仍是後綴。</p>
+<p>後綴陣列當中，兩個相鄰後綴，開頭各去掉一個字元，得到兩個新後綴，可能相鄰、可能不相鄰，但是大小關係依然相同。</p>
+<p>兩個新後綴，LCP少了一個開頭字元、LCP長度少一，小心不能減至負值。</p>
+<pre>
+         1 2     5 6 
+      ---------------------
+         a a     b b
+         b b     a a
+         a b     b b
+         b a     a b
+         b       b a
+         a       b
+                 a
+
+bababba < babba            => ababba < abba
+LCP(bababba, babba)        =  b + LCP(ababba, abba)
+LCP_length(bababba, babba) =  1 + LCP_length(ababba, abba)
+</pre>
+<pre>
+           2 3       7   9
+      ---------------------
+           a a       b   b
+           b b       b   b
+           b b       a   b
+           a b           a
+             a           b
+             b           a
+             a           b
+             b           b
+             b           a
+             a
+
+abba < abbbababba            => bba < bbbababba
+LCP(abba, abbbababba)        =  a + LCP(bba, bbbababba)
+LCP_length(abba, abbbababba) =  1 + LCP_length(bba, bbbababba)
+
+LCP_length(7th, (7+1)th) ≥ LCP_length(7th, 9th)
+LCP_length((9-1)th, 9th) ≥ LCP_length(7th, 9th)
+</pre>
+<p>第一個新後綴、其後方相鄰後綴，兩者的LCP長度，比兩個新後綴的LCP長度更長、一樣長。</p>
+<p>第二個新後綴、其前方相鄰後綴，兩者的LCP長度，比兩個新後綴的LCP長度更長、一樣長。</p>
+<p>逐次去掉後綴的開頭字元，以此順序計算相鄰後綴的LCP。LCP長度減一之後，由於新後綴與其相鄰後綴的LCP長度一定更長、一樣長，所以不必從頭開始比對字元。</p>
+<pre>
+一、依序掃描原字串的每個後綴。每次都會少掉一個開頭字元：
+　甲、求得該後綴在後綴陣列裡的位置。
+　乙、再找出上一個相鄰後綴。
+　丙、逐一比對字元，求出LCP長度，儲存於LCP Array。
+　丁、下次就可以從LCP長度減一開始比對字元。小心不能減至負值。
+</pre>
+<textarea>
+char s[10 + 1];	// string
+int sa[10];		// suffix array，各個名次對應的後綴。
+int rank[10];	// 各個後綴對應的名次
+int lcpa[10];	// longest common prefix array
+
+void lcp_array()
+{
+	// 也就是各個後綴在sa當中的索引值
+	// 也就是sa的反函數
+	for (int i=0; i<N; ++i)
+		rank[sa[i]] = i;
+
+	for (int i=0, lcp=0; i<N; i++)
+		if (rank[i] == 0)
+			lcpa[0] = 0;
+		else
+		{
+			int j = sa[rank[i]-1];
+			if (lcp > 0) lcp--;
+			while (s[i+lcp] == s[j+lcp]) lcp++;
+			lcpa[rank[i]] = lcp;
+		}
+}
+</textarea>
+<p class="t">字串匹配</p>
+<p>T的後綴陣列裡面，二分搜尋P。令二分搜尋的三個指標是L M R。一旦L R與P有相同前綴，那麼M與P比大小時，就不用比對這一段相同前綴了。</p>
+<p>時間複雜度是O(PlogT)，可以加速到O(P+logT)。然而實際運作起來並無太大差異。</p>
+<pre>
+一、計算T的Suffix Array。O(T)。
+二、計算T的Longest Common Prefix Array。O(T)。
+三、預先算好二分搜尋時所有可能遭遇的區間的LCP(i,j)。O(T)。
+　回、建立偽線段樹的過程，即可算得。
+　回、或採< O(T),O(1) > RMQ。很難實作。
+四、二分搜尋時，判斷LCP(L,M)、LCP(M,R)，與LCP(L,P)（或LCP(R,P)）的大小關係。
+　　把P與適合的L或R，盡可能增加共同前綴的長度。O(P+logT)。
+</pre>
+<p class="e">ICPC 4657</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量Suffix資料結構: Suffix Trie</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">普通的建立方法</p>
+<p>把一個字串的所有後綴，通通塞入一棵Trie，就成了Suffix Trie。Trie的使用方式以及程式碼，請參考本站文件「<a href="String.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/String.html">Trie</a>」。</p>
+<p>T個後綴塞入Trie的時間複雜度為O(T^2)，空間複雜度為O(T^2)。</p>
+<img src="SuffixTrie1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SuffixTrie1.png">
+<p class="t">運用suffix link的建立方法</p>
+<p>先前介紹Aho-Corasick Algorithm已經提過suffix link：每個節點各自牽一條線到次長後綴的節點。</p>
+<p>運用suffix link，就能online建立Suffix Trie，而且不必重覆遍歷已經建立的節點。每加入一個字元，就從最深的節點開始走訪suffix link、建立新節點。</p>
+<p>加入所有字元之後，記得標出每個後綴所在節點。</p>
+<p>時間複雜度仍是O(T^2)，空間複雜度仍是O(T^2)。</p>
+<img src="SuffixTrie2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SuffixTrie2.png">
+<textarea>
+char s[10000 + 1];
+
+struct Node
+{
+	bool word;
+	Node* l[128], *suffix;
+	Node()
+	{
+		word = false;
+		suffix = 0;
+		memset(l, 0, sizeof(l));
+	}
+};
+
+void suffix_trie()
+{
+	Node* root = new Node(), *deepest = root;
+	for (int i=0; s[i]; ++i)	// 逐次加入字元s[i]。
+	{
+		// 從最深的節點開始走訪suffix link
+		Node* prev_q = 0;
+		for (Node* p = deepest; true; p = p->suffix)
+		{
+			Node* q = p->l[s[i]];
+			if (!q)	// 節點尚未建立
+			{
+				p->l[s[i]] = q = new Node();
+				if (prev_q) prev_q->suffix = q;
+				prev_q = q;
+			}
+			else	// 節點已經建立
+			{
+				if (prev_q) prev_q->suffix = q;
+				break;
+			}
+		}
+		deepest = deepest->l[s[i]];
+	}
+
+	// 標出每個後綴所在節點
+	for (Node* p = deepest; p; p = p->suffix)
+		p->word = true;
+}
+</textarea>
+<p class="t">字串匹配</p>
+<p>從T找到一個P：從樹根開始走訪Suffix Trie，看看有沒有P。時間複雜度為O(P)。</p>
+<p>從T找到全部P：建立Suffix Trie的時候，每個後綴所經過的節點，都必須額外紀錄該後綴在T之中的出現位置。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量Suffix資料結構: Suffix Tree</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Suffix Tree</p>
+<p>Suffix Tree是Suffix Trie的改良版本：</p>
+<p>一、字串結尾額外添加一個從未出現的字元（例如'\0'），再來建立Suffix Trie。如此一來，後綴結尾總是出現在樹葉，不會出現在內部節點，就不必特別紀錄後綴所在節點。</p>
+<p>二、去除沒有分叉的節點，一連串的樹枝銜接成一根樹枝。</p>
+<p>三、兩個索引值就能表示一個子字串。樹枝上的子字串改為兩個索引值、或者兩個指標。</p>
+<img src="SuffixTree1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SuffixTree1.png">
+<p>如此成為了「後綴樹」，共T+1個樹葉。字元皆相同時，節點數最多，共2T+1個節點；字元皆不同時，節點數最少，共T+2個節點。空間複雜度是O(T)。</p>
+<p class="t">Suffix Tree: Ukkonen's Algorithm</p>
+<p><a href="javascript:if(confirm('http://www.csie.ntu.edu.tw/~hil/algo2011spring/algo2011spring09.pptx  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.csie.ntu.edu.tw/~hil/algo2011spring/algo2011spring09.pptx'" tppabs="http://www.csie.ntu.edu.tw/~hil/algo2011spring/algo2011spring09.pptx" class="l">http://www.csie.ntu.edu.tw/~hil/algo2011spring/algo2011spring09.pptx</a></p>
+<p>運用suffix link，是online演算法，時間複雜度為O(T)。</p>
+<p>樹葉終身是樹葉。因此每加入一個字元時，不必回到最深的節點開始建立新節點，可以直接從當前節點開始建立新節點。</p>
+<img src="SuffixTree2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SuffixTree2.png">
+<textarea>
+char s[10000 + 1];
+
+// 該節點上方的樹枝，儲存s[a,b)的字元。
+struct Node
+{
+	int a, b;
+	Node* l[128], *suffix;
+	Node(int a, int b): a(a), b(b), suffix(0)
+	{
+		memset(l, 0, sizeof(l));
+	}
+};
+
+void Ukkonen()
+{
+	Node* root = new Node(0, 0), *p = root;
+
+	// 逐次加入字元s[i]。包含'\0'。
+	int N = strlen(s);
+	for (int a=0, i=0; i<N+1; ++i)
+	{
+		Node* ant = root;
+		while (a <= i)
+		{
+			// 往下走，直到字元s[i-1]出現。
+			while (true)
+			{
+				if (a == i) break;
+				Node* q = p->l[s[a]];
+				if (a + q->b - q->a > i) break;
+				a += q->b - q->a;
+				p = q;
+			}
+
+			Node* q = p;
+			if (a == i)		// s[i-1]位在樹枝末梢。
+			{
+				// 節點已經建立。
+				if (p->l[s[i]]) break;
+			}
+			else if (a < i)	// s[i-1]位在樹枝中間。
+			{
+				// 節點已經建立。
+				Node* r = p->l[s[a]];
+				int k = r->a + i - a;
+				if (s[i] == s[k]) break;
+
+				// 節點尚未建立。
+				// 分裂此樹枝，以利將來插入樹葉。
+				p->l[s[a]] = q = new Node(r->a, k);
+				q->l[s[k]] = r; r->a = k;
+			}
+
+			// 建立樹葉。終身為葉。
+			q->l[s[i]] = new Node(i, 1e9);
+
+			// 建立上次樹葉的suffix link，連到這次樹葉。
+			// 至於這次樹葉的suffix link要等到下次才知道。
+			if (ant != root) ant->suffix = q;
+			ant = q;
+
+			// 走訪suffix link
+			if (p->suffix) p = p->suffix;
+			else a++;	// 次長後綴在同一個節點
+		}
+		if (ant != root) ant->suffix = p;
+	}
+}
+</textarea>
+<p class="t">字串匹配</p>
+<p>從T找到一個P：從樹根開始走訪Suffix Tree，看看有沒有P。時間複雜度為O(P)。</p>
+<p>Suffix Tree的每一條邊，是T中最先出現的字串。</p>
+<p>從T找到全部P：從Suffix Tree找到P之後，遍歷子樹。子樹的葉子數量，就是P在T當中的出現次數。至於P在T當中的位置是 [ T長度 - 葉子深度 , T長度 - 葉子深度 + 當前節點深度 ]。</p>
+<p>因為是二元樹，內部節點數量等於葉子數量減一，所以字串匹配的時間複雜度還是線性，只是出現次數的常數變兩倍。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">大量Suffix資料結構: Suffix Tray</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Suffix Tray</p>
+<p>Suffix Tree和Suffix Array一併使用。</p>
+<p><a href="javascript:if(confirm('http://cs.nyu.edu/cole/papers/suffix-trays.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://cs.nyu.edu/cole/papers/suffix-trays.pdf'" tppabs="http://cs.nyu.edu/cole/papers/suffix-trays.pdf">http://cs.nyu.edu/cole/papers/suffix-trays.pdf</a></p>
+<p><a href="javascript:if(confirm('http://courses.csail.mit.edu/6.851/spring07/scribe/lec09.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://courses.csail.mit.edu/6.851/spring07/scribe/lec09.pdf'" tppabs="http://courses.csail.mit.edu/6.851/spring07/scribe/lec09.pdf">http://courses.csail.mit.edu/6.851/spring07/scribe/lec09.pdf</a></p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Extension</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Longest Common Extension</p>
+<p>兩個字串，第一個字串從第i個字元開始，第二個字串從第j個字元開始，可以匹配到的最長字串，就是Longest Common Extension。</p>
+<pre>
+    01234567
+s1: aabbccc
+s2: aabbbccc
+
+LCE(0, 0) = aabb
+LCE(2, 2) = bb
+LCE(3, 4) = bccc
+</pre>
+<p>Longest Common Extension其實就是第一個字串的第i個後綴、第二個字串的第j個後綴，它們的Longest Common Prefix。</p>
+<p class="t">演算法（Suffix Array）</p>
+<p>把兩個字串的全部後綴，一起排序。如果有大量的i與j需要計算，可以使用Range Minimum Query來查詢LCP Array的區間最小值。</p>
+<p>時間複雜度為O(S+T)，S與T分別是兩個字串的長度。</p>
+<p class="t">演算法（Suffix Trie、Suffix Tree）</p>
+<p>把兩個字串的全部後綴統統丟入Suffix Trie或Suffix Tree當中，從樹根往下逐字比對即可。如果有大量的i與j需要計算，可以改為求兩個後綴結尾節點的Lowest Common Ancestor。</p>
+<p>時間複雜度為O(S+T)，S與T分別是兩個字串的長度。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Common Substring</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Longest Common Substring</p>
+<p>「最長共同子字串」是指一群字串當中，每一個字串都有的子字串，其長度最長者。可能有許多個。</p>
+<pre>
+s1: aabbccc
+s2: aabbbccc
+s3: baabaccc
+
+s1 s2 s3 的 Longest Common Substring 就是 aab 與 ccc。
+</pre>
+<p class="t">演算法（Suffix Array）</p>
+<p>把全部字串的全部後綴，標記好是屬於哪一個字串，然後統統排序。排在一起的後綴們，如果涵蓋了每一種字串的後綴，那麼這些後綴的共同前綴，就是一個共同子字串。所有的共同子字串當中，找出最長者，即為最長共同子字串。</p>
+<p>實作時可以用兩個指標，一前一後輪流移動，讓兩個指標所夾住之區間，持有每一種字串的後綴，以找出共同子字串。</p>
+<p>實作時可以把字串銜接成一整串，並在字串之間插入從未出現過的字元，就能直接套用後綴陣列的演算法。然而重新銜接字串會花費不少時間和空間，因此也可以嘗試修改後綴陣列的演算法，避免重新銜接字串。</p>
+<p>時間複雜度是O(N)，N是所有字串長度的總和。</p>
+<p>【待補程式碼】</p>
+<p>以下暫且提供未使用LCP Array的程式碼。</p>
+<textarea>
+char s[10][1024];		// 10個字串，長度皆可達到1024-1。
+char* sa[10 * 1024];	// suffix array
+int c[10];				// 紀錄目前出現的後綴是位於哪幾個字串。
+
+int cmp(const void* a, const void* b)
+{
+	return strcmp(*(char**)a, *(char**)b);
+}
+
+// 找出一個後綴所附屬的字串
+inline int pos(int n)
+{
+//	return (sa[n] - s[0]) / 1024;
+	return (sa[n] - s[0]) >> 10;
+}
+
+// 求出兩個字串的Longest Common Prefix長度
+int lcp(char* s, char* t)
+{
+	int n = 0;
+	while (s[n] && t[n] && s[n] == t[n]) n++;
+	return n;
+}
+
+void longest_common_substring()
+{
+	// 建立後綴陣列
+	int N = 0;
+	for (int i=0; i<10; ++i)
+		for (int j=0; s[i][j]; ++j)
+			sa[N++] = s[i] + j;
+
+	qsort(sa, N, sizeof(char*), cmp);
+
+	// 尋找連續後綴
+	int ans = 0;
+	memset(c, 0, sizeof(c));
+	for (int i=0, j=0, n=0; j<N; )
+	{
+		// 往右移動j，直到涵蓋每一種字串的後綴。
+		// 並且隨時紀錄每一種字串的後綴的出現次數。
+		while (n < N && j < N) if (!c[pos(j++)]++) n++;
+
+		// 計算共同子字串，並且紀錄最長者。
+		ans = max(ans, lcp(sa[i], sa[j]));
+
+		// 往右移動i，直到無法涵蓋每一種字串的後綴。
+		while (n == N) if (!--c[pos(i++)]) n--;
+	}
+
+	cout << "最長共同子字串的長度是" << ans;
+}
+</textarea>
+<p class="e">UVa 11107 11512 11855</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Longest Repeated Substring</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Longest Repeated Substring</p>
+<p>「最長重覆子字串」是指出現兩次以上的子字串當中，其長度最長者。可能有許多個。</p>
+<p>子字串重複出現有兩種定義，一種是位置可以重疊，另一種是位置不能重疊。</p>
+<pre>
+s: ababababa
+
+可以重疊的 Longest Repeated Substring 就是 abababa。
+不可以重疊的 Longest Repeated Substring 就是 abab 與 baba。
+</pre>
+<p class="t">可以重疊的Longest Repeated Substring</p>
+<p>LCP Array的最大值就是答案。各位用力想吧！時間複雜度為O(N)。</p>
+<p class="e">ICPC 4513</p>
+<p class="t">不可以重疊的Longest Repeated Substring</p>
+<p>試誤法，以Binary Search找出最長重複子字串的長度。</p>
+<p>看看後綴陣列是否有一段連續區間的LCP長度，恰好是最長重複子字串的長度，並且區間要足夠寬，讓子字串不重疊。</p>
+<p>時間複雜度為O(NlogN)。</p>
+<p class="e">UVa 10829</p>
+<p class="t">延伸閱讀：Karp-Miller-Rosenberg Algrotihm</p>
+<p>KMR Algorithm可以用來統計每個子字串的出現次數、出現位置。</p>
+<p>KMR Algorithm其實就是Prefix-Doubling Algorithm。依序排序長度為一、二、四、八、……的子字串，把每次排序的名次統統紀錄下來。然後利用名次，統計長度為一、二、四、八、……的子字串的出現次數、出現位置。整體的時間複雜度仍是O(NlogN)。</p>
+<pre>
+length = 1                   length = 2
+       | 0 1 2 3 4 5 6 7            | 0 1 2 3 4 5 6 7
+s      | a b a a b b a a     s      | a b a a b b a a
+rank   | 0 1 0 0 1 1 0 0     rank   | 1 3 0 1 4 3 0 2
+repeat | 5 3 5 5 3 3 5 5     repeat | 2 2 2 2 2 2 2 1 
+
+a      | 0 2 3 6 7           aa     | 2 6
+b      | 1 4 5               ab     | 0 3
+                             ba     | 1 5
+                             bb     | 4
+                             a      | 7
+</pre>
+<p>要尋找長度不是一、二、四、八、……的子字串出現位置，一樣也是使用排序，找出名次，再統計出現位置。排序時，利用長度最接近、略短於目前長度的子字串排序結果，一樣也是先比前半段，再比後半段，前後兩段會重疊。時間複雜度也是O(N)。這個手法在Range Minimum Query也可以見到。</p>
+<p>至於找Longest Common Substring，方法同上個小節。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

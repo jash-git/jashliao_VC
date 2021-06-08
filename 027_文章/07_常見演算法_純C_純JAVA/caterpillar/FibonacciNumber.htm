@@ -1,0 +1,371 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <title>費式數列</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;費式數列</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+
+      <h2> 說明</h2>
+      <small>
+
+
+
+
+Fibonacci為1200年代的歐洲數學家，在他的著作中曾經提到：「若有一隻免子每個月生一隻小免子，一個月後小免子也開始生產。起初只有一隻免
+子，一個月後就有兩隻免子，二個月後有三隻免子，三個月後有五隻免子（小免子投入生產）......」。 <br>
+      <br>
+
+
+
+
+如果不太理解這個例子的話，舉個圖就知道了，注意新生的小免子需一個月成長期才會投入生產，類似的道理也可以用於植物的生長，這就是Fibonacci數
+列，一般習慣稱之為費氏數列，例如以下： <br>
+
+
+
+
+
+1、1 、2、3、5、8、13、21、34、55、89......</small>
+
+
+
+
+ 
+      <h2> 解法</h2>
+      <small>
+
+
+
+
+依說明，我們可以將費氏數列定義為以下： <br>
+      </small>
+
+
+
+      <div style="margin-left: 40px; font-weight: bold; font-family: Courier New,Courier,monospace;"><small>fn = fn-1 + fn-2　　&nbsp;&nbsp; if n &gt; 1<br>
+
+
+
+
+fn = n　　　　　　 &nbsp; &nbsp; if n = 0, 1&nbsp;</small></div>
+
+
+
+
+      <h2> 演算法</h2>
+      <small>
+
+
+
+
+費氏陣列的解法很多，基本上可以使用遞迴解，演算法最簡單，如下： </small><br>
+
+
+
+
+
+      <pre>Procedure FIB(N) [<br>    IF (N &lt; 0)  <br>        PRINT ("輸入錯誤"); <br><br>    IF (N = 0 OR N = 1) <br>        RETURN (N); <br>    ELSE <br>        RETURN ( FIB(N-1) + FIB(N-2) ); <br>]  <br></pre>
+
+
+
+
+
+      <br>
+      <small>
+
+
+
+簡單，但是不實用，因為太慢了，在求每一個費氏數時，都會發生嚴重的重覆計算，也就是遞迴該行 ( FIB(N-1) + FIB(N-2)
+)，最差的big-o可以到2的n/2次方，畫張遞迴的樹狀圖就可以知道重覆計算的數有多少了。 <br>
+      <br>
+
+
+
+
+可以採取非遞迴的版本，可以將big(o)減至n，演算法如下： </small>
+
+
+
+
+      <br>
+
+
+
+
+
+      <pre>Procedure FIB(N) <br>    a = 1; <br>    b = 1; <br>    FOR i = 2 TO N [<br>        temp = b; <br>        b = a + b; <br>        a = temp; <br>    ]<br>    RETURN b; <br>] <br></pre>
+
+
+
+
+
+      <br>
+      <small>
+
+
+
+若想要一次列出所有N之前的費氏數，則可以將for迴圈的部份改以陣列，也就是： </small><br>
+
+
+
+
+
+      <pre>F(0) = 0; <br>F(1) = 1; <br>FOR i&lt;-2 TO N [<br>    F(i) = F(i-1) + F(i-2); <br>] <br></pre>
+
+
+
+
+
+      <br>
+      <small>
+
+
+
+費氏陣列並不是使用遞迴來解一定不好，事實上單就執行次數上來說，有一個使用遞迴的演算法可以更快
+(big(o)是以2為底的Logn值)，但是要使用到乘法運算，所以實際上要看所使用的機器而定。 </small><br>
+
+
+
+
+
+      <pre>Procedure FIB(N) <br>    IF (n &lt;= 1)<br>        RETURN(n); <br><br>    IF (n = 2) <br>        RETURN(1); <br>    ELSE [ <br>        i = n/2; <br>        f1 = FIB(i+1); <br>        f2 = FIB(i); <br><br>        IF (n mod 2 = 0)<br>            RETURN( f2*(2*f1-f2) ); <br>        ELSE <br>            RETURN ( f1**2+f2**2 ); <br>    ]<br>] <br></pre>
+
+
+
+
+
+      <br>
+      <small>
+
+
+
+您可以實際使用費氏數列來印證演算法中的那兩條公式，其中f1**2表示f1的平方；若將遞迴的樹狀圖畫出來，就像這樣：</small><br>
+
+
+
+
+      <div style="text-align: center;"><img style="width: 399px; height: 178px;" alt="費式數列" title="費式數列" src="fibonacciNumber-1.jpg" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/images/fibonacciNumber-1.jpg"></div>
+
+
+
+
+      <br>
+      <small>
+
+
+
+另外費氏數列還有公式解，導證方式就不提了：</small><br>
+
+
+
+
+      <div style="text-align: center;"><img style="width: 320px; height: 53px;" alt="費式數列" title="費式數列" src="fibonacciNumber-2.jpg" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/images/fibonacciNumber-2.jpg"></div>
+      <small>
+
+
+
+
+您說，如果免子不只生一隻小免子的話怎麼辦？像這種問題，我們可以將費氏數列加以擴充，稱之為擴充費氏數列： <br>
+      </small>
+
+
+
+      <div style="margin-left: 40px; font-weight: bold; font-family: Courier New,Courier,monospace;"><small>fn = X * fn-1 + Y * fn-2　　 &nbsp; &nbsp;if n &gt; 1<br>
+
+
+
+
+fn = 1　　　　　　　　　&nbsp; &nbsp; &nbsp; &nbsp; if n = 0, 1 <br>
+
+
+
+
+      </small></div>
+
+
+
+
+      <small><br>
+
+
+
+
+當X、Y等於1時，自然就是一般的費氏數列了。 <br>
+      <br>
+
+
+
+
+想瞭解費氏數列與自然界神奇的關係，可以造訪這個 <a href="javascript:if(confirm('http://episte.math.ntu.edu.tw/articles/sm/sm_02_08_1/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://episte.math.ntu.edu.tw/articles/sm/sm_02_08_1/index.html'" tppabs="http://episte.math.ntu.edu.tw/articles/sm/sm_02_08_1/index.html">網頁<cite class="urllink"></cite></a>。</small>
+
+
+
+
+
+
+      <h2> 實作</h2>
+
+
+
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>#define N 20 <br><br>int main(void) { <br>    int Fib[N] = {0}; <br>    int i; <br><br>    Fib[0] = 0; <br>    Fib[1] = 1; <br><br>    for(i = 2; i &lt; N; i++) <br>        Fib[i] = Fib[i-1] + Fib[i-2]; <br><br>    for(i = 0; i &lt; N; i++) <br>        printf("%d ", Fib[i]); <br>    printf("\n"); <br><br>    return 0; <br>} <br></pre>
+
+
+
+
+
+      <br>
+
+
+
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+
+
+
+      <pre>public class Fibonacci {<br>    public static void main(String[] args) {<br>        int[] fib = new int[20]; <br><br>        fib[0] = 0; <br>        fib[1] = 1; <br><br>        for(int i = 2; i &lt; fib.length; i++) <br>            fib[i] = fib[i-1] + fib[i-2]; <br><br>        for(int i = 0; i &lt; fib.length; i++) <br>            System.out.print(fib[i] + " "); <br>        System.out.println();<br>    }<br>}</pre>
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+<br>
+
+
+
+
+<br>
+
+
+
+
+
+
+</body>
+</html>

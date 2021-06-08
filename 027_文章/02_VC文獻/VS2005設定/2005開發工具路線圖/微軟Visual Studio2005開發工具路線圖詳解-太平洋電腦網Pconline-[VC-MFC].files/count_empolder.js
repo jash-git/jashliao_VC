@@ -1,0 +1,1 @@
+document.write("<a href=http://big5.pconline.com.cn/b5/count5.pconline.com.cn/newcount/admin/index.php target=_blank><img src=http://big5.pconline.com.cn/b5/count5.pconline.com.cn/newcount/count.php?namecode=pcedu&subnamecode=pcedu_empolder&screen="+screen.width+"*"+screen.height+"&refer="+escape(document.referrer)+" border=0 width=0 height=0 alt= ></a>");

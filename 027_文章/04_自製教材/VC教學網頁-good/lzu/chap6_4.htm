@@ -1,0 +1,240 @@
+<html>
+
+<head>
+<title>6.4 在非对话框窗口中使用控件</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.4 </font><font SIZE="3" color="#3973DE">在非对话框窗口中使用控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">控件并不是对话框独有的，事实上，很多非对话框窗口都可以使用控件．比较典型的应用是在表单视图、工具条和状态栏中使用控件．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.4.1 
+    </font><font SIZE="3" color="#3973DE">在表单视图中使用控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">提供了一个名为</font><font FACE="Times New Roman" SIZE="3">CFormView</font><font SIZE="3">的特殊视图类，我们称其为表单视图．表单视图是指用控件来输入和输出数据的视图，用户可以方便地在表单视图中使用控件．表单视图具有对话框和滚动视图的特性，它使程序看起来象是一个具有滚动条的对话框．在有些情况下，用表单视图比用普通视图更符合用户的需要，例如，在向数据库输入数据时，显然用表单的形式可以更习惯些．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">可以方便地创建基于表单视图的应用程序，只要在</font><font FACE="Times New Roman" SIZE="3">MFC AppWizard</font><font SIZE="3">对话框的第六步先选择</font><font FACE="Times New Roman" SIZE="3">CView</font><font SIZE="3">，然后在</font><font FACE="Times New Roman" SIZE="3">Base class</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CFormView</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">就会创建一个基于</font><font FACE="Times New Roman" SIZE="3">CFormView</font><font SIZE="3">的应用程序．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者可以按上述方法建立一个名为</font><font FACE="Times New Roman" SIZE="3">Test</font><font SIZE="3">的应用程序．在</font><font FACE="Times New Roman" SIZE="3">Test</font><font SIZE="3">工程的资源中，读者会发现一个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDD_TEST_DIALOG</font><font SIZE="3">的对话框模板，该对话框模板可供用户放置和安排控件．在程序运行时，框架根据该对话框模板创建</font><font FACE="Times New Roman" SIZE="3">CFormView</font><font SIZE="3">对象，并根据模板的信息在表单视图中自动创建控件．与设计对话框类相类似，用户可以用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为表单视图类加入与控件对应的成员变量，可以调用</font><font FACE="Times New Roman" SIZE="3">UpdateData</font><font SIZE="3">在控件和成员变量之间交换数据，但对控件的初始化工作是在</font><font FACE="Times New Roman" SIZE="3">OnInitialUpdate</font><font SIZE="3">函数而不是在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">函数中进行的．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">基于表单视图的应用程序与基于对话框的应用程序都是在应用程序中直接使用控件，但二者有很多不同之处．基于对话框的应用程序是用一个对话框来作为程序的主窗口的，因而程序的主窗口的特性与对话框类似，如窗口的大小不能改变，程序没有菜单条、工具条和状态栏等．基于表单视图的应用程序仍然是基于</font><font FACE="Times New Roman" SIZE="3">Doc/View</font><font SIZE="3">框架结构的（见七、八、九章），只是视图被换成了表单视图，也就是说，应用程序的窗口可以改变大小，程序有菜单条、工具条和状态栏，且程序仍然可以</font><font FACE="Times New Roman" SIZE="3">Dov/View</font><font SIZE="3">运行机制来处理文档．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">表单视图比较简单，这里就不举例说明了．在第十章，读者会看到使用表单视图的例子．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.4.2 
+    </font><font SIZE="3" color="#3973DE">在工具条和状态栏中使用控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">一个专业的程序常常会在工具条和状态栏中加入一些控件以方便用户的使用．例如，在</font><font FACE="Times New Roman" SIZE="3">Developer Studio</font><font SIZE="3">的工具条中就有不少组合框，而在状态栏中则常常会显示一个进度条来表明工作的进度．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果读者想在自己程序的工具条和状态栏中加入控件，则需要掌握一些技巧．在本小节，我们将结合一个具体实例来演示这些技巧．例程的名为</font><font FACE="Times New Roman" SIZE="3">CtrlInBar</font><font SIZE="3">，其界面如图</font><font FACE="Times New Roman" SIZE="3">6.8</font><font SIZE="3">所示．可以看出，该程序在工具条中创建了一个组合框，在状态栏中创建了一个进度条．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><img src="T6_8.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/T6_8.gif" alt="T6_8.tif (174388 bytes)" WIDTH="480" HEIGHT="342"><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">6.8 
+    CtrlInBar</font><font SIZE="3">程序</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在让我们开始工作．首先，请读者用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">建立一个名为</font><font FACE="Times New Roman" SIZE="3">CtrlInBar</font><font SIZE="3">的单文挡</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">应用程序，然后，请按清单</font><font FACE="Times New Roman" SIZE="3">6.4</font><font SIZE="3">修改源代码．注意在程序中编写了一个</font><font FACE="Times New Roman" SIZE="3">CToolBar</font><font SIZE="3">类的派生类</font><font FACE="Times New Roman" SIZE="3">CMyToolBar</font><font SIZE="3">，以及一个</font><font FACE="Times New Roman" SIZE="3">CStatusBar</font><font SIZE="3">的派生类</font><font FACE="Times New Roman" SIZE="3">CMyStatusBar</font><font SIZE="3">，这两个类与</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类在同一模块中．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><b><font SIZE="3"><p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">6.4 </font><font SIZE="3">在工具条和状态栏中创建控件的有关代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// MainFrm.h : interface of the CMainFrame class</p>
+    <p ALIGN="JUSTIFY">//</p>
+    <p ALIGN="JUSTIFY">/////////////////////////////////////////////////////////////////////////////</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#define IDC_MYCOMBO 100</p>
+    <p ALIGN="JUSTIFY">class CMyToolBar : public CToolBar</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p ALIGN="JUSTIFY">CComboBox m_ComboBox;</p>
+    <p ALIGN="JUSTIFY">BOOL CreateComboBox(int nIndex);</p>
+    <p ALIGN="JUSTIFY">}; </p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#define ID_INDICATOR_PROGRESS 100</p>
+    <p ALIGN="JUSTIFY">class CMyStatusBar : public CStatusBar</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p ALIGN="JUSTIFY">CProgressCtrl m_Progress;</p>
+    <p ALIGN="JUSTIFY">int m_nProgressPane;</p>
+    <p ALIGN="JUSTIFY">BOOL CreateProgressCtrl(int nPane);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">afx_msg void OnSize(UINT nType, int cx, int cy);</p>
+    <p ALIGN="JUSTIFY">DECLARE_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY">};</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">class CMainFrame : public CFrameWnd</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">protected: // control bar embedded members</p>
+    <p ALIGN="JUSTIFY"><b>CMyStatusBar</b> m_wndStatusBar;</p>
+    <p ALIGN="JUSTIFY"><b>CMyToolBar</b> m_wndToolBar;</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// MainFrm.cpp : implementation of the CMainFrame class</p>
+    <p ALIGN="JUSTIFY">//</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">static UINT indicators[] =</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">ID_SEPARATOR, // status line indicator</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ID_SEPARATOR</b></p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if (CFrameWnd::OnCreate(lpCreateStruct) == -1)</p>
+    <p ALIGN="JUSTIFY">return -1;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (!m_wndToolBar.Create(this) ||</p>
+    <p ALIGN="JUSTIFY">!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">TRACE0(&quot;Failed to create toolbar\n&quot;);</p>
+    <p ALIGN="JUSTIFY">return -1; // fail to create</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if (!m_wndStatusBar.Create(this) ||</p>
+    <p ALIGN="JUSTIFY">!m_wndStatusBar.SetIndicators(indicators,</p>
+    <p ALIGN="JUSTIFY">sizeof(indicators)/sizeof(UINT)))</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">TRACE0(&quot;Failed to create status bar\n&quot;);</p>
+    <p ALIGN="JUSTIFY">return -1; // fail to create</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TODO: Remove this if you don't want tool tips or a resizeable 
+    toolbar</p>
+    <p ALIGN="JUSTIFY">m_wndToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |</p>
+    <p ALIGN="JUSTIFY">CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_wndToolBar.CreateComboBox(0); //</font><font SIZE="3">在工具条的最左边创建组合框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_wndStatusBar.CreateProgressCtrl(1); //</font><font SIZE="3">在第二个窗格创建进度条</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_wndToolBar.m_ComboBox.AddString(&quot;Item1&quot;);</p>
+    <p ALIGN="JUSTIFY">m_wndToolBar.m_ComboBox.AddString(&quot;Item2&quot;);</p>
+    <p ALIGN="JUSTIFY">m_wndToolBar.m_ComboBox.AddString(&quot;Item3&quot;);</p>
+    <p ALIGN="JUSTIFY">m_wndToolBar.m_ComboBox.AddString(&quot;Item4&quot;);</p>
+    <p ALIGN="JUSTIFY">m_wndStatusBar.m_Progress.SetRange(0,200);</p>
+    <p ALIGN="JUSTIFY">m_wndStatusBar.m_Progress.SetPos(100);</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">/////////////////////////////////////////////////////////////////////////////</p>
+    <p ALIGN="JUSTIFY">//CMyToolBar</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">是按钮的索引，函数将在该按钮的左侧创建组合框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CMyToolBar::CreateComboBox(int nIndex)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if(m_ComboBox.GetSafeHwnd()) //</font><font SIZE="3">防止重复创建</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CToolBarCtrl &amp;ToolBarCtrl=GetToolBarCtrl();</p>
+    <p ALIGN="JUSTIFY">TBBUTTON button;</p>
+    <p ALIGN="JUSTIFY">CRect rect;</p>
+    <p ALIGN="JUSTIFY">button.fsStyle=TBSTYLE_SEP;</p>
+    <p ALIGN="JUSTIFY">ToolBarCtrl.InsertButton(nIndex,&amp;button); //</font><font SIZE="3">插入空位</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ToolBarCtrl.InsertButton(nIndex,&amp;button);</p>
+    <p ALIGN="JUSTIFY">ToolBarCtrl.InsertButton(nIndex,&amp;button);</p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">设置空位的宽度（处于中间的空位用来容纳组合框）</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetButtonInfo(nIndex+1,IDC_MYCOMBO,TBBS_SEPARATOR,100);</p>
+    <p ALIGN="JUSTIFY">SetButtonInfo(nIndex, ID_SEPARATOR, TBBS_SEPARATOR, 12);</p>
+    <p ALIGN="JUSTIFY">SetButtonInfo(nIndex+2, ID_SEPARATOR, TBBS_SEPARATOR, 12);</p>
+    <p ALIGN="JUSTIFY">GetItemRect(nIndex+1, &amp;rect); //</font><font SIZE="3">获取中间空位的坐标</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">rect.top = 3;</p>
+    <p ALIGN="JUSTIFY">rect.bottom = rect.top + 100;</p>
+    <p ALIGN="JUSTIFY">if (!m_ComboBox.Create(CBS_DROPDOWNLIST|WS_VISIBLE|WS_TABSTOP,</p>
+    <p ALIGN="JUSTIFY">rect, this, IDC_MYCOMBO))</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">m_ComboBox.SetItemHeight(-1,15); //</font><font SIZE="3">设置编辑框组件的高度</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">/////////////////////////////////////////////////////////////////////////////</p>
+    <p ALIGN="JUSTIFY">//CMyStatusBar</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BEGIN_MESSAGE_MAP(CMyStatusBar, CStatusBar)</p>
+    <p ALIGN="JUSTIFY">ON_WM_SIZE()</p>
+    <p ALIGN="JUSTIFY">END_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nPane</font><font SIZE="3">是窗格的索引，函数将在该窗格内创建进度条控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CMyStatusBar::CreateProgressCtrl(int nPane)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if(m_Progress.GetSafeHwnd()) //</font><font SIZE="3">防止重复创建</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">设置该窗格的宽度为</font><font FACE="Times New Roman" SIZE="3">200</p>
+    <p ALIGN="JUSTIFY">SetPaneInfo(nPane,GetItemID(nPane),SBPS_NORMAL,200);</p>
+    <p ALIGN="JUSTIFY">CRect rect(0,0,1,1);</p>
+    <p ALIGN="JUSTIFY">if(!m_Progress.Create(WS_CHILD|WS_VISIBLE,rect,this,</p>
+    <p ALIGN="JUSTIFY">ID_INDICATOR_PROGRESS))</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">m_nProgressPane=nPane;</p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CMyStatusBar::OnSize(UINT nType, int cx, int cy) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CStatusBar::OnSize(nType, cx, cy);</p>
+    <p ALIGN="JUSTIFY">if(m_Progress.GetSafeHwnd()==NULL) return;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CRect rect;</p>
+    <p ALIGN="JUSTIFY">GetItemRect(m_nProgressPane,&amp;rect);</p>
+    <p ALIGN="JUSTIFY">m_Progress.MoveWindow(rect); //</font><font SIZE="3">调整控件的位置和尺寸</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CMyToolBar</font><font SIZE="3">类可以在工具条中指定按钮的左边放置一个下拉列表式组合框，并在组合框的两端留出空位．该类的</font><font FACE="Times New Roman" SIZE="3">CreateComboBox</font><font SIZE="3">成员负责创建组合框，参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">是工具条按钮的索引，需注意的是工具条的一个空位也要占有一个索引．在</font><font FACE="Times New Roman" SIZE="3">CreateComboBox</font><font SIZE="3">中，主要调用了下列函数：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CToolBar::GetToolBarCtrl</font><font SIZE="3">返回一个</font><font FACE="Times New Roman" SIZE="3">CToolBarCtrl</font><font SIZE="3">对象．从</font><font FACE="Times New Roman" SIZE="3">4.0</font><font SIZE="3">版开始，</font><font FACE="Times New Roman" SIZE="3">CToolBar</font><font SIZE="3">类是在新控件类</font><font FACE="Times New Roman" SIZE="3">CToolBarCtrl</font><font SIZE="3">类的基础上实现的，后者具有更强大的功能．例如</font><font FACE="Times New Roman" SIZE="3">CToolBarCtrl</font><font SIZE="3">提供了</font><font FACE="Times New Roman" SIZE="3">CToolBar</font><font SIZE="3">没有的</font><font FACE="Times New Roman" SIZE="3">InsertButton</font><font SIZE="3">成员函数．</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CToolBarCtrl::InsertButton</font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">索引处插入三个空位．</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CToolBar::SetButtonInfo</font><font SIZE="3">设置空位的宽度，其中中间的空位有</font><font FACE="Times New Roman" SIZE="3">100</font><font SIZE="3">像素宽，用来容纳组合框．</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CToolBar::GetItemRect</font><font SIZE="3">获得中间空位的坐标．</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CComboBox::Create</font><font SIZE="3">函数创建组合框．注意</font><font FACE="Times New Roman" SIZE="3">rect</font><font SIZE="3">对象说明的是包括列表框在内的组合框的尺寸．</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CComboBox::SetItemHeight</font><font SIZE="3">设置编辑框组件的高度．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CMyStatusBar</font><font SIZE="3">类可以在指定的状态栏窗格中放置一个进度条．该类的</font><font FACE="Times New Roman" SIZE="3">CreateProgressCtrl</font><font SIZE="3">成员负责创建进度条，参数</font><font FACE="Times New Roman" SIZE="3">nPane</font><font SIZE="3">是窗格的索引．在该函数中主要调用了下列函数：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar::SetPaneInfo</font><font SIZE="3">设置窗格的宽度为</font><font FACE="Times New Roman" SIZE="3">200</font><font SIZE="3">．在调用该函数时，先调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar::GetItemID</font><font SIZE="3">返回窗格的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">．</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CProgressCtrl::Create</font><font SIZE="3">创建控件．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者可能会奇怪，</font><font FACE="Times New Roman" SIZE="3">CProgressCtrl::Create</font><font SIZE="3">创建的控件只有</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">×</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">大小．这是由于在调用该函数创建控件时，状态栏的大小往往并未确定．这时如果调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar::GetItemRect</font><font SIZE="3">，只能得到</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">坐标，而不能得到正确的窗格坐标，所以程序只好先创建一个</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">×</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">的控件．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">工具条中按钮和控件的尺寸及其相对于工具条的位置不会随外界因素发生变化，而状态栏则不同，当用户改变了框架窗口的宽度时，状态栏的宽度也会随之改变，并且它会重新调整各窗格的大小和位置，此时如果不及时调整进度条的坐标，那么进度条与所在窗格之间将发生错位．调整进度条的大小和位置的工作由</font><font FACE="Times New Roman" SIZE="3">CMyStatusBar::OnSize</font><font SIZE="3">函数完成．当窗口的尺寸发生改变后，窗口会收到</font><font FACE="Times New Roman" SIZE="3">WM_SIZE</font><font SIZE="3">消息，</font><font FACE="Times New Roman" SIZE="3">OnSize</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">WM_SIZE</font><font SIZE="3">消息的处理函数．在</font><font FACE="Times New Roman" SIZE="3">CMyStatusBar::OnSize</font><font SIZE="3">函数中，先调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar::GetItemRect</font><font SIZE="3">获得进度条所在窗格的坐标，然后调用</font><font FACE="Times New Roman" SIZE="3">CWnd::MoveWindow</font><font SIZE="3">来调整进度条控件的坐标．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在窗口形成时，也会收到</font><font FACE="Times New Roman" SIZE="3">WM_SIZE</font><font SIZE="3">消息，这时</font><font FACE="Times New Roman" SIZE="3">OnSize</font><font SIZE="3">函数可以及时调整进度条的大小和位置．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap6_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_3.htm">上一页</a></td>
+        <td><p align="right"><a href="chap6_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_5.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+  
+  
+  
+  
+  <title>Eratosthenes篩選求質數</title>
+</head>
+
+
+<body>
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;Eratosthenes篩選求質數</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+      <h2>說明</h2>
+      <small>
+除了自身之外，無法被其它整數整除的數稱之為質數，要求質數很簡單，但如何快速的求出質數則一直是程式設計人員與數學家努力的課題，在這邊介紹一個著名的 Eratosthenes求質數方法。</small><br>
+
+      <h2>解法</h2>
+      <small>
+首先知道這個問題可以使用迴圈來求解，將一個指定的數除以所有小於它的數，若可以整除就不是質數，然而如何減少迴圈的檢查次數？如何求出小於N的所有質數？<br>
+      <br>
+
+首先假設要檢查的數是N好了，則事實上只要檢查至N的開根號就可以了，道理很簡單，假設A*B =
+N，如果A大於N的開根號，則事實上在小於A之前的檢查就可以先檢查到B這個數可以整除N。不過在程式中使用開根號會精確度的問題，所以可以使用
+i*i &lt;= N進行檢查，且執行更快。<br>
+      <br>
+
+再來假設有一個篩子存放1～N，例如：<br>
+      </small>
+
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold;">2　3　4　5　6　7　8　9　10　11　12　13　14　15　16　17　18　19　20　21 ........ N</span><br>
+
+      </small></div>
+
+      <small><br>
+
+先將2的倍數篩去：<br>
+      </small>
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold;">2　3　5　7　9　11　13　15　17　19　21 ........ N</span><br>
+
+      </small></div>
+
+      <small><br>
+
+再將3的倍數篩去：<br>
+      </small>
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold;">2　3　5　7　11　13　17　19　........ N</span><br>
+
+      </small></div>
+
+      <small><br>
+
+再來將5的倍數篩去，再來將7的質數篩去，再來將11的倍數篩去........，如此進行到最後留下的數就都是質數，這就是Eratosthenes篩選方法（Eratosthenes Sieve Method）。<br>
+      <br>
+
+檢查的次數還可以再減少，事實上，只要檢查6n+1與6n+5就可以了，也就是直接跳過2與3的倍數，使得程式中的if的檢查動作可以減少。 </small>
+      <br>
+
+
+
+
+      <h2> 實作</h2>
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>#define N 1000 <br><br>int main(void) { <br>    int i, j; <br>    int prime[N+1]; <br><br>    for(i = 2; i &lt;= N; i++) <br>        prime[i] = 1; <br><br>    for(i = 2; i*i &lt;= N; i++) { // 這邊可以改進 <br>        if(prime[i] == 1) { <br>            for(j = 2*i; j &lt;= N; j++) { <br>                if(j % i == 0) <br>                    prime[j] = 0; <br>            } <br>        } <br>    } <br><br>    for(i = 2; i &lt; N; i++) { <br>        if(prime[i] == 1) { <br>            printf("%4d ", i); <br>            if(i % 16 == 0) <br>                printf("\n"); <br>        } <br>    } <br><br>    printf("\n"); <br><br>    return 0; <br>} <br></pre>
+
+
+      <br>
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+      <pre>import java.util.*;<br><br>public class Prime {    <br>    public static int[] findPrimes(final int max) { <br>        int[] prime = new int[max+1]; <br>        ArrayList list = new ArrayList();<br><br>        for(int i = 2; i &lt;= max; i++) <br>            prime[i] = 1; <br><br>        for(int i = 2; i*i &lt;= max; i++) { // 這邊可以改進 <br>            if(prime[i] == 1) { <br>                for(int j = 2*i; j &lt;= max; j++) { <br>                    if(j % i == 0) <br>                        prime[j] = 0; <br>                } <br>            } <br>        } <br><br>        for(int i = 2; i &lt; max; i++) { <br>            if(prime[i] == 1) { <br>                list.add(new Integer(i)); <br>            } <br>        }<br>        <br>        int[] p = new int[list.size()];<br>        Object[] objs = list.toArray(); <br>        for(int i = 0; i &lt; p.length; i++) {<br>            p[i] = ((Integer) objs[i]).intValue();<br>        }<br>        <br>        return p;<br>    }<br>    <br>    public static void main(String[] args) {<br>        int[] prime = Prime.findPrimes(1000);<br>        <br>        for(int i = 0; i &lt; prime.length; i++) {<br>            System.out.print(prime[i] + " ");<br>        }<br>        <br>        System.out.println();<br>    }<br>}</pre>
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+<br>
+
+<br>
+
+
+
+
+</body>
+</html>

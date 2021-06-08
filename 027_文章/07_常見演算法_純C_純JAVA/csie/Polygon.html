@@ -1,0 +1,262 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Polygon</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Polygon</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Polygon</p>
+<p>多邊形是由許多條邊端點對著端點串接起來的圖形。</p>
+<img src="Polygon1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon1.png">
+<p class="t">資料結構</p>
+<p>要記錄一個多邊形的資訊，有許多種方法，例如：一、按照連接順序把多邊形的邊放到一個陣列裡面；二、按照連接順序把多邊形的頂點放到一個陣列裡面；三、挑一個頂點作為起點，從起點開始按照連接順序把各條邊的長度、邊與邊之間的夾角放到一個陣列裡面。</p>
+<p>這幾種方法的空間複雜度都是O(N)，N為多邊形的頂點數目，也可以說是邊的數目。</p>
+<textarea>
+struct Point {double x, y;};
+struct Segment {Point p1, p2;};
+struct Walk {double length, angle;};
+
+Segment polygon[10];	// 一
+
+Point polygon[10];		// 二
+
+Point original;			// 三
+Walk polygon[10];
+</textarea>
+<p class="t">多邊形的分類</p>
+<p>依照形狀，多邊形可以細分不同類型：</p>
+<img src="Polygon2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Polygon2.png">
+<p>這些分類，決定了多邊形演算法的難易程度。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Polygon Area（Under Construction!）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">多邊形面積（Surveyor's Formula）</p>
+<p>也就是高中所教的行列式公式，用來計算多邊形面積。</p>
+<pre>
+        1    | x1   x2   x3     xN-1   xN   x1 |
+area = --- * |    ×    ×    ...      ×    ×    |
+        2    | y1   y2   y3     yN-1   yN   y1 |
+
+右下斜線相乘取正號，左下斜線相乘取負號，然後通通加起來，除以二。
+如果是逆時針旋轉，求出來為正值。
+如果是順時針旋轉，求出來為負值，必須再取絕對值。
+
+其實就是相鄰兩點求外積，然後統統加起來，除以二。
+</pre>
+<p>【待補圖片】</p>
+<img src="PolygonArea.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/PolygonArea.png">
+<pre>
+先研究一下凸多邊形面積。假設凸多邊形的其中一個頂點剛好是原點。現在從原點放射把凸多邊形切割成許多三角形。
+我們知道外積可以算三角形面積，所以凸多邊形的面積就很好算了。
+接著我們假設原點在凸多邊形外，現在從原點放射把凸多邊形額外切割出幾個凸多邊形外的三角形。
+我們知道外積所得之面積有正負號，端看兩條向量的旋轉順序。可以發現凸多邊形外的三角形，外積所得的面積也剛好是負的。於是凸多邊形面積還是很好算。
+接著考慮凹多邊形，可以發現負面積的性質仍然存在。
+接著考慮簡單多邊形，可以發現負面積的性質仍然存在。
+接著考慮任意多邊形，可以發現負面積的性質仍然存在。
+</pre>
+<p>時間複雜度為O(N)，N為多邊形的頂點數目。</p>
+<textarea>
+struct Point {double x, y;} p[10 + 1];	// 十個頂點的多邊形
+
+double cross(Point& a, Point& b)
+{
+	return a.x * b.y - b.x * a.y;
+}
+
+void polygon_area()
+{
+	p[10] = p[0];
+
+	double area = 0.0;
+	for (int i=0; i<10; ++i)
+		area += cross(p[i], p[i+1]);
+
+	cout << "多邊形面積為" << area;
+}
+</textarea>
+<textarea>
+struct Point {double x, y;} p[10];	// 十個頂點的多邊形
+
+void polygon_area()
+{
+	double area = 0.0;
+	for (int i=0; i<10; ++i)
+	{
+		area += p[i].x * p[(i+1)%N].y;
+		area -= p[i].y * p[(i+1)%N].x;
+	}
+	cout << "多邊形面積為" << area;
+}
+</textarea>
+<textarea>
+struct Point {double x, y;} p[10];	// 十個頂點的多邊形
+
+void polygon_area()
+{
+	double area = 0.0;
+	// 此作法可省略%運算、省略重複的+1運算，跑得快一點。
+	for (int i=10-1, j=0; j<10; i=j++)
+	{
+		area += p[i].x * p[j].y;
+		area -= p[i].y * p[j].x;
+	}
+	cout << "多邊形面積為" << area;
+}
+</textarea>
+<p class="e">UVa 10060 10652 922</p>
+<p class="t">多邊形重心</p>
+<textarea>
+struct Point {int x, y;} p[10];
+
+void mass_center()
+{
+	ConvexHull(N);
+
+	int wx = 0, wy = 0, w = 0;
+	for (i=1; i<CHN; ++i)
+	{
+		int x = p[0].x + p[CH[i]].x + p[CH[i+1]].x;
+		int y = p[0].y + p[CH[i]].y + p[CH[i+1]].y;
+		int area = cross(p[0], p[CH[i]], p[CH[i+1]]);
+
+		wx += x * area;
+		wy += y * area;
+		w += area;
+	}
+
+	cout << '(' << (double)wx/3/w << ',' << (double)wy/3/w << ')';
+}
+</textarea>
+<p class="e">UVa 10002 132 ICPC 4838</p>
+<p class="t">多面體體積</p>
+<textarea>
+// 三維版本
+double length(Point p)
+{
+	return sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
+}
+
+double area(Point o, Point a, Point b)
+{
+	return length((a-o) * (b-o)) / 2.0;
+}
+
+double volume(Point o, Point a, Point b, Point c)
+{
+	return (a-o) * (b-o) ^ (c-o) / 6.0;
+}
+
+double volume()
+{
+	Point O(0, 0, 0);
+	double ret = 0.0;
+	for (int i = 0; i < N; i++)
+		ret += volume(O, P[F[i].a], P[F[i].b], P[F[i].c]);
+	return fabs(ret);
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Point in Polygon</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">判斷一個點是否在凸多邊形內部</p>
+<p>比較直覺的方式，是沿著凸多邊形外圍繞一圈，看看點是不是在每一條邊的同側即可。若發現外積皆小於零，即表示點在多邊形內部：若發現外積等於零，即表示點在凸多邊形上、或在凸多邊形某條邊的延伸線上；若發現外積大於零，則表示點在凸多邊形外部。</p>
+<p>另外一種方式，是將點到凸多邊形頂點的各條向量，利用外積運算判斷是否都往同一方向旋轉，如果都是往同一方向旋轉，則表示點在凸多邊形內部；如果中途出現反方向旋轉，則表示點在凸多邊形外部；如果中途出現外積為零的情況，表示點在凸多邊形上，而且就在對應的邊上。</p>
+<p>時間複雜度為O(N)，N為凸多邊形的頂點數目。</p>
+<p class="e">UVa 109 361 476 477 478 10078 10291 10321</p>
+<p class="t">判斷一個點是否在凸多邊形內部</p>
+<p>凸多邊形內任選一點作為原點（例如所有點的平均值），然後依角度大小排序凸多邊形的所有頂點。之後就可以用Binary Search找出給定的點在哪個夾角之內，最後判斷點是不是在此夾角構成的三角形裡面。</p>
+<p>O(NlogN)預處理，O(logN)求答案。</p>
+<p class="t">判斷一個點是否在簡單多邊形內部（Ray Casting Algorithm）</p>
+<p>簡單多邊形的情況下，可以使用射線演算法：<a href="javascript:if(confirm('http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html'" tppabs="http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html" class="l">http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html</a>。原理很簡單，從給定點開始，往隨便一個方向（通常是水平往右）射出一條無限長射線，看看穿過多少條邊，如果穿過偶數次，表示點在簡單多邊形外部；如果穿過奇數次，表示點在簡單多邊形內部。</p>
+<p>時間複雜度為O(N)，N為簡單多邊形的頂點數目。</p>
+<textarea>
+struct Point {double x, y;} p[10];	// 十個頂點的多邊形
+
+bool point_in_polygon(Point& t)
+{
+	bool c = false;
+	for (int i = 0, j = 10-1; i < 10; j = i++)
+		if ((p[i].y > t.y) != (p[j].y > t.y) &&
+			t.x < (p[j].x-p[i].x)*(t.y-p[i].y)/(p[j].y-p[i].y)+p[i].x)
+			c = !c;
+	return c;
+}
+</textarea>
+<p class="e">UVa 634 11030 10348</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Polygon Filling</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">前言</p>
+<p>在3D繪圖當中，我們常常要填滿一個多邊形裡面所有的像素（pixel），讓整塊多邊形擁有顏色。多邊形是浮點數座標，以頂點的形式儲存在資料結構中；像素則是整數座標，整個畫面到處都是。</p>
+<p>讀了上一個章節，可以聯想到一個簡單的方式：窮舉畫面上所有像素，判斷每個像素是否在多邊形內，如果是，就填上像素。當畫面與多邊形差不多大，這個方式很有效率；當畫面比多邊形大很多，這個方式會浪費許多時間，讓許多玩FPS遊戲的人抓狂。時間複雜度是O(XYN)，其中X與Y是畫面的長與寬，N是簡單多邊形的頂點數目。</p>
+<p>讀者也可能很快的想到Flood Fill Algorithm，然而它並不應景。我們不知道多邊形的邊界是畫面上的哪些像素──沒有在畫面上圍出邊界，就無法使用Flood Fill Algorithm。</p>
+<p>我們可以先把多邊形的邊界描在畫面上，再來使用Flood Fill Algorithm，這不失為一個好解法。至於下面要介紹的演算法，也是先把多邊形的邊界描出來，不過它的裝填方式，比Flood Fill Algotithm還要有效率多了。</p>
+<p class="t">裝填凸多邊形（Scanline Fill Algorithm）</p>
+<p>一、先求出凸多邊形的最低像素和最高像素，把凸多邊形的邊，分類為左邊界和右邊界。二、然後建立兩條陣列，陣列大小等同於凸多邊形的垂直高低差，用來儲存垂直方向各個像素的左邊界與右邊界。三、接著依序窮舉凸多邊形的邊，把每條邊碰到的像素位置算出來，作為邊界值，存到陣列。四、最後以水平方向，一條一條填滿多邊形。</p>
+<p>求出邊界需時O(N+2H)，裝填需時O(2H+A)，總共的時間複雜度是O(N+H+A)，其中N是凸多邊形的頂點數目，H是凸多邊形的垂直高度差，A是凸多邊形的像素數目。</p>
+<p>用Flood Fill Algorithm求出邊界需時O(N+2H)，裝填需時O(4A)，總共的時間複雜度也是O(N+H+A)。雖然時間複雜度與Scanline Fill Algorithm一樣，然而Flood Fill Algorithm的裝填速度還是慢了一點。</p>
+<p class="e">UVa 143 356</p>
+<p class="t">裝填簡單多邊形</p>
+<p>請參考：<a href="javascript:if(confirm('http://alienryderflex.com/polygon_fill/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://alienryderflex.com/polygon_fill/'" tppabs="http://alienryderflex.com/polygon_fill/" class="l">http://alienryderflex.com/polygon_fill/</a>。原理與Point in Polygon的演算法是一樣的。</p>
+<p>另一種很常用的方式，是將簡單多邊形進行三角剖分，每個三角形各自裝填。</p>
+<p class="t">計算簡單多邊形內部格點數目，多邊形的頂點剛好都在格點上</p>
+<p>利用Pick's Theorem可以迅速求出簡單多邊形內部會有多少像素，限制是簡單多邊形的頂點必須不偏不倚位於像素上。</p>
+<pre>
+簡單多邊形面積 = 簡單多邊形圍住的像素數目 + 簡單多邊形上的像素數目 / 2 - 1
+</pre>
+<p>簡單多邊形其中一條邊上面的像素數目，可以利用邊的起點座標與終點座標，以X軸差與Y軸差的最大公因數求得。</p>
+<p class="e">UVa 10088</p>
+<p class="t">計算簡單多邊形內部格點數目，多邊形的頂點在任意位置</p>
+<p>【待補文字】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Polygon Intersection（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">判斷直線與凸多邊形相交</p>
+<p class="e">ICPC 4837</p>
+<p class="t">兩個凸多邊形的交集</p>
+<p>可以用旋轉卡尺求解，也可以用掃瞄線求解。O(N)。</p>
+<pre>
+外側向量超車擋在內側向量前面，車頭向內。
+任選兩向量開始
+先繞一圈找到交點
+接下來再繞一圈，內側有前進的話，就會漸漸圍出交集
+最後到達最初的交點時，結束
+要小心退化的情況。
+</pre>
+<pre>
+半平面交硬幹 O(NlogN)
+平移掃描線 O(N)
+交互前進 O(N)
+－
+極大/極小頂點查詢 O(logN)
+直線是否相交查詢 O(logN)
+</pre>
+<p class="e">UVa 137 10321</p>
+<p class="t">兩個簡單多邊形的交集、聯集、差集</p>
+<p>求出所有線段交點的演算法，略作修改。O(NlogN + K)。</p>
+<p class="t">兩個簡單多邊形的交集、聯集、差集（Minkowski Sum）</p>
+<p>【待補文字】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Polygon Kernel（Under Construction!）</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">簡單多邊形的核</p>
+<p>在多邊形內部，可以看到整個多邊形的地點們，稱做「核」。核可能是一個點、一條線段、或一塊凸的區域。</p>
+<p>無核的多邊形稱做星狀多邊形（star-shaped polygon）。</p>
+<p>所有邊的半平面交，即是核。O(NlogN)。【待補文字】</p>
+<p class="e">ICPC 2512 UVa 588</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Polygon Visibility（Under Construction!）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="e">UVa 746</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

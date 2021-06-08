@@ -1,0 +1,366 @@
+<html>
+
+<head>
+<title>9.3创建动态连接库</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="4">9.3</font><font SIZE="4" color="#3973DE">创建动态连接库</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在一些情况下，必须使用动态连接库：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>1.</font><font SIZE="3">多个应用程序共享代码和数据：比如</font><font FACE="Times New Roman" SIZE="3">Office</font><font SIZE="3">软件的各个组成部分有相似的外观和功能，这就是通过共享动态连接库实现的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>2.</font><font SIZE="3">在钩子程序过滤系统消息时必须使用动态连接库</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>3.</font><font SIZE="3">设备驱动程序必须是动态连接库</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>4.</font><font SIZE="3">如果要在对话框编辑器中使用自己定义的控件，也必须使用动态连接库</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>5.</font><font SIZE="3">动态连接库以一种自然的方式将一个大的应用程序划分为几个小的模块，有利于小组内部成员的分工与合作。而且，各个模块可以独立升级。如果小组中的一个成员开发了一组实用例程，他就可以把这些例程放在一个动态连接库中，让小组的其他成员使用。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>6.</font><font SIZE="3">为了实现应用程序的国际化，往往需要使用动态连接库。使用动态连接库可以将针对某一国家、语言的信息存放在其中。对于不同的版本，使用不同的动态连接库。在使用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">生成应用程序时，我们可以指定资源文件使用的语言，这就是通过提供不同的动态连接库实现的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>MFC</font><font SIZE="3">支持两类动态连接库的创建：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">用户动态连接库</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>MFC</font><font SIZE="3">扩展类库。</font><font FACE="Times New Roman"><b></p>
+    <p></b></font><font color="#3973DE" FACE="Times New Roman">9.3.1</font><font color="#3973DE">用户动态连接库（<font FACE="Times New Roman">_USRDLL</font>）</font></p>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">用户动态连接库一般使用</font><font FACE="Times New Roman" SIZE="3">C</font><font SIZE="3">语言接口。要创建一个动态连接库，选择</font><font FACE="Times New Roman" SIZE="3">File-&gt;New</font><font SIZE="3">菜单，弹出</font><font FACE="Times New Roman" SIZE="3">New</font><font SIZE="3">对话框。在</font><font FACE="Times New Roman" SIZE="3">Projects</font><font SIZE="3">标签页下，选择“</font><font FACE="Times New Roman" SIZE="3">Win32 Dynamic-Link Library</font><font SIZE="3">”。</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">就会创建动态连接库所需的工程文件和</font><font FACE="Times New Roman" SIZE="3">MAK</font><font SIZE="3">文件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">然后把下面两个文件加入到工程中（</font><font FACE="Times New Roman" SIZE="3">Project-Add to Project-Files</font><font SIZE="3">菜单）。</p>
+    <p>文件</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">：</font><font FACE="Times New Roman" SIZE="3">mymaths.cpp</p>
+    <p>////////////////////////////</p>
+    <p>//mymaths.cpp</p>
+    <p>//</p>
+    <p>//a maths API DLL.</p>
+    <p>//</p>
+    <p>///////////////////////////</p>
+    <p>#include&lt;windows.h&gt;</p>
+    <p>//Declare the DLL functions prototypes</p>
+    <p>int Summary(int);</p>
+    <p>int Factorial(int);</p>
+    <p>//////////////////////////</p>
+    <p>//DllEntryPoint():The entry point of the DLL</p>
+    <p>//</p>
+    <p>/////////////////////////</p>
+    <p>BOOL WINAPI DLLEntryPoint(HINSTANCE hDLL,DWORD dwReason,</p>
+    <p>LPVOID Reserved)</p>
+    <p>{</p>
+    <p>switch(dwReason)</p>
+    <p>{</p>
+    <p>case DLL_PROCESS_ATTACH:</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">一些初始化代码</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>break;</p>
+    <p>}</p>
+    <p>case DLL_PROCESS_DETACH:</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">一些用于清理的代码</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>break;</p>
+    <p>}</p>
+    <p>}</p>
+    <p>return TRUE;</p>
+    <p>}</p>
+    <p>int Summary(int n)</p>
+    <p>{</p>
+    <p>int sum=0;</p>
+    <p>int i;</p>
+    <p>for(i=1;i&lt;=n;i++)</p>
+    <p>{</p>
+    <p>sum+=i;</p>
+    <p>}</p>
+    <p>return sum;</p>
+    <p>}</p>
+    <p>int Factorial(int n)</p>
+    <p>{</p>
+    <p>int Fact=1;</p>
+    <p>int i;</p>
+    <p>for(i=1;i&lt;=n;i++)</p>
+    <p>{</p>
+    <p>Fact=Fact*i;</p>
+    <p>}</p>
+    <p>return Fact;</p>
+    <p>}</font><font SIZE="3"></p>
+    <p>文件</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">：</font><font FACE="Times New Roman" SIZE="3">mymaths.def</p>
+    <p>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+    <p>;Mymaths.DEF</p>
+    <p>;</p>
+    <p>;The DEF file for the Mymaths.DLL DLL.</p>
+    <p>;</p>
+    <p>LIBRARY mymaths</p>
+    <p>CODE PRELOAD MOVEABLE DISCARDABLE</p>
+    <p>DATA PRELOAD SINGLE</p>
+    <p>EXPORTS</p>
+    <p>;The names of the DLL functions</p>
+    <p>Summary</p>
+    <p>Factorial</p>
+    <p></font><font SIZE="3">在文件</font><font FACE="Times New Roman" SIZE="3">mymaths.cpp</font><font SIZE="3">开头，声明了动态连接库所包含的两个函数：</font><font FACE="Times New Roman" SIZE="3">Summary</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Factorial</font><font SIZE="3">。接着是</font><font FACE="Times New Roman" SIZE="3">DllEntryPoint()</font><font SIZE="3">函数的定义。</font><font FACE="Times New Roman" SIZE="3">DllEntryPoint()</font><font SIZE="3">顾名思义是动态连接库的入口，应用程序通过该入口访问动态连接库提供的服务。</font><font FACE="Times New Roman" SIZE="3">DllEntryPoint()</font><font SIZE="3">主体是一个</font><font FACE="Times New Roman" SIZE="3">switch/case</font><font SIZE="3">语句：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>switch(dwReason)</p>
+    <p>{</p>
+    <p>case DLL_PROCESS_ATTACH:</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">一些初始化代码</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>break;</p>
+    <p>}</p>
+    <p>case DLL_PROCESS_DETACH:</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">一些用于清理的代码</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>break;</p>
+    <p>}</p>
+    <p>}</p>
+    <p></font><font SIZE="3">其中，在</font><font FACE="Times New Roman" SIZE="3">case 
+    DLL_PROCESS_ATTACH</font><font SIZE="3">分支可加入动态连接库执行时的一些初始化代码。在</font><font FACE="Times New Roman" SIZE="3">case DLL_PROCESS_DETACH</font><font SIZE="3">加入动态连接库被卸载时的一些清理代码，比如释放动态连接库运行时申请的内存等。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">DllEntryPoint()</font><font SIZE="3">函数后，是两个函数</font><font FACE="Times New Roman" SIZE="3">Summary</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Factorial</font><font SIZE="3">函数的定义。它们的定义与前面的静态库完全相同。在这里用户可以放入任何函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">另外，我们还需要一个</font><font FACE="Times New Roman" SIZE="3">mymaths.def</font><font SIZE="3">文件。这个文件记录了可被外部应用程序使用的</font><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">库函数名字。这些名字信息和对应的函数位置的信息将被编译进动态连接库文件中，然后应用程序根据函数名字和函数位置对照表来找到对应的函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">按</font><font FACE="Times New Roman" SIZE="3">F7</font><font SIZE="3">编译工程，</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">就在</font><font FACE="Times New Roman" SIZE="3">mymaths\debug</font><font SIZE="3">目录下生成一个</font><font FACE="Times New Roman" SIZE="3">mymaths.dll</font><font SIZE="3">动态连接库文件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">现在，我们来使用刚才生成的动态连接库。我们并不重新生成一个程序，而是修改前面测试静态库时的</font><font FACE="Times New Roman" SIZE="3">test</font><font SIZE="3">程序。首先，把</font><font FACE="Times New Roman" SIZE="3">mymaths\debug</font><font SIZE="3">目录下的</font><font FACE="Times New Roman" SIZE="3">mymaths.dll</font><font SIZE="3">拷贝到</font><font FACE="Times New Roman" SIZE="3">test\debug</font><font SIZE="3">目录下。</font><font FACE="Times New Roman" SIZE="3">test</font><font SIZE="3">程序运行时，会在该目录下搜索动态连接库文件。然后修改</font><font FACE="Times New Roman" SIZE="3">testdlg.h</font><font SIZE="3">，在其中加入一个函数</font><font FACE="Times New Roman" SIZE="3">LoadDLL()</font><font SIZE="3">的声明，见清单</font><font FACE="Times New Roman" SIZE="3">9.4</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">LoadDLL</font><font SIZE="3">用于载入动态连接库。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">9.4 </font><font SIZE="3">修改后的对话框头文件</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>class CTestDlg : public CDialog</p>
+    <p>{</p>
+    <p>// Construction</p>
+    <p>public:</p>
+    <p>CTestDlg(CWnd* pParent = NULL); // standard constructor</p>
+    <p>protected:</p>
+    <p>void LoadDLL();</p>
+    <p>//......</p>
+    <p>}</p>
+    <p></font><font SIZE="3">然后修改</font><font FACE="Times New Roman" SIZE="3">testdlg.cpp</font><font SIZE="3">，修改后如清单</font><font FACE="Times New Roman" SIZE="3">9.5</font><font SIZE="3">。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">95. TestDlg.cpp</font><font SIZE="3">文件</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// TestDlg.cpp : implementation file</p>
+    <p>//</p>
+    <p>#include &quot;stdafx.h&quot;</p>
+    <p>#include &quot;Test.h&quot;</p>
+    <p>#include &quot;TestDlg.h&quot;</p>
+    <p>//#include &quot;mymath.h&quot; //</font><font SIZE="3">注释掉</font><font FACE="Times New Roman" SIZE="3">mymath.h</font><font SIZE="3">头文件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>#ifdef _DEBUG</p>
+    <p>#define new DEBUG_NEW</p>
+    <p>#undef THIS_FILE</p>
+    <p>static char THIS_FILE[] = __FILE__;</p>
+    <p>#endif</p>
+    <p>//The instance of the Mymaths.DLL library</p>
+    <p>HINSTANCE ghMathsDLL=NULL;</p>
+    <p>//declare the Summary() function from the Mymaths.DLL libray.</p>
+    <p>typedef int (*SUMMARY)(int);</p>
+    <p>SUMMARY Summary;</p>
+    <p>//declare the Factorial() function from</p>
+    <p>//the Mymaths.DLL library.</p>
+    <p>typedef int (*FACTORIAL)(int);</p>
+    <p>FACTORIAL Factorial;</p>
+    <p>/////////////////////////////////////////////////////////////////////////////</p>
+    <p>// CAboutDlg dialog used for App About</p>
+    <p>class CAboutDlg : public CDialog</p>
+    <p>{</p>
+    <p>//...</p>
+    <p>};</p>
+    <p>//CAboutDlg</font><font SIZE="3">的一些成员函数定义</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>//CTestDlg</font><font SIZE="3">的一些成员函数定义</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CTestDlg::OnSum() </p>
+    <p>{</p>
+    <p>// TODO: Add your control notification handler code here</p>
+    <p>LoadDLL();</p>
+    <p>int nSum=Summary(10);</p>
+    <p>CString sResult;</p>
+    <p>sResult.Format(&quot;Sum(10)=%d&quot;,nSum);</p>
+    <p>AfxMessageBox(sResult);</p>
+    <p>}</p>
+    <p>void CTestDlg::OnFactorial() </p>
+    <p>{</p>
+    <p>// TODO: Add your control notification handler code here</p>
+    <p>LoadDLL();</p>
+    <p>int nFact=Factorial(10);</p>
+    <p>CString sResult;</p>
+    <p>sResult.Format(&quot;10!=%d&quot;,nFact);</p>
+    <p>AfxMessageBox(sResult);</p>
+    <p>}</p>
+    <p>void CTestDlg::LoadDLL()</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">如果</font><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">已经载入，则返回</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>if(ghMathsDLL!=NULL)</p>
+    <p>{</p>
+    <p>return; </p>
+    <p>}</p>
+    <p>//</font><font SIZE="3">载入</font><font FACE="Times New Roman" SIZE="3">Mymaths.DLL</font><font SIZE="3">文件</font><font FACE="Times New Roman" SIZE="3">.</p>
+    <p>ghMathsDLL=LoadLibrary(&quot;mymaths.DLL&quot;);</p>
+    <p>//</font><font SIZE="3">如果载入</font><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">失败，提示用户</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>if(ghMathsDLL==NULL)</p>
+    <p>{</p>
+    <p>AfxMessageBox(&quot;Cannot load DLL file!&quot;);</p>
+    <p>}</p>
+    <p>//</font><font SIZE="3">获得</font><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">中</font><font FACE="Times New Roman" SIZE="3">Summary</font><font SIZE="3">函数的地址</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>Summary=(SUMMARY)GetProcAddress(ghMathsDLL,&quot;Summary&quot;);</p>
+    <p>//</font><font SIZE="3">获得</font><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">中</font><font FACE="Times New Roman" SIZE="3">Factorial</font><font SIZE="3">函数的地址</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>Factorial=(FACTORIAL)GetProcAddress(ghMathsDLL,&quot;Factorial&quot;);</p>
+    <p>}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">testdlg.cpp</font><font SIZE="3">文件开头，加入：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>//The instance of the Mymaths.DLL library</p>
+    <p>HINSTANCE ghMathsDLL=NULL;</p>
+    <p>//declare the Summary() function from the Mymaths.DLL libray.</p>
+    <p>typedef int (*SUMMARY)(int);</p>
+    <p>SUMMARY Summary;</p>
+    <p>//declare the Factorial() function from</p>
+    <p>//the Mymaths.DLL library.</p>
+    <p>typedef int (*FACTORIAL)(int);</p>
+    <p>FACTORIAL Factorial;</p>
+    <p></font><font SIZE="3">首先加入一个</font><font FACE="Times New Roman" SIZE="3">ghMathsDLL</font><font SIZE="3">的全局变量，它是动态连接库载入后的句柄（同应用程序一样，每个动态连接库载入都会有一个句柄和它相对应）。应用程序通过句柄访问库中的函数。然后加入</font><font FACE="Times New Roman" SIZE="3">Summary</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Factorial</font><font SIZE="3">函数指针的类型定义。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">LoadDLL()</font><font SIZE="3">函数定义中，检查动态连接库句柄是否为空；若为空，则用</font><font FACE="Times New Roman" SIZE="3">LoadLibrary</font><font SIZE="3">载入该动态连接库。然后用</font><font FACE="Times New Roman" SIZE="3">GetProcAddress</font><font SIZE="3">取得</font><font FACE="Times New Roman" SIZE="3">Summary</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Factorial</font><font SIZE="3">函数地址。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">OnFactorial</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OnSummary</font><font SIZE="3">函数开头，调用</font><font FACE="Times New Roman" SIZE="3">LoadDLL()</font><font SIZE="3">，载入动态连接库。现在编译运行程序，按</font><font FACE="Times New Roman" SIZE="3">Factorial</font><font SIZE="3">按钮测试一下程序。<b></p>
+    <p></b></font><font color="#3973DE" SIZE="3">应用程序是如何查找</font><font color="#3973DE"><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">文件的</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">应用程序</font><font FACE="Times New Roman" SIZE="3">test</font><font SIZE="3">按以下顺序查找动态连接库文件：<ul>
+      <li>当前目录下（因此要将动态连接库拷贝至<font FACE="Times New Roman" SIZE="3">DEBUG</font>目录下，因为可执行文件在该目录下）</li>
+      <li><font FACE="Times New Roman" SIZE="3">Windows</font>目录</li>
+      <li><font FACE="Times New Roman" SIZE="3">Windows</font>系统目录</li>
+      <li><font FACE="Times New Roman" SIZE="3">PATH</font>环境变量中设置的目录</li>
+      <li>列入映射网络的目录表中的目录</font></li>
+    </ul>
+    <p><font SIZE="3"><b>　</p>
+    <p></b><font color="#3973DE">调用动态连接库中的函数的方法</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">有两种方法可以调用动态连接库中的函数：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>1.</font><font SIZE="3">通过引入库：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">利用</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">提供的</font><font FACE="Times New Roman" SIZE="3">IMPLIB</font><font SIZE="3">工具为动态连接库生成引入库，为引入库设计一个头文件：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>#ifndef _MYMATH_H</p>
+    <p>#define _MYMATH_H</p>
+    <p>extern </font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">C</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>{</p>
+    <p>int Summary(int n);</p>
+    <p>int Factorial(int n);</p>
+    <p>}</p>
+    <p>#endif</p>
+    <p></font><font SIZE="3">将该头文件包含在使用动态连接库的源文件中，连接应用程序时会连接上该引入库。这样，应用程序就可以象使用静态连接库一样自由的使用动态连接库中的函数了。注意要把动态连接库拷贝到应用程序可执行文件所在的目录（</font><font FACE="Times New Roman" SIZE="3">\TEST\DEBUG</font><font SIZE="3">）下。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">这是一种常用的方法。实际上，应用程序就是通过这种方式访问</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">函数的。</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">为其内核动态连接库生成引入库并提供了头文件。应用程序在编译时将引入库的信息带入可执行文件中，在运行时通过引入库信息访问</font><font FACE="Times New Roman" SIZE="3">API</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>2. </font><font SIZE="3">直接指定库和函数地址</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">这种方式适合于一些提供文件格式转换等服务的动态连接库。比如，一个程序带有多个动态连接库，分别用于访问</font><font FACE="Times New Roman" SIZE="3">JPG</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">BMP</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">GIF</font><font SIZE="3">等多种图像文件格式，这些动态连接库提供了相同的库函数接口。此时，无法使用引入库方式指定库函数。可以采用下面的方法来解决这个问题。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>HANDLE hLibrary;</p>
+    <p>FARPROC lpFunc;</p>
+    <p>int nFormat;</p>
+    <p>if(nFormat==JPEG)//</font><font SIZE="3">如果是</font><font FACE="Times New Roman" SIZE="3">JPEG</font><font SIZE="3">格式，装入</font><font FACE="Times New Roman" SIZE="3">JPEG</font><font SIZE="3">动态连接库</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>{</p>
+    <p>hLibrary=LoadLibrary(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">JPEG.DLL</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">);</p>
+    <p>}</p>
+    <p>else//</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">GIF</font><font SIZE="3">格式</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>hLibrary= LoadLibrary(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">GIF.DLL</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">);</p>
+    <p>if(hLibrary&gt;=32)</p>
+    <p>{</p>
+    <p>lpFunc=GetProcAddress(hLibrary,</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">ReadImage</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">);</p>
+    <p>if(lpFunc!=(FARPROC)NULL)</p>
+    <p>(*lpFunc)((LPCTSTR)strFileName);</p>
+    <p>FreeLibrary(hLibrary);</p>
+    <p>}</p>
+    <p>LoadLibrary</font><font SIZE="3">函数装入所需的动态连接库，并返回库的句柄。如果句柄小于</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">，则载入库失败，错误含义参见有关手册。</font><font FACE="Times New Roman" SIZE="3">GetProcAddress</font><font SIZE="3">函数使用函数名字取得函数的地址。利用该函数地址，就可以访问动态连接库的函数了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>FreeLibrary</font><font SIZE="3">通过检查动态连接库的引用计数器，判断是否还有别的程序在使用这个动态连接库。如果没有，就从内存中移去该动态连接库；如果有，将动态连接库的使用计数器减</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">LoadLibrary</font><font SIZE="3">则将引用计数加</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在用户动态连接库中，也可以使用</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">类。这时，可以选择静态连接和动态连接两种方式使用</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">库。</font><font FACE="Times New Roman"><b></p>
+    <p></b></font><font color="#3973DE" FACE="Times New Roman">9.3.2 MFC</font><font color="#3973DE">扩展类库（<font FACE="Times New Roman">_AFXDLL</font>）</font></p>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">除了创建具有</font><font FACE="Times New Roman" SIZE="3">C</font><font SIZE="3">语言接口的用户动态连接库外，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">还允许用户在动态连接库中创建</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">类的派生类，这些类作为</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">类的自然延伸出现，可以为其他</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">应用程序所使用，就象使用普通的</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">类一样。<b></p>
+    <p></b><font color="#3973DE">创建扩展类库</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">要创建扩展类库，可以选择</font><font FACE="Times New Roman" SIZE="3">File-&gt;New</font><font SIZE="3">菜单，在</font><font FACE="Times New Roman" SIZE="3">Projects</font><font SIZE="3">类型中选择</font><font FACE="Times New Roman" SIZE="3">MFC AppWizard(dll)</font><font SIZE="3">。弹出</font><font FACE="Times New Roman" SIZE="3">MFC AppWizard 1of 1</font><font SIZE="3">对话框，从中选择</font><font FACE="Times New Roman" SIZE="3">MFC Extension DLL(using shared MFC DLL)</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">就会生成</font><font FACE="Times New Roman" SIZE="3">Extension DLL</font><font SIZE="3">所需的框架。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">这里不再创建动态连接库，而是用</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">的例子</font><font FACE="Times New Roman" SIZE="3">DLLHUSK</font><font SIZE="3">程序（在</font><font FACE="Times New Roman" SIZE="3">SAMPLES\MFC\ADVANCED \DLLHUSK</font><font SIZE="3">目录下）说明扩展类库的创建和使用。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">DLLHUSK</font><font SIZE="3">项目工作区中，包含三个工程：</font><font FACE="Times New Roman" SIZE="3">DLLHUSK</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">TESTDLL1</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">TESTDLL2</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>TESTDLL1</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">TESTDLL2</font><font SIZE="3">分别定义了几个扩展类：</font><font FACE="Times New Roman" SIZE="3">CTextDoc</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">CHelloView</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CListOutputFrame</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">DLLHUSK</font><font SIZE="3">是使用这些类的示例程序。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CListOutputFrame</font><font SIZE="3">声明中，要加入</font><font FACE="Times New Roman" SIZE="3">AFX_EXT_CLASS</font><font SIZE="3">，表明它是一个</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">扩展类。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>class AFX_EXT_CLASS CListOutputFrame:public CMDIChildWnd</p>
+    <p>{</p>
+    <p>...</p>
+    <p>}</p>
+    <p></font><font SIZE="3">在函数定义处，还要包含</font><font FACE="Times New Roman" SIZE="3">afxdllx.h</font><font SIZE="3">头文件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// Initialization of MFC Extension DLL</p>
+    <p>#include &quot;afxdllx.h&quot; // standard MFC Extension DLL routines</p>
+    <p></font><font SIZE="3">类的成员函数使用与应用程序中类的使用大致相同。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CListOutputFrame</font><font SIZE="3">类定义文件中，还提供了一个</font><font FACE="Times New Roman" SIZE="3">C</font><font SIZE="3">函数。它的函数声明在类头文件</font><font FACE="Times New Roman" SIZE="3">testdll2.h</font><font SIZE="3">中：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// Initialize the DLL, register the classes etc</p>
+    <p>extern &quot;C&quot; AFX_EXT_API void WINAPI InitTestDLL2();</p>
+    <p></font><font SIZE="3">这个函数用于初始化动态连接库和注册类：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// Exported DLL initialization is run in context of running application</p>
+    <p>extern &quot;C&quot; void WINAPI InitTestDLL2()</p>
+    <p>{</p>
+    <p>// create a new CDynLinkLibrary for this app</p>
+    <p>new CDynLinkLibrary(extensionDLL);</p>
+    <p>// nothing more to do</p>
+    <p>}</p>
+    <p></font><font SIZE="3">另外，源文件中还需要提供一个</font><font FACE="Times New Roman" SIZE="3">DllMain</font><font SIZE="3">函数：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">这个函数作用与前面的</font><font FACE="Times New Roman" SIZE="3">DllEntryPoint</font><font SIZE="3">类似。 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">扩展类库也需要一个</font><font FACE="Times New Roman" SIZE="3">DEF</font><font SIZE="3">文件，这个文件包含了动态连接库中可用的函数信息。由于现在动态连接库包含的是类，因此在函数命名上与用户动态连接库有所不同。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>EXPORTS</p>
+    <p>?AddString@CListOutputFrame@@QAAXPBD@Z</p>
+    <p>??_7CListOutputFrame@@6B@</p>
+    <p>??_GCListOutputFrame@@UAAPAXI@Z</p>
+    <p>?OnEditCut@CListOutputFrame@@IAAXXZ</p>
+    <p>?_messageEntries@CListOutputFrame@@0QBUAFX_MSGMAP_ENTRY@@B</p>
+    <p>??0CListOutputFrame@@QAA@XZ</p>
+    <p>??1CListOutputFrame@@UAA@XZ</p>
+    <p>?Clear@CListOutputFrame@@QAAXXZ</p>
+    <p>?OnEditClear@CListOutputFrame@@IAAXXZ</p>
+    <p>?OnEditCopy@CListOutputFrame@@IAAXXZ</p>
+    <p>InitTestDLL2</p>
+    <p>......</p>
+    <p></font><font SIZE="3">有关函数名扩展的技术参考</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">帮助文档。<b></p>
+    <p></b><font color="#3973DE">使用扩展类动态连接库</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">要使用扩展类库，要将类库的头文件包含在工程中。然后在适当位置初始化类库，</font><font FACE="Times New Roman" SIZE="3">DLLHusk</font><font SIZE="3">是在</font><font FACE="Times New Roman" SIZE="3">InitInstance</font><font SIZE="3">中完成这一工作的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BOOL CHuskApp::InitInstance()</p>
+    <p>{</p>
+    <p>//...</p>
+    <p>InitTestDLL1(); </p>
+    <p>InitTestDLL2();</p>
+    <p>//...</p>
+    <p>} </p>
+    <p></font><font SIZE="3">然后就可以象使用普通</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">类一样使用扩展类库中定义的类了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>m_pListOut=new CListOutputFrame;</font><font SIZE="3"><b></p>
+    <p></b></font><font color="#3973DE" SIZE="3">访问</font><font color="#3973DE"><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">中的资源</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">当应用程序使用资源时，它按以下顺序查找资源：首先查找应用程序本身，看有没有对应的资源；如果没有，查找</font><font FACE="Times New Roman" SIZE="3">MFC400.DLL</font><font SIZE="3">（或</font><font FACE="Times New Roman" SIZE="3">MFC400D.DLL</font><font SIZE="3">，它包含调试信息）。再查找应用程序所带的动态连接库中的资源。如果想在</font><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">中直接使用资源而不经过以上搜索顺序，可以使用</font><font FACE="Times New Roman" SIZE="3">AfxGetResouceHandle()</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">AfxSetResourceHandle()</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>AfxGetResourceHandle()</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">AfxSetResouceHandle()</font><font SIZE="3">函数分别用来保存旧的资源句柄和设置新的资源句柄。比如，要想直接从</font><font FACE="Times New Roman" SIZE="3">DLL</font><font SIZE="3">中载入一个位图资源，可以这么调用：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CBitmap mybitmap;</p>
+    <p>HINSTANCE hInstOld=AfxGetResourceHandle()</p>
+    <p>AfxSetResouceHandler(extensionDLL.hModule);</p>
+    <p>if(!mybitmap.LoadBitmap(IDR_BITMAP));</p>
+    <p>{</p>
+    <p>//restore the old resouce chain and return error</p>
+    <p>AfxSetResouceHandle(hInstOld);</p>
+    <p>return FALSE;</p>
+    <p>}</p>
+    <p>AfxSetResouceHandle(hInstOld);</p>
+    <p>//use this bitmap...</p>
+    <p>return TRUE;</p>
+    <p></font><font SIZE="3">还可以使用</font><font FACE="Times New Roman" SIZE="3">FindResource()</font><font SIZE="3">搜索资源表，寻找给定的资源。</p>
+    <blockquote>
+      </font><font FACE="Arial" SIZE="2"><b><p>HRSRC FindResource(</p>
+    </blockquote>
+    <p>HMODULE</b> <i>hModule</i><b>,</b></font> </p>
+    <p><b><font SIZE="2">　</font><font FACE="Arial" SIZE="2"></p>
+    <p>LPCTSTR</b> <i>lpName</i><b>,</b></font> </p>
+    <p><b><font SIZE="2">　</font><font FACE="Arial" SIZE="2"></p>
+    <p>LPCTSTR</b> <i>lpType</i> </font></p>
+    <p><b><font SIZE="2">　</font><font FACE="Arial" SIZE="2"></p>
+    <p>);</font><font SIZE="3"></p>
+    <p>FindResource</b>带三个参数，第一个参数是模块句柄，第二个是要查找的资源名字，如“MYDIALOG”，第三个是资源类型，可参见Visual 
+    C++文档。如果查找成功，则返回该资源句柄。可以用LoadResouce以该句柄为参数装入资源。</font><font SIZE="4"><b></p>
+    </b></font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap9_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap9/chap9_2.htm">上一页</a></td>
+        <td><p align="right"><a href="chap9_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap9/chap9_4.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+  
+  
+  
+  
+  <title>最大公因數、最小公倍數、因式分解</title>
+</head>
+
+
+<body>
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip: 最大公因數、最小公倍數、因式分解</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+      <h2>說明</h2>
+      <small>
+最大公因數使用輾轉相除法來求，最小公倍數則由這個公式來求：<br>
+      </small>
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold;">GCD * LCM = 兩數乘積</span></small><br>
+
+      </div>
+
+      <h2>解法</h2>
+      <small>
+最大公因數可以使用遞迴與非遞迴求解，因式分解基本上就是使用小於輸入數的數值當作除數，去除以輸入數值，如果可以整除就視為因數，要比較快的解法就是求出小於該數的所有質數，並試試看是不是可以整除，求質數的問題是另一個課題，請參考 <a href="EratosthenesPrime.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/EratosthenesPrime.htm">Eratosthenes 篩選求質數</a>。</small><br>
+
+
+
+
+      <br>
+
+      <h2> 實作（最大公因數、最小公倍數）</h2>
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>int main(void) { <br>    int m, n, r; <br>    int s;<br><br>    printf("輸入兩數："); <br>    scanf("%d %d", &amp;m, &amp;n); <br>    s = m * n;<br><br>    while(n != 0) { <br>        r = m % n; <br>        m = n; <br>        n = r; <br>    } <br><br>    printf("GCD：%d\n", m); <br>    printf("LCM：%d\n", s/m); <br><br>    return 0; <br>} <br></pre>
+
+
+      <br>
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+      <pre>public class GcdLcm {<br>    public static int gcdOf(int m, int n) {<br>        int r;<br>        <br>        while(n != 0) { <br>            r = m % n; <br>            m = n; <br>            n = r; <br>        }<br>        <br>        return m;<br>    }<br>    <br>    public static int lcmOf(int m, int n) {<br>        return m * n / gcdOf(m, n);<br>    }<br>    <br>    public static void main(String[] args) {<br>        System.out.println("GCD of (10, 4) = " + <br>                              GcdLcm.gcdOf(10, 4));<br>        System.out.println("LCM of (10, 4) = " + <br>                              GcdLcm.lcmOf(10, 4));<br>    }<br>} <br></pre>
+
+
+
+      <h2> 實作（因式分解）</h2>
+
+
+      <ul>
+        <li> C（不用質數表）
+  </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>int main(void) { <br>    int i, n; <br><br>    printf("請輸入整數："); <br>    scanf("%d", &amp;n); <br>    printf("%d = ", n); <br><br>    for(i = 2; i * i &lt;= n;) { <br>        if(n % i == 0) { <br>            printf("%d * ", i); <br>            n /= i; <br>        } <br>        else <br>            i++; <br>    } <br><br>    printf("%d\n", n); <br><br>    return 0; <br>} <br></pre>
+
+
+      <br>
+
+
+      <ul>
+        <li> C（使用質數表）
+  </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>#define N 1000 <br><br>int prime(int*);  // 求質數表 <br>void factor(int*, int);  // 求factor <br><br>int main(void) { <br>    int ptable[N+1] = {0}; <br>    int count, i, temp; <br><br>    count = prime(ptable); <br><br>    printf("請輸入一數："); <br>    scanf("%d", &amp;temp); <br>    factor(ptable, temp); <br><br>    printf("\n"); <br><br>    return 0; <br> } <br><br> int prime(int* pNum) { <br>    int i, j; <br>    int prime[N+1]; <br><br>    for(i = 2; i &lt;= N; i++) <br>        prime[i] = 1; <br><br>    for(i = 2; i*i &lt;= N; i++) { <br>        if(prime[i] == 1) { <br>            for(j = 2*i; j &lt;= N; j++) { <br>                if(j % i == 0) <br>                    prime[j] = 0; <br>            } <br>        } <br>    } <br><br>    for(i = 2, j = 0; i &lt; N; i++) { <br>        if(prime[i] == 1) <br>            pNum[j++] = i; <br>    } <br><br>    return j; <br>} <br><br>void factor(int* table, int num) { <br>    int i; <br><br>    for(i = 0; table[i] * table[i] &lt;= num;) { <br>        if(num % table[i] == 0) { <br>            printf("%d * ", table[i]); <br>            num /= table[i]; <br>        } <br>        else <br>            i++; <br>    } <br><br>    printf("%d\n", num); <br>}<br> <br></pre>
+
+
+      <br>
+
+
+      <ul>
+        <li> Java（使用質數表）
+  </li>
+      </ul>
+
+
+      <pre>import java.util.ArrayList;<br><br>public class Factor {<br>    public static int[] factor(int num) {<br>        int[] pNum = Prime.findPrimes(num);<br>        <br>        ArrayList list = new ArrayList();<br>        <br>        for(int i = 0; pNum[i] * pNum[i] &lt;= num;) { <br>            if(num % pNum[i] == 0) { <br>                list.add(new Integer(pNum[i]));<br>                num /= pNum[i]; <br>            } <br>            else <br>                i++; <br>        } <br><br>        list.add(new Integer(num));<br>        <br>        int[] f = new int[list.size()];<br>        Object[] objs = list.toArray();<br>        for(int i = 0; i &lt; f.length; i++) {<br>            f[i] = ((Integer) objs[i]).intValue();<br>        }<br>        <br>        return f;<br>    }<br>    <br>    public static void main(String[] args) {<br>        int[] f = Factor.factor(100);<br>        for(int i = 0; i &lt; f.length; i++) {<br>            System.out.print(f[i] + " ");<br>        }<br>        System.out.println();<br>    }<br>}</pre>
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+<br>
+
+
+
+
+</body>
+</html>

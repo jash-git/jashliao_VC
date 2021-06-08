@@ -1,0 +1,498 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - [project] Speech</title></head><body>
+<style>
+canvas {border: 1px solid brown;}
+audio {width: 512px;}
+#out {
+display:block;
+width:512;
+height:auto;
+border:1px solid navy;
+}
+.a {width: 90%; margin: .5em;}
+p {width: 40em;}
+</style>
+<script>
+var FFT = function(N) {
+	this.N            = N;
+	this.spectrum     = new Float32Array(N/2);
+	this.real         = new Float32Array(N);
+	this.imag         = new Float32Array(N);
+	this.reverseTable = new Uint32Array(N);
+	this.sinTable     = new Float32Array(N+1);
+	this.cosTable     = new Float32Array(N+1);
+
+	for (var i=1, j=N>>1; i<N; i<<=1, j>>=1)
+		for (var k=0; k<i; k++)
+			this.reverseTable[k + i] = this.reverseTable[k] + j;
+
+	for (var i=1; i<N; i<<=1) {
+		this.sinTable[i] = Math.sin(-Math.PI/i);
+		this.cosTable[i] = Math.cos(-Math.PI/i);
+	}
+};
+
+FFT.prototype.forward = function(sample) {
+	var N            = this.N,
+		cosTable     = this.cosTable,
+		sinTable     = this.sinTable,
+		reverseTable = this.reverseTable,
+		real         = this.real,
+		imag         = this.imag,
+		spectrum     = this.spectrum;
+
+	var cosdt, sindt, cost, sint, tr, ti, temp_cost, i, j, k, jj;
+
+	for (i=0; i<N; ++i) {
+		real[i] = sample[reverseTable[i]];
+		imag[i] = 0;
+	}
+
+	for (k=1; k<N; k<<=1) {
+//		double ω = -2.0 * π / k;
+//		complex<double> dθ(cos(ω), sin(ω));
+//		complex<double> θ(1, 0);
+		cosdt = cosTable[k]; sindt = sinTable[k];
+		cost = 1; sint = 0;
+		for (i=0; i<k; i++) {
+			for (j=i; j<N; j+=(k<<1)) {
+//				complex<double> a = x[j];
+//				complex<double> b = x[j + k/2] * θ;
+//				x[j + k/2] = a - b;
+//				x[j]       = a + b;
+				jj = j + k;
+				tr = real[jj] * cost - imag[jj] * sint;
+				ti = real[jj] * sint + imag[jj] * cost;
+				real[jj] = real[j] - tr;
+				imag[jj] = imag[j] - ti;
+				real[j] += tr;
+				imag[j] += ti;
+			}
+//			θ *= dθ;
+			temp_cost = cost;
+			cost = cost      * cosdt - sint * sindt;
+			sint = temp_cost * sindt + sint * cosdt;
+		}
+	}
+
+	i = N/2;
+	while (i--)
+		spectrum[i] = 2 * Math.sqrt(real[i] * real[i] + imag[i] * imag[i]) / N;
+};
+</script>
+<script>
+var DLFT = function(N, rate) {
+	this.N            = N;
+	this.spectrum     = new Float32Array(N);
+	this.cosTable     = new Float32Array(N+1);
+	this.sinTable     = new Float32Array(N+1);
+
+	var df = Math.log(rate) / N, f;
+	for (var i=0; i<N; ++i) {
+		f = -Math.exp(df * i) * Math.PI * 2;
+		this.cosTable[i] = Math.cos(f);
+		this.sinTable[i] = Math.sin(f);
+	}
+};
+
+DLFT.prototype.forward = function(sample, iBegin, iEnd) {
+	var N            = this.N,
+		cosTable     = this.cosTable,
+		sinTable     = this.sinTable,
+		spectrum     = this.spectrum;
+
+	var cosdt, sindt, cost, sint, tr, ti, temp_cost, i, j;
+
+	for (i=iBegin; i<iEnd; ++i) {
+		cosdt = cosTable[i]; sindt = sinTable[i];
+		cost = 1; sint = 0;
+		tr = 0; ti = 0;
+		for (j=0; j<N; ++j)  {
+			tr += sample[j] * cost;
+			ti += sample[j] * sint;
+			temp_cost = cost;
+			cost = cost      * cosdt - sint * sindt;
+			sint = temp_cost * sindt + sint * cosdt;
+		}
+		spectrum[i] = 2 * Math.sqrt(tr * tr + ti * ti) / N;
+//		if (i == iBegin) out.innerHTML += spectrum[i] + "\n";
+	}
+};
+</script>
+
+<div class="a"><div class="h">
+<p class="b">Speech</p>
+<p class="r">2012/2/24 - 2012/3/1</p>
+</div><div class="c">
+<p>I am trying to use Firefox Audio API to make certain speech processing.</p>
+<p>講英文好累。我打算用小火狐的API做點語音處理的實驗，希望做出一個可以分析中文腔調的程式。之前我偶然有機會接觸到語言訓練師，聽說語言訓練師目前使用的腔調分析軟體，全世界只有那麼一套，是十年前開發的東西，主要針對英文使用者而非中文使用者，功能有限，而且有點貴，不是一般家庭可以負擔的。如果有人想在家裡自主訓練，那就不太方便了。</p>
+<p>我想說不如試著做一個免費的好了。畢竟目前用到的技術都是數十年前的老技術，聲波圖（waveform）、聲紋圖（spectrogram）、音高圖（pitch）、F1/F2圖，就連學校課程都有教了，我想應該不會太難做吧。比較麻煩的地方，主要是要去鑽研一些錄放音的api，還有一些演算法細節。目前瀏覽器沒辦法直接透過JavaScript錄音，只有flash做得到；所以我想到時候應該還是得學點ActionScript然後把這些程式寫成一個flash。</p>
+<p>另外一方面，一如本站一直以來在做的事，我會抽空把這些知識和演算法整理一下，讓大家對中文語音能夠有多一點了解。我想如果多一點人了解的話，應該就會能想出更好的辦法──像是鼻音、氣音、捲舌音、聲調等等，目前都還沒有辦法可以準確偵測到（也許還需要插氣管和照X光機之類的）。若可以吸引網友們注意，大家集思廣益，也許能解決這些問題。</p>
+<p>我並不是什麼語言學還是語音處理的專家，對於這些東西並不熟悉、還在學習。如果各位發現這網頁上的資料是有問題的，歡迎到<a href="javascript:if(confirm('http://algonote.wordpress.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://algonote.wordpress.com/'" tppabs="http://algonote.wordpress.com/">留言板</a>反映。</p>
+<p>有任何建議也歡迎到<a href="javascript:if(confirm('http://algonote.wordpress.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://algonote.wordpress.com/'" tppabs="http://algonote.wordpress.com/">留言版</a>討論。</p>
+<p class="t">資源</p>
+<p>Ian: <a href="javascript:if(confirm('http://users.ece.gatech.edu/~chl/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://users.ece.gatech.edu/~chl/'" tppabs="http://users.ece.gatech.edu/~chl/">李錦輝教授</a>好像對發音特性（articulatory feature）的分析方式頗有研究。可以去找他的相關研究。</p>
+<p>Ian: <a href="javascript:if(confirm('http://www.ling.sinica.edu.tw/director.asp.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.ling.sinica.edu.tw/director.asp.htm'" tppabs="http://www.ling.sinica.edu.tw/director.asp.htm">中研院鄭秋豫博士</a>對連續語流的韻律也頗有研究，他利用Fujisaki model來描述中文語音的句調發表了不少論文。</p>
+<p class="t">桀驁不馴小火狐。駕駕！</p>
+<p>這邊整理一些JavaScript和小火狐的編程資料。</p>
+<p><a href="javascript:if(confirm('http://html5-demos.appspot.com/static/html5-whats-new/template/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://html5-demos.appspot.com/static/html5-whats-new/template/index.html#30'" tppabs="http://html5-demos.appspot.com/static/html5-whats-new/template/index.html#30">HTML5可以做到哪些事</a>。原來已經可以用javascript製造WAV然後播放聲音，這樣理論上就可以做DSP了！只是錄音+抽出訊號的部分要再找找看怎麼做...</p>
+<p>再來一個，<a href="javascript:if(confirm('http://blog.gingertech.net/wp-content/uploads/2011/01/LCA_MM_AVProc2011/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://blog.gingertech.net/wp-content/uploads/2011/01/LCA_MM_AVProc2011/'" tppabs="http://blog.gingertech.net/wp-content/uploads/2011/01/LCA_MM_AVProc2011/">小火狐的聲音操作</a>。不過有些<a href="javascript:if(confirm('https://bugzilla.mozilla.org/show_bug.cgi?id=686137  \n\nThis file was not retrieved by Teleport Pro, because it is addressed using an unsupported protocol (e.g., gopher).  \n\nDo you want to open it from the server?'))window.location='https://bugzilla.mozilla.org/show_bug.cgi?id=686137'" tppabs="https://bugzilla.mozilla.org/show_bug.cgi?id=686137">bug</a>似乎<a href="javascript:if(confirm('https://chrisdecairos.ca/2012/01  \n\nThis file was not retrieved by Teleport Pro, because it is addressed using an unsupported protocol (e.g., gopher).  \n\nDo you want to open it from the server?'))window.location='https://chrisdecairos.ca/2012/01'" tppabs="https://chrisdecairos.ca/2012/01">正在修好</a>。</p>
+<p><a href="javascript:if(confirm('http://www.htmlfivewow.com/demos/waveform-generator/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.htmlfivewow.com/demos/waveform-generator/index.html'" tppabs="http://www.htmlfivewow.com/demos/waveform-generator/index.html">這個</a>用JS寫的，可以把一些簡單的波製成聲音、也有頻譜。</p>
+<pre>
+https://developer.mozilla.org/en/DOM/HTMLAudioElement
+https://developer.mozilla.org/zh_tw/Introducing_the_Audio_API_Extension
+https://wiki.mozilla.org/Audio_Data_API#Security
+https://wiki.mozilla.org/Audio_Data_API (只有FF支援)
+https://wiki.mozilla.org/Audio_Data_API_JS_Library (歡樂~)
+https://developer.mozilla.org/en/DOM/Blob
+
+javascript namespace
+http://www.2ality.com/2011/04/modules-and-namespaces-in-javascript.html
+
+audio DOM
+http://www.devx.com/webdev/Article/43324/1954
+http://dev.w3.org/html5/spec/Overview.html#media-element (slow)
+
+audio API: AudioContext (Webkit only)
+http://www.html5rocks.com/en/tutorials/webaudio/intro/
+https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html
+http://epx.com.br/artigos/audioapi.php (easy)
+
+網址列輸入 about:config
+security.fileuri.strict_origin_policy 的值改為 false
+http://kb.mozillazine.org/Security.fileuri.origin_policy  12345
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Spectrum</p>
+<p class="r">2012/2/24</p>
+</div><div class="c">
+<p>從這邊搬過來的：<a href="javascript:if(confirm('https://wiki.mozilla.org/Audio_Data_API  \n\nThis file was not retrieved by Teleport Pro, because it is addressed using an unsupported protocol (e.g., gopher).  \n\nDo you want to open it from the server?'))window.location='https://wiki.mozilla.org/Audio_Data_API'" tppabs="https://wiki.mozilla.org/Audio_Data_API">https://wiki.mozilla.org/Audio_Data_API</a></p>
+<audio id="au1" src="song.ogg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/project/song.ogg" controls="true"></audio>
+<div><canvas id="spectrum" width="512" height="200"></canvas></div>
+<script>
+var _1_ = function() {
+var canvas = document.getElementById('spectrum');
+var ctx = canvas.getContext('2d');
+
+var audio = document.getElementById('au1');
+audio.addEventListener('MozAudioAvailable', audioAvailable, false);
+audio.addEventListener('loadedmetadata', loadedMetadata, false);
+
+var channels;
+var rate;
+var frameBufferLength;
+var fft;
+
+function loadedMetadata() {
+	channels          = audio.mozChannels;
+	rate              = audio.mozSampleRate;
+	frameBufferLength = audio.mozFrameBufferLength;
+
+	fft = new FFT(frameBufferLength / channels);
+}
+
+function audioAvailable(event) {
+	var fb = event.frameBuffer;
+	var t  = event.time;
+
+	var signal = new Float32Array(fb.length / channels);
+	for (var i = 0, fbl = frameBufferLength / 2; i < fbl; i++ ) {
+		signal[i] = (fb[2*i] + fb[2*i+1]) / 2;
+	}
+	fft.forward(signal);
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = "brown";
+	for (var i = 0; i < fft.spectrum.length; i++ ) {
+		var magnitude = fft.spectrum[i] * 4000;
+		ctx.fillRect(i * 4, canvas.height, 3, -magnitude);
+	}
+}
+}();
+</script>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Spectrogram</p>
+<p class="r">2012/2/24 - 2012/3/1</p>
+</div><div class="c">
+<p>小火狐有bug所以沒辦法調巴佛大小。以44100Hz的取樣率、1024的巴佛來說，頻譜上一點就差44100Hz / 1024 = 43Hz，頻譜的低音部分非常不明顯，更何況一般人對於頻率的感覺是取log的。也許Discrete Logarithmic Fourier Transform是個不錯的解決方式（<a href="javascript:if(confirm('http://people.csail.mit.edu/wangc/papers/phd_thesis.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://people.csail.mit.edu/wangc/papers/phd_thesis.pdf'" tppabs="http://people.csail.mit.edu/wangc/papers/phd_thesis.pdf">http://people.csail.mit.edu/wangc/papers/phd_thesis.pdf</a>，2.3.1小節），它也可以做Pitch Tracking之類的事情，個人認為是非常優雅的方法。不過我不知道如何快速實作這玩意，恩，懇求各位強者幫忙吧──不過我總感覺到頭來我還是得自己寫。</p>
+<p>另外提供一份上課投影片：<a href="javascript:if(confirm('http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-345-automatic-speech-recognition-spring-2003/lecture-notes/lecture23.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-345-automatic-speech-recognition-spring-2003/lecture-notes/lecture23.pdf'" tppabs="http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-345-automatic-speech-recognition-spring-2003/lecture-notes/lecture23.pdf">請按此</a>。這投影片講的是一些語音處理的基本玩意；雖然是2003年的，不過應該還是滿有參考價值。</p>
+<p class="t">Discrete Fourier Transform</p>
+<audio id="au2" src="song.ogg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/project/song.ogg" controls="true"></audio>
+<input id="input2" type="button" value="清除" />
+<div><canvas id="spectrogram" width="900" height="128"></canvas></div>
+<script>
+var _2_ = function() {
+var canvas = document.getElementById('spectrogram');
+var ctx = canvas.getContext('2d');
+
+document.getElementById('input2').onclick = function clean() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+var audio = document.getElementById('au2');
+audio.addEventListener('MozAudioAvailable', audioAvailable, false);
+audio.addEventListener('loadedmetadata', loadedMetadata, false);
+
+var channels;
+var rate;
+var frameBufferLength;
+var fft;
+
+function loadedMetadata() {
+	channels          = audio.mozChannels;
+	rate              = audio.mozSampleRate;
+	frameBufferLength = audio.mozFrameBufferLength;
+
+	fft = new FFT(frameBufferLength / channels);
+}
+
+function audioAvailable(event) {
+	var fb = event.frameBuffer;
+	var t  = event.time;
+
+	var signal = new Float32Array(fb.length / channels);
+	for (var i = 0, fbl = frameBufferLength / 2; i < fbl; i++ ) {
+		signal[i] = (fb[2*i] + fb[2*i+1]) / 2;
+	}
+	fft.forward(signal);
+
+	var x = Math.round(rate * t / (frameBufferLength / channels));
+	for (var i = 0; i < fft.spectrum.length; i++ ) {
+		var magnitude = fft.spectrum[i];
+		var scale = Math.round(magnitude * 2560 * 2);
+
+		if (i < 128) {
+			ctx.fillStyle = "rgb(" + scale + "," + scale + "," + scale + ")";
+			ctx.fillRect(x, canvas.height - i, 1, -1);
+		}
+	}
+}
+}();
+</script>
+<p class="t">Discrete Logarithmic Fourier Transform</p>
+<p>DLFT有個問題就是沒有O(NlogN)的演算法。不過沒關係，如果沒有要求即時性的話，O(N^2)的運算量還是可以接受的；用於語言訓練，重點在於準確而不是快速。</p>
+<p>垂直方向是log scale，不過總覺得完全看不出音調下降的趨勢，應該是個大失敗。基頻的選擇和選曲都有點問題吧...</p>
+<audio id="au2-2" src="song.ogg" tppabs="http://www.csie.ntnu.edu.tw/~u91029/project/song.ogg" controls="true"></audio>
+<input id="input2-2" type="button" value="清除" />
+<div><canvas id="spectrogram-2" width="900" height="300"></canvas></div>
+<div id="out2-2"></div>
+<script>
+var out = document.getElementById('out2-2');
+
+var _2_2_ = function() {
+var canvas = document.getElementById('spectrogram-2');
+var ctx = canvas.getContext('2d');
+
+document.getElementById('input2-2').onclick = function clean() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+var audio = document.getElementById('au2-2');
+audio.addEventListener('MozAudioAvailable', audioAvailable, false);
+audio.addEventListener('loadedmetadata', loadedMetadata, false);
+
+var channels;
+var rate;
+var frameBufferLength;
+var dlft;
+
+var iFrom = 500, iTo = 800;
+
+function loadedMetadata() {
+	channels          = audio.mozChannels;
+	rate              = audio.mozSampleRate;
+	frameBufferLength = audio.mozFrameBufferLength;
+
+	dlft = new DLFT(frameBufferLength / channels, rate);
+	out.innerHTML += Math.exp(Math.log(rate) / 1024 * iFrom) + "\n";
+	out.innerHTML += Math.exp(Math.log(rate) / 1024 * iTo) + "\n";
+}
+
+function audioAvailable(event) {
+	var fb = event.frameBuffer;
+	var t  = event.time;
+
+	var signal = new Float32Array(fb.length / channels);
+	for (var i = 0, fbl = frameBufferLength / 2; i < fbl; i++ ) {
+		signal[i] = (fb[2*i] + fb[2*i+1]) / 2;
+	}
+	dlft.forward(signal, iFrom, iTo);
+
+	var max_magnitude = 0;
+	var x = Math.round(rate * t / (frameBufferLength / channels));
+	for (var i = 0; i < dlft.spectrum.length; i++ ) {
+		if (i >= iFrom && i < iTo) {
+			var magnitude = dlft.spectrum[i];
+			var scale = Math.round(magnitude * 10000);
+			if (magnitude > max_magnitude) max_magnitude = magnitude;
+
+			ctx.fillStyle = "rgb(" + scale + "," + scale + "," + scale + ")";
+			ctx.fillRect(x, canvas.height + iFrom - i, 1, -1);
+		}
+	}
+//	out.innerHTML += max_magnitude + "\n";
+}
+}();
+</script>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Pitch Tracking</p>
+<p class="r">2012/2/29 - 2012/3/1</p>
+</div><div class="c">
+<p>清華大學張智星教授的<a href="javascript:if(confirm('http://mirlab.org/jang/books/audioSignalProcessing/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mirlab.org/jang/books/audioSignalProcessing/'" tppabs="http://mirlab.org/jang/books/audioSignalProcessing/">課程網站</a>有介紹幾個Pitch Tracking的演算法。這種東西感覺上是越簡潔的越實用。</p>
+<p>另外<a href="javascript:if(confirm('http://access.feld.cvut.cz/view.php?cisloclanku=2009060001  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://access.feld.cvut.cz/view.php?cisloclanku=2009060001'" tppabs="http://access.feld.cvut.cz/view.php?cisloclanku=2009060001">這篇文章</a>評比了幾個古代的Pitch Tracking演算法。</p>
+<p>不過我還是念念不忘DLFT + Dynamic Programming就是了。總有一天我要把它實作出來。</p>
+<p>目前來說，並沒有一個夠漂亮的方法可以求出說話的音高，常常產生誤算；不過音高的走向倒是可以勉強描出一個輪廓的。對於聽力不那麼靈敏、正在訓練說話語調的人來說，音高圖應該還是有著不錯的參考價值，至少可以大概看出一二三四聲。</p>
+<p>換個話題。情緒跟音高、出氣量有些關聯，也就是所謂抑揚頓挫。要由音高、出氣量推理出情緒，成年人類可以輕鬆辦到，至於電腦就沒轍了。要讓電腦辨識情緒，大概還要好一陣子吧。先學個唱歌好了，因為唱歌最需要感情，學好唱歌應該就比較知道怎麼辨識說話情緒吧。閒扯了一堆。</p>
+<p class="t">voice onset time</p>
+<p>中文的聲母ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏ……都是爆音、摩擦音、氣音，雖然嘴巴有出氣，但是聲帶其實沒在震動（或者說，震動不夠強），所以其實是抓太不到pitch和tone的。只有韻母可以明顯看到pitch和tone。</p>
+<p>嘴巴送氣與聲帶震動的先後時機，有個專有名詞<a href="javascript:if(confirm('http://zh.wikipedia.org/wiki/VOT  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://zh.wikipedia.org/wiki/VOT'" tppabs="http://zh.wikipedia.org/wiki/VOT">voice onset time</a>可以描述這件事。什麼清音濁音之類的，都可以套用VOT的概念來分類。不過想藉由聲音訊號計算出VOT，幾乎是天方夜譚，因為麥克風偵測不太到嘴巴送氣，只偵測的到聲帶震動。如果可以在麥克風上面加個氣流計，肯定有幫助，不過有誰閒閒沒事會去做這種東西呢？</p>
+<p>順帶一提，人類如何分辨聲母呢？個人推測：聽覺上也許跟<a href="javascript:if(confirm('http://www.phy.ntnu.edu.tw/demolab/html.php?html=modules/sound/section2  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.phy.ntnu.edu.tw/demolab/html.php?html=modules/sound/section2'" tppabs="http://www.phy.ntnu.edu.tw/demolab/html.php?html=modules/sound/section2">音品</a>有關，發音上則是跟舌頭位置、送氣到牙齒/舌頭的哪個位置、送氣量、送氣集中/分散程度有關，與口腔形狀無關。</p>
+<p>現在語音辨識技術最厲害的地方（也是最莫名其妙的地方），不需要了解ㄅㄆㄇㄈ的聲波特性，就可以進行語音辨識。目前語音辨識用的是機率統計的數學模型，看起來很像的聲波就當作一樣，不像的聲波就當作不一樣；收集越多聲波，統計數量越多，那就會越準確──跟ㄅㄆㄇㄈ怎麼發音、ㄅㄆㄇㄈ的聲波特性完全扯不上邊。</p>
+<p>最後，若讀者對於唸ㄅㄆㄇㄈ很有心得，歡迎到<a href="javascript:if(confirm('http://algonote.wordpress.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://algonote.wordpress.com/'" tppabs="http://algonote.wordpress.com/">敝站留言版</a>分享一下心得，這樣或許可以歸納出ㄅㄆㄇㄈ的聲波特性。</p>
+<p>跳來跳去講了一堆。改天來重新編排一下章節順序好了。</p>
+<p class="t">先來個AMDF好了</p>
+<p>其實做出來的圖還滿亂的。也許我該寫個偵測靜音、median smoothing之類的。</p>
+<p>綠色線是音量（dB）。黃色線是音高。我唸的是「紅豆生南國，春來發幾枝」，還不錯可以看到tone，也有反映出抑揚頓挫。音高上升就是二聲、音高下降就是四聲，三聲就是下去再上來。</p>
+<audio id="au3" src="poem-1.wav" tppabs="http://www.csie.ntnu.edu.tw/~u91029/project/poem.wav" controls="true"></audio>
+<input id="input3" type="button" value="清除" />
+<div><canvas id="pitch" width="900" height="128"></canvas></div>
+<!--<div id="out"></div>-->
+<script>
+var _3_ = function() {
+var out = document.getElementById('out');
+
+var canvas = document.getElementById('pitch');
+var ctx = canvas.getContext('2d');
+
+document.getElementById('input3').onclick = function clean() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+var audio = document.getElementById('au3');
+audio.addEventListener('MozAudioAvailable', audioAvailable, false);
+audio.addEventListener('loadedmetadata', loadedMetadata, false);
+
+var channels;
+var rate;
+var frameBufferLength;
+var fft;
+
+function loadedMetadata() {
+//	audio.mozFrameBufferLength = 1024;
+	channels          = audio.mozChannels;
+	rate              = audio.mozSampleRate;
+	frameBufferLength = audio.mozFrameBufferLength;
+
+	fft = new FFT(frameBufferLength / channels);
+}
+
+var lastenergy = 0;
+var lastpitch = 0;
+function audioAvailable(event) {
+	var fb = event.frameBuffer;
+	var t  = event.time;
+	var x = Math.round(rate * t / (frameBufferLength / channels));
+
+	var signal = new Float32Array(fb.length / channels);
+	for (var i = 0, fbl = frameBufferLength / 2; i < fbl; i++)
+		signal[i] = (fb[2*i] + fb[2*i+1]) / 2;
+
+	var energy = Math.log(getEnergy(signal));
+	ctx.strokeStyle = "green";
+	ctx.beginPath();
+	ctx.moveTo((x-1)*4, lastenergy * -20);
+	ctx.lineTo(x*4, energy * -20);
+	ctx.stroke();
+	lastenergy = energy;
+
+	var pitch = 0;
+	if (energy > -4.3) pitch = getPitch(signal);
+//	out.innerHTML += pitch + '\n';
+	pitch -= 80;
+	ctx.strokeStyle = "yellow";
+	ctx.beginPath();
+	ctx.moveTo((x-1)*4, canvas.height - lastpitch);
+	ctx.lineTo(x*4, canvas.height - pitch);
+	ctx.stroke();
+	lastpitch = pitch;
+}
+
+function getEnergy(fSample) {
+	var iEnergy = 0;
+	for (var i=0; i<fSample.length; ++i)
+		iEnergy += fSample[i] * fSample[i];
+
+	return iEnergy;
+}
+
+// [iBegin, iEnd) 的加權平均。
+function masscenter(array, iBegin, iEnd) {
+	var sum = 0, wsum = 0;
+	for (var i = iBegin; i < iEnd; ++i) {
+		if (i >= 0 && i < array.length) {
+			sum += array[i];
+			wsum += array[i] * i;
+		}
+	}
+	if (sum < 1e-6) return 0;
+	return wsum / sum ;
+}
+
+// 找到 [iBegin, iEnd) 最低點，以擷取基頻F0。
+function trough(fAMDF, iBegin, iEnd) {
+	// 找到全域最低點。
+	var iTrough = iBegin;
+	var fTroughValue = fAMDF[iBegin];
+	for (var i = iBegin + 1; i < iEnd; i++)
+		if (fAMDF[i] < fTroughValue)
+			fTroughValue = fAMDF[iTrough = i];
+
+	// 加權平均。
+	var iTroughBegin = iTrough - 2;
+	var iTroughEnd   = iTrough + 2;
+	if (iTroughBegin < iBegin) iTroughBegin = iBegin;
+	if (iTroughEnd   > iEnd  ) iTroughEnd   = iEnd;
+	var fTrough = masscenter(fAMDF, iTroughBegin, iTroughEnd);
+	return fTrough;
+}
+
+var fAMDF = new Float32Array(1024);
+function getPitch(fSample) {
+	var iBegin = 300;	// 44100Hz / 300 = 147Hz for man :D
+	var iHalfLength = fSample.length >> 1;
+	var i, j;
+	for (i = iBegin; i < iHalfLength; i++) {
+		// 最多疊三倍週期，防止高頻oversampling。
+		fAMDF[i] = 0;
+		for (j = 0; j < i * 3 && j < iHalfLength; j++)
+			fAMDF[i] += Math.abs(fSample[j] - fSample[j + i]);
+		// normalize
+		if (j == iHalfLength) fAMDF[i] /= iHalfLength;
+		else fAMDF[i] /= (i * 3);
+	}
+
+	// 找到AMDF函數第一個高峰，從高峰之後開始找最低點。
+	var p = iBegin;
+	while (p < iHalfLength && fAMDF[p] < fAMDF[p + 1]) p++;
+	p = trough(fAMDF, p, iHalfLength);
+	if (p == 0) return 0;
+	return rate / p;
+}
+
+}();
+</script>
+<p class="t">目標是DLFT...</p>
+<p>to be continue...</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Formant Tracking</p>
+<p class="r">2012/3/1</p>
+</div><div class="c">
+<pre>
+http://person2.sol.lu.se/SidneyWood/praate/wavformedform.html
+http://speechformants.files.wordpress.com/2007/12/methods-of-formant-tracking-fadhlis.pdf
+</pre>
+</div></div><script src="h-1.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/project/h.js"></script></body></html>

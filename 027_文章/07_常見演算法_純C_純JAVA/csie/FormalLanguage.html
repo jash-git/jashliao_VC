@@ -1,0 +1,576 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Formal Language</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Language</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Language</p>
+<p>Language是一大堆字串。Language是一個字串集合。</p>
+<pre>
+括號對稱的Language
+使用的字元是「(」與「)」。
+
+()
+()()()
+(((())))
+(((()(()))()))
+......
+</pre>
+<pre>
+聖經人名的Language
+使用的字元是52種大小寫英文字母。
+
+Aaron
+Abaddon
+Abagtha
+Abana
+Abba
+Abda
+......
+</pre>
+<pre>
+C Programming Language
+使用的字元是ASCII當中的可見符號、換行、空白等等。
+
+int main() {return 0;}
+
+int main(int argc, char* argv[]) {return 0;}
+
+int main( int argc , char * argv[] ) {
+    return 0;
+}
+</pre>
+<pre>
+English Language
+使用的字元是52種大小寫英文字母、標點符號。
+
+Whatever, you know, just sayin.
+How are you? I am fine, thank you.
+</pre>
+<pre>
+Chinese Language
+使用的字元是漢字，大約七萬字。
+
+臣亮言：先帝創業未半，而中道崩殂；今天下三分，益州疲敝，此誠危急存亡之秋也。
+為著環境未凍來完成彼段永遠難忘的戀情。孤單來到昔日的海岸，景致猶原也無改變。
+為了防止世界被破壞，為了守護世界的和平，貫徹愛與真實的邪惡。
+</pre>
+<p class="t">Grammar</p>
+<p>Grammar是一組規則，用三言兩語構築一大堆字串、構築一套Language。一套Language可以設計許多種不同的Grammar，不過光是學一種Grammar就夠頭痛了。</p>
+<p>Grammar理論上必須剛好生成Language之內的所有字串、永不生成Language以外的所有字串。</p>
+<pre>
+English Grammar
+主詞S，動詞V，受詞O，補語C。
+
+1. S + V
+2. S + V + C
+3. S + V + O
+4. S + V + O + C
+5. S + V + O + O
+6. V + S + O
+7. S + do/does + V + C
+......
+......
+......
+123. S = dog / cat / ...
+124. V = run / sleep / ...
+......
+......
+......
+</pre>
+<p>以數學的角度來看，Grammar就像是數學公式。從資料結構的角度來看，Grammar是紀錄大量字串的資料結構。從資料壓縮的角度來看，不失真地壓縮Language，就得到Grammar。</p>
+<p class="t">Parse</p>
+<p>我們可以「剖析」一個字串，逐字對應至Grammar，進而判斷該字串是不是Language當中的字串。</p>
+<pre>
+      I            love          you.
+[名詞主格nom.] [及物動詞vt.] [名詞受格obj.]
+
+  我     愛     你。
+[名詞] [動詞] [受詞]
+</pre>
+<p>字串對應到文法時，有兩種以上的對應方式，那麼此文法就稱作「曖昧文法Ambiguous Grammar」。曖昧文法很容易讓人誤解字串涵義，而中文文法就是一個著名的曖昧文法。</p>
+<pre>
+已結婚的和尚未結婚的青年都要實行生育計畫
+
+一、已結婚的和尚未結婚的青年，都要實行生育計畫！　（「和」當作連詞）
+二、已結婚的和尚、未結婚的青年，都要實行生育計畫！（「和尚」當作名詞）
+</pre>
+<pre>
+下雨天留客天留我不留
+
+一、下雨，天留客。天留，我不留。
+二、下雨，天留客。天留我？不留。
+三、下雨，天留客。天留我不？留。
+四、下雨，天留客。天留我不留？
+五、下雨天，留客天。留我？不留。
+六、下雨天，留客天。留我不？留。
+七、下雨天，留客天。留我不留？
+</pre>
+<p>「剖析」只能判定語法，而不能判定語意。</p>
+<p>「語法Syntax」是字串的格式；字串對應到文法即可求得。例如上面兩例，每一行句子的語法都略有不同。曖昧文法使得同一個字串擁有許多種語法，難以剖析。</p>
+<p>「語意Semantics」是字串的含意；確立語法之後，根據上下文、根據現場情境求得。例如下例第一句、第三句之中重複的地方，就是語法相同、語意不同。第二句是語法不同、語意也不同。</p>
+<pre>
+有兩種人不談戀愛：一種是誰都看不上，另一種是誰都看不上。
+有兩種人最容易被甩：一種人不知道什麼叫做愛，一種人不知道什麼叫做愛。
+這些人都是原先喜歡一個人，後來喜歡一個人。
+</pre>
+<p>電腦習慣先判定語法、再判定語意，曖昧文法應予盡量避免。人類習慣先揣摩語意、再揣摩語法，曖昧文法實則影響不大。</p>
+<p class="e">UVa 271 310 384 620 743 1089 10027 10981 11108 ICPC 4455</p>
+<p class="t">Formal Language與Natural Language</p>
+<p>接下來要介紹的Language，是以數學方式建構而得的語言，是一套數學理論，稱作「制式語言Formal Language」。</p>
+<p>人類互相交流的語言，例如中文、英文、閩南語、客家話、粵語，則相對地稱作「自然語言Natural Language」。</p>
+<p>以數學方式建構而得的語言，規律太過完美，不足以表達現實生活那些缺乏規律的語言。解析人類語言的方法，是自成一系的古老學問，屬於「語言學Linguistics」的範疇，是人文方面的學問。</p>
+<p>運用電腦處理人類語言，例如語言翻譯、人機對話等等，則是屬於「計算語言學Computational Linguistics」的範疇。</p>
+<p class="t">Formal Language四大類型</p>
+<pre>
+Regular Language
+Context-free Language
+Context-sensitive Language
+Unrestricted Language
+</pre>
+<p>古早人以數學方式，研發了四種語言規律，由規律嚴謹到規律寬鬆排列，前者是後者的特例。</p>
+<p>其中Regular Language與Context-free Language，由於規律十分嚴謹，所以得以設計效率極高的演算法、擁有實務價值。</p>
+<p>例如Regular Language用於字串匹配、用於驗證字串格式。例如Context-free Language用於設計程式語言、用於檢索網頁資料。身為一個程式員，其實每天都在不自覺地接觸這些語言的應用。</p>
+<p>至於Context-sensitive Language與Unrestricted Language，由於缺乏規律、難以計算，所以鮮少討論。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Regular Language</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Regular Language</p>
+<p>「正規語言」規律十分簡單：</p>
+<pre>
+一、空集合：一套正規語言可以只包含一個字串，而且是空字串。
+{ф}
+
+二、字元：一套正規語言可以只包含一個字串，而且是長度為一的字串。
+{a}、{b}、{c}
+
+三、銜接：一套正規語言可以只包含一個字串，是上述某些字串銜接而得的字串。
+{aa}、{aaa}、{aaabbb}、{abc}、{aabbccabc}、{ababab}
+
+四、聯集：一套正規語言可以是上述某些字串的聯集。
+{aaabbb, ab, ba, cat, dog, ф}
+{Aaron, Abaddon, Abagtha, Abana, Abba, Abda, ......}
+</pre>
+<p class="t">Regular Expression</p>
+<p>一個「正規表示式」就是一種文法，輕鬆描述一套正規語言。撰寫語法如下表所示：</p>
+<pre>
+   | RegExp | Regular Language        | 意義
+---| -------| ------------------------| ---------------
+   | ab     | {ab}                    | 銜接
+   | abc    | {abc}                   |
+---| -------| ------------------------| ---------------
+() | (ab)   | {ab}                    | 包裝
+   | (ab)c  | {abc}                   |
+---| -------| ------------------------| ---------------
++  | a+     | {a, aa, aaa, ...}       | 出現一次以上
+   | ab+    | {ab, abb, abbb, ...}    |
+   | (ab)+  | {ab, abab, ababab, ...} |
+   | a+b    | {ab, aab, aaab, ...}    |
+---| -------| ------------------------| ---------------
+*  | a*     | {ф, a, aa, aaa, ...}    | 出現零次以上
+   | ab*    | {a, ab, abb, abbb, ...} |
+---| -------| ------------------------| ---------------
+?  | a?     | {ф, a}                  | 出現零次或一次
+   | abc?   | {ab, abc}               |
+   | (abc)? | {ф, abc}                |
+   | a?b    | {b, ab}                 |
+---| -------| ------------------------| ---------------
+{} | a{3,5} | {aaa, aaaa, aaaaa}      | 出現x次或至y次
+---| -------| ------------------------| ---------------
+|  | a|b    | {a, b}                  | 聯集
+   | a|b|c  | {a, b, c}               |
+   | ab|cd  | {ab, cd}                |
+   | (a|b)c | {ac, bc}                |
+   | (a|b)? | {ф, a, b}               |
+   | (a|b)+ | {a, b,                  |
+   |        |  aa, ab, ba, bb,        |
+   |        |  aaa, aab, aba, ...}    |
+---| -------| ------------------------| ---------------
+[] | [abc]  | {a, b, c}               | 字元的聯集
+   | [a-z]  | {a, b, c, ..., z}       |
+   | [a-zA] | {a, ..., z, A}          |
+   [a-zA-Z] | {a, ..., z, A, ..., Z}  |
+---| -------| ------------------------| ---------------
+.  | .      | {a, b, c, ...,          | 全部字元的聯集
+   |        |  A, B, C, ...,          | 或者說
+   |        |  1, 2, 3, ...,          | 任意一個字元
+   |        |  (, ), +, *, ?, ... }   |
+   | a.     | {aa, ab, ac, ...}       |
+   | a..    | {aaa, aab, aac, ...}    |
+---| -------| ------------------------| ---------------
+\  | \(     | {(}                     | escape
+   | \.     | {.}                     |
+</pre>
+<p>註：作業系統的檔案名稱，也常常寫成正規表示式，例如*.txt。但是檔案名稱採用的是另一種撰寫語法，像是?是指任意一個字元、*是指任意一個字串，都與上表的意義不同。千萬不要搞混。</p>
+<p class="t">範例：行動電話號碼</p>
+<p>台灣的行動電話號碼，諸如0935-120-188、0982647356等等，所有的電話號碼字串構成的集合，正是一套正規語言。對應的正規表示式為：</p>
+<pre>
+09[0-9][0-9]-?[0-9][0-9][0-9]-?[0-9][0-9][0-9]
+09[0-9]{2,2}-?[0-9]{3,3}-?[0-9]{3,3}
+09[0-9]{2,2}(-?[0-9]{3,3}){2,2}
+09([0-9][0-9]-?[0-9]){2,2}[0-9][0-9]
+......
+</pre>
+<p>先前提到一套語言可以設計許多種不同的文法，想當然一套正規語言可以設計許多種正規表示式。</p>
+<p class="t">範例：浮點數</p>
+<p>程式語言的浮點數，諸如-1.23、4.56e-7等等，所有的浮點數字串構成的集合，正是一套正規語言。對應的正規表示式為：</p>
+<pre>
+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
+</pre>
+<p class="e">UVa 325</p>
+<p class="t">String Verification / Wildcard String Matching</p>
+<p>大部分的程式語言都有內建正規表示式，除了可以驗證一個字串是否符合文法格式（字串驗證），甚至還可以搜尋一個字串、找到符合文法格式的字串片段（萬用字元字串匹配）。</p>
+<p>當出現多種匹配方式，默認的結果是匹配位置盡量靠左、然後匹配長度盡量長。</p>
+<p>針對字串匹配的特殊語法如下表所示：</p>
+<pre>
+   | String | RegExp | Matching | 意義
+---| -------| -------| ---------| --------------------
+^  | abcabc | ^ab    | ab       | 一定要出現於字串開頭
+   | abcabc | ^a.*   | abcabc   |
+---| -------| -------| ---------| --------------------
+$  | abcabc | ab$    | ф        | 一定要出現於字串結尾
+   | abcabc | ^a.*c$ | abcabc   |
+</pre>
+<p>字串驗證、萬用字元字串匹配，有著許多實際運用：</p>
+<p>例如用正規表示式一口氣涵蓋所有需要的檔案名稱。</p>
+<p>例如申請網站帳號、例如網路購物，表單必須輸入帳號名稱、生日、電話、地址等。可以用正規表示式，驗證使用者輸入的格式是否正確：<a href="javascript:if(confirm('http://net.tutsplus.com/tutorials/other/8-regular-expressions-you-should-know/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://net.tutsplus.com/tutorials/other/8-regular-expressions-you-should-know/'" tppabs="http://net.tutsplus.com/tutorials/other/8-regular-expressions-you-should-know/" class="l">http://net.tutsplus.com/tutorials/other/8-regular-expressions-you-should-know/</a>。</p>
+<p>例如公司欲偵測員工是否偷玩臉書、偷逛網拍，就在防火牆安裝snort，設計正規表示式，擷取送往臉書與購物網站的封包。</p>
+<p class="t">演算法（Backtracking）</p>
+<p>此處實作的是常見的grep指令。一開始的時候、以及遇到*號的時候，就窮舉各種匹配位置，遞迴下去判斷是否匹配；其他符號則循序匹配。</p>
+<p>時間複雜度與正規表示式之中*號的數量有關。無星號，就是普通的字串匹配，時間複雜度為O(TR)，其中T為字串長度、R是正規表示式長度；有星號，我就不會分析了，或許跟k-partition problem差不多。</p>
+<textarea>
+bool match(char *text, char *regexp)
+{
+	if (regexp[0] == '^')
+		return matchhere(text, regexp+1);
+
+	// 窮舉匹配位置
+	for (; *text != '\0'; text++)
+		if (matchhere(text, regexp))
+			return true;
+
+	// 空字串也得處理
+	if (*text == '\0' && regexp[0] == '\0')
+		return true;
+
+	return false;
+}
+
+bool matchhere(char *text, char *regexp)
+{
+	if (regexp[0] == '\0')
+		return true;
+	if (regexp[1] == '*')
+		return matchstar(text, regexp+2, regexp[0]);
+	if (regexp[0] == '$' && regexp[1] == '\0')
+		return *text == '\0';
+	if (*text != '\0' &&
+		(regexp[0] == '.' || regexp[0] == *text))
+		return matchhere(text+1, regexp+1);
+	return false;
+}
+
+// 開頭是c*
+bool matchstar(char *text, char *regexp, char c)
+{
+	// 匹配長度儘可能長
+	char *t = text;
+	while (*t != '\0' && (c == '.' || *t == c)) t++;
+
+	// 窮舉匹配位置，從匹配的最長的情況開始嘗試。
+	for ( ; t >= text; t--)
+		if (matchhere(t, regexp))
+			return true;
+	return false;
+}
+</textarea>
+<p class="t">演算法（Thompson's Algorithm）</p>
+<p><a href="javascript:if(confirm('http://swtch.com/~rsc/regexp/regexp1.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://swtch.com/~rsc/regexp/regexp1.html'" tppabs="http://swtch.com/~rsc/regexp/regexp1.html">http://swtch.com/~rsc/regexp/regexp1.html</a></p>
+<p><a href="javascript:if(confirm('http://swtch.com/~rsc/regexp/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://swtch.com/~rsc/regexp/'" tppabs="http://swtch.com/~rsc/regexp/">http://swtch.com/~rsc/regexp/</a></p>
+<p>正規表示式等價地轉換成Non-deterministic Finite Automata, NFA。字串匹配的空間複雜度為O(R)，時間複雜度為O(TR)。</p>
+<p>可以再等價地轉換成Deterministic Finite Automata, DFA。字串匹配的空間複雜度上升為O(2^R)、時間複雜度降低為O(T)。</p>
+<p class="e">UVa 12415 891</p>
+<p class="t">Regular Language的能力極限</p>
+<p>正規語言是循序性的語言，不具備從屬關係、階層關係、巢狀結構、樹狀結構、遞迴結構。</p>
+<pre>
+如果你沒勇氣陪我到明天的明天的明天倒不如就忘了就斷了寂寞的昨天的昨天
+
+　明天　　　　　　昨天
+　｜　　　　　　　｜
+　明天（後天）　　昨天（前天）
+　｜
+　明天（大後天）
+
+【感情應該要慢慢培養。這前前後後也才六天，用不著這麼激動吧。】
+</pre>
+<pre>
+有一個發人省思的故事是：「哥哥說：『爸爸跟我說過：「說話要誠實，不可以
+欺騙別人。」但是媽媽也跟我說過：「說話太誠實，常常無意間傷害別人。」』
+弟弟說：『老師有說：「子曰：『巧言令色，鮮矣仁。』」，爸爸是對的！』」
+這個故事告訴我們：正規語言難以釐清到底誰說了哪句話。
+
+　全文＿＿＿＿＿＿＿＿＿＿＿＿
+　｜　　　　　　　　　　　　　｜
+　故事說＿＿＿＿＿＿　　　　　我想說
+　｜　　　　　　　　｜　　　　｜
+　哥哥說＿　　　　　弟弟說　　正規語言
+　｜　　　｜　　　　｜
+　爸爸說　媽媽說　　老師說
+　｜　　　｜　　　　｜
+　要誠實　別太誠實　孔子說
+　　　　　　　　　　｜
+　　　　　　　　　　巧言令色
+</pre>
+<pre>
+永和有永和路，中和有中和路，
+中和的中和路有接永和的中和路，永和的永和路沒接中和的永和路；
+永和的中和路有接永和的永和路，中和的永和路沒接中和的中和路。
+永和有中正路，中和有中正路，永和的中正路用景平路接中和的中正路；
+永和有中山路，中和有中山路，永和的中山路直接接上了中和的中山路。
+永和的中正路接上了永和的中山路，中和的中正路卻不接中和的中山路。
+中正橋下來不是中正路，但永和有中正路；
+秀朗橋下來也不是秀朗路，但永和也有秀朗路。
+永福橋下來不是永福路，永和沒有永福路；
+福和橋下來不是福和路，但福和路接的是永福橋。
+
+【這個亂到我實在畫不出階層架構圖，誠徵在地人幫忙畫個純文字版的架構圖。】
+</pre>
+<p>教科書經常用下例說明正規語言的能力極限：</p>
+<pre>
+連續的「(」緊接著連續的「)」，並且「(」與「)」剛好一樣多的語言。
+</pre>
+<p>按照數學定義，正規文法只能是有限長度，但是正規語言可以是有限集合或無限集合。我們可以使用窮舉法、預處理的思路，聯集所有層次的括號，涵蓋這個語言；但是當括號層數不固定、可達無限多層時，就無法用有限長度的正規表示式涵蓋這個語言了。</p>
+<pre>
+Regular Expression         | Regular Language
+---------------------------| ---------------------------
+                           | {ф}
+\(\)                       | {ф, ()}
+\(\)|\(\(\)\)              | {ф, (), (())}
+\(\)|\(\(\)\)|\(\(\(\)\)\) | {ф, (), (()), ((()))}
+not exist                  | {ф, (), (()), ((())), ...}
+---------------------------| ---------------------------
+\(*\)*                     | {ф, (, ), ((, (), )), ...}
+(\(\))*                    | {ф, (), ()(), ()()(), ...}
+</pre>
+<p>更進一步來說，擁有巢狀括號、括號裡面又有文字的語言，也不是正規語言。實務上我們可以運用大量正規表示式，逐次得到每一層每一個括號裡面的字串，然後建立階層架構；但是當巢狀括號沒有固定的數量，實在是不適合採用這種方式。</p>
+<p>諸如四則運算式子、HTML、C程式語言等等，都不是正規語言，而是接下來介紹的Context-free Language。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Context-free Language（Under Construction!）</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Context-free Language</p>
+<p>「上下文無關語言」</p>
+<p>判斷一種Grammar是否正確地生成一種Language，是無法計算的問題！</p>
+<p>判斷兩種Grammar是否等價，還是無法計算的問題！</p>
+<p>判斷一種文法是不是曖昧文法，也是無法計算的問題！</p>
+<p class="t">Context-free Grammar</p>
+<p>Context-free Grammar的撰寫格式有許多種，例如Chomsky Normal Form與Backus-Naur Form。請讀者自行上網查詢。</p>
+<p>最容易使用的Grammar，是把新的元素固定加在句首或句尾，方便套用規則。</p>
+<img src="Context-freeLanguage1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Context-freeLanguage1.png">
+<p>正規語言的文法，一定可以寫成如下格式：</p>
+<pre>
+1. A -> bB
+2. A -> b
+3. A -> ф
+</pre>
+<p class="e">UVa 10597</p>
+<p class="t">Parser</p>
+<p>Parse Tree / Abstract Syntax Tree</p>
+<p class="e">UVa 10906 ICPC 3513</p>
+<p class="t">演算法（Recursive Descent Parser）</p>
+<p>窮舉位置、pop token、peek。</p>
+<p class="e">UVa 134 171 586 10058</p>
+<p>string literal pop</p>
+<p class="e">UVa 293</p>
+<p class="t">演算法（LL Parser）</p>
+
+<p class="t">範例：括號平衡</p>
+<pre>
+S -> [S] | (S) | SS | λ
+</pre>
+<p class="e">UVa 673 551 442</p>
+<p class="t">範例：多項式</p>
+<textarea>
+char s[100] = "-1x^2y^2 + 2xyz + y^1 - 5";
+struct Poly {int c, x, y, z;} p[100];	// 一百項
+
+// 彈出數字
+void pop(char* s, int& i, int& n)
+{
+	// 忽略次方符號
+	if (s[i] == '^') ++i;
+
+	// 數值
+	n = 0;
+	bool digit = false;
+	for (; isdigit(s[i]); ++i)
+	{
+		n = n * 10 + s[i] - '0';
+		digit = true;
+	}
+	if (n == 0 && !digit) n = 1;
+}
+
+void parse(char* s, Poly p[100], int& n)
+{
+	memset(p, 0, sizeof(p)*100);
+	n = 0;
+
+	tight(s);
+	for (int i=0; s[i]; ++n)
+	{
+		// 正負號
+		int m = 1;
+		if (s[i] == '+') m = +1, ++i;
+		if (s[i] == '-') m = -1, ++i;
+
+		// 係數
+		pop(s, i, p[N].c);
+		p[N].c *= m;
+
+		// 元與次方
+		if (s[i] == 'x') pop(s, ++i, p[N].x);
+		if (s[i] == 'y') pop(s, ++i, p[N].y);
+		if (s[i] == 'z') pop(s, ++i, p[N].z);
+	}
+}
+</textarea>
+<p class="e">UVa 126 327</p>
+<p class="t">範例：正整數四則運算，運算子無優先順序。</p>
+<textarea>
+char s[100] = "1 + 2 * 3 - 4 / 5";
+
+// 去除多餘空白
+int tight(char* s)
+{
+	int n = 0;
+	for (int i=0; s[i]; ++i)
+		if (s[i] != ' ')
+			s[n++] = s[i];
+	s[n++] = '\0';
+	return n;
+}
+
+int evaluate()
+{
+	int length = tight(s);
+	char op = 0;
+	int v = 0, n = 0;
+	for (int i=0; i<length; ++i)
+		if (isdigit(t[i]))
+			n = n * 10 + t[i] - '0';
+		else
+		{
+			if (!op) v = n;
+			else if (op == '+') v += n;
+			else if (op == '-') v -= n;
+			else if (op == '*') v *= n;
+			else if (op == '/') v /= n;
+			op = t[i];
+			n = 0;
+		}
+	return v;
+}
+</textarea>
+<p class="t">範例：正整數四則運算，運算子有優先順序，有括號。</p>
+<pre>
+1. expr -> expr op expr
+2. expr -> '(' expr ')'
+3. expr -> 0-9
+3. op -> '+' | '-' | '×' | '÷'
+</pre>
+<textarea>
+char s[100] = "(1 + 2 * 3) * ((4 - 5) / 6)";
+
+// 計算
+int cal(int lv, char op, int rv)
+{
+	if (op == '+') return lv + rv;
+	if (op == '-') return lv - rv;
+	if (op == '*') return lv * rv;
+	if (op == '/') return lv / rv;
+	return 0;	// crash
+}
+
+// 尋找運算子的位置。左結合，故從右端找。
+int findop(int L, int R, char op1, char op2)
+{
+	int c = 0;
+	for (int i=R; i>=L; --i)
+	{
+		if (s[i] == '(') c++;
+		if (s[i] == ')') c--;
+		if (c == 0 && (s[i] == op1 || s[i] == op2))
+			return i;
+	}
+	return -1;
+}
+
+// 擷取數值
+int number(int L, int R)
+{
+	int n = 0;
+	for (int i=L; i<=R; ++i)
+		n = n * 10 + s[i] - '0';
+	return n;
+}
+
+int parse(int L, int R)
+{
+	// 先找優先權較低的運算符號。最先分解、最後計算。
+	int M = findop(L, R, '+', '-');
+
+	// 找不到低的，再找優先權比較高的運算符號。
+	if (M == -1) findop(L, R, '*', '/');
+
+	// 運算符號的左右兩式遞迴下去求得確切數值，然後再計算。
+	// Unspecified Behavior：左式、右式，不知先呼叫誰！
+	if (M != -1)
+		return cal(parse(L, M-1), s[M], parse(M+1, R));
+
+	// 括號
+	if (s[L] == '(' && s[R] == ')')
+		return parse(L+1, M-1);
+
+	// 數值
+	return number(L, R);
+}
+
+int evaluate()
+{
+	return parse(0, tight(s) - 1);
+}
+</textarea>
+<p class="e">UVa 533 622 695 10454 11724</p>
+<p class="e">UVa 11808 UVa 10614 UVa 1293</p>
+<p class="t">範例：製圖</p>
+<p class="e">UVa 692 10155 10467 10562 1152</p>
+<p class="t">範例：計算機</p>
+<p class="e">UVa 172 198</p>
+<p class="t">範例：程式語言</p>
+<p class="e">UVa 174 189 342 10151 10757 12421 12422 12423 1090 ICPC 4785</p>
+<p class="t">Context-free Language的極限</p>
+<p>正規語言處理循序性文字，是字串匹配的終極武器。</p>
+<p>上下文無關語言處理巢狀文字。</p>
+<p class="t">文學與程式設計，都是一種藝術</p>
+<p>判斷一種文法是否合用，判斷一支程式是否有無窮迴圈，都是屬於無法計算的問題。</p>
+<p>儘管如此，我們還是可以小心翼翼的設計文法，盡量避免文法錯誤；一如我們小心翼翼的設計程式，盡量避免無窮迴圈。</p>
+<p>從各種不同的可能性當中，耗費心神追求一種完美的狀態，但是卻無法驗證它是不是正確答案──那就是一種藝術了。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Automaton（Under Construction!）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Automaton</p>
+<img src="Automaton1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Automaton1.png">
+<p>自動機主要用於字串驗證（string verification）。依序讀取字串的各個字元，同時在自動機上移動；一旦字串讀取完畢、正好抵達自動機終點，那麼字串驗證成功。</p>
+<p>自動機亦可用於字串匹配（string matching）。許多字串匹配演算法，都可以順勢建構自動機，請參考「<a href="StringMatching.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StringMatching.html">String Matching</a>」。</p>
+<p>自動機的特色是：仰賴一個lookup table，只需要反覆查表，就能完成字串驗證、字串匹配，而不需要特別的演算法。</p>
+<p>以圖論的觀點來看，先前章節都是用樹來儲存字串，此處則是用圖來儲存字串。然而圖的結構太過複雜，導致自動機難以建構，也無法直接插入字串、刪除字串、枚舉字串，只能搜尋字串。</p>
+<p>列出字串很慢，驗證字串很快，自動機有著NP-Complete、one-way function的味道。</p>
+<p class="e">UVa 251</p>
+<p class="e">UVa 738 804</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,741 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab720{\fonttbl{\f0\fswiss MS Sans Serif;}{\f1\froman\fcharset2 Symbol;}{\f2\fmodern Courier New;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033\pard\plain\f2\fs20 Chapter 7 Common Dialog Boxes
+\par 
+\par Common dialog boxes are very useful in Windows( programming. We can use these dialog boxes to select files, colors, fonts, set up printer, do search and replace. Since these kind of operations are very common for all applications, common dialogs are pre-implemented by the operating system. We do not need to create them from dialog template if we want to use one of these dialog boxes.
+\par 
+\par 7.1\tab File Open and Save Dialog Box
+\par 
+\par Implementing a Standard File Open Dialog Box
+\par 
+\par File dialog box is designed to let user pick up a file name for open, save, or other operations. In MFC, this type of common dialog boxes is implemented by class CFileDialog. The code used to implement a file open dialog box is very simple: we can just declare a CFileDialog type variable, then call function CFileDialog::DoModal() to implement the dialog box:
+\par 
+\par CFileDialog dlg(TRUE);
+\par 
+\par dlg.DoModal();
+\par 
+\par That's all we need to do. Since class CFileDialog does not have a default constructor, we must pass at least a Boolean type value to the first parameter of its constructor. If this value is TRUE, the dialog box will be an "Open" dialog box, if it is FALSE, the dialog box will be a "Save As" dialog box. Because the dialog template is already implemented by the operating system, we don't even need to design a single button for it. However, with the above simple implementation, what we can create is a very general file open dialog box: it does not have file filter, it does not display default file name, also, the initial directory is always the current working directory.
+\par 
+\par Structure OPENFILENAME
+\par 
+\par To customize the default behavior of file dialog box, we need to add extra code. Fortunately, this class is designed so that its properties can be easily changed by the programmer. We can make changes to its default file extension filter, default file name. We can also enable or disable certain controls in the dialog box, or even use our own dialog template.
+\par 
+\par Class CFileDialog has a very important member variable: m_ofn. It is declared by structure OPENFILENAME, which has the following format:
+\par 
+\par typedef struct tagOFN \{ // ofn 
+\par     DWORD         lStructSize; 
+\par     HWND          hwndOwner; 
+\par     HINSTANCE     hInstance; 
+\par     LPCTSTR       lpstrFilter; 
+\par     LPTSTR        lpstrCustomFilter; 
+\par     DWORD         nMaxCustFilter; 
+\par     DWORD         nFilterIndex; 
+\par     LPTSTR        lpstrFile; 
+\par     DWORD         nMaxFile; 
+\par     LPTSTR        lpstrFileTitle; 
+\par     DWORD         nMaxFileTitle; 
+\par     LPCTSTR       lpstrInitialDir; 
+\par     LPCTSTR       lpstrTitle; 
+\par     DWORD         Flags; 
+\par     WORD          nFileOffset; 
+\par     WORD          nFileExtension; 
+\par     LPCTSTR       lpstrDefExt; 
+\par     DWORD         lCustData; 
+\par     LPOFNHOOKPROC lpfnHook; 
+\par     LPCTSTR       lpTemplateName; 
+\par \} OPENFILENAME;
+\par 
+\par It has 20 members, which can all be used to customize the dialog box. In this and the following sections, we are going to see how to use them to change the default behavior of the file dialog box.
+\par 
+\par File Extension Filter
+\par 
+\par One of the most important members in this structure is lpstrFilter, which lets us specify a user defined filter for displaying files. Only those files whose extensions match one of the filters will be displayed in the dialog box. We can specify as many filters as we want. Each filter is made up of two parts: the text description and the filter string. The text description is used to give the user an idea about the type of the files, the filter string usually contains wildcard characters that can be used to specify file types. 
+\par For example, if we want to display only bitmap files, the description could be "Bitmap File (*.bmp)" and the filter string should be "*.bmp". Filters are separated by zeros. Within a filter, the description text and the filter string are also separated by a zero. For example, if we want to specify two filters, one is "*.cpp", another is for "*.htm", we should set the filter like this:
+\par 
+\par lpstrFilter="CPP File(*.cpp)\\0*.cpp\\0HTML File(*.htm)\\0*.htm\\0";
+\par 
+\par In the above statement, "CPP File(*.cpp)\\0*.cpp\\0" is the first filter and "HTML File(*.htm) \\0*.htm\\0" is the second filter.
+\par 
+\par A filter can select more than one type of files. If we specify this type of filter, the different file types should be separated by a ';' character. For example, in the above example, if we want the first filter to select both "*.cpp" and "*.h" file, its filter string should be "*.cpp;*.h".
+\par 
+\par Besides the standard filter, we can also specify a custom filter. In the file dialog boxes, the custom filter will always be displayed in the first place of the filter list. To specify a custom filter, we can store the filter string in a buffer, use member lpstrCustomFilter to store the buffer's address, and use member nMaxCustFilter to store the buffer's size.
+\par 
+\par If we have a list of filters, we can use only one of them at any time. Member nFilterIndex lets us specify which filter will be used as the initial one. Here the index to the first file filter is 1.
+\par 
+\par Retrieving File Names
+\par 
+\par After function CFileDialog::DoModal() is called, we can use CFileDialog::GetFileName() or CFileDialog::GetPathName() to retrieve the file name selected by the user. The difference between the two functions is that CFileDialog::GetFileName() returns full file name (including extension), and CFileDialog::GetFilePath() returns full path name (file name plus directory names). There are some other member functions that we can call to retrieve file extension, file title, etc.
+\par 
+\par File Open
+\par 
+\par Sample 7.1\\CDB demonstrates how to use file dialog box and how to customize its standard styles. It is a standard SDI application generated by Application Wizard. After the application is generated, a new sub- menu File Dialog Box is added to mainframe menu IDR_MAINFRAME between View and Help. Two new commands File Dialog Box | File Open and File Dialog Box | File Save are added to this sub-menu, whose IDs are ID_FILEDIALOGBOX_FILEOPEN and ID_FILEDIALOGBOX_FILESAVE respectively. Two WM_COMMAND message handlers are added to class CCDBDoc (the document class) for the new commands through using Class Wizard, the corresponding function names are CCDBDoc::OnFiledialogboxFileopen() and CCDBDoc::OnFiledialogboxFilesave() respectively.
+\par 
+\par In the sample, command File Dialog Box | File Open is used to invoke a file open dialog box which has two filters and one custom filter. The message handler is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Before we call function CFileDialog::DoModal(), the default behavior of file dialog box is modified. Here, three file filters are specified: the first filter selects "*.c", "*.cpp", "*.h" and "*.hpp" files; the second filter selects "*.doc" and "*.htm" files; the third filter selects all files. Since "1" is assigned to member nFilterIndex, the filter that is used initially would be "*.C;*.CPP;*.H;*.HPP".
+\par 
+\par A custom filter is also specified, which will select only files with "*.bmp" extension.
+\par After calling function CFileDialog::DoModal(), if the user has picked up a file and clicked "OK" button, both file name and path name will be displayed in a message box.
+\par 
+\par File Save
+\par 
+\par When we ask the user to save a file, there are two more things that should be considered. First, we need to specify a default file name that will be used to save the data. Second, when the user uses "*.*" file filter, we may need to provide a default file extension.
+\par 
+\par We can specify the default file name by using members lpstrFile and nMaxFile of structure OPENFILENAME. We can store the default file name in a buffer, assign the buffer's address to member lpstrFile and the buffer's size to member nMaxFile. With this implementation, when the file save dialog box is invoked, the default file name will appear in "File Name" edit box. Also, we can use member lpstrDefExt to specify a default file extension. Please note that the maximum size of an extension string is 3 (If the string contains more than 3 characters, only the first three characters will be used).
+\par 
+\par The following is the WM_COMMAND message handler for command File Dialog Box | File Save:
+\par 
+\par (Code omitted)
+\par 
+\par In the sample, the default file name is set to "TestFile" (stored in buffer szFile). Also, default file extension is "DIB". All other settings are the same with the file open dialog box implemented above.
+\par 
+\par 7.2\tab More Customizations
+\par 
+\par New Style and Old Style File Dialog Boxes
+\par 
+\par If we are writing applications for new operating systems such as Window95(, we can implement the file dialog box in two different styles. The new style, also called "Explorer-style" uses list control to display file names. The old style, which is the only available file dialog box in Windows3.1(, uses list box control. Two type of dialog boxes are shown in Figure 7-1.
+\par 
+\par (Figure 7-1 omitted)
+\par 
+\par The Explorer style file dialog box can display long file name, the old style dialog box will convert all long file names to 8.3 format (8 characters of file name + dot + 3 characters of extension). By default, class CFileDialog will implement Explorer-style file dialog box. If we want to create old style file dialog box, we must set changes to member Flags of structure OPENFILENAME.
+\par 
+\par Member Flags is a DWORD type value, which contains many 1-bit flags that can be set or cleared to change the styles of the file dialog box. By default, its OFN_EXPLORER bit is set, and this will let the dialog box have Explorer-style. If we set this bit to 0, the dialog box will be implemented in the old style.
+\par 
+\par Other Bits of Flags
+\par 
+\par We can use other bits of Flags to further customize the styles of file dialog box. The following lists three of them:
+\par 
+\par (Table omitted)
+\par 
+\par Dialog Box Title
+\par 
+\par The default titles of file dialog boxes are "File Open" and "Save As". We can change these titles by preparing text string in a buffer and assign its address to lpstrTitle member of structure OPENFILENAME.
+\par 
+\par Retrieving Multiple Path Names and File Names
+\par 
+\par If we allow the user to select more than one file, we need to call function CFileDialog:: GetStartPosition() and CFileDialog::GetNextPathName(...) to retrieve path name for each selected file. Here, the first function will return a POSITION type value, which could be used to call the second function. The returned value of the second function is a CString type value, which contains a valid file path name. Also, when calling the second function, the POSITION value will also be updated, which again can be used to get the next selected file path name. If all the selected files have been enumerated, a NULL value will be stored in the variable that holds the POSITION value.
+\par 
+\par However, there is no similar functions for retrieving all file names. To obtain all the selected file names, we need to access member lpstrFile of structure OPENFILENAME. After the user has made selections, the selected folder and file names will be stored in a buffer pointed by member lpstrFile. For Explorer-style dialog box, folder and file names are separated by '\\0' characters; for old style dialog box, they are separated by SPACE character. In either case, folder name is always the first item contained in the buffer, which is followed by separator ('\\0' or SPACE), file name, separator, and file name.... The position of the first file name is specified by member nFileOffset.
+\par 
+\par Sample
+\par 
+\par Sample 7.2\\CDB demonstrates these styles. It is based on sample 7.1\\CDB, with two new commands File Dialog Box | Customized File Open and File Dialog Box | Customize File Open Old added to the application. The IDs of the two commands are ID_FILEDIALOGBOX_CUSTOMIZEDFILEOPEN and ID_FILEDIALOGBOX_CUSTOMIZEFILEOPENOLD respectively. Message handlers are added for them through using Class Wizard, the corresponding member functions are CCDBDoc:: OnFiledialogboxCustomizedfileopen() and CCDBDoc::OnFiledialogboxCustomizefileopenold().
+\par 
+\par For dialog box invoked by command File Dialog Box | Customized File Open, multiple file selection is enabled. Also, the dialog box has a "Help" button and a "Read only" check box. The following is the implementation of this command:
+\par 
+\par (Code omitted)
+\par 
+\par Two flags OFN_ALLOWMULTISELECT and OFN_SHOWHELP are set, this will enable multiple file selection and display the "Help" button. Also, flag OFN_HIDEREADONLY is disabled, this will display "Read only" check box in the dialog box. If the dialog box returns value IDOK (This indicates the user has pressed "OK" button), the first file name is obtained by doing the following:
+\par 
+\par lpstr=dlg.m_ofn.lpstrFile+dlg.m_ofn.nFileOffset;
+\par 
+\par Because the file names are separated by '\\0' characters, we can use the following statement to access next file name:
+\par 
+\par lpstr+=strlen(lpstr);
+\par 
+\par Path names are obtained through calling function CFileDialog::GetStartPosition() and CFileDialog::GetNextPathName(...). The selected file and path names will be displayed in a message box.
+\par Command File Dialog Box | Customize File Open Old has the same functionality, except that the dialog box is implemented in the old style. Before the dialog box is invoked, flag OFN_LONGNAMES is disabled, which will convert all long file names to "8.3 format". Because the file names are separated by SPACE rather than '\\0' characters, the procedure of obtaining file names is a little different:
+\par 
+\par (Code omitted)
+\par 
+\par Instead of checking '\\0', SPACE characters are checked between file names. Because SPACE character is not the end of a null-terminated string, we have to calculate the length for each file name.
+\par 
+\par If we compile and execute the application at this point, the dialog boxes invoked by the two newly added commands should let us select multiple files by using mouse along with CTRL or SHIFT key.
+\par 
+\par 7.3\tab Selecting Only Directory
+\par 
+\par Sometimes we want to let the user select directories (folders) rather than files, for example, an installation application will probably ask the user to select the target directory where the files can be copied. In this case, we need to provide an interface for picking up only directories. Although this can be implemented through designing a new dialog box, it is not the best solution.
+\par 
+\par Sample 7.3\\CDB demonstrates how to implement directory selection dialog box. It is based on sample 7.2\\CDB, with two new commands added to the application: File Dialog Box | Dir Dialog and File Dialog Box | Dir Dialog Old. The IDs of the two new commands are ID_FILEDIALOGBOX_DIRDIALOG and ID_FILEDIALOGBOX_DIRDIALOGOLD, and their message handlers are CCDBDoc:: OnFiledialogboxDirdialog() and CCDBDoc::OnFiledialogboxDirdialogold(). The two commands will be used to implement directory selection dialog box in new and old styles respectively. 
+\par 
+\par New Style
+\par 
+\par If we are writing code for Windows 95( or Windows NT4.0(, things become very simple. There are some API shell functions that can be called to implement a "folder selection" dialog box with just few simple steps. We can call function ::SHBrowseForFolder(...) to implement dialog box that let the user select folder, and call function ::SHGetPathFromIDList(...) to retrieve the folder that has been selected by the user.
+\par 
+\par The following is the prototype of function ::SHBrowseForFolder(...):
+\par 
+\par WINSHELLAPI LPITEMIDLIST WINAPI ::SHBrowseForFolder(LPBROWSEINFO lpbi); 
+\par 
+\par It has only one parameter, which is a pointer to structure BROWSEINFO. The structure lets us set the styles of folder selection dialog box, it has eight members:
+\par 
+\par typedef struct _browseinfo \{ 
+\par     HWND hwndOwner;
+\par     LPCITEMIDLIST pidlRoot;
+\par     LPSTR pszDisplayName;
+\par \tab LPCSTR lpszTitle;
+\par     UINT ulFlags;
+\par     BFFCALLBACK lpfn;
+\par     LPARAM lParam;
+\par     int iImage;
+\par \} BROWSEINFO, *PBROWSEINFO, *LPBROWSEINFO;
+\par 
+\par Member hwndOwner is the handle of the window that will be the parent of folder selection dialog box, it can be NULL (In this case, the folder selection dialog box does not belong to any window). Member pidlRoot specifies which folder will be treated as "root" folder, if it is NULL, the "desktop" folder is used as the root folder. We must provide a buffer with size of MAX_PATH and assign its address to member pszDisplayName for receiving folder name. Member lpszTitle lets us provide a customized title for folder selection dialog box. Members lpfn, lParam and iImage let us further customize the behavior of dialog box by specifying a user-implemented callback function. Generally we can use the default implementation, in which case these members can be set to NULL. Member ulFlags lets us set the styles of folder selection dialog box. For example, we can enable computer and printer selections by setting BIF_BROWSEFORCOMPUTER and BIF_BROWSEFORPRINTER flags.
+\par 
+\par Function ::SHBrowseForFolder(...) returns a pointer to ITEMIDLIST type object, which can be passed to function ::SHGetPathFromIDList(...) to retrieve the selected folder name:
+\par 
+\par WINSHELLAPI BOOL WINAPI ::SHGetPathFromIDList(LPCITEMIDLIST pidl, LPSTR pszPath);
+\par 
+\par We need to pass the pointer returned by function ::SHBrowserForFolder(...) to pidl parameter, then provide our own buffer whose address is passed to parameter pszPath for retrieving directory name.
+\par 
+\par Because these functions are shell functions, the buffers returned from them can not be released using normal method. Instead, it should be released by shell's task allocator.
+\par 
+\par Shell's task allocator can be obtained by calling function ::SHGetMalloc(...):
+\par 
+\par HRESULT ::SHGetMalloc(LPMALLOC *ppMalloc);
+\par 
+\par By calling this function, we can access shell's IMalloc interface (a shell's interface that is used to allocate, free and manage memory). We need to pass the address of a pointer to this function, then we can use method IMalloc::Free(...) to released the buffers allocated by the shell.
+\par 
+\par The following is the implementation of command File Dialog Box | Dir Dialog:
+\par 
+\par (Code omitted)
+\par 
+\par First function ::SHGetMalloc(...) is called to retrieve a pointer to shell's lMalloc interface, which will be used to release the memory allocated by the shell. Then, structure BROWSEINFO is filled. Both hwndOwner and pidlRoot are assigned NULL. By doing this, the dialog will have no parent, and the desktop folder will be used as its root folder. The title of dialog box is changed to "Select Directory". For member ulFlags, two bits BIF_RETURNFSANCESTORS and BIF_RETURNONLYFSDIRS are set to 1. This will allow the user to select only file system ancestors and file system directories. The returned buffer's address is stored in pointer pidl, which is passed to function ::SHBrowseForFolder(...) for retrieving the directory name. The selected directory name is stored in buffer szBuf, and is displayed in a message box. Finally, memory allocated by the shell is released by shell's lMalloc interface.
+\par 
+\par Old Style
+\par 
+\par If we are writing code for Win32 applications, the above-mentioned method does not work. We must use the old style file dialog box to implement folder selection.
+\par The default dialog box has two list boxes, one is used for displaying directory names, the other for displaying file names. One way to implement directory selection dialog box is to replace the standard dialog template with our own. To avoid any inconsistency, we must include all the controls contained in the standard template in the custom dialog template (with the same resource IDs), hide the controls that we don't want, and override the default class to change its behavior.
+\par 
+\par To use a user-designed dialog template, we must: 1) Prepare a custom dialog template that has all the standard controls. 2) Set OFN_ENABLETEMPLATE bit for member Flags of structure OPENFILENAME, assign custom dialog template name to member lpTemplateName (If the dialog has an integer ID, we need to use MAKEINTRESOURCE macro to convert it to a string ID). 3) Assign the instance handle of the application to member hInstance, which can be obtained by calling function AfxGetInstanceHandle().
+\par 
+\par The standard file dialog box has two list boxes that are used to display files and directories, two combo boxes to display drives and file types, an edit box to display file name, a "Read only" check box, several static controls to display text, and "OK", "Cancel" and "Help" buttons. The following table lists their IDs and functions:
+\par 
+\par (Table omitted)
+\par 
+\par We must design a dialog template that contains exactly the same controls in order to replace the default template with it. This means that the custom dialog template must have static controls with IDs of 1088, 1089, 1090..., list boxes with IDs of 1120 and 1121, combo boxes with IDs of 1136 and 1137, and so on. 
+\par Although we can not delete any control, we can resize the dialog template and change the positions of the controls so that it will fit our use.
+\par 
+\par To let user select only folders, we need to hide following controls (along with the static control that contains text "Directories"): stc1, stc2, stc3, edt1, lst1, cmb1. We can call function CWnd::ShowWindow(...) and pass SW_HIDE to its parameter in the dialog initialization stage to hide these controls. Figure 7-3 shows the custom dialog template IDD_DIR implemented in the sample.
+\par 
+\par We must also fill edit box edt1 with a dummy string, because if it is empty or filled with "*.*", the file dialog box will not close when the user presses "OK" button.
+\par 
+\par By default, clicking on "OK" button will not close the dialog box if the currently highlighted folder is not expanded. In this case, clicking on "OK" button will expand the folder, and second clicking will close the dialog box. To overcome this, we need to call function CFileDialog::OnOK() twice when the "OK" button is clicked, this will close the dialog box under any situation.
+\par 
+\par We need to override class CFileDialog in order to change its default behavior. In the sample application, new class MCDialogBox is added by Class Wizard, whose base class is selected as CDialogBox. Three new member functions are added: constructor, MCFileDialog::OnOK() and MCFileDialog:: OnInitDialog(). The following is this new class:
+\par 
+\par (Code omitted)
+\par 
+\par Like class CFileDialog, the constructor of MCFileDialog has six parameters. The first parameter specifies if the dialog box is an "Open File" or a "Save As" dialog box, the rest parameters specify default file extension, default file name, style flags, filter, and parent window.
+\par The constructor is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Nothing is done in this function except calling the default constructor of the base class. Function MCFileDialog::InitDialog() is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The controls that are useless for picking up folder are set hidden, and edt1 edit box is filled with a dummy string (it can be any string). The initial focus is set to the list box which will be used to display the directories. After calling function OnInitDialog() of base class (this will implement default dialog initialization), the first directory in the list box is highlighted.
+\par The implementation of function MCFileDialog::OnOK() is very simple:
+\par 
+\par void MCFileDialog::OnOK()
+\par \{
+\par     CFileDialog::OnOK();
+\par     CFileDialog::OnOK();
+\par \}
+\par 
+\par The standard file dialog template can be found in file "Commdlg.dll", which is usually located under system directory. A copy of this file can be also found under Chap7\\.
+\par In the sample, command File Dialog Box | Dir Dialog Old is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Flag OFN_EXPLORER must be disabled in order to implement old style file dialog box. The name of custom dialog template is assigned to member lpTemplateName of structure OPENFILENAME. After calling function MCFileDialog::DoModal(), the directory name is retrieved from member lpstrFile of structure OPENFILENAME. 
+\par Since member nFileOffset specifies position where file name starts, the characters before this address is the directory name followed by a SPACE character. We can change SPACE to '\\0' character to let the string ends by the directory name.
+\par 
+\par This method is only available for the current version of Windows(, it may change in the future. Whenever possible, we should use the first method to implement folder selection.
+\par 
+\par 7.4\tab Adding File Preview
+\par 
+\par The file dialog box will become more useful if we add a file preview window to it. With this feature, when the user highlights a file, part of file's contents will be displayed in the preview window so the user will have a better knowledge on the file before opening it. This can be easily implemented in the Explorer-style file dialog box because it provides an easy way to let us add extra controls to the default dialog box and write message handlers.
+\par 
+\par Adding Extra Controls
+\par 
+\par Explorer-style file dialog box has a nice feature that lets us add extra controls. We can design our own dialog template, and add other common controls. Instead of copying all the default controls contained in the standard dialog box, we can just create a static text control with symbolic ID of stc32. The relative positions between our controls and stc32 will be used to decide the layout of the file dialog box. When using this dialog template, we need to set OFN_ENABLETEMPLATE bit for member Flags of structure OPENFILENAME, and assign the name of custom dialog template to member lpTemplateName. Also, we need to derive a new class from CFileDialog in order to handle messages for the newly added controls.
+\par 
+\par Notification CDN_SELCHANGE
+\par 
+\par File selection activities are sent to the dialog box through WM_NOTIFY message. This message is primarily used by common controls to send notifications to the parent window. For example, in a file dialog box, if the user has changed the file selection, a CDN_SELCHANGE notification will be sent. Since message WM_NOTIFY is used for many purposes, after receiving it, we need to check LPARAM parameter and decide if the notification is CDN_SELCHANGE or not. In CWnd derived classes, WM_NOTIFY message is handled by function CWnd:OnNotify(...), we can override it to customize the default behavior of the file dialog box.
+\par 
+\par The following is the format of function CWnd::OnNotify(...):
+\par  
+\par BOOL CWnd::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult);
+\par 
+\par To decide if this notification is CDN_SELCHANGE or not, first we need to cast lParam parameter to an OFNOTIFY type pointer. The following is the format of structure OFNOTIFY:
+\par 
+\par typedef struct _OFNOTIFY \{
+\par     NMHDR          hdr; 
+\par     LPOPENFILENAME lpOFN; 
+\par     LPTSTR         pszFile; 
+\par \} OFNOTIFY, FAR *LPOFNOTIFY;
+\par 
+\par The first member of OFNOTIFY is an NMHDR structure:
+\par 
+\par  typedef struct tagNMHDR \{ 
+\par     HWND hwndFrom; 
+\par     UINT idFrom; 
+\par     UINT code; 
+\par \} NMHDR;
+\par 
+\par From its member code, we can judge if the current notification is CDN_SELCHANGE or not.
+\par 
+\par Sample
+\par 
+\par Sample 7.4\\CDB demonstrates how to add a file preview window to Explorer-style file dialog box. If the user selects a file with "*.cpp" extension after the file dialog is activated, the contents of the file will be displayed in the preview window before it is opened.
+\par 
+\par In the sample, a new command File Dialog Box | Custom File Dlg is added to the application, whose command ID is ID_FILEDIALOGBOX_CUSTOMFILEDLG. Also, a WM_COMMAND message handler is added for this command through using Class Wizard, whose correspondung member function is CCDBDoc:: OnFiledialogboxCustomfiledlg().
+\par 
+\par A new dialog template IDD_COMDLG32 is also added, it contains a static text control stc32, and an edit box control IDC_EDIT (Figure 7-4). This edit box has "Disabled" and "Multiline" styles. This will implement a read only edit box that can display multiple lines of text. A new class MCCusFileDialog is derived from FileDialog. 
+\par In this class, function OnNotity(...) is overridden.
+\par 
+\par The following is the definition of class MCCusFileDialog:
+\par 
+\par (Code omitted)
+\par 
+\par Function MCCusFileDialog::OnNotify(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par First we check if the notification is CDN_SELCHANGE, if so, we retrieve the path name and the file extension by calling function CFileDialog::GetPathName() and CFileDialog::GetFileExt() respectively. If the file extension is "*.cpp", we call function CFile::Open(...) to open this file. When making this call, we use flag CFile::modeRead to open it as a read only file. Then function CFile::Read(...) is called to read the first 255 characters of the file into buffer szBuf. Finally, function CWnd::SetWindowText(...) is called to display these characters.
+\par 
+\par Command File Dialog Box | Custom File Dlg is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The file dialog box is implemented using class MCCusFileDialog. To use the custom dialog template, OFN_ENABLETEMPLATE bit is set for member Flags, and the name of the custom dialog template is assigned to member lpTemplateName of structure OPENFILENAME. Function  CFileDialog::DoModal() is called as usual.
+\par 
+\par If we want to modify the size and relative position of the preview window, we need to override function OnInitDialog(), and call function CWnd::MoveWindow(...) there to resize the edit box.
+\par 
+\par 7.5\tab Color Dialog Box
+\par 
+\par Introduction
+\par 
+\par A color dialog box lets the user choose one or several colors from a pool of available colors. In Windows(, a valid color may be formed by combining red, green and blue colors with different intensities. There are altogether 16,777,216 possible colors in the system.
+\par 
+\par In MFC, color dialog box is supported by class CColorDialog. To create a color dialog box, we need to use class CColorDialog to declare a variable, then call CColorDialog::DoModal() to activate the dialog box.
+\par In the color dialog box, there are four ways to choose a color (Figure 7-5):
+\par 
+\par (Figure 7-5 omitted)
+\par 
+\par 1)  Select a color from those listed as Basic colors.
+\par 2)  Select a color from those listed as Custom colors.
+\par 3)  Select a color from "color matrix".
+\par 4)  Input R, G, B values directly.
+\par 
+\par The selected color is shown in "Color | Solid" window. When a dialog box is implemented, there are two things that we can customize: the original selected color and the custom colors. If we do not change anything, the default selected color is black (RGB(0, 0, 0)). There are altogether 16 custom colors. By default, they are all initialized to white (RGB(255, 255, 255)) at the beginning.
+\par 
+\par Initializing Selected Color and Custom Colors
+\par 
+\par The default selected color can be set when the constructor of class CColorDialog is called. The function has the following format:
+\par 
+\par CColorDialog::CcolorDialog
+\par (
+\par     COLORREF clrInit=0, DWORD dwFlags=0, CWnd *pParentWnd=NULL
+\par );
+\par 
+\par There are three parameters here, the first of which is the default selected color, the second is the flags that can be used to customize the dialog box, and the third is a pointer to the parent window.
+\par Class CColorDialog has a member m_cc, which is a CHOOSECOLOR structure:
+\par 
+\par typedef struct \{
+\par     DWORD        lStructSize; 
+\par     HWND         hwndOwner; 
+\par     HWND         hInstance; 
+\par     COLORREF     rgbResult; 
+\par     COLORREF*    lpCustColors; 
+\par     DWORD        Flags; 
+\par     LPARAM       lCustData; 
+\par     LPCCHOOKPROC lpfnHook; 
+\par     LPCTSTR      lpTemplateName; 
+\par \} CHOOSECOLOR; 
+\par 
+\par We can change the custom colors by assigning the address of a COLORREF type array with size of 16 to member lpCustColors of this structure. The colors in the array will be used to initialize the custom colors.
+\par After the dialog box is closed, we can call function CColorDialog::GetColor() to retrieve the selected color. 
+\par Also, if we've initialized custom colors, we can obtain the updated values by accessing member lpCustColors.
+\par 
+\par Sample
+\par 
+\par Sample 7.5\\CDB demonstrates how to use color dialog box. First a function ColorDialog(...) is added to class CCDBDoc, which will implement a color dialog box whose default selected color and custom colors are customized. The following is its definition:
+\par 
+\par class CCDBDoc : public CDocument
+\par \{
+\par ......
+\par public:
+\par     void ColorDialog(COLORREF colorInit, DWORD dwFlags=0);
+\par ......
+\par \}
+\par 
+\par This function has two parameters, the first one specifies the initially selected color, and the second one specifies the style flags. We will show how to use different style flags later, for the time being we just set all bits to 0. The function is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par We first create a color dialog box and use colorInit to initialize the selected color. Like OPENFILENAME, structure CHOOSECOLOR also has a Flags member that can be used to set the styles of color dialog box. In the above function new flags contained in parameter dwFlags are added to the default flags through bit-wise OR operation. Variable color is a COLORREF type array with a size of 16. We use a loop to fill each of its elements with a different color and pass the address of the array to member lpCustColors of structure CHOOSECOLOR. After calling CColorDialog::DoModal(), function CColorDialog::GetColor() is called to retrieve the selected color, whose RGB values are displayed in a message box. Besides this, the RGB values of custom colors are also displayed.
+\par 
+\par In the sample, a new sub-menu Color Dialog Box is added to IDR_MAINFRAME menu, and a command Color Dialog Box | Initialize is created. The ID of this command is ID_COLORDIALOGBOX_INITIALIZE, also, a WM_COMMAND message handler CCDBDoc::OnColordialogboxInitialize() is added through using Class Wizard.
+\par 
+\par The following is the implementation of this command:
+\par 
+\par void CCDBDoc::OnColordialogboxInitialize() 
+\par \{
+\par     ColorDialog(RGB(255, 0, 0));
+\par \}
+\par 
+\par The selected color is initialized to red, and no additional styles are specified.
+\par 
+\par Full Open
+\par 
+\par Now we are going to customize the styles of color dialog box. First, we can create a fully opened dialog box by setting CC_FULLOPEN bit for member Flags of CHOOSECOLOR structure. Also, we can prevent the dialog from being fully opened by setting CC_PREVENTFULLOPEN bit. In the sample, two menu commands Color Dialog Box | Disable Full Open and Color Dialog Box | Full Open are added, in their corresponding message handlers, the color dialog boxes with different styles are implemented:
+\par 
+\par void CCDBDoc::OnColordialogboxDisablefullopen() 
+\par \{
+\par     ColorDialog(RGB(0, 255, 0), CC_PREVENTFULLOPEN);
+\par \}
+\par 
+\par void CCDBDoc::OnColordialogboxFullopen() 
+\par \{
+\par     ColorDialog(RGB(0, 255, 0), CC_FULLOPEN);
+\par \}
+\par 
+\par Now we can compile the application and try color dialog boxes with different styles.
+\par 
+\par 7.6\tab Custom Dialog Box Template
+\par 
+\par Like file dialog box, we can use our own dialog template to implement color dialog box. When designing our own dialog template, we must include all the items contained in the standard color dialog box. We can change the position and resize some controls, and hide the ones that do not fit our use. To use the custom dialog template, we need to set CC_ENABLETEMPLATE bit for member Flags of structure CHOOSECOLOR, and assign the instance handle of the application to member hInstance. Here the instance handle of the application can be obtained by calling function AfxGetInstanceHandle(). We also need to assign the name of the custom dialog template to member lptemplateName.
+\par 
+\par Custom Dialog Template
+\par 
+\par Sample 7.6\\CDB demonstrates how to implement color dialog box using user-designed dialog template. It is based on sample 7.5\\CDB, with two new commands Color Dialog Box | Choose Base Color and Color Dialog Box | Choose Custom Color added to the application. For command Color Dialog Box | Choose Base Color, a color dialog box that only allows the user to choose color from base colors is implemented; for command Color Dialog Box | Choose Custom Color, the user is only allowed to choose color form custom colors. The IDs of two commands are ID_COLORDIALOGBOX_CHOOSEBASECOLOR and ID_COLORDIALOGBOX_CHOOSECOSTUMCOLOR, and their WM_COMMAND message handlers are CCDBDoc::OnColordialogboxChoosebasecolor() and CCDBDoc:: OnColordialogboxChoosecostumcolor() respectively.
+\par 
+\par Figure 7-6 shows the controls contained in the standard color dialog box.
+\par 
+\par (Figure 7-6 omitted)
+\par 
+\par The following table contains a list of ID values for these controls:
+\par 
+\par (Table omitted)
+\par 
+\par The standard dialog template can be copied from file "Commdlg.dll". By default, all the controls in this template will have a numerical ID. In order to make them easy to use, we can assign each ID a symbol, this can be done by inputting a text ID and assigning the control's original ID value to it in "ID" window of the property sheet that is used for customizing the styles of a control. For example, when we open "Text Properties" property sheet for control 720, its "ID" window shows "720". We can change it to "COLOR_BOX1=720". By doing this, the control will have an ID symbol "COLOR_BOX1", whose value is 720. In the sample, most of the controls are assigned ID symbols.
+\par 
+\par We can hide certain unnecessary controls by calling function CWnd::ShowWindow(...) in dialog box's initialization stage. However, there is an easier approach to it: we can resize the dialog template and move the unwanted controls outside the template (Figure 7-7). By doing this, these controls will not be shown in the dialog box, and therefore, can not respond to mouse clicking events.
+\par 
+\par However, in Developer Studio, a control is confined within the dialog template and is not allowed to be moved outside it. A workaround for this is to edit the resource file directly. Actually, a dialog template is based on a text format resource file. In our sample, all type of resources are stored in file "CDB.rc". By opening it in "Text" mode, we can find the session describing the color dialog template:
+\par 
+\par (Code omitted)
+\par 
+\par The first four lines specify the properties of this dialog template, which include its dimension, styles, caption, and font. Between "BEGIN" and "END" keywords, all controls included in the template are listed. Each item is defined with a type description followed by a series of styles. In the above example, the first item is a static text control (LTEXT), which contains text "Basic Colors" ("&Basic Colors:"). It has an ID of 65535 (-1), located at (4, 4), and its dimension is (140, 9).
+\par 
+\par In the above example, if we change a control's horizontal coordinate to a value bigger than 150 (Because the dimension of the dialog template is 150(124), it will be moved outside the template.
+\par 
+\par In the sample, two such dialog templates are prepared: "CHOOSECOLOR" and "CHOOSECUSCOLOR". In "CHOOSECOLOR", static text control COLOR_BOX1 is inside the template, and the area within this control will be used to draw base colors. For "CHOOSECUSCOLOR", static text control COLOR_CUSTOM1 is inside the template, the area within this control will be used to draw custom colors (COLOR_BOX1 and COLOR_CUSTOM1 are used to define an area where the controls will be created dynamically for displaying colors). In both cases, frame COLOR_CURRENT is inside the template, which will be used to display the current selected color.
+\par 
+\par Commands Implementation
+\par 
+\par Function CCDBDoc::OnColordialogboxChoosebasecolor() is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par There is nothing special for this function. The only thing we need to pay attention to is that we must set CC_FULLOPEN flag in order to display currently selected color. Otherwise control COLOR_CURRENT will not work.
+\par 
+\par The following is the implementation of function CCDBDoc::OnColordialogboxChoosecostumcolor(): 
+\par 
+\par (Code omitted)
+\par 
+\par We must provide custom colors. Otherwise they will all be initialized to white. With a color dialog box whose color matrix window can not be used, the custom colors provide the only way to let user pick up a color.
+\par 
+\par 7.7\tab Font Dialog Box
+\par 
+\par Basics
+\par 
+\par Font dialog box lets user select a special font with different style combinations: boldface, italic, strikeout or underline. The font size and color can also be set in the dialog box.. In MFC, the class that is used to implement font dialog box is CFontDialog. To create a standard font dialog box, all we need to do is declaring a CFontDialog type variable and using it to call function CFontDialog::DoModal(). Like classes CFileDialog and CColorDialog, class CFontDialog also contains a member variable that allows us to customize the default styles of color dialog box. This variable is m_cf, which is declared by structure CHOOSEFONT:
+\par 
+\par typedef struct \{ 
+\par     DWORD        lStructSize; 
+\par     HWND         hwndOwner; 
+\par     HDC          hDC; 
+\par     LPLOGFONT    lpLogFont; 
+\par     INT          iPointSize; 
+\par     DWORD        Flags; 
+\par     DWORD        rgbColors; 
+\par     LPARAM       lCustData; 
+\par     LPCFHOOKPROC lpfnHook; 
+\par     LPCTSTR      lpTemplateName; 
+\par     HINSTANCE    hInstance; 
+\par     LPTSTR       lpszStyle; 
+\par     WORD         nFontType; 
+\par     WORD         ___MISSING_ALIGNMENT__; 
+\par     INT          nSizeMin; 
+\par     INT          nSizeMax; 
+\par \} CHOOSEFONT;
+\par 
+\par There are several things that can be customized here. First, we can change the default font size range. By default, a valid size for all fonts is ranged from 8 to 72. We can set a narrower range by setting CF_LIMITSIZE bit of member Flags and assigning lower and higher boundaries to members nSizeMin and nSizeMax respectively. We can also specify font's initial color by setting CF_EFFECTS bit of member Flags and assigning a COLORREF value to member rgbColors (the initial color must be one of the standard colors defined in the font dialog box  such as red, green, cyan, black...).
+\par 
+\par Structure LOGFONT
+\par 
+\par Also, we can specify an initially selected font (with specified size and styles) by assigning a LOGFONT type pointer to member lpLogFont. Here, structure LOGFONT is used to describe a font:
+\par 
+\par typedef struct tagLOGFONT \{
+\par    LONG lfHeight;
+\par    LONG lfWidth;
+\par    LONG lfEscapement;
+\par    LONG lfOrientation;
+\par    LONG lfWeight;
+\par    BYTE lfItalic;
+\par    BYTE lfUnderline;
+\par    BYTE lfStrikeOut;
+\par    BYTE lfCharSet;
+\par    BYTE lfOutPrecision;
+\par    BYTE lfClipPrecision;
+\par    BYTE lfQuality;
+\par    BYTE lfPitchAndFamily;
+\par    CHAR lfFaceName[LF_FACESIZE];
+\par \} LOGFONT;
+\par 
+\par A font has many properties. The most important ones are face name, height, and font styles (italic, bolded, underlined or strikeout). In structure LOGFONT, these styles are represented by the following members: lfFaceName, lfWeight, lfItalic, lfUnderline and lfStrikeOut. A face name is the name of the font, it distinguishes one font from another. Every font has its own face name, such as "Arial", "System" and "MS Serif". The weight of a font specifies how font is emphasized, its range is from 0 to 1000. Usually we use predefined values such as FW_BOLD (font is bolded) and FW_NORMAL (font is not bolded) for convenience. Member lfItalic, lfUnderline and lfStrikeOut are all Boolean type, by setting them to TRUE, we can let the font to become italic, underlined, or strikeout. Member nSizeMin and nSizeMax can be used to restrict the size of a font.
+\par 
+\par In order to use LOGFONT object to initialize a font dialog box, we must first set CF_INITTOLOGFONTSTRUCT bit for member Flags of structure CHOOSEFONT, then assign the LOGFONT type pointer to member lpLogFont.
+\par 
+\par Retrieving Selected Font
+\par 
+\par After the font dialog box is closed, the font that is selected by the user can be retrieved through following member functions: CFontDialog::GetFaceName(), CFontDialog::IsBold(), CFongDialog:: IsItalic()....
+\par 
+\par Sample
+\par 
+\par Sample 7.7\\CDB demonstrates how to use font dialog box. It is based on sample 7.6\\CDB with a new command Font Dialog Box | Initialize added to the application. The ID of this command is ID_FONTDIALOGBOX_INITIALIZE, and its WM_COMMAND message handler is CCDBDoc:: OnFontdialogboxInitialize(). The command is implement as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The initially selected font is "Times New Roman", whose color is yellow (RGB(255, 255, 0)), and has the following styles: italic, underlined, strikeout, bolded. The range of the font size is restricted between 20 and 48. After the user clicks button "OK", the properties of the selected font are retrieved through member functions of class CFontDialog, and are displayed in a message box.
+\par 
+\par 7.8\tab Customizing Dialog Box Template
+\par 
+\par Like file and color dialog boxes, we can use custom dialog template to implement font dialog box. This gives us a chance to move, resize or hide some standard controls. To use a custom template, we need the following steps: 1) Design a new dialog template that contains all the controls in a standard font dialog box. 2) Set CF_ENABLETEMPLATE bit for member Flags of structure CHOOSEFONT, and assign custom template name to member lpTemplateName. 3) Assign application's instance handle to member hInstance.
+\par The standard dialog template can be found in file "Commdlg.dll". It can be opened from Developer Studio in "Resources" mode.
+\par 
+\par All IDs of the controls are numbers. When writing code to access the controls, we can use these numbers directly, or we can assign each control a text ID like what we did for sample 7.6\\CDB. Actually, these IDs are all pre-defined, whose symbolic IDs can be found in file "Dlgs.h" (we can find this file under ~DevStudio\\VC\\Include\\ directory). We can check a control's ID value and search through this file to find out its symbolic ID. For example, in font dialog box, the combo box under window "Font:" has an ID of 1136 (0x470). In file  "Dlgs.h", we can find:
+\par 
+\par ......
+\par //
+\par //  Combo boxes.
+\par //
+\par #define cmb1        0x0470
+\par #define cmb2        0x0471
+\par #define cmb3        0x0472
+\par ......
+\par 
+\par Value 0x0470 is used by cmb1, so we can access this combo box through using symbol cmb1.
+\par Sample 7.8\\CDB demonstrates how to use custom dialog template to implement font dialog box. It is based on sample 7.7\\CDB. In the sample, a new command Font Dialog Box | Customize is added to the application, whose command ID is ID_FONTDIALOGBOX_INITIALIZE. If we execute this command, a font dialog box whose color selection feature is disabled will be invoked.
+\par 
+\par In order to implement this dialog box, we need to disable the following two controls: stc4 (Static control containing string "Color", whose ID value is 1091) and cmb4 (Combo box for color selection, whose ID value is 1139).
+\par 
+\par In the sample, the custom dialog template is IDD_FONT. It contains all the standard controls.
+\par 
+\par A new class MCFontClass is added to the application through using Class Wizard, its base class is CFontClass. In the derived class, function OnInitDialog is overridden, within which the above two controls are disabled:
+\par 
+\par (Code omitted)
+\par 
+\par The WM_COMMAND type message handler of command ID_FONTDIALOGBOX_INITIALIZE is CCDBDoc:: OnFontdialogboxCustomize(), which is also added through using Class Wizard. The following is its implementation:
+\par 
+\par (Code omitted)
+\par 
+\par With the above implementation, the font dialog box will not contain color selection feature.
+\par 
+\par 7.9\tab Modeless Common Dialog Boxes
+\par 
+\par Tricks
+\par 
+\par It is difficult to implement modeless common dialog boxes. This is because all the common dialog boxes are designed to work in the modal style. Therefore, if we call function Create(...) instead of DoModal(), although the dialog box will pop up, it will not behave like a common dialog box. This is because function Create(...) is not overridden in a class such as CColorDialog, CFontDialog.
+\par 
+\par We need to play some tricks in order to implement modeless common dialog boxes. By looking at the source code of MFC, we can find that within function CColorDialog::DoModal() or CFontDialog:: DoModal(), the base class version of DoModal() is not called. Instead, API functions ::ChooseColor(...)and ::ChooseFont(...) are used to implement common dialog boxes.
+\par 
+\par There is no difference between the common dialog boxes implemented by API functions and MFC classes. Actually, using API function is fairly simple. For example, if we want to implement a color dialog box, we can first prepare a CHOOSECOLOR object, then use it to call function ::ChooseColor(...). But here we must initialize every member of CHOOSECOLOR in order to let the dialog box have appropriate styles.
+\par 
+\par By using this method we can still create only modal common dialog boxes. A "modeless" common dialog box can be implemented by using the following method:
+\par 
+\par 1)  Before creating the common dialog box, first implement a non-visible modeless window.
+\par 2)  Create the modal common dialog box, use the modeless window as its parent.
+\par 
+\par Although the common dialog box is modal, its parent window is modeless. So actually we can switch away from the common dialog box (and its parent window) without closing it. Because the common dialog box's parent is invisible, this gives the user an impression that the common dialog box is modeless.
+\par 
+\par But if we call function DoModal() to implement the common dialog box, we are not allowed to switch away even it has a modeless parent window. We must call API functions to create this type of common dialog boxes.
+\par 
+\par Hook Function
+\par 
+\par We can provide hook function when implementing common dialog boxes using API functions. In Windows( programming, a hook function is used to intercept messages sent to a window, thus by handling these messages we can customize a window's behavior. Both structure CHOOSEFONT and CHOOSECOLOR have a member lpfnHook that can be used to store a hook function's address when the common dialog box is being implemented. If a valid hook function is provided, when a message is sent to the dialog box, the hook function will be called first to process the message. To enable hook function, we also need to set CF_ENABLEHOOK or CC_ENABLEHOOK bit for member Flags of structure CHOOSEFONT or CHOOSECOLOR. If the message is not processed in the hook function, the dialog's default behavior will not change.
+\par 
+\par A hook procedure usually looks like the following:
+\par 
+\par (Code omitted)
+\par 
+\par The first parameter is the handle of the destination window where the message is being sent. The second parameter specifies the type of message. The third and fourth parameters are WPARAM and LPARAM parameters of the message respectively. For different events, the messages sent to this procedure are different. For example, in the dialog's initialization stage, message WM_INITDIALOG will be sent, if we want to add other initialization code, we could implement it under "case WM_INITDIALOG" statement.
+\par 
+\par In MFC, this procedure is encapsulated by message mapping. We don't have to write hook procedure, because we can map any message to a specific member function. For example, in MFC, message WM_INITDIALOG is always mapped to function OnInitDialog(), so we can always do our initialization work within this member function.
+\par 
+\par When we use MFC classes to implement common dialog boxes, there is a hook function _AfxCommDlgProc(...) behind us. We never need to know its existence. However, we use it indirectly whenever a common dialog box is created. By looking at MFC source code, we will find that in the constructors of common dialog boxes, the address of this function is assigned to member lpfnHook.
+\par 
+\par To make full use of MFC resource, instead of creating a new hook function, we can use _AfxCommDlgProc(...) when calling API functions to implement common dialog boxes.
+\par 
+\par Using MFC Classes together with API Functions
+\par 
+\par When we use MFC class to create a window, the window's handle is automatically saved in a member variable. So we can always use the member functions to access this window. If we use API functions, no MFC class declared variables can participate in window creating activities, so we will not have any variable that can be used to call the member functions of MFC classes for accessing the window. This doesn't mean we are going to give up MFC implementation completely. Whenever possible, we want to use the member functions of CColorDialog or CFileDialog instead of implementing everything by our own. Actually, a window and a MFC class declared variable can be associated together after the window is created by calling function CWnd::Attach(...). The following is the format of this function:
+\par 
+\par BOOL CWnd::Attach(HWND hWndNew);
+\par 
+\par So long as we have a valid window handle, we can attach it to a MFC class declared variable.
+\par 
+\par Obtaining Handle
+\par 
+\par When we call function ::ChooseColor(...) or ::Choosefont(...), no window handle will be returned. The only place we can obtain dialog's handle is in the hook function (through parameter hdlg). We can attach this handle to a CColorDialog or CFontDialog declared variable after receiving message WM_INITDIALOG.
+\par 
+\par Accessing Member Variable from Static or Global Function
+\par 
+\par Because a hook function is a callback function, it must be either a static or global function. Therefore, we can not access the member variable of a class within the hook function. To let the window handle be attached to a member variable, we must pass its address to the callback function through a message parameter. By doing this, after receiving the message, the member variable can be accessed through a pointer within the callback function.
+\par 
+\par Both structure CHOOSECOLOR and CHOOSEFONT have a member lCustData, which allows us to specify a custom data that will be sent to the callback function along with WM_INITDIALOG message. The custom data will be contained in LPARAM message parameter. So if we assign the address of a variable declared by MFC class to member lCustData, we can receive it in the dialog box' initialization stage and call function CWnd:: Attach(...) to attach the window handle to this variable.
+\par 
+\par In other cases we would like to call the default hook procedure. We can store the address of the default hook procedure in a variable, and call it within the our hook procedure as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The code listed above shows how to trap WM_INITDIALOG message and attach the window handle to a variable declared outside the hook function. Also, the default hook procedure is called to let other messages be processed normally. Here, lpFontfn is a global pointer that stores the address of the hook procedure.
+\par 
+\par Sample Implementation
+\par 
+\par Sample 7.9\\CDB demonstrates how to implement modeless common dialog boxes. It is based on sampele 7.8\\CDB, with two new commands added to the application: Color Dialog Box | Modeless and Font Dialog Box | Modeless, both of which can be used to invoke modeless common dialog boxs. For the former command, the user can select a color and switch back to the main window to see the effect without dismissing the dialog box. The IDs of the two commands are ID_COLORDIALOGBOX_MODELESS and ID_FONTDIALOGBOX_MODELESS, and their WM_COMMAND message handlers are CCDBDoc:: OnColordialogboxModeless() and CCDBDoc::OnFontdialogboxModeless() respectively.
+\par 
+\par A dummy dialog box is added to the application, whose resource ID is IDD_DIALOG_DUMMY. It will be used as the parent window of the common dialog boxes. Since this window is always hidden after being invoked, it does not matter what controls are included in the dialog template. The class that will be used to implement this dialog box is MCDummyDlg.
+\par 
+\par Two new variables are declared in class CCDBDoc for implementing modeless color dialog box:
+\par 
+\par (Code omitted)
+\par 
+\par Here, m_pColorDmDlg will be used to create dummy window, and m_pColorDlg will be used to create color dialog box.
+\par 
+\par At the beginning of file "CDBDoc. Cpp", a global hook procedure and a pointer are declared:
+\par 
+\par UINT CALLBACK ColorHook(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+\par UINT (CALLBACK *lpColorfn)(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+\par 
+\par Function ColorHook is the custom hook procedure, and pointer lpColorfn will be used to store the address of the default hook procedure.
+\par 
+\par In function CCDBDoc::OnColordialogboxModeless(), first we need to initialize m_pColorDlg and m_pColorDmDlg, then create the dummy window:
+\par 
+\par (Code omitted)
+\par 
+\par Function CDialog::Create() is called to create a modeless dialog box, and function CWnd:: ShowWindow(...) (using parameter SW_HIDE) is called to hide this window.
+\par 
+\par Before the color dialog box is created, we must make some changes to structure CHOOSECOLOR:
+\par 
+\par (Code omitted)
+\par 
+\par The address of m_pColorDlg is stored as custom data, which will be sent to the hook function. The dummy window is designated as the parent window of the color dialog box and its handle is assigned to member hwndOwner of structure CHOOSECOLOR. A global COLORREF type array rgbColors is declared, which will be used to initialize the custom colors in the color dialog box. Also, custom dialog template "CHOOSECUSCOLOR" is used, which will allow the user to choose color from only custom colors.
+\par 
+\par The address of default hook procedure (which is contained in member lpfnHook of structure CHOOSECOLOR after the constructor of class CColorDlg is called) is stored in global variable lpColorfn, and the new hook procedure address is assigned to lpfnHook. Finally, API function ::ChooseColor(...) is called to invoke the color dialog box:
+\par 
+\par (Code omitted)
+\par 
+\par In the hook procedure, after receiving message WM_INITDIALOG, we can obtain the value of m_pColorDlg from LPARAM parameter and attach the color dialog box's window handle to it:
+\par 
+\par (Code omitted)
+\par 
+\par However, there are still some problems left to be solved. Since the dialog box is modeless now, we can execute command Color Dialog Box | Modeless again when the dialog box is being used. Also, in the new situation, the user is able to exit the application without closing the dialog box first.
+\par 
+\par To avoid the dummy dialog box and the color dialog box from being created again while they are active, we have to check m_pColorDlg and m_pColorDmDlg variables. First, if they are NULL, it means the variables have not been initialized, we need to allocate buffers and create the window. If they are not NULL, there are two possibilities: 1) The dialog box is currently active. 2) The dialog box is closed. Obviously we don't need to do anything for the first case. For the second case, we need to reinitialize the two variables and create the window again. Since the window handle is attached to the variable in the hook procedure, we need to detach it before releasing the allocated buffers. For the above reasons, the following is added to the beginning of function CCDBDoc::OnColordialogboxModeless():
+\par 
+\par (Code omitted)
+\par 
+\par We need to destroy the windows by ourselves if the user exits the application without first closing the color dialog box. We can override a member function OnCloseDocument(), which will be called when the document is about to be closed. This function can be easily added through using the Class Wizard. The following shows how it is implemented in the sample:
+\par 
+\par (Code omitted)
+\par 
+\par Again, function CWnd::Detach() is called before the buffers are released.
+\par 
+\par Applying Selected Color Instantly
+\par 
+\par To make the sample more practical, another feature is added to it: when the user picks up a color, the client window of the application will be painted with that color instantly. To implement this, a new COLORREF type variable m_colorCur is added to class CDBDoc, which will be used to store the current color of the client window:
+\par 
+\par class CCDBDoc : public CDocument
+\par \{
+\par protected:
+\par ......
+\par     COLORREF m_colorCur;
+\par ......
+\par \}
+\par 
+\par The color is initialized in the constructor as follows:
+\par 
+\par CCDBDoc::CCDBDoc()
+\par \{
+\par ......
+\par     m_colorCur=RGB(0, 255, 255);
+\par \}
+\par 
+\par Member function CCDBDoc::SetCurrentColor(...) and CCDBDoc::GetCurrentColor() are added to let us access variable m_colorCur outside the document:
+\par 
+\par class CCDBDoc : public CDocument
+\par \{
+\par ......
+\par public:
+\par     void SetCurrentColor(COLORREF);
+\par     COLORREF GetCurrentColor()\{return m_colorCur;\}
+\par ......
+\par \}
+\par 
+\par Function CCDBDoc::GetCurrentColor(...) is implemented as an inline function, and function CCDBDoc::SetCurrentColor(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Here we check if the new color is the same with the old color, if not, we update member m_colorCur, and repaint the client window by calling function CDocument::UpdateAllViews(...).
+\par 
+\par When initializing the color dialog box, we need to use m_colorCur to set the initially selected color before the color dialog box is created. The following change is made for this purpose:
+\par 
+\par Before change: 
+\par 
+\par void CCDBDoc::OnColordialogboxModeless() 
+\par \{
+\par ......
+\par     m_pColorDlg=new CColorDialog();
+\par ......
+\par \}
+\par 
+\par After change:
+\par 
+\par void CCDBDoc::OnColordialogboxModeless() 
+\par \{
+\par ......
+\par     m_pColorDlg=new CColorDialog(m_colorCur);
+\par ......
+\par \}
+\par 
+\par Function CCDBView::OnDraw(...) is modified to paint the client window with color CCDBDoc:: m_colorCur:
+\par 
+\par (Code omitted)
+\par 
+\par First we find out the size of the client window, then call function CCDBDoc::GetCurrentColor() to retrieve the current color, and call function CDC::FillSolidRect() to fill the window with this color.
+\par 
+\par When the user selects a new color, we need to call function CCDBDoc::SetCurrentColor(...) to update the current color. In order to do this, we need to trap message WM_LBUTTONUP in the hook procedure, obtain the selected color and update variable CCDBDoc::m_colorCur. For this purpose: the following is added to function ColorHook(...):
+\par 
+\par (Code omitted)
+\par 
+\par Since ColorHook(...) is not a member function of class CCDBDoc, we can not access its member function directly from the hook procedure. So here AfxGetMainWnd() is called first to obtain the mainframe window, then CFrameWnd::GetActiveDocument() is called to obtain the active document attached to it. This method can also be used to access the active document from other classes.
+\par 
+\par When calling function CCDBDoc::SetCurrentColor(...), we use IDs COLOR_RED, COLOR_GREEN and COLOR_BLUE to retrieve the current values contained in the edit boxes (see Figure 7-6). In a standard color dialog box, these edit boxes will be shown only when the dialog box is fully opened. Although this is not the case in the sample, we still can retrieve the contents of them even they can not be seen. Also, we use CDialog::GetDlgItemInt(...) to convert characters to integers when retrieving the color values.
+\par 
+\par In the sample, modeless font dialog is implemented in a similar way. 
+\par 
+\par Summary:
+\par 
+\par 1)  Three classes that can be used to implement common file dialog box, common color dialog box and common font dialog box are CFileDialog, CColorDialog and CFontDialog respectively. To implement a standard common dialog box, we need to use the corresponding class to initialize a variable, then call function DoModal() to invoke the dialog box.
+\par 
+\par 2)  We can customize the default behavior of common dialog boxes by modifying the members of structure OPENFILENAME, CHOOSECOLOR or CHOOSEFONT.
+\par 
+\par 3)  File dialog box can be implemented either in an "Explorer" style or an "Old" style.
+\par 
+\par 4)  There are some shell functions that can be called to implement folder selection dialog box. If we want to implement the old-style interface, we must use custom dialog template and override class CFileDialog.
+\par 
+\par 5)  To use custom dialog template, we need to first design a dialog template that contains all the standard controls, then set "enable template" flag and assign the template name to member lpTemplateName.
+\par 
+\par 6)  To add extra controls to an "Explorer" style file dialog box, we need to design a dialog template that contains static control with ID of stc32. We do not need to replicate all the standard controls.
+\par 
+\par 7)  MFC classes do not support modeless common dialog boxes. To implement this type of dialog boxes, we need to create a modeless parent window for the common dialog box and hide the parent window all the time. This will give the user an impression that the common dialog box is modeless. Also, we need to call API functions instead of MFC member functions to create the common dialog box.
+\par 
+\par }
+ 

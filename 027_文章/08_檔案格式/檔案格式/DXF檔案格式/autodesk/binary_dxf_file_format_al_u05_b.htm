@@ -1,0 +1,56 @@
+<html>
+<head>
+<meta name=ID content="Binary_DXF_File_Format_al_u05_b">
+<title>Binary DXF File Format  [ACG]</title>
+<meta name=KEYWORDS content="DXB files;ASCII; American Standard Code for Information Interchange.  See ASCII;DXF files;binary drawing interchange files. See DXB files;commands,  DXFOUT; DXFOUT command;binary DXF files; DXF files,  binary;extended data,  described;commands,  DXFIN; DXFIN command">
+<meta name=BROWSE content="BROWSE1:000">
+<meta name=WINDOW content="main">
+</head>
+<body bgcolor=#ffffff link=#003399 vlink=#003399>
+<a name="XREF_35235_al_u05_b"></a>
+
+<table width=100% cellpadding=5 cellspacing=0 border=0><tr><td>
+<font face=Arial color=#003399 size=3><b> <a href="drawing_interchange_file_formats.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/drawing_interchange_file_formats.htm">Drawing Interchange File Formats</a>
+</b></font>
+<hr size=1>
+<font face=Arial color=#003399 size=3><b><img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> Binary DXF File Format
+</b></font>
+<hr size=1>
+</td></tr></table>
+
+<p><font face="MS Sans Serif,Arial" size=2>The ASCII DXF file format is a complete representation of an AutoCAD drawing in an ASCII text form, and is easily processed by other programs. In addition, AutoCAD can produce or read a binary form of the full DXF file and accept limited input in another binary file format. 
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The DXFOUT command provides a Binary option that writes binary <font face=Arial><i>dxf </i></font>files. Such a file contains all of the information present in an ASCII DXF file but in a more compact form that takes, typically, 25 percent less file space and can be read and written more quickly (typically, five times faster) by AutoCAD. Unlike ASCII <font face=Arial><i>dxf </i></font>files, which entail a trade-off between size and floating-point accuracy, binary <font face=Arial><i>dxf </i></font>files preserve all of the accuracy in the drawing database. (AutoCAD Release 10 was the first version to support this form of DXF file; it cannot be read by older versions.)
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>A binary DXF file begins with a 22-byte sentinel consisting of the following:
+</font></p>
+<p><font face="Courier New,Courier" size=2>AutoCAD Binary DXF&lt;CR&gt;&lt;LF&gt;&lt;SUB&gt;&lt;NULL&gt;
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>Following the sentinel are pairs (group, value) as in an ASCII DXF file but represented in binary form. The group code is a single-byte binary value, and the value that follows is one of the following:
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><UL type=square><LI>A 2-byte integer with the least significant byte first and the most significant byte last
+</font>
+<font face="MS Sans Serif,Arial" size=2><LI>An 8-byte IEEE double-precision floating-point number stored with the least significant byte first and the most significant byte last
+</font>
+<font face="MS Sans Serif,Arial" size=2><LI>An ASCII string terminated by a 0 (NULL) byte
+</font>
+<p><font face="MS Sans Serif,Arial" size=2></UL> The type of the datum following a group is determined from the group code by the same rules used in decoding ASCII DXF files. Translation of angles to degrees and dates to fractional Julian date representation is performed for binary files, as well as for ASCII DXF files. The comment group, 999, is not used in binary DXF files.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>Extended data group codes are represented in binary DXF as a single byte with the value 255, followed by a 2-byte integer value containing the actual group code, followed by the actual value.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>Extended data long (group code 1071) values occupy 4 bytes of data. Extended data binary chunks (group code 1004) are represented as a single-byte, unsigned integer length, followed by the specified number of bytes of chunk data. For example, to transfer an extended data long group, the following values would appear, occupying 1, 2, and 4 bytes respectively.
+</font></p>
+<font face="Courier New,Courier" size=2><tt>255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><font face=Arial><i>Escape group code</i></font> 
+</font><br><tt>
+</tt><font face="Courier New,Courier" size=2><tt>1071&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;</tt><font face=Arial><i>True group code</i></font> 
+</font><br><tt>
+</tt><p><font face="Courier New,Courier" size=2><tt>999999&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;</tt><font face=Arial><i>Value for the 1071 group code</i></font> 
+</font></p><tt>
+</tt><p><font face="MS Sans Serif,Arial" size=2>DXFOUT writes binary DXF files with the same file type (<font face=Arial><i>.dxf</i></font>) as for ASCII DXF files. The DXFIN command automatically recognizes a binary file by means of its sentinel string. There is no need for you to identify it as a binary file.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>If DXFIN encounters an error in a binary DXF file, it reports the byte address within the file where the error was detected.
+</font></p>
+
+</body>
+</html>
+

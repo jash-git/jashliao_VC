@@ -1,0 +1,314 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Audio</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Audio（Under Construction!）</p>
+</div><div class="c">
+<p class="t">參考資料</p>
+<p>張智星教授的網站，條目非常清晰：</p>
+<p><a href="javascript:if(confirm('http://mirlab.org/jang/books/audioSignalProcessing/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://mirlab.org/jang/books/audioSignalProcessing/'" tppabs="http://mirlab.org/jang/books/audioSignalProcessing/">http://mirlab.org/jang/books/audioSignalProcessing/</a></p>
+<p>《PC電腦語音辨認實作》絕版書籍。部分內容過時。書中的程式碼有參考價值。</p>
+<p class="t">一、錄音</p>
+<p>接下來將一步步介紹語音處理的前置流程。建議讀者已經具有數位訊號處理Digital Signal Processing的基礎。</p>
+<p>讀者可以安裝麥克風，運用錄音軟體錄製聲音，選擇單聲道，儲存成WAV格式。WAV格式是最基本的聲音檔案格式。</p>
+<p>讀者也可以運用Windows SDK，製作一支錄音程式。這方面筆者了解不多，有賴網友補充。</p>
+<pre>
+麥克風的構造以及頻率響應
+http://www.sounderpro.com.tw/reviw/microphone/mic_01.html
+</pre>
+<p class="t">二、開檔、存檔</p>
+<p>在電腦中，聲音訊號是一串整數數列，資料結構是一維陣列。</p>
+<p>sampling rate，取樣率：一秒鐘有多少個訊號。數值越高，聲音就越連貫。電腦的聲音檔案，通常採用44100Hz；手機與電話的聲音傳輸，公定為8000Hz。</p>
+<p>bit depth或bits per sample，位元深度：一個訊號用多少位元紀錄。數值越高，聲音就越精準。一般使用16bit就足夠詳細了，因此每個訊號都是-32768到32767的整數值。</p>
+<p>bit rate，位元率：即是sampling rate乘以bit depth。這個數據用來判斷電腦存取聲音檔案時，每一秒要處理多少位元。將滑鼠停留在聲音檔案圖示上面，就會出現bit rate大小。</p>
+<p>channel，聲道：聲音訊號共有幾條。舉例來說，民眾所熟悉的立體雙聲道，其實就是同時播出兩條不同的聲音訊號。以下為了方便講解，聲音訊號皆預設為單聲道。</p>
+<p>此處我們使用的是<a href="javascript:if(confirm('http://www.sfml-dev.org/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.sfml-dev.org/'" tppabs="http://www.sfml-dev.org/">SFML</a>這套函式庫，輕鬆開啟WAV格式的聲音檔案，將聲音訊號儲存至陣列。</p>
+<textarea>
+#include <sfml/audio.hpp>
+
+sf::SoundBuffer LoadBuffer;
+sf::SoundBuffer SaveBuffer;
+
+/* 利用 SFML 讀取 .wav 檔案
+ * file_path     : 檔案路徑暨名稱
+ * sample_length : 訊號長度
+ * sample_rate   : 取樣頻率
+ * channel       : 通道數
+ * sample        : 訊號，注意不能修改其內容
+ * return        : 讀檔成功為1，失敗為0
+ */
+int LoadWav(const char *file_path, int& sample_length, int& sample_rate, int& channel, short*& sample)
+{
+	int r = LoadBuffer.LoadFromFile(file_path);
+	if (!r) return 0;
+
+	sample_length = LoadBuffer.GetSamplesCount();
+	sample_rate   = LoadBuffer.GetSampleRate();
+	channel       = LoadBuffer.GetChannelsCount();
+	sample        = (short*)LoadBuffer.GetSamples();
+	return 1;
+}
+
+/* 利用 SFML 儲存 .wav 檔案
+ * file_path     : 檔案路徑暨名稱
+ * sample_length : 訊號長度
+ * sample_rate   : 取樣頻率
+ * channel       : 通道數
+ * sample        : 訊號
+ * return        : 存檔成功為1，失敗為0
+ */
+int SaveWav(const char *file_path, int sample_length, int sample_rate, int channel, short* sample)
+{
+	// 訊號先放入SoundBuffer。
+	int r = SaveBuffer.LoadFromSamples(sample, sample_length, channel, sample_rate);
+	if (!r) return 0;
+
+	// SoundBuffer儲存成檔案。
+	return SaveBuffer.SaveToFile(file_path);
+}
+</textarea>
+<p>可以開檔、存檔之後，不妨做點簡單的測試。例如挪移訊號並疊加訊號，製造立體聲效果。</p>
+<textarea>
+void echo()
+{
+	short* sample;
+	int sample_length, sample_rate, channel;
+	LoadWav("poem.wav", sample_length, sample_rate, channel, sample);
+
+	short* new_sample = new short[sample_length];
+	for (int i=0; i<sample_length; ++i)
+	{
+		new_sample[i] = sample[i];
+		// 延遲 11012 / 44050 = 0.25 秒，音量減少一半。
+		if (i - 11012 >= 0) new_sample[i] += sample[i - 11012] / 2;
+	}
+
+	SaveWav("save.wav", sample_length, sample_rate, channel, new_sample);
+	delete [] new_sample;
+}
+</textarea>
+<p>有時候麥克風品質不佳，導致聲音粗糙。運用微分運算可使訊號稍微清晰。</p>
+<textarea>
+void pre_emphize(short* sample, short* new_sample)
+{
+	new_sample[0] = sample[0];
+	for (int i=1; i<sample_length; ++i)
+		new_sample[i] = sample[i] - 0.95 * sample[i-1];
+}
+</textarea>
+<p>小測驗：儲存訊號的陣列究竟是多大？記憶體用量是多少？</p>
+<p class="t">三、Frame</p>
+<p>由於訊號很長、變化很大，因此必須將訊號分成小段處理，使得小段之內變化很小。每個小段都稱做一個「音框Frame」。</p>
+<img src="Speech1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Speech1.png">
+<p>當取樣頻率是44100Hz，音框設定為512點的時候，這個音框占有512/44100 ≈ 0.01秒，人耳無法分辨這麼短時間的變化，人聲也無法控制這麼短時間的變化，可以說是足夠細膩了。</p>
+<p class="t">四、Window</p>
+<p>原本完整的聲音波形，硬生生被音框截斷了，因此使用傅立葉轉換分析頻率會產生誤差。解法是：將音框兩端的訊號漸漸減弱，減少影響。也就是將音框點對點乘上一個中央高、兩側低的函數，數值皆介於零到一之間，稱做「<a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Window_function  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Window_function'" tppabs="http://en.wikipedia.org/wiki/Window_function">窗函數Window Function</a>」。</p>
+<img src="Speech2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Speech2.png">
+<textarea>
+const double pi = 2.0 * acos(0.0);	// π
+const int frame_size = 512;
+double hamming[512];
+
+void InitHammingWindow()
+{
+	for (int i=0; i<frame_size; i++)
+		hamming[i] = 0.54 - 0.46 * cos( (double)i * pi / (frame_size - 1) );
+}
+
+void UseHammingWindow(double* sample)
+{
+	for (int i=0; i<frame_size; i++)
+		sample[i] *= hamming[i];
+}
+</textarea>
+<p>套用窗函數之後，在設定音框位置時，通常會讓相鄰音框相互重疊一部分。讓位於音框邊緣、被窗函數削減的訊號，能在隔壁音框受到重視。</p>
+<img src="Speech3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Speech3.png">
+<p>窗函數具有缺陷。把窗函數從時域轉換成頻域，外觀是很多圓丘擠在一起，窗函數會增強凸起處對應的頻率，但也會削弱凹陷處對應的頻率。</p>
+<img src="Speech3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Speech3.png">
+<p class="t">四、Spectrum</p>
+<p>也就是說，如果對象是男低音、頻率極低的聲音，那麼音框必須大一點才行。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Audio（Under Construction!）</p>
+</div><div class="c">
+<p class="t">Auditory / Articulation</p>
+<p class="t">Audio Signal</p>
+<p>「取樣定理」提到：以取樣頻率10Hz將一個波記錄為訊號（每秒取10點訊號），以此訊號只能重建出5Hz以下的波。</p>
+<p>人類的聽覺範圍約是20Hz~20000Hz，所以上一節提到的44100Hz就是這樣來的，兩倍多一點。</p>
+<p class="t">WAV Format</p>
+<pre>
++flash偷錄音
+http://fms.denniehoopingarner.com/hiddenAudioControl/howto.html
+</pre>
+<p class="t">Pitch / Formant / Tone</p>
+<pre>
+algorithm list
+http://access.feld.cvut.cz/view.php?cisloclanku=2009060001
+
+matlab
+http://www.ee.ic.ac.uk/hp/staff/dmb/voicebox/voicebox.html
+
+SFS
+http://www.phon.ucl.ac.uk/resource/sfs/download.htm
+
+get peak
+http://www.surina.net/soundtouch/
+</pre>
+<p class="t">Voice Activity Detection（Endpoint Detection）</p>
+<p class="t">Noise Detection / Noise Reduction</p>
+<p class="t">Mel-frequency Cepstrum Coefficients</p>
+<textarea>
+void ceptrum()
+{
+	float h[ORDER + 1];
+	h[0] = c[0];
+	h[1] = c[1];
+	for (int n=2; n<=ORDER; ++n)
+	{
+		float sum = 0;
+		for (int k=1; k<n; ++k)
+			sum += float(k) / float(n) * h[k] * c[n-k];
+		h[n] = c[n] + sum;
+	}
+	for (int i=1; i<=ORDER; ++i)
+		c[i-1] = h[i] * (1 + ORDER / 2 * sin(pi * j));
+}
+</textarea>
+<p class="t">Phoneme</p>
+<pre>
+Voice Onset Time
+氣流通過與聲帶震動的時機，會產生不同感受的聲音。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Audio Processing</p>
+</div><div class="c">
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Audio_signal_processing  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Audio_signal_processing'" tppabs="http://en.wikipedia.org/wiki/Audio_signal_processing">http://en.wikipedia.org/wiki/Audio_signal_processing</a></p>
+<p class="t">變聲器</p>
+<iframe src="Qnj2oU8MYCI" tppabs="http://www.youtube.com/embed/Qnj2oU8MYCI"></iframe>
+<p>原理其實非常簡單，只要把聲音訊號進行傅立葉轉換，然後在頻域上稍作處理，便有這種效果。</p>
+<p>在頻域上作位移、也就是改變頻率高低之後，聽起來就像是變性一樣。一般來說男生低、女生高，所以調高頻率後聽起來像女聲，調低頻率後聽起來像男聲。</p>
+<p>除了改變頻率高低，也可以位移後再疊加，聽起來就有和聲效果。流行歌曲最常使用這種招數，歌唱的難聽的也會變得好聽，單調的曲子的也會變得豐富。</p>
+<p>針對音質做處理，專業的術語叫做「vocoder」，此單字取自於 voice coder ，也就是聲音編碼器的意思。電子琴基本上就是個 vocoder，喜歡玩音樂的人應該是不陌生的。</p>
+<p>傅立葉轉換除了可以用電腦計算，也可以直接用電子電路兜出來。像是下面這個影片，似乎就是買個了現成的電路板，自己組裝一下就變成了變聲器。</p>
+<iframe src="fE1zsZvzRms" tppabs="http://www.youtube.com/embed/fE1zsZvzRms"></iframe>
+
+<p class="t">伴唱帶音源</p>
+<div class="pre">
+<iframe src="_ilErbGsXPo" tppabs="http://www.youtube.com/embed/_ilErbGsXPo"></iframe>
+<iframe src="IcY_peOex9o" tppabs="http://www.youtube.com/embed/IcY_peOex9o"></iframe>
+
+大致上可以分為兩個方向來說。
+灌錄CD唱片時，
+通常伴奏和人聲會分做不同聲道來儲存，
+所以只要知道如何把人聲的訊號源抽取出來，
+降低一個比例再放回去，
+就可以做成伴唱帶。
+
+另一個方向是，
+手上拿到的是聲音檔而不是CD音源，
+人聲和伴奏混在一起的情況。
+把聲音訊號進行傅立葉轉換，
+觀察一下伴奏和人聲的頻率變化，
+然後把人聲所在頻率抽取出來。
+最簡單的想法是使用去除雜訊演算法，
+專業術語「speech enhancement」，
+把伴奏當做雜訊來抽取。
+或者打「off vocal algorithm」之類的
+可以找到一些資料，
+不過我也不是很懂，各位可以自己研究看看。
+</div>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Speech Processing</p>
+</div><div class="c">
+<p class="t">Speech Processing</p>
+<pre>
+Speech Recognition / Speech Verification
+Speech Evaluation
+Speech Emotion Recognition
+Speech Synthesis
+Speech Compression / Speech Encoding
+</pre>
+<pre>
+語音辨識與合成
+http://www.speechapi.com/main/
+</pre>
+<pre>
+Audiology（聽力學）
+醫學系、復健系的學問，另外心理系會用到。
+探討人類聽力器官構造、人類聽覺、設計實驗測量聽力、各種聽力疾病。
+
+Acoustics（音響學）（聲學）
+機械系、物理系的學問，另外建築系、傳播系、音樂系會用到。
+各科系的討論方向不同。探討波的數學表示法、聲波的物理性質、聲波位在各種材質上的數學表示法、錄製與播放聲音的設備、音樂。
+
+Linguistics（語言學）
+中文系、外文系的學問。
+探討文法結構、字詞連結方式與語意的關係、咬字發音。
+目前的語音處理，完全沒有用到語言學！
+目前採用的數學方法是n-gram。
+http://www.matrix67.com/blog/archives/4870
+</pre>
+
+<p class="t">語音揀貨</p>
+<div class="pre">
+<iframe src="ZfMlAHyI27k" tppabs="http://www.youtube.com/embed/ZfMlAHyI27k"></iframe>
+
+倉庫管理是個很重要的工作，
+以往的方式，是採用RFID技術，
+也就是在每個貨物上面貼條碼標籤，
+想要檢驗貨物，就以人力拿著刷條碼機，
+翻轉一下貨物，找到貨物上的條碼，
+然後掃描一下條碼，
+就像便利商店結帳那樣。
+接著貨物的相關資訊，就會透過網路，
+傳送到中央機房的資料庫裡面。
+
+<iframe src="J5MnyD1XAy8" tppabs="http://www.youtube.com/embed/J5MnyD1XAy8"></iframe>
+
+貨物形狀千奇百怪，
+一手拿著刷條碼機，一手要從貨物上找到條碼，
+似乎有點麻煩。
+科技始終來自於惰性，
+就有人想到出一張嘴的方法：把語音辨識技術用在揀貨上面！
+只要戴個藍芽耳麥，一邊散步一邊念出貨品名稱，
+就能取代刷條碼機了，
+是不是很方便呢？
+
+最厲害的，
+是將貨品名稱轉為人工語音，
+直接對揀貨員下指令，
+如此揀貨員就不用拿著一張報表、拿著一台PDA，
+能夠空出一雙手、到處去搬貨物了。
+
+說不定不久之後，
+就能看到超商店員自顧自的碎碎念呢。
+</div>
+
+<p class="t">語音查號</p>
+<div class="pre">
+<iframe src="uNfluFG-Dew" tppabs="http://www.youtube.com/embed/uNfluFG-Dew"></iframe>
+
+這整個過程是「語音辨識」技術。
+將說話者的聲音即時錄音，
+用 Fourier Transform 解析說話頻率，
+然後用 Hidden Markov Model 辨識出說話者發出的是哪些注音符號，
+然後建立語句資料庫，收集大量文件，
+然後用 n-gram 判斷說話者說出的是哪些字。
+然後再去搜尋電話資料庫看看哪些電話符合說話者的描述內容，
+整個過程相當複雜，有點工程的味道。
+
+由這報導可知，
+顯然當今的施工工法還不是很好。
+各位資訊工程師加油吧！
+
+<iframe height="360" src="kxToOTjmviw" tppabs="http://www.youtube.com/embed/kxToOTjmviw" type="application/x-shockwave-flash" width="480"></iframe>
+
+還有一個最近開始流行的，
+叫作「語音搜尋」。
+只要說話，就可以搜尋了，很方便的。
+希望有朝一日瀏覽器也可以直接語音搜尋，
+這樣就可以少敲一點鍵盤了。
+那些學了一堆輸入法的人應該感到很嘔吧。
+</div>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

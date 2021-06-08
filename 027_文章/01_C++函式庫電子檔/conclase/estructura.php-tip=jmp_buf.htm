@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>C++ con Clase. Estructura jmp_buf</title>
+<meta name="description" content="Cursos de C++, POO y programaci&oacute;n Windows, API32, CSS, con lista de correo asociada.">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="keywords" content="C, C++, C/C++, curso, programaci&oacute;n, POO, lista, correo, windows, tutorial, programas, API32, CSS">
+<link rel="stylesheet" href="funcion.css" tppabs="http://www.conclase.net/c/librerias/funcion.css" type="text/css">
+</head>
+
+<body>
+<a name="inicio"></a>
+<div class="bloque">
+<div class="cab-izq">
+   <img src="librerias.gif" tppabs="http://www.conclase.net/c/librerias/imagen/librerias.gif" alt="Librerías ANSI C" width="351" height="69">
+</div>
+
+<div class="cab-der">
+   <img src="Tipos.gif" tppabs="http://www.conclase.net/c/librerias/imagen/Tipos.gif" border="0" alt="Tipos" width="120" height="69">
+</div>
+<div class="cab-centr">
+   <a title="Consultas, lista de correo 'C++ Con Clase'" href="javascript:if(confirm('http://www.conclase.net/c/listacorreo.php  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.conclase.net/c/listacorreo.php'" tppabs="http://www.conclase.net/c/listacorreo.php"><img src="preguntas.gif" tppabs="http://www.conclase.net/c/librerias/imagen/preguntas.gif" border="0" alt="Consultas, lista de correo 'C++ Con Clase'" width="49" height="49"></a>
+   <a title="'C++ Con Clase' Página de entrada" href="javascript:if(confirm('http://www.conclase.net/c/index.php  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.conclase.net/c/index.php'" tppabs="http://www.conclase.net/c/index.php"><img src="ccc.gif" tppabs="http://www.conclase.net/c/librerias/imagen/ccc.gif" border="0" alt="'C++ Con Clase' página de entrada" width="49" height="49"></a>
+   <a title="Contactar con Webmaster" href="mailto:webmaster@conclase.net"><img src="correo.gif" tppabs="http://www.conclase.net/c/librerias/imagen/correo.gif" border="0" alt="Contactar con Webmaster" width="49" height="49"></a>
+</div>
+</div>
+
+<div>
+<div class="izquierda">
+<h3><a class="letras" href="libreria.php-lib=setjmp.htm" tppabs="http://www.conclase.net/c/librerias/libreria.php?lib=setjmp">setjmp</a></h3>
+<h4>Funciones</h4>
+<a class="menu" href="funcion.php-fun=longjmp.htm" tppabs="http://www.conclase.net/c/librerias/funcion.php?fun=longjmp">longjmp</a>
+<a class="menu" href="funcion.php-fun=setjmp.htm" tppabs="http://www.conclase.net/c/librerias/funcion.php?fun=setjmp">setjmp</a>
+<h4>Estructuras</h4>
+<a class="menu" href="estructura.php-tip=jmp_buf.htm" tppabs="http://www.conclase.net/c/librerias/estructura.php?tip=jmp_buf">jmp_buf</a>
+  
+</div>
+
+<div class="centro">
+<div class="barra"> 
+  <a href="index.php.htm" tppabs="http://www.conclase.net/c/librerias/index.php">Librerías</a>
+  <a href="funciones.php.htm" tppabs="http://www.conclase.net/c/librerias/funciones.php">Funciones</a> 
+  <a href="estructuras.php.htm" tppabs="http://www.conclase.net/c/librerias/estructuras.php">Estructuras y tipos</a> 
+  <a href="macros.php.htm" tppabs="http://www.conclase.net/c/librerias/macros.php">Macros y Constantes</a> 
+</div>
+<h1>Tipo jmp_buf ANSI C</h1>
+<pre class="sintaxis">typedef &lt;tipo> jmp_buf;</pre>
+<p>Un tipo de array/arreglo apropiado para guardar la información necesaria
+para restaurar un entorno de llamada.</p>
+<h2>Ejemplo:</h2>
+<table COLS=2 WIDTH="70%" >
+<tr ALIGN=LEFT VALIGN=TOP>
+    <td>
+      <pre class="sintaxis">typedef struct __jmp_buf {
+   unsigned long __eax, __ebx, __ecx, __edx, __esi;
+   unsigned long __edi, __ebp, __esp, __eip, __eflags;
+   unsigned short __cs, __ds, __es, __fs, __gs, __ss;
+   unsigned long __sigmask; /* for POSIX signals only */
+   unsigned long __signum; /* for expansion */
+   unsigned long __exception_ptr; /* pointer to previous exception */
+   unsigned char __fpu_state[108]; /* for future use */
+} jmp_buf[1];</pre>
+    </td>
+
+<td><b>DJGPP</b></td>
+</tr>
+
+<tr ALIGN=LEFT VALIGN=TOP>
+    <td>
+      <pre class="sintaxis">typedef struct __jmp_buf {
+   unsigned    j_sp;
+   unsigned    j_ss;
+   unsigned    j_flag;
+   unsigned    j_cs;
+   unsigned    j_ip;
+   unsigned    j_bp;
+   unsigned    j_di;
+   unsigned    j_es;
+   unsigned    j_si;
+   unsigned    j_ds;
+   #if !defined(__TINY__)
+   unsigned    j_excep;
+   unsigned    j_context;
+   #endif /* !__TINY__ */
+} jmp_buf[1];</pre>
+    </td>
+
+<td><b>Borland</b></td>
+</tr>
+
+<tr ALIGN=LEFT VALIGN=TOP>
+    <td>
+      <pre class="sintaxis">#define _JBLEN 16 
+#define _JBTYPE int
+typedef _JBTYPE jmp_buf[_JBLEN];</pre>
+    </td>
+
+<td><b>Dev-C++</b></td>
+</tr>
+</table>
+
+<a href="#inicio"><img src="Arriba2.gif" tppabs="http://www.conclase.net/c/librerias/imagen/Arriba2.gif" border="0"></a> 
+</div>
+</div>
+
+<div class="abajo">
+<p class="copyright">&copy; Mayo de 2001 Steven R Davidson, <a href="mailto:steven@conclase.net">steven@conclase.net</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Dynamic Tree</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Tree資料結構</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Heavy-Light Decomposition</p>
+<p>想查詢一棵樹上任意一條路徑的權重，直覺就得到一個O(V)方法，最差情況出現在這棵樹是一條長鏈。</p>
+<p>長鏈有很棒的資料結構。只要找出樹上所有長鏈，每條長鏈套用偽線段樹、BIT、Sparse Table、BST、Heap，就能降低時間複雜度。</p>
+<p>找長鏈怎麼找呢？先用一次Graph Traversal算出每棵子樹有多少節點。然後，樹上每個節點各自連向最大的子樹。最後，自然形成了鏈，樹上每個節點都隸屬於某條鏈。</p>
+<p>這種分割一棵樹成為數條鏈的手法，稱做「重輕分解」。中文網路上意譯為「樹鏈剖分」。</p>
+<img src="Heavy-LightDecomposition1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Heavy-LightDecomposition1.png">
+<p class="t">時間複雜度</p>
+<p>樹鏈剖分為O(V)，建立長鏈們的資料結構為O(VlogV)，查詢LCA為O(logV)，查詢一條路徑為O((logV)^2)。</p>
+<p>一棵樹最多V條鏈，一條鏈最多V個點──但是一條路徑最多遇到O(logV)條鏈，一條鏈進行區間查詢只需O(logV)時間。</p>
+<p>由根往葉走，一旦遭遇新鏈，新鏈子樹小於等於原鏈子樹，剩下的節點數量不到一半。因此最多遇到O(logV)條鏈。</p>
+<img src="Heavy-LightDecomposition2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Heavy-LightDecomposition2.png">
+<textarea>
+const int V = 100000;
+vector<int> adj[V];		// adjacency list，是一棵樹
+int parent[V], heavy[V];// 各點的父親、最重小孩
+int depth[V], size[V];	// 各點的深度、子樹的點數
+int chain[V], head[V];	// 各點所屬的鏈的編號、開頭祖先
+
+void DFS(int i)
+{
+	size[i] = 1;
+	for (int k=0; k<adj[i].size(); ++k)
+	{
+		int j = adj[i][k];
+		if (j == parent[i]) continue;
+
+		parent[j] = i;
+		depth[j] = depth[i] + 1;
+
+		DFS(j);
+
+		size[i] += size[j];
+		if (heavy[i] == -1 || size[j] > size[heavy[i]])
+			heavy[i] = j;
+	}
+}
+
+// 以DFS實作
+void heavylight(int N)
+{
+	memset(heavy, -1, sizeof(heavy));
+
+	parent[0] = -1;
+	depth[0] = 0;
+	DFS(0);
+
+	int c = 0;	// 鏈的編號
+	for (int i=0; i<N; ++i)
+		if (parent[i] == -1 || heavy[parent[i]] != i)
+		{
+			// i點是鏈的開頭祖先
+			for (int k = i; k != -1; k = heavy[k])
+				chain[k] = c, head[k] = i;
+			c++;
+		}
+}
+
+// 或者以BFS實作
+int q[V], *qf, *qb;	// BFS queue
+
+void heavylight(int N)
+{
+	// 計算parent和depth，等同於DFS的divide階段。
+	qf = qb = q;
+	parent[0] = -1;
+	depth[0] = 0;
+	*qb++ = 0;
+	while (qf < qb)
+		for (int i=*qf++, k=0; k<adj[i].size(); ++k)
+		{
+			int j = adj[i][k];
+			if (j == parent[i]) continue;
+			parent[j] = i;
+			depth[j] = depth[i] + 1;
+			*qb++ = j;
+		}
+
+	// 計算size和heavy，等同於DFS的merge階段。
+	memset(size, 0, sizeof(size));
+	memset(heavy, -1, sizeof(heavy));
+	for (int k=N-1; k>0; --k)	// 不處理樹根
+	{
+		int j = q[k], i = parent[q[k]];
+		size[j]++;
+		size[i] += size[j];
+		if (heavy[i] == -1 || size[j] > size[heavy[i]])
+			heavy[i] = j;
+	}
+
+	// 同前
+	int c = 0;
+	for (int i=0; i<N; ++i)
+		if (parent[i] == -1 || heavy[parent[i]] != i)
+		{
+			for (int k = i; k != -1; k = heavy[k])
+				chain[k] = c, head[k] = i;
+			c++;
+		}
+}
+
+int lca(int i, int j)
+{
+	// 深的上升
+	while (chain[i] != chain[j])
+		if (depth[head[i]] > depth[head[j]])
+			i = parent[head[i]];
+		else
+			j = parent[head[j]];
+
+	return depth[i] < depth[j] ? i : j;
+}
+
+int lca(int i, int j)
+{
+	// i淺j深
+	while (chain[i] != chain[j])
+	{
+		if (depth[head[i]] > depth[head[j]])
+			swap(i, j);
+		j = parent[head[j]];
+	}
+
+	if (depth[i] > depth[j])
+		swap(i, j);
+	return i;
+}
+</textarea>
+<p class="e">Timus 1553 SPOJ 375</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Forest資料結構（Under Construction!）</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Link-Cut Tree</p>
+<pre>
+http://compgeom.cs.uiuc.edu/~jeffe/teaching/datastructures/2006/notes/07-linkcut.pdf
+http://courses.csail.mit.edu/6.851/spring07/scribe/lec04.pdf
+http://wenku.baidu.com/view/75906f160b4e767f5acfcedb.html
+</pre>
+<pre>
+一、靜態樹：甲、一棵無向樹。
+        　　乙、更新一個點(邊)的數值。
+        　　丙、查詢一條路徑的最大值、最小值、總和、相異數字數量、......。
+二、動態樹：丁、一棵樹，砍斷一條邊，變成兩棵樹。
+        　　戊、兩棵樹，增加一條邊，接成一棵樹。
+
+動態樹部分，由於長鏈可能會被切斷的，所以「樹鏈剖分」就沒搞頭了。
+就只能老老實實的用Link-Cut Tree了。
+</pre>
+<p class="e">UVa 11994</p>
+<p class="t">Euler Tour Tree</p>
+<p>【待補文字】</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

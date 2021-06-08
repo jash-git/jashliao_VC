@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+  
+  
+  
+  
+  <title>最大訪客數</title>
+</head>
+
+
+<body>
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip:&nbsp;最大訪客數</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+      <h2>說明</h2>
+      <small>
+現將舉行一個餐會，讓訪客事先填寫到達時間與離開時間，為了掌握座位的數目，必須先估計不同時間的最大訪客數。</small><br>
+
+      <h2>解法</h2>
+      <small>
+這個題目看似有些複雜，其實相當簡單，單就計算訪客數這個目的，同時考慮同一訪客的來訪時間與離開時間，反而會使程式變得複雜；只要將來訪時間與離開時間分開處理就可以了，假設訪客 i 的來訪時間為x[i]，而離開時間為y[i]。<br>
+      <br>
+
+在資料輸入完畢之後，將x[i]與y[i]分別進行排序（由小到大），道理很簡單，只要先計算某時之前總共來訪了多少訪客，然後再減去某時之前的離開訪客，就可以輕易的解出這個問題。 </small>
+      <br>
+
+
+
+
+      <br>
+
+      <h2> 實作</h2>
+
+
+      <ul>
+        <li> C
+  </li>
+      </ul>
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br>#define MAX 100 <br>#define SWAP(x,y) {int t; t = x; x = y; y = t;} <br><br>int partition(int[], int, int); <br>void quicksort(int[], int, int); // 快速排序法<br>int maxguest(int[], int[], int, int); <br><br>int main(void) { <br>    int x[MAX] = {0}; <br>    int y[MAX] = {0}; <br>    int time = 0; <br>    int count = 0; <br><br>    printf("\n輸入來訪與離開125;時間(0~24)："); <br>    printf("\n範例：10 15"); <br>    printf("\n輸入-1 -1結束"); <br>    while(count &lt; MAX) { <br>        printf("\n&gt;&gt;"); <br>        scanf("%d %d", &amp;x[count], &amp;y[count]); <br>        if(x[count] &lt; 0) <br>            break; <br>        count++; <br>    } <br><br>    if(count &gt;= MAX) { <br>        printf("\n超出最大訪客數(%d)", MAX); <br>        count--; <br>    } <br><br>    // 預先排序 <br>    quicksort(x, 0, count); <br>    quicksort(y, 0, count); <br><br>    while(time &lt; 25) { <br>        printf("\n%d 時的最大訪客數：%d", <br>                   time, maxguest(x, y, count, time)); <br>        time++; <br>    } <br><br>    printf("\n"); <br><br>    return 0; <br>} <br><br>int maxguest(int x[], int y[], int count, int time) { <br>    int i, num = 0; <br><br>    for(i = 0; i &lt;= count; i++) { <br>        if(time &gt; x[i]) <br>            num++; <br>        if(time &gt; y[i]) <br>            num--; <br>    } <br><br>    return num; <br>} <br><br>int partition(int number[], int left, int right) { <br>    int i, j, s; <br><br>    s = number[right]; <br>    i = left - 1; <br><br>    for(j = left; j &lt; right; j++) { <br>        if(number[j] &lt;= s) { <br>            i++; <br>            SWAP(number[i], number[j]); <br>        } <br>    } <br><br>    SWAP(number[i+1], number[right]); <br>    return i+1; <br>} <br><br>void quicksort(int number[], int left, int right) { <br>    int q; <br><br>    if(left &lt; right) { <br>        q = partition(number, left, right); <br>        quicksort(number, left, q-1); <br>        quicksort(number, q+1, right); <br>    } <br>} <br></pre>
+
+
+      <br>
+
+
+      <ul>
+        <li> Java
+  </li>
+      </ul>
+
+
+      <pre>import java.io.*;<br>import java.util.*;<br><br>public class MaxVisit {<br>    public static int maxGuest(int[] x, int[] y, int time) {<br>        int num = 0; <br><br>        for(int i = 0; i &lt; x.length; i++) { <br>            if(time &gt; x[i]) <br>                num++; <br>            if(time &gt; y[i]) <br>                num--; <br>        } <br><br>        return num; <br>    }<br>    <br>    public static void main(String[] args) throws IOException {<br>        BufferedReader buf = new BufferedReader(<br>                new InputStreamReader(System.in));<br>        System.out.println("輸入來訪時間與離開時間(0~24)：");<br>        System.out.println("範例：10 15"); <br>        System.out.println("輸入-1結束");<br>        <br>        java.util.ArrayList list = new ArrayList();<br>        <br>        while(true) { <br>            System.out.print("&gt;&gt;"); <br>            String input = buf.readLine();<br>            <br>            if(input.equals("-1")) <br>                break; <br>            <br>            list.add(input);<br>        }<br>        <br>        int[] x = new int[list.size()];<br>        int[] y = new int[list.size()];<br>        <br>        for(int i = 0; i &lt; x.length; i++) {<br>            String input = (String) list.get(i);<br>            String[] strs = input.split(" ");<br>            <br>            x[i] = Integer.parseInt(strs[0]);<br>            y[i] = Integer.parseInt(strs[1]);<br>        }<br>        <br>        Arrays.sort(x);<br>        Arrays.sort(y);<br>        <br>        for(int time = 0; time &lt; 25; time++) { <br>            System.out.println(time + " 時的最大訪客數：" <br>                    + MaxVisit.maxGuest(x, y, time)); <br>        } <br>    }<br>}</pre>
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+<br>
+
+
+
+
+</body>
+</html>

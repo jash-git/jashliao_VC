@@ -1,0 +1,123 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>7.4 定制串行化</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="4">7.4 </font><font SIZE="4" color="#3973DE">定制串行化</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">前面编辑器的例子使用</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">类的字符串来保存文本行，由于它是</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">类，因此可以串行化自己，将自己写入磁盘或从磁盘文件中读取二进制数据来建立对象。那么，如果不是标准的</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">类，比如用户自己定义的类，如何让它支持串行化呢？下面，我们结合前面第五章提到的就业调查表的例子来演示如何让用户定义的类支持串行化功能。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">要让用户定义的类支持串行化，一般分为五步：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>1.</font><font SIZE="3">从</font><font FACE="Times New Roman" SIZE="3">CObject</font><font SIZE="3">或其派生类派生出用户的类</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>2.</font><font SIZE="3">重载</font><font FACE="Times New Roman" SIZE="3">Serialize()</font><font SIZE="3">成员函数，加入必要的代码，用以保存对象的数据成员到</font><font FACE="Times New Roman" SIZE="3">CArchive</font><font SIZE="3">对象以及从</font><font FACE="Times New Roman" SIZE="3">CArchive</font><font SIZE="3">对象载入对象的数据成员状态。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>3.</font><font SIZE="3">在类声明文件中，加入</font><font FACE="Times New Roman" SIZE="3">DECLARE_SERIAL</font><font SIZE="3">宏。编译时，编译器将扩充该宏，这是串行化对象所必需的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>4.</font><font SIZE="3">定义一个不带参数的构造函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>5.</font><font SIZE="3">在实现文件中加入</font><font FACE="Times New Roman" SIZE="3">IMPLEMENT_SERIAL</font><font SIZE="3">宏。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>class CRegister:public CObject</p>
+    <p>{</p>
+    <blockquote>
+      </font><font FACE="Courier New" SIZE="2"><p>public:</p>
+    </blockquote>
+    <p>DECLARE_SERIAL( CRegister)</font><font FACE="Courier New" SIZE="3"></p>
+    <p>//</font><font SIZE="3">必需提供一个不带任何参数的空的构造函数</p>
+    <blockquote>
+      </font><font FACE="Courier New" SIZE="2"><p>CRegister(){};</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>public:</p>
+    <p>CString strIncome;</p>
+    <p>CString strKind;</p>
+    <p>BOOL bMarried;</p>
+    <p>CString strName;</p>
+    <p>int nSex;</p>
+    <p>CString strUnit;</p>
+    <p>int nWork;</p>
+    <p>UINT nAge;</p>
+    <p>void Serialize(CArchive&amp;);</p>
+    <p>};</p>
+    <p>MFC</font><font SIZE="3">在从磁盘文件载入对象状态并重建对象时，需要有一个缺省的不带任何参数的构造函数。串行化对象将用该构造函数生成一个对象，然后调用</font><font FACE="Times New Roman" SIZE="3">Serialize()</font><font SIZE="3">函数，用重建对象所需的值来填充对象的所有数据成员变量。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">构造函数可以声明为</font><font FACE="Times New Roman" SIZE="3">public</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">protected</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">private</font><font SIZE="3">。如果使它成为</font><font FACE="Times New Roman" SIZE="3">protect</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">private</font><font SIZE="3">，则可以确保它只被串行化过程所使用。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在类定义文件中给出</font><font FACE="Times New Roman" SIZE="3">Serialize()</font><font SIZE="3">的定义。它包括对象的保存和载入两部分。前面已经提到，</font><font FACE="Times New Roman" SIZE="3">CArchive</font><font SIZE="3">类提供一个</font><font FACE="Times New Roman" SIZE="3">IsStoring()</font><font SIZE="3">成员函数指示是保存数据到磁盘文件还是从磁盘文件载入对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CRegister::Serialize(CArchive&amp; ar)</p>
+    <p>{</font><font FACE="Courier New" SIZE="3"></p>
+    <p>//</font><font SIZE="3">首先调用基类的</font><font FACE="Courier New" SIZE="3">Serialize()</font><font SIZE="3">方法。</font><font FACE="Courier New" SIZE="2"></p>
+    <p>CObject::Serialize( ar);</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>if(ar.IsStoring())</p>
+    <p>{</p>
+    <p>ar&lt;&lt;strIncome;</p>
+    <p>ar&lt;&lt;strKind;</p>
+    <p>ar&lt;&lt;(int)bMarried;</p>
+    <p>ar&lt;&lt;strName;</p>
+    <p>ar&lt;&lt;nSez;</p>
+    <p>ar&lt;&lt;strUnit;</p>
+    <p>ar&lt;&lt;nWork;</p>
+    <p>ar&lt;&lt;(WORD)nAge;</p>
+    <p>}</p>
+    <p>else</p>
+    <p>{</p>
+    <p>ar&gt;&gt;strIncome;</p>
+    <p>ar&gt;&gt;strKind;</p>
+    <p>ar&gt;&gt;(int)bMarried;</p>
+    <p>ar&gt;&gt;strName;</p>
+    <p>ar&gt;&gt;nSex;</p>
+    <p>ar&gt;&gt;strUnit;</p>
+    <p>ar&gt;&gt;nWork;</p>
+    <p>ar&gt;&gt;(WORD)nAge;</p>
+    <p>}</p>
+    <p>}</p>
+    <p></font><font SIZE="3">我们看到，对象的串行化实际上是通过调用对象中的数据成员的串行化来完成的。<b></p>
+    </b></font><font FACE="Times New Roman" SIZE="3"><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#80D6FF">
+      <tr>
+        <td width="100%"></font><font SIZE="3">注意</font><font FACE="Times New Roman" SIZE="3">:CArchive</font><font SIZE="3">类的</font><font FACE="Times New Roman" SIZE="3">&gt;&gt;</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">&lt;&lt;</font><font SIZE="3">操作符并不支持所有的标准数据类型。它支持的数据类型有：</font><font FACE="Times New Roman" SIZE="3">CObject</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">BYTE</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WORD</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">int</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">LONG</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">DWORD</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">float</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">double</font><font SIZE="3">。其他的类型的数据要进行串行化输入输出时，需要将该类型的数据转化为上述几种类型之一方可。</font></td>
+      </tr>
+    </table>
+    </center></div><p><font SIZE="3">另外，在类的实现（类定义）文件开始处，还要加入</font><font FACE="Times New Roman" SIZE="3">IMPLEMENT_SERIAL</font><font SIZE="3">宏。</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p>IMPLEMENT_SERIAL( CRegister, CObject, 1 )</p>
+    </blockquote>
+    <p>IMPLEMENT_SERIAL</font><font SIZE="3">宏用于定义一个从</font><font FACE="Times New Roman" SIZE="3">CObject</font><font SIZE="3">派生的可串行化类的各种函数。宏的第一和第二个参数分别代表可串行化的类名和该类的直接基类。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">第三个参数是对象的版本号，它是一个大于或等于零的整数。</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">串行化代码在将对象读入内存时检查版本号。如果磁盘文件上的对象的版本号和内存中的对象的版本号不一致，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">将抛出一个</font><font FACE="Times New Roman" SIZE="3">CArchiveException</font><font SIZE="3">异常，阻止程序读入一个不匹配版本的对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">现在，我们就可以象使用标准</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">类一样使用</font><font FACE="Times New Roman" SIZE="3">CRegister</font><font SIZE="3">的串行化功能了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CArchive ar;</p>
+    <p>CRegister reg1,reg2;</p>
+    <p>ar&lt;&lt;reg1&lt;&lt;reg2;</p>
+    <p></font><font SIZE="3">读者请试着在第五章职工调查表程序基础上，增加保存调查信息到文件以及从文件中读入调查表信息功能。对于多个调查表，可考虑采用</font><font FACE="Times New Roman" SIZE="3">CObjList</font><font SIZE="3">链表保存多个对象的指针。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">串行化简化了对象的保存和载入，为对象提供了持续性。但是，串行化本身还是具有一定的局限性的。串行化一次从文件中载入所有对象，这不适合于大文件编辑器和数据库。对于数据库和大文件编辑器，它们每次只是从文件中读入一部分。此时，就要避开文档的串行化机制来直接读取和保存文件了。另外，使用外部文件格式（预先定义的文件格式而不是本应用程序定义的文件格式）的程序一般也不使用文档的串行化。下面我们就给出这样一个例子，说明在不使用串行化情况下如何读取和保存文件。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap7_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/chap7_3.htm">上一页</a></td>
+        <td><p align="right"><a href="chap7_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/chap7_5.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

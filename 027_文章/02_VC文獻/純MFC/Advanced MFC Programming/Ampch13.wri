@@ -1,0 +1,801 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab720{\fonttbl{\f0\fswiss MS Sans Serif;}{\f1\froman\fcharset2 Symbol;}{\f2\fmodern Courier New;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033\pard\plain\f2\fs20 Chapter 13 Adding Special Features to Application
+\par 
+\par Normal applications created by Application Wizard cannot satisfy us all the time. For certain types of applications, we need to add special features to our programs. Since Application Wizard or Class Wizard does not directly support these features, we need to have in-depth knowledge on Windows( programming in order to customize standard applications. In this chapter, we will discuss how to create applications with special features such as multiple documents, multiple views, irregular-shaped window, customized non-client area. Also, we will discuss how to implement hook in the applications.
+\par 
+\par 13.1\tab One Instance Application
+\par 
+\par By default, a Windows( application is allowed to have multiple instances working simultaneously. Most of the time this is the desired feature of an application. For example, a word processing program may have several instances working together, each editing a different file. But sometimes we may want an application to have only one instance working at any time, this is especially true for some communication programs. For example, for a file server application, if we allow two servers to work together at the same time, it may cause the inconsistency on the data contained in the files.
+\par 
+\par Window Creation
+\par 
+\par To implement one instance application, we must understand how the applications are created under Windows(. This is easily understood if we have the experience of writing Win32 Windows( applications. However, if we started everything from MFC, it is not very obvious how a window is created because MFC hides everything from the programmer. Although it is relatively easy to create an application by deriving classes from MFC without caring about the actual procedure of creating windows, if we rely too much on MFC, we also lose the power of customizing it.
+\par 
+\par Every visual object that is created under Windows( is a window. This includes the frame window, tool bar, menu, view, button and other controls. Actually, MFC is not the only tool that can be used to create windows. A window can be created by using any computer language such as C, Basic, Pascal so long as it abides by the rules of creating windows.
+\par 
+\par Under Windows(, a window can be described by structure WNDCLASS:
+\par 
+\par typedef struct _WNDCLASS \{
+\par     UINT    style; 
+\par     WNDPROC lpfnWndProc; 
+\par     int     cbClsExtra; 
+\par     int     cbWndExtra; 
+\par     HANDLE  hInstance; 
+\par     HICON   hIcon; 
+\par     HCURSOR hCursor; 
+\par     HBRUSH  hbrBackground; 
+\par     LPCTSTR lpszMenuName; 
+\par     LPCTSTR lpszClassName; 
+\par \} WNDCLASS;
+\par 
+\par Member style specifies window styles, by setting different bits of this member we can create different type of windows. There are many styles that can be combined together, two most often used styles are CS_HREDRAW and CS_VREDRAW, which will cause the client area to be updated if the user resize the window in either horizontal or vertical direction. Member lpfnWndProc points to a callback function that will be used to process the incoming messages. When a window is created, it should contain several default objects: 1) icon, which will be used to draw the application when it is minimized; 2) cursor, which will be used to customize the mouse cursor when it is located within the client window of the application; 3) default mainframe menu; 4) brush, which will be used to erase the client area (This brush specifies the background pattern of the window). The above objects are described by following members of structure WNDCLASS respectively: hIcon, hCursor, hbrBackground and lpszMenuName.
+\par 
+\par Another very important member is lpszClassName, which describes the type of the window we will create. Every window under Windows( has a class name. Before creating a new type of window, we must register its class name to the system. After that we can use this class name to implement an instance of window. A class name is simply a string, which can be specified by the programmer.
+\par 
+\par If we write windows program in C, we must go through the following procedure in order to create a new window: register the window class name, implement a message handling routine, use the registered window class name to implement a new window instance. In MFC, this procedure is hidden behind the classes, when we use a class derived from CWnd to declare a variable, the class registration is completed sometime before the window is created. Also, we do not need to provide message handling routines because there exist default message handlers in MFC. If we want to trap certain messages, we can add member functions and use message mapping macros to associate the messages with functions.
+\par 
+\par It is relatively easy to implement one-instance application by programming in C: before registering a window class, we can first find out if there exists any instance implemented by the same class name in the system. If so, we simply exit and do not go on to create a new window. If not, we will implement the new window.
+\par 
+\par However, in MFC, we do not see the class registration procedure, so it is difficult to manipulate it. Also, in MFC, all the window class names are predefined, so we actually can not modify them. In order to create one-instance application, we need to discard the default registered window class name, and use our own class name to create new instance. By doing so, we are able to check if there already exists an instance of this window type before creating a new one.
+\par 
+\par Function CWnd::PreCreateWindow(...)
+\par 
+\par The styles of a window (including the class name) can be modified just before it is created. In MFC, function CWnd::PreCreateWindow(...) can be overridden for this purpose.
+\par 
+\par The input parameter of CWnd::PreCreateWindow(...) is a CREATESTRUCT type variable, which is passed to the function by reference:
+\par 
+\par virtual BOOL CWnd::PreCreateWindow(CREATESTRUCT& cs);
+\par 
+\par Structure CREATESTRUCT contains a variety of window styles:
+\par 
+\par typedef struct tagCREATESTRUCT \{
+\par    LPVOID    lpCreateParams;
+\par    HANDLE    hInstance;
+\par    HMENU     hMenu;
+\par    HWND      hwndParent;
+\par    int       cy;
+\par    int       cx;
+\par    int       y;
+\par    int       x;
+\par    LONG      style;
+\par    LPCSTR    lpszName;
+\par    LPCSTR    lpszClass;
+\par    DWORD     dwExStyle;
+\par \} CREATESTRUCT;
+\par 
+\par We can specify a new menu and use it as the mainframe menu. We can set the initial size and position of the window. We can also specify window name, and customize many other styles. Within the structure, the window class name is specified by member lpszClass. By default, this structure is stuffed with standard values, however, we can change any of them to let the application have new styles. For example, if we want to use "My class" as the class name of our application rather than using the default one, we need to implement the overridden function as follows:
+\par 
+\par BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
+\par \{
+\par     cs.lpszClass="My class";
+\par     return CMDIFrameWnd::PreCreateWindow(cs);
+\par \}
+\par 
+\par One-Instance Application in MFC
+\par 
+\par In MFC, one-instance application can be implemented as follows: before the application is implemented, we need to find out if there is any registered application that uses specified window class name: if so, we should exit; otherwise, we can proceed to register our own window class name, and override function  CFrameWnd::PreCreateWindow(...) to change the default class name to the new one. By doing so, an application can have only one instance implemented in the system at any time.
+\par 
+\par In MFC, an application starts from class CWinApp. After an application is executed, the very first function being called is the constructor of the class derived from CWinApp. Of course we can implement class name checking and registration here. However, a better place is in function CWinApp::InitInstance(), where the application is being initialized. For SDI and MDI applications, the mainframe window, document and view are implemented and bound together here, for dialog box based applications, the main dialog box is also implemented within this function.
+\par 
+\par Sample 13.1\\Once
+\par 
+\par Sample 13.1\\Once is a standard MDI application generated by Application Wizard, it demonstrates how to implement one-instance MDI application. The application has no functionality except that if we try to activate more than one copy of this application, instead of creating a new instance, the existing one will always be brought up and become active.
+\par 
+\par Instead of using default class name, we need to register a custom class name to the system. The first thing we need to do before frame window, document and view are implemented is to look up if there exists an application with the same class name in the system:
+\par 
+\par (Code omitted)
+\par 
+\par Function CWnd::FindWindow(...) is called to find the application with the same class name in the system. This function allows us to search windows with specific class name and/or window name. It has the following format:
+\par 
+\par static CWnd *CWnd::FindWindow(LPCTSTR lpszClassName, LPCTSTR lpszWindowName);
+\par 
+\par We can pass NULL to window name parameter (lpszWindowName) to match only the class name. If the pointer returned by this function is not NULL, we can activate that window, bring it to top, and activate all its child windows. This procedure is implemented by calling the following functions: 1)  CWnd:: GetLastActivePopup(), which will find out the most recently activated pop-up window. 2) ::ShowWindow(...), which will restore the original state of the window being minimized (parameter SW_RESTORE can be used for this purpose). 3) CWnd::SetForegroundWindw(), which will bring the child window to foreground if there is a such kind of window. Steps 1) and 3) are necessary here because a mainframe window may own some pop up windows (For example, a dialog box implemented by a command of the mainframe menu). Once the mainframe window is brought to the top, we also need to bring its child pop up window to foreground.
+\par 
+\par After this is done, we need to return a FALSE value, which indicates that the procedure of creating mainframe window, document and view is not successful. This will cause the application to exit.
+\par 
+\par If no window with the same class name is found, we can proceed to register our own window class. This can be done by stuffing a WNDCLASS type object and passing the object address to function AfxRegisterClass(...), whose only parameter is a WNDCLASS type pointer:
+\par 
+\par BOOL AFXAPI AfxRegisterClass(WNDCLASS *lpWndClass);
+\par 
+\par In order to make sure that our application is the same with those implemented by default MFC window classes, we must stuff the class with appropriate values. Here is how this is done in the sample:
+\par 
+\par (Code omitted)
+\par 
+\par The class name string is defined using ONCE_CLASSNAME macro. Of course, when we override function CMainFrame::OnPreCreateWindow(...), we need to replace the default class name with it. The following code fragment shows how this function is overridden in the sample:
+\par 
+\par BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
+\par \{
+\par     cs.lpszClass=ONCE_CLASSNAME;
+\par     return CMDIFrameWnd::PreCreateWindow(cs);
+\par \}
+\par 
+\par Before the application exits, we must unregister the window class if it has been registered successfully. For this purpose, a Boolean type variable m_bRegistered is declared in class COnceApp, which will be set to TRUE after the class is registered successfully. When overriding function CWinApp::ExitInstance() (which should be overridden if we want to do some cleanup job before the application exits), we need to unregister the window class name if the value of m_bRegistered is TRUE. The following is the overridden function implemented in the sample:
+\par 
+\par (Code omitted)
+\par 
+\par That's all we need do for implementing one-instance application.
+\par 
+\par 13.2\tab Creating Applications without Using Document/View Structure
+\par 
+\par Document/View structure provides us with much convenience on data storing and interpreting. But sometimes using this structure is burdensome, especially when we want to implement just a very simple application. For example, if we want to display a fixed content in the client window and do not want to write any data to the disk, there is no need to implement document in the application at all.
+\par 
+\par How Application, Document and View Are Bound Together
+\par 
+\par Although it seems that document and view are inborn for SDI or MDI applications, we do have way to get rid of them. Actually, the document and view are created in function CWinApp::InitInstance(...) and bound to mainframe window there. The following shows standard implementation of a typical SDI application, if we examine the SDI applications created before, we will find the following code in all of them:
+\par 
+\par (Code omitted)
+\par 
+\par Class CSingleDocTemplate binds together the mainframe window, view and document. It creates view and makes it client of the frame window. Obviously, by eliminating these statements, we are able to create our own client window without bothering to use document and view.
+\par 
+\par Creating Window
+\par 
+\par However, if we do not let the framework to create the mainframe window and a client window for us, we have to do it by ourselves. Fortunately creating a window is not so difficult, we can call function CFrameWnd::Create(...) at any time to dynamically create a window with both title bar and client window:
+\par 
+\par virtual BOOL CFrameWnd::Create
+\par (
+\par     LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL
+\par );
+\par 
+\par Here, we are asked to provide some information of the window that is about to be created. This includes class name, window name, window styles, window position and size, etc. The class name must be a registered one. Although we can register our own window class name as we did in the previous section, we can also pass NULL to parameter lpszClassName to let the default registered class name be used. Also, we can pass NULL to parameter dwStyle to use the default window style, and pass rectDefault to parameter rect to let the window have default position and size.
+\par 
+\par Sample 13.2\\Gen
+\par 
+\par Sample 13.2\\Gen demonstrates how to create applications without using document/view structure. Originally it is a standard SDI application generated by Application Wizard. Then it is modified to become an application that does not use document/view implementation.
+\par 
+\par Rather than creating mainframe window then using view as its client window, in the sample, only a mainframe window is created by calling function CFrameWnd::Create(...). This can be done in the constructor of class CMainFrame. In sample 13.2\\Gen, the constructor is modified as follows:
+\par 
+\par (Code omitted)
+\par 
+\par We must provide a window name, which will be displayed in the caption bar of the window. In standard SDI or MDI applications, this string can be obtained from string resource IDR_MAINFRAME. To make the sample similar to a standard application, we can load this string and use it as the window name. Since we will not support any file type, in the sample string resource IDR_MAINFRAME contains only one simple string (This means it does not contain several sub-strings that are separated by character '\\n' as in standard SDI or MDI applications).
+\par 
+\par For a simple application, there is no need to implement status bar and tool bar any more, so function CMainFrame::OnCreate(...) is removed, and variables CMainFrame::m_wndStatusBar, CMainFrame:: m_wndToolBar along with another global variable indicators are also deleted.
+\par 
+\par For any application implemented by MFC, it is originated from class CWinApp. This class has a CWnd type member pointer m_pMainWnd. When the mainframe window is created, its address is stored by this pointer. If we want to create window by ourselves, we must do the same thing in order to let the rest part of our application have MFC features.
+\par 
+\par With the above implementation, function CGenApp::InitInstance(...) can be greatly simplified, what we need to do here is implementing a CMainFrame type object, assigning its address to CGenApp:: m_pMainWnd, then calling functions CWnd::ShowWindow(...) and CWnd::UpdateWindow(...) to display the window. This last step is necessary, if we omit it, the window will not be displayed. The following is the modified function in the sample:
+\par 
+\par (Code omitted)
+\par 
+\par Here variable m_nCmdShow indicates how the window should be displayed (minimized, maximized, etc). It must be passed to function CWnd::ShowWindow(...) in order to initialize the window to a specified state.
+\par 
+\par Excluding Classes from Build
+\par 
+\par Although we do not need to use view and document classes anymore (CGenView and CGenDoc in the sample), it is difficult to remove them from the project once they are generated automatically. However, we can change the project settings so that the two classes will not be complied when the project is being built. This can be achieved through following steps: 1) Executing command Project | Settings.... 2) From the popped up dialog box, expand "Source Files" node in "Settings For:" window. 3) Select "GenView.cpp" and click on "General" tab on the right part of the dialog box. 4) Check "exclude file from build" check box (Figure 13-1). We can do the same thing for file "GenDoc.cpp" to exclude class CGenDoc from build.
+\par 
+\par Now there is no view in the application. If we want to output something to the client window, we have to implement it in class CMainFrame. Of course, there is no member function OnDraw(...) to override any more. In order to output anything to the client window, we need to override function CMainFrame:: OnPaint(...), which is the handler of WM_PAINT message. We have to prepare DC by ourselves, and, if we want, we need to add scroll bars and calculate the offset positions all by our own. By eliminating the document and view, we have a simple implementation of the application and a smaller executable file. But if we need a simple feature that is not supported by MFC, we have to implement everything by ourselves.
+\par 
+\par 13.3\tab Implementing Multiple Views
+\par 
+\par Sometimes we do not want the default document/view implementation, but sometimes we need more than standard features. One thing we might think about when creating MDI applications is: is it possible to implement different types of views to interpret data stored in the document? A typical example of this is that we can use both "bar chart" and "pie chart" to interpret percentages (Figure 13-2).
+\par 
+\par Simple View Implementation
+\par 
+\par Since the document/view creating and binding procedure is not the task of programmer (when Application Wizard is used), it is easy to be neglected. The code for creating document and view then binding them together resides in function CWinApp::InitInstance(). For example, if we create an MDI application named "Chart", by default, the CWinApp derived class will be named CChartApp, also, the document and view classes will be named CChartView and CChartDoc respectively. In member function CChartApp::InitInstance(), the above objects are bound together by class CMultiDocTemplate:
+\par 
+\par (Code omitted)
+\par 
+\par The constructor of class CMultiDocTemplate has four parameters, the first of which is a string resource ID, which comprises several sub-strings for specifying the default child window title, document type, and so on. The rest three parameters must use RUNTIME_CLASS macro, and we can use the appropriate class name as its parameter. In the code listed above, the child window uses class CChildFrame to create the frame window, and uses CChartView to create the client window. The child window is attached to the document implemented by class CChartDoc.
+\par 
+\par Attaching Multiple Views to One Document
+\par 
+\par If we need only one type of view, this is enough. However, if we want to attach multiple views to a single document, we can call function CWinApp::AddDocTemplate(...) again to bind a new type of view to the document.
+\par 
+\par Sample 13.3\\Chart
+\par 
+\par Sample 13.3\\Chart demonstrates how to attach multiple views to one document. It is a standard MDI application generated by Application Wizard. The purpose of this application is to interpret data stored in the document in different ways. The original classes generated by Application Wizard are CChartApp, CChartDoc, CChartView, CMainFrame and CChildFrame. After the application skeleton is generated, a new class CPieView (derived from CView) is add to the application through using Class Wizard.
+\par 
+\par Data stored in the document is very simple, there are three variables declared in class CChartDoc: CChartDoc::m_nA, CChartDoc::m_nB and CChartDoc::m_nC. The variables are initialized in the constructor as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Three variables each represents a percentage, so adding them up will result in 100. There are many different types of charts that can be used to interpret them, two most common ones are "bar chart" and "pie chart". 
+\par 
+\par In the sample application, two different types of views are attached to one document, so the user can use either "Bar chart" or "Pie chart" to view the data. To obtain data from the document, function CChartDoc::GetABC(...) is implemented to let these values be accessible in the attached views.
+\par 
+\par In function CChartView::OnDraw(...), three bars are drawn using different colors, their heights represent the percentage of three member variables. For class CPieView, three pies are drawn in different colors and they form a closed circle, whose angles represent different percentages.
+\par 
+\par Two views are attached to the document in function CChartApp::InitInstance(). Besides the standard implementation, a new document template is created and added to the application. The following portion of function CChartApp::InitInstance() demonstrates how the two views are attached to the same document:
+\par 
+\par (Code omitted)
+\par 
+\par With the above implementation, when a new client is about to be created, the user will be prompted to choose from one of the two types of views. Here strings that are included in the prompt dialog box should be prepared as sub-strings contained in the string resources that are used to identify document type (IDR_CHARTTYPE and IDR_PIETYPE in the sample).
+\par 
+\par The format of the document type string is the same with that of a normal MDI application, which comprises several sub-strings. The most important ones are the first two sub-strings: one will be used as the default title of the client window and the other will be used in the prompt dialog box to let the user select an appropriate view when a new client window is about to be created. In the sample, the contents of string IDR_CHARTYPE and IDR_PIETYPE are as follows:
+\par 
+\par \\nBar\\nBar\\n\\n\\nChart.Document\\nChart Document
+\par \\nPie\\nPie\\n\\n\\nChart.Document\\nChart Document
+\par 
+\par Both the window and the string contained in the prompt dialog box for chart view are set to "Bar", for pie view, they are set to "Pie".
+\par 
+\par Window Origin and View Port Origin
+\par 
+\par When implementing drawing on the target device, sometimes it is more convenient if we use appropriate coordinate system. As a programmer, when we write code to draw geometrical shapes, we are always working on Page-Space (logical space). The actual output would happen on Device-Space. By default, one logical unit is mapped to one device unit, and both origins are located at upper-left corners.
+\par 
+\par When drawing certain types of geometrical shapes, for example, a circle, it would be more convenient if we adjust the origin of the coordinate system so that it is located at the center of the circle (See Figure 13-3).
+\par 
+\par To offset origin in either page-space or device-space, we can use the following functions:
+\par 
+\par (Table omitted)
+\par 
+\par It is the ratio, rather than their absolute values, of window extents and view port extents that specify how a logical unit will be mapped in horizontal as well as vertical directions. It is important that if use MM_ISOTROPIC mode, after calling function CDC::SetMapMode(...), CDC::SetWindowExt(...) needs to be called before CDC::SetViewportExt(...).
+\par 
+\par Pie Chart Drawing
+\par 
+\par In the sample, we need to draw three pies that form a circle. Since we need to calculate the starting and ending points for each pie, it would be convenient if the origin of the coordinate system is located at the center of the circle. Also, to assure that the circle will not change to ellipse on any device, we need to set MM_ISOTROPIC mapping mode.
+\par 
+\par The following is the implementation of function CPieView::OnDraw(...):
+\par 
+\par (Code omitted)
+\par 
+\par In the above code, first MM_ISOTROPIC mode is set. Then the window extents is set to (100, 100). To map one logical unit to an absolute size, function CDC::GetDevice(...) is called using both LOGPIXELSX and LOGPIXELSY parameters. This will cause the function to return the number of pixels per logical inch in both horizontal and vertical directions. Then we use the returned values to set view port extents. This will cause 100 logical units to be mapped to 1 inch in both horizontal and vertical directions. By doing this, no matter where we run the program, the output will be the same dimension.
+\par 
+\par When calling function CDC::SetViewportExt(...), we set the vertical extent to a negative value. This will change the orientation of the y-axis so that the positive values locate at the upper part of the axis (See Figure 13-3).
+\par 
+\par Next, function CDC::SetViewportOrg(...) is called to set the device origin to the center of the window. This will simplify the calculation of starting and ending points when drawing pies.
+\par 
+\par 13.4\tab Multiple Documents Implementation
+\par 
+\par Not only can we implement an application with more than one type of views, but also implement an application that supports more than one type of documents. For example, generally a graphic editor needs to support several types of image files, such as bitmap and GIF files. Although we can support all file formats within one document, for MDI applications, the source code will become easy to manage if we use one document type to support one file format.
+\par 
+\par Actually, the procedure of implementing more than one document is almost the same with adding more than one view to an application. All we need to modify is still function CWinApp::InitInstance(), within which we must create a new document template and call function CWinApp::AddDocTemplate(...) to bind the new document (along with a view) to the mainframe window.
+\par 
+\par From the sample application created in the previous section, we know that when a new document template is being created, we need to provide a resource ID, a document class name, a view class name, and a frame window class name. If we look at the menu and icon resources of an MDI application, we will find that ID IDR_MAINFRAME is used in three different places: there is a string resource using this ID, which will be used as the mainframe window caption text; there is a menu resource using this ID, which will be used to implement the application's main menu (when there is no child window open); there is an icon resource using this ID, which will be put to the top-left corner of the application (left side of the title bar).
+\par 
+\par When a document template is created, we also need to provide a resource ID, which will be used to implement the above resources when the client window is open. Like IDR_MAINFRAME, the corresponding string resource will be used to display the title of the child frame and document type; the menu resource will be used to implement application menu when the corresponding client window is open; the icon resource will be displayed in the top-left corner on the client window.
+\par 
+\par We may have noticed that in the previous sample, when we open a window implemented by class CPieView, the mainframe menu will be changed to IDR_MAINFRAME, and the top-left icon is a general icon. This is because we didn't prepare menu and icon resources for ID IDR_PIETYPE.
+\par 
+\par Sample 13.4\\Chart is based on sample 13.3\\Chart and demonstrates how to further support a new type of document in the application.
+\par 
+\par In the sample, just for the purpose of demonstration, a new type of document is added without implementing anything (It does not contain any data). Although it is a dummy document, by attaching a CEditView type view to it we know that several documents can co-exist in one application.
+\par 
+\par The class name of the new document is CTextDoc, and is added through using Class Wizard. The view that will be associated with it is CTextView, which is derived from class CEditView. No special change is made to the two classes. In function CChartApp::InitInstance(), after two views are attached to class CChartDoc, the new view is attached to the new document and they are bound together to the mainframe window:
+\par 
+\par (Code omitted)
+\par 
+\par Besides this, we also added following resources to the application: icons IDR_PIETYPE and IDR_TEXTTYPE; menus IDR_PIETYPE and IDR_TEXTTYPE; string IDR_TEXTTYPE.
+\par 
+\par 13.5\tab Painting Caption Bar
+\par 
+\par Non-client Area and Related Messages
+\par 
+\par The caption (title) bar belongs to non-client area of a window. Actually, any window can be divided into client and non-client areas. By default, the application itself is responsible for implementing client area painting, and the system is responsible for non-client area painting. The non-client area includes caption bar, menu, frame and border.
+\par 
+\par Generally an application should not paint the non-client area. But sometimes we do need to customize the default implementation to create some special effects. While the client area painting is managed by message WM_PAINT, non-client area has a counterpart message WM_NCPAINT.
+\par 
+\par When painting the caption bar, we need to pay attention to the current window states. By default, a window's caption bar is painted with blue color if the application is in the foreground (In other word, when the application is active), and painted with gray color if it is in the background (When it is inactive). When customizing the caption bar, we also need to put some indication on it to distinguish between the above two states.
+\par 
+\par When painting the non-client area, the message used to distinguish active and inactive states of a window is WM_NCACTIVE. Its WPARAM parameter indicates whether the caption bar needs to be painted to indicate active or inactive state: if it is 0, the application is about to become inactive; otherwise the application is about to become active. Please note that in the latter case, the non-client area painting should not be processed. The active state of the non-client area should always be painted after receiving message WM_NCPAINT (instead of WM_NCACTIVE).
+\par 
+\par Since we only want to change the appearance of default caption bar, we will let the rest non-client area be painted by default implementation. To do this, after receiving WM_NCPAINT and WM_NCACTIVATE messages, we can first call the default message handlers (Which will cause the non-client area to be painted by the default method), then paint the caption bar using our own implementation.
+\par 
+\par The default handlers of the above two messages are functions CWnd::OnNcPaint() and CWnd:: OnNcActivate(...). By default, they paint the caption bar, draw the icon and system buttons on the caption bar, draw the frame and border.
+\par 
+\par The other two messages we must handle are WM_SETTEXT and WM_SYSCOMMAND. The first command corresponds to the situation when the caption text is first set or when it is changed. The second message corresponds to the situation when the application resumes from the iconic state to its original state. In the above two cases, after message WM_NCPAINT is sent to the application, the text will be put directly to the caption bar.
+\par 
+\par Caption Text Area
+\par 
+\par Figure 13-4 shows the composition of a caption bar: the outer frame, within which there is an icon located at the left side, and three system buttons located at the right of the caption bar. The minimize button and the maximize button are abut together, also, there is a space between them and the close button. By default, the caption text is aligned to the left.
+\par 
+\par The position and size of a caption window can be obtained by calling function CWnd:: GetWindowRect(...). We need to exclude the frame, icon and buttons in order to calculate the area where we can put the caption text.
+\par 
+\par So the actual caption text area can be calculated as follows:
+\par 
+\par left position =
+\par (
+\par     left position of the caption window +
+\par     border width +
+\par     system button horizontal size +
+\par     frame width
+\par )
+\par 
+\par top position = top position of the caption window + frame height
+\par 
+\par right position =
+\par (
+\par     right position of the caption window -
+\par     border width -
+\par     frame width - 
+\par    3*(system button horizontal size)
+\par )
+\par 
+\par bottom position = top position + vertical size of the caption
+\par 
+\par If we use window DC, the coordinates of the window's top-left corner are (0, 0), this will simplify our calculation.\
+\
+
+\par Please note that we must use class CWindowDC to create DC for painting the non-client area rather than using class CClientDC. Class CClientDC is designed to let us paint only within a window's client area, so its origin is located at left-top corner of the client window. Class CWindowDC can let us paint the whole window, including both client and non-client area.
+\par 
+\par Sample 13.5\\Cap
+\par 
+\par Sample application 13.5\\Cap demonstrates this technique. It is a standard SDI application generated by Application Wizard, and its caption window is painted yellow no matter what the corresponding system color is (The default caption bar color can be customized by the user). The modifications made to the application are all within class CMainFrame, and there are altogether four message handlers added to the application: CMainFrame::OnNcPaint() for message WM_NCPAINT, CMainFrame::OnNcActivate(...) for message WM_NCACTIVATE, CMainFrame::OnSetText() for message WM_SETTEXT and CMainFrame:: OnSysCommand(...) for message WM_SYSCOMMAND.
+\par 
+\par The function implemented for drawing caption text is CMainFrame::DrawCaption(...). This function has one COLORREF type parameter color, which will be used as the text background. Within this function, several system metrics are obtained, which will be used to calculate caption text area later:
+\par 
+\par (Code omitted)
+\par 
+\par The caption text is obtained by combining the name of currently opened document with the string stored in resource AFX_IDS_APP_TITLE. Here resource AFX_IDS_APP_TITLE stores application name, and function CDocument::GetTitle() returns the name of currently opened document.
+\par 
+\par Then the area where we can put caption text is calculated and stored in a local variable rectDraw. Before drawing the text, we need to fill it with the background color:
+\par 
+\par (Code omitted)
+\par 
+\par Since the DC is created using class CWindowDC, the coordinates of the window's origin are (0, 0). Before drawing the text, we need to set the text background mode to transparent. Also, in the sample, when the caption text is being drawn, it is centered instead of being aligned left:
+\par 
+\par (Code omitted)
+\par 
+\par Function CMainFrame::DrawCaption() is called in several places. When WM_NCACTIVATE message is received and the window state is about to become inactive, we paint the caption bar with cyan color. When WM_NCPAINT message is received, the caption bar is painted with yellow color.
+\par 
+\par Also, when WM_SETTEXT or WM_SYSCOMMAND messages are received, the caption needs to be updated. So within the two message handlers, message WM_NCPAINT is sent to the mainframe window:
+\par 
+\par (Code omitted)
+\par 
+\par Figure 13-5 shows the result of the above implementation.
+\par 
+\par (Figure 13-5 omitted)
+\par 
+\par 13.6\tab Irregular Shape Window
+\par 
+\par Theoretically speaking, all windows created in Windows( system must be rectangular. This satisfies our needs most of the time. However, sometimes it would be more preferable to let windows have irregular shapes. For example, in multimedia type applications, sometimes we need to implement a special elliptical (or more complex shape) "callout" window with a pointer pointing to an object, with the explanation of the object displayed within the ellipse. The user may feel free to resize or move this window, and edit the text within it (Figure 13-6).
+\par 
+\par Problem
+\par 
+\par To implement such type of window, we can let the application paint only within the elliptical area and leave the rest area unchanged.
+\par 
+\par However, this will cause problem when the user moves or resizes the window. Although only the elliptical area is painted, the window is essentially rectangular. By default, the portion not covered by the ellipse will be treated as the background (It is not updated when message WM_PAINT is received). The application itself can handle WM_ERASEBKGND message to update the background. To let the window have an irregular shape, instead of painting this area with any pattern, we need to make it transparent. In order to achieve this, we shouldn't do anything after receiving message WM_ERASEBKGND. However, this still will cause new problem when the window is moved or resized: since the application does not update its background client area, original background pattern will remain unchanged after moving and resizing (This will cause something doesn't belong to the window background to move along with it).
+\par 
+\par Style WS_EX_TRANSPARENT
+\par 
+\par A window's background could be made transparent by using style WS_EX_TRANSPARENT when we create a window by calling function CWnd::CreateEx(...). Unfortunately, in MFC, the window creation procedure is deeply hidden in the base classes. Although it is very easy to create special windows such as frame windows, views, dialog boxes, buttons, we actually have very few controls over their styles.
+\par 
+\par Another difficult thing is that, if we want to create an irregular shape window, normally we do not want it to have caption bar. If we want to create the window by ourselves instead of using MFC, we need to choose appropriate window styles and take care everything by ourselves, which may be a very complex issue.
+\par 
+\par Using Dialog Box
+\par 
+\par To simplify this procedure, we can start from creating a dialog box and change it to an irregular shape window. Since dialog box is also a type of window, it has all the customizable styles belonging to a normal window (A dialog box does not have to contain any common controls).
+\par 
+\par In property sheet "Dialog Properties", we have a lot of choices for changing the styles of a dialog box. This property sheet contains several pages such as "General", "Styles", "More Styles" and "Extended Styles". Within each property page, we can set different window styles. The following table lists some important issues need to be takern into consideration when designing a window with irregular shape:
+\par 
+\par (Table omitted)
+\par 
+\par All other styles remain unchanged, we need to use default settings for them.
+\par 
+\par Sample 13.6\\Balloon is implemented this way. It is a dialog box based application generated by the Application Wizard, and the two classes used to implement the application are CBalloonApp and CBalloonDlg. After the skeleton is created we can open the default dialog box template (In the sample, the template is IDD_BALLOON_DIALOG), remove the default buttons and controls, then customize the window styles as mentioned above.
+\par 
+\par Disabling Default Background Painting
+\par 
+\par By default, class CDialog will paint the background with gray color (button face color), although the dialog box's background is transparent, the client area will still be painted with default brush when being erased. Thus we will see temporary gray background when the dialog box is being resized or moved. To prevent the background from being erased with brush, we need to handle message WM_ERASEBKGND to bypass the default background erasing activities. In the sample, this message is mapped to function CBalloonDlg:: OnEraseBkgnd(...), which does nothing but returning a TRUE value to give the system an impression that the background erasing has completed:
+\par 
+\par BOOL CBalloonDlg::OnEraseBkgnd(CDC *pDC) 
+\par \{
+\par     return TRUE;
+\par \}
+\par 
+\par Disabling Non-client Area Painting
+\par 
+\par We also need to pay attention to non-client area. Although the window does not have a caption bar, it has resizable border, which also belongs to non-client area. By default, the border will be painted as a 3D frame, which can be used for resizing the window. To make it transparent, we need to handle message WM_NCPAINT. We don't need to provide any implementation here because there is nothing to be painted. In the sample, this message is handled in CBalloonDlg::OnNcPaint(), which is an empty function:
+\par 
+\par void CBalloonDlg::OnNcPaint()
+\par \{
+\par \}
+\par 
+\par We do need to override CBalloonDlg::OnPaint() to paint the elliptical area. Within this function, an ellipse is drawn in the client area, also a pointer is drawn at the left bottom corner. Both ellipse and its pointer are painted using yellow color.
+\par 
+\par Moving the Window with Mouse
+\par 
+\par Because the application does not have caption bar, we must provide a method to let the window be moved through using mouse. This should be implemented by handling three messages: WM_LBUTTONDOWN, WM_LBUTTONUP and WM_MOUSEMOVE. When the left button is pressed down, we need to set the window capture. As the mouse moves (with left button held down), we need to move the window according to the new mouse position by calling function CWnd::MoveWindow(...). When the left button is released, we need to release the window capture.
+\par 
+\par Two variables are declared in class CBalloonDlg for this purpose: Boolean type variable CBalloonDlg::m_bCapture and CPoint type variable CBalloonDlg::m_ptMouse. Here, CBalloonDlg:: m_ptMouse is used to record the previous mouse position. Whenever the window needs to be moved, we call function CWnd::GetWindowRect(...) to obtain its current position and size, then offset the rectangle (The size and position of the window is stored in a CRect type variable) according to both current and previous mouse positions, and update variable CBalloonDlg::m_ptMosue. Since all the calculation is carried out in the desktop coordinate system, we need to call function CWnd::ClientToScreen(...) to convert the mouse position before using it (Mouse position is passed to the message handlers in the coordinate system of the application window). The following is the WM_MOUSEMOVE message handler implemented in the sample:
+\par 
+\par (Code omitted)
+\par 
+\par This implementation is slow, because when mouse moves a small distance, the whole window need to be redrawn at the new position. An alternative solution is to draw only the rectangular outline when mouse is moving (with the left button held down), and update the window only when the left button is released. To implement this, instead of calling function CWnd::MoveWindow(...) in WM_MOUSEMOVE message handler, we need to call function CDC::DrawDragRect(...) to erase the previous rectangle outline and draw a new one.
+\par 
+\par For this sample, as the left button is clicked on any portion of the rectangular window area, the application will respond. If we want the window to be movable only when the clicking happens within the elliptical area, we need to use region. To implement this, instead of calling function CRect::PtInRect(...), we can call CRgn::PtInRegion(...) to respond to the left button clicking. Also, if we want to make resizing more flexible, we can test if the mouse cursor is over the border of the ellipse rather let the resizing be handled automatically (By default, window's rectangular frame will be used as the resizing border). To implement this, we need to change mouse cursor's shape when it is over the border of the ellipse, set capture when the left button is pressed down, release capture when the button is released, and resize the window according to the mouse movement.
+\par 
+\par Although the application does not resemble a dialog box, we can still find some of its features: it can be closed by pressing ENTER or ESC key. To modify this feature, we need to override function CDialog::OnPreTranslateMsg(...). If we implement this, we must provide a way to close the window, otherwise the user has to ask OS to end its life everytime.
+\par 
+\par 13.7\tab Saving Initial States
+\par 
+\par It would be preferable to let the application remember its current states when being closed, and resume them next time it is activated. This feature is especially useful for an editor-like application. Generally, we need to save the mainframe window's size, position, and state (is it minimized or maximized?). If there is splitter window implemented in the application, we also need to remember the size of each individual pane. Besides this, we can make the application more attractive by saving information of each tool bar, which include the on/off state, docking state, size and position.
+\par 
+\par Where to Save the Information
+\par 
+\par To save this kind of information, we need to write it to hard disk when the application exits. Of course we can manage this by opening a file and write our data to it. However, under Windows(, there is a better way to implement it. We can either store all the information in an ".ini" file under certain directory or store it in the registry. The latter is a better solution because this will make the file system much cleaner. For every application generated by Application wizard, we can find the following statement in function CXXXApp::InitInstance():
+\par 
+\par     SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+\par 
+\par This will set a registration key in the registry, all the information stored by the application will be under this key. In the above statement the registration key is "Local AppWizard-Generated Applications". By default, all the applications generated by the Application Wizard will share this key. If we want the application to use a different key, we can simply change this default string.
+\par 
+\par Functions Used to Write and Read Information
+\par 
+\par We have four standard functions to save and load the information. By using these functions, we can either save a string or an integer, and read them back:
+\par 
+\par (Code omitted)
+\par 
+\par Functions CWinApp::WriteProfileInt(...) and CWinApp::GetProfileInt(...) can be used to save and load integers, and the rest two functions can be used to save and load strings.
+\par 
+\par Format of ".ini" File
+\par 
+\par The stored information is organized into sections and entries, we can save relevant information under one section using different entries. For example, the following is a portion of an ".ini" file, within which the window size, position and splitter window information is stored:
+\par 
+\par [Window Position]
+\par 
+\par Window Position=0, 0, 200, 200;
+\par Window State=Normal;
+\par 
+\par [Splitter Window]
+\par 
+\par Vertical Size=100;
+\par 
+\par There are two sections here, the section keys are "Window Position" and "Splitter Window" respectively. Under "Window Position" section, there are two entries, the first is "Window Position" and the second is "Window State", both of them store strings. The second section is "Splitter Window", it has only one entry "Vertical Size", which stores an integer. When we store and retrieve a particular entry, we need to provide the correct section key and entry key.
+\par 
+\par Sample 13.7\\Ini
+\par 
+\par Now that we know how to save and load the information, we need to find out what kind of information need to be saved. Sample 13.7\\Ini demonstrates how to create an application that can resume its previous states including the window state (minimized, maximized, or normal state), size, position and the states of the tool bar. It is a standard SDI application generated by Application Wizard, which has a default tool bar. Its client window is implemented by a two-pane splitter window.
+\par 
+\par The most appropriate place to save the state information is before the application is about to exit. This corresponds to receiving message WM_CLOSE, which indicates that the application will terminate shortly. Since most information concerns the top parent window of the application, it would be more convenient if we handle this message in the mainframe window.
+\par 
+\par To retrieve a window's position and size, we can call function CWnd::GetWindowRect(...). The values obtained through calling this function will be in the coordinate system of the desktop window. When the application is invoked next time, we need to call function CWnd::MoveWindow(...) to resume its previous position and size. This should be handled in function CMainFrame::OnCreate(...). The following two functions show how the frame window information is saved and loaded:
+\par 
+\par (Code omitted)
+\par 
+\par The window state information is retrieved by calling functions CWnd::IsIconic() and CWnd:: IsZoomed(). If both of them return FALSE, the window is in normal state. To set the window to zoomed or iconic state, we need to set variable CIniApp::m_nCmdShow to either SW_SHOWMINIMIZED or SW_SHOWMAXIMIZED in function CWinApp::InitInstance()(This variable is declared in base class CWinApp). The following portion of function CIniApp::InitInstance() shows how the window state is set:
+\par 
+\par (Code omitted)
+\par 
+\par Finally, saving and loading the states of tool bar is very simple, all we need to do is calling function CFrameWnd::SaveBarState(...) to save the tool bar state after receiving message WM_CLOSE and calling function CFrameWnd::LoadBarState(...) in CFrameWnd::OnCreate(...) to load them. No matter how many tool bars are implemented in the application, all of their states will be saved and loaded automatically. The following code fragment demonstrates this:
+\par 
+\par (Code omitted)
+\par 
+\par With the above implementation, the application is able to remember its previous states.
+\par 
+\par 13.8\tab Exchanging User-Defined Messages Among Applications
+\par 
+\par We all know that standard Windows( messages can be sent to other windows by calling functions CWnd::SendMessage(...) and CWnd::PostMessage(...), we also know that we can create user defined messages that can be used within one process. However, user defined messages can only be sent within one application, there is no way to send them to other applications.
+\par 
+\par Registering User Defined Messages
+\par 
+\par Under Windows(, there are several ways to share information and data among several processes, among them sending message is the simplest one. If we want to share user-defined messages among different processes, rather than defining a message with ID greater than WM_USER, we need to register the messages to the OS so that they are unique in the whole system.
+\par 
+\par The function used for registering user defined messages is ::RegisterWindowMessage(...). The input parameter to this function should be a null-terminated string, and its returned value is the message ID that could be used for later communication. If another application wants to use this message, it must first complete the message registration by calling the above function.
+\par 
+\par Using registered messages is almost the same with using standard messages. We can call either CWnd::SendMessage(...) or CWnd::PostMessage(...) to send out the message. When doing this, we can specify both WPARAM and LPARAM parameters. Finally, we can map the registered messages to member functions using message mapping macros.
+\par 
+\par To map registered messages to member functions, we need to use macro ON_REGISTERED_MESSAGE. This macro has two parameters, the first should be the value returned from function ::RegisterWindowMessage(...), which need to be stored in a global (or static) variable. The second parameter should be the name of the member function that will process the message.
+\par 
+\par Sample
+\par 
+\par Sample 13.8\\Sender and 13.8\\MsgRcv demonstrate how to send user-defined messages between two applications. Here, "Sender" is a dialog box based application, and "MsgRcv" is a list view based application. Both of them register two messages: MSG_SENDSTRING and MSG_RECEIVED. The two macros are defined in "Common.h" header file, which is included by both projects. The user can freely input any number in one of the edit box contained in "Sender", and press "Send" button to send the message to "MsgRcv". Before sending the message, "Sender" will search for "MsgRcv", if the application exists, it will send MSG_SENDSTRING message to it, with the number input by the user as the message parameter. Upon receiving the message, "MsgRcv" will add the number to its list, then send back an MSG_RECEIVED message. Upon receiving this message, "Sender" increments a counter indicating how many messages are sent successfully, and its value will be displayed in the dialog box.
+\par 
+\par Finding Window & Sending Message
+\par 
+\par To find application "MsgRcv", function CWnd::FindWindow(...) needs to be called. We can base our search on two things: window class name and window name. Because the window name may actually change during its lifetime, it is better to base our searching on class name. As we know from section 13.1, in order to designate a special class name to a certain window, we need to register the window class name by ourselves and use it for creating the window. In sample 13.8\\MsgRcv, the window class name is registered in function CMsgRcvApp::InitInstance() and unregistered in function CMsgRcvApp::ExitInstance(). When stuffing structure WNDCLASS, we use IDR_MAINFRAME to set the window's default icon and menu resources, so there will be no difference between our application and standard ones. The customized class name (macro CLASS_NAME_RECIEVER) is defined in header file "13.8\\Common.h" and is shared by both applications. In function CMainFrame::PreCreateWindow(...) of application "MsgRcv", the mainframe window class name is changed before the window is created:
+\par 
+\par BOOL CMainFrame::PreCreateWindow(CREATESTRUCT &cs)
+\par \{
+\par     cs.lpszClass=CLASS_NAME_RECIEVER;
+\par     return CFrameWnd::PreCreateWindow(cs);
+\par \}
+\par 
+\par Two global variables are declared to store the registered message IDs in file "MainFrm.cpp" for both applications:
+\par 
+\par UINT g_uMsgSendStr=0;
+\par UINT g_uMsgReceived=0;
+\par 
+\par For both applications, in function CMainFrame::OnCreate(...), the messages are registered as follows:
+\par 
+\par int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
+\par \{
+\par     g_uMsgSendStr=::RegisterWindowMessage(MSG_SENDSTRING);
+\par     g_uMsgReceived=::RegisterWindowMessage(MSG_RECEIVED);
+\par ......
+\par \}
+\par 
+\par For application "MsgRcv", message MSG_SENDSTRING is mapped to function CMainFrm::OnSendStr(...) as follows:
+\par 
+\par BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
+\par ......
+\par     ON_REGISTERED_MESSAGE(g_uMsgSendStr, OnSendStr)
+\par END_MESSAGE_MAP()
+\par 
+\par We use WPARAM and LPARAM parameters to pass the window handle of "Sender" and the number input by the user to "MsgRcv". By sending the handle with message MSG_SENDSTRING, the message receiver can use it to make reply immediately, there is no need to find the window again.
+\par 
+\par Function CMainFrame::OnSendStr(...) is listed as follows, it demonstrates how message MSG_SENDSTRING is handled in "MsgRcv". Like a normal WM_MESSAGE type message handler, this function has two parameters that are used to pass WPARAM and LPARAM. In the sample, WPARAM parameter is used to pass the window handle of "Sender", from which we can obtain a CWnd type pointer and use it to send MSG_RECEIVED message back. After that the value obtained from LPARAM parameter is added to the list view. The following is this function:
+\par 
+\par (Code omitted)
+\par 
+\par On the "Sender" side, if the user presses "Send" button, we call function CWnd::FindWindow(...) to find the mainframe window of "MsgRcv". If it exists, message MSG_SENDSTRING will be sent to it, with the WPARAM parameter set to the window handle of the dialog box and LPARAM parameter set to the number contained in the edit box:
+\par 
+\par (Code omitted)
+\par 
+\par Message MSG_RECEIVED is mapped to function CSenderDlg::OnReceive(...). Upon receiving message MSG_RECEIVED, we simply increment the counter and display the new value in the dialog box:
+\par 
+\par (Code omitted)
+\par 
+\par It is fun to play with the two applications, because they implement the simplest communication protocol: sending the message, replying with the acknowledgment. By using message communication, we can send only simple information (like integers) to another application. If we want to send complex data structure to other processes, we need to use other memory sharing techniques such as file mapping along with message sending.
+\par 
+\par 13.9\tab Z-Order
+\par 
+\par Z-order represents the third dimension of a window besides its x and y position. Under Windows(, a window can be placed before or after another window, and none of the two windows can have a same Z-order (This means if the two windows share a common area, one of them must be overlapped by the other).
+\par 
+\par Under Windows(, the Z-order of a top-most application window (the window that does not have parent window) is managed by the OS. When the user clicks the mouse on an application, this window will be brought to the top of the Z-order by default. If this happens, also, the orders of all other windows will be changed accordingly.
+\par 
+\par A window's Z-order can also be changed from within the application. The function that can be used to implement this is CWnd::SetWindowPos(...). Besides Z-order, this function can also be used to change the x-y position and the dimension of a window. It is more powerful than function CWnd::MoveWindow(...), which could be used to move a window only in the x-y plane.
+\par 
+\par Function CWnd::SetWindowPos(...) has six parameters:
+\par 
+\par BOOL CWnd::SetWindowPos
+\par (
+\par     const CWnd *pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags
+\par );
+\par 
+\par The middle four parameters (x, y, cx and cy) can be used to change a window's x-y position and size. If we want to change only the Z-order of a window, we can set these variables to 0s and set nFlags to SWP_NOMOVE | SWP_NOSIZE.
+\par 
+\par The first parameter is a CWnd type pointer, it indicates where the window should be placed. This gives us the power to place a window before or after any existing window in the system. More over, we can specify other four parameters: CWnd::wndBottom, CWnd::wndTop, CWnd::wndTopMost, CWnd:: wndNoTopMost. Among these parameters the most interesting parameter is CWnd::wndTopMost, if we use this parameter, the window will always stay on top of other windows under any condition.
+\par 
+\par Sample 13.9\\ZOrder demonstrates how to change a window's Z-order. It is a dialog based application generated by the Application Wizard. The only controls contained in the dialog template are four radio buttons. If the user click on one of them, function CWnd::SetWindowPos(...) will be called using the corresponding parameter:
+\par 
+\par (Code omitted)
+\par 
+\par By checking "wndTopMost" radio button, the dialog box will always stay on top of other windows.
+\par 
+\par 13.10\tab Hook
+\par 
+\par Hook is a very powerful method in Windows( programming. Remember when creating the snapshot application in Chapter 12, when the application was made hidden to let the user make preparation, a timer was started. The capture would be made just after the timer times out. This is a little inconvenient, because the time that allows the user to make preparation is fixed. The ideal implementation would be like this: instead of setting a timer, we can predefine a key stroke; the user can feel free to make any preparation as the application is hidden; the capture will be made only after the user presses the predefined key.
+\par 
+\par However, it seems almost impossible to implement this using normal Windows( programming technique. As the application loses its focus, it will not receive any keyboard related messages, this means we cannot direct the keystrokes to it.
+\par 
+\par The solution to this problem is using hook, which is a mechanism to intercept the Windows( messages and process them before they reach the destinations. There are many type of system information that can be intercepted, such as keystroke, mouse move, system messages, and so on.
+\par 
+\par Hook Installation
+\par 
+\par Hooks can be installed either system wide or specific to a single thread. In the former case, we can monitor the activities in the whole system. To install a hook, we need to provide a hook procedure, which will be used to handle the intercepted message. For different kind of hooks, we need to provide different procedures. For example, the mouse hook procedure and the keyboard hook procedure look like the following:
+\par 
+\par LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam); 
+\par LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam); 
+\par 
+\par Although they look the same, the meanings of their parameters are different. For keyboard hook procedure, WPARAM parameter represents virtual-key code, and lParam parameter represents keystroke information. For mouse hook procedure, WPARAM parameter represents message ID, and LPARAM represents mouse coordinates. Different types of hooks have different hook procedures, they should be provided by the programmer when one or more types of hooks are implemented.
+\par 
+\par To install a hook, we need to call function ::SetWindowsHookEx(...):
+\par 
+\par HHOOK ::SetWindowsHookEx(int idHook, HOOKPROC lpfn, HINSTANCE hMod, DWORD dwThreadId);
+\par 
+\par The first parameter indicates the type of hook, for a keyboard hook, it should be WH_KEYBOARD, for a mouse hook, it should be WH_MOUSE. The second parameter is the address of the hook procedure described above. The third and fourth parameters should be set differently for system wide hook and thread specific hook.
+\par 
+\par System Wide Hook
+\par 
+\par The complex aspect of hook is that if we want to install a system wide hook, the hook procedure must reside in a DLL (Except for journal record hook and journal playback hook, which will be introduced in the next section). In this case, parameter hMod must be the instance of the DLL, and dwThreadId should be 0. If we want to install a thread specific hook and the hook procedure resides within the application rather than a separate DLL, parameter hMode must be NULL.
+\par 
+\par Variables in DLL
+\par 
+\par Obviously in our case, we want the hook to be system wide, so we have to build a separate DLL. This causes us some inconvenience. When the hook procedure receives the hot-key stroke, it needs to activate the application. But since the DLL and the application are separate from one another, it is difficult to access the application process from the DLL.
+\par 
+\par Suppose we want to implement the hot-key based screen capturing, as we execute Capture | Go! command (see Chapter 12), we can hide the application by calling function CWnd::ShowWindow(...) using SW_HIDE flag. From now on the application has no way to receive keystrokes, we have to process them in the keyboard hook procedure residing in the DLL. As we get the predefined key stoke, we need to make the capture and call function CWnd::ShowWindow(...) using flag SW_SHOW to activate the application.
+\par 
+\par We can implement this by sending message from DLL to the application. If the DLL knows the window handle of the application's mainframe window, this can be easily implemented. To pass the window handle to the DLL, we can call a function exported from the DLL when the hook is installed, and ask the DLL to keep this handle for later use.
+\par 
+\par However, data stored in the DLL is slightly different from data stored in a common process. For a normal process, it has its own memory space, the static variables stored in this space will not change throughout their lifetime. However, for a DLL, since it can be shared by several processes, its variables are mapped to the application's memory space separately. By doing this, for a variable contained in the DLL, different applications may have different values. This will eliminate data conflicting among different processes.
+\par 
+\par This causes the following situation: if several processes share the same variable contained in the DLL, on the DLL side, the value of this variable may change as the window focus shifts from one process to another.
+\par 
+\par This will get us into trouble: since the variables relative to one process will only be mapped to it while the process is active, as we hide our application, the handle stored in the DLL previously will not represent the correct value anymore.
+\par 
+\par Defining Data Segment
+\par 
+\par To solve this problem, DLL has another feature that enables all the processes using one DLL to share common data among them. In order to do this, we need to specify a special data segment for storing such type of variables. We could use macro #pragma data_seg to specify the data segment, and use -SEGMENT switch to link the project.
+\par 
+\par DLL Implementation
+\par 
+\par Sample 13.10\\Hook demonstrates keyboard hook implementation. The hook procedure stays in a separate DLL file: "HookLib.Dll". Creating a DLL is slightly different from creating MFC based applications, there is no skeleton generated at the beginning. After using the application wizard to generate a Win32 based DLL project, we are not provided with a single line of source code.
+\par 
+\par Since our DLL is relatively small, we can use just one ".c" and ".h" file to implement it. We can create these two files by opening new text files, then executing command Project | Add To Project | Files... to add them into the project.
+\par 
+\par In the sample, the DLL is implemented by "HookLib.h" and "HookLib.c" files.
+\par 
+\par File "HookLib.h" declares all the functions that will be included in the DLL:
+\par 
+\par (Code omitted)
+\par 
+\par Function LibMain(...) and WEP(...) are the entry point and the exit point of the DLL respectively. The reason for using so many #if macros here is that it enables us to use the same header file for both the DLL and the application that links the DLL. As we build the DLL, we want to export functions so that they can be called outside the DLL; in the application, we need to import these functions from the DLL. Macro __declspec(dllimport) declares an import function and __declspec(dllexport) declares an export function. As we can see, if macro __DLLIMPORT__ is defined, function LibMain(...), WEP(...) and KeyboardProc(...) will be declared (they will be used only in the DLL). In this case, two other functions SetKeyboardHook(...) and UnsetKeyboardHook() will be declared as import function. If the macro is not defined, the two functions will be declared as export functions.
+\par 
+\par The reason for using macro EXTERN_C is that the DLL is built with C convention and our application is built with C++ convention. To make them compatible, we must explicitly specify how to build the functions in the DLL. In the sample, two functions are exported from the DLL: SetKeyboardHook(...) will be used by the application to install hook; UnsetKeyboardHook() will be used to remove the hook.
+\par 
+\par In file "HookLib.c", first two static variables are declared:
+\par 
+\par (Code omitted)
+\par 
+\par We use #pragma data_seg("SHARDATA") to specify that g_hWnd and g_hHook will be stored in "SHARDATA" segment instead of being mapped to calling processes.
+\par 
+\par Function SetKeyboardHook(...) installs system wide keyboard hook by calling function SetWindowsHookEx(...). When using this function, we must provide the instance handle of the DLL library and the handle of the application's mainframe window:
+\par 
+\par (Code omitted)
+\par 
+\par The handle of application's mainframe window is stalled in variable g_hWnd for later use. The handle of the hook is stored in variable g_hHook and will be used in function UnsetKeyboardHook() to remove the keyboard hook:
+\par 
+\par STDENTRY_(BOOL) UnsetKeyboardHook()
+\par \{
+\par     return UnhookWindowsHookEx(g_hHook); 
+\par \}
+\par 
+\par Function KeyboardProc(...) is the hook procedure. When there is a keystroke, this function will be called, and the keystroke information will be processed within this function:
+\par 
+\par (Code omitted)
+\par 
+\par The first parameter, code, indicates the type of keystroke activities. We need to respond only when there is a keystroke action, in which case parameter code is HC_ACTION. If code is less than 0, we must pass the message to other hooks without processing it (This is because there may be more than one hook installed in the system). In order not to change the behavior of other applications, after processing the keystroke message, we also need to call function ::CallNextHookEx(...) to let the message reach its original destination.
+\par 
+\par If the keystroke is CTRL+F3, we will check if the application window is visible. If not, function ::ShowWindow(...) is called to activate it. In this case, the keyboard hook will be removed.
+\par 
+\par We need to use -SECTION link option in order to implement "SHARDATA" data segment. This can be done through executing Project | Settings... command (Or pressing ALT+F7 hot key) then clicking "Link" tab on the popped up property sheet. In the window labeled "Project Options", we need to add "-SECTION:SHARDATA,RWS" at the end of link option. This will make the data in this segment to be readable, writable, and be shared by several processes (Figure 13-7).
+\par 
+\par Sample 13.6\\Hook
+\par Sample 13.6\\Hook is a standard SDI application generated by the Application Wizard. In the sample, header file "HookLib.h" is included in the implementation file "MainFrm.cpp", also, macro __DLLIMPORT__ is defined there. This will import two functions contained in the DLL. The following portion of file "MainFrm.cpp" shows how the header file is included and how the macro is defined:
+\par 
+\par #define __DLLIMPORT__
+\par 
+\par #include "stdafx.h"
+\par #include "..\\HookLib\\HookLib.h"
+\par #include "Hook.h"
+\par 
+\par To use the functions in DLL, we need to link file "HookLib.Lib" which is generated when the DLL is being built. This can be done by executing command Project | Setting..., clicking tab "Link" from the popped up property page, and entering the path of file "HookLib.Lib" in edit box labeled "Object/Library Modules" (Figure 13-8).
+\par 
+\par The keyboard hook is installed in function CMainFrame::OnCreate(...). Also, within the function, DLL is dynamically loaded by calling function ::LoadLibrary(...). The returned value of this function is the DLL's instance (if the DLL is loaded successfully), which will be used to install the keyboard hook. The following code fragment shows how the DLL is loaded:
+\par 
+\par (Code omitted)
+\par 
+\par The DLL library is released before the application is about to exit in function CMainFrame::OnClose():
+\par 
+\par (Code omitted)
+\par 
+\par A command Hide | Go! is added to the mainframe menu IDR_MAINFRAME, this command installs keyboard hook and hides the application. We can press CTRL+F4 to show the application after it becomes hidden. The following is the implementation of this command:
+\par 
+\par (Code omitted)
+\par 
+\par The application and the DLL should be in the same directory in order let the DLL be loaded successfully. Or, the DLL may be stored under "Windows" or "Windows\\System" directory.
+\par 
+\par 13.11\tab Journal Record and Journal Playback Hooks
+\par 
+\par Journal hooks are very interesting, they allow us to write program that can record and playback events happened in the system (such as mouse move, clicking, key stroking, etc.). With journal hooks, it is easy to implement advanced features such as macro recording.
+\par 
+\par Events recording can be implemented by journal record hook, events playback can be implemented by journal playback hook. Both of the hooks are system wide, and the hook procedures can reside in either a DLL or EXE file. The installation of the two hooks is the same with that of keyboard hook, except that we need to use WH_JOURNALRECORD or WH_JOURNALPLAYBACK parameter when calling function ::SetWindowHookEx(...). Similarly, we need to provide a hook procedure for each installed hook. Usually the names of journal hook procedures are JournalPlaybackProc(...) and JournalRecordProc(...) respectively. Like procedure KeyboardProc(...), both functions have three parameters, however, their meanings are different here:
+\par 
+\par LRESULT CALLBACK JournalPlaybackProc(int code, WPARAM wParam, LPARAM lParam);
+\par LRESULT CALLBACK JournalRecordProc(int code, WPARAM wParam, LPARAM lParam);
+\par 
+\par For journal record procedure, we need to record event only when parameter code is HC_ACTION. At this time, the event message is stored in an EVENTMSG type object, whose address can be obtained from parameter lParam. Structure EVENTMSG stores hardware message sent to the system message queue, along with time stamp indicating when the message was posted. We can use the information contained in this structure to implement playback.
+\par 
+\par Analyzing Events
+\par 
+\par Another thing we need to pay attention to is that we need to provide a way of letting the user stop recording and rendering playback at any time. By default, Windows( allows journal hook to be stopped by any of the following key stroking: CTRL+ESC, ALT+ESC and CTRL+ALT+DEL. Besides the default feature, it is desirable to provide a build-in function for stopping the journal hook. We can predefine a key for this purpose. The key pressing events can be trapped by analyzing EVENTMSG type object, which has the following format:
+\par 
+\par (Code omitted)
+\par 
+\par Member message specifies event type, in order to trap keystroke, we need to respond to WM_KEYDOWN activities. In this case, the virtual key code is stored in the lower byte of member paramL.
+\par 
+\par Sample 13.11\\Hook demonstrates journal record and playback hook implementation. Like previous section, here hook functions are also implemented in the DLL. For this sample, 13.11\\Hook is based on 13.10\\Hook, and 13.11\\HookLib is based on 13.10\\HookLib.
+\par 
+\par For events other than specified key stroke, we need to allocate enough buffers for storing an EVENTMSG type object and bind them together using linked list. To implement this, we can define a new structure of our own:
+\par 
+\par typedef struct tagEVENTNODE
+\par \{
+\par     EVENTMSG Event;
+\par     struct tagEVENTNODE *lpNextEvent;
+\par \}EVENTNODE, *LPEVENTNODE;
+\par 
+\par Pointer lpNextEvent will point to the next EVENTMSG structure. This will form a singly linked list.
+\par 
+\par The following code fragment shows how events are recorded in journal record hook procedure. Like other types of hooks, we need to call CallNextHookEx() to pass the event to other hooks if parameter code is less than 0:
+\par 
+\par (Code omitted)
+\par 
+\par In the above code fragment, we check if the event is CTRL+F3 key stroking. If so, we remove the hook and send a message to the application's mainframe window indicating that the recording is finished.
+\par 
+\par (Code omitted)
+\par 
+\par In the above code fragment, we try to allocate buffers for recording the event. If this is not successful, we also need to finish the recording.
+\par 
+\par (Code omitted)
+\par 
+\par In the above code fragment, if lpeventTail is NULL, this is the first event we will record after the journal record hook has been installed. We must record the current time so that we can play back the recorded events at the rates they were generated.
+\par 
+\par (Code omitted)
+\par 
+\par The above code fragment shows how the event is recorded.
+\par 
+\par Playing back the Recorded Events
+\par 
+\par The playback is just the reverse procedure. Instead of allocating buffers and recording events, we need to analyze the recorded singly linked list and playback every event then free the buffers. When implementing the playback, parameter code indicates what we need to do: if it is HC_SKIP, we need to get the next event for playback; if it is HC_GETNEXT, we need to copy the event to an EVENTMSG type object whose address can be obtained from parameter lParam. Here is how we get the next event when parameter code is HC_SKIP:
+\par 
+\par (Code omitted)
+\par 
+\par Here, if there is no more event, we need to reset everything and send a message (the message is a user defined message WM_FINISHJOURNAL, see below) to the mainframe window of the application indicating that the playback is over. If there are still events left, we get the next recorded event and free the buffers holding the event that is being played back. If parameter code is HC_GETNEXT, we need to obtain an EVENTMSG type pointer from parameter lParam, and copy the event pointed by lpEventPlay to the object pointed by this pointer. When doing this copy, we need to add an offset to the time stamp because originally it indicates the time when the events were recorded:
+\par 
+\par (Code omitted)
+\par 
+\par Using Functions Contained in DLL
+\par 
+\par To notify the mainframe window about journal finishing event, a user registered message is used to communicate between the application and DLL. In the DLL, function ::RegisterMessage() is called after it is loaded, which will register WM_FINISHJOURNAL message in DLL. This message is also registered in the application's CMainFrame::OnCreate(...) function. In the sample, two menu commands Macro | Record and Macro | Playback are added to the application. To avoid journal playback, journal record and keyboard hook from getting entangled, only one of the three hook related commands are enabled at any time. Besides this, playback hook could not be installed if journal record hook has not been installed. This is controlled by the following two variables declared in the application: CMainFrame::m_bEnableMenu, CMainFrame::m_bPlayAvailable.
+\par 
+\par Installing and removing the hooks is simple. The following three functions show how the journal record hook and journal playback hook are implemented in the application. Here, CMainFrame::OnMacroRecord() implements command Macro | Record, CMainFrame::OnMacroPlayback() implements command Macro | Playback, and CMainFrame::OnFinishJournal(...) handles message WM_FINISHJOURNAL:
+\par 
+\par (Code omitted)
+\par 
+\par To test the program, we can first execute Macro | Record command, then use mouse or keyboard to generate a series of events. Next, we can press CTRL+F3 to stop recording. Finally we can execute Macro | Playback command to see what has been recorded.
+\par 
+\par 13.12\tab Memory Sharing Among Processes
+\par 
+\par In sample applications created in section 13.8, we demonstrated how to share user defined messages among different processes. However, with this method, we can send only simple parameter (integer) with every message. Sometimes it is necessary to share complex data among different processes, in which case we must apply memory sharing method.
+\par 
+\par Problem with Global Memory
+\par 
+\par Is it possible to share buffers allocated by ::GlobalAlloc(...) function among different processes? If so, we can embed memory handle in the message parameters and send it to another process. Upon receiving the message, the corresponding process can obtain the global memory handle and call ::GlobalLock(...) to access all the memory buffers.
+\par 
+\par Unfortunately, although it is a possible method to share data among different processes for Win16 applications, it is not possible for us to do so for Win32 based applications. In a 32-bit operating system, virtual memory is used to map physical memory to logical memory for each separate process, so each process has its own memory space from 0 to infinity (ideally). Therefore, if the two processes have the same logical address, they actually indicate different physical addresses. So if we send memory address from one process to another, it will not indicate the original buffer.
+\par 
+\par File Mapping
+\par 
+\par To solve this problem, in Win32 platform, there is a new technique that allows different processes to share a same block of memory. This technique is called file mapping, and can be used to let different processes share either a file or a block of memory.
+\par 
+\par The file or memory used for this purpose is called File Mapping Object and must be created using special function. After it is created successfully, each process can open a view of the file or memory, which will be mapped to the address space of the calling process.
+\par 
+\par File Mapping Functions
+\par 
+\par There are three functions that can be used to implement file or memory mapping:
+\par 
+\par (Code omitted)
+\par 
+\par File mapping object can be initiated by calling function ::CreateFileMapping(...). If we want to share a file, we need to pass the file handle to the first parameter (hFile) of this function. If we want to share a block of memory, we need to pass 0xFFFFFFFF to this parameter. The fourth and fifth parameters specify the size of the object. For file sharing, they can be set to zero, in which case the whole file will be shared. In the case of memory sharing, they must be greater than zero. Parameter lpFileMappingAttributes can be used to specify the security attributes of the object, in most cases we can assign zero to it and use the default attributes. Parameter flprotect specifies read and write permission. The most important parameter is the last one, which must be the address of buffers that contain a name assigned to the file mapping object. If any other process wants to access this object, it must also use the same name to create a view of the file mapping object.
+\par 
+\par After the file mapping object is created successfully, the owner (the process that created the object) can create a view of file to map the buffers to its own address space by calling function ::MapViewOfFile(...). When doing this, we must pass the handle returned by function ::CreateFileMapping(...) to parameter hFileMappingObject. If we pass 0 to parameters dwFileOffsetHigh, dwFileOffsetLow and dwNumberOfBytesToMap, the whole file or memory will be mapped. Finally, parameter dwDesiredAccess allows us to specify desired access right. This function will return a void type pointer, which could be cast to any type of pointer.
+\par 
+\par If any other process wants to access the file mapping object, it must call functions ::OpenFileMapping(...) and ::MapViewOfFile(...) to first access it then create a view of file. When calling function ::OpenFileMapping(...), it must pass the object name (specified by function ::CreateFileMapping(...) when the file mapping object was created) to parameter lpName. The buffers can be mapped to the address space of the process by calling function ::MapViewOffile(...), which is exactly the same with creating view of file for the owner of the object.
+\par 
+\par Samples
+\par 
+\par Samples 13.12\\Send and 13.12\\MsgRcv demonstrate how to share a block of memory between two applications. They are based on samples 13.8\\Send and 13.8\\MsgRcv respectively. First, the "Sender" application is modified so that its edit box will allow multiple line text input (When inputting the text, CTRL+RETURN key stroke can be used to start a new line), and the original variable CSenderDlg::m_nSent is replaced by CSenderDlg::m_szText, which is a CString type variable. The file mapping object is created in function CSenderDlg::OnInitDialog() as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Here, BUFFER_SIZE is a macro defined as an integer in header file "Common.h". Also, MAPPING_PROJECT is a macro defined as a string. They will be used by both "Sender" and "MsgRcv". In message handler CSenderDlg::OnButtonSend(), before the message is sent out, we obtain the text from the edit box, create a view of file and put the text into the buffers. Then message MSG_SENDSTRING is sent to "MsgRcv":
+\par 
+\par (Code omitted)
+\par 
+\par In project "MsgRcv", the client window is implemented using edit view instead of original list view, this makes it easier for us to display text. After receiving the message, we open the file mapping object, create a view of file, then retrieve text from the buffers. Then we access the edit view, select all the text contained in the view, and replace the selected text with the newly obtained text. Finally, the acknowledge message is sent back:
+\par 
+\par (Code omitted)
+\par 
+\par There are other methods for sharing memory among different processes, such as DDE and OLE. Comparing to the two methods, file mapping method is relatively simple and easy to implement.
+\par 
+\par Summary
+\par 
+\par 1)  Before a window is created, we must stuff a WNDCLASS type object, register the window class name, and use this name to create the window. Class WNDCLASS contains useful information about the window such as mainframe menu, default icon, default cursor shape, brush that will be used to erase the background, and the window class name. 
+\par 
+\par 2)  To implement one-instance application, we need to register our own window class name, and override function CWnd::PreCreateWindow(...). Before the window is created, we need to replace the default window class name with the new one. By doing this, we can implement one-instance application by searching for registered window class name: before registering the window class, we can check if there already exists a window that has the same class name. If so, the application simply exits.
+\par 
+\par 3)  We can call function CWnd::FindWindow(...) to find out a window with a specific class name or window name in the system.
+\par 
+\par 4)  The document/view structure is implemented by class CSingleDocTemplate or CMutiDocTemplate. If we want to create an application that does not use document/view structure, we need to eliminate the procedure of creating CSingleDocTemplate or CMutiDocTemplate type object and call function CWnd::Create(...) to create the mainframe window by ourselves.
+\par 
+\par 5)  We can create several CMultiDocTemplate type objects in an application to let it support multiple views or multiple documents.
+\par 
+\par 6)  Caption bar and window frame belong to non-client area. To paint non-client area, we need to handle messages WM_NCPAINT and WM_NCACTIVATE.
+\par 
+\par 7)  To create a window with transparent background, we need to specify style WS_EX_TRANSPARENT while creating the window.
+\par 
+\par 8)  An application can save its states in the system registry by calling function CWinApp::SetRegistryKey(...). The information can be saved and loaded by calling the following functions: CWinApp::WriteProfileInt(...), CWinApp::WriteProfileString(...), CWinApp:: GetProfileInt(...)., CWinApp::GetProfileString(...).
+\par 
+\par 9)  To exchange user defined messages between two different processes, we must use function ::RegisterWindowMessage(...) to register the messages.
+\par 
+\par 10)  Calling function CWnd::SetWindowPos(...) using parameter CWnd::wndTopMost will make a window always stay on top of any other window.
+\par 
+\par 11)  Hook can be installed to let a process intercept and process Windows( messages before they reach destinations. There are several types of hooks, which include mouse hook, keyboard hook, journal record hook, journal playback hook, etc.
+\par 
+\par 12)  A hook can be installed by calling function ::SetWindowsHookEx(...) and removed by calling function ::UnhookWindowsHookEx(...).
+\par 
+\par 13)  A DLL does not have its own memory space, instead, its variables are mapped to the memory spaces of the calling processes. To declare static variables in the DLL, we need to specify a data segment by using #pragma data_seg macro and -SECTION link option.
+\par 
+\par 14)  To share a file or a block of memory among different processes, we need to create file mapping object. Any process that wants to access the memory must create a view of file, which will map the memory to its own address space.
+\par 
+\par }
+ 

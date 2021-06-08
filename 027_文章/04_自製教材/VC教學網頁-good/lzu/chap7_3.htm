@@ -1,0 +1,361 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>7.3 让文档视结构程序支持卷滚</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="4"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="4">7.3 </font><font SIZE="4" color="#3973DE">让文档视结构程序支持卷滚</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">但是，编辑器现在还不支持卷滚。当文本行超过窗口大小时，窗口并不自动向上滚动以显示输入的字符。当打开一个文件时，如果文件大小超过窗口大小，也无法通过卷滚视图来看文档的全部内容。现在我们要让编辑器增加卷滚功能。</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">7.3.1</font><font SIZE="3" color="#3973DE">逻辑坐标和设备坐标</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在引入文档卷滚功能之前，首先要介绍以下逻辑坐标和设备坐标这两个重要概念。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">中，文档坐标系称作逻辑坐标系，视图坐标系称为设备坐标系。它们之间的关系如下图所示：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3"><img src="T7_11.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_11.gif" alt="T7_11.tif (107238 bytes)" WIDTH="341" HEIGHT="201"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">7-11</font><font SIZE="3">文档坐标和视图坐标</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">逻辑坐标按照坐标设置方式（又成为映射模式）可分为</font><font FACE="Times New Roman" SIZE="3">8</font><font SIZE="3">种，它们在坐标上的特性如下表所示：</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">7-1 </font><font SIZE="3">各种映射模式下的坐标转换方式</font></p>
+    <div align="center"><center><table BORDER="1" CELLSPACING="2" BORDERCOLOR="#7F7F7F" CELLPADDING="1" WIDTH="400" height="259">
+      <tr>
+        <td WIDTH="33%" height="35"><font SIZE="3">映射模式</font></td>
+        <td WIDTH="28%" height="35"><font SIZE="3">逻辑单位</font></td>
+        <td WIDTH="19%" height="35"><font FACE="Times New Roman" SIZE="3"><p ALIGN="CENTER">x</font><font SIZE="3">递增方向</font></td>
+        <td WIDTH="19%" height="35"><font FACE="Times New Roman" SIZE="3"><p ALIGN="CENTER">y</font><font SIZE="3">递增方向</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%" height="19"><font FACE="Times New Roman" SIZE="3">MM_TEXT</font></td>
+        <td WIDTH="28%" height="19"><font SIZE="3">像素</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向右</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向下</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%" height="19"><font FACE="Times New Roman" SIZE="3">MM_LOMETRIC</font></td>
+        <td WIDTH="28%" height="19"><font FACE="Times New Roman" SIZE="3">0.1mm</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向右</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向上</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%" height="19"><font FACE="Times New Roman" SIZE="3">MM_HIMETRIC</font></td>
+        <td WIDTH="28%" height="19"><font FACE="Times New Roman" SIZE="3">0.01mm</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向右</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向上</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%" height="18"><font FACE="Times New Roman" SIZE="3">MM_LOENGLISH</font></td>
+        <td WIDTH="28%" height="18"><font FACE="Times New Roman" SIZE="3">0.01inch</font></td>
+        <td WIDTH="19%" height="18"><font SIZE="3"><p ALIGN="CENTER">向右</font></td>
+        <td WIDTH="19%" height="18"><font SIZE="3"><p ALIGN="CENTER">向上</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%" height="19"><font FACE="Times New Roman" SIZE="3">MM_HIENGLISH</font></td>
+        <td WIDTH="28%" height="19"><font FACE="Times New Roman" SIZE="3">0.001inch</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向右</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向上</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%" height="19"><font FACE="Times New Roman" SIZE="3">MM_TWIPS</font></td>
+        <td WIDTH="28%" height="19"><font FACE="Times New Roman" SIZE="3">1/1440inch</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向右</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">向上</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%" height="19"><font FACE="Times New Roman" SIZE="3">MM_ISOTROPIC</font></td>
+        <td WIDTH="28%" height="19"><font SIZE="3">可调整 </font><font FACE="Times New Roman" SIZE="3">(x=y)</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">可选择</font></td>
+        <td WIDTH="19%" height="19"><font SIZE="3"><p ALIGN="CENTER">可选择</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%" height="38"><font FACE="Times New Roman" SIZE="3">MM_ANISOTROPIC</font></td>
+        <td WIDTH="28%" height="38"><font SIZE="3">可调整（</font><font FACE="Times New Roman" SIZE="3">x!=y</font><font SIZE="3">）</font></td>
+        <td WIDTH="19%" height="38"><font SIZE="3"><p ALIGN="CENTER">可选择</font></td>
+        <td WIDTH="19%" height="38"><font SIZE="3"><p ALIGN="CENTER">可选择</font></td>
+      </tr>
+    </table>
+    </center></div><p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">我们一般使用的映射模式是</font><font FACE="Times New Roman" SIZE="3">MM_TEXT</font><font SIZE="3">，它也是缺省设置。在该模式下，坐标原点在工作区左上角，而</font><font FACE="Times New Roman" SIZE="3">x</font><font SIZE="3">坐标值是向右递增，</font><font FACE="Times New Roman" SIZE="3">y</font><font SIZE="3">坐标值是向下递增，单位值</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">代表一个像素。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">要设置映射模式，可以调用</font><font FACE="Times New Roman" SIZE="3">CDC::SetMapMode()</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CClientDC dc;</p>
+    <p>nPreMapMode=dc.SetMapMode(nMapMode);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">它将映射模式设置为</font><font FACE="Times New Roman" SIZE="3">nMapMode</font><font SIZE="3">，并返回前一次的映射模式</font><font FACE="Times New Roman" SIZE="3">nPreMapMode</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">GetMapMode</font><font SIZE="3">可取得当前的映射模式：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CClientDC dc;</p>
+    <p>nMapMode=dc.GetMapMode();</p>
+    <p>MFC</font><font SIZE="3">绘图函数都使用逻辑坐标作为位置参数。比如</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CString str(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">Hello,world!</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">);</p>
+    <p>dc.TextOut(10,10,str,str.GetLength());</p>
+    <p></font><font SIZE="3">这里的</font><font FACE="Times New Roman" SIZE="3">(10,10)</font><font SIZE="3">是逻辑坐标而不是像素点数（只是在缺省映射模式</font><font FACE="Times New Roman" SIZE="3">MM_TEXT</font><font SIZE="3">下，正好与像素点相对应），在输出时</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">函数会将逻辑坐标</font><font FACE="Times New Roman" SIZE="3">(10,10)</font><font SIZE="3">依据当前映射模式转化为“设备坐标”，然后将文字输出在屏幕上。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">设备坐标以像素点为单位，且</font><font FACE="Times New Roman" SIZE="3">x</font><font SIZE="3">轴坐标值向右递增，</font><font FACE="Times New Roman" SIZE="3">y</font><font SIZE="3">轴坐标值向下递增，但原点</font><font FACE="Times New Roman" SIZE="3">(0,0)</font><font SIZE="3">位置却不限定在工作区的左上角。依据设备坐标的原点和用途，可以将</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">下使用的设备坐标系统分为三种：工作区坐标系统，窗口坐标系统和屏幕坐标系统。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">（</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">）工作区坐标系统：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">工作区坐标系统是最常见的坐标系统，它以窗口客户区左上角为原点</font><font FACE="Times New Roman" SIZE="3">(0,0)</font><font SIZE="3">，主要用于窗口客户区绘图输出以及处理窗口的一些消息。鼠标消息</font><font FACE="Times New Roman" SIZE="3">WM_LBUTTONDOWN</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WM_MOUSEMOVE</font><font SIZE="3">传给框架的消息参数以及</font><font FACE="Times New Roman" SIZE="3">CDC</font><font SIZE="3">一些用于绘图的成员都是使用工作区坐标。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">（</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">）屏幕坐标系统：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">屏幕坐标系统是另一类常用的坐标系统，以屏幕左上角为原点（</font><font FACE="Times New Roman" SIZE="3">0,0</font><font SIZE="3">）。以</font><font FACE="Times New Roman" SIZE="3">CreateDC(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">DISPLAY</font><font SIZE="3">” </font><font FACE="Times New Roman" SIZE="3">, ...)</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">GetDC(NULL)</font><font SIZE="3">取得设备上下文时，该上下文使用的坐标系就是屏幕坐标系。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">一些与窗口的工作区不相关的函数都是以屏幕坐标为单位，例如设置和取得光标位置的函数</font><font FACE="Times New Roman" SIZE="3">SetCursorPos()</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">GetCursorPos()</font><font SIZE="3">；由于光标可以在任何一个窗口之间移动，它不属于任何一个单一的窗口，因此使用屏幕坐标。弹出式菜单使用的也是屏幕坐标。另外，</font><font FACE="Times New Roman" SIZE="3">CreateWindow</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">MoveWindow</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SetWindowPlacement()</font><font SIZE="3">等函数用于设置窗口相对于屏幕的位置，使用的也是屏幕坐标系统。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">（</font><font FACE="Times New Roman" SIZE="3">3</font><font SIZE="3">）窗口坐标系统：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">窗口坐标系统以窗口左上角为坐标原点</font><font FACE="Times New Roman" SIZE="3">,</font><font SIZE="3">它包含了窗口控制菜单、标题栏等内容。一般情况下很少在窗口标题栏上绘图，因此这种坐标系统很少使用。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">三类设备坐标系统关系如下图所示：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3"><img src="T7_12.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_12.gif" alt="T7_12.tif (166822 bytes)" WIDTH="415" HEIGHT="277"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">7-12. 
+    </font><font SIZE="3">三类设备坐标</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>MFC</font><font SIZE="3">提供</font><font FACE="Times New Roman" SIZE="3">ClientToScreen()</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">ScreenToClient()</font><font SIZE="3">两个函数用于完成工作区坐标和屏幕坐标之间的转换工作。</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p></font><font FACE="Arial" SIZE="2"><b>void</b> 
+        <b>ScreenToClient(</b> <b>LPPOINT</b> <i>lpPoint</i> <b>)</b> <b>const;</p>
+        </b></font><font FACE="Times New Roman" SIZE="3"><p></font><font FACE="Arial" SIZE="2"><b>void</b> 
+        <b>ScreenToClient(</b> <b>LPRECT</b> <i>lpRect</i> <b>)</b> <b>const;</p>
+        <p>void</b> <b>ClientToScreen(</b> <b>LPPOINT</b> <i>lpPoint</i> <b>)</b> <b>const;</p>
+        </b></font><p><font FACE="Arial" SIZE="2"><b>void</b> <b>ClientToScreen(</b> <b>LPRECT</b> 
+        <i>lpRect</i> <b>)</b> <b>const;</b></font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">其实，我们在前面介绍弹出式菜单时已经使用了</font><font FACE="Times New Roman" SIZE="3">ClientToScreen</font><font SIZE="3">函数。在那里，由于弹出式菜单使用的是屏幕坐标，因此当处理弹出式菜单快捷键</font><font FACE="Times New Roman" SIZE="3">shift+F10</font><font SIZE="3">时，如果要在窗口左上角</font><font FACE="Times New Roman" SIZE="3">(5,5)</font><font SIZE="3">处显示快捷菜单，就必须先调用</font><font FACE="Times New Roman" SIZE="3">ClientToScreen</font><font SIZE="3">函数将客户区坐标（</font><font FACE="Times New Roman" SIZE="3">5,5</font><font SIZE="3">）转化为屏幕坐标。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CRect rect;</p>
+    <p>GetClientRect(rect);</p>
+    <p>ClientToScreen(rect);</p>
+    <p>point = rect.TopLeft();</p>
+    <p>point.Offset(5, 5);</p>
+    <p></font><font SIZE="3">在视图滚动后，如果用户在视图中单击鼠标，那么会得到鼠标位置的设备（视图）坐标。在使用这个数据处理文档（比如画点或画线）时，需要把它转化为文档坐标。这是因为利用</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">绘图时，所有传递给</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">作图的坐标都是逻辑坐标。当调用</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">绘图函数绘图时，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">自动将逻辑坐标转换成设备坐标，然后再绘图。设备上下文类</font><font FACE="Times New Roman" SIZE="3">CDC</font><font SIZE="3">提供了两个成员函数</font><font FACE="Times New Roman" SIZE="3">LPToDP</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">DPToLP</font><font SIZE="3">完成逻辑坐标和设备坐标之间的转换工作。如其名字所示那样，</font><font FACE="Times New Roman" SIZE="3">LPToDP</font><font SIZE="3">将逻辑坐标转换为设备坐标，</font><font FACE="Times New Roman" SIZE="3">DPToLP</font><font SIZE="3">将设备坐标转换为逻辑坐标。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void LPtoDP( LPPOINT lpPoints, int nCount = 1 ) const;</p>
+    <p>void LPtoDP( LPRECT lpRect ) const;</p>
+    <blockquote>
+      <blockquote>
+        <p>void LPtoDP( LPSIZE lpSize ) const;</p>
+        <p>void DPtoLP( LPPOINT lpPoints, int nCount = 1 ) const;</p>
+        <p>void DPtoLP( LPRECT lpRect ) const;</p>
+        <p>void DPtoLP( LPSIZE lpSize ) const;</p>
+        </font><p>　</p>
+      </blockquote>
+    </blockquote>
+    <font SIZE="3"><b><p></b><font color="#3973DE">7.3.2 滚动文档</font></p>
+    </font><font FACE="Times New Roman" SIZE="3"><p></font><font SIZE="3">由于</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">绘图函数使用的是逻辑坐标，因此用户可以在一个假想的通常是比视图要大的“文档窗口”中绘图；</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">自动在幕后完成坐标转换工作，并将落在视图范围内的那一部分“文档窗口”显示出来，其余的部分被裁剪。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">但是光这样还不能卷滚文档。要卷滚显示文档，还必须知道文档卷滚到了什么位置；一旦用户拖动滚动条时要告诉视图改变在文档中的相应位置。所有这些，由</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">来完成。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>MFC</font><font SIZE="3">提供了</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">类，简化了滚动需要处理的大量工作。除了管理文档中的滚动操作外，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">还通过调用</font><font FACE="Times New Roman" SIZE="3">Windows API</font><font SIZE="3">函数画出滚动条、箭头和滚动光标。它还负责处理：</p>
+    <blockquote>
+      <p>用户初始化滚动条范围</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">通过滚动视图的</font><font FACE="Times New Roman" SIZE="3">SetScrollRange()</font><font SIZE="3">方法</font><font FACE="Times New Roman" SIZE="3">)</p>
+      </font><font SIZE="3"><p>处理滚动条消息，并滚动文档到相应位置</p>
+      <p>管理窗口和视图的尺寸大小</p>
+      <p>调整滚动条上滑块（或称拇指框）的位置，使之与文档当前位置相匹配</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">程序员要做的工作是：</p>
+    <blockquote>
+      <p>从</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">类中派生出自己的视图类，以支持卷滚</p>
+      <p>提供文档大小，确定滚动范围和设置初始位置</p>
+      <p>协调文档位置和屏幕坐标</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">要让应用程序支持卷滚，可以在用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">生成框架程序时就指定视图的基类为</font><font FACE="Times New Roman" SIZE="3">CSrollView</font><font SIZE="3">。可以在</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">MFC AppWizard-Step 6 of 6</font><font SIZE="3">对话框中，在对话框上方应用程序所包含的类中选择</font><font FACE="Times New Roman" SIZE="3">CEditorView</font><font SIZE="3">，然后在</font><font FACE="Times New Roman" SIZE="3">Base Class</font><font SIZE="3">下拉列表框中选择应用程序视图类的基类为</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">，如图</font><font FACE="Times New Roman" SIZE="3">7-11</font><font SIZE="3">所示：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font><img src="T7_13.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_13.gif" alt="T7_13.tif (317268 bytes)" WIDTH="504" HEIGHT="405"><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">7-13 
+    </font><font SIZE="3">为应用程序的视图类指定基类</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">现在我们要手工修改</font><font FACE="Times New Roman" SIZE="3">CEditorView</font><font SIZE="3">，使它的基类为</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>1. </font><font SIZE="3">修改视图类所对应的头文件，将所有用到</font><font FACE="Times New Roman" SIZE="3">CView</font><font SIZE="3">的地方改为</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">。通常，首先修改视图类赖以派生的父类，形式如下：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>class CEditorView:public CScrollView</p>
+    <p>2. </font><font SIZE="3">修改视图类实现的头文件，把所有用到</font><font FACE="Times New Roman" SIZE="3">CView</font><font SIZE="3">的地方改为</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">。首先修改</font><font FACE="Times New Roman" SIZE="3">IMPLEMENT_DYNACREATE</font><font SIZE="3">一行：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>IMPLEMENT_DYNACREATE(CEditorView,CScrollView)</p>
+    <p></font><font SIZE="3">然后修改</font><font FACE="Times New Roman" SIZE="3">BEGIN_MESSAGE_MAP</font><font SIZE="3">宏</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BEGIN_MESSAGE_MAP(CEditorView,CScrollView)</p>
+    <p></font><font SIZE="3">然后将其他所有用到</font><font FACE="Times New Roman" SIZE="3">CView</font><font SIZE="3">的地方改为</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">一个更简单的方法是：使用</font><font FACE="Times New Roman" SIZE="3">Edit-Replace</font><font SIZE="3">功能，进行全局替换。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">到现在为止，已经将编辑器视图类</font><font FACE="Times New Roman" SIZE="3">CEditorView</font><font SIZE="3">的基类由</font><font FACE="Times New Roman" SIZE="3">CView</font><font SIZE="3">转化为</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">现在，要设置文档大小，以便让</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">知道该如何处理文档。视图必需知道文档的卷滚范围，这样才能确定何时卷滚到文档的头部和尾部，以及当拖动卷滚条的滑块时按适当比例调整文档当前显示位置。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">为此，我们首先在文档类</font><font FACE="Times New Roman" SIZE="3">CEditorDoc</font><font SIZE="3">的头文件</font><font FACE="Times New Roman" SIZE="3">editordoc.h</font><font SIZE="3">中增加一个</font><font FACE="Times New Roman" SIZE="3">CSize</font><font SIZE="3">类型的数据成员</font><font FACE="Times New Roman" SIZE="3">m_sizeDoc</font><font SIZE="3">用以表示文档的大小。</font><font FACE="Times New Roman" SIZE="3">CSize</font><font SIZE="3">对象包含</font><font FACE="Times New Roman" SIZE="3">cx</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">cy</font><font SIZE="3">两个数据成员，分别用于存放文档的</font><font FACE="Times New Roman" SIZE="3">x</font><font SIZE="3">方向坐标范围和</font><font FACE="Times New Roman" SIZE="3">y</font><font SIZE="3">方向坐标范围。另外，还要提供一个成员函数</font><font FACE="Times New Roman" SIZE="3">GetDocSize()</font><font SIZE="3">来访问该文档大小范围数据成员。修改后的</font><font FACE="Times New Roman" SIZE="3">editordoc.h</font><font SIZE="3">如清单</font><font FACE="Times New Roman" SIZE="3">7.11</font><font SIZE="3">。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">7.11 CEditorDoc</font><font SIZE="3">头文件</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>class CEditorDoc : public CDocument</p>
+    <p>{</p>
+    <p>protected: // create from serialization only</p>
+    <p>CEditorDoc();</p>
+    <p>DECLARE_DYNCREATE(CEditorDoc)</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>//</font><font SIZE="3">保存文档大小</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CSize m_sizeDoc;</p>
+    <p>// Attributes</p>
+    <p>public:</p>
+    <p>CSize GetDocSize(){return m_sizeDoc;}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// Operations</p>
+    <p>public:</p>
+    <p>CStringList lines;</p>
+    <p>int nLineNum;</b></p>
+    <p>......</p>
+    <p>};</p>
+    <p></font><font SIZE="3">既然增加了</font><font FACE="Times New Roman" SIZE="3">m_sizeDoc</font><font SIZE="3">这一数据成员，就需要在</font><font FACE="Times New Roman" SIZE="3">CEditorDoc</font><font SIZE="3">构造函数中进行初始化，给</font><font FACE="Times New Roman" SIZE="3">m_sizeDoc</font><font SIZE="3">设置一合理的数值，比如说</font><font FACE="Times New Roman" SIZE="3">x=700</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">y=800</font><font SIZE="3">。构造函数如清单</font><font FACE="Times New Roman" SIZE="3">7.12</font><font SIZE="3">。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">7.12 CEditorDoc</font><font SIZE="3">的构造函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CEditorDoc::CEditorDoc()</p>
+    <p>{</p>
+    <p>// TODO: add one-time construction code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>nLineNum=0;</p>
+    <p>m_sizeDoc=CSize(700,800);</b></p>
+    <p>}</p>
+    <p></font><font SIZE="3">一个设计优秀的应用程序应当能够动态调整文档的卷滚范围。比如，在</font><font FACE="Times New Roman" SIZE="3">WORD</font><font SIZE="3">中新建一个文件时，在“页面模式”下将可卷滚范围设为一页大小。随着用户输入，逐渐增加文档的卷滚范围。但是这里为简明起见，将文档卷滚范围设为固定大小</font><font FACE="Times New Roman" SIZE="3">700X800</font><font SIZE="3">点像素大小。设置文档大小通过由视图类的</font><font FACE="Times New Roman" SIZE="3">CEditorView::OnInitialUpdate()</font><font SIZE="3">调用</font><font FACE="Times New Roman" SIZE="3">SetScrollSizes()</font><font SIZE="3">成员函数来完成。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>SetScrollSizes()</font><font SIZE="3">用于设置文档卷滚范围。一般在重载</font><font FACE="Times New Roman" SIZE="3">OnInitialUpdate()</font><font SIZE="3">成员函数或</font><font FACE="Times New Roman" SIZE="3">OnUpdate()</font><font SIZE="3">时调用该函数，用以调整文档卷滚特性。比如，在文档初始显示或文档大小作了调整之后。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">7.13 </font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">OnInitialUpdate()</font><font SIZE="3">中设置卷滚范围</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CEditorView::OnInitialUpdate() </p>
+    <p>{</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>// TODO: Add your specialized code here and/or call the base class</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CDC *pDC=GetDC();</p>
+    <p>pFont=new CFont();</p>
+    <p>if(!(pFont-&gt;CreateFont(0,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,</p>
+    <p>ANSI_CHARSET,OUT_TT_PRECIS,CLIP_TT_ALWAYS,</p>
+    <p>DEFAULT_QUALITY,DEFAULT_PITCH,&quot;Courier New&quot;)))</p>
+    <p>{</p>
+    <p>pFont-&gt;CreateStockObject(SYSTEM_FONT);</p>
+    <p>}</p>
+    <p>CFont* oldFont=pDC-&gt;SelectObject(pFont);</p>
+    <p>TEXTMETRIC tm;</p>
+    <p>pDC-&gt;GetTextMetrics(&amp;tm);</p>
+    <p>lHeight=tm.tmHeight+tm.tmExternalLeading;</p>
+    <p>cWidth=tm.tmAveCharWidth;</p>
+    <p>SetScrollSizes(MM_TEXT,GetDocument()-&gt;GetDocSize());</b></p>
+    <p>CScrollView::OnInitialUpdate();</p>
+    <p>}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>SetScrollSizes()</font><font SIZE="3">第一个参数为映射模式。</font><font FACE="Times New Roman" SIZE="3">SetScrollSizes()</font><font SIZE="3">可以使用除</font><font FACE="Times New Roman" SIZE="3">MM_ISOTROPIC</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">MM_ANISOTROPIC</font><font SIZE="3">之外的其他任何映射模式。</font><font FACE="Times New Roman" SIZE="3">SetScrollSizes()</font><font SIZE="3">第二个参数为文档大小，用一个</font><font FACE="Times New Roman" SIZE="3">CSize</font><font SIZE="3">类型的数值表示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">另外，我们还要检查两个包含绘图输出功能的函数：</font><font FACE="Times New Roman" SIZE="3">CEditorView::OnChar()</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CEditorView::OnDraw()</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CEditorView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) </p>
+    <p>{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CEditorDoc* pDoc=GetDocument();</p>
+    <p>CClientDC dc(this);</p>
+    <p>CString line(&quot;&quot;);//</font><font SIZE="3">存放编辑器当前行字符串</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>POSITION pos=NULL;//</font><font SIZE="3">字符串链表位置指示</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>if(nChar=='\r')</p>
+    <p>{</p>
+    <p>pDoc-&gt;nLineNum++;</p>
+    <p>}</p>
+    <p>else</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">按行号返回字符串链表中位置值</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pos=pDoc-&gt;lines.FindIndex(pDoc-&gt;nLineNum);</p>
+    <p>if(!pos)</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">没有找到该行号对应的行，因此它是一个空行，</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>//</font><font SIZE="3">我们把它加到字符串链表中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>line+=(char)nChar;</p>
+    <p>pDoc-&gt;lines.AddTail(CString(line));</p>
+    <p>}</p>
+    <p>else{</p>
+    <p>//there is a line,so add the incoming char to the end of</p>
+    <p>//the line</p>
+    <p>line=pDoc-&gt;lines.GetAt(pos);</p>
+    <p>line+=(char)nChar;</p>
+    <p>pDoc-&gt;lines.SetAt(pos,line);</p>
+    <p>}</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>TEXTMETRIC tm;</p>
+    <p>dc.GetTextMetrics(&amp;tm);</p>
+    <p>dc.TextOut(0,</p>
+    <p>(int)pDoc-&gt;nLineNum*tm.tmHeight,</p>
+    <p>line,</p>
+    <p>line.GetLength());</p>
+    <p>}</p>
+    <p>pDoc-&gt;SetModifiedFlag();</p>
+    <p>SetScrollSizes(MM_TEXT,GetDocument()-&gt;GetDocSize());</b></p>
+    <p>CScrollView::OnChar(nChar,nRepCnt,nFlags);</p>
+    <p>}</p>
+    <p></font><font SIZE="3">在程序运行开始的时侯，视图坐标原点和文档坐标原点是重合的。但是，当用户拖动滚动条时，视图原点就与文档原点不一致了，如图</font><font FACE="Times New Roman" SIZE="3">7-14</font><font SIZE="3">。由于</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">是按照文档坐标（逻辑坐标）来输出图形的，这样自然就无法正确显示文档内容。</p>
+    <p ALIGN="CENTER"><img src="T7_14.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_14.gif" alt="T7_14.tif (490924 bytes)" WIDTH="462" HEIGHT="542"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">7-14 
+    </font><font SIZE="3">文档滚动前后文档坐标原点和视图坐标原点的变化</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">这时，要想获得正确输出，就必须调整视图坐标，让视图坐标原点和文档坐标原点重合，如图</font><font FACE="Times New Roman" SIZE="3">7-15</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font><font SIZE="3"><img src="T7_15.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_15.gif" alt="T7_15.tif (109159 bytes)" WIDTH="420" HEIGHT="188"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">7-15 
+    </font><font SIZE="3">调整视图设备上下文原点后</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CScrollView</font><font SIZE="3">视图类提供了一个</font><font FACE="Times New Roman" SIZE="3">CScrollView::OnPrepareDC()</font><font SIZE="3">成员函数，完成视图设备上下文坐标原点的调整工作。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">现在修改</font><font FACE="Times New Roman" SIZE="3">OnChar()</font><font SIZE="3">，加入</font><font FACE="Times New Roman" SIZE="3">OnPrepareDC()</font><font SIZE="3">函数，见清单</font><font FACE="Times New Roman" SIZE="3">7.15</font><font SIZE="3">。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">7.15 </font><font SIZE="3">修改后的</font><font FACE="Times New Roman" SIZE="3">OnChar</font><font SIZE="3">成员函数</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>void CEditorView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) </p>
+    <p>{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CEditorDoc* pDoc=GetDocument();</p>
+    <p>CClientDC dc(this);</p>
+    <p>OnPrepareDC(&amp;dc);</p>
+    <p>CFont* pOldFont=dc.SelectObject(pFont); </p>
+    <p>CString line(&quot;&quot;);//</font><font SIZE="3">存放编辑器当前行字符串</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>POSITION pos=NULL;//</font><font SIZE="3">字符串链表位置指示</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>if(nChar=='\r')</p>
+    <p>{</p>
+    <p>pDoc-&gt;nLineNum++;</p>
+    <p>}</p>
+    <p>else</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">按行号返回字符串链表中位置值</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pos=pDoc-&gt;lines.FindIndex(pDoc-&gt;nLineNum);</p>
+    <p>if(!pos)</p>
+    <p>{</p>
+    <p>//</font><font SIZE="3">没有找到该行号对应的行，因此它是一个空行，</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>//</font><font SIZE="3">我们把它加到字符串链表中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>line+=(char)nChar;</p>
+    <p>pDoc-&gt;lines.AddTail(CString(line));</p>
+    <p>}</p>
+    <p>else{</p>
+    <p>//there is a line,so add the incoming char to the end of</p>
+    <p>//the line</p>
+    <p>line=pDoc-&gt;lines.GetAt(pos);</p>
+    <p>line+=(char)nChar;</p>
+    <p>pDoc-&gt;lines.SetAt(pos,line);</p>
+    <p>}</p>
+    <p>TEXTMETRIC tm;</p>
+    <p>dc.GetTextMetrics(&amp;tm);</p>
+    <p>dc.TextOut(0,</p>
+    <p>(int)pDoc-&gt;nLineNum*tm.tmHeight,</p>
+    <p>line,</p>
+    <p>line.GetLength());</p>
+    <p>}</p>
+    <p>pDoc-&gt;SetModifiedFlag();</p>
+    <p>dc.SelectObject(pOldFont);</p>
+    <p>SetScrollSizes(MM_TEXT,GetDocument()-&gt;GetDocSize());</b></p>
+    <p>CScrollView::OnChar(nChar,nRepCnt,nFlags);</p>
+    <p>}</p>
+    <p></font><font SIZE="3">但是，对于视图</font><font FACE="Times New Roman" SIZE="3">OnDraw()</font><font SIZE="3">函数，则不需要作这样的调整。这是因为，框架在调用</font><font FACE="Times New Roman" SIZE="3">OnDraw()</font><font SIZE="3">之前，已经自动调用了</font><font FACE="Times New Roman" SIZE="3">OnPrepareDC()</font><font SIZE="3">成员函数完成设备上下文坐标调整工作了。<b></p>
+    <div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#79D3FF">
+      <tr>
+        <td width="100%"></b>提示：对于框架传过来的设备上下文，不需要调用</font><font FACE="Times New Roman" SIZE="3">OnPrepareDC(),</font><font SIZE="3">因为框架知道它是用于绘图的，因此事先调用了</font><font FACE="Times New Roman" SIZE="3">OnPrepareDC()</font><font SIZE="3">作好了坐标调整工作。如果是自己构造或用</font><font FACE="Times New Roman" SIZE="3">GetDC()</font><font SIZE="3">取得得设备上下文，则需要调用</font><font FACE="Times New Roman" SIZE="3">OnPrepareDC()</font><font SIZE="3">完成设备上下文坐标调整工作。<b></b></font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p></font><font SIZE="3">现在编辑器已经能够支持文档滚动了，如图</font><font FACE="Times New Roman" SIZE="3">7-16</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font><font SIZE="3">　<img src="T7_16.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/T7_16.gif" alt="T7_16.tif (270924 bytes)" WIDTH="487" HEIGHT="349"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">7-16</font><font SIZE="3">支持滚动的文本编辑器</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap7_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/chap7_2.htm">上一页</a></td>
+        <td><p align="right"><a href="chap7_4.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap7/chap7_4.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

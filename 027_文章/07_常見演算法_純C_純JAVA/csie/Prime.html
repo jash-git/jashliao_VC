@@ -1,0 +1,793 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Prime</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Prime Generation: Sieve of Eratosthenes</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Sieve of Eratosthenes</p>
+<p>這是一個製作質數表的方法。通常簡稱為「篩法」。</p>
+<p>列出所有正整數。從2開始，刪掉2的倍數。找下一個未被刪掉的數字，找到3，刪掉3的倍數。找下一個未被刪掉的數字，找到5，刪掉5的倍數。如此不斷下去，就能刪掉所有合數，找到所有質數。</p>
+<img src="SieveOfEratosthenes.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/SieveOfEratosthenes.png">
+<textarea>
+bool prime[20000000];
+
+void eratosthenes()
+{
+	for (int i=0; i<20000000; i++)	// 初始化
+		prime[i] = true;
+
+	prime[0] = false;	// 0 和 1 不是質數
+	prime[1] = false;
+
+	// 找下一個未被刪掉的數字
+	for (int i=2; i<20000000; i++)
+		if (prime[i])
+			// 刪掉質數i的倍數，從兩倍開始。保留原本質數。
+			for (int j=i+i; j<20000000; j+=i)
+				prime[j] = false;
+}
+</textarea>
+<p>欲刪掉質數i的倍數之時，早已刪掉1倍到i-1倍了，直接從i倍開始。</p>
+<textarea>
+bool prime[20000000];
+
+void eratosthenes()
+{
+	for (int i=0; i<20000000; i++)
+		prime[i] = true;
+
+	prime[0] = false;
+	prime[1] = false;
+
+	for (int i=2; i<20000000; i++)
+		if (prime[i])
+			// 刪掉質數i的倍數，從i倍開始。
+			for (int j=i*i; j<20000000; j+=i)
+				prime[j] = false;
+}
+</textarea>
+<p>欲刪掉質數i的倍數之時，早已刪掉「小於i的質數、其倍數」倍了，直接刪掉「大於等於i的質數、其倍數」倍。</p>
+<p>乍看下程式碼增多而變慢，實際上cache miss減少而變快。</p>
+<textarea>
+bool prime[20000000];
+
+void eratosthenes()
+{
+	for (int i=0; i<20000000; i++)
+		prime[i] = true;
+
+	prime[0] = false;
+	prime[1] = false;
+
+	for (int i=2; i<20000000; i++)
+		if (prime[i])
+			// k是倍率，j是質數i的倍數。
+			// 由大到小判斷，當prime[k]成立時，
+			// k才能涵蓋所有「大於等於i的質數、其倍數」倍。
+			for (int k=(20000000-1)/i, j=i*k; k>=i; k--, j-=i)
+				if (prime[k])
+					prime[j] = false;
+}
+// 運用小範圍的prime[k]，避免存取大範圍的prime[j]，
+// 大幅減少cache miss。
+</textarea>
+<p>一個合數x，必定有一個小於等於sqrt(x)的質因數。所有小於等於sqrt(x)的質數，刪掉這些質數的倍數，就能刪掉所有合數了。</p>
+<textarea>
+bool prime[20000000];
+
+void eratosthenes()
+{
+	for (int i=0; i<20000000; i++)
+		prime[i] = true;
+
+	prime[0] = false;
+	prime[1] = false;
+
+	// 只需要刪掉sqrt(20000000)以下的質數的倍數。
+	int sqrt_20000000 = sqrt(20000000);
+	for (int i=2; i<=sqrt_20000000; i++)
+		if (prime[i])
+			for (int k=(20000000-1)/i, j=i*k; k>=i; k--, j-=i)
+				if (prime[k])
+					prime[j] = false;
+}
+</textarea>
+<p>顛倒true和false，節省初始化時間。</p>
+<textarea>
+// 全域變數的陣列，每一格將自動初始化為false。
+bool sieve[20000000];
+
+void eratosthenes()
+{
+	int sqrt_20000000 = sqrt(20000000);
+	sieve[0] = sieve[1] = true;
+	for (int i=2; i<=sqrt_20000000; i++)
+		if (!sieve[i])
+			for (int k=(20000000-1)/i, j=i*k; k>=i; k--, j-=i)
+				if (!sieve[k])
+					sieve[j] = true;
+}
+</textarea>
+<p>製作質數表。篩法結束之後，掃描一次陣列即可。</p>
+<textarea>
+bool sieve[20000000];
+
+void eratosthenes()
+{
+	......;
+
+	// 製作質數表
+	vector<int> prime;
+	for (int i=2; i<20000000; i++)
+		if (!sieve[i])
+			prime.push_back(i);
+}
+</textarea>
+<p class="e">UVa 406 516 524 543 10140 10311</p>
+<p class="t">使用bitset來取代bool陣列</p>
+<p>一個int有32個位元，可以當作32個欄位來使用，節省記憶體空間，減少cache miss。</p>
+<textarea>
+const int N = 20000000;
+int sieve[(N>>5) + 1];	// 加一，以包含餘數。
+
+int  GET(int x) { return sieve[x>>5]>>(x&31) & 1; }
+void SET(int x) { return sieve[x>>5] |= 1<<(x&31); }
+
+void eratosthenes()
+{
+	// register關鍵字讓變數存放於CPU register，加快存取速度。
+	register int i, j, k;
+	int sqrt_N = sqrt(N);
+	SET(0); SET(1);
+	for (i=2; i<=sqrt_N; i++)
+		if (!GET(i))
+			// 因為陣列已經加一，N-1改成N也無妨。
+			for (k=N/i, j=i*k; k>=i; k--, j-=i)
+				if (!GET(k))
+					SET(j);
+}
+</textarea>
+<p class="t">不處理2的倍數</p>
+<p>不處理2的倍數，節省一半記憶體，增進一點速度。</p>
+<p>令陣列第0格代表數字1、陣列第1格代表數字3、陣列第2格代表數字5、……，以此類推。</p>
+<textarea>
+const int N = 1<<25;
+int sieve[(N>>6) + 1];	// 不處理2的倍數
+
+int  GET(int x) { return sieve[x>>5]>>(x&31) & 1; }
+void SET(int x) { return sieve[x>>5] |= 1<<(x&31); }
+int  N2I(int i) { return (i-1)>>1; }
+int  I2N(int i) { return (i<<1)+1; }
+#define N2I(i) (((i)-1)>>1)	// 索引值 = (數字 - 1) / 2
+#define I2N(i) (((i)<<1)+1)	// 數字   = 索引值 * 2 + 1
+
+// 驗證一個數字是不是質數
+bool isprime(int x)
+{
+	return x==2 || x>2 && (x&1) && !GET(N2I(x));
+}
+
+void eratosthenes()
+{
+	int half_sqrt_N = sqrt(N) / 2;
+	int half_N = N >> 1;
+	register int i, j, k;
+	// 從3開始。N2I(3) = 1。
+	for (i=1; i<=half_sqrt_N; i++)
+		if (!GET(i))
+			for (j=2*i*(i+1), k=2*i+1; j<half_N; j+=k)
+				SET(j);
+}
+
+void eratosthenes()
+{
+	int half_sqrt_N = sqrt(N) / 2;
+	register int i, j, k, ii;
+	for (i=1; i<=half_sqrt_N; i++)
+		if (!GET(i))
+			for (ii=I2N(i), j=N2I(N/ii), k=ii*j+i; j>=i; j--, k-=ii)
+				if (!GET(j))
+					SET(k);
+}
+</textarea>
+<p class="t">時間複雜度</p>
+<p>考慮迴圈索引值i與j共有多少種：i一共有N種；j一共有(N/p1 - p1) + (N/p2 - p2) + ... + (N/sqrtN - sqrtN)種，其中p1 p2 ...是質數2 3 ...。時間複雜度就是兩者相加，為O(NloglogsqrtN) = O(NloglogN)。</p>
+<pre>
+1/1  + 1/2  + ... + 1/N     = O(logN)
+1/p1 + 1/p2 + ... + 1/N     = O(loglogN)
+1/p1 + 1/p2 + ... + 1/sqrtN = O(loglogsqrtN) = O(loglogN)
+</pre>
+<pre>
+http://en.wikipedia.org/wiki/Divergence_of_the_sum_of_the_reciprocals_of_the_primes
+1/1  + 1/2  + ... + 1/n - ln(n)     趨近於Euler-Mascheroni constant
+1/p1 + 1/p2 + ... + 1/n - ln(ln(n)) 趨近於Meissel–Mertens constant
+</pre>
+<p>至於迴圈最內部，每個合數都被刪掉一次，總共O(N)次。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Prime Generation: Linear Sieve Algorithm</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">線性時間篩法</p>
+<p>一邊製作質數表，一邊刪掉每個數的質數倍，時間複雜度就能達到O(N)。</p>
+<textarea>
+const int N = 20000000;
+bool sieve[N];
+
+void eratosthenes()
+{
+	vector<int> prime;
+	for (int i=2; i<N; i++)
+	{
+		if (!sieve[i]) prime.push_back(i);
+		for (int j=0; i*prime[j]<N; j++)
+		{
+			sieve[i*prime[j]] = true;
+			if (i % prime[j] == 0) break;
+		}
+	}
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Prime Generation: 6n±1 Method</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">6n±1 Method</p>
+<p>這是一個精簡版的篩法，原理是：只拿2和3這兩個質數先篩過一遍，剩下的數字則用試除法驗證是不是質數。</p>
+<p>2和3的最小公倍數是6，我們就把所有數字分為6n、6n+1、6n+2、6n+2、6n+3、6n+4、6n+5六種（n是倍率）。除以六會餘零的數字為6n，除以六會餘一的數字為6n+1，以此類推。</p>
+<p>可以看出6n、6n+2、6n+3、6n+4會是2或3的倍數，不屬於質數。因此，只要驗證6n+1和6n+5是不是質數就可以了。（6n+5也可以寫成6n-1，意義不變。）</p>
+<p>6n-1到6n+1，再到下一個6n-1，再到6n+1，把這些要驗證的數字由小排到大，可以發現之間的差值會是2 4 2 4 2 4 ...不斷跳二跳四。實作程式碼時，就可以直接用加法加二加四，而不必用乘法及加減法計算6n-1、6n+1，如此一來程式的執行效率會好一點。</p>
+<p>驗證的順序是：數字2和3明顯的是質數，不必驗證；若是從數字5開始驗證，那麼下一個要驗證的數字就是5+2，再下一個就是5+2+4，再下一個就是5+2+4+2，如此不斷下去。</p>
+<textarea>
+// 以試除法判斷質數
+bool isprime(int n)
+{
+	for (int i=5; i*i<=n; i+=2)
+		if (n%i == 0)
+			return false;
+	return true;
+}
+
+// 只檢查6n±1。這些數字的間隔為2 4 2 4....
+void make_prime()
+{
+	cout << "找到質數2";
+	cout << "找到質數3";
+	for (int i=5, gap=2; i<1000000; i+=gap, gap=6-gap)
+		if (isprime(i))
+			cout << "找到質數" << i;
+}
+</textarea>
+<textarea>
+vector<int> prime;
+
+// 以試除法判斷質數
+bool isprime(int n)
+{
+	for (int i=0; prime[i]*prime[i]<=n; i++)
+		if (n % prime[i] == 0)
+			return false;
+	return true;
+}
+
+// 只檢查6n±1。這些數字的間隔為2 4 2 4....
+void make_prime()
+{
+	cout << "找到質數2"; prime.push_back(2);
+	cout << "找到質數3"; prime.push_back(3);
+	for (int i=5, gap=2; i<1000000; i+=gap, gap=6-gap)
+		if (isprime(i))
+			{cout << "找到質數" << i; prime.push_back(i);}
+}
+</textarea>
+<p>這個方法的時間複雜度是O(NsqrtN)，空間複雜度是O(1)。事實上6n±1法比篩法慢上許多。不過6n±1法的程式碼構造較為單純，當要枚舉的質數範圍不大時，有機會跑得比篩法還快。另外，6n±1法不需要開一條超大陣列來做計算，比起篩法它節省了很多空間，這也是它的優點。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Primality Test</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Primality Test</p>
+<p>質數測試，測試一個數字是否為質數。</p>
+<p>質數測試屬於P問題，不過以下介紹的皆非多項式時間的演算法，甚至是不保證結果正確的演算法。若對多項式時間、保證結果正確的演算法有興趣，可上網搜尋AKS Algorithm。</p>
+<p>要進行質數測試，也可以直接運用篩法製造所有質數，再來判斷質數。</p>
+<p class="t">Divisibility Primality Test</p>
+<p>整除性測試法。依照質數定義，一個質數p不會被大於1且小於p的數字整除，只要把這些數字都拿來試除，就可以判定一個數字是不是質數。</p>
+<p>此演算法其實就是窮舉所有可能的因數一一試除。</p>
+<textarea>
+bool divisibiity_test(int n)
+{
+	// 窮舉n所有可能的因數一一試除。
+	for (int d=2; d<n; ++d)
+		if (n % d == 0)
+			return false;	// 不是質數
+	return true;	// 是質數
+}
+</textarea>
+<textarea>
+bool divisibiity_test(int n)
+{
+	// 一個數字n不會有大於sqrt(n)的質因數（除了n本身以外）
+	int sqrt_n = sqrt(n);
+	for (int d=2; d<=sqrt_n; ++d)
+		if (n % d == 0)
+			return false;
+	return true;
+}
+</textarea>
+<p>這個演算法會進行sqrt(n)-1次除法，可推得時間複雜度為O(sqrtN)，然而前提是：不管n多大，每次除法都是O(1)。</p>
+<p>當要測試的數字很多時，可以先建立質數表，進行質數測試時僅檢查質因數。</p>
+<p class="t">Square Root Primality Test</p>
+<p>餘數系統的平方根有個特性：</p>
+<pre>
+以質數n為模數，1的平方根一定等於±1（即是1與n-1）。
+以合數n為模數，1的平方根除了等於±1（即是1與n-1），也可能等於其他數字。
+</pre>
+<p>平方根測試法是運用此特性而想出的方法：</p>
+<pre>
+以質數n為模數，0到n-1之間，只有1與n-1，平方之後等於1。
+以合數n為模數，0到n-1之間，還可能有其它數字，平方之後等於1。
+
+以n為模數，當2到n-2的每一個數字，平方之後皆不等於1，就推定n是質數。
+</pre>
+<p>此演算法的結果不一定正確。通過測試的數字，可能是合數或質數；無法通過測試的數字，一定是合數。</p>
+<p>有些合數會被誤判成質數，例如22就會被判定成質數，1^2、2^2、…、21^2模22之後剛好都餘1。</p>
+<textarea>
+bool square_root_primality_test(int n)
+{
+	for (int i=1; i<n-1; ++i)
+		if (i * i % n == 1)
+			return false;
+	return true;
+}
+</textarea>
+<p class="t">Fermat's Primality Test</p>
+<p>費瑪小定理：</p>
+<pre>
+若n是質數，a小於n，則a^n ≡ a (mod n)。
+若n是質數，a小於n，a不是零，則a^(n-1) ≡ 1 (mod n)。
+</pre>
+<p>費瑪質數測試法是運用費瑪小定理而想出的方法：</p>
+<pre>
+n是質數，費瑪小定理一定成立：a^(n-1) % n = 1一定成立。
+n是合數，費瑪小定理可能成立：a^(n-1) % n = 1可能成立。
+
+當a^(n-1) % n = 1成立，就推定n是質數。
+</pre>
+<p>此演算法的結果不一定正確。通過測試的數字，可能是合數或質數；無法通過測試的數字，一定是合數。</p>
+<p>使用各式各樣的a來實施測試，那麼判定結果就更準確。</p>
+<textarea>
+bool fermat_primality_test(int n)
+{
+	// 隨便取得一個數值當作a，
+	// 但是必須大於1、小於n，才有意義。
+//	srand(time(0));
+	int a = rand() % (n-2) + 2;
+
+	// 計算a^(n-1) % n的值，存於x中。
+	int x = 1;
+	for (int i=1; i<n; ++i) 
+		x = x * a % n;
+	return x == 1;
+//	return pow(a, n-1, n) == 1;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Primality Test: Miller-Rabin Algorithm</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>結合Square Root Primality Test與Fermat's Primality Test。</p>
+<p>此演算法的結果不一定正確。通過測試的數字，可能是合數或質數；無法通過測試的數字，一定是合數。</p>
+<pre>
+一、選定一個底數a，大於1、小於n，用來進行費瑪測試。
+　　待測數字n，會是費瑪測試的模數。
+二、令 n-1 = u * 2^t，其中t盡量大（u為奇數）。
+三、觀察a^u這個數字：
+　　若等於±1，
+　　則表示步驟四，所有數字都是1，永不出現平方根測試的反例。
+　　也表示步驟五，最終將通過費瑪測試。
+　　推定n是質數。
+四、依序觀察a^(u * 2^1)、a^(u * 2^2)、…、a^(u * 2^(t-1))這些數字，
+　　每個數字正好是前一個數字的平方：
+　甲、一旦發現有個數字的平方等於+1，
+　　　則表示無法通過平方根測試。
+　　　（但是步驟五，最終將通過費瑪測試。）
+　　　確定n是合數。
+　乙、一旦發現有個數字的平方等於-1，
+　　　則表示接下來的數字都是1，永不出現平方根測試的反例。
+　　　也表示步驟五，最終將通過費瑪測試。
+　　　推定n是質數。
+五、觀察a^(u * 2^t)這個數字：
+　甲、若等於+1，表示通過費瑪測試，推定n是質數。
+　乙、若不等於+1，表示無法通過費瑪測試，確定n是合數。
+　回、也就是說，a^(u * 2^(t-1))必須等於±1，平方之後才會等於+1。
+　　　步驟五才能通過費瑪測試。
+　回、由於步驟四已經檢查過a^(u * 2^(t-1))是否為±1，
+　　　所以步驟五可以省略，直接確定n是合數。
+</pre>
+<textarea>
+bool miller_rabin(int n)
+{
+	if (n < 2) return false;
+
+//	srand(time(0));
+	int a = rand() % (n-2) + 2;
+
+	int u = n-1, t = 0;
+	while (u % 2 == 0) u >>= 1, t++;
+
+	int x = pow(a, u, n);	// x = a ^ u % n;
+	if (x == 1 || x == n-1) return true;
+
+	for (int i=0; i<t-1; i++)
+	{
+		x = mul(x, x, n);	// x = x * x % n;
+		if (x == 1) return false;
+		if (x == n-1) return true;
+	}
+	return false;
+}
+</textarea>
+<p class="t">時間複雜度</p>
+<p>步驟二：不斷分解因數2，最多log(n)步，需時O(logN)。</p>
+<p>步驟三：餘數次方，Divide and Conquer，需時O(logN)。</p>
+<p>步驟四：根據步驟二，最多log(n)-1個數字，需時O(logN)。</p>
+<p>總時間複雜度為O(logN)，然而前提是：不管N多大，每次餘數乘法都是O(1)。</p>
+<p class="t">Strong Probable-prime Base（SPRP）</p>
+<p>以過濾合數的角度來看，多取幾個相異的底數a實施測試，判定結果就更準確。</p>
+<p>事實上已經有熱心人士，找出特定的底數組合，仔細檢查了各種數字的判定結果，保證判定結果正確。例如底數組合{2, 7, 61}就能正確判斷2^32以下的數字是不是質數。</p>
+<p><a href="javascript:if(confirm('http://primes.utm.edu/prove/prove2_3.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://primes.utm.edu/prove/prove2_3.html'" tppabs="http://primes.utm.edu/prove/prove2_3.html">http://primes.utm.edu/prove/prove2_3.html</a></p>
+<p><a href="javascript:if(confirm('http://miller-rabin.appspot.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://miller-rabin.appspot.com/'" tppabs="http://miller-rabin.appspot.com/">http://miller-rabin.appspot.com/</a></p>
+<textarea>
+bool isprime(int n)
+{
+	// 預先判斷偶數與1，節省一點時間。
+	if (n == 2) return true;
+	if (n < 2 || n % 2 == 0) return false;
+
+	int u = n - 1, t = 0;
+	while (u % 2 == 0) {u >>= 1; t++;}
+
+	// 推定是質數，就實施下一次測試；
+	// 確定是合數，就馬上結束。
+	int sprp[3] = {2, 7, 61};	// 足以涵蓋int範圍
+	for (int k=0; k<3; ++k)
+	{
+		// a沒有大於1、小於n-1的限制，
+		// 沒有測試意義的數字，當作是通過測試。
+		// （a是質數時，模n後不會等於零，不必特別判斷。）
+		int a = sprp[k] % n;
+		if (a == 0 || a == 1 || a == n-1) continue;
+
+		long long x = pow(a, u, n);
+		if (x == 1 || x == n-1) continue;
+
+		for (int i = 0; i < t-1; i++)
+		{
+			x = mul(x, x, n);
+			if (x == 1) return false;
+			if (x == n-1) break;
+		}
+		if (x == n-1) continue;
+
+		return false;
+	}
+	// 通過全部測試，確定是質數。
+	return true;
+}
+</textarea>
+<p class="e">UVa 10956 PKU 1811</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Integer Factorization</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Integer Factorization</p>
+<p>Factor譯作「因式」，Factorization譯作「因式分解」。</p>
+<p>「整數分解」是指因式分解的對象為整數，把一個正整數分解成質因數的連乘積。中學課本則譯作「質因數分解」，著眼於分解結果而非分解對象。</p>
+<pre>
+n = 2^e1 * 3^e2 * 5^e3 * 7^e4 * 11^e5 * …
+</pre>
+<p>質因數分解屬於NP問題，但是目前還不確定它究竟是P問題或是NP-Complete問題，相當特別。</p>
+<p class="t">Fundamental Theorem of Arithmetic（算數基本定理）</p>
+<p>凡是正整數都可以藉由質因數分解成為一個獨一無二的式子，不同的n就會對應不同的(e1, e2, …)，反方向亦同。</p>
+<p>根據算數基本定理，凡是牽扯到乘法、因數、倍數的數學運算，都可以改變成比較簡單的運算。</p>
+<pre>
+分解前     | 分解後
+n          | (e1, e2, ...)
+m          | (f1, f2, ...)
+-----------+--------------------------------------
+乘除法     | 加減法
+n × m      | (e1 + f1, e2 + f2, ...)
+n ÷ m      | (e1 - f1, e2 - f2, ...)
+           |
+整除       | 大於等於
+n % m = 0  | (e1, e2, ...) ≥ (f1, f2, ...)
+m | n      | e1≥f1 and e2≥f2 and ...
+           |
+最大公因數 | 最小值
+gcd(n, m)  | (min(e1, f1), min(e2, f2), ...)
+           |
+最小公倍數 | 最大值
+lcm(n, m)  | (max(e1, f1), max(e2, f2), ...)
+           |
+互質       | 對應項必須有零
+n⊥m       | min(e1, f1) = 0 and min(e2, f2) = 0 and ...
+           | e1*f1 = 0 and e2*f2 = 0 and ...
+</pre>
+<p>算術基本定理闡述了另一種世界觀，把數字看作是質數的結合。質數的英文prime有著「原始就有」的意思，便是指質數是所有數字的根本。</p>
+<p class="t">Trial Division Factorization Method</p>
+<p>把所有可能的因數拿來試除。用質因數會更好；可以預先建立質數表。</p>
+<textarea>
+void trial_division(int n)
+{
+	// 窮舉所有可能的因數，一一試除。
+	for (int d=2; d<=n; ++d)
+		while (n % d == 0)
+		{
+			n / = d;
+			cout << d;	// 印出質因數
+		}
+}
+</textarea>
+<textarea>
+void trial_division(int n)
+{
+	// 一個數字n不會有大於sqrt(n)的質因數（除了n本身以外）
+	int sqrt_n = sqrt(n);
+	for (int d=2; d<=sqrt_n; ++d)
+		while (n % d == 0)
+		{
+			n / = d;
+			cout << d;	// 印出質因數
+		}
+
+	if (n > 1) cout << n;	// n是質數
+}
+</textarea>
+<p class="e">UVa 516 583 10179 10290 10329 10392 10622 10780 10791 10879</p>
+<p class="t">Fermat's Factorization Method</p>
+<p>把一個數字分解成兩個數的乘積（這兩個數不一定是質數）。一直遞迴分解下去，無法再分解的時候就找到質因數了。分解手法如下：</p>
+<pre>
+現在要找出 a 和 b 讓 n = a*b
+運用平方差公式 x^2 – y^2 = (x+y) * (x-y)
+令 n = x^2 – y^2, a = x+y, b = x-y
+窮舉整數 x，看看 sqrt(x^2-n) 是不是剛好就是一個整數 y，
+如果是整數就找到一組 a 和 b 了。
+</pre>
+<textarea>
+void fermat(int n)
+{
+	for (int x = sqrt(n); x<n; ++x)
+	{
+		int yy = x * x – n, y = sqrt(yy);
+		if (y * y == yy)	// 如果sqrt(x^2-n)是整數
+		{
+			int a = x + y, b = x – y;
+			cout << "n =" << a << "*" << b;
+
+			// 遞迴分解a和b，繼續質因數分解。
+			fermat(a); fermat(b);
+		}
+	}
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Integer Factorization: Pollard's ρ Algorithm</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">亂數產生器</p>
+<p>此演算法可以找到n的其中一個因數。</p>
+<p>使用一個簡單的亂數產生器f(a<sub>i+1</sub>) = a<sub>i</sub><sup>2</sup> + c (mod n)，嘗試各種a<sub>0</sub>與c，製造所有可能的因數，一一試除即可。</p>
+<p>以此亂數產生器公式，依序枚舉a<sub>0</sub>、a<sub>1</sub>、a<sub>2</sub>、……，模n的情況下，最終必定循環。繪圖時可以畫成一個ρ的形狀，演算法因而得名。ρ唸作[ro]，可以寫作rho。</p>
+<p class="t">運用最大公因數找到因數</p>
+<p>因為亂數產生器製造的數字a，a恰是n的因數的機會較小，而a與n有共同因數的機會較大，所以改用d = gcd(a, n)來找到n的因數d。最大公因數有著極快的演算法，對執行速度影響不大。</p>
+<p class="t">偵測循環</p>
+<p>亂數產生器最終必會出現重覆數字，產生循環。一旦遇到循環，立刻結束枚舉，不再進行重覆運算。</p>
+<p>另外，此演算法改用abs(a<sub>x</sub> - a<sub>y</sub>)，用數字的差值製造所有可能的因數。筆者不知道如此做的原因。</p>
+<p>原論文採用「<a href="CycleFinding.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/CycleFinding.html">Floyd's Algorithm</a>」偵測循環。</p>
+<textarea>
+#define f(x) ((x * x + c) % n)	// 亂數產生器
+
+int pollard_rho(int n)
+{
+	int a0 = rand() % n;	// 最好是+2
+	int c = rand() % n;		// 最好不是0和-2
+	int x = a0, y = a0;
+	while (true)
+	{
+		// Floyd's Algorithm。
+		// 一旦出現循環，則回傳原本數字n。
+		x = f(x); y = f(f(y));
+		if (x == y) return n;
+
+		int d = __gcd(abs(x - y), n);
+		if (d > 1 && d < n) return d;
+	}
+	return -1;	// 不會執行到這行
+}
+</textarea>
+<textarea>
+#define f(x) ((x * x + c) % n)	// 亂數產生器
+
+int pollard_rho(int n)
+{
+	int a0 = rand() % n;	// 最好是+2
+	int c = rand() % n;		// 最好不是0和-2
+	int x = a0, y = a0;
+	while (true)
+	{
+		x = f(x); y = f(f(y));
+//		if (x == y) return n;
+
+		// 因為出現循環之時，x-y等於0，gcd(0,n)等於n。
+		// 所以亦得用d==n判斷是否出現循環，減少一行程式碼。
+		int d = __gcd(abs(x - y), n);
+		if (d > 1 && d <= n) return d;
+	}
+	return -1;	// 不會執行到這行
+}
+</textarea>
+<p>亦可採用「<a href="CycleFinding.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/CycleFinding.html">Brent's Algorithm</a>」偵測循環，效率較佳。</p>
+<textarea>
+int pollard_rho(int n)
+{
+	int a0 = rand() % n;	// 最好是+2
+	int c = rand() % n;		// 最好不是0和-2
+	int x = a0, y = a0;
+	int i = 1, k = 2;
+	while (true)
+	{
+		x = (x * x + c) % n;
+//		if (x == y) return n;
+		int d = __gcd(abs(x - y), n);
+		if (d > 1 && d <= n) return d;
+		if (++i == k) y = x, k <<= 1;
+	}
+	return -1;	// 不會執行到這行
+}
+</textarea>
+<p class="t">讀者可以思考一下這些問題</p>
+<p>一、為何亂數產生器不採用f(a<sub>i+1</sub>) = a<sub>i</sub> + c (mod n)這條更加簡單的式子？</p>
+<p>二、為何a<sub>0</sub>至少要是+2？（經過實測，a<sub>0</sub>最好是+2。）</p>
+<p>三、為何c最好不是0和-2？試試看將亂數產生器公式，代入到x和y之中，計算一下x-y，然後計算一下gcd(abs(x-y), n)。</p>
+<p>四、為何x等於y的時候，就要馬上結束迴圈呢？</p>
+<p>五、如果略去abs()，改成gcd(x-y, n)，對結果有影響嗎？</p>
+<p class="t">質因數分解</p>
+<p>似乎只要嘗試各種c，就一定可以窮舉出所有可能的因數。筆者不知道原因。</p>
+<textarea>
+vector<int> factor;	// 存放n的質因數
+
+int pollard_rho(int n, int c)
+{
+	int x = 2, y = 2, i = 1, k = 2;
+	while (true)
+	{
+		x = (mul(x, x, n) + c) % n;
+		int d = __gcd(abs(x - y), n);
+		if (d > 1 && d <= n) return d;
+		if (++i == k) y = x, k <<= 1;
+	}
+	return -1;
+}
+
+void factorize(int n)
+{
+	if (n == 1) return;
+
+	// 預先判斷質數。
+	// 可以使用Miller-Rabin Algorithm with SPRP。
+	if (isprime(n))
+	{
+		factor.push_back(n);
+		return;
+	}
+
+	// 此處只有合數才能實施Pollard's ρ Algorithm，
+	// 否則永遠找不到1與n以外的因數，陷入無窮迴圈。
+	// 窮舉各種c，直到發現n的因數d，一定能找到。
+	int d = n;
+	for (int c=0; d == n; ++c)
+		d = pollard_rho(n, c);
+
+	factorize(d);
+	factorize(n / d);
+}
+</textarea>
+<p class="e">UVa 11476</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Euler's Totient Function</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Euler's Totient Function（Euler's φ Function）</p>
+<p>這是一個公式。計算1到n的正整數當中，跟n互質（最大公因數是一）的數，總共有幾個。</p>
+<p>首先要將n做質因數分解：</p>
+<pre>
+n = p<sub>1</sub><sup>a<sub>1</sub></sup> × p<sub>2</sub><sup>a<sub>2</sub></sup> × … × p<sub>k</sub><sup>a<sub>k</sub></sup>   where p<sub>1</sub> … p<sub>k</sub> are primes
+</pre>
+<p>以質因數計算Euler's Totient Function。φ唸做[fai]，可以寫做phi：</p>
+<pre>
+φ(n) = n × (1 - 1/p<sub>1</sub>) × (1 - 1/p<sub>2</sub>) × … × (1 - 1/p<sub>k</sub>)
+</pre>
+<p>可以採用這個順序計算，避免溢位：</p>
+<pre>
+n ÷ p<sub>1</sub> × (p<sub>1</sub>-1) ÷ p<sub>2</sub> × (p<sub>2</sub>-1) ÷ … ÷ p<sub>k</sub> × (p<sub>k</sub>-1)
+</pre>
+<p>如此就不用一個一個去計算最大公因數了，非常有效率！</p>
+<p>質因數分解採用試除法，計算Euler's Totient Function的時間複雜度為O(sqrtN)。預先建立質數表，得加速至O(π(sqrtN))，其中π(N)是1到N的質數個數。</p>
+<p class="e">UVa 10299 10179 11064</p>
+<p class="t">性質</p>
+<pre>
+φ(p) = p - 1                  iff p is prime.
+φ(p<sup>a</sup>) = p<sup>a</sup> - p<sup>a-1</sup>              iff p is prime.
+φ(n × m) = φ(n) × φ(m)        iff n and m are relatively prime.
+φ(n) = φ(p<sub>1</sub><sup>a<sub>1</sub></sup>) × … × φ(p<sub>k</sub><sup>a<sub>k</sub></sup>)   iff n = p<sub>1</sub><sup>a<sub>1</sub></sup> × … × p<sub>k</sub><sup>a<sub>k</sub></sup>
+                              where p<sub>1</sub> … p<sub>k</sub> are prime.
+</pre>
+<p class="t">建立表格</p>
+<p>未經改良的篩法，能求出每個數的質因數。運用篩法計算Euler's Totient Function，時間複雜度為O(NloglogN)。</p>
+<textarea>
+int phi[10000];
+
+void phi_table()
+{
+	phi[1] = 1;
+	for (int i=2; i<10000; ++i)
+		if (!phi[i])
+			for (int j=i; j<10000; j+=i)
+			{
+				if (!phi[j]) phi[j] = j;
+				phi[j] = phi[j] / i * (i-1);
+			}
+}
+</textarea>
+<p>或者，首先運用篩法，為每個數求得一個質因數；然後運用Euler's Totient Function的性質，實施Dynamic Programming。此時得以套用線性時間篩法，時間複雜度為O(N)。</p>
+<textarea>
+int phi[10000];
+
+void phi_table()
+{
+	// 篩法。為每個數求得一個質因數。O(NloglogN)。
+	// 亦可運用線性時間篩法。O(N)。
+	for (int i=2; i<100; ++i)
+		if (!phi[i])
+			for (int k=(10000-1)/i, j=i*k; k>=i; k--, j-=i)
+				if (!phi[k])
+					phi[j] = i;	// i是j的其中一個質因數
+
+	// 計算Euler's Totient Function。O(N)。
+	phi[1] = 1;
+	for (int i=2; i<10000; ++i)
+		if (!phi[i])		// i是質數
+			phi[i] = i-1;
+		else				// i不是質數
+		{
+			int j = i / phi[i];	// i分解成j*phi[i]
+			if (j % phi[i] == 0)// j與phi[i]不互質
+				phi[i] = phi[j] * phi[i];
+			else
+				phi[i] = phi[j] * (phi[i] - 1);
+		}
+}
+</textarea>
+<p class="e">UVa 10820 10990 11327 11424 11426</p>
+<p class="t">延伸閱讀：最大公因數的傅立葉轉換就是Euler's Totient Function</p>
+<p><a href="javascript:if(confirm('http://en.wikipedia.org/wiki/Euler%27s_totient_function  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://en.wikipedia.org/wiki/Euler%27s_totient_function#Fourier_transform'" tppabs="http://en.wikipedia.org/wiki/Euler%27s_totient_function#Fourier_transform" class="l">http://en.wikipedia.org/wiki/Euler%27s_totient_function#Fourier_transform</a></p>
+<pre>
+       <sub>N-1</sub>
+φ(n) =  Σ { gcd(n, k) ÷ e<sup>i*2π*(n/N)*k</sup> }
+       <sup>k=0</sup>
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Möbius Function</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Möbius Function</p>
+<p>用排容原理求一個數字的所有因數總和。</p>
+<p class="e">ICPC 2116</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

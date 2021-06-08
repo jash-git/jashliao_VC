@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="stdlayout.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/stdlayout.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="print.css" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/css/print.css" type="text/css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta content="text/html; charset=Big5" http-equiv="content-type">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <title>產生可能的集合</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+<h3><a href="javascript:if(confirm('http://caterpillar.onlyfun.net/Gossip/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://caterpillar.onlyfun.net/Gossip/index.html'" tppabs="http://caterpillar.onlyfun.net/Gossip/index.html">From
+Gossip@caterpillar</a></h3>
+
+
+
+
+
+
+<h1><a href="AlgorithmGossip.htm" tppabs="http://caterpillar.onlyfun.net/Gossip/AlgorithmGossip/AlgorithmGossip.htm">Algorithm Gossip: 產生可能的集合</a></h1>
+
+<table style="text-align: left; width: 946px; height: 32px;" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+
+    <tr>
+
+      <td style="width: 676px; vertical-align: top;"> 
+
+
+
+
+
+      <h2>說明</h2>
+      <small>
+
+給定一組數字或符號，產生所有可能的集合（包括空集合），例如給定1 2 3，則可能的集合為：{}、{1}、{1,2}、{1,2,3}、{1,3}、{2}、{2,3}、{3}。</small><br>
+
+
+      <h2>解法</h2>
+      <small>
+
+如果不考慮字典順序，則有個簡單的方法可以產生所有的集合，思考二進位數字加法，並注意1出現的位置，如果每個位置都對應一個數字，則由1所對應的數字所產生的就是一個集合，例如：</small> <br>
+
+
+
+      <table border="1" width="50%">
+
+
+  <tbody>
+
+
+    <tr>
+
+
+      <td align="left" valign="top"><small>000 </small></td>
+
+
+
+      <td align="left" valign="top"><small>{} </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>001 </small></td>
+
+
+
+      <td align="left" valign="top"><small>{3} </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>010 </small></td>
+
+
+
+      <td align="left" valign="top"><small>{2} </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>011 </small></td>
+
+
+
+      <td align="left" valign="top"><small>{2,3} </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>100 </small></td>
+
+
+
+      <td align="left" valign="top"><small>{1} </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>101 </small></td>
+
+
+
+      <td align="left" valign="top"><small>{1,3} </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>110 </small></td>
+
+
+
+      <td align="left" valign="top"><small>{1,2} </small></td>
+
+
+
+    </tr>
+
+
+
+    <tr>
+
+
+
+      <td align="left" valign="top"><small>111 </small></td>
+
+
+
+      <td align="left" valign="top"><small>{1,2,3} </small></td>
+
+
+    </tr>
+
+
+  
+  
+        </tbody>
+      </table>
+
+
+      <br>
+      <small>
+
+瞭解這個方法之後，剩下的就是如何產生二進位數？有許多方法可以使用，您可以使用unsigned型別加上&amp;位元運算來產生，這邊則是使用陣列搜
+尋，首先陣列內容全為0，找第一個1，在還沒找到之前將走訪過的內容變為0，而第一個找到的0則變為
+1，如此重複直到所有的陣列元素都變為1為止，例如：<br>
+      </small>
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">000&nbsp;=&gt; 100&nbsp;=&gt; 010&nbsp;=&gt; 110&nbsp;=&gt; 001&nbsp;=&gt; 101&nbsp;=&gt; 011&nbsp;=&gt; 111</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+如果要產生字典順序，例如若有4個元素，則：<br>
+      </small>
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{} =&gt; {1} =&gt; {1,2} =&gt; {1,2,3}&nbsp;=&gt; {1,2,3,4}&nbsp;=&gt;</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{1,2,4}&nbsp;=&gt;</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{1,3}&nbsp;=&gt; {1,3,4}&nbsp;=&gt;</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{1,4}&nbsp;=&gt;</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{2}&nbsp;=&gt; {2,3}&nbsp;=&gt; {2,3,4}&nbsp;=&gt;</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{2,4}&nbsp;=&gt;</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{3}&nbsp;=&gt; {3,4}&nbsp;=&gt;</span><br style="font-weight: bold; font-family: Courier New,Courier,monospace;">
+
+
+      <span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{4}</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+簡單的說，如果有n個元素要產生可能的集合，當依序產生集合時，如果最後一個元素是n，而倒數第二個元素是m的話，例如：<br>
+      </small>
+
+      <div style="margin-left: 40px;"><small><span style="font-weight: bold; font-family: Courier New,Courier,monospace;">{a b c d e n}</span><br>
+
+
+      </small></div>
+
+
+      <small><br>
+
+
+則下一個集合就是{a b c d e+1}，再依序加入後續的元素。<br>
+      <br>
+
+
+例如有四個元素，而當產生{1 2 3 4}集合時，則下一個集合就是{1 2 3+1}，也就是{1 2
+4}，由於最後一個元素還是4，所以下一個集合就是{1 2+1}，也就是{1 3}，接下來再加入後續元素4，也就是{1 3
+4}，由於又遇到元素4，所以下一個集合是{1 3+1}，也就是{1 4}。</small>
+
+      <br>
+
+
+      <h2> 實作</h2>
+
+
+
+      <ul>
+        <li> C（無字典順序）
+  </li>
+      </ul>
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>#define MAXSIZE 20 <br><br>int main(void) { <br>    char digit[MAXSIZE]; <br>    int i, j; <br>    int n; <br><br>    printf("輸入集合個數："); <br>    scanf("%d", &amp;n); <br><br>    for(i = 0; i &lt; n; i++) <br>        digit[i] = '0'; <br><br>    printf("\n{}"); // 空集合 <br><br>    while(1) { <br>        // 找第一個0，並將找到前所經過的元素變為0 <br>        for(i = 0; i &lt; n &amp;&amp; digit[i] == '1'; digit[i] = '0', i++); <br><br>        if(i == n)  // 找不到0 <br>            break; <br>        else          // 將第一個找到的0變為1 <br>            digit[i] = '1'; <br><br>        // 找第一個1，並記錄對應位置 <br>        for(i = 0; i &lt; n &amp;&amp; digit[i] == '0'; i++); <br><br>        printf("\n{%d", i+1); <br>    <br>        for(j = i + 1; j &lt; n; j++) <br>            if(digit[j] == '1') <br>                printf(",%d", j + 1); <br><br>        printf("}"); <br>    } <br>    <br>    printf("\n"); <br><br>    return 0; <br>} <br></pre>
+
+
+
+      <br>
+
+
+
+      <ul>
+        <li> C（字典順序）
+  </li>
+      </ul>
+
+
+
+      <pre>#include &lt;stdio.h&gt; <br>#include &lt;stdlib.h&gt; <br><br>#define MAXSIZE 20 <br><br>int main(void) { <br>    int set[MAXSIZE]; <br>    int i, n, position = 0; <br><br>    printf("輸入集合個數："); <br>    scanf("%d", &amp;n); <br>    printf("\n{}"); <br>    set[position] = 1; <br><br>    while(1) { <br>        printf("\n{%d", set[0]);  // 印第一個數 <br>        for(i = 1; i &lt;= position; i++) <br>            printf(",%d", set[i]); <br>        printf("}"); <br><br>        if(set[position] &lt; n) {  // 遞增集合個數 <br>            set[position+1] = set[position] + 1; <br>            position++; <br>        } <br>        else if(position != 0) {  // 如果不是第一個位置 <br>            position--;       // 倒退 <br>            set[position]++;  // 下一個集合尾數 <br>        } <br>        else  // 已倒退至第一個位置 <br>            break; <br>    } <br><br>    printf("\n"); <br><br>    return 0; <br>} <br></pre>
+
+
+
+      <br>
+
+
+
+      <ul>
+        <li> Java（無字典順序）
+  </li>
+      </ul>
+
+
+
+      <pre>public class PossibleSet {<br>    public static void main(String[] args) {<br>        char[] digit = new char[4]; <br><br>        for(int i = 0; i &lt; digit.length; i++) <br>            digit[i] = '0'; <br><br>        System.out.println("{}"); // 空集合 <br><br>        while(true) { <br>            // 找第一個0，並將找到前所經過的元素變為0<br>            int i;<br>            for(i = 0; i &lt; digit.length &amp;&amp; digit[i] == '1'; <br>                digit[i] = '0', i++); <br><br>            if(i == digit.length)  // 找不到0 <br>                break; <br>            else          // 將第一個找到的0變為1 <br>                digit[i] = '1'; <br><br>            // 找第一個1，並記錄對應位置 <br>            for(i = 0; i &lt; digit.length &amp;&amp; digit[i] == '0'; i++); <br><br>            System.out.print("{" + (i+1)); <br>        <br>            for(int j = i + 1; j &lt; digit.length; j++) <br>                if(digit[j] == '1') <br>                    System.out.print(", " + (j + 1)); <br><br>            System.out.println("}"); <br>        } <br>    }<br>} <br></pre>
+
+
+
+      <br>
+
+
+
+      <ul>
+        <li> Java（字典順序）
+  </li>
+      </ul>
+
+
+
+      <pre>public class PossibleSet {<br>    public static void main(String[] args) {<br>        int[] set = new int[4]; <br>        int i, n, position = 0; <br><br>        set[position] = 1; <br><br>        while(true) { <br>            System.out.print("{" + set[0]);  // 印第一個數 <br>            for(i = 1; i &lt;= position; i++) <br>                System.out.print("," + set[i]); <br>            System.out.print("}"); <br><br>            if(set[position] &lt; set.length) {  // 遞增集合個數 <br>                set[position+1] = set[position] + 1; <br>                position++; <br>            } <br>            else if(position != 0) {  // 如果不是第一個位置 <br>                position--;       // 倒退 <br>                set[position]++;  // 下一個集合尾數 <br>            } <br>            else  // 已倒退至第一個位置 <br>                break; <br>        } <br><br>        System.out.println(); <br>    }<br>}</pre>
+
+
+      <br>
+
+ </td>
+
+      <td style="width: 250px; text-align: center; vertical-align: top;">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script><br>
+
+      <br>
+
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="show_ads.js" tppabs="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<br>
+
+
+<br>
+
+
+
+
+
+
+</body>
+</html>

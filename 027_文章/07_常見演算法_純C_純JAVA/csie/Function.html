@@ -1,0 +1,150 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Function</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Function</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">多項式（polynomial）</p>
+<p>由實數與變數的加法、減法、乘法所組成的式子，就叫做「多項式」。以變數次方為主要視角，多項式可以拆成許多「項」。</p>
+<p>多項式的資料結構，這裡簡單提一下。要嘛開個array，每一格存一種次方的係數；要嘛開個linked list，把係數為零的項統統去掉然後串成一串。</p>
+<p>多項式的運算，主要有加、減、乘、除、模、微、積、代入。國二到大一至少接觸了六年，應當難不倒各位讀者，就不贅述了。</p>
+<p class="e">UVa 392 126 10719 10586 10951 463 930 10428 498 10268 10105</p>
+<p>附帶一提，大數的四則運算，基本上就是仿照多項式運算。大數其實就是x代入10，大數的骨子裡根本就是多項式。電腦的數字有二進位、十進位、八進位、十六進位，進位法其實就是x代入各種底數，進位法骨子裡根本就是多項式。</p>
+<p>附帶一提，如果您學過線性代數，可以發現多項式其實是線性的；如果您學過微積分，可以發現多項式其實是連續的。</p>
+<p>為什麼筆者要在函數的章節提及多項式呢？因為筆者不知道這個主題應該放在哪裡，後來想想作為楔子也不錯。</p>
+<p class="t">方程式（equation）</p>
+<p>兩個相等的變數式子，就叫作「方程式」。按照英文字面意義來翻譯，應該稱做「等式」。</p>
+<p>中學教了很多方程式的計算，例如單一方程式求根、聯立方程式求解，並且配合幾何學一起講解。大學指考前，算了千百次，應當難不倒各位；然而事實上方程式是一個龐大複雜的系統，如果您學得不錯，應該要好好感謝高中數學老師。</p>
+<p>方程式有什麼用途呢？其實就是設x、解x。這兩件事情很難用中文講個明白，不過只要經歷許多數學題目之後，自然而然就能體會到設x、解x的精神所在。</p>
+<img src="findx.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/findx.png">
+<p class="t">函數（function）</p>
+<p>這個翻譯非常不直覺。函數其實是「對應」與「變換」兩種概念的結合。</p>
+<p>對應，就是一個東西對應一個東西。變換，就是從一個東西，按照對應關係，變成另一個東西。</p>
+<p>想要清楚描述對應與變換，只要寫出函數式子就可以了。代入數值，實際計算一下，就知道對應方式，也完成了變換。</p>
+<p>函數的用途，是描述兩件事物的關聯。例如三角函數就是三角形內角與邊長的關聯。半徑與圓周長、整數和質因數分解、所有人的身高與體重，通通都可以寫成函數的模樣。至於方程式也通常會整理成函數的模樣，方便求解。</p>
+<p>函數並不全是優雅又好算的多項式函數。儘管函數的概念很簡單，但是卻常常難算的要命。工程數學這個學問，就是以人腦處理很難算的函數；數值方法這個學問，就是以電腦處理很難算的函數。有了電腦可以算得比較快，但是計算過程並沒有比較簡單。</p>
+<p>以下不打算詳述函數的特性，而是簡介函數的運算，加、減、乘、除、微、積、求根、代入等等。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Root Finding: Bisection Method</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Bisection Method</p>
+<p>它可以用來找到連續函數的其中一個根。</p>
+<p>Bisection Method中文譯做「二分法」，bi-這個字首有「雙」的意思，而section有「分割」、「區段」的涵義。在解釋Bisection Method之前，得先複習一下高中數學課程的「勘根定理」。</p>
+<p class="t">勘根定理</span>
+<p>勘根定理的大意是這樣的：任意取一個區間[a,b]，並將a、b分別代入連續方程式f(x)當中，得到f(a)、f(b)。如果f(a)和f(b)是一正一負──即f(a) * f(b) &lt; 0，就表示座標(a, f(a))和座標(b, f(b))這兩點分別位於X軸的兩側。因為f是個連續函數，故座標(a, f(a))到座標(b, f(b))的路線，一定至少經過一次X軸──亦即區間[a,b]裡面至少會有一個根。</p>
+<p align="center"><img src="BisectionMethod21.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod21.png"><img src="BisectionMethod12.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod12.png"><img src="BisectionMethod31.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod31.png"></p>
+<p>剛才只討論了f(a)和f(b)是一正一負的情形。如果f(a)和f(b)不是一正一負，而是同號──即f(a) * f(b) &gt; 0，就表示座標(a, f(a))和座標(b, f(b))這兩點分別位在X軸的同一邊。區間[a,b]中有可能有根，也可能無根。</p>
+<p align="center"><img src="BisectionMethod41.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod41.png"><img src="BisectionMethod51.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod51.png"></p>
+<p>f(a)和f(b)也有可能是零。此時a和b就會是根。</p>
+<p align="center"><img src="BisectionMethod16.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod16.png"><img src="BisectionMethod17.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod17.png"></p>
+<p class="t">Bisection Method</p>
+<p>Bisection Method就是反覆的使用勘根定理，反覆縮小區間，最後便可逼近一個根的值。Bisection Method縮小區間的方式，就像Binary Search一樣，將區間分成相等的兩半，然後選擇其中一個區間繼續找根。這裡舉一個簡易的例子，請看圖。</p>
+<p align="center"><img src="BisectionMethod21.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod21.png"><img src="BisectionMethod22.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod22.png"><img src="BisectionMethod23.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod23.png"><br><img src="BisectionMethod24.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod24.png"><img src="BisectionMethod25.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod25.png"></p>
+<p>將區間分成兩段，然後判斷根是在[a,c]中還是在[c,a]中，並選擇有根的那個區間繼續遞迴下去，趨近根的正確值。選擇區間時，依據勘根定理的精神──一正一負之間必有根，就可判斷出要將a移至c、或者將b移至c。</p>
+<p>使用迴圈來實作的程式碼大致上是這樣的。</p>
+<textarea>
+float bisection(float a, float b, float (*f)(float), int times)
+{
+	float fa = f(a), fb = f(b), c = a, fc;
+	if (fa == 0) return a;	// a 就是根
+	if (fb == 0) return b;	// b 就是根
+
+	while (times--)
+	{
+		c = (a + b) / 2; fc = f(c);
+		if (fc * fb > 0) {b = c; fb = fc;}		// c 和 b 同邊
+		else if (fc * fa > 0) {a = c; fa = fc;}	// c 和 a 同邊
+		else return c;							// c 就是根
+	}
+	return c;
+}
+</textarea>
+<p>times可用來限制迴圈次數，另外也可以避免[a,b]之間沒有根而造成的無窮迴圈。</p>
+<p>a b的值是可以互調的，所以不必擔心a b孰大孰小。</p>
+<p>這段程式碼也可以改寫成遞迴的形式，就像Binary Search同時可以有迴圈和遞迴的形式一樣。</p>
+<p>這段程式碼使用了function pointer的語法。把欲逼近的f(x)當作參數傳進去執行，這麼一來Bisection Method就比較像是個函式的感覺了吧！</p>
+<p class="t">其他例子的討論</p>
+<p>當區間[a,b]內有多個根的時候，大家的心中還是會熱切的希望自己的程式至少也能找出一個根，而不會連一個都找不到。</p>
+<p align="center"><img src="BisectionMethod31.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod31.png"><img src="BisectionMethod32.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod32.png"></p>
+<p>以這個例子來說，可以發現[a,c]有根，[c,b]亦有根。在找出一個根的前提下，可以選擇一正一負的區間[c,b]，因為它一定包含至少一個根。如果兩個都是一正一負的區間，可以修改一下程式，將兩邊的根都找出來。</p>
+<p>還有另一種可能的情形是這樣的：</p>
+<p align="center"><img src="BisectionMethod41.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod41.png"><img src="BisectionMethod42.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod42.png"></p>
+<p>如果[a,b]是在同邊的話，還是可以嘗試將區段一分為二。運氣好的話，或許可以找到其中一個區間是一正一負，也或許兩個區間都是一正一負，這時候就可以用剛才敘述的方法來分析它了；如果運氣不好，兩個區間都是同邊，那也只好找其中一個區間遞迴下去了──堅持要讓兩個區間都遞迴下去的話，會讓時間複雜度變成非線性的，反而變成一個很慢的演算法了。</p>
+<p>再來，如果區間一直都在同邊的話，就可能是沒有根的情形了：</p>
+<p align="center"><img src="BisectionMethod51.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod51.png"><img src="BisectionMethod52.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/BisectionMethod52.png"></p>
+<p>這個時候必須讓程式能夠提早結束。有一個簡單的方法就是限制遞迴的次數，這在剛才的程式碼敘述中就有提到了。</p>
+<p>Bisection Method很明顯的一次只能處理一個根，就和Binary Search一樣，一次也只能找一個數字。這是這一類演算法的極限了。如果要保證一定要找得到根，那麼一開始的f(a)和f(b)就必須是一正一負。</p>
+<p class="t">實際應用時的意外狀況和應對方法</p>
+<p>如果[a,b]之內不只有一個根，那麼Bisection Method也只能找到其中的一個根，而不能找到所有的根。要解決這個問題，可以把[a,b]細分成許多更小的區段，直到小區段只包含一個根，接著分別對這些小區段執行Bisection Method，就可以找出所有的根了。</p>
+<p>如果[a,b]的端點恰好沒有定義在f(x)當中，則無法計算出f(a)、f(b)的值。要解決這個問題，可以將區間略略縮小一些，像是[a + 0.0001, b - 0.0001]，即可避免端點沒有定義的情況。</p>
+<p class="t">精確度</p>
+<p>在Bisection Method當中，分割區段的次數重複越多次，便可以越精確。</p>
+<p>儲存小數的float、double這些資料型態，其能儲存的位數有限，不可能精確，會有一個極限在。而Bisection Method可以到達該極限。假設一個float變數的範圍為10^38到10^-38，也就是說，分割區段log₂(10^76) ≒ 252次，一定能計算出float變數所能儲存的最精確的數值。</p>
+<textarea>
+float bisection(float a, float b, float (*f)(float))
+{
+	float fa = f(a), fb = f(b), c, fc;
+
+	while (fabs(b - a) > 1e-5)	// 足夠精確就好了
+	{
+		c = (a + b) / 2; fc = f(c);
+		if (fc * fb > 0) {b = c; fb = fc;}
+		else {a = c; fa = fc;}
+	}
+	return c;
+}
+</textarea>
+<textarea>
+float bisection(float a, float b, float (*f)(float))
+{
+	float fa = f(a), fb = f(b), c, fc;
+
+	while (true)	// 到達精確的極限
+	{
+		c = (a + b) / 2; fc = f(c);
+		if (a == c || b == c) break;
+		if (fc * fb > 0) {b = c; fb = fc;}
+		else {a = c; fa = fc;}
+	}
+	return c;
+}
+</textarea>
+<p>根據筆者測試，不管迴圈計算多少遍，a b的大小關係永遠不變，而c永遠會在[a,b]當中，不會超出範圍。</p>
+<p>迴圈不斷計算之後，有些函數造成a b最終相等，也有些函數造成a b永遠不相等，永遠相差一個最小精確度的值。要解決不相等的問題，只需判斷c是a或是b即可。</p>
+<p class="e">UVa 10263 10341 10398 10428 10566 10668</p>
+<p class="t">範例：求平方根</p>
+<textarea>
+int sqrt(int x)
+{
+	int L = 1, R = x, M = L;
+	while (L <= R)
+	{
+		M = (L + R) / 2;
+		if (M * M == x) return M;
+		else if (M * M > x) R = M-1;
+		else L = M+1;
+	}
+	return M;
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Root Finding: Newton's Method</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">牛頓法</p>
+<p>牛頓法只能用在連續平滑函數（例如多項式函數），而且函數的形狀必須長得很完美，否則難以逼近根、收斂至根；二分法則可以用在隨便扭來扭去、折來折去的連續函數上，不必平滑也沒關係。但是牛頓法比起二分法有一個重要的優點，那就是牛頓法可以解決根恰好等於區域極值的情況，而二分法無法處理這種情況。</p>
+<p>牛頓法的逼近速度，與函數的斜率有關，函數長得很水平的時候，逼近速度快得驚人，會比二分法有效率。至於牛頓法能不能每次都成功逼近根，這我就不清楚了，各位可以上網搜尋一下資料。</p>
+<p>牛頓法也可以用來求極值。由於給定函數一定是連續平滑函數的緣故，只要把函數微分一下，再用牛頓法求根，就得到極值了。</p>
+<p class="e">UVa 11277</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Integration（Under Construction）</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">Trapezium rule</p>
+<p class="t">Simpson's rule</p>
+<p class="e">ICPC 3001</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

@@ -1,0 +1,749 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - String Matching</title></head><body>
+<div class="a"><div class="h">
+<p class="b">String Matching</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">摘要</p>
+<pre>
+字串匹配演算法的類型：
+　一、以字元為單位，
+　　　位移、對齊、比對。
+　　　請參考：<a href="javascript:if(confirm('http://www-igm.univ-mlv.fr/~lecroq/string/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www-igm.univ-mlv.fr/~lecroq/string/index.html'" tppabs="http://www-igm.univ-mlv.fr/~lecroq/string/index.html" class="l">http://www-igm.univ-mlv.fr/~lecroq/string/index.html</a>。
+
+　二、以位元為單位，
+　　　轉換成數值，使用數學方法計算相似度。
+　　　例如Shift-And Algorithm。
+
+　三、以後綴為單位，
+　　　採用Enumerate與Search分為兩步驟：枚舉T的所有後綴、搜尋開頭恰為P的後綴。
+　　　例如把所有後綴丟進Trie、Tree、Array等資料結構，並進行排序，然後搜尋。
+
+字串匹配演算法的類型：
+　一、T與P的最長共同前綴（Longest Common Prefix）
+　　適用情況：T為定值，P為變動值。
+　　單一字串匹配：Gusfield's Algorithm。（P為定值，T為變動值。）
+　　單一、多重字串匹配：Suffix Array + Binary Search、Suffix Trie、Suffix Tree。
+　　特色：LCP Array。
+
+　二、P本身的次長共同前後綴（Longest Proper Prefix-Suffix）（Border）
+　　適用情況：P為定值，T為變動值。
+　　單一字串匹配：Morris-Pratt Algorithm。
+　　多重字串匹配：Aho-Corasick Algorithm。
+　　特色：可以轉換成自動機。
+</pre>
+<p class="t">String Matching</p>
+<p>中譯「字串匹配」。大意是：有兩個字串T和P，找出T當中是否有一段字串正好是P，並找出位置。可想作是從長篇文字中搜索一小段文字。</p>
+<p>註：在字串匹配問題中，我們通常將兩字串的象徵符號取做T和P，T意指text，P意指pattern。</p>
+<pre>
+T: ababcabc，P: abc，T中有兩個地方出現P：
+
+ababcabc    ababcabc
+  |||            |||
+  abc            abc
+</pre>
+<p>這裡提供一個天真又單純的演算法：採用窮舉法，讓P對準T的各個位置，然後逐一比對每個字元、判斷一不一樣。時間複雜度為O(T * P)。</p>
+<pre>
+T: ababcabc，P: abc，逐步向右挪動P，逐一比對各字元：
+
+0.          1.          2.
+ababcabc    ababcabc    ababcabc
+|||          |||          |||
+abc          abc          abc
+(X)          (X)          (O)
+
+3.          4.          5.
+ababcabc    ababcabc    ababcabc
+   |||          |||          |||
+   abc          abc          abc
+   (X)          (X)          (O)
+</pre>
+<textarea>
+void string_match()
+{
+	string t = "ababcabc", p = "abc";
+
+	// 採用窮舉法，讓P對準T的各個位置
+	for (int i=0; i<t.size(); ++i)
+	{
+		// P不會超出T右端
+		if (i + p.size() > t.size()) break;
+
+		// 逐一比對每個字元、判斷一不一樣
+		bool match = true;
+		for (int j=0; j<p.size(); ++j)
+			if (t[i+j] != p[j])
+			{
+				match = false;
+				break;
+			}
+
+		if (match)
+			cout << "T的第" << i << "個字元開始為P";
+	}
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">String Matching: Morris-Pratt Algorithm</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">次長的共同前後綴（Longest Proper Prefix-Suffix）（Border）</p>
+<pre>
+1.
+T: aabzabzabcz
+P: abzabc
+採用窮舉法，慢慢向右挪動P，然後比對字元。
+
+2.
+當挪動至下圖位置，發現P僅有一部分比對成功：
+
+        V
+  aabzabzabcz
+   |||||
+   abzabc
+
+3.
+比對成功的字串片段，可以好好利用：
+
+  .abzab.....
+   |||||
+   abzab.
+
+4.
+嘗試挪動P。
+挪動一個位置、挪動兩個位置、……，
+
+  .abzab.....   .abzab.....   .abzab.....   .abzab.....   .abzab.....
+    ||||           |||            ||             |                   
+    abzab.         abzab.         abzab.         abzab.         abzab.
+
+  (P shift 1)   (P shift 2)   (P shift 3)   (P shift 4)   (P shift 5)
+
+5.
+換個角度來看上述的行為。
+挪動一個位置：看看abzab的後四個字元，是不是前四個字元。
+挪動兩個位置：看看abzab的後三個字元，是不是前三個字元。
+　　　⋮　　　　　　　　　⋮　　　　　　　　　　⋮
+
+6.
+比對成功的字串片段（也是P的前綴），abzab
+它的「次長的共同前後綴」，ab
+如果預先知道「次長的共同前後綴」，
+就可以一口氣大幅挪動P，略過許多步驟：
+
+        V                  V
+  aabzabzabcz        aabzabzabcz
+   |||||       --->      ||
+   abzabc                abzabc
+
+7.
+由「V」處繼續向右比對字元。
+當比對失敗、遇到相異字元，
+就再次使用比對成功的字串片段，
+取其「次長的共同前後綴」來大幅挪動P。
+</pre>
+<p>當一個字串的某個前綴等於某個後綴，就把此前綴（此後綴）稱做「共同前後綴」。一個字串的「最長的共同前後綴」就是原字串本身。</p>
+<p class="t">演算法</p>
+<pre>
+一、預先計算P的每種前綴的「次長的共同前後綴」。
+二、從左到右，依序比對字元。
+　回、當比對成功、遇到相同字元：
+　　　繼續比對下個字元。
+　回、當比對失敗、遇到相異字元：
+　　　就從比對成功的字串片段，取其「次長的共同前後綴」來大幅挪動P。
+　回、當全部比對成功、匹配到P：
+　　　就從比對成功的P，取其「次長的共同前後綴」來大幅挪動P。
+</pre>
+<p class="t">failure function（prefix function）（border function）</p>
+<p>它是一個字串函數：輸入字串的其中一個前綴，則輸出該前綴的「次長的共同前後綴」。</p>
+<p>會被稱作prefix function，是因為此函數的定義域是前綴。會被稱作failure function，是因為此函數的值域，是比對失敗時，緊接著得用到的資訊。這兩種講法都有人在用。</p>
+<p>計算failure function可以採用Dynamic Programming。分割問題的方式，是把P[0...i]的最後一個字元P[i]拿掉，然後利用已知的「次長的共同前後綴」，得到P[0...i]的「次長的共同前後綴」。</p>
+<textarea>
+// p[0...i] 的「次長的共同前後綴」是 p[0...failure[i]]。
+// 令 failure[] 值為 -1 時，代表「次長的共同前後綴」為空字串。
+int failure[100];
+
+void failure(string& p)
+{
+	// iterative, bottom-up DP
+	for (int i=1, j=failure[0]=-1; i<p.size(); ++i)
+	{
+		// 先試 p[0...i-1] 的「次長的共同前後綴」，
+		// 也就是 p[0...failure[i-1]] = p[0...j]。
+		// 再試 p[0...j] 的「次長的共同前後綴」，
+		// 也就是 p[0...failure[j]]。
+		// 再試 p[0...failure[j]] 的「次長的共同前後綴」……
+		// 直到試成功為止。
+		while (j >= 0 && p[j+1] != p[i])
+			j = failure[j];
+
+		// p[i] 終於有用處了，終於可以加長！
+		if (p[j+1] == p[i]) j++;
+
+		// 得到了 failure[i] 的值！
+		failure[i] = j;
+	}
+}
+</textarea>
+<p class="t">字串匹配</p>
+<p>字串匹配的過程，跟failure function的計算過程十分相像，非常神奇。</p>
+<textarea>
+// 目前比對成功的部分是p[0...i-1]
+// 大幅挪動P之後，比對成功的部份剩下P[0...failure[i-1]]。
+int failure[100];
+
+void Morris_Pratt(string& t, string& p)
+{
+	if (p.size() > t.size()) return;
+
+	// 預先計算 P 的 failure function，O(P)。
+	for (int i=1, j=failure[0]=-1; i<p.size(); ++i)
+	{
+		while (j >= 0 && p[j+1] != p[i])
+			j = failure[j];
+		if (p[j+1] == p[i]) j++;
+		failure[i] = j;
+	}
+
+	// 進行字串匹配，O(T)。
+	for (int i=0, j=-1; i<t.size(); ++i)
+//	for (int i=0, j=-1; i-j-1+p.size()<=t.size(); ++i)
+	{
+		// 先試 p[0...j] 的「最長的共同前後綴」，
+		// 再試「次長的共同前後綴」，
+		// 再試「次次長的共同前後綴」……
+		// 直到試成功為止。
+		while (j >= 0 && p[j+1] != t[i])
+			j = failure[j];
+
+		// t[i] 終於有用處了，終於可以加長！
+		if (p[j+1] == t[i]) j++;
+
+		// 匹配到P！
+		if (j == p.size()-1)
+		{
+			cout << "P出現位置" << i - p.size() + 1;
+
+			// 如果字串結尾不是'\0'的時候，就必須挪動 P。
+			// 如果字串結尾是'\0'的時候，就能省略這一行。
+			j = failure[j];
+		}
+	}
+}
+</textarea>
+<p class="t">© 2010 <a href="javascript:if(confirm('http://tkcnandy.blogspot.com/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://tkcnandy.blogspot.com/'" tppabs="http://tkcnandy.blogspot.com/">tkcn</a>. All rights reserved.</p>
+<script type="text/javascript" src="Morris-Pratt.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/demo/Morris-Pratt/Morris-Pratt.js"></script>
+<p class="d" id="KMP"></p>
+<pre>
+甲、移動「V」。
+　　（下一步為乙。）
+乙、比對兩字元。
+　　（若相同，下一步為甲或戊。若不同，下一步為丙。）
+丙、從目前比對成功的字串片段，找到「次長的共同前後綴」。
+　　（下一步為丁。）
+丁、向右挪動P，左端僅露出一截「次長的共同前後綴」。
+　　（下一步是乙。）
+戊、整個P匹配成功。
+　　（下幾步是丙、丁、甲。）
+　　（當字串結尾附有'\0'，則下一步是甲。）
+</pre>
+<p class="t">時間複雜度：multipop stack的均攤分析</p>
+<p>在講解時間複雜度之前，先討論一個基礎問題。</p>
+<pre>
+有一個stack，一開始是空的。它有三種操作。
+
+1. push(x)      - worst time O(1)
+2. pop()        - worst time O(1)
+3. multipop(k)  - 連續pop出k個元素，如果stack是空的就馬上停止。
+                  worst time O(min(k, s))，當stack恰有s個元素的時候。
+
+請問這個stack進行N次操作的時間複雜度為多少？
+我們不知道每次的操作是哪一種。可能是三種其中一種。
+</pre>
+<p>甲、普通的分析：</p>
+<p>乍看之下，花費最多時間的就是multipop，於是我們就以multipop的觀點來計算時間複雜度。</p>
+<p>一次multipop的時間複雜度是O(min(n, k))，n是stack當下的元素個數，k是欲pop的元素個數；由於n和k最大可到N，所以寫成O(N)。</p>
+<p>multipop最多有N次，N次的multipop是O(N^2)，因此時間複雜度就是O(N^2)。</p>
+<p>乙、均攤分析中的聚合分析：</p>
+<p>N次操作，stack從頭到尾最多只能放入N個元素，也就是N次push。</p>
+<p>也就是說，stack從頭到尾最多只能彈出N個元素，精準的來說，是N/2個元素。無論是pop，或者是multipop，最多只能彈出N/2個元素。</p>
+<p>由放入的元素、彈出的元素的總數量，來計算時間複雜度；這兩個數量相加最多就是N，因此時間複雜度就是O(N)。</p>
+<p class="t">時間複雜度</p>
+<p>接著回到Morris-Pratt Algorithm。分為兩部分討論。</p>
+<p>甲、進行字串匹配的過程：</p>
+<p>以字元兩兩比對的總次數，作為時間複雜度。</p>
+<p>當下比對成功的字串片段S，想成是stack的元素。一開始S長度是零；如果比對到相同字元，S就會增加一字元，想成是push；如果比對到不同字元，大幅挪動P之後，S就只剩下「次長的共同前後綴」，一瞬間變短很多，想成是multipop（實際上，一瞬間變短很多只需要O(1)，時間複雜度遠比multipop來的小。）。</p>
+<p>最多有T個字元放入S、彈出S，所以字元兩兩比對的總次數不超過2*T次。</p>
+<p>換個方式說。對於T的某一個字元來說，與其他字元進行比對的次數，小於等於「當下比對成功的字串片段」的長度。「當下比對成功的字串片段」是動態改變的，如同stack一樣增減，所以字元兩兩比對的總次數不超過2*T次。</p>
+<p>乙、計算P的failure function的過程：</p>
+<p>原理與甲相同，字元兩兩比對的總次數不超過2*P次。</p>
+<p>總時間複雜度為O(T + P)。</p>
+<p class="e">UVa 10298 11475</p>
+<p class="t">Morris-Pratt Automaton</p>
+<p>此演算法可以化作自動機，轉化的時間複雜度為O(PA)，A為字元種類數目。</p>
+<p>化作自動機之後，字串匹配的過程就變得更簡單了，甚至可以設計成電子迴路。</p>
+<img src="Morris-PrattAutomaton1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Morris-PrattAutomaton1.png">
+<img src="Morris-PrattAutomaton2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Morris-PrattAutomaton2.png">
+<p>轉化的原理，是針對每個狀態，都找出經由failure function能到達的狀態們，然後建立轉移邊，連到那些狀態們的下一個狀態。</p>
+<p>【待補程式碼】</p>
+<p class="e">ICPC 4842</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">String Matching: Knuth-Morris-Pratt Algorithm</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">註記</p>
+<p>幾乎所有坊間書籍都將Morris-Pratt Algorithm誤植為KMP Algorithm，連CLRS也不例外。</p>
+<p>中文網路流傳著一個Extended KMP Algorithm，學術上查無此稱呼。究其內容，實為Gusfield's Algorithm。</p>
+<p class="t">演算法</p>
+<pre>
+           v
+T = aaaabcacab
+P =    abcabcacab
+           ^
+</pre>
+<p>Morris-Pratt Algorithm當中，當比對到上圖之處，c != b，所以需要向右挪動P。找到abca的「次長的共同前後綴」，也就是a。然後向右挪動P，最後左端凸出一段a，如下圖所示。</p>
+<pre>
+           v
+T = aaaabcacab
+P =       abcabcacab
+           ^
+</pre>
+<p>接下來就繼續比對字元。在這裡c != b，所以又要挪動P了。</p>
+<p>Knuth則是多想了一步：連續挪動P，能不能預先偵測呢？Knuth發現，找到abca的「次長的共同前後綴」a之後，看看a的下一個字元（是b），是否仍是abca的下一個字元（也是b）。如果兩個字元一樣的話，那就表示P鐵定會連續挪動兩次，兩次比較都是c != b。</p>
+<p>既然鐵定會挪動兩次，那乾脆直接移到定位不就好了？於是Knuth在計算failure function的時候，就額外加了一個判斷：找到abca的相同前後綴f(abca) = a之後，如果f(abca)的下一個字元恰巧仍是abca的下一個字元，那麼就令f(abca) = f(a)，也就是再多找一次a的相同前後綴。如此一來，P只要移一次就行了。</p>
+<p>由於是用遞迴定義failure function，所以連續挪動三次、四次、五次的情況，經過遞迴計算，最後都會變成一次移到定位。</p>
+<p class="t">延遲時間</p>
+<p>當T是一個stream I/O、讀入字元只能一個一個來的情況下，每讀入一個字元最多會有1+log<sub>φ</sub>P次字元比較。換句話說，每讀入一個字元，直到需要讀取下一個字元前，期間最多會停滯O(log<sub>φ</sub>P)的時間。</p>
+<p>【待補證明】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Multi-Pattern String Matching: Aho-Corasick Algorithm</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">suffix link</p>
+<p>【註：原始論文是failure function與output function】</p>
+<p>Morris-Pratt Algorithm的加強版，同時匹配數個P。預先把所有P建立成一棵trie，每個節點添上failure function，之後就可以拿trie與T進行字串匹配了。</p>
+<p>Morris-Pratt Algorithm是找到「當下比對成功的字串片段」的後綴（不含本身），是P的哪一個前綴。盡可能長。</p>
+<p>Aho-Corasick Algorithm是找到「當下比對成功的字串片段」的後綴（不含本身），是哪一個P的哪一個前綴。盡可能長。</p>
+<p>因此，failure function其實就是尋找trie上每個節點的後綴（不含本身），盡可能長。直覺的稱呼是suffix link。</p>
+<img src="Aho-CorasickAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Aho-CorasickAlgorithm1.png">
+<p class="t">dictionary suffix link</p>
+<p>【註：原始論文無此概念。】</p>
+<p>當P之中無父子關係，比對字元時，當前節點僅需判斷是否匹配到P。</p>
+<p>當P之中有父子關係（一個字串是另一個字串的子字串、但是不相等），比對字元時，當前節點必須額外行走suffix link，以找到所有匹配的P。</p>
+<p>添上dictionary suffix link，以更迅速地找到所有匹配的P。</p>
+<pre>
+           suffix link：不含本身的後綴、盡可能長。
+dictionary suffix link：不含本身的後綴、盡可能長、必須是某個P。
+</pre>
+<img src="Aho-CorasickAlgorithm2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Aho-CorasickAlgorithm2.png">
+<p class="t">演算法</p>
+<pre>
+一、所有P建立一棵trie。
+二、添上suffix link、dictionary suffix link。
+三、拿T做字串比對：
+　回、比對成功、遇到相同字元：走trie edge。
+　回、比對失敗、遇到相異字元：走suffix link。
+　回、找到所有匹配的P：另走dictionary suffix link。
+　　　（若P之中無父子關係，
+　　　　僅需判斷當前節點是否完全比對成功、匹配到P即可。）
+</pre>
+<p class="t">時間複雜度</p>
+<p>建立trie的時間複雜度是O(P1 + ... + Pn) = O(Σ(Pi)) = O(P)。</p>
+<p>字串匹配的時間複雜度是O(T + K)，K是每個P在T中的出現次數的總和。K最小為0，K最大為O(T * n)。</p>
+<p>【註：原始論文中，字串匹配的時間複雜度是O(T + P + K)。當數個T做字串匹配，將慢許多。】</p>
+<textarea t="判斷每個P是否出現在T當中">
+int N = 1000;	// P的個數
+char T[100+1];
+char P[1000][100+1];
+
+bool occur[1000];	// 紀錄各個P有沒有出現在T當中
+int equiv[1000];	// 紀錄各個P有沒有重複出現
+
+struct TrieNode
+{
+	TrieNode* l[26], *suffix, *dictsuffix;
+	int index;	// P的編號
+
+	TrieNode()
+	{
+		memset(l, 0, sizeof(l));
+		suffix = dictsuffix = 0;
+		index = -1;
+	}
+} *root;
+
+// 初始化
+void init()
+{
+	memset(occur, false, sizeof(occur));
+	memset(equiv, -1, sizeof(equiv));
+	root = new TrieNode();
+}
+
+// 砍掉整棵trie
+void free(TrieNode* p = root)
+{
+	for (int i=0; i<26; ++i)
+		if (p->l[i])
+			free(p->i[i]);
+	delete p;
+}
+
+// 把一個字串加入trie
+void add(char* s, int index)
+{
+	TrieNode* p = root;
+	for (; *s; ++s)
+	{
+		if (!p->l[*s - 'A'])
+			p->l[*s - 'A'] = new TrieNode();
+		p = p->l[*s - 'A'];
+	}
+
+	// 如果此字串之前有出現，就特別紀錄起來。
+	if (p->index == -1)
+		p->index = index;
+	else
+		equiv[index] = p->index;
+}
+
+// 添上suffix link和dictionary suffix link
+// 以BFS順序進行
+// 時間複雜度O(Σ(Pi))
+void build()
+{
+	TrieNode* q[100000], **qf, **qb;
+	qf = qb = q;
+	*qb++ = root;
+
+	while (qf < qb)
+	{
+		TrieNode* p = *qf++;
+		for (int i=0; i<26; ++i)
+			if (p->l[i])
+			{
+				// 添上 suffix link
+				TrieNode* q = p->suffix;
+				while (q && !q->l[i]) q = q->suffix;
+				if (q) p->l[i]->suffix = q->l[i];
+				else   p->l[i]->suffix = root;
+
+				// 添上 dictionary suffix link
+				TrieNode* r = p->l[i]->suffix;
+				if (r->index != -1) p->l[i]->dictsuffix = r;
+				else p->l[i]->dictsuffix = r->dictsuffix;
+
+				*qb++ = p->l[i];
+			}
+	}
+}
+
+// 拿trie與T進行字串匹配
+// 時間複雜度O(T+K)
+void match(char* s)
+{
+	TrieNode* p = root;
+	for (; *s; ++s)
+	{
+		// 不斷比對字元，直到比對成功。
+		// 此部分總計時間複雜度為O(T)。
+		while (p && !p->l[*s - 'A']) p = p->suffix;
+		if (p) p = p->l[*s - 'A'];
+		else p = root;
+
+		// 走dictionary suffix link找到所有匹配的P。
+		// 此部分總計時間複雜度為O(K)。
+		for (TrieNode* q = p; q; q = q->dictsuffix)
+			if (q->index != -1)
+				occur[q->index] = true;
+	}
+}
+
+void aho_corasick()
+{
+	init();		// 初始化
+	for (int i=0; i<N; ++i)	// 所有P建立trie
+		add(P[i], i);
+	build();	// suffix link、dictionary suffix link
+	match(T);	// 拿trie與T進行字串匹配
+	free();		// 釋放記憶體空間
+
+	for (int i=0; i<N; ++i)
+		// 匹配到P，或者之前出現過、匹配到P。
+		if (occur[i] ||
+			equiv[i] != -1 && occur[equiv[i]])
+			cout << "第" << i << "個字串有出現";
+		else
+			cout << "第" << i << "個字串沒出現";
+}
+</textarea>
+<p class="e">UVa 10679 ICPC 4670</p>
+<p class="t">使用n次Morris-Pratt Algorithm</p>
+<p>同時匹配數個P，也可以用n次Morris-Pratt Algorithm，總時間複雜度就是O((T+P1) + ... + (T+Pn)) = O(T*n + P)，慢許多。</p>
+<p class="t">使用Suffix Tree</p>
+<p>同時匹配數個P，也可以替T建立一棵Suffix Tree，看看樹上有沒有各個P。時間複雜度與Aho-Corasick Algorithm相同。</p>
+<p>T固定，適合用Suffix Tree；P固定，適合用Aho-Corasick Algorithm。</p>
+<p class="t">Aho-Corasick Automaton</p>
+<p>此演算法可以化作自動機，轉化的時間複雜度為O(NA)，N為Trie的節點數目，A為字元總類數目。與Morris-Pratt Automaton的建構原理一模一樣。</p>
+<p>dictionary suffix link無法融入到自動機裡面，必須額外紀錄。</p>
+<img src="Aho-CorasickAutomaton1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Aho-CorasickAutomaton1.png">
+<img src="Aho-CorasickAutomaton2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Aho-CorasickAutomaton2.png">
+<textarea>
+void aho_corasick_automaton()
+{
+	// 使用BFS順序建立自動機
+	TrieNode* q[100000], **qf, **qb;
+	qf = qb = q;
+	*qb++ = root;
+
+	// 設定root
+	// 比對失敗，狀態轉移到root。
+	// 比對成功，狀態轉移到對應字元。設定好failure link。
+	for (int i=0; i<26; ++i)
+		if (!root->l[i])
+			root->l[i] = root;
+		else
+		{
+			root->l[i]->failure = root;
+			*qb++ = root->l[i];
+		}
+
+	// 比對失敗，狀態轉移到適當的前綴、加上當前字元。
+	// 比對成功，狀態轉移到對應字元。設定好failure link。
+	while (qf < qb)
+	{
+		TrieNode* p = *qf++;
+		for (int i=0; i<26; ++i)
+		{
+			if (!p->l[i])
+				p->l[i] = p->failure->l[i];
+			else
+			{
+				p->l[i]->failure = p->failure->l[i];
+				*qb++ = p->l[i];
+			}
+		}
+	}
+}
+</textarea>
+<p class="e">UVa 11468 ICPC 3124 5103</p>
+<p class="t">延伸閱讀：Wild Card String Matching</p>
+<p>當P中含有萬用字元「?」的時候，可以將P拆成一段一段不含萬用字元的部份，然後使用Multi-Pattern String Matching求出各小段在T中的出現位置，然後位移對齊一下（根據各小段在P中的位置），看看P的所有小段是否同時出現，即代表是否有匹配。時間複雜度是O(T+P)。</p>
+<p class="e">UVa 475</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">2D Pattern Matching: Baker-Bird Algorithm</p>
+<p class="r">程度★★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>當T與P是二維長方形的時候。時間複雜度是O(T+P)。</p>
+<pre>
+1.
+把T橫切成一條一條，
+把P橫切成一條一條，
+然後每一條T都執行Multi-Pattern String Matching，例如Aho-Corasick Algorithm。
+如果第a條P，從T[i,j]開始出現，那麼就進行紀錄：M[i,j] = a。
+M是一個跟T一樣大的陣列。
+
+2.
+把M直切成一條一條，
+每一條M都執行String Matching，例如Morris-Pratt Algorithm。
+看看是否出現1234567...n這個字串（剛剛P共有n條）。
+
+X.
+當P有某兩條相同時，則要小心處理，把這兩條的編號設為相同。
+</pre>
+<p>附帶一提，如果是使用Aho-Corasick Algorithm，因為P中不會有父子關係，所以不必建dictionary suffix link，省下很多功夫。</p>
+<p class="e">UVa 11019</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">String Matching: Gusfield's Algorithm（Z Algorithm）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">z function</p>
+<p>定義一個函數z()，z(i)是指由s[i]開始的字串，與s[0]開始的字串可以匹配到多長。也就是說s[0 ... z(i)-1] = s[i ... i+z(i)-1]。</p>
+<pre>
+  | 0 1 2 3 4 5 6 7
+--+-----------------
+s | a b a a b a a b
+z | 8 0 1 5 0 1 2 0
+
+z(0)：abaabaab，長度8。
+z(1)：ф，長度0。
+z(2)：a，長度1。
+z(3)：abaab，長度5。
+</pre>
+<p>設計此函數的緣由，是因為進行字串匹配的時候，我們總是希望兩字串的開頭盡可能長得一樣。至於為什麼取名為z，就得問原作者了。後面將提到如何運用z function作字串匹配，現在先講解如何計算z function。</p>
+<p>計算z()，是由左往右算。z(0)是特例，z(0)是整個字串的長度，所以z(0)不用算，由z(1)開始算。</p>
+<p>計算z(i)，是運用已經算好的z(j)，j < i。也就是指已經算好的某一段s[0 ... z(j)-1] = s[j ... j+z(j)-1]。首先找出哪一段s[j ... j+z(j)-1]覆蓋了s[i]，而且j+z(j)-1越右邊越好。</p>
+<img src="ZAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ZAlgorithm1.png">
+<p>一、如果沒有任何一段s[j ... j+z(j)-1]覆蓋了s[i]，表示已經算好的部份都派不上用場。從s[i]與s[0]開始比對，逐字比下去。</p>
+<img src="ZAlgorithm2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ZAlgorithm2.png">
+<p>二、如果有一段s[j ... j+z(j)-1]覆蓋了s[i]，表示s[i]也會出現在s[0 ... z(j)-1]之中，把i映射到對應的位置i'。緊接著再來一次，運用z(i')，也就是指s[0 .... z(i')-1] = s[i' ... i'+z(i')-1]，如此又把i'映射到字串開頭了。</p>
+<img src="ZAlgorithm3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ZAlgorithm3.png">
+<p>二之一、如果s[i ... i+z(i')-1]短少於s[j ... j+z(j)-1]的右端，那就可以直接算出z(i)的答案，就是z(i')。</p>
+<img src="ZAlgorithm4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ZAlgorithm4.png">
+<p>二之二、如果s[i ... i+z(i')-1]剛好貼齊s[j ... j+z(j)-1]的右端，那就必須檢查不確定的部分，直接從s[j+z(j)]與s[j+z(j)-i]繼續比對，逐字比下去。</p>
+<img src="ZAlgorithm5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ZAlgorithm5.png">
+<p>二之三、如果s[i ... i+z(i')-1]凸出了s[j ... j+z(j)-1]的右端，則與上一種情形相同。</p>
+<img src="ZAlgorithm6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ZAlgorithm6.png">
+<img src="ZAlgorithm7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ZAlgorithm7.png">
+<p class="t">時間複雜度</p>
+<p>以字元兩兩比較的總次數，作為時間複雜度。</p>
+<p>j+z(j)-1這個數值會從0開始不斷增加。每當字元比對成功時，j+z(j)-1就會跟著增加，下次比對的時候就會從j+z(j)繼續比對。j+z(j)-1這個數值的增加次數與比對次數一樣多，最多會從0增加到S，所以時間複雜度是O(S)。</p>
+<p>j便是原著中的L，j+z(j)-1便是原著中的R。</p>
+<textarea>
+char s[10] = "abcabcabc"
+int z[10];		// z陣列
+
+void z_function(string& s)
+{
+	memset(z, 0, sizeof(0));	// 初始化為0
+	z[0] = 9;					// z(0)是整個字串的長度
+
+	int L = 0, R = 0;	// s[L, R]即是s[j ... j+z(j)-1]。
+	for (int i=1; i<9; ++i)
+	{
+		// i'，i用s[L, R]映至i'
+		// 向左移動L單位
+		// s[L]移到s[0]，減了L；s[i]移到s[i-L]，也是減了L。
+		int ii = i - L;
+
+		// j+z(j)映射到字串開頭的位置
+		// s[i]移到s[0]，減了i；s[R+1]移到s[R+1-i]，也是減了i。
+		int n = R + 1 - i;
+
+		// 已經算好的部份都派不上用場
+		if (i > R)
+		{
+			// 從s[i]與s[0]開始比對，逐字比下去。
+			int x = i;
+			while (x < 9 && s[x] == s[x-i]) x++;
+			z[i] = x - i;
+
+			// 更新s[0 ... z(j)-1] = s[j ... j+z(j)-1]。
+			if (x > i) L = i, R = x - 1;
+		}
+		// s[i ... i+z(i')-1]貼齊或超出s[j ... j+z(j)-1]的右端
+		else if (z[ii] >= n)
+		{
+			// 從s[R+1]與s[R+1-i]開始比對，逐字比下去。
+			int x = R + 1;
+			while (x < 9 && s[x] == s[x-i]) x++;
+			z[i] = x - i;
+
+			// 更新s[0 ... z(j)-1] = s[j ... j+z(j)-1]。
+			L = i;
+			R = x - 1;
+		}
+		else
+		{
+			z[i] = z[ii];
+		}
+	}
+}
+</textarea>
+<textarea>
+char s[10] = "abcabcabc"
+int z[10];		// z陣列
+
+void z_function()
+{
+	memset(z, 0, sizeof(0));	// 初始化為0
+	z[0] = 9;					// z(0)是整個字串的長度
+
+	int L = 0, R = 1;			// 改成半開區間s[L, R)
+	for (int i=1; i<9; ++i)
+		if (R <= i || z[i-L] >= R-i)
+		{
+			int x = (R <= i ? i : R);
+			while (x < 9 && s[x] == s[x-i]) x++;
+			z[i] = x-i;
+			if (i < x) {L = i; R = x;}
+		}
+		else
+			z[i] = z[i-L];
+}
+</textarea>
+<p class="t">字串匹配</p>
+<p>只要弄出P + $ + T，也就是把P接到T開頭，中間用一個從未出現過的字元隔開。然後算一次z()，看看哪些z(i)剛好是P的長度，就匹配完畢了。</p>
+<p>實作時不必真的把T與P接在一起，可以先算好P的z function，然後再利用P去計算T的z function就可以了。時間複雜度為O(T+P)。</p>
+<img src="ZAlgorithm8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ZAlgorithm8.png">
+<p>映射至P的過程，就宛如Morris-Pratt Algorithm當中的「次長的共同前後綴」。</p>
+<pre>
+Gusfield's Algorithm  ：一個字串的每個後綴之中，與字串開頭相同的最長前綴。
+Morris-Pratt Algorithm：一個字串的每個前綴之中，與字串開頭相同的次長後綴。
+</pre>
+<p>Gusfield's Algorithm點明了字串匹配的精髓，就是兩個字串的「共同前綴」，非常直觀。Morris-Pratt Algorithm可視作Gusfield's Algorithm的另外一面，兩者關係互補。</p>
+<p class="e">UVa 455 11022 ICPC 4759</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">String Matching: Boyer-Moore Algorithm</p>
+<p class="r">程度★★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p><a href="javascript:if(confirm('http://www-igm.univ-mlv.fr/~lecroq/string/node14.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www-igm.univ-mlv.fr/~lecroq/string/node14.html'" tppabs="http://www-igm.univ-mlv.fr/~lecroq/string/node14.html">http://www-igm.univ-mlv.fr/~lecroq/string/node14.html</a></p>
+<p>向右挪動P，有著good-suffix shift與bad-character shift兩種挪動選項。每次挪動P之時，選擇向右挪動較多者。</p>
+<p>每次挪動P之後，由P的右端、往P的左端比對字元。</p>
+<p class="t">good-suffix shift</p>
+<p>P的每個後綴，找到本身以外，最後出現的地方。</p>
+<p>若沒重複出現，則找到「次長的相同前後綴」。即是failure function，定義域變成後綴罷了。</p>
+<p>計算good-suffix shift表格的時間複雜度為O(P)。</p>
+<p class="t">bad-character shift</p>
+<p>P的每個字元，找到最後出現的地方。</p>
+<p>注意到bad-character shift可能向左挪動。</p>
+<p>計算bad-character shift表格的時間複雜度為O(P + A)。A為字元種類數目。</p>
+<p class="t">時間複雜度</p>
+<p>字串比對，最差的時間複雜度為O(T * P)，此時T與P的全部字元皆相同；最佳的時間複雜度為O(T / P)，此時T與P沒有共同的字元。</p>
+<p>當T與P並非週期性字串，字元兩兩比對最多3T次。</p>
+<p>號稱實務上最快的演算法。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Multi-Pattern String Matching: Wu-Manber Algorithm</p>
+<p class="r">程度★★★　難度★</p>
+</div><div class="c">
+<p class="t">大意</p>
+<p>硬是拿Boyer-Moore Algorithm來做多重字串比對，工程味道濃厚的演算法。</p>
+<p>向右挪動P，只有bad-character shift一種挪動選項。</p>
+<p>比對單位由一個字元，改為B個字元。筆者推敲其用意如下：</p>
+<p>一、B取log<sub>A</sub>Σ(Pi)，能降低理論上的時間複雜度。</p>
+<p>二、過去在Big5編碼中（現今多採UTF-8編碼），一個中文字是兩個位元組。B取2，就能以中文字為比對單位。</p>
+<p>三、中文是以字組詞。B加大，就能以詞、詞組為比對單位。</p>
+<p>【註：此演算法的比對單位是B個字元，然而挪動單位仍是一個字元。因此二與三是空談。】</p>
+<p>實作時，B個字元用hash function合而為一數。</p>
+<p class="t">演算法</p>
+<pre>
+一、只看每個P的左端m個字元，暫時忽略右端其餘字元。
+　　P長度最短者，取作m。
+二、預先建立SHIFT table、HASH table、PREFIX table。
+三、實施Boyer-Moore Algorithm的字串匹配演算法，
+　　比對單位改為B個字元，挪動單位仍是一個字元。
+　　直接從SHIFT table取值，判斷比對成功、比對失敗。
+　回、B個字元比對失敗：
+　　甲、SHIFT table，根據其值，向右挪動P。
+　回、B個字元比對成功：
+　　甲、P的後綴在T中：
+　　　　HASH table，得到後綴是這B個字元的所有P。
+　　乙、P的前綴在T中：
+　　　　PREFIX table，得到這些P的前綴、B個字元，判斷是否也在T出現。
+　　　　T的當前比對位置往左數m個字元，就能進行判斷了。
+　　丙、P的其餘片段在T中（只有這裡是看P的全部字元）：
+　　　　逐個字元比對，方向隨便。若完整匹配到P，就輸出。
+　　丁、向右挪動P、一個字元。
+</pre>
+<p class="t">SHIFT table</p>
+<p>輸入B個字元，找到整個P之中最後出現的地方。</p>
+<p>時間複雜度是O(P * B)。</p>
+<p>空間複雜度是O(A ^ B)，A是字元種類數目。</p>
+<p class="t">HASH table</p>
+<p>輸入後綴、B個字元，得到符合條件的所有P。</p>
+<p>時間、空間複雜度同SHIFT table。</p>
+<p class="t">PREFIX table</p>
+<p>輸入其中一個P，得到前綴、B個字元。</p>
+<p>時間複雜度是O(n * B)，空間複雜度是O(n)，n是P的個數。</p>
+<p class="t">時間複雜度</p>
+<p>字串比對，最差的時間複雜度是O(BTP)，此時T與P的全部字元皆相同。最佳的時間複雜度是O(BT/m)，此時T與P沒有共同的連續B個字元。</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

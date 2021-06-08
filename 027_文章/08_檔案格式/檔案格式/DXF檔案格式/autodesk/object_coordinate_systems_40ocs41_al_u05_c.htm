@@ -1,0 +1,70 @@
+<html>
+<head>
+<meta name=ID content="Object_Coordinate_Systems_40OCS41_Al_u05_c">
+<title>Object Coordinate Systems (OCS)  [ACG]</title>
+<meta name=KEYWORDS content="coordinates,  OCS; OCS">
+<meta name=BROWSE content="BROWSE1:000">
+<meta name=WINDOW content="main">
+</head>
+<body bgcolor=#ffffff link=#003399 vlink=#003399>
+
+<table width=100% cellpadding=5 cellspacing=0 border=0><tr><td>
+<font face=Arial color=#003399 size=3><b> <a href="dxf_group_codes.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/dxf_group_codes.htm">DXF Group Codes</a>
+</b></font>
+<hr size=1>
+<font face=Arial color=#003399 size=3><b><a href="advanced_dxf_issues_al_u05_c.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/advanced_dxf_issues_al_u05_c.htm"><img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> Advanced DXF Issues</a> 
+</b></font><br>
+</td></tr><tr><td>
+<font face=Arial color=#003399 size=3><b><img src="bk_space.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/bk_space.gif" border=0> <img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> Object Coordinate Systems (OCS)
+</b></font>
+<hr size=1>
+</td></tr></table>
+
+<p><font face="MS Sans Serif,Arial" size=2>To save space in the drawing database (and in the DXF file), the points associated with each entity are expressed in terms of the entity's own object coordinate system (OCS). The OCS was referred to as ECS in previous releases of AutoCAD. With OCS, the only additional information needed to describe the entity's position in 3D space is the 3D vector describing the <FONT FACE=ARIAL><I>Z</I></FONT> axis of the OCS, and the elevation value.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>For a given <FONT FACE=ARIAL><I>Z</I></FONT> axis (or extrusion) direction, there are an infinite number of coordinate systems, defined by translating the origin in 3D space and by rotating the <FONT FACE=ARIAL><I>X</I></FONT> and <FONT FACE=ARIAL><I>Y</I></FONT> axes around the <FONT FACE=ARIAL><I>Z </I></FONT>axis. However, for the same <FONT FACE=ARIAL><I>Z</I></FONT> axis direction, there is only one OCS. It has the following properties:
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><UL type=square><LI>Its origin coincides with the WCS origin.
+</font>
+<font face="MS Sans Serif,Arial" size=2><LI>The orientation of the <FONT FACE=ARIAL><I>X</I></FONT> and <FONT FACE=ARIAL><I>Y</I></FONT> axes within the <FONT FACE=ARIAL><I>XY</I></FONT> plane are calculated in an arbitrary but consistent manner. AutoCAD performs this calculation using the arbitrary axis algorithm (see "Arbitrary Axis Algorithm").
+</font>
+<p><font face="MS Sans Serif,Arial" size=2></UL> For some entities, the OCS is equivalent to the WCS and all points (DXF groups 10-37) are expressed in World coordinates. See the following table.
+</font></p>
+<font face=Arial size=2><i>Coordinate systems associated with an entity type
+</i></font>
+<TABLE border=0 cellpadding=2 cellspacing=4><TR VALIGN=TOP><TD bgcolor=#F9F6ED><font face="MS Sans Serif,Arial" size=2><b>Entities</b></font></td>
+<TD bgcolor=#F9F6ED><font face="MS Sans Serif,Arial" size=2><b>Notes</b></font></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>3D entities such as line, point, <br>3dface, 3D polyline, 3D vertex, 3D mesh, 3D mesh vertex</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>These entities do not lie in a particular plane. All points are expressed in world coordinates. Of these entities, only lines and points can be extruded. Their extrusion direction can differ from the World <FONT FACE=ARIAL><I>Z</I></FONT> axis.</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>2D entities such as circle, arc, solid, trace, text, attrib, attdef, shape, insert, 2D polyline, 2D vertex, lwpolyline, hatch, image</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>These entities are planar in nature. All points are expressed in object coordinates. All of these entities can be extruded. Their extrusion direction can differ from the World <FONT FACE=ARIAL><I>Z </I></FONT>axis.</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Dimension</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Some of a dimension's points are expressed in WCS and some in OCS.</font></p></td></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Viewport</font></p></td>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2>Expressed in World coordinates.</font></p></td></TR>
+</TABLE>
+
+<p><font face="MS Sans Serif,Arial" size=2>Once AutoCAD has established the OCS for a given entity, the OCS works as follows:
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The elevation value stored with an entity indicates how far to shift the <FONT FACE=ARIAL><I>XY </I></FONT>plane along the <FONT FACE=ARIAL><I>Z </I></FONT>axis (from the WCS origin) to make it coincide with the plane that contains the entity. How much of this is the user-defined elevation is unimportant.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>Any 2D points entered through the UCS are transformed into the corresponding 2D points in the OCS, which is shifted and rotated with respect to the UCS.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>These are a few ramifications of this process:
+</font></p>
+<font face="MS Sans Serif,Arial" size=2><UL type=square><LI>You cannot reliably find out what UCS was in effect when an entity was acquired.
+</font>
+<font face="MS Sans Serif,Arial" size=2><LI>When you enter the <FONT FACE=ARIAL><I>XY</I></FONT> coordinates of an entity in a given UCS and then do a DXFOUT, you probably won't recognize those <FONT FACE=ARIAL><I>XY</I></FONT> coordinates in the DXF file. You must know the method by which AutoCAD calculates the <FONT FACE=ARIAL><I>X</I></FONT> and <FONT FACE=ARIAL><I>Y</I></FONT> axes in order to work with these values.
+</font>
+<font face="MS Sans Serif,Arial" size=2><LI>The elevation value stored with an entity and output in DXF files is a sum of the <FONT FACE=ARIAL><I>Z</I></FONT>-coordinate difference between the UCS <FONT FACE=ARIAL><I>XY</I></FONT> plane and the OCS <FONT FACE=ARIAL><I>XY</I></FONT> plane, and the elevation value that the user specified at the time the entity was drawn.
+</font>
+<p>
+<hr size=1>
+<font face="MS Sans Serif,Tahoma,Arial" size=2></UL> Topics in this section:
+</font></p>
+<font face="MS Sans Serif,Tahoma,Arial" size=2><UL type=square><LI> <a href="arbitrary_axis_algorithm_al_u05_c.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/arbitrary_axis_algorithm_al_u05_c.htm">Arbitrary Axis Algorithm</a>
+</font>
+</UL> 
+</body>
+</html>
+

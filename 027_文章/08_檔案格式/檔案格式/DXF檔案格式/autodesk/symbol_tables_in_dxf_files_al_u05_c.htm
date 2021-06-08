@@ -1,0 +1,49 @@
+<html>
+<head>
+<meta name=ID content="Symbol_Tables_in_DXF_Files_Al_u05_c">
+<title>Symbol Tables in DXF Files  [ACG]</title>
+<meta name=KEYWORDS content="">
+<meta name=BROWSE content="BROWSE1:000">
+<meta name=WINDOW content="main">
+</head>
+<body bgcolor=#ffffff link=#003399 vlink=#003399>
+
+<table width=100% cellpadding=5 cellspacing=0 border=0><tr><td>
+<font face=Arial color=#003399 size=3><b> <a href="dxf_group_codes.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/dxf_group_codes.htm">DXF Group Codes</a>
+</b></font>
+<hr size=1>
+<font face=Arial color=#003399 size=3><b><a href="tables_section_al_u05_c.htm" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/tables_section_al_u05_c.htm"><img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> TABLES Section</a> 
+</b></font><br>
+</td></tr><tr><td>
+<font face=Arial color=#003399 size=3><b><img src="bk_space.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/bk_space.gif" border=0> <img src="book2.gif" tppabs="http://www.autodesk.com/techpubs/autocad/acadr14/dxf/images/book2.gif" border=0> Symbol Tables in DXF Files
+</b></font>
+<hr size=1>
+</td></tr></table>
+
+<p><font face="MS Sans Serif,Arial" size=2>The order of the tables may change, but the LTYPE table always precedes the LAYER table. Each table is introduced with a 0 group with the label TABLE. This is followed by a 2 group identifying the particular table (APPID, DIMSTYLE, LAYER, LTYPE, STYLE, UCS, VIEW, VPORT, or BLOCK_RECORD), a 5 group (a handle), a group 100 (AcDbSymbolTable subclass marker), and a 70 group that specifies the maximum number of table entries that may follow. Table names are output in uppercase characters. The DIMSTYLE handle is a 105 group not a 5 group.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The tables in a drawing can contain deleted items, but these are not written to the DXF file. As a result, fewer table entries may follow the table header than are indicated by the 70 group, so do not use the count in the 70 group as an index to read in the table. This group is provided so that a program that reads DXF files can allocate an array large enough to hold all the table entries that follow.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>Following this header for each table are the table entries. Each table item consists of a 0 group identifying the item type (same as table name, such as LTYPE or LAYER), a 2 group giving the name of the table entry, a 70 group specifying flags relevant to the table entry (defined for each following table), and additional groups that give the value of the table entry. The end of each table is indicated by a 0 group with the value ENDTAB.
+</font></p>
+The following is an example of the TABLES section of a DXF file.
+<TABLE border=0 cellpadding=2 cellspacing=4><TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><tt>&nbsp;&nbsp;0<br>SECTION<br>&nbsp;&nbsp;2<br>TABLES</tt> </font></p><tt><br></tt></TD>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><font face=Arial><i>Beginning of TABLES section</i></font><font face=Arial><i> <br><br><br></i></font></font></p><font face=Arial><i><br></i></font></TD></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><tt>&nbsp;&nbsp;0<br>TABLE<br>&nbsp;&nbsp;2<br>&lt;table type&gt;<br>&nbsp;&nbsp;5<br>&lt;handle&gt;<br>100<br>AcDbSymbolTable<br> 70<br>&lt;max. entries&gt;</tt> </font></p><tt><br></tt></TD>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><font face=Arial><i>Common table group codes,<br>repeats for each entry <br><br></i></font><font face=Arial><i><br><br><br><br><br><br></i></font></font></p><font face=Arial><i><br></i></font></TD></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><tt>&nbsp;&nbsp;0<br>&lt;table type&gt;<br>&nbsp;&nbsp;5<br>&lt;handle&gt;<br>100<br>AcDbSymbolTableRecord<br> .<br> . &lt;data&gt;<br> .</tt> </font></p><tt><br></tt></TD>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><font face=Arial><i>Table entry data, repeats,<br>for each table record <br><br><br></i></font></font></p><font face=Arial><i><br></i></font></TD></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><tt>&nbsp;&nbsp;0<br>ENDTAB</tt> </font></p><tt><br></tt></TD>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><font face=Arial><i>End of table <br></i></font></font></p><font face=Arial><i><br></i></font></TD></TR>
+<TR VALIGN=TOP><TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><tt>&nbsp;&nbsp;0<br>ENDSEC</tt> </font></p><tt><br></tt></TD>
+<TD bgcolor=#F9F6ED><p><font face="MS Sans Serif,Arial" size=2><font face=Arial><i>End of TABLES section <br></i></font></font></p><font face=Arial><i><br></i></font></TD></TR>
+</TABLE>
+
+<p><font face="MS Sans Serif,Arial" size=2>Both symbol table records and symbol tables are database objects. At a very minimum, with all prevailing usage within AutoCAD, this implies that a handle is present, positioned after the 2 group codes for both the symbol table record objects and the symbol table objects.
+</font></p>
+<p><font face="MS Sans Serif,Arial" size=2>The DIMSTYLE table is the only record type in the system with a handle code of 105 because of its earlier usage of group code 5. As a rule, programmers should not be concerned about this exception unless it is in the context of the DIMSTYLE table section. This is the only context in which this exception should occur.
+</font></p>
+
+</body>
+</html>
+

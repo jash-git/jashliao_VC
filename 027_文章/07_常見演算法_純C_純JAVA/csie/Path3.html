@@ -1,0 +1,519 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Path</title></head><body>
+<div class="a"><div class="h">
+<p class="b">k Shortest Path</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">k Shortest Walk</p>
+<p>給定起點與終點，排名第k短的途徑。有可能跟最短途徑一樣長。或許可以翻譯為「第k短途徑」。</p>
+<p>可以直接套用先前所學的Dijkstra's Algorithm，把DP表格開大一點，每個點都儲存前k短的長度，就能解決問題。時間複雜度為O(K * (E+VlogV))。</p>
+<p class="e">UVa 10740</p>
+<p class="t">k Shortest Path與k Shortest Trail</p>
+<p>「第k短路徑」、「第k短跡」尚無有效率的演算法，大多是使用窮舉法，窮舉所有可能的路徑。時間複雜度本是指數時間，但如果配合了heuristic function，理想狀態之下，時間複雜度得宣稱是多項式時間。</p>
+<p>主要的演算法有Yen's Algorithm與MPS Algorithm兩個。</p>
+<p><a href="javascript:if(confirm('http://imlazy.ycool.com/post.1956603.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://imlazy.ycool.com/post.1956603.html'" tppabs="http://imlazy.ycool.com/post.1956603.html">http://imlazy.ycool.com/post.1956603.html</a></p>
+<p><a href="javascript:if(confirm('http://code.google.com/p/k-shortest-paths/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://code.google.com/p/k-shortest-paths/'" tppabs="http://code.google.com/p/k-shortest-paths/">http://code.google.com/p/k-shortest-paths/</a></p>
+<p><a href="javascript:if(confirm('http://www.mat.uc.pt/~eqvm/OPP/KSPP/KSPP.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.mat.uc.pt/~eqvm/OPP/KSPP/KSPP.html'" tppabs="http://www.mat.uc.pt/~eqvm/OPP/KSPP/KSPP.html">http://www.mat.uc.pt/~eqvm/OPP/KSPP/KSPP.html</a>
+<p><a href="javascript:if(confirm('http://blog.csdn.net/sharpdew/archive/2005/08/05/446510.aspx  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://blog.csdn.net/sharpdew/archive/2005/08/05/446510.aspx'" tppabs="http://blog.csdn.net/sharpdew/archive/2005/08/05/446510.aspx">http://blog.csdn.net/sharpdew/archive/2005/08/05/446510.aspx</a></p>
+<p class="e">ICPC 3624</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Next-to-Shortest Path</p>
+<p class="r">程度★★★　難度★★★</p>
+</div><div class="c">
+<p class="t">Strictly Second Shortest Walk</p>
+<p>給定起點與終點，「嚴格次短途徑」是權重不等於最短途徑、權重盡量小的途徑。可能有許多條。</p>
+<p>【註：以下假設有向圖上沒有負環、無向圖上沒有負邊，此時最短途徑恰等於最短路徑。至於有向圖上有負環、無向圖上有負邊的嚴格次短途徑，至今仍無人討論過。】</p>
+<img src="StrictlySecondShortestWalk1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StrictlySecondShortestWalk1.png">
+<img src="StrictlySecondShortestWalk2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StrictlySecondShortestWalk2.png">
+<p>既然不想走這條路，就必須改走別條路。這是人之常情。</p>
+<p>不想找到一條最短路徑，而想找到一條嚴格次短途徑，一種方式是觀察最短路徑的替代道路。</p>
+<p>列出所有最短路徑，也就是「最短路徑圖」，從中尋找替代道路。由於替代道路太長，不利分析，於是發揮Incremental Method化整為零的精神：不觀察替代道路的所有邊，改為觀察替代道路上的一條邊。此精神先前也於Label Correcting Algorithm出現過。</p>
+<p>【註：一張圖上，給定起點與終點，描出所有最短路徑，此處暫且稱之「最短路徑圖」。此概念尚未出現專有名詞。圖上只有正邊時，最短路徑圖是一張有向無環圖DAG；圖上有零邊或負邊，但是無負環時，最短路徑圖可能會額外出現零環。】</p>
+<img src="StrictlySecondShortestWalk3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StrictlySecondShortestWalk3.png">
+<p>在有向圖上，替代邊必然是最短路徑以外的邊；在無向圖上，替代邊不僅可以採用最短路徑以外的邊，也可以逆行最短路徑上面的邊。替代邊設定為有向邊是比較完善的。</p>
+<p>也就是說，嚴格次短途徑一定經過「最短路徑圖」以外的邊；若在無向圖上，也可以經過「最短路徑圖」上的反方向邊。</p>
+<p>嚴格次短途徑仍是越短越好。當有一條途徑經過替代邊ij，要使此途徑盡量短，唯一的方法就是：從起點到i必須是最短路徑，從j到終點也必須是最短路徑。接著只要使用窮舉法，窮舉所有可能的替代邊，即可找到其中一條嚴格次短途徑。</p>
+<img src="StrictlySecondShortestWalk4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/StrictlySecondShortestWalk4.png">
+<pre>
+一、預先計算起點s出發的單源最短路徑。
+二、預先計算抵達終點t的單源最短路徑。
+三、窮舉圖上每一條邊ij作為替代邊（無向圖則視作雙向都有邊）：
+　甲、取得s->i的最短路徑。
+　乙、取得j->t的最短路徑。
+　丙、串成一條途徑s->i->j->t。
+　　子、若s->i->j->t是最短路徑，表示邊ij不是替代邊，則捨棄之。
+　　丑、若s->i->j->t不是最短路徑，就有可能是嚴格次短途徑，則紀錄之。
+四、於丑，當中最短的途徑，便是嚴格次短途徑。
+</pre>
+<p>窮舉所有邊的過程，其時間複雜度為O(E)，必然小於單源最短路徑的時間複雜度。因此可以直接宣稱時間複雜度等同求單源最短路徑的時間複雜度。</p>
+<p class="e">UVa 10342</p>
+<p class="t">Strictly Second Shortest Path（Next-to-Shortest Path）</p>
+<p>給定起點與終點，「嚴格次短路徑」是權重不等於最短路徑、權重盡量小的路徑。</p>
+<p>正權重無向圖的演算法，時間複雜度宣稱是O(E+VlogV)。</p>
+<p>建立「最短路徑圖」，採用Divide and Conquer，將嚴格次短路徑分為「經過最短路徑圖以外的邊」與「經過最短路徑圖的反方向邊」兩種。這兩種情形分別被以下兩篇論文解決：</p>
+<p>Kuo-Hua Kao, Jou-Ming Chang, Yue-Li Wang, Justie Su-Tzu Juan. A Quadratic Algorithm for Finding Next-to-Shortest
+Paths in Graphs. Algorithmica, 2010.</p>
+<p>Bang-Ye Wu. A Simpler and More Efficient Algorithm for the
+Next-to-Shortest Path Problem. Combinatorial Optimization and Applications, 2010.</p>
+<p>關鍵點在於把vertex-disjoint paths與dominator兩個概念連結在一起。</p>
+<p>【待補文字】</p>
+<pre>
+greedy algorithm
+只能找出其中一條次短路徑
+
+一、求出s->t最短路徑圖。O(E+VlogV)
+
+二、依照最短距離排序最短路徑圖上所有點（等同於最短路徑圖的拓樸排序）。
+
+三、針對每個點x，計算s到x的全部路徑所形成的DAG，離x最近的關節點Is(x)。O(V+E)
+　　針對每個點x，計算x到t的全部路徑所形成的DAG，離x最近的關節點It(x)。O(V+E)
+
+四、針對每個點x，以朝向s點的方向，依序掃描其祖先p。可以用反拓樸順序找？
+
+　甲、令y := p。
+　　　現在找出一個適合的y，這個y可以讓 s->x->y->t 形成簡單路徑。
+   　（就是y到t的路徑之間，存在一個關節點，是x的子孫。）
+   　（而且s到x的路徑之間，存在一個關節點，是y的祖先。）
+   　（可以用distance label的大小來判斷。）
+
+　乙、如果不能形成簡單路徑，下一個y是Is(x)。
+　　　走過的y就標記，以後不再找。
+
+　丙、一旦發現一個合理的y，就嘗試更新d(x,y)最小值。
+　　　而且不用繼續再找下一個y了，因為d(x,y)只會越來越大。可以直接下一個p。
+
+　丁、如果y碰到了Is(x)，表示不能形成簡單路徑了，那就直接下一個p。
+
+　注、有一種尋找最短區間的味道。
+　　　最短路徑拉成一直線s->y->x->t，區間右端是x，左端是y。
+　　　區間要弄得夠大，以保證能形成簡單路徑。
+　　　區間不能太大，左端不可超過或等於Is(x)。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Most Vital Edge（Under Construction!）</p>
+<p class="r">程度★★★　難度★</p>
+</div><div class="c">
+<p class="t">Most Vital Edge（Replacement Path）</p>
+<p>道路崩塌、道路阻塞時，該如何找到最短的替代道路呢？</p>
+<p>切斷圖上一條邊之後，起點到終點的最短路徑，稱做此邊的「替代路徑」，可能不存在、可能有許多條。</p>
+<p>切斷之後，讓「替代路徑」長度增加最多的那條邊，則稱做「要害邊」，可能不存在、可能有許多條。</p>
+<p class="t">非負權重圖演算法（Malik-Mittal-Gupta Algorithm）</p>
+<p>觀察起點到終點的最短路徑圖。刪除最短路徑圖之外的邊、刪除最短路徑圖上不是瓶頸的邊、刪除st最短路徑之外的邊──起點到終點的替代路徑仍是原先的最短路徑。能改變替代路徑長度的邊，就只有st最短路徑上面的瓶頸（bottleneck）。</p>
+<img src="VitalEdgeSPT1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VitalEdgeSPT1.png">
+<p>替代路徑經過最短路徑圖之外的邊，替代路徑長度才會增加。為了讓盡量縮短替代路徑長度，除了替代邊以外，都沿著原先的最短路徑走。</p>
+<img src="VitalEdgeSPT2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VitalEdgeSPT2.png">
+<p>一種方式是：找到起點的最短路徑樹、終點的最短路徑樹，穿越這兩棵最短路徑樹的邊（即是Cut）做為替代邊。運用遞推法，逐步擴展起點的最短路徑樹。</p>
+<img src="VitalEdgeSPT3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/VitalEdgeSPT3.png">
+<p>時間複雜度同單源最短路徑的時間。</p>
+<textarea t="計算替代道路長度">
+struct Node {int b, c;};
+bool operator<(const Node& n1, const Node& n2) {return n1.c > n2.c;}
+
+const int V = 9, E = 9;	// 點數和邊數
+vector<Node> adj[V];	// adjacency lists
+int ds[V], dt[V]		// distance
+int parent[V];			// shortest path tree
+bool visit[V];
+
+// O(ElogE) single source shortest paths
+void dijkstra(int source, int* dist)
+{
+	for (int i=0; i<V; ++i) dist[i] = 1e9;
+	for (int i=0; i<V; ++i) visit[i] = false;
+	priority_queue<Node> pq;
+
+	dist[source] = 0;
+	parent[source] = source;
+	pq.push((Node){source, 0});
+
+	for (int i=0; i<V; ++i)
+	{
+		int a = -1;
+		while (!pq.empty() && visit[a = pq.top().b]) pq.pop();
+		if (a == -1) return 1e9;
+		visit[a] = true;
+
+		for (int j=0; j<adj[a].size(); ++j)
+		{
+			int b = adj[a][j].b;
+			int c = adj[a][j].c;
+			if (!visit[b] && dist[a] + c < dist[b])
+			{
+				dist[b] = dist[a] + c;
+				parent[b] = a;
+				pq.push((Node){b, dist[b]});
+			}
+		}
+	}
+}
+
+void replacement_path(int source, int target)
+{
+	dijkstra(target, dt);
+	dijkstra(source, ds);
+	// 得到起點的最短路徑樹！
+
+	for (int i=0; i<V; ++i) visit[i] = false;
+	priority_queue<Node> pq;
+
+	// 擷取起點到終點的路徑（順序顛倒）
+	vector<int> path;
+	for (int a=target; a!=source; a=parent[a])
+		path.push_back(a);
+	path.push_back(source);
+
+	// 運用BFS擴展最短路徑樹
+	int q[200000], *qf, *qb;
+	qf = qb = q;
+
+	// 依序嘗試刪除st最短路徑的每一條邊，計算替代路徑。
+	for (int i=path.size()-2; i>=0; --i)
+	{
+		// 添補上次被刪除的邊，最短路徑樹添補一點。
+		visit[*qb++ = path[i+1]] = true;
+
+		// 繼續擴展最短路徑樹，避免經過這次被刪除的邊。
+		while (qf < qb)
+		{
+			int a = *qf++;
+			for (int j=0; j<adj[a].size(); ++j)
+			{
+				int b = adj[a][j].b;
+				int c = adj[a][j].c;
+				if (visit[b]) continue;
+				// 避免經過這次被刪除的邊。
+				if (a == path[i+1] && b == path[i]) continue;
+
+				// 最短路徑樹上的邊
+				if (parent[t] == a)
+					visit[*qb++ = b] = true;
+				// 割上的邊（做為替代道路），
+				// 或是最短路徑樹內的穿越邊（稍後移除）。
+				else
+					pq.push((Node){b, ds[a] + c + dt[b]});
+			}
+		}
+
+		// 先移除不在割上的邊。
+		while (!pq.empty() && visit[pq.top().b]) pq.pop();
+		// 再取得替代道路長度。
+		int d2 = pq.empty() ? 1e9 : pq.top().c;
+		cout << "不經過邊" << path[i+1] << path[i];
+		cout << "的替代道路長度是" << d2;
+	}
+}
+</textarea>
+
+</div></div><div class="a"><div class="h">
+<p class="b">k Disjoint Paths</p>
+<p class="r">程度★★★　難度★</p>
+</div><div class="c">
+<p class="t">k Vertex-disjoint Paths</p>
+<p>給定k組起點與終點（點皆相異），找齊k條路徑，點皆相異。屬於NP-Complete問題，是Multicommodity Flow的特例。</p>
+<p>但是當k值固定時，則是P問題，有O(V^2)演算法：</p>
+<p><a href="javascript:if(confirm('http://research.nii.ac.jp/~k_keniti/quaddp1.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://research.nii.ac.jp/~k_keniti/quaddp1.pdf'" tppabs="http://research.nii.ac.jp/~k_keniti/quaddp1.pdf">http://research.nii.ac.jp/~k_keniti/quaddp1.pdf</a></p>
+<p class="t">k Edge-disjoint Paths</p>
+<p>一切如同k Vertex-disjoint Paths，改為邊皆相異。</p>
+<p class="t">k Vertex-disjoint s-t Paths</p>
+<p>給定一組起點與終點，找出k條路徑，中繼點皆相異。屬於P問題，請參考「<a href="Connectivity.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Connectivity.html">Connectivity</a>」。</p>
+<p class="e">ICPC 4259</p>
+<p class="t">k Edge-disjoint s-t Paths</p>
+<p class="e">UVa 10806 ICPC 4271</p>
+<p class="t">相異節點最少的來回路徑</p>
+<p class="e">ICPC 3570</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Diameter, Radius</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Eccentricity</p>
+<pre>
+eccentricity(i) = max d(i, j)
+                  j∊V
+
+d(i, j) 為i點到j點的最短路徑
+</pre>
+<p>在一張無向圖上面，給定圖上一點，以最短路徑長度當作距離，找出離此點最遠的一點，這兩點之間的距離就叫做「偏心距」。</p>
+<p class="t">Diameter, Radius</p>
+<pre>
+diameter(G) = max eccentricity(i) = max d(i, j)
+              i∊V                  i,j∊V
+
+radius(G)   = min eccentricity(i)
+              i∊V
+</pre>
+<p>一張無向圖的「直徑」是圖上所有偏心距當中最大的一個，一張無向圖的「半徑」是圖上所有偏心距當中最小的一個。「直徑」也可以直接想做是，一張圖上長度最長的一條最短路徑之長度。</p>
+<p>【註：有時候為了方便，直徑和半徑會定義成一段路徑，而不是一個數值。】</p>
+<p>一張圖可能會有許多條直徑、許多條半徑。</p>
+<p>直徑和半徑都是最短路徑。根據最短路徑的性質，直徑和半徑中間截一段路徑下來，也都會是最短路徑。</p>
+<p>要計算一張無向圖的直徑與半徑是很簡單的，首先算好所有兩點之間最短路徑，然後按照定義來算就可以了。</p>
+<textarea>
+int d[10][10];	// adjacency matrix
+int ecc[10];	// 各點的偏心距
+
+void diameter_radius()
+{
+	// Floyd-Warshall Algorithm
+	for (int k=0; k<10; ++k)
+		for (int i=0; i<10; ++i)
+			for (int j=0; j<10; ++j)
+				d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+
+	// 計算偏心距
+	memset(ecc, 0x7f, sizeof(ecc));
+	for (int i=0; i<10; ++i)
+		for (int j=0; j<10; ++j)
+			ecc[i] = min(ecc[i], d[i][j]);
+
+	// 計算直徑和半徑
+	int diameter = 0;
+	int radius = 1e9;
+	for (int i=0; i<10; ++i)
+	{
+		diameter = max(diameter, ecc[i]);
+		radius   = min(radius  , ecc[i]);
+	}
+
+/*
+	// 直徑也可以這樣算
+	for (int i=0; i<10; ++i)
+		for (int j=0; j<10; ++j)
+			diameter = max(diameter, d[i][j]);
+*/
+}
+</textarea>
+<p class="e">ICPC 3569</p>
+<p class="t">延伸閱讀：樹的直徑與半徑</p>
+<p>樹的直徑與半徑可以利用DFS求得，詳情請看本站文件「<a href="Tree.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Tree.html">Tree</a>」。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Central Vertex</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">Central Vertex（Center）</p>
+<pre>
+center(G) = arg min eccentricity(i)
+             i  i∊V
+
+          = arg min max d(i, j)
+             i  i∊V j∊V
+
+d(i, j) 為i點到j點的最短路徑
+</pre>
+<p>一張無向圖的「中心」是圖上的一個點，離中心最偏遠的點，其距離會最小，也就是說「中心」的偏心距會等於半徑長度。一張無向圖可能會有很多個「中心」。</p>
+<img src="Center1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Center1.png">
+<p>中心離圖上所有點越近越好，圖上所有點離中心越近越好。是以最偏遠的點的距離來衡量遠近，而非以各點的距離總和來衡量遠近。</p>
+<p>要找到一張無向圖的中心是很簡單的，首先算好所有兩點之間最短路徑，然後按照定義來找就可以了。</p>
+<p class="t">Absolute Center</p>
+<pre>
+absolute_center(G) = arg min eccentricity(i)
+                      i   i
+
+                   = arg min max d(i, j)
+                      i   i  j∊V
+</pre>
+<p>一張無向圖的「絕對中心」，與中心稍有不同。絕對中心不一定得是原圖上的點，它可以位於某條邊上的某處。一張無向圖可能會有很多個「絕對中心」。</p>
+<img src="Center2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Center2.png">
+<p>要找到一張無向圖的絕對中心，方法不多。目前最快的演算法，便是下述的演算法。</p>
+<p class="t">演算法（Kariv-Hakimi Algorithm）</p>
+<p>此演算法跟一般圖論問題的解題手法完全不同。首先忘掉圖論，讓我們回到高中函數。</p>
+<p>我們先假設絕對中心在邊ij上面。接著畫出一個函數圖形：X軸是絕對中心與i點的距離（想當然X軸範圍只有0到d(i,j)），Y軸是絕對中心與圖上x點的最短距離。先隨便選一個x點。</p>
+<p>根據絕對中心在邊ij上面的各種位置，我們都可以算出絕對中心離x點的最短距離，進而描出一條函數線。這條函數線長得什麼樣子呢？以下分為三種情況討論：</p>
+<p>甲、絕對中心在正權重的邊上游移：</p>
+<p>觀察絕對中心到x點的最短距離變化。絕對中心挪往邊ij的中間，絕對中心到x點的最短距離就會慢慢增加；絕對中心挪往邊ij的兩端，絕對中心到x點的最短距離就會慢慢減少。左右的坡度是相同的，也可能只有左坡或者只有右坡。</p>
+<img src="Kariv-Hakimi1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi1.png">
+<img src="Kariv-Hakimi2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi2.png">
+<p>接著觀察絕對中心到圖上每一點的最短距離變化。我們可以把每一個點的函數線統統描在同一張函數圖形，每條線的坡度都是一樣的。</p>
+<p>根據絕對中心的定義，絕對中心與最遠點的距離越小越好；對照到函數圖形，就是上方邊際線的Y軸座標越低越好。由此可知，上方邊際線的最凹處，就是絕對中心的偏心距大小；最凹處的投影位置，就是絕對中心的最佳位置。窮舉上方邊際線的所有凹處，找出最小的偏心距，就能找到絕對中心。</p>
+<img src="Kariv-Hakimi3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi3.png">
+<p>該如何找到上方邊際線的最凹處呢？這就要一點小技巧了。首先把每一條函數線的左端點按照高低排序，然後由最高的函數線開始，不斷與更低的函數線相交，交點即是上方邊際線的凹處。每次求得交點後，就留下原本較低的函數線，繼續與更低的函數線相交，最後就能得到所有凹處。Y軸座標最低的，就是最凹處了。<p>
+<img src="Kariv-Hakimi4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi4.png">
+<p>計算凹處的Y軸座標很簡單，只需要知道相交的兩條線在X軸的兩端分別有多高，就能推導出來了：</p>
+<pre>
+  eccentricity(c)
+= d(c, i) + d(i, x)
+= d(c, j) + d(j, y)
+= {d(i, j) + d(i, x) + d(j, y)} / 2
+</pre>
+<p>乙、絕對中心在負權重的邊上游移：</p>
+<p>X軸左右兩端最高的函數線的交叉點，就是上方邊際線的最凹處。輕鬆寫意。</p>
+<img src="Kariv-Hakimi5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi5.png">
+<img src="Kariv-Hakimi6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi6.png">
+<p>丙、絕對中心在零權重的邊上游移：</p>
+<p>函數線都是水平線，最高的函數線到處都是最凹處。</p>
+<img src="Kariv-Hakimi7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi7.png">
+<p>最後，要找到一張無向圖的絕對中心，只需窮舉圖上所有邊，看看絕對中心在哪一條邊，再來依照方才的分析過程，取偏心距最小者即可。</p>
+<pre>
+一、計算所有兩點之間最短路徑。
+　 並且紀錄起點到圖上各點的最短路徑長度順序。
+二、窮舉圖上所有邊ij，找出絕對中心：
+　甲、正邊：i點、j點、上方邊際線所有凹處。O(V)。
+　乙、負邊：i側最高線與j側最高線的交叉點。O(1)。
+　丙、零邊：最高的水平線。O(1)。
+</pre>
+<p class="t">時間複雜度</p>
+<p>一、計算所有兩點之間最短路徑：有負邊，則以Minimum Weight T-join求解，需時O(V^4)。無負邊，則執行V次Dijkstra's Algorithm，以Fibonacci Heap實作，需時O(V * (E + VlogV))。</p>
+<p>二、尋找絕對中心：圖的資料結構是adjacency lists，需時O(VE)。</p>
+<p>時間複雜度取決於計算最短路徑的時間。</p>
+<p class="t">實作</p>
+<p>下面提供一個簡化過的實作，假設圖上的邊都是正權重。</p>
+<p>這段程式碼沒有特別去紀錄絕對中心的位置，各位可以試著想一下怎麼紀錄。</p>
+<textarea t="找出絕對中心的偏心距（adjacency matrix）">
+const int V = 10;
+int w[V][V];		// adjacency matrix
+
+bool visit[V];		// visit record
+int d[V][V];		// 所有兩點之間最短路徑長度
+int rank[V][V];		// 各起點的最短路徑長度順序
+
+void Dijkstra(int s)
+{
+	int* ds = d[s];	// alias
+	int* rs = rank[s];
+
+	for (int i=0; i<V; ++i) visit[i] = false;
+	for (int i=0; i<V; ++i) ds[i] = 1e9;
+
+	ds[s] = 0;
+
+	for (int k=0; k<V; ++k)
+	{
+		int i = -1, min = 1e9;
+		for (int x=0; x<V; ++x)
+			if (!visit[x] && ds[x] < min)
+				min = ds[i = x];
+
+		if (i == -1) break;
+		visit[i] = true;
+		rs[k] = i;	// 順便紀錄各點的最短距離長度順序
+
+		for (int j=0; j<V; ++j)
+			if (!visit[j] && ds[i] + w[i][j] < ds[j])
+				ds[j] = ds[i] + w[i][j];
+	}
+}
+
+void Kariv_Hakimi()
+{
+	for (int i=0; i<N; ++i)
+		Dijkstra(i);
+
+	// 絕對中心的偏心距可能會出現0.5的小數，
+	// 故可直接紀錄兩倍的偏心距。
+	int ecc2 = 1e9;
+
+	for (int i=0; i<V; ++i)
+		for (int j=i+1; j<V; ++j)
+		{
+			if (w[i][j] == 1e9) continue;
+
+			// 如果絕對中心在i點
+			ecc2 = min(ecc2, d[i][rank[i][V-1]] * 2);
+			// 如果絕對中心在j點
+			ecc2 = min(ecc2, d[j][rank[j][V-1]] * 2);
+
+			int* r = rank[i];	// alias
+
+			// 靠i側時，令a線是目前最高，令b線比a線低並且越來越低。
+			for (int a=V-1, b=V-2; b>=0; --b)
+				// 靠j側時，b線比a線高，故兩線相交，產生凹處。
+				if (d[j][r[b]] > d[j][r[a]])
+				{
+					ecc2 = min(ecc2,
+							d[i][r[b]] + d[i][j] + d[j][r[a]]);
+					a = b;
+				}
+		}
+
+	cout << "離最遠的點的距離" << double(ecc) / 2.0;
+}
+</textarea>
+<p class="t">延伸閱讀：無權重圖的絕對中心</p>
+<p>簡單來說，就是每一條邊的權重都是一。在這種情況下，要尋找絕對中心的位置就簡單多了，判斷方式會變得簡潔一點。</p>
+<img src="Kariv-Hakimi8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi8.png">
+<pre>
+先判斷左右兩側最高點是否一樣高。
+　甲、如果不一樣高，上方邊際線就出來了，答案也就出來了。O(1)。
+　乙、如果一樣高，則需要判斷上方邊際線的凹凸。
+　　　檢查左右兩側最高點，是不是來自同一點的最短路徑長度，若是則為凸。O(V)。
+</pre>
+<p>計算兩點之間最短路徑，只需V次BFS，需時O(VE)。尋找絕對中心，仍需時O(VE)。整體時間複雜度可降至O(VE)。</p>
+<textarea t="找出絕對中心的偏心距（adjacency matrix）">
+const int V = 10;
+int adj[V][V], size[V];	// adjacency lists
+
+int q[V][V], *qf, *qb;	// 10 BFS queues
+bool visit[V];			// BFS visit record
+int d[V][V];			// 所有兩點之間最短路徑長度
+
+void BFS(int s)
+{
+	memset(visit, false, sizeof(visit));
+	qf = qb = q[s];
+
+	visit[s] = true;
+	*qb++ = s;
+	d[s][s] = 0;
+
+	while (qf < qb)
+	{
+		int i = *qf++;
+		for (int n=0; n<size[i]; ++n)
+		{
+			int j = adj[i][n];
+			if (!visit[j])
+			{
+				visit[j] = true;
+				*qb++ = j;
+				d[s][j] = d[s][i] + 1;
+			}
+		}
+	}
+}
+
+void Kariv_Hakimi()
+{
+	for (int i=0; i<V; ++i)
+		BFS(i);
+
+	int ecc2 = 1e9;
+	for (int i=0; i<V; ++i)
+		for (int n=0; n<size[i]; ++n)
+		{
+			int j = adj[i][n];
+			if (j <= i) continue;
+
+			int ecci = d[i][q[i][V-1]];
+			int eccj = d[j][q[j][V-1]];
+			int diff = 1;
+			if (ecci == eccj)
+				for (int k=0; k<V; ++k)
+					if (d[i][k] == ecci && d[j][k] == ecci)
+					{
+						diff = 0;
+						break;
+					}
+			ecc2 = min(ecc2, ecci + eccj - diff);
+		}
+
+	cout << "離最遠的點的距離" << double(ecc) / 2.0;
+}
+</textarea>
+<p class="e">UVa 10805</p>
+<p class="t">延伸閱讀：點有加權效果的絕對中心</p>
+<pre>
+absolute_center(G) = arg min max {d(i, j) * w(j)}
+                      i   i  j∊V
+</pre>
+<p>令圖上的點與邊都擁有正權重，距離重新定義為最短路徑乘上端點的權重。在此狀況下，尋找絕對中心，變得要排序，需時O(VElogV)。各位可以想一想怎麼做。</p>
+<img src="Kariv-Hakimi9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Kariv-Hakimi9.png">
+
+</div></div><div class="a"><div class="h">
+<p class="b">Peripheral Vertex（Under Construction!）</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Peripheral Vertex</p>
+<p class="t">Pseudo-Peripheral Vertex</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

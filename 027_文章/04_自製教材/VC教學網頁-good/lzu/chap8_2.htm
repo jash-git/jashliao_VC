@@ -1,0 +1,213 @@
+<html>
+
+<head>
+<title>8.2图形设备接口（GDI）</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" size="3"><p ALIGN="CENTER"></font><font color="#3973DE"><font FACE="Times New Roman" SIZE="4">8.2</font><font SIZE="4"> &nbsp; 
+    图形设备接口（</font><font FACE="Times New Roman" SIZE="4">GDI</font><font SIZE="4">）</font></font><font FACE="Times New Roman" SIZE="4"></p>
+    <p></font><font SIZE="3">图形设备接口（</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">）是一个可执行程序，它接受</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">应用程序的绘图请求（表现为</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">函数调用），并将它们传给相应的设备驱动程序，完成特定于硬件的输出，象打印机输出和屏幕输出。</font><font FACE="Times New Roman" SIZE="4"><b></p>
+    <p></b></font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">负责</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">的所有图形输出，包括屏幕上输出像素、在打印机上输出硬拷贝以及绘制</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">用户界面。</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">8.2.1 </font><font SIZE="3" color="#3973DE">三种图形输出类型</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">应用程序可以使用</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">创建三种类型的图形输出：矢量输出、光栅图形输出和文本输出。<b></p>
+    <p></b><font color="#3973DE">矢量图形输出</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">矢量图形输出指的是创建线条和填充图形，包括点、直线、曲线、多边形、扇形和矩形的绘制。<b></p>
+    <p></b><font color="#3973DE">光栅输出</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">光栅图形的输出是指光栅图形函数对以位图形式存储的数据进行操作，它包括各种位图和图标的输出。在屏幕上表现为对若干行和列的像素的操作，在打印机上则是若干行和列的点阵的输出。 
+    </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">光栅图形输出的优点是速度很快，它是直接从内存到显存的拷贝操作。缺点是需要额外的内存空间。</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">在绘制界面时使用了大量的光栅输出。<b></p>
+    <p></b><font color="#3973DE">文本输出</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">与</font><font FACE="Times New Roman" SIZE="3">DOS</font><font SIZE="3">字符方式下的输出不同，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">是按图形方式输出的。这样，在输出文本时，必须以逻辑坐标为单位计算文本的输出位置，而不是象</font><font FACE="Times New Roman" SIZE="3">DOS</font><font SIZE="3">下以文本行为单位输出文本。这比</font><font FACE="Times New Roman" SIZE="3">DOS</font><font SIZE="3">下的文本输出要难一些。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">但是，按图形方式输出文本也给文本输出带来很大的灵活性。用户可以通过调用各种</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">函数，制造出各种文本输出效果，包括加粗、斜体、设置颜色等。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>Windows</font><font SIZE="3">还提供了一种</font><font FACE="Times New Roman" SIZE="3">TrueType(</font><font SIZE="3">写真字体</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">TrueType</font><font SIZE="3">字体用一组直线和曲线命令及一些参数来描述字体的轮廓。</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">可以通过参数来调整直线的长度和曲线的形状，从而实现对字体的自由缩放。</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">8.2.2 MFC</font><font color="#3973DE"><font SIZE="3">中与</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">有关的类</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">为了支持</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">绘图，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">提供了两种重要的类：设备上下文类，用于设置绘图属性和绘制图形；绘图对象类，封装了各种</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">绘图对象，包括画笔、刷子、字体、位图、调色板和区域。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><p></b><font color="#3973DE">设备上下文类</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">设备上下文类包括</font><font FACE="Times New Roman" SIZE="3">CDC</font><font SIZE="3">和它的派生类</font><font FACE="Times New Roman" SIZE="3">CClientDC</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">CPaintDC</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">CWindowDC</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">CMetaFileDC</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CDC</font><font SIZE="3">是设备上下文类的基类，除了一般的窗口显示外，还用于基于桌面的全屏幕绘制和非屏幕显示的打印机输出。</font><font FACE="Times New Roman" SIZE="3">CDC</font><font SIZE="3">类封装了所有图形输出函数，包括矢量、光栅和文本输出。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CClientDC</font><font SIZE="3">（客户区设备上下文）用于客户区的输出，它在构造函数中封装了</font><font FACE="Times New Roman" SIZE="3">GetDC()</font><font SIZE="3">，在析构函数中封装了</font><font FACE="Times New Roman" SIZE="3">ReleaseDC()</font><font SIZE="3">函数。一般在响应非窗口重画消息（如键盘输入时绘制文本、鼠标绘图）绘图时要用到它。用法是：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CClientDC dc(this);//this</font><font SIZE="3">一般指向本窗口或当前活动视图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>dc.TextOut(10,10,str,str.GetLength());</p>
+    <p>//</font><font SIZE="3">利用</font><font FACE="Times New Roman" SIZE="3">dc</font><font SIZE="3">输出文本，如果是在</font><font FACE="Times New Roman" SIZE="3">CScrollView</font><font SIZE="3">中使用，还要注意调 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>//</font><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">OnPrepareDC(&amp;dc)</font><font SIZE="3">调整设备上下文的坐标。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CPaintDC</font><font SIZE="3">用于响应窗口重绘消息（</font><font FACE="Times New Roman" SIZE="3">WM_PAINT</font><font SIZE="3">）是的绘图输出。</font><font FACE="Times New Roman" SIZE="3">CPaintDC</font><font SIZE="3">在构造函数中调用</font><font FACE="Times New Roman" SIZE="3">BeginPaint()</font><font SIZE="3">取得设备上下文，在析构函数中调用</font><font FACE="Times New Roman" SIZE="3">EndPaint()</font><font SIZE="3">释放设备上下文。</font><font FACE="Times New Roman" SIZE="3">EndPaint()</font><font SIZE="3">除了释放设备上下文外，还负责从消息队列中清除</font><font FACE="Times New Roman" SIZE="3">WM_PAINT</font><font SIZE="3">消息。因此，在处理窗口重画时，必须使用</font><font FACE="Times New Roman" SIZE="3">CPaintDC</font><font SIZE="3">，否则</font><font FACE="Times New Roman" SIZE="3">WM_PAINT</font><font SIZE="3">消息无法从消息队列中清除，将引起不断的窗口重画。</font><font FACE="Times New Roman" SIZE="3">CPaintDC</font><font SIZE="3">也只能用在</font><font FACE="Times New Roman" SIZE="3">WM_PAINT</font><font SIZE="3">消息处理之中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CWindowDC</font><font SIZE="3">用于窗口客户区和非客户区（包括窗口边框、标题栏、控制按钮等）的绘制。除非要自己绘制窗口边框和按钮（如一些</font><font FACE="Times New Roman" SIZE="3">CD</font><font SIZE="3">播放程序等），否则一般不用它。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CMetaFileDC</font><font SIZE="3">专门用于图元文件的绘制。图元文件记录一组</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">命令，可以通过这一组</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">命令重建图形输出。使用</font><font FACE="Times New Roman" SIZE="3">CMetaFileDC</font><font SIZE="3">时，所有的图形输出命令会自动记录到一个与</font><font FACE="Times New Roman" SIZE="3">CMetaFileDC</font><font SIZE="3">相关的图元文件中。 
+    <b></p>
+    <p></b><font color="#3973DE">图形对象类</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">图形对象类包括</font><font FACE="Times New Roman" SIZE="3">CGdiObject</font><font SIZE="3">、画笔、刷子、字体、位图、调色板、区域等。</font><font FACE="Times New Roman" SIZE="3">CGdiObject</font><font SIZE="3">是图形对象类的基类，但该类不能直接为应用程序所使用。要使用</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">对象，必须使用它的派生类：画笔、刷子、字体、位图、区域等等。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">使用图形对象要注意两点：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>1.</font><font SIZE="3">同其他</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">对象一样，</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">对象的创建也要分为两步：第一步，是定义一个</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">绘图对象类的实例；第二步调用该对象的创建方法真正创建对象。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">2.</font><font SIZE="3">创建对象：使用该对象，首先要调用</font><font FACE="Times New Roman" SIZE="3">CDC::SelectObject()</font><font SIZE="3">将它选入到设备上下文中，同时保存原来的设置到一个</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">对象指针比如说</font><font FACE="Times New Roman" SIZE="3">pOldObject</font><font SIZE="3">中。在使用完后，再用</font><font FACE="Times New Roman" SIZE="3">SelectObject(pOldObject)</font><font SIZE="3">恢复原来的设置。但是，如果该设备上下文是用户自己创建的，则不必恢复原来设置，因为框架会在该设备上下文生存期结束时删除该设备上下文，同时也就删除了原来存放于该设备上下文中的绘图对象设置。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">下面介绍各种对象的用法：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">画笔</font><font FACE="Times New Roman" SIZE="3">(CPen)</font></b><font SIZE="3">：封装</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">画笔，可被选中设备上下文中当前所用得笔。画笔用于绘制对象的边框以及直线和曲线。缺省画笔画一条与一个像素等宽的黑色实线。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">要使用画笔，首先要定义一个画笔：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>CPen pen;</p>
+    <p></font><font SIZE="3">然后创建画笔。创建画笔有两种方法：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">一是使用</font><font FACE="Times New Roman" SIZE="3">CPen::CreatePen(int 
+    nPenStyle,int nWidth,DWORD crColor)</font><font SIZE="3">进行初始化。第一个参数是笔的风格。</font><font FACE="Times New Roman" SIZE="3">nPenStyle</font><font SIZE="3">可选值有：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>PS_SOLID </font><font SIZE="3">实线</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>PS_DOT </font><font SIZE="3">虚线</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>PS_INSIDEFRAME </font><font SIZE="3">在一个封闭形状的框架内画线，若设定的颜色不能在调色板种找到且线宽大于</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">会使用一种混色。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>PS_NULL </font><font SIZE="3">空的画笔，什么也不画</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">第二个参数是线的宽度，按逻辑单位。若线宽设为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，则不管是什么映射模式下，线宽始终为一个像素。第三个参数是线的颜色，可以选</font><font FACE="Times New Roman" SIZE="3">16</font><font SIZE="3">种</font><font FACE="Times New Roman" SIZE="3">VGA</font><font SIZE="3">颜色中的一种。颜色的设置用一个</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">宏来指定。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>RGB</font><font SIZE="3">宏形式如下</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>COLORREF RGB(cRed,cGreen,cBlue)</p>
+    <p>cRed</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">cGreen</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">cBlue</font><font SIZE="3">分别代表颜色的</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">三个分量，它们的取值在</font><font FACE="Times New Roman" SIZE="3">0-255</font><font SIZE="3">之间。可以使用</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">组合成各种色彩。但是，这种表示法并不是很直观，因此我们把常见的</font><font FACE="Times New Roman" SIZE="3">RGB</font><font SIZE="3">组合定义成新的宏并放在一个</font><font FACE="Times New Roman" SIZE="3">colors.h</font><font SIZE="3">中，如清单</font><font FACE="Times New Roman" SIZE="3">8.1</font><font SIZE="3">。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">8.1 </font><font SIZE="3">常见色彩定义</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>/*COLORS.H -</font><font SIZE="3">常见色彩定义 </font><font FACE="Times New Roman" SIZE="3">*/</p>
+    <p>#ifndef _COLORS_H</p>
+    <p>#define _COLORS_H</p>
+    <p>//Main Colors</p>
+    <p>#define WHITE RGB(255,255,255)</p>
+    <p>#define BLACK RGB(0,0,0)</p>
+    <p>#define DK_GRAY RGB(128,128,128)</p>
+    <p>#define LT_GRAY RGB(192,192,192)</p>
+    <p>//dark colors</p>
+    <p>#define DK_RED RGB(128,0,0)</p>
+    <p>#define DK_GREEN RGB(0,128,0)</p>
+    <p>#define DK_BLUE RGB(0,0,128)</p>
+    <p>#define DK_PURPLE RGB(128,0,128)</p>
+    <p>#define DK_YELLOW RGB(128,128,0)</p>
+    <p>#define DK_CYAN RGB(0,128,128)</p>
+    <p>//bright colors</p>
+    <p>#define BR_RED RGB(255,0,0)</p>
+    <p>#define BR_GREEN RGB(0,255,0)</p>
+    <p>#define BR_BLUE RGB(0,0,255)</p>
+    <p>#define BR_PURPLE RGB(255,0,255)</p>
+    <p>#define BR_YELLOW RGB(255,255,0)</p>
+    <p>#define BR_CYAN RGB(0,255,255)</p>
+    <p>#endif</p>
+    <p></font><font SIZE="3">这样，要指定一个淡黄色的宽度为逻辑单位</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">的实心笔，可以调用：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>pen.CreatePen(PS_SOLID,1,BR_YELLOW);</p>
+    <p></font><font SIZE="3">创建笔的另一个方法是使用库存对象。</font><font FACE="Times New Roman" SIZE="3">SelectStockObject</font><font SIZE="3">可从以下库存笔中选择一个：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BLACK_PEN </font><font SIZE="3">黑笔</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>NULL_PEN </font><font SIZE="3">空笔（不画线或边框）</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>WHITE_PEN </font><font SIZE="3">白笔<b></p>
+    <div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#84D7FF">
+      <tr>
+        <td width="100%"></b>注：库存对象是由操作系统维护的用于绘制屏幕的常用对象，包括库存画笔、刷子、字体等。</font><b></b></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p></font><b><font SIZE="3">刷子</font><font FACE="Times New Roman" SIZE="3">(CBrush)</font></b><font SIZE="3">：封装</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">刷子，可用作设备上下文中当前刷子。刷子用来填充一个封闭图形对象（如矩形、椭圆）的内部区域。缺省的刷子将封闭图形的内部填充成全白色。我们以前所创建的窗口内部都是白色就是窗口使用缺省刷子填充的结果。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">可以用以下几种方法创建刷子：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>(1)CreateSolidBrush(DWORD crColor)</font><font SIZE="3">创建一个实心刷子，用一种颜色填充一个内部区域。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>(2)CreateHatchBrush(int nIndex,DWORD crColor)</font><font SIZE="3">；创建一个带阴影的刷子，</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">代表一种影线模式：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">8-2</font><font SIZE="3">刷子的各种影线效果</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>(3)</font><font SIZE="3">用</font><font FACE="Times New Roman" SIZE="3">CreatePatternBrush(CBitmap* 
+    pBitmap)</p>
+    <p></font><font SIZE="3">用一个位图作刷子，一般采用</font><font FACE="Times New Roman" SIZE="3">8X8</font><font SIZE="3">的位图，因为刷子可以看作</font><font FACE="Times New Roman" SIZE="3">8X8</font><font SIZE="3">的小位图。当</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">桌面背景采用图案（如</font><font FACE="Times New Roman" SIZE="3">weave</font><font SIZE="3">）填充时，使用的就是这种位图刷子。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>(4)</font><font SIZE="3">同样可以使用</font><font FACE="Times New Roman" SIZE="3">SelectStockObject()</font><font SIZE="3">从库存刷子中选取一个：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>BLACK_BRUSH </font><font SIZE="3">黑色刷子</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>WHITE_BRUSH </font><font SIZE="3">白色刷子</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>DKGRAY_BRUSH </font><font SIZE="3">暗灰刷子</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>GRAY_BRUSH </font><font SIZE="3">灰色刷子</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>LTGRAY_BRUSH </font><font SIZE="3">淡灰色刷子</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>NULL_BRUSH </font><font SIZE="3">空刷子，内部不填充</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">字体</font><font FACE="Times New Roman" SIZE="3">(CFont)</font></b><font SIZE="3">：封装了</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">字体对象，用户可以建立一种</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">字体，并使用</font><font FACE="Times New Roman" SIZE="3">CFont</font><font SIZE="3">的成员函数来访问它。关于</font><font FACE="Times New Roman" SIZE="3">CFont</font><font SIZE="3">类，我们在前面已经作了一些介绍，这里不再赘述，读者可以参见前一章内容。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">位图</font><font FACE="Times New Roman" SIZE="3">(CBitmap)</font></b><font SIZE="3">：封装一</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">位图，它提供成员函数装载和操作位图。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">调色板</font><font FACE="Times New Roman" SIZE="3">(CPalette)</font></b><font SIZE="3">：封装</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">调色板，它保存着系统可用的色彩信息，是应用程序和彩色输出设备上下文的接口。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">区域</font><font FACE="Times New Roman" SIZE="3">CRgn</font><font SIZE="3">类</b>：封装</font><font FACE="Times New Roman" SIZE="3">GDI</font><font SIZE="3">区域。区域是窗口内的一块多边形或椭圆形的区域。</font><font FACE="Times New Roman" SIZE="3">CRgn</font><font SIZE="3">用于设备环境（通常是窗口）内的区域操作。</font><font FACE="Times New Roman" SIZE="3">CRgn</font><font SIZE="3">通常与</font><font FACE="Times New Roman" SIZE="3">CDC</font><font SIZE="3">的有关剪裁</font><font FACE="Times New Roman" SIZE="3">(clipping)</font><font SIZE="3">的成员函数配合使用。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">有关位图和调色板的使用在第十一章“多媒体编程”还要再作详细阐述。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">8.2.3</font><font SIZE="3" color="#3973DE">常见的绘图任务</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p></b></font><font SIZE="3" color="#3973DE">输出文本</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">字体大小计算：通过调用</font><font FACE="Times New Roman" SIZE="3">GetTextMetrics()</font><font SIZE="3">返回当前使用字体的尺寸描述，如前面文 
+    本编辑所演示的那样。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">字体颜色设置：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">设置前景色：</font><font FACE="Times New Roman" SIZE="3">CDC::SetTextColor(int 
+    nColor)</font><font SIZE="3">；</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">设置背景色：</font><font FACE="Times New Roman" SIZE="3">CDC::SetBkColor(int 
+    nColor)</font><font SIZE="3">；</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">例如：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>dc.SetTextColor(WHITE);</p>
+    <p>dc.SetBkColor(DK_BLUE);</p>
+    <p>dc.TextOut(10,10,</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">White 
+    Text on blue background</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">,30);</p>
+    <p></font><font SIZE="3">文字输出：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">除了我们前面介绍的文本输出函数</font><font FACE="Times New Roman" SIZE="3">TextOut()</font><font SIZE="3">之外，还有其他几个函数可用于文本输 
+    出：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>TabbedTextOut</font><font SIZE="3">：象</font><font FACE="Times New Roman" SIZE="3">TextOut</font><font SIZE="3">一样显示正文，但用指定的制表间隔扩充制表键</font><font FACE="Times New Roman" SIZE="3">Tab</font><font SIZE="3">。 
+    在前面的文本编辑器中，当输入一个</font><font FACE="Times New Roman" SIZE="3">Tab</font><font SIZE="3">时，</font><font FACE="Times New Roman" SIZE="3">TextOut</font><font SIZE="3">在屏幕上输出一个黑色方块。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>ExtTextOut</font><font SIZE="3">：在指定的矩形中显示正文。可以用该函数删去超出矩形的正文，用正 
+    文背景填充矩形，调整字符间隔。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>DrawText</font><font SIZE="3">：在指定矩形种显示正文，可以用这个函数扩展制表键</font><font FACE="Times New Roman" SIZE="3">Tab</font><font SIZE="3">。在格式化矩 
+    形时调整正文左对齐、右对齐或居中；还可以在一个词中断开以适应矩形边界。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">画点</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>SetPixel</font><font SIZE="3">在指定坐标处按指定色彩画一点。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">画线</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>MoveToEx</font><font SIZE="3">将直线起点移动到指定坐标处，</font><font FACE="Times New Roman" SIZE="3">LineTo</font><font SIZE="3">从起点开始画直线到终点处。使 
+    用的线型由当前所用画笔指定。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">画弧</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>Arc(int x1,int y1,int x2,int y2,int x3,int y3,int x4,int y4);</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font><font SIZE="3">　</font><img src="T8_3.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap8/T8_3.gif" alt="T8_3.tif (43298 bytes)" WIDTH="189" HEIGHT="97"><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font></b><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">8-3 </font><font SIZE="3">弧线的坐标定位</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font></b><font SIZE="3" color="#3973DE">封闭图形</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">矩形</font><font FACE="Times New Roman" SIZE="3">Rectangle</p>
+    <p></font><font SIZE="3">圆角矩形</font><font FACE="Times New Roman" SIZE="3">RoundRect()</p>
+    <p>Ellipse</font><font SIZE="3">在一个矩形内画椭圆</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>Chord</font><font SIZE="3">弦形图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>Pie</font><font SIZE="3">画饼形图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>Polygon</font><font SIZE="3">生成封闭的多边形</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>PolyPolygon</font><font SIZE="3">画完整的一组多边形</p>
+    <p><b>　</p>
+    <p></b><font color="#3973DE">其它常用的绘图函数还有：</font></p>
+    <p>FillRect：用指定颜色填充矩形且不画边线</p>
+    <p>Draw3dRect:这是一个非常实用的函数，用于绘制各种3D边框。它的函数原型如下：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Arial" SIZE="2"><b><p>void Draw3dRect( LPCRECT </b><i>lpRect</i><b>, 
+        COLORREF </b><i>clrTopLeft</i><b>, COLORREF </b><i>clrBottomRight</i><b> );</p>
+        <p>void Draw3dRect( int </b><i>x</i><b>, int </b><i>y</i><b>, int </b><i>cx</i><b>, int </b><i>cy</i><b>, 
+        COLORREF </b><i>clrTopLeft</i><b>, COLORREF </b><i>clrBottomRight</i><b> );</p>
+        </b></font><font SIZE="3"><p>通过设置上下边框的颜色clrTopLeft和clrBottomRight，可以绘制出凸出或 
+        凹陷等各种效果的3D边框。</p>
+        <p align="center"><img src="T8_4.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap8/T8_4.gif" alt="T8_4.tif (91724 bytes)" WIDTH="389" HEIGHT="172"></p>
+      </blockquote>
+      <p align="center">图8-4 Draw3dRect绘制3D边框</p>
+      <p>DrawFocusRect：用点线画一个矩形框，内部不填充，边线是用于屏幕上当前色的相反色画出来的，故第二次画时，会擦除原来所画的线。</p>
+      <p>ExtFloodFill：用给定的颜色，利用当前刷子填充表面被一个边线包围的区域，用户可以有选择地填充一个由指定颜色组成的区域。</p>
+      <p>FloodFill:用给定的颜色，利用当前所选的刷子填充显示的底面被一个边线所包围的区域，如多边形区域的填充。</p>
+    </blockquote>
+    <p>FrameRect:绘制矩形边框时内部不填充。</p>
+    <p>InvertRect:在某一矩形区域内反显现有颜色。</font><font FACE="Times New Roman" SIZE="4"><b></p>
+    </b></font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap8_1.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap8/chap8_1.htm">上一页</a></td>
+        <td><p align="right"><a href="chap8_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap8/chap8_3.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

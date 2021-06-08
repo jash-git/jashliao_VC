@@ -1,0 +1,188 @@
+<html>
+
+<head>
+<title>4.3&nbsp; 状态栏的设计与实现</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="4">4.3</font><font color="#3973DE" size="4"> 
+    &nbsp; 状态栏的设计与实现</font><font FACE="Times New Roman" size="4"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">状态栏实际上是个窗口，一般分为几个窗格，每个窗格显示不同的信息。</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">会为应用程序自动创建一个状态栏，该状态栏包括几个窗格，分别用来显示状态栏提示和</font><font FACE="Times New Roman" SIZE="3">CAPS LOCK</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">NUM LOCK </font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SCROLL LOCK</font><font SIZE="3">键的状态。在</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">中，状态栏的功能由</font><font FACE="Times New Roman" SIZE="3">CStatusBar</font><font SIZE="3">类实现。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">创建一个状态栏需要以下几个步骤：</p>
+    <blockquote>
+      <blockquote>
+        <p>构建一个</font><font FACE="Times New Roman" SIZE="3">CStatusBar</font><font SIZE="3">对象。</p>
+        <p>调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar::Create</font><font SIZE="3">创建状态栏窗口。</p>
+        <p>调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar::SetIndicators</font><font SIZE="3">函数分配窗格，并将状态栏的每一个窗格与一个字符串</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">相联系。</font></p>
+      </blockquote>
+    </blockquote>
+    <p>　<font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">相应的代码读者可以在</font><font FACE="Times New Roman" SIZE="3">Record</font><font SIZE="3">工程的</font><font FACE="Times New Roman" SIZE="3">CMainFrame::OnCreate</font><font SIZE="3">成员函数中找到。如清单</font><font FACE="Times New Roman" SIZE="3">4.6</font><font SIZE="3">所示。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">4.6 </font><font SIZE="3">创建状态栏</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">…</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>if (!m_wndStatusBar.Create(this) ||</p>
+    <p>!m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT)))</p>
+    <p>{</p>
+    <p>TRACE0(&quot;Failed to create status bar\n&quot;);</p>
+    <p>return -1; // fail to create</p>
+    <p>}</p>
+    <p></font><font SIZE="3">…</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p>SetIndicators</font><font SIZE="3">函数的第一个参数</font><font FACE="Times New Roman" SIZE="3">indicators</font><font SIZE="3">是一个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">数组，在</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类所在的</font><font FACE="Times New Roman" SIZE="3">CPP</font><font SIZE="3">文件的开头部分可以找到该数组，如清单</font><font FACE="Times New Roman" SIZE="3">4.7</font><font SIZE="3">所示。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">4.7 ID</font><font SIZE="3">数组</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>static UINT indicators[] =</p>
+    <p>{</p>
+    <p>ID_SEPARATOR, // status line indicator</p>
+    <p>ID_INDICATOR_CAPS,</p>
+    <p>ID_INDICATOR_NUM,</p>
+    <p>ID_INDICATOR_SCRL,</p>
+    <p>};</p>
+    <p>　<b></p>
+    <p></b>　</p>
+    <p ALIGN="JUSTIFY">indicator</font><font SIZE="3">数组提供了状态栏窗格的分配信息，它的第一项一般为</font><font FACE="Times New Roman" SIZE="3">ID_SEPARATOR</font><font SIZE="3">，该</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">对应的窗格用来显示命令提示信息，后三项都是字符串</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，读者可以在</font><font FACE="Times New Roman" SIZE="3">String Table</font><font SIZE="3">字符串资源中找到这三个字符串分别是</font><font FACE="Times New Roman" SIZE="3">CAP</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">NUM</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">SCRL</font><font SIZE="3">。它们对应的三个窗格用来显示键盘的状态。</p>
+    <p ALIGN="JUSTIFY">现在让我们来给状态栏再加一个时间窗格，它将用来显示系统时间。显示的格式是</font><font FACE="Times New Roman" SIZE="3">hh:mm:ss</font><font SIZE="3">，即时</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">分</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">秒。</p>
+    <p ALIGN="JUSTIFY">首先在</font><font FACE="Times New Roman" SIZE="3">indicators</font><font SIZE="3">数组的</font><font FACE="Times New Roman" SIZE="3">ID_SEPARATOR</font><font SIZE="3">项之后插入一个名为</font><font FACE="Times New Roman" SIZE="3">ID_INDICATOR_CLOCK</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。然后找到并双击名为</font><font FACE="Times New Roman" SIZE="3">String Table</font><font SIZE="3">的字符串资源，打开字符串资源编辑窗口。接着在编辑窗口内按</font><font FACE="Times New Roman" SIZE="3">Insert</font><font SIZE="3">键以插入一个新的字符串，请指定字符串的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">ID_INDICATOR_CLOCK</font><font SIZE="3">，内容为</font><font FACE="Times New Roman" SIZE="3">00:00:00</font><font SIZE="3">。状态栏将根据字符串的长度来确定相应窗格的缺省宽度，所以指定为</font><font FACE="Times New Roman" SIZE="3">00:00:00</font><font SIZE="3">就为时间的显示预留了空间。<b></p>
+    <div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#A3BDEF">
+      <tr>
+        <td width="100%"></b>提示</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">上述方法不能动态改变窗格宽度，并且有时是不精确的，当系统字体改变时，这种做法可能会导致一些误差。考虑到该方法简单直观，且一般情况下问题不大，故本文用它来举例。如果读者对动态、精确地指定窗格感兴趣，请参看</font><font FACE="Times New Roman" SIZE="3">Visual C++ 5.0</font><font SIZE="3">随光盘提供的一个名为</font><font FACE="Times New Roman" SIZE="3">NPP</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">例子（在</font><font FACE="Times New Roman" SIZE="3">samples\mfc\general\npp</font><font SIZE="3">目录下）。<b></td>
+      </tr>
+    </table>
+    </center></div><p></b></font>　<font SIZE="3"></p>
+    <p ALIGN="JUSTIFY">时间窗格显示的时间必须每隔一秒钟更新一次。更新时间窗格的正文可调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar:: SetPaneText</font><font SIZE="3">函数，要定时更新，则应利用</font><font FACE="Times New Roman" SIZE="3">WM_TIMER</font><font SIZE="3">消息。在</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">中用户可以安装一个或多个计时器，计时器每隔一定的时间间隔就会自动发出一个</font><font FACE="Times New Roman" SIZE="3">WM_TIMER</font><font SIZE="3">消息，而这个时间间隔可由用户指定。</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">Window</font><font SIZE="3">类提供了</font><font FACE="Times New Roman" SIZE="3">WM_TIMER</font><font SIZE="3">消息处理函数</font><font FACE="Times New Roman" SIZE="3">OnTimer</font><font SIZE="3">，我们应在该函数内进行更新时间窗格的工作。</p>
+    <p ALIGN="JUSTIFY">请读者利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">给</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类加入</font><font FACE="Times New Roman" SIZE="3">WM_TIMER</font><font SIZE="3">的消息处理函数</font><font FACE="Times New Roman" SIZE="3">OnTimer</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WM_CLOSE</font><font SIZE="3">消息的处理函数</font><font FACE="Times New Roman" SIZE="3">OnClose</font><font SIZE="3">，具体方法是在</font><font FACE="Times New Roman" SIZE="3">Class name</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Object IDs</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">Messages</font><font SIZE="3">栏中找到</font><font FACE="Times New Roman" SIZE="3">WM_TIMER</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WM_CLOSE</font><font SIZE="3">项，分别双击之然后按</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮退出</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">CMainFrame::OnClose</font><font SIZE="3">函数是在关闭主框架窗口是被调用的，程序可以在该函数中做一些清除工作。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">接下来请按清单</font><font FACE="Times New Roman" SIZE="3">4.8</font><font SIZE="3">修改程序。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">4.8 CMainFrame</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p>int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)</p>
+    <p>{</p>
+    <p></font><font SIZE="3">…</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"><b></p>
+    <p>SetTimer(1,1000,NULL);</b></p>
+    <p>return 0;</p>
+    <p>}</p>
+    <p>void CMainFrame::OnTimer(UINT nIDEvent) </p>
+    <p>{</p>
+    <p>// TODO: Add your message handler code here and/or call default</p>
+    <p>　<b></p>
+    <p>CTime time;</p>
+    <p>time=CTime::GetCurrentTime();</p>
+    <p>CString s=time.Format(&quot;%H:%M:%S&quot;);</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            <blockquote>
+              <blockquote>
+                <blockquote>
+                  <blockquote>
+                    <blockquote>
+                      <p>m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex(ID_INDICATOR_CLOCK),s);</b></p>
+                    </blockquote>
+                  </blockquote>
+                </blockquote>
+              </blockquote>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p>CFrameWnd::OnTimer(nIDEvent);</p>
+    <p>}</p>
+    <p>void CMainFrame::OnClose() </p>
+    <p>{</p>
+    <p>// TODO: Add your message handler code here and/or call default</p>
+    <p>　<b></p>
+    <p>KillTimer(1);</b></p>
+    <p>CFrameWnd::OnClose();</p>
+    <p>}</p>
+    <p></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CMainFrame::OnCreate</font><font SIZE="3">函数内调用了</font><font FACE="Times New Roman" SIZE="3">CWnd::SetTimer</font><font SIZE="3">以安装一个计时器，</font><font FACE="Times New Roman" SIZE="3">SetTimer</font><font SIZE="3">的第一个参数指定计时器</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">，第二个参数则规定了计时器的时间间隔为</font><font FACE="Times New Roman" SIZE="3">1000</font><font SIZE="3">毫秒即</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">秒。这样，每隔</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">秒</font><font FACE="Times New Roman" SIZE="3">OnTimer</font><font SIZE="3">函数就会被调用一次。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">OnTimer</font><font SIZE="3">函数中，首先构建了一个</font><font FACE="Times New Roman" SIZE="3">CTime</font><font SIZE="3">对象，接着调用</font><font FACE="Times New Roman" SIZE="3">CTime</font><font SIZE="3">的静态成员函数</font><font FACE="Times New Roman" SIZE="3">GetCurrentTime</font><font SIZE="3">以获得当前的系统时间，然后利用</font><font FACE="Times New Roman" SIZE="3">CTime::Format</font><font SIZE="3">函数返回一个按时</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">分</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">秒的格式表示的字符串，最后调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar::SetPaneText</font><font SIZE="3">来更新时间窗格显示的正文。</font><font FACE="Times New Roman" SIZE="3">SetPaneText</font><font SIZE="3">的第一个参数是窗格的索引，对于某一个窗格</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，可调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar::CommandToIndex</font><font SIZE="3">来获得索引。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在撤销主框架窗口时应关闭计时器，因此在</font><font FACE="Times New Roman" SIZE="3">CMainFrame::OnClose</font><font SIZE="3">函数内调用了</font><font FACE="Times New Roman" SIZE="3">KillTimer</font><font SIZE="3">函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在让我们来看一下</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">的消息映射，在</font><font FACE="Times New Roman" SIZE="3">CMainFrame</font><font SIZE="3">类所在</font><font FACE="Times New Roman" SIZE="3">CPP</font><font SIZE="3">文件的开始部分可以找到该类的消息映射，如清单</font><font FACE="Times New Roman" SIZE="3">4.9</font><font SIZE="3">所示。<b></p>
+    <p>清单</font><font FACE="Times New Roman" SIZE="3">4.9</b></p>
+    <p>BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)</p>
+    <p>//{{AFX_MSG_MAP(CMainFrame)</p>
+    <p>ON_WM_CREATE()</p>
+    <p>ON_COMMAND(ID_RECORD_STOP, OnRecordStop)</p>
+    <p>ON_COMMAND(ID_RECORD_START, OnRecordStart)</p>
+    <p>ON_UPDATE_COMMAND_UI(ID_RECORD_START, OnUpdateRecordStart)</p>
+    <p>ON_UPDATE_COMMAND_UI(ID_RECORD_STOP, OnUpdateRecordStop)</p>
+    <p>ON_COMMAND(ID_HIGH_QUALITY, OnHighQuality)</p>
+    <p>ON_COMMAND(ID_LOW_QUALITY, OnLowQuality)</p>
+    <p>ON_UPDATE_COMMAND_UI(ID_HIGH_QUALITY, OnUpdateHighQuality)</p>
+    <p>ON_UPDATE_COMMAND_UI(ID_LOW_QUALITY, OnUpdateLowQuality)</p>
+    <p>ON_COMMAND(ID_VIEW_TOOLBAR1, OnViewToolbar1)</p>
+    <p>ON_UPDATE_COMMAND_UI(ID_VIEW_TOOLBAR1, OnUpdateViewToolbar1)</p>
+    <p>ON_WM_TIMER()</p>
+    <p>ON_WM_CLOSE()</p>
+    <p>//}}AFX_MSG_MAP</p>
+    <p>END_MESSAGE_MAP()</p>
+    <p>　</p>
+    <p></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">读者可以看到，在消息映射表中，</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为消息处理函数和命令处理函数自动加入了消息映射。自动加入的部分呈灰色显示，位于注释行</font><font FACE="Times New Roman" SIZE="3">//{{AFX_MSG_MAP</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">//}}AFX_MSG_MAP </font><font SIZE="3">之间。命令处理函数由</font><font FACE="Times New Roman" SIZE="3">ON_COMMAND</font><font SIZE="3">宏来映射，命令更新处理函数由</font><font FACE="Times New Roman" SIZE="3">ON_UPDATE_COMMAND_UI</font><font SIZE="3">，而</font><font FACE="Times New Roman" SIZE="3">WM_</font><font SIZE="3">消息的处理函数由</font><font FACE="Times New Roman" SIZE="3">ON_WM_</font><font SIZE="3">消息宏来映射。<b></p>
+    <div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#85A9EB">
+      <tr>
+        <td width="100%"></b>提示</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">今后只要看到</font><font FACE="Times New Roman" SIZE="3">//{{AFX_...</font><font SIZE="3">的注释对，则说明它们之间的部分是</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">自动加入的，这部分呈灰色显示。请不要随便修改它们，更不能把手工加入的部分放在</font><font FACE="Times New Roman" SIZE="3">//{{AFX_...</font><font SIZE="3">注释对内，否则有可能导致</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">出错。<b></td>
+      </tr>
+    </table>
+    </center></div><p ALIGN="JUSTIFY"></b></font>　<font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><font SIZE="3">编译并运行</font><font FACE="Times New Roman" SIZE="3">Record 
+    </font><font SIZE="3">，可以看到状态栏的新变化，最终的界面如图</font><font FACE="Times New Roman" SIZE="3">4.8</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p align="center"></font><img src="T4_8.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap4/T4_8.gif" alt="T4_8.tif (116548 bytes)" WIDTH="398" HEIGHT="268"><font SIZE="3"><b></p>
+    <p align="center"></b>图<font FACE="Times New Roman" SIZE="3">4.8 </font>最终的<font FACE="Times New Roman" SIZE="3">Record</font>程序</p>
+    <p ALIGN="CENTER"><b>小 结</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <p></font><font SIZE="3"><font SIZE="3">本章主要向读者介绍了工具条和状态栏的一些实用技术。要点如下：</font></font><font FACE="Times New Roman" SIZE="3"></p>
+    </blockquote>
+    <blockquote>
+      <blockquote>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">中，创建一个窗口一般分两步：</font><font FACE="Times New Roman" SIZE="3">1.</font><font SIZE="3">构建一个窗口对象。构建的方法是定义一个对象或用</font><font FACE="Times New Roman" SIZE="3">new</font><font SIZE="3">操作符动态创建之。</font><font FACE="Times New Roman" SIZE="3">2.</font><font SIZE="3">调用窗口类的</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">成员函数。该函数把实际的窗口作出来，并将其</font><font FACE="Times New Roman" SIZE="3">HWND</font><font SIZE="3">保存在窗口的公共数据成员</font><font FACE="Times New Roman" SIZE="3">m_hWnd</font><font SIZE="3">中。</p>
+        <p ALIGN="JUSTIFY">创建工具条和状态栏的工作是在</font><font FACE="Times New Roman" SIZE="3">CMainFrame::OnCreate</font><font SIZE="3">函数中完成的，</font><font FACE="Times New Roman" SIZE="3">OnCreate</font><font SIZE="3">函数是在创建窗口时被调用的，这时窗口的创建已部分完成，窗口对象的</font><font FACE="Times New Roman" SIZE="3">HWND</font><font SIZE="3">句柄也已有效，但窗口还是不可见的。因此一般在</font><font FACE="Times New Roman" SIZE="3">OnCreate</font><font SIZE="3">函数中作一些诸如创建子窗口的初始化工作。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">afx_msg</font><font SIZE="3">前缀保证了正确版本的消息处理函数被调用。</p>
+        <p ALIGN="JUSTIFY">工具条有两个要素：工具条资源和工具条类</font><font FACE="Times New Roman" SIZE="3">CToolBar</font><font SIZE="3">。若用户只需要一个工具条，可利用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">自动生成，然后再修改之。若需要多个工具条，则必须手工创建。</p>
+        <p ALIGN="JUSTIFY">如果不为命令定义命令处理函数或命令更新处理函数，则框架将自动使该命令对应的用户接口对象（主要指菜单项和按钮）禁止。利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">可以十分方便的加入命令处理函数和命令更新处理函数。</p>
+        <p ALIGN="JUSTIFY">在菜单下拉之前，或在工具条按钮处在空闲循环期间，</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">会发一个更新命令，这将导致命令更新处理函数的调用。命令更新处理函数利用</font><font FACE="Times New Roman" SIZE="3">CCmdUI</font><font SIZE="3">类来更新用户接口对象。调用</font><font FACE="Times New Roman" SIZE="3">CCmdUI::Enable</font><font SIZE="3">可使用户接口对象允许或禁止，调用</font><font FACE="Times New Roman" SIZE="3">CCmdUI::SetCheck</font><font SIZE="3">可使用户接口对象选中或不选中。</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CWnd::ShowWindow</font><font SIZE="3">可以隐藏</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">显示一个窗口。</p>
+        <p ALIGN="JUSTIFY">要在状态栏中插入新的窗格，需要在</font><font FACE="Times New Roman" SIZE="3">indicator</font><font SIZE="3">数组中插入新的字符串</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。而状态栏将根据这个字符串的长度来确定新窗格的缺省宽度。</p>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CStatusBar:: 
+        SetPaneText</font><font SIZE="3">可更新状态栏窗格显示的正文。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap4_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap4/chap4_2.htm">上一页</a></td>
+        <td><p align="right"></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

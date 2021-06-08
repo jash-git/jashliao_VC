@@ -1,0 +1,1627 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>6.1 传统控件</title>
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" size="5">6.1 </font><font color="#3973DE" size="5">传统控件</font><font FACE="Times New Roman" size="5"></p>
+    </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">在上一课的表</font><font FACE="Times New Roman" SIZE="3">5.1</font><font SIZE="3">已经列出了</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">的传统控件及其对应的控件类。在这些控件中，读者应该重点掌握命令按钮、选择框、单选按钮、编辑框、列表框和组合框。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">.1.1 
+    </font><font SIZE="3" color="#3973DE">传统控件的控件通知消息</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">控件通过向父窗口发送控件通知消息来表明发生了某种事件．例如，当用户在按钮上单击鼠标时，按钮控件会向父窗口发送</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息．传统控件的通知消息实际上是通过</font><font FACE="Times New Roman" SIZE="3">WM_COMMAND</font><font SIZE="3">消息发给父窗口的（滚动条除外），在该消息的</font><font FACE="Times New Roman" SIZE="3">wParam</font><font SIZE="3">中含有通知消息码（如</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">）和控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，在</font><font FACE="Times New Roman" SIZE="3">lParam</font><font SIZE="3">中则包含了控件的句柄．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">可以很容易地为控件通知消息加入消息映射和消息处理函数，这在上一章中已经演示过了．传统控件的消息映射宏是</font><font FACE="Times New Roman" SIZE="3">ON_XXXX</font><font SIZE="3">，其中</font><font FACE="Times New Roman" SIZE="3">XXXX</font><font SIZE="3">表示通知消息码，如</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3">ON_XXXX</font><font SIZE="3">消息映射如下所示，该宏有两个参数，一个是控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，一个是消息处理函数名．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ON_XXXX(nID, memberFxn)</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">消息处理函数的声明应该有如下形式：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">afx_msg void memberFxn( );</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">例如，某按钮的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息的消息映射及其处理函数的声明如下所示</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">ON_BN_CLICKED(IDC_ADD,OnAdd)</p>
+    <p ALIGN="JUSTIFY">afx_msg void OnAdd( );</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">有时，为了处理方便，需要把多个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">连续的控件发出的相同消息映射到同一个处理函数上．这就要用到</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</font><font SIZE="3">宏．</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</font><font SIZE="3">消息映射宏的第一个参数是控件消息码，第二和第三个参数分别指明了一组连续的控件</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">中的头一个和最后一个</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，最后一个参数是消息处理函数名。例如，要处理一组单选按钮发出的</font><font FACE="Times New Roman" SIZE="3">BN_CLICKED</font><font SIZE="3">消息，相应的消息映射如下所示：</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ON_CONTROL_RANGE(BN_CLICKED, 
+      IDC_FIRST, IDC_LAST, OnRadioClicked)</p>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">OnRadioClicked</font><font SIZE="3">的声明如下，该函数比上面的</font><font FACE="Times New Roman" SIZE="3">OnAdd</font><font SIZE="3">多了一个参数</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">以说明发送通知消息的控件</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">afx_msg void OnRadioClicked(UINT nID);</p>
+    <p ALIGN="JUSTIFY">ClassWizard</font><font SIZE="3">不支持</font><font FACE="Times New Roman" SIZE="3">ON_CONTROL_RANGE</font><font SIZE="3">宏，所以需要手工建立消息映射和消息处理函数．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="90%" bgcolor="#9BCDFF">
+      <tr>
+        <td width="100%"><font SIZE="3">提示</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">事实上，在使用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">时只要运用一个小小的技巧，就可以把不同控件的通知消息映射到同一个处理函数上，也可以把一个控件的不同通知消息映射到同一个处理函数上．这个技巧就是在用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">创建消息处理函数时，指定相同的函数名即可．此方法的优点在于控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">不必是连续的，缺点是处理函数没有</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">参数，因而不能确定是哪一个控件发送的消息．</font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.1.2 </font><font SIZE="3" color="#3973DE">静态控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">静态控件包括静态正文</font><font FACE="Times New Roman" SIZE="3">(Static Text)</font><font SIZE="3">和图片控件</font><font FACE="Times New Roman" SIZE="3">(Picture)</font><font SIZE="3">。静态正文控件用来显示正文。图片控件可以显示位图、图标、方框和图元文件，在图片控件中显示图片的好处是不必操心图片的重绘问题。静态控件不能接收用户的输入。在上一章中，读者已经用过静态正文和组框控件。图片控件的例子可以在</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">创建的</font><font FACE="Times New Roman" SIZE="3">IDD_ABOUTBOX</font><font SIZE="3">对话框模板中找到，在该模板中有一个图片控件用来显示图标。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">静态控件的主要起说明和装饰作用。</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CStatic</font><font SIZE="3">类封装了静态控件。</font><font FACE="Times New Roman" SIZE="3">CStatic</font><font SIZE="3">类的成员函数</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">负责创建静态控件，该函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Create( LPCTSTR 
+          lpszText, DWORD dwStyle, const RECT&amp; rect, CWnd* pParentWnd, UINT nID = 0xffff );</p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">lpszText</font><font SIZE="3">指定了控件显示的正文。</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">指定了静态控件的风格，表</font><font FACE="Times New Roman" SIZE="3">6.1</font><font SIZE="3">显示了静态控件的各种风格，</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">可将这些风格组合起来。</font><font FACE="Times New Roman" SIZE="3">rect</font><font SIZE="3">是一个对</font><font FACE="Times New Roman" SIZE="3">RECT</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">CRect</font><font SIZE="3">结构的引用，用来说明控件的位置和尺寸。</font><font FACE="Times New Roman" SIZE="3">pParentWnd</font><font SIZE="3">指向父窗口，该参数不能为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">则说明了控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。如果创建成功，该函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.1 
+    </font><font SIZE="3">静态控件的风格</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="31%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件风格</b></font></td>
+        <td WIDTH="69%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_BLACKFRAME</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个具有与窗口边界同色的框（缺省为黑色）。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_BLACKRECT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个具有与窗口边界同色的实矩形（缺省为黑色）。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_CENTER</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使显示的正文居中对齐，正文可以回绕。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_GRAYFRAME</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个具有与屏幕背景同色的边框。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_GRAYRECT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个具有与屏幕背景同色的实矩形。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_ICON</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使控件显示一个在资源中定义的图标，图标的名字有</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">函数的</font><font FACE="Times New Roman" SIZE="3">lpszText</font><font SIZE="3">参数指定。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_LEFT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">左对齐正文，正文能回绕。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_LEFTNOWORDWRAP</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">左对齐正文，正文不能回绕。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_NOPREFIX</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使静态正文串中的</font><font FACE="Times New Roman" SIZE="3">&amp;</font><font SIZE="3">不是一个热键提示符。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_NOTIFY</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使控件能向父窗口发送鼠标事件消息。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_RIGHT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">右对齐正文，可以回绕。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_SIMPLE</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使静态正文在运行时不能被改变并使正文显示在单行中。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_USERITEM</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个用户定义项。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_WHITEFRAME</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个具有与窗口背景同色的框（缺省为白色）。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SS_WHITERECT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个具有与窗口背景同色的实心矩形（缺省为白色）。</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">除了上表中的风格外，一般还要为控件指定</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WS_VISIBLE</font><font SIZE="3">窗口风格。一个典型的静态正文控件的风格为</font><font FACE="Times New Roman" SIZE="3">WS_CHILD|WS_VISIBLE|SS_LEFT</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对于用对话框模板编辑器创建的静态控件，可以在控件的属性对话框中指定表</font><font FACE="Times New Roman" SIZE="3">6.1</font><font SIZE="3">中列出的控件风格。例如，可以在静态正文控件的属性对话框中选择</font><font FACE="Times New Roman" SIZE="3">Simple</font><font SIZE="3">，这相当于指定了</font><font FACE="Times New Roman" SIZE="3">SS_SIMPLE</font><font SIZE="3">风格。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Cstatic</font><font SIZE="3">类主要的成员函数在表</font><font FACE="Times New Roman" SIZE="3">6.2</font><font SIZE="3">中列出。可以利用</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的成员函数</font><font FACE="Times New Roman" SIZE="3">GetWindowText</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">SetWindowText</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">GetWindowTextLength</font><font SIZE="3">等函数来查询和设置静态控件中显示的正文．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><b><font SIZE="3"><p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.2 
+    CStatic</font><font SIZE="3">类的主要成员函数</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="50%"><font SIZE="3"><b><p ALIGN="JUSTIFY">函数声明</b></font></td>
+        <td WIDTH="50%"><font SIZE="3"><b><p ALIGN="JUSTIFY">用途</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HBITMAP 
+        SetBitmap( HBITMAP hBitmap );</font></td>
+        <td WIDTH="50%"><font SIZE="3"><p ALIGN="JUSTIFY">指定要显示的位图。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HBITMAP 
+        GetBitmap( ) const;</font></td>
+        <td WIDTH="50%"><font SIZE="3"><p ALIGN="JUSTIFY">获取由</font><font FACE="Times New Roman" SIZE="3">SetBitmap</font><font SIZE="3">指定的位图。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HICON SetIcon( 
+        HICON hIcon );</font></td>
+        <td WIDTH="50%"><font SIZE="3"><p ALIGN="JUSTIFY">指定要显示的图标。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HICON GetIcon( ) 
+        const;</font></td>
+        <td WIDTH="50%"><font SIZE="3"><p ALIGN="JUSTIFY">获取由</font><font FACE="Times New Roman" SIZE="3">SetIcon</font><font SIZE="3">指定的图标。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HCURSOR 
+        SetCursor( HCURSOR hCursor );</font></td>
+        <td WIDTH="50%"><font SIZE="3"><p ALIGN="JUSTIFY">指定要显示的光标图片。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HCURSOR 
+        GetCursor( );</font></td>
+        <td WIDTH="50%"><font SIZE="3"><p ALIGN="JUSTIFY">获取由</font><font FACE="Times New Roman" SIZE="3">SetCursor</font><font SIZE="3">指定的光标。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HENHMETAFILE 
+        SetEnhMetaFile( HENHMETAFILE hMetaFile );</font></td>
+        <td WIDTH="50%"><font SIZE="3"><p ALIGN="JUSTIFY">指定要显示的增强图元文件。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HENHMETAFILE 
+        GetEnhMetaFile( ) const;</font></td>
+        <td WIDTH="50%"><font SIZE="3"><p ALIGN="JUSTIFY">获取由</font><font FACE="Times New Roman" SIZE="3">SetEnhMetaFile</font><font SIZE="3">指定的图元文件。</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">静态控件较简单，故这里就不举例说明了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.1.3 
+    </font><font SIZE="3" color="#3973DE">按钮控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">按钮是指可以响应鼠标点击的小矩形子窗口。按钮控件包括命令按钮</font><font FACE="Times New Roman" SIZE="3">(Pushbutton)</font><font SIZE="3">、检查框</font><font FACE="Times New Roman" SIZE="3">(Check Box)</font><font SIZE="3">、单选按钮</font><font FACE="Times New Roman" SIZE="3">(Radio Button)</font><font SIZE="3">、组框</font><font FACE="Times New Roman" SIZE="3">(Group Box)</font><font SIZE="3">和自绘式按钮</font><font FACE="Times New Roman" SIZE="3">(Owner-draw Button)</font><font SIZE="3">。命令按钮的作用是对用户的鼠标单击作出反应并触发相应的事件，在按钮中既可以显示正文，也可以显示位图。选择框控件可作为一种选择标记，可以有选中、不选中和不确定三种状态。单选按钮控件一般都是成组出现的，具有互斥的性质，即同组单选按钮中只能有一个是被选中的。组框用来将相关的一些控件聚成一组．自绘式按钮是指由程序而不是系统负责重绘的按钮。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">按钮主要是指命令按钮、选择框和单选按钮。后二者实际上是一种特殊的按钮，它们有选择和未选择状态。当一个选择框处于选择状态时，在小方框内会出现一个“√”，当单选按钮处于选择状态时，会在圆圈中显示一个黑色实心圆。此外，检查框还有一种不确定状态，这时检查框呈灰色显示，不能接受用户的输入，以表明控件是无效的或无意义的。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">按钮控件会向父窗口发出如表</font><font FACE="Times New Roman" SIZE="3">6.3</font><font SIZE="3">所示的控件通知消息。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><p ALIGN="CENTER"></b>表</font><font FACE="Times New Roman" SIZE="3">6.3 </font><font SIZE="3">按钮控件的通知消息</font></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="32%"><font SIZE="3"><p ALIGN="JUSTIFY"><b>消息</b></font></td>
+        <td WIDTH="68%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BN_CLICKED</font></td>
+        <td WIDTH="68%"><font SIZE="3"><p ALIGN="JUSTIFY">用户在按钮上单击了鼠标。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BN_DOUBLECLICKED</font></td>
+        <td WIDTH="68%"><font SIZE="3"><p ALIGN="JUSTIFY">用户在按钮上双击了鼠标。</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">FC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CButton</font><font SIZE="3">类封装了按钮控件。</font><font FACE="Times New Roman" SIZE="3">CButton</font><font SIZE="3">类的成员函数</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">负责创建按钮控件，该函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Create( LPCTSTR 
+          lpszCaption, DWORD dwStyle, const RECT&amp; rect, CWnd* pParentWnd, UINT nID );</p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">lpszCaption</font><font SIZE="3">指定了按钮显示的正文。</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">指定了按钮的风格，如表</font><font FACE="Times New Roman" SIZE="3">6.4</font><font SIZE="3">所示，</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">可以是这些风格的组合。</font><font FACE="Times New Roman" SIZE="3">rect</font><font SIZE="3">说明了按钮的位置和尺寸。</font><font FACE="Times New Roman" SIZE="3">pParentWnd</font><font SIZE="3">指向父窗口，该参数不能为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">是按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。如果创建成功，该函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.4 </font><font SIZE="3">按钮的风格</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="31%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件风格</b></font></td>
+        <td WIDTH="69%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_AUTOCHECKBOX</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">同</font><font FACE="Times New Roman" SIZE="3">BS_CHECKBOX</font><font SIZE="3">，不过单击鼠标时按钮会自动反转。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_AUTORADIOBUTTON</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">同</font><font FACE="Times New Roman" SIZE="3">BS_RADIOBUTTON</font><font SIZE="3">，不过单击鼠标时按钮会自动反转。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_AUTO3STATE</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">同</font><font FACE="Times New Roman" SIZE="3">BS_3STATE</font><font SIZE="3">，不过单击按钮时会改变状态。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_CHECKBOX</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定在矩形按钮右侧带有标题的选择框。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_DEFPUSHBUTTON</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定缺省的命令按钮，这种按钮的周围有一个黑框，用户可以按回车键来快速选择该按钮。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_GROUPBOX</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个组框。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_LEFTTEXT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使控件的标题显示在按钮的左边。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_OWNERDRAW</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个自绘式按钮。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_PUSHBUTTON</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个命令按钮。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_RADIOBUTTON</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个单选按钮，在圆按钮的右边显示正文。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BS_3STATE</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">同</font><font FACE="Times New Roman" SIZE="3">BS_CHECKBOX</font><font SIZE="3">，不过控件有三种状态：选择、未选择和变灰。</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">除了上表中的风格外，一般还要为控件指定</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_VISIBLE</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WS_TABSTOP</font><font SIZE="3">窗口风格，</font><font FACE="Times New Roman" SIZE="3">WS_TABSTOP</font><font SIZE="3">使控件具有</font><font FACE="Times New Roman" SIZE="3">Tabstop</font><font SIZE="3">属性。创建一个普通按钮应指定的风格为</font><font FACE="Times New Roman" SIZE="3">WS_CHILD|WS_VISIBLE|WS_TABSTOP</font><font SIZE="3">。创建一个普通检查框应指定风格</font><font FACE="Times New Roman" SIZE="3">WS_CHILD|WS_VISIBLE|WS_TABSTOP| BS_AUTOCHECKBOX</font><font SIZE="3">。创建组中第一个单选按钮应指定风格</font><font FACE="Times New Roman" SIZE="3">WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP| 
+    BS_AUTORADIOBUTTON</font><font SIZE="3">，组中其它单选按钮应指定风格则不应该包括</font><font FACE="Times New Roman" SIZE="3">WS_TABSTOP</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WS_GROUP</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对于用对话框模板编辑器创建的按钮控件，可以在控件的属性对话框中指定表</font><font FACE="Times New Roman" SIZE="3">6.4</font><font SIZE="3">中列出的控件风格。例如，在命令按钮的属性对话框中选择</font><font FACE="Times New Roman" SIZE="3">Default button</font><font SIZE="3">，相当于指定了</font><font FACE="Times New Roman" SIZE="3">BS_DEFPUSHBUTTON</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CButton</font><font SIZE="3">类的主要的成员函数有：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">UINT GetState( ) const;<br>
+          </font><font SIZE="3">该函数返回按钮控件的各种状态。可以用下列屏蔽值与函数的返回值相与，以获得各种信息。</p>
+          <blockquote>
+            </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0003</font><font SIZE="3">。用来获取检查框或单选按钮的状态。</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">表示未选中，</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">表示被选中，</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">表示不确定状态（仅用于检查框）。</p>
+            </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0004</font><font SIZE="3">。用来判断按钮是否是高亮度显示的。非零值意味着按钮是高亮度显示的。当用户点击了按钮并按主鼠标左键时，按钮会呈高亮度显示。</p>
+            </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0008</font><font SIZE="3">。非零值表示按钮拥有输入焦点。</p>
+          </blockquote>
+        </blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void SetState( BOOL 
+        bHighlight );<br>
+        </font><font SIZE="3">当参数</font><font FACE="Times New Roman" SIZE="3">bHeightlight</font><font SIZE="3">值为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">时，该函数将按钮设置为高亮度状态，否则，去除按钮的高亮度状态。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetCheck( ) const;<br>
+        </font><font SIZE="3">返回检查框或单选按钮的选择状态。返回值</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">表示按钮未被选择，</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">表示按钮被选择，</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">表示按钮处于不确定状态（仅用于检查框）。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void SetCheck( int nCheck 
+        );<br>
+        </font><font SIZE="3">设置检查框或单选按钮的选择状态。参数</font><font FACE="Times New Roman" SIZE="3">nCheck</font><font SIZE="3">值的含义与</font><font FACE="Times New Roman" SIZE="3">GetCheck</font><font SIZE="3">返回值相同。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">UINT GetButtonStyle( ) 
+        const;<br>
+        </font><font SIZE="3">获得按钮控件的</font><font FACE="Times New Roman" SIZE="3">BS_XXXX</font><font SIZE="3">风格。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void SetButtonStyle( UINT 
+        nStyle, BOOL bRedraw = TRUE );<br>
+        </font><font SIZE="3">设置按钮的风格。参数</font><font FACE="Times New Roman" SIZE="3">nStyle</font><font SIZE="3">指定了按钮的风格。</font><font FACE="Times New Roman" SIZE="3">bRedraw</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">则重绘按钮，否则就不重绘。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HBITMAP SetBitmap( HBITMAP 
+        hBitmap );<br>
+        </font><font SIZE="3">设置按钮显示的位图。参数</font><font FACE="Times New Roman" SIZE="3">hBitmap</font><font SIZE="3">指定了位图的句柄。该函数还会返回按钮原来的位图。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HBITMAP GetBitmap( ) 
+        const;<br>
+        </font><font SIZE="3">返回以前用</font><font FACE="Times New Roman" SIZE="3">SetBitmap</font><font SIZE="3">设置的按钮位图。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HICON SetIcon( HICON hIcon 
+        );<br>
+        </font><font SIZE="3">设置按钮显示的图标。参数</font><font FACE="Times New Roman" SIZE="3">hIcon</font><font SIZE="3">指定了图标的句柄。该函数还会返回按钮原来的图标。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HICON GetIcon( ) const;<br>
+        </font><font SIZE="3">返回以前用</font><font FACE="Times New Roman" SIZE="3">SetIcon</font><font SIZE="3">设置的按钮图标。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HCURSOR SetCursor( HCURSOR 
+        hCursor );<br>
+        </font><font SIZE="3">设置按钮显示的光标图。参数</font><font FACE="Times New Roman" SIZE="3">hCursor</font><font SIZE="3">指定了光标的句柄。该函数还会返回按钮原来的光标。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">HCURSOR GetCursor( );<br>
+        </font><font SIZE="3">返回以前用</font><font FACE="Times New Roman" SIZE="3">GetCursor</font><font SIZE="3">设置的光标。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">另外，可以使用下列的一些与按钮控件有关的</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">成员函数来设置或查询按钮的状态。用这些函数的好处在于不必构建按钮控件对象，只要知道按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，就可以直接设置或查询按钮。</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void CheckDlgButton( int 
+        nIDButton, UINT nCheck );<br>
+        </font><font SIZE="3">用来设置按钮的选择状态。参数</font><font FACE="Times New Roman" SIZE="3">nIDButton</font><font SIZE="3">指定了按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">nCheck</font><font SIZE="3">的值</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">表示按钮未被选择，</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">表示按钮被选择，</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">表示按钮处于不确定状态。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void CheckRadioButton( int 
+        nIDFirstButton, int nIDLastButton, int nIDCheckButton );<br>
+        </font><font SIZE="3">用来选择组中的一个单选按钮。参数</font><font FACE="Times New Roman" SIZE="3">nIDFirstButton</font><font SIZE="3">指定了组中第一个按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">nIDLastButton</font><font SIZE="3">指定了组中最后一个按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">nIDCheckButton</font><font SIZE="3">指定了要选择的按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetCheckedRadioButton( 
+        int nIDFirstButton, int nIDLastButton );<br>
+        </font><font SIZE="3">该函数用来获得一组单选按钮中被选中按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。参数</font><font FACE="Times New Roman" SIZE="3">nIDFirstButton</font><font SIZE="3">说明了组中第一个按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">nIDLastButton</font><font SIZE="3">说明了组中最后一个按钮的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">UINT IsDlgButtonChecked( 
+        int nIDButton ) const;<br>
+        </font><font SIZE="3">返回检查框或单选按钮的选择状态。返回值</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">表示按钮未被选择，</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">表示按钮被选择，</font><font FACE="Times New Roman" SIZE="3">2</font><font SIZE="3">表示按钮处于不确定状态（仅用于检查框）。</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以调用</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">成员函数</font><font FACE="Times New Roman" SIZE="3">GetWindowText</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">GetWindowTextLength</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">SetWindowText</font><font SIZE="3">来查询或设置按钮中显示的正文．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">还提供了</font><font FACE="Times New Roman" SIZE="3">CButton</font><font SIZE="3">的派生类</font><font FACE="Times New Roman" SIZE="3">CBitmapButton</font><font SIZE="3">。利用该类可以创建一个拥有四幅位图的命令按钮，按钮在不同状态时会显示不同的位图，这样可以使界面显得生动活泼。如果读者对</font><font FACE="Times New Roman" SIZE="3">CBitmapButton</font><font SIZE="3">感兴趣，可以参看</font><font FACE="Times New Roman" SIZE="3">VC5.0</font><font SIZE="3">随盘提供的</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">例子</font><font FACE="Times New Roman" SIZE="3">CTRLTEST</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在上一章的</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">例子中已演示了各种按钮控件的使用，故这里就不再举例了。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.1.4 </font><font SIZE="3" color="#3973DE">编辑框控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编辑框</font><font FACE="Times New Roman" SIZE="3">(Edit Box)</font><font SIZE="3">控件实际上是一个简易的正文编辑器，用户可以在编辑框中输入并编辑正文。编辑框既可以是单行的，也可以是多行的，多行编辑框是从零开始编行号的．在一个多行编辑框中，除了最后一行外，每一行的结尾处都有一对回车换行符（用＂</font><font FACE="Times New Roman" SIZE="3">\r\n</font><font SIZE="3">＂表示）．这对回车换行符是正文换行的标志，在屏幕上是不可见的．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编辑框控件会向父窗口发出如表</font><font FACE="Times New Roman" SIZE="3">6.5</font><font SIZE="3">所示的控件通知消息。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.5</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="22%"><font SIZE="3"><b><p ALIGN="JUSTIFY">消息</b></font></td>
+        <td WIDTH="78%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="22%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EN_CHANGE</font></td>
+        <td WIDTH="78%"><font SIZE="3"><p ALIGN="JUSTIFY">编辑框的内容被用户改变了。与</font><font FACE="Times New Roman" SIZE="3">EN_UPDATE</font><font SIZE="3">不同，该消息是在编辑框显示的正文被刷新后才发出的。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="22%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EN_ERRSPACE</font></td>
+        <td WIDTH="78%"><font SIZE="3"><p ALIGN="JUSTIFY">编辑框控件无法申请足够的动态内存来满足需要。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="22%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EN_HSCROLL</font></td>
+        <td WIDTH="78%"><font SIZE="3"><p ALIGN="JUSTIFY">用户在水平滚动条上单击鼠标。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="22%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EN_KILLFOCUS</font></td>
+        <td WIDTH="78%"><font SIZE="3"><p ALIGN="JUSTIFY">编辑框失去输入焦点。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="22%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EN_MAXTEXT</font></td>
+        <td WIDTH="78%"><font SIZE="3"><p ALIGN="JUSTIFY">输入的字符超过了规定的最大字符数。在没有</font><font FACE="Times New Roman" SIZE="3">ES_AUTOHSCROLL</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">ES_AUTOVSCROLL</font><font SIZE="3">的编辑框中，当正文超出了编辑框的边框时也会发出该消息。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="22%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EN_SETFOCUS</font></td>
+        <td WIDTH="78%"><font SIZE="3"><p ALIGN="JUSTIFY">编辑框获得输入焦点。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="22%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EN_UPDATE</font></td>
+        <td WIDTH="78%"><font SIZE="3"><p ALIGN="JUSTIFY">在编辑框准备显示改变了的正文时发送该消息。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="22%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">EN_VSCROLL</font></td>
+        <td WIDTH="78%"><font SIZE="3"><p ALIGN="JUSTIFY">用户在垂直滚动条上单击鼠标。</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">类封装了编辑框控件。</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">类的成员函数</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">负责创建按钮控件，该函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Create( DWORD 
+          dwStyle, const RECT&amp; rect, CWnd* pParentWnd, UINT nID );</font></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">指定了编辑框控件风格，如表</font><font FACE="Times New Roman" SIZE="3">6.6</font><font SIZE="3">所示，</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">可以是这些风格的组合。</font><font FACE="Times New Roman" SIZE="3">rect</font><font SIZE="3">指定了编辑框的位置和尺寸。</font><font FACE="Times New Roman" SIZE="3">pParentWnd</font><font SIZE="3">指定了父窗口，不能为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。编辑框的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">由</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">指定。如果创建成功，该函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.6 </font><font SIZE="3">编辑框控件的风格</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="31%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件风格</b></font></td>
+        <td WIDTH="69%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_AUTOHSCROLL</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">当用户在行尾键入一个字符时，正文将自动向右滚动</font><font FACE="Times New Roman" SIZE="3">10</font><font SIZE="3">个字符，当用户按回车键时，正文总是滚向左边。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_AUTOVSCROLL</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">当用户在最后一个可见行按回车键时，正文向上滚动一页。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_CENTER</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">在多行编辑框中使正文居中。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_LEFT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">左对齐正文。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_LOWERCASE</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">把用户输入的字母统统转换成小写字母。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_MULTILINE</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个多行编辑器。若多行编辑器不指定</font><font FACE="Times New Roman" SIZE="3">ES_AUTOHSCROLL</font><font SIZE="3">风格，则会自动换行，若不指定</font><font FACE="Times New Roman" SIZE="3">ES_AUTOVSCROLL</font><font SIZE="3">，则多行编辑器会在窗口中正文装满时发出警告声响。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_NOHIDESEL</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省时，当编辑框失去输入焦点后会隐藏所选的正文，当获得输入焦点时又显示出来。设置该风格可禁止这种缺省行为。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_OEMCONVERT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使编辑框中的正文可以在</font><font FACE="Times New Roman" SIZE="3">ANSI</font><font SIZE="3">字符集和</font><font FACE="Times New Roman" SIZE="3">OEM</font><font SIZE="3">字符集之间相互转换。这在编辑框中包含文件名时是很有用的。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_PASSWORD</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使所有键入的字符都用“</font><font FACE="Times New Roman" SIZE="3">*</font><font SIZE="3">”来显示。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_RIGHT</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">右对齐正文。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_UPPERCASE</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">把用户输入的字母统统转换成大写字母。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_READONLY</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">将编辑框设置成只读的。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ES_WANTRETURN</font></td>
+        <td WIDTH="69%"><font SIZE="3"><p ALIGN="JUSTIFY">使多行编辑器接收回车键输入并换行。如果不指定该风格，按回车键会选择缺省的命令按钮，这往往会导致对话框的关闭。</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">除了上表中的风格外，一般还要为控件指定</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_VISIBLE</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_TABSTOP</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WS_BORDER</font><font SIZE="3">窗口风格，</font><font FACE="Times New Roman" SIZE="3">WS_BORDER</font><font SIZE="3">使控件带边框。创建一个普通的单行编辑框应指定风格为</font><font FACE="Times New Roman" SIZE="3">WS_CHILD|WS_VISIBLE|WS_TABSTOP 
+    |WS_BORDER|ES_LEFT|ES_AUTOHSCROLL</font><font SIZE="3">，这将创建一个带边框、左对齐正文、可水平滚动的单行编辑器。要创建一个普通多行编辑框，还要附加</font><font FACE="Times New Roman" SIZE="3">ES_MULTILINE|ES_WANTRETURN|ES_AUTOVSCROLL |WS_HSCROLL| 
+    WS_VSCROLL</font><font SIZE="3">风格，这将创建一个可水平和垂直滚动的，带有水平和垂直滚动条的多行编辑器。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对于用对话框模板编辑器创建的编辑框控件，可以在控件的属性对话框中指定表</font><font FACE="Times New Roman" SIZE="3">6.6</font><font SIZE="3">中列出的控件风格。例如，在属性对话框中选择</font><font FACE="Times New Roman" SIZE="3">Multi-line</font><font SIZE="3">项，相当与指定了</font><font FACE="Times New Roman" SIZE="3">ES_MULTILINE</font><font SIZE="3">风格。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">编辑框支持剪贴板操作。</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">类提供了一些与剪贴板有关的成员函数，如表</font><font FACE="Times New Roman" SIZE="3">6.7</font><font SIZE="3">所示。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.7 </font><font SIZE="3">与剪切板有关的</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">成员函数</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="35%"><font SIZE="3"><b><p ALIGN="JUSTIFY">函数声明</b></font></td>
+        <td WIDTH="65%"><font SIZE="3"><b><p ALIGN="JUSTIFY">用途</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void Clear( )</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">清除编辑框中被选择的正文。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void Copy( )</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">把在编辑框中选择的正文拷贝到剪贴板中。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void Cut( )</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">清除编辑框中被选择的正文并把这些正文拷贝到剪贴板中。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void Paste( )</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">将剪贴板中的正文插入到编辑框的当前插入符处。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="35%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Undo( )</font></td>
+        <td WIDTH="65%"><font SIZE="3"><p ALIGN="JUSTIFY">撤消上一次键入。对于单行编辑框，该函数总返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，对于多行编辑框，返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">表明操作成功，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">。</font></td>
+      </tr>
+    </table>
+    <p><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可以用下列</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的成员函数来查询编辑框。在学习下面的函数时，读者会经常遇到术语字符索引．字符的字符索引是指从编辑框的开头字符开始的字符编号，它是从零开始编号的．也就是说，字符索引实际上是指当把整个编辑正文看作一个字符串数组时，该字符所在的数组元素的下标．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">int GetWindowText( LPTSTR lpszStringBuf, int nMaxCount ) const;<br>
+        void GetWindowText( CString&amp; rString ) const;<br>
+        </font><font SIZE="3">这两个函数均是</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的成员函数，可用来获得窗口的标题或控件中的正文。第一个版本的函数用</font><font FACE="Times New Roman" SIZE="3">lpszStringBuf</font><font SIZE="3">参数指向的字符串数组作为拷贝正文的缓冲区，参数</font><font FACE="Times New Roman" SIZE="3">nMaxCount</font><font SIZE="3">可以拷贝到缓冲区中的最大字符数，该函数返回以字节为单位的实际拷贝字符数（不包括结尾的空字节）。第二个版本的函数用一个</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">对象作为缓冲区。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetWindowTextLength( ) 
+        const;<br>
+        CWnd</font><font SIZE="3">的成员函数，可用来获得窗口的标题或控件中的正文的长度。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD GetSel( ) const;<br>
+        void GetSel( int&amp; nStartChar, int&amp; nEndChar ) const;<br>
+        </font><font SIZE="3">两个函数都是</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">的成员函数，用来获得所选正文的位置。</font><font FACE="Times New Roman" SIZE="3">GetSel</font><font SIZE="3">的第一个版本返回一个</font><font FACE="Times New Roman" SIZE="3">DWORD</font><font SIZE="3">值，其中低位字说明了被选择的正文开始处的字符索引，高位字说明了选择的正文结束处的后面一个字符的字符索引，如果没有正文被选择，那么返回的低位和高位字节都是当前插入符所在字符的字符索引。</font><font FACE="Times New Roman" SIZE="3">GetSel</font><font SIZE="3">的第二个版本的两个参数是两个引用，其含义与第一个版本函数返回值的低位和高位字相同。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int LineFromChar( int 
+        nIndex = </font><font SIZE="3">–</font><font FACE="Times New Roman" SIZE="3">1 ) const;<br>
+        CEdit</font><font SIZE="3">的成员函数，仅用于多行编辑框，用来返回指定字符索引所在行的行索引（从零开始编号）。参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了一个字符索引，如果</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，那么函数将返回选择正文的第一个字符所在行的行号，若没有正文被选择，则该函数会返回当前的插入符所在行的行号。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int LineIndex( int nLine = 
+        </font><font SIZE="3">–</font><font FACE="Times New Roman" SIZE="3">1 ) const;<br>
+        CEdit</font><font SIZE="3">的成员函数，仅用于多行编辑框，用来获得指定行的开头字符的字符索引，如果指定行超过了编辑框中的最大行数，该函数将返回</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">。参数</font><font FACE="Times New Roman" SIZE="3">nLine</font><font SIZE="3">是指定了从零开始的行索引，如果它的值为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，则函数返回当前的插入符所在行的字符索引。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetLineCount( ) const;<br>
+        CEdit</font><font SIZE="3">的成员函数，仅用于多行编辑框，用来获得正文的行数。如果编辑框是空的，那么该函数的返回值是</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int LineLength( int nLine 
+        = </font><font SIZE="3">–</font><font FACE="Times New Roman" SIZE="3">1 ) const;<br>
+        CEdit</font><font SIZE="3">的成员函数，用于获取指定字符索引所在行的字节长度（行尾的回车和换行符不计算在内）。参数</font><font FACE="Times New Roman" SIZE="3">nLine</font><font SIZE="3">说明了字符索引．如果</font><font FACE="Times New Roman" SIZE="3">nLine</font><font SIZE="3">的值为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，则函数返回当前行的长度（假如没有正文被选择），或选择正文占据的行的字符总数减去选择正文的字符数（假如有正文被选择）。若用于单行编辑框，则函数返回整个正文的长度。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetLine( int nIndex, 
+        LPTSTR lpszBuffer ) const;<br>
+        int GetLine( int nIndex, LPTSTR lpszBuffer, int nMaxLength ) const;<br>
+        CEdit</font><font SIZE="3">的成员函数，仅用于多行编辑框，用来获得指定行的正文（不包括行尾的回车和换行符）。参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">是行号，</font><font FACE="Times New Roman" SIZE="3">lpszBuffer</font><font SIZE="3">指向存放正文的缓冲区，</font><font FACE="Times New Roman" SIZE="3">nMaxLength</font><font SIZE="3">规定了拷贝的最大字节数，若。函数返回实际拷贝的字节数，若指定的行号大于编辑框的实际行数，则函数返回</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">。需要注意的是，</font><font FACE="Times New Roman" SIZE="3">GetLine</font><font SIZE="3">函数不会在缓冲区中字符串的末尾加字符串结束符</font><font FACE="Times New Roman" SIZE="3">(NULL)</font><font SIZE="3">．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">下列</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">类的成员函数可用来修改编辑框控件。</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void SetWindowText( 
+        LPCTSTR lpszString );<br>
+        CWnd</font><font SIZE="3">的成员函数，可用来设置窗口的标题或控件中的正文。参数</font><font FACE="Times New Roman" SIZE="3">lpszString</font><font SIZE="3">可以是一个</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">对象，或是一个指向字符串的指针。</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void SetSel( DWORD 
+        dwSelection, BOOL bNoScroll = FALSE );<br>
+        void SetSel( int nStartChar, int nEndChar, BOOL bNoScroll = FALSE );<br>
+        CEdit</font><font SIZE="3">的成员函数，用来选择编辑框中的正文。参数</font><font FACE="Times New Roman" SIZE="3">dwSelection</font><font SIZE="3">的低位字说明了选择开始处的字符索引，高位字说明了选择结束处的字符索引。如果低位字为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">且高位字节为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，那么就选择所有的正文，如果低位字节为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，则取消所有的选择．参数</font><font FACE="Times New Roman" SIZE="3">bNoScroll</font><font SIZE="3">的值如果是</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，则滚动插入符并使之可见，否则就不滚动．参数</font><font FACE="Times New Roman" SIZE="3">nStartChar</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">nEndChar</font><font SIZE="3">的含义与参数</font><font FACE="Times New Roman" SIZE="3">dwSelection</font><font SIZE="3">的低位字和高位字相同．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void ReplaceSel( LPCTSTR 
+        lpszNewText, BOOL bCanUndo = FALSE );<br>
+        CEdit</font><font SIZE="3">的成员函数，用来将所选正文替换成指定的正文．参数</font><font FACE="Times New Roman" SIZE="3">lpszNewText</font><font SIZE="3">指向用来替换的字符串．参数</font><font FACE="Times New Roman" SIZE="3">bCanUndo</font><font SIZE="3">的值为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">说明替换是否可以被撤消的．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在调用上述函数时，如果涉及的是一个多行编辑框，那么除了</font><font FACE="Times New Roman" SIZE="3">LineLength</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">GetLine</font><font SIZE="3">函数外，都要把回车和换行符考虑在内．例如，假设在编辑框中有如下几行正文：</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">abcd</p>
+    <p ALIGN="JUSTIFY">efg</p>
+    <p ALIGN="JUSTIFY">ij</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">那么字母＂</font><font FACE="Times New Roman" SIZE="3">e</font><font SIZE="3">＂的字符索引是</font><font FACE="Times New Roman" SIZE="3">6</font><font SIZE="3">而不是</font><font FACE="Times New Roman" SIZE="3">4</font><font SIZE="3">，因为＂</font><font FACE="Times New Roman" SIZE="3">abcd</font><font SIZE="3">＂后面还有一对回车换行符．调用</font><font FACE="Times New Roman" SIZE="3">LineLength(7)</font><font SIZE="3">会返回第二行的长度</font><font FACE="Times New Roman" SIZE="3">3</font><font SIZE="3">．调用</font><font FACE="Times New Roman" SIZE="3">LineIndex(2)</font><font SIZE="3">会得到</font><font FACE="Times New Roman" SIZE="3">11</font><font SIZE="3">．调用</font><font FACE="Times New Roman" SIZE="3">LineFromChar(8)</font><font SIZE="3">会返回</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">．如果没有选择任何正文，并且插入符在字母＂</font><font FACE="Times New Roman" SIZE="3">e</font><font SIZE="3">＂上，那么调用</font><font FACE="Times New Roman" SIZE="3">GetSel</font><font SIZE="3">返回值的低位和高位字都是</font><font FACE="Times New Roman" SIZE="3">6</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">通过分析上述函数，我们可以总结出一些查询和设置编辑框的方法．</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">调用</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">的成员函数</font><font FACE="Times New Roman" SIZE="3">GetWindowText</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">SetWindowText</font><font SIZE="3">可以查询和设置编辑框的整个正文，在上一章的</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">程序中，我们就使用过这两个函数．</p>
+        <p ALIGN="JUSTIFY">如果想对多行编辑框逐行查询，那么应该先调用</font><font FACE="Times New Roman" SIZE="3">GetLineCount</font><font SIZE="3">获得总行数，然后再调用</font><font FACE="Times New Roman" SIZE="3">GetLine</font><font SIZE="3">来获取每一行的正文．下面一段代码演示了如何对多行编辑框进行逐行查询．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">char buf[40];</p>
+        <p ALIGN="JUSTIFY">int total=MyEdit.GetLineCount();</p>
+        <p ALIGN="JUSTIFY">int i,length;</p>
+        <p ALIGN="JUSTIFY">for(i=0;i&lt;total;i++)</p>
+        <p ALIGN="JUSTIFY">{</p>
+        <p ALIGN="JUSTIFY">length=MyEdit.GetLine(i,buf,39);</p>
+        <p ALIGN="JUSTIFY">buf[length]=0; //</font><font SIZE="3">加字符串结束符</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"><b>. . . . . .</p>
+        </b><p ALIGN="JUSTIFY">}</p>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">可以利用</font><font FACE="Times New Roman" SIZE="3">LineIndex</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">LineFromChar</font><font SIZE="3">来在字符索引和字符的行列坐标之间相互转换．下列代码演示了在已知字符索引的情况下，如何获得对应的行列坐标：<br>
+        </font><font FACE="Times New Roman" SIZE="3">int row,column;<br>
+        row=MyEdit.LineFromChar(charIndex);<br>
+        column=charIndex-MyEdit.LineIndex(row);<br>
+        </font><font SIZE="3">下列代码演示了在已知字符的行列坐标的情况下，如何获得对应的字符索引：<br>
+        </font><font FACE="Times New Roman" SIZE="3">int charIndex;<br>
+        charIndex=MyEdit.LineIndex(row)+column;<br>
+        </font><font SIZE="3">不难看出字符索引与对应的行列坐标的关系是：字符索引</font><font FACE="Times New Roman" SIZE="3">=LineIndex(</font><font SIZE="3">行坐标</font><font FACE="Times New Roman" SIZE="3">)+</font><font SIZE="3">列坐标．</p>
+        <p ALIGN="JUSTIFY">对于选择正文的查询和设置，应该利用函数</font><font FACE="Times New Roman" SIZE="3">GetSel</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">SetSel</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ReplaceSel</font><font SIZE="3">．</p>
+        <p ALIGN="JUSTIFY">可以利用</font><font FACE="Times New Roman" SIZE="3">GetSel</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">SetSel</font><font SIZE="3">来查询和设置插入符的位置．</font><font FACE="Times New Roman" SIZE="3">SetSel</font><font SIZE="3">可以使编辑框滚动到插入符的新位置．<br>
+        要获取插入符的行列坐标，可用下面的代码实现：<br>
+        </font><font FACE="Times New Roman" SIZE="3">MyEdit.SetSel(-1,0); //</font><font SIZE="3">取消正文的选择<br>
+        </font><font FACE="Times New Roman" SIZE="3">int start,end,row,column;<br>
+        MyEdit.GetSel(start,end); //start</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">end</font><font SIZE="3">的值就是插入符的字符索引<br>
+        </font><font FACE="Times New Roman" SIZE="3">row=MyEdit.LineFromChar(start); //</font><font SIZE="3">获取插入符的行坐标<br>
+        </font><font FACE="Times New Roman" SIZE="3">column=start-MyEdit.LineIndex(row); //</font><font SIZE="3">获取插入符的列坐标<br>
+        下面的代码演示了如何把插入符移到指定的行和列：<br>
+        </font><font FACE="Times New Roman" SIZE="3">MyEdit.SetSel(-1,0); //</font><font SIZE="3">取消正文的选择<br>
+        </font><font FACE="Times New Roman" SIZE="3">int charIndex=MyEdit.LineIndex(row)+column;<br>
+        MyEdit.SetSel(charIndex,charIndex);</p>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">可以利用</font><font FACE="Times New Roman" SIZE="3">ReplaceSel</font><font SIZE="3">函数在 
+        插入符处插入正文，典型的代码如下所示：<br>
+        </font><font FACE="Times New Roman" SIZE="3">MyEdit.SetSel(-1,0); //</font><font SIZE="3">取消正文的选择<br>
+        </font><font FACE="Times New Roman" SIZE="3">MyEdit.ReplaceSel(</font><font SIZE="3">“</font><font FACE="Times New Roman" SIZE="3">......</font><font SIZE="3">”</font><font FACE="Times New Roman" SIZE="3">);</p>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">可以利用</font><font FACE="Times New Roman" SIZE="3">ReplaceSel</font><font SIZE="3">清除编辑框中的正文，典型的代码如下所示：<br>
+        </font><font FACE="Times New Roman" SIZE="3">MyEdit.SetSel(0,-1); //</font><font SIZE="3">选择全部正文<br>
+        </font><font FACE="Times New Roman" SIZE="3">MyEdit.ReplaceSel(</font><font SIZE="3">“”</font><font FACE="Times New Roman" SIZE="3">);</p>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在后面的小节中，读者将会看到使用编辑框的例子．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">.1.5 
+    </font><font SIZE="3" color="#3973DE">滚动条控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">滚动条</font><font FACE="Times New Roman" SIZE="3">(Scroll Bar)</font><font SIZE="3">主要用来从某一预定义值范围内快速有效地进行选择．滚动条分垂直滚动条和水平滚动条两种．在滚动条内有一个滚动框，用来表示当前的值．用鼠标单击滚动条，可以使滚动框移动一页或一行，也可以直接拖动滚动框．滚动条既可以作为一个独立控件存在，也可以作为窗口、列表框和组合框的一部分．</font><font FACE="Times New Roman" SIZE="3">Windows 95</font><font SIZE="3">的滚动条支持比例滚动框，即用滚动框的大小来反映页相对于整个范围的大小．</font><font FACE="Times New Roman" SIZE="3">Windows 3.x</font><font SIZE="3">使用单独的滚动条控件来调整调色板、键盘速度以及鼠标灵敏度，在</font><font FACE="Times New Roman" SIZE="3">Windows 95</font><font SIZE="3">中，滚动条控件被轨道条取代（参见</font><font FACE="Times New Roman" SIZE="3">6.2.3</font><font SIZE="3">）不提倡使用单独的滚动条控件．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">需要指出的是，从性质上划分，滚动条可分为标准滚动条和滚动条控件两种．标准滚动条是由</font><font FACE="Times New Roman" SIZE="3">WS_HSCROLL</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">WS_VSCROLL</font><font SIZE="3">风格指定的，它不是一个实际的窗口，而是窗口的一个组成部分（例如列表框中的滚动条），只能位于窗口的右侧（垂直滚动条）或底端（水平滚动条）．标准滚动条是在窗口的非客户区中创建的．与之相反，滚动条控件并不是窗口的一个零件，而是一个实际的窗口，可以放置在窗口客户区的任意地方，它既可以独立存在，也可以与某一个窗口组合，行使滚动窗口的职能．由于滚动条控件是一个独立窗口，因此可以拥有输入焦点，可以响应光标控制键，如</font><font FACE="Times New Roman" SIZE="3">PgUp</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">PgDown</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">Home</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">End</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CScrollBar</font><font SIZE="3">类封装了滚动条控件．</font><font FACE="Times New Roman" SIZE="3">CScrollBar</font><font SIZE="3">类的</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">成员函数负责创建控件，该函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Create( DWORD 
+        dwStyle, const RECT&amp; rect, CWnd* pParentWnd, UINT nID );</p>
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">指定了控件的风格．</font><font FACE="Times New Roman" SIZE="3">rect</font><font SIZE="3">说明了控件的位置和尺寸．</font><font FACE="Times New Roman" SIZE="3">pParentWnd</font><font SIZE="3">指向父窗口，该参数不能为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">则说明了控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。如果创建成功，该函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要创建一个普通的水平滚动条控件，应指定风格</font><font FACE="Times New Roman" SIZE="3">WS_CHILD|WS_VISIBLE|BS_HORZ</font><font SIZE="3">．要创建一个普通的垂直滚动条控件，应指定风格</font><font FACE="Times New Roman" SIZE="3">WS_CHILD|WS_VISIBLE|BS_VERT</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">主要的</font><font FACE="Times New Roman" SIZE="3">CScrollBar</font><font SIZE="3">类成员函数如下所示：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetScrollPos( ) const;<br>
+        </font><font SIZE="3">该函数返回滚动框的当前位置．若操作失败则返回</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int SetScrollPos( int 
+        nPos, BOOL bRedraw = TRUE );<br>
+        </font><font SIZE="3">该函数将滚动框移动到指定位置．参数</font><font FACE="Times New Roman" SIZE="3">nPos</font><font SIZE="3">指定了新的位置．参数</font><font FACE="Times New Roman" SIZE="3">bRedraw</font><font SIZE="3">表示是否需要重绘滚动条，如果为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，则重绘之．函数返回滚动框原来的位置．若操作失败则返回</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void GetScrollRange( LPINT 
+        lpMinPos, LPINT lpMaxPos ) const;<br>
+        </font><font SIZE="3">该函数对滚动条的滚动范围进行查询．参数</font><font FACE="Times New Roman" SIZE="3">lpMinPos</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">lpMaxPos</font><font SIZE="3">分别指向滚动范围的最小最大值．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void SetScrollRange( int 
+        nMinPos, int nMaxPos, BOOL bRedraw = TRUE );<br>
+        </font><font SIZE="3">该函数用于指定滚动条的滚动范围．参数</font><font FACE="Times New Roman" SIZE="3">nMinPos</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">nMaxPos</font><font SIZE="3">分别指定了滚动范围的最小最大值．由这两者指定的滚动范围不得超过</font><font FACE="Times New Roman" SIZE="3">32767</font><font SIZE="3">．当两者都为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">时，滚动条将被隐藏．参数</font><font FACE="Times New Roman" SIZE="3">bRedraw</font><font SIZE="3">表示是否需要重绘滚动条，如果为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，则重绘之．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL GetScrollInfo( 
+        LPSCROLLINFO lpScrollInfo, UINT nMask );<br>
+        </font><font SIZE="3">该函数用来获取滚动条的各种状态，包括滚动范围、滚动框的位置和页尺寸．参数</font><font FACE="Times New Roman" SIZE="3">lpScrollInfo</font><font SIZE="3">指向一个</font><font FACE="Times New Roman" SIZE="3">SCROLLINFO</font><font SIZE="3">结构，该结构如下所示：<br>
+        </font><font FACE="Times New Roman" SIZE="3">typedef struct tagSCROLLINFO { <br>
+        UINT cbSize; //</font><font SIZE="3">结构的尺寸（字节为单位）<br>
+        </font><font FACE="Times New Roman" SIZE="3">UINT fMask; /*</font><font SIZE="3">说明结构中的哪些参数是有效的，可以是屏蔽值的组合， 
+        如</font><font FACE="Times New Roman" SIZE="3">SIF_POS|SIF_PAGE</font><font SIZE="3">，若为</font><font FACE="Times New Roman" SIZE="3">SIF_ALL</font><font SIZE="3">则整个结构都有效</font><font FACE="Times New Roman" SIZE="3">*/<br>
+        int nMin; //</font><font SIZE="3">滚动范围最大值，当</font><font FACE="Times New Roman" SIZE="3">fMask</font><font SIZE="3">中包含</font><font FACE="Times New Roman" SIZE="3">SIF_RANGE</font><font SIZE="3">时有效<br>
+        </font><font FACE="Times New Roman" SIZE="3">int nMax; //</font><font SIZE="3">滚动范围最小值，当</font><font FACE="Times New Roman" SIZE="3">fMask</font><font SIZE="3">中包含</font><font FACE="Times New Roman" SIZE="3">SIF_RANGE</font><font SIZE="3">时有效<br>
+        </font><font FACE="Times New Roman" SIZE="3">UINT nPage; /*</font><font SIZE="3">页尺寸，用来确定比例滚动框的大小，当</font><font FACE="Times New Roman" SIZE="3">fMask</font><font SIZE="3">中包含 </font><font FACE="Times New Roman" SIZE="3">SIF_PAGE</font><font SIZE="3">时有效</font><font FACE="Times New Roman" SIZE="3">*/<br>
+        int nPos; //</font><font SIZE="3">滚动框的位置，当</font><font FACE="Times New Roman" SIZE="3">fMask</font><font SIZE="3">中包含</font><font FACE="Times New Roman" SIZE="3">SIF_POS</font><font SIZE="3">有效<br>
+        </font><font FACE="Times New Roman" SIZE="3">int nTrackPos; /*</font><font SIZE="3">拖动时滚动框的位置，当</font><font FACE="Times New Roman" SIZE="3">fMask</font><font SIZE="3">中包含 </font><font FACE="Times New Roman" SIZE="3">SIF_TRACKPOS</font><font SIZE="3">时有效，该参数只能查询，不能设 
+        置，最好不要用该参数来查询拖动时滚动框的位置</font><font FACE="Times New Roman" SIZE="3">*/<br>
+        } SCROLLINFO; <br>
+        typedef SCROLLINFO FAR *LPSCROLLINFO;<br>
+        </font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nMask</font><font SIZE="3">的意义与</font><font FACE="Times New Roman" SIZE="3">SCROLLINFO</font><font SIZE="3">结构中的</font><font FACE="Times New Roman" SIZE="3">fMask</font><font SIZE="3">相同．函数在获得有效值后返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL SetScrollInfo( 
+        LPSCROLLINFO lpScrollInfo, BOOL bRedraw = TRUE );<br>
+        </font><font SIZE="3">该函数用于设置滚动条的各种状态，一个重要用途是设定页尺寸从而实现比例滚动框．参数</font><font FACE="Times New Roman" SIZE="3">lpScrollInfo</font><font SIZE="3">指向一个</font><font FACE="Times New Roman" SIZE="3">SCROLLINFO</font><font SIZE="3">结构，参数</font><font FACE="Times New Roman" SIZE="3">bRedraw</font><font SIZE="3">表示是否需要重绘滚动条，如果为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，则重绘之．若操作成功，该函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CWnd</font><font SIZE="3">类也提供了一些函数来查询和设置所属的标准滚动条．这些函数与</font><font FACE="Times New Roman" SIZE="3">CScrollBar</font><font SIZE="3">类的函数同名，且功能相同，但每个函数都多了一个参数，用来选择滚动条．例如，</font><font FACE="Times New Roman" SIZE="3">CWnd:: GetScrollPos </font><font SIZE="3">的声明为</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetScrollPos( int nBar 
+        ) const;<br>
+        </font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nBar</font><font SIZE="3">用来选择滚动条，可以为下列值：<br>
+        </font><font FACE="Times New Roman" SIZE="3">SB_HORZ //</font><font SIZE="3">指定水平滚动条<br>
+        </font><font FACE="Times New Roman" SIZE="3">SB_VERT //</font><font SIZE="3">指定垂直滚动条</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">无论是标准滚动条，还是滚动条控件，滚动条的通知消息都是用</font><font FACE="Times New Roman" SIZE="3">WM_HSCROLL</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WM_VSCROLL</font><font SIZE="3">消息发送出去的．对这两个消息的确省处理函数是</font><font FACE="Times New Roman" SIZE="3">CWnd::OnHScroll</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CWnd::OnVScroll</font><font SIZE="3">，它们几乎什么也不做．一般需要在派生类中对这两个函数从新设计，以实现滚动功能．这两个函数的声明为</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">afx_msg void OnHScroll( 
+        UINT nSBCode, UINT nPos, CScrollBar* pScrollBar );</p>
+        <p ALIGN="JUSTIFY">afx_msg void OnVScroll( UINT nSBCode, UINT nPos, CScrollBar* pScrollBar 
+        );<br>
+        </font><font SIZE="3">参数</font><font FACE="Times New Roman" SIZE="3">nSBCode</font><font SIZE="3">是通知消息码，如表</font><font FACE="Times New Roman" SIZE="3">6.8</font><font SIZE="3">所示．</font><font FACE="Times New Roman" SIZE="3">nPos</font><font SIZE="3">是滚动框的位置，只有在</font><font FACE="Times New Roman" SIZE="3">nSBCode</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">SB_THUMBPOSITION</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">SB_THUMBTRACK</font><font SIZE="3">时，该参数才有意义．如果通知消息是滚动条控件发来的，那么</font><font FACE="Times New Roman" SIZE="3">pScrollBar</font><font SIZE="3">是指向该控件的指针，如果是标准滚动条发来的，则</font><font FACE="Times New Roman" SIZE="3">pScrollBar</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">．</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.8</font><font SIZE="3">　滚动条的通知消息码</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="40%"><font SIZE="3"><b><p ALIGN="JUSTIFY">消息</b></font></td>
+        <td WIDTH="60%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_BOTTOM / 
+        SB_RIGHT</font><font SIZE="3">（二者的消息码是一样的，因此可以混用，下同）</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">滚动到底端（右端）．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_TOP / SB_LEFT</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">滚动到顶端（左端）．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_LINEDOWN / 
+        SB_LINERIGHT</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">向下（向右）滚动一行（列）．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_LINEUP / 
+        SB_LINELEFT</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">向上（向左）滚动一行（列）．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_PAGEDOWN / 
+        SB_PAGERIGHT</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">向下（向右）滚动一页．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_PAGEUP / 
+        SB_PAGELEFT</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">向上（向左）滚动一页．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_THUMBPOSITION</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">滚动到指定位置．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_THUMBTRACK</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">滚动框被拖动．可利用该消息来跟踪对滚动框的拖动．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="40%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SB_ENDSCROLL</font></td>
+        <td WIDTH="60%"><font SIZE="3"><p ALIGN="JUSTIFY">滚动结束．</font></td>
+      </tr>
+    </table>
+    <font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">6.1.8</font><font SIZE="3">小节的例子中，读者将学会如何使用滚动条以及如何编写自己的</font><font FACE="Times New Roman" SIZE="3">OnHScroll</font><font SIZE="3">函数．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.1.6 
+    </font><font SIZE="3" color="#3973DE">列表框控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">列表框主要用于输入，它允许用户从所列出的表项中进行单项或多项选择，被选择的项呈高亮度显示．列表框具有边框，并且一般带有一个垂直滚动条．列表框分单选列表框和多重选择列表框两种．单选列表框一次只能选择一个列表项，而多重选择列表框可以进行多重选择．对于列表项的选择，微软公司有如下建议：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">单击鼠标选择一个列表项，单击一个按钮来处理选择的项．</p>
+        <p ALIGN="JUSTIFY">双击鼠标选择一个列表项是处理选择项的快捷方法．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">列表框会向父窗口发送如表</font><font FACE="Times New Roman" SIZE="3">6.9</font><font SIZE="3">所示的通知消息．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.9 </font><font SIZE="3">列表框控件的通知消息</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="567">
+      <tr>
+        <td WIDTH="27%"><font SIZE="3"><b><p ALIGN="JUSTIFY">消息</b></font></td>
+        <td WIDTH="73%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBN_DBLCLK</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">用户用鼠标双击了一列表项．只有具有</font><font FACE="Times New Roman" SIZE="3">LBS_NOTIFY</font><font SIZE="3">的列表框才能发送该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBN_ERRSPACE</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">列表框不能申请足够的动态内存来满足需要．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBN_KILLFOCUS</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">列表框失去输入焦点．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBN_SELCANCEL</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">当前的选择被取消．只有具有</font><font FACE="Times New Roman" SIZE="3">LBS_NOTIFY</font><font SIZE="3">的列表框才能发送该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBN_SELCHANGE</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">单击鼠标选择了一列表项．只有具有</font><font FACE="Times New Roman" SIZE="3">LBS_NOTIFY</font><font SIZE="3">的列表框才能发送该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBN_SETFOCUS</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">列表框获得输入焦点．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WM_CHARTOITEM</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">当列表框收到</font><font FACE="Times New Roman" SIZE="3">WM_CHAR</font><font SIZE="3">消息后，向父窗口发送该消息．只有具有</font><font FACE="Times New Roman" SIZE="3">LBS_WANTKEYBOARDINPUT</font><font SIZE="3">风格的列表框才会发送该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WM_VKEYTOITEM</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">当列表框收到</font><font FACE="Times New Roman" SIZE="3">WM_KEYDOWN</font><font SIZE="3">消息后，向父窗口发送该消息．只有具有</font><font FACE="Times New Roman" SIZE="3">LBS_WANTKEYBOARDINPUT</font><font SIZE="3">风格的列表框才会发送该消息．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">类封装了列表框．</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">类的</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">成员函数负责列表框的创建，该函数的声明是</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Create( DWORD 
+          dwStyle, const RECT&amp; rect, CWnd* pParentWnd, UINT nID );</font></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">指定了列表框控件的风格，如表</font><font FACE="Times New Roman" SIZE="3">6.10</font><font SIZE="3">所示，</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">可以是这些风格的组合．</font><font FACE="Times New Roman" SIZE="3">rect</font><font SIZE="3">说明了控件的位置和尺寸．</font><font FACE="Times New Roman" SIZE="3">pParentWnd</font><font SIZE="3">指向父窗口，该参数不能为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">则说明了控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。如果创建成功，该函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.10 </font><font SIZE="3">列表框控件的风格</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="557">
+      <tr>
+        <td WIDTH="38%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件风格</b></font></td>
+        <td WIDTH="62%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_EXTENDEDSEL</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">支持多重选择．在点击列表项时按住</font><font FACE="Times New Roman" SIZE="3">Shift</font><font SIZE="3">键或</font><font FACE="Times New Roman" SIZE="3">Ctrl</font><font SIZE="3">键即可选择多个 项．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_HASSTRINGS</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个含有字符串的自绘式列表框．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_MULTICOLUMN</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个水平滚动的多列列表框，通过调用</font><font FACE="Times New Roman" SIZE="3">CListBox::SetColumnWidth</font><font SIZE="3">来设置每列的宽度．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_MULTIPLESEL</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">支持多重选择．列表项的选择状态随着用户对该项单击或双击鼠标而翻转．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_NOINTEGRALHEIGHT</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">列表框的尺寸由应用程序而不是</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">指定．通常，</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">指定尺寸会使列表项的某些部分隐藏起来．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_NOREDRAW</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">当选择发生变化时防止列表框被更新，可发送</font><font FACE="Times New Roman" SIZE="3">WM_SETREDRAW</font><font SIZE="3">来改变该风格．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_NOTIFY</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">当用户单击或双击鼠标时通知父窗口．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_OWNERDRAWFIXED</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">指定自绘式列表框，即由父窗口负责绘制列表框的内容，并且列表项有相同的高度．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_OWNERDRAWVARIABLE</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">指定自绘式列表框，并且列表项有不同的高度．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_SORT</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">使插入列表框中的项按升序排列．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_STANDARD</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">相当于指定了</font><font FACE="Times New Roman" SIZE="3">WS_BORDER|WS_VSCROLL|LBS_SORT |LBS_NOTIFY</font><font SIZE="3">．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_USETABSTOPS</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">使列表框在显示列表项时识别并扩展制表符</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">‘</font><font FACE="Times New Roman" SIZE="3">\t</font><font SIZE="3">’</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">，缺省的制表宽度是</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">个对话框单位．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_WANTKEYBOARDINPUT</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">允许列表框的父窗口接收</font><font FACE="Times New Roman" SIZE="3">WM_VKEYTOITEM</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WM_CHARTOITEM</font><font SIZE="3">消息，以响应键盘输入．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">LBS_DISABLENOSCROLL</font></td>
+        <td WIDTH="62%"><font SIZE="3"><p ALIGN="JUSTIFY">使列表框在不需要滚动时显示一个禁止的垂直滚动条．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">除了上表中的风格外，一般还要为列表框控件指定</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_VISIBLE</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_TABSTOP</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_BORDER</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WS_VSCROLL</font><font SIZE="3">风格．要创建一个普通的单选择列表框，应指定的风格为</font><font FACE="Times New Roman" SIZE="3">WS_CHILD|WS_VISIBLE|WS_TABSTOP|LBS_STANDARD</font><font SIZE="3">．要创建一个多重选择列表框，应该在单选择列表框风格的基础上再加上 
+    </font><font FACE="Times New Roman" SIZE="3">LBS_MULTIPLESEL</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">LBS_ EXTENDEDSEL</font><font SIZE="3">．如果不希望列表框排序，就不能使用</font><font FACE="Times New Roman" SIZE="3">LBS_STANDARD</font><font SIZE="3">风格．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对于用对话框模板编辑器创建的列表框控件，可以在控件的属性对话框中指定表</font><font FACE="Times New Roman" SIZE="3">6.10</font><font SIZE="3">中列出的控件风格。例如，在属性对话框中选择</font><font FACE="Times New Roman" SIZE="3">Sort</font><font SIZE="3">项，相当与指定了</font><font FACE="Times New Roman" SIZE="3">LBS_SORT</font><font SIZE="3">风格。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CListBox</font><font SIZE="3">类的成员函数有数十个之多．我们可以把一些常用的函数分为三类，在下面列出．需要说明的是，可以用索引来指定列表项，索引是从零开始的．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">首先，</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数提供了下列函数用于插入和删除列表项．</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int AddString( LPCTSTR 
+        lpszItem );<br>
+        </font><font SIZE="3">该函数用来往列表框中加入字符串，其中参数</font><font FACE="Times New Roman" SIZE="3">lpszItem</font><font SIZE="3">指定了要添加的字符串．函数的返回值是加入的字符串在列表框中的位置，如果发生错误，会返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">LB_ERRSPACE</font><font SIZE="3">（内存不够）．如果列表框未设置</font><font FACE="Times New Roman" SIZE="3">LBS_SORT</font><font SIZE="3">风格，那么字符串将被添加到列表的末尾，如果设置了</font><font FACE="Times New Roman" SIZE="3">LBS_SORT</font><font SIZE="3">风格，字符串会按排序规律插入到列表中．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int InsertString( int 
+        nIndex, LPCTSTR lpszItem );<br>
+        </font><font SIZE="3">该函数用来在列表框中的指定位置插入字符串．参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">给出了插入位置（索引），如果值为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，则字符串将被添加到列表的末尾．参数</font><font FACE="Times New Roman" SIZE="3">lpszItem</font><font SIZE="3">指定了要插入的字符串．函数返回实际的插入位置，若发生错误，会返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">LB_ERRSPACE</font><font SIZE="3">．与</font><font FACE="Times New Roman" SIZE="3">AddString</font><font SIZE="3">函数不同，</font><font FACE="Times New Roman" SIZE="3">InsertString</font><font SIZE="3">函数不会导致</font><font FACE="Times New Roman" SIZE="3">LBS_SORT</font><font SIZE="3">风格的列表框重新排序．不要在具有</font><font FACE="Times New Roman" SIZE="3">LBS_SORT</font><font SIZE="3">风格的列表框中使用</font><font FACE="Times New Roman" SIZE="3">InsertString</font><font SIZE="3">函数，以免破坏列表项的次序．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int DeleteString( UINT 
+        nIndex );<br>
+        </font><font SIZE="3">该函数用于删除指定的列表项，其中参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了要删除项的索引．函数的返回值为剩下的表项数目，如果</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">超过了实际的表项总数，则返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void ResetContent( );<br>
+        </font><font SIZE="3">该函数用于清除所有列表项．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int Dir( UINT attr, 
+        LPCTSTR lpszWildCard );<br>
+        </font><font SIZE="3">该函数用来向列表项中加入所有与指定通配符相匹配的文件名或驱动器名．参数</font><font FACE="Times New Roman" SIZE="3">attr</font><font SIZE="3">为文件类型的组合，如表</font><font FACE="Times New Roman" SIZE="3">6.11</font><font SIZE="3">所示．参数</font><font FACE="Times New Roman" SIZE="3">lpszWildCard</font><font SIZE="3">指定了通配符（如</font><font FACE="Times New Roman" SIZE="3">*.cpp</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">*.*</font><font SIZE="3">等）．</p>
+      </blockquote>
+    </blockquote>
+    <p><b>　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.11 Dir</font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">attr</font><font SIZE="3">参数的含义</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><b><p ALIGN="JUSTIFY">值</b></font></td>
+        <td WIDTH="82%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0000</font></td>
+        <td WIDTH="82%"><font SIZE="3"><p ALIGN="JUSTIFY">普通文件（可读写的文件）．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0001</font></td>
+        <td WIDTH="82%"><font SIZE="3"><p ALIGN="JUSTIFY">只读文件．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0002</font></td>
+        <td WIDTH="82%"><font SIZE="3"><p ALIGN="JUSTIFY">隐藏文件．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0004</font></td>
+        <td WIDTH="82%"><font SIZE="3"><p ALIGN="JUSTIFY">系统文件．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0010</font></td>
+        <td WIDTH="82%"><font SIZE="3"><p ALIGN="JUSTIFY">目录．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x0020</font></td>
+        <td WIDTH="82%"><font SIZE="3"><p ALIGN="JUSTIFY">文件的归档位已被设置．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x4000</font></td>
+        <td WIDTH="82%"><font SIZE="3"><p ALIGN="JUSTIFY">包括了所有与通配符相匹配的驱动器．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">0x8000</font></td>
+        <td WIDTH="82%"><font SIZE="3"><p ALIGN="JUSTIFY">排除标志．若指定该标志，则只列出指定类型的文件名，否则，先要列出普通文件，然后再列出指定的文件．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">下列的</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数用于搜索、查询和设置列表框．</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetCount( ) const;<br>
+        </font><font SIZE="3">该函数返回列表项的总数，若出错则返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int FindString( int 
+        nStartAfter, LPCTSTR lpszItem ) const;<br>
+        </font><font SIZE="3">该函数用于对列表项进行与大小写无关的搜索．参数</font><font FACE="Times New Roman" SIZE="3">nStartAfter</font><font SIZE="3">指定了开始搜索的位置</font><font FACE="Times New Roman" SIZE="3">, </font><font SIZE="3">合理指定</font><font FACE="Times New Roman" SIZE="3">nStartAfter</font><font SIZE="3">可以加快搜索速度，若</font><font FACE="Times New Roman" SIZE="3">nStartAfter</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，则从头开始搜索整个列表．参数</font><font FACE="Times New Roman" SIZE="3">lpszItem</font><font SIZE="3">指定了要搜索的字符串．函数返回与</font><font FACE="Times New Roman" SIZE="3">lpszItem</font><font SIZE="3">指定的字符串相匹配的列表项的索引，若没有找到匹配项或发生了错误，函数会返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3">FindString</font><font SIZE="3">函数先从</font><font FACE="Times New Roman" SIZE="3">nStartAfter</font><font SIZE="3">指定的位置开始搜索，若没有找到匹配项，则会从头开始搜索列表．只有找到匹配项，或对整个列表搜索完一遍后，搜索过程才会停止，所以不必担心会漏掉要搜索的列表项．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetText( int nIndex, 
+        LPTSTR lpszBuffer ) const;<br>
+        void GetText( int nIndex, CString&amp; rString ) const;<br>
+        </font><font SIZE="3">用于获取指定列表项的字符串．参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了列表项的索引．参数</font><font FACE="Times New Roman" SIZE="3">lpszBuffer</font><font SIZE="3">指向一个接收字符串的缓冲区．引用参数</font><font FACE="Times New Roman" SIZE="3">rString</font><font SIZE="3">则指定了接收字符串的</font><font FACE="Times New Roman" SIZE="3">CString</font><font SIZE="3">对象．第一个版本的函数会返回获得的字符串的长度，若出错，则返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetTextLen( int nIndex 
+        ) const;<br>
+        </font><font SIZE="3">该函数返回指定列表项的字符串的字节长度．参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了列表项的索引．若出错则返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DWORD GetItemData( int 
+        nIndex ) const;<br>
+        </font><font SIZE="3">每个列表项都有一个</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">位的附加数据．该函数返回指定列表项的附加数据，参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了列表项的索引．若出错则函数返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int SetItemData( int 
+        nIndex, DWORD dwItemData );<br>
+        </font><font SIZE="3">该函数用来指定某一列表项的</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">位附加数据．参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了列表项的索引．</font><font FACE="Times New Roman" SIZE="3">dwItemData</font><font SIZE="3">是要设置的附加数据值．</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#7DBEFF">
+      <tr>
+        <td width="100%"></b>提示</font><font FACE="Times New Roman" SIZE="3">:</font><font SIZE="3">列表项的</font><font FACE="Times New Roman" SIZE="3">32</font><font SIZE="3">位附加数据可用来存储与列表项相关的数据，也可以放置指向相关数据的指针．这样，当用户选择了一个列表项时，程序可以从附加数据中快速方便地获得与列表项相关的数据．<b></b></font></td>
+      </tr>
+    </table>
+    </center></div><p ALIGN="JUSTIFY"><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">int GetTopIndex( ) const;<br>
+        </font><font SIZE="3">该函数返回列表框中第一个可见项的索引，若出错则返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int SetTopIndex( int 
+        nIndex );<br>
+        </font><font SIZE="3">用来将指定的列表项设置为列表框的第一个可见项，该函数会将列表框滚动到合适的位置．参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了列表项的索引．若操作成功，函数返回</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">值，否则返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#9DCEFF">
+      <tr>
+        <td width="100%"></b>提示：由于列表项的内容一般是不变的，故</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">未提供更新列表项字符串的函数．如果要改变某列表项的内容，可以先调用</font><font FACE="Times New Roman" SIZE="3">DeleteString</font><font SIZE="3">删除该项，然后再用</font><font FACE="Times New Roman" SIZE="3">InsertString</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">AddString</font><font SIZE="3">将更新后的内容插入到原来的位置．<b></b></font></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY"></font><font SIZE="3">下列</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">的成员函数与列表项的选择有关．</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetSel( int nIndex ) 
+        const;<br>
+        </font><font SIZE="3">该函数返回指定列表项的状态．参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了列表项的索引．如果查询的列表项被选择了，函数返回一个正值，否则返回</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">，若出错则返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetCurSel( ) const;<br>
+        </font><font SIZE="3">该函数仅适用于单选择列表框，用来返回当前被选择项的索引，如果没有列表项被选择或有错误发生，则函数返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int SetCurSel( int nSelect 
+        );<br>
+        </font><font SIZE="3">该函数仅适用于单选择列表框，用来选择指定的列表项．该函数会滚动列表框以使选择项可见．参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了列表项的索引，若为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，那么将清除列表框中的选择．若出错函数返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int SelectString( int 
+        nStartAfter, LPCTSTR lpszItem );<br>
+        </font><font SIZE="3">该函数仅适用于单选择列表框，用来选择与指定字符串相匹配的列表项．该函数会滚动列表框以使选择项可见．参数的意义及搜索的方法与函数</font><font FACE="Times New Roman" SIZE="3">FindString</font><font SIZE="3">类似．如果找到了匹配的项，函数返回该项的索引，如果没有匹配的项，函数返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">并且当前的选择不被改变．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetSelCount( ) const;<br>
+        </font><font SIZE="3">该函数仅用于多重选择列表框，它返回选择项的数目，若出错函数返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int SetSel( int nIndex, 
+        BOOL bSelect = TRUE );<br>
+        </font><font SIZE="3">该函数仅适用于多重选择列表框，它使指定的列表项选中或落选．参数</font><font FACE="Times New Roman" SIZE="3">nIndex</font><font SIZE="3">指定了列表项的索引，若为</font><font FACE="Times New Roman" SIZE="3">-1</font><font SIZE="3">，则相当于指定了所有的项．参数</font><font FACE="Times New Roman" SIZE="3">bSelect</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">时选中列表项，否则使之落选．若出错则返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int GetSelItems( int 
+        nMaxItems, LPINT rgIndex ) const;<br>
+        </font><font SIZE="3">该函数仅用于多重选择列表框，用来获得选中的项的数目及位置．参数</font><font FACE="Times New Roman" SIZE="3">nMaxItems</font><font SIZE="3">说明了参数</font><font FACE="Times New Roman" SIZE="3">rgIndex</font><font SIZE="3">指向的数组的大小．参数</font><font FACE="Times New Roman" SIZE="3">rgIndex</font><font SIZE="3">指向一个缓冲区，该数组是一个整型数组，用来存放选中的列表项的索引．函数返回放在缓冲区中的选择项的实际数目，若出错函数返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int SelItemRange( BOOL 
+        bSelect, int nFirstItem, int nLastItem );<br>
+        </font><font SIZE="3">该函数仅用于多重选择列表框，用来使指定范围内的列表项选中或落选．参数</font><font FACE="Times New Roman" SIZE="3">nFirstItem</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">nLastItem</font><font SIZE="3">指定了列表项索引的范围．如果参数</font><font FACE="Times New Roman" SIZE="3">bSelect</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，那么就选择这些列表项，否则就使它们落选．若出错函数返回</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．</p>
+        </font><font FACE="Times New Roman" SIZE="3">
+      </blockquote>
+    </blockquote>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">6.1.8</font><font SIZE="3">小节的例子中，读者将会看到对列表框的测试．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.1.7 
+    </font><font SIZE="3" color="#3973DE">组合框控件</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">组合框把一个编辑框和一个单选择列表框结合在了一起．用户既可以在编辑框中输入，也可以从列表框中选择一个列表项来完成输入．如上一章所提到的，组合框分为简易式</font><font FACE="Times New Roman" SIZE="3">(Simple)</font><font SIZE="3">、下拉式</font><font FACE="Times New Roman" SIZE="3">(Dropdown)</font><font SIZE="3">和下拉列表式</font><font FACE="Times New Roman" SIZE="3">(Drop List)</font><font SIZE="3">三种．简易式组合框包含一个编辑框和一个总是显示的列表框。下拉式组合框同简易式组合框类似，二者的区别在于仅当单击下滚箭头后列表框才会弹出。下拉列表式组合框也有一个下拉的列表框，但它的编辑框是只读的，不能输入字符。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">Windows</font><font SIZE="3">中比较常用的是下拉式和下拉列表式组合框，在</font><font FACE="Times New Roman" SIZE="3">Developer Studio</font><font SIZE="3">中就大量使用了这两种组合框．二者都具有占地小的特点，这在界面日益复杂的今天是十分重要的．下拉列表式组合框的功能与列表框类似．下拉式组合框的典型应用是作为记事列表框使用，既把用户在编辑框中敲入的东西存储到列表框组件中，这样当用户要重复同样的输入时，可以从列表框组件中选取而不必在编辑框组件中从新输入．在</font><font FACE="Times New Roman" SIZE="3">Developer Studio</font><font SIZE="3">中的</font><font FACE="Times New Roman" SIZE="3">Find</font><font SIZE="3">对话框中就可以找到一个典型的下拉式组合框．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">要设计一个记事列表框，应采取下列原则：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">在创建组合框时指定</font><font FACE="Times New Roman" SIZE="3">CBS_DROPDOWNLIST</font><font SIZE="3">风格．</p>
+        <p ALIGN="JUSTIFY">要限制列表项的数目，以防止内存不够．</p>
+        <p ALIGN="JUSTIFY">如果在编辑框中输入的字符串不能与列表框组件中的列表项匹配，那么应该把该字符串插入到列表框中的</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">位置处．最老的项处于列表的末尾．如果列表项的数目超出了限制，则应把最老的项删除．</p>
+        <p ALIGN="JUSTIFY">如果在编辑框中输入的字符串可以与列表框组件中的某一项完全匹配，则应该先把该项从列表的当前位置删除，然后在将其插入道列表的</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">位置处．</font></p>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">组合框控件会向父窗口发送表</font><font FACE="Times New Roman" SIZE="3">6.12</font><font SIZE="3">所示的通知消息．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.12 </font><font SIZE="3">组合框控件的通知消息</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="27%"><font SIZE="3"><b><p ALIGN="JUSTIFY">消息</b></font></td>
+        <td WIDTH="73%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_CLOSEUP</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">组合框的列表框组件被关闭．简易式组合框不会发出该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_DBLCLK</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">用户在某列表项上双击鼠标．只有简易式组合框才会发出该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_DROPDOWN</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">组合框的列表框组件下拉．简易式组合框不会发出该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_EDITCHANGE</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">编辑框的内容被用户改变了。与</font><font FACE="Times New Roman" SIZE="3">CBN_EDITUPDATE</font><font SIZE="3">不同，该消息是在编辑框显示的正文被刷新后才发出的。下拉列表式组合框不会发出该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_EDITUPDATE</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">在编辑框准备显示改变了的正文时发送该消息。下拉列表式组合框不会发出该消息．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_ERRSPACE</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">组合框无法申请足够的内存来容纳列表项．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_SELENDCANCEL</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">表明用户的选择应该取消．当用户在列表框中选择了一项，然后又在组合框控件外单击鼠标时就会导致该消息的发送．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_SELENDOK</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">用户选择了一项，然后按了回车键或单击了下滚箭头．该消息表明用户确认了自己所作的选择．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_KILLFOCUS</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">组合框失去了输入焦点．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_SELCHANGE</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">用户通过点击或移动箭头键改变了列表的选择．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_SETFOCUS</font></td>
+        <td WIDTH="73%"><font SIZE="3"><p ALIGN="JUSTIFY">组合框获得了输入焦点．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MFC</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">类封装了组合框．需要指出的是，虽然组合框是编辑框和列表框的选择，但是</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">类并不是</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">类和</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">类的派生类，而是</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的派生类．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CComboBox</font><font SIZE="3">的成员函数</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">负责创建组合框，该函数的说明如下：</p>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL Create( DWORD 
+          dwStyle, const RECT&amp; rect, CWnd* pParentWnd, UINT nID );</font></p>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">参数</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">指定了组合框控件的风格，如表</font><font FACE="Times New Roman" SIZE="3">6.10</font><font SIZE="3">所示，</font><font FACE="Times New Roman" SIZE="3">dwStyle</font><font SIZE="3">可以是这些风格的组合．</font><font FACE="Times New Roman" SIZE="3">rect</font><font SIZE="3">说明的是列表框组件下拉后组合框的位置和尺寸．</font><font FACE="Times New Roman" SIZE="3">pParentWnd</font><font SIZE="3">指向父窗口，该参数不能为</font><font FACE="Times New Roman" SIZE="3">NULL</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3">nID</font><font SIZE="3">则说明了控件的</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">。如果创建成功，该函数返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，否则返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><font SIZE="3"><b><div align="center"><center><table border="2" cellpadding="2" cellspacing="0" width="100%" bgcolor="#A2D0FF">
+      <tr>
+        <td width="100%"></b>提示：在用</font><font FACE="Times New Roman" SIZE="3">Create</font><font SIZE="3">函数创建组合框时，参数</font><font FACE="Times New Roman" SIZE="3">rect</font><font SIZE="3">说明的是包括列表框组件在内的组合框的位置和尺寸，而不是列表框组件隐藏时的编辑框组件尺寸．要设置编辑框组件的高度，可以调用成员函数</font><font FACE="Times New Roman" SIZE="3">SetItemHeight(-1,cyItemHeight)</font><font SIZE="3">，其中参数</font><font FACE="Times New Roman" SIZE="3">cyItemHeight</font><font SIZE="3">指定了编辑框的高度（以像素为单位）．<b></b></font></td>
+      </tr>
+    </table>
+    </center></div><p ALIGN="CENTER">表<font FACE="Times New Roman" SIZE="3">6.13 </font><font SIZE="3">组合框的风格</font></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="36%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件风格</b></font></td>
+        <td WIDTH="64%"><font SIZE="3"><b><p ALIGN="JUSTIFY">含义</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_AUTOHSCROLL</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">使编辑框组件具有水平滚动的风格．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_DROPDOWN</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个下拉式组合框．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_DROPDOWNLIST</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个下拉列表式组合框．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_HASSTRINGS</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个含有字符串的自绘式组合框．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_OEMCONVERT</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">使编辑框组件中的正文可以在</font><font FACE="Times New Roman" SIZE="3">ANSI</font><font SIZE="3">字符集和</font><font FACE="Times New Roman" SIZE="3">OEM</font><font SIZE="3">字符集之间相互转换。这在编辑框中包含文件名时是很有用的。</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_OWNERDRAWFIXED</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">指定自绘式组合框，即由父窗口负责绘制列表框的内容，并且列表项有相同的高度．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_OWNERDRAWVARIABLE</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">指定自绘式组合框，并且列表项有不同的高度．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_SIIMPLE</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">指定一个简易式组合框．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_SORT</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">自动对列表框组件中的项进行排序．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_DISABLENOSCROLL</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">使列表框在不需要滚动时显示一个禁止的垂直滚动条．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="36%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBS_NOINTEGRALHEIGHT</font></td>
+        <td WIDTH="64%"><font SIZE="3"><p ALIGN="JUSTIFY">组合框的尺寸由应用程序而不是</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">指定．通常，由</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">指定尺寸会使列表项的某些部分隐藏起来．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CBS_SIMPLE</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">CBS_DROPDOWN</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CBS_DROPDOWNLIST</font><font SIZE="3">分别用来将组合框指定为简易式、下拉式和下拉列表式．一般还要为组合框指定</font><font FACE="Times New Roman" SIZE="3">WS_CHILD</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_VISIBLE</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_TABSTOP</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">WS_VSCROLL</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">CBS_AUTOHSCROLL</font><font SIZE="3">风格．如果要求自动排序，还应指定</font><font FACE="Times New Roman" SIZE="3">CBS_SORT</font><font SIZE="3">风格．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对于用对话框模板编辑器创建的组合框控件，可以在控件的属性对话框中指定上表中列出的控件风格。例如，在属性对话框中选择</font><font FACE="Times New Roman" SIZE="3">Dropdown</font><font SIZE="3">，相当于指定了</font><font FACE="Times New Roman" SIZE="3">CBS_DROPDOWN</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CComboBox</font><font SIZE="3">类的成员函数较多．其中常用的函数可粗分为两类，分别针对编辑框组件和列表框组件．可以想象，这些函数与</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">类和</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">类的成员函数肯定有很多类似之处，但它们也会有一些不同的特点．如果读者能从＂组合框是由编辑框和列表框组成＂这一概念出发，就能够很快的掌握</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">的主要成员函数．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">事实上，绝大部分</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">的成员函数都可以看成是</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数的翻版．函数的功能，函数名，甚至函数的参数都是类似的．为了方便学习，在下面列出</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">类的成员函数时，采用了与对应的</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数相比较的做法．在成员函数的列表中，分别列出了成员函数名，对应的</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数，以及二者之间的不同之处．不同之处是指函数的功能、参数以及返回值有什么差别．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">针对编辑框组件的主要成员函数如表</font><font FACE="Times New Roman" SIZE="3">6.14</font><font SIZE="3">所示．该表的前三个函数实际上是</font><font FACE="Times New Roman" SIZE="3">CWnd</font><font SIZE="3">类的成员函数，可用来查询和设置编辑框组件．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.14 </font><font SIZE="3">针对编辑框组件的</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">成员函数</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="32%"><font SIZE="3"><b><p ALIGN="JUSTIFY">成员函数名</b></font></td>
+        <td WIDTH="31%"><b><font SIZE="3"><p ALIGN="JUSTIFY">对应的</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">成员函数</font></b></td>
+        <td WIDTH="37%"><b><font SIZE="3"><p ALIGN="JUSTIFY">与</font><font FACE="Times New Roman" SIZE="3">CEdit</font><font SIZE="3">成员函数的不同之处</font></b></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::GetWindowText</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::GetWindowText</font></td>
+        <td WIDTH="37%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::SetWindowText</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::SetWindowText</font></td>
+        <td WIDTH="37%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::GetWindowTextLength</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CWnd::GetWindowTextLength</font></td>
+        <td WIDTH="37%">　</td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetEditSel</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetSel</font><font SIZE="3">的第一个版本</font></td>
+        <td WIDTH="37%"><font SIZE="3"><p ALIGN="JUSTIFY">仅函数名不同．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetEditSel</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetSel</font><font SIZE="3">的第二个版本</font></td>
+        <td WIDTH="37%"><font SIZE="3"><p ALIGN="JUSTIFY">函数名不同，且无</font><font FACE="Times New Roman" SIZE="3">bNoScroll</font><font SIZE="3">参数．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Clear</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Clear</font></td>
+        <td WIDTH="37%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Copy</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Copy</font></td>
+        <td WIDTH="37%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Cut</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Cut</font></td>
+        <td WIDTH="37%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Paste</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Paste</font></td>
+        <td WIDTH="37%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">与</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">的成员函数类似，针对列表框组件的</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">成员函数也可以分为三类．表</font><font FACE="Times New Roman" SIZE="3">6.15</font><font SIZE="3">列出了用于插入和删除列表项的成员函数，表</font><font FACE="Times New Roman" SIZE="3">6.16</font><font SIZE="3">列出了用于搜索、查询和设置列表框的成员函数，与列表项的选择有关的成员函数在表</font><font FACE="Times New Roman" SIZE="3">6.17</font><font SIZE="3">中列出．需要指出的是，如果这些函数出错，则反回</font><font FACE="Times New Roman" SIZE="3">CB_ERR</font><font SIZE="3">，而不是</font><font FACE="Times New Roman" SIZE="3">LB_ERR</font><font SIZE="3">．另外，排序的组合框具有的是</font><font FACE="Times New Roman" SIZE="3">CBS_SORT</font><font SIZE="3">风格，而不是</font><font FACE="Times New Roman" SIZE="3">LBS_SORT</font><font SIZE="3">．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER">6.15 </font><font SIZE="3">用于插入和删除列表项的</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">成员函数</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="27%"><font SIZE="3"><b><p ALIGN="JUSTIFY">成员函数名</b></font></td>
+        <td WIDTH="31%"><b><font SIZE="3"><p ALIGN="JUSTIFY">对应的</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数</font></b></td>
+        <td WIDTH="43%"><b><font SIZE="3"><p ALIGN="JUSTIFY">与</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数的不同之处</font></b></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">AddString</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">AddString</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">InsertString</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">InsertString</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DeleteString</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">DeleteString</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ResetContent</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ResetContent</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Dir</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Dir</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+    </table>
+    <p><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="CENTER">6.16 </font><font SIZE="3">用于搜索、查询和设置列表框的</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">成员函数</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="27%"><font SIZE="3"><b><p ALIGN="JUSTIFY">成员函数名</b></font></td>
+        <td WIDTH="31%"><b><font SIZE="3"><p ALIGN="JUSTIFY">对应的</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数</font></b></td>
+        <td WIDTH="43%"><b><font SIZE="3"><p ALIGN="JUSTIFY">与</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数的不同之处</font></b></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetCount</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetCount</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">FindString</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">FindString</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetLBText</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetText</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">仅函数名不同．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetLBTextLen</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetTextLen</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">仅函数名不同．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetItemData</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetItemData</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetItemData</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetItemData</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetTopIndex</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetTopIndex</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetTopIndex</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetTopIndex</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+    </table>
+    <p><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.17 </font><font SIZE="3">与列表项的选择有关的</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">成员函数</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="27%"><font SIZE="3"><b><p ALIGN="JUSTIFY">成员函数名</b></font></td>
+        <td WIDTH="31%"><b><font SIZE="3"><p ALIGN="JUSTIFY">对应的</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数</font></b></td>
+        <td WIDTH="43%"><b><font SIZE="3"><p ALIGN="JUSTIFY">与</font><font FACE="Times New Roman" SIZE="3">CListBox</font><font SIZE="3">成员函数的不同之处</font></b></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetCurSel</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">GetCurSel</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">无．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetCurSel</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SetCurSel</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">新选的列表项的内容会被拷贝到编辑框组件中．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="27%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SelectString</font></td>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">SelectString</font></td>
+        <td WIDTH="43%"><font SIZE="3"><p ALIGN="JUSTIFY">新选的列表项的内容会被拷贝到编辑框组件中．</font></td>
+      </tr>
+    </table>
+    <p><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">另外，</font><font FACE="Times New Roman" SIZE="3">CComboBox</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">ShowDropDown</font><font SIZE="3">成员函数专门负责显示或隐藏列表框组件，该函数的声明为</p>
+    <blockquote>
+      </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">void ShowDropDown( BOOL 
+      bShowIt = TRUE );</font></p>
+    </blockquote>
+    <p><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">如果参数</font><font FACE="Times New Roman" SIZE="3">bShowIt</font><font SIZE="3">的值为</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，那么将显示列表框组件，否则，就隐藏之．该函数对简易式组合框没有作用．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <b><p ALIGN="JUSTIFY"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">6.1.8 
+    </font><font SIZE="3" color="#3973DE">测试传统控件的一个例子</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在让我们编写一个程序来测试一下上面介绍的一些传统控件．该程序名为</font><font FACE="Times New Roman" SIZE="3">CtrlTest</font><font SIZE="3">，其界面如图</font><font FACE="Times New Roman" SIZE="3">6.1</font><font SIZE="3">所示．前面介绍的程序都是基于框架窗口的，而</font><font FACE="Times New Roman" SIZE="3">CtrlTest</font><font SIZE="3">程序是一个基于对话框的应用程序，即以对话框作为程序的主窗口．该程序主要对组合框、列表框、多行编辑框和滚动条控件进行了测试，其中：</p>
+    <blockquote>
+      <blockquote>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Input</font><font SIZE="3">组合框是一个记事列表框．在编辑框组件中输入字符串，或从列表框组件中选择以前输入过的字符串，然后按</font><font FACE="Times New Roman" SIZE="3">Add</font><font SIZE="3">按钮，该字符串就会被加入到</font><font FACE="Times New Roman" SIZE="3">List</font><font SIZE="3">列表框中．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">List</font><font SIZE="3">列表框是一个多重选择列表框．该列表框具有</font><font FACE="Times New Roman" SIZE="3">LBS_EXTENDEDSEL</font><font SIZE="3">风格，用户可以单击鼠标进行单项选择，也可以按住</font><font FACE="Times New Roman" SIZE="3">Shift</font><font SIZE="3">或</font><font FACE="Times New Roman" SIZE="3">Ctrl</font><font SIZE="3">键后单击鼠标来进行多重选择．用户可以按</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">键删除列表框中选择的项．</p>
+        </font><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">History of SELCHANGE</font><font SIZE="3">多行编辑框．该编辑框用于跟踪</font><font FACE="Times New Roman" SIZE="3">Input</font><font SIZE="3">组合框的列表框组件发出的</font><font FACE="Times New Roman" SIZE="3">CBN_SELCHANGE</font><font SIZE="3">通知消息，编辑框对该消息的响应是显示</font><font FACE="Times New Roman" SIZE="3">XXXX selected</font><font SIZE="3">，以表明用户新选择了一个列表项．读者通过该编辑框可以了解组合框是在什么情况下发送</font><font FACE="Times New Roman" SIZE="3">CBN_SELCHANGE</font><font SIZE="3">通知消息的．按</font><font FACE="Times New Roman" SIZE="3">Clear</font><font SIZE="3">按钮将清除编辑框．</p>
+        <p ALIGN="JUSTIFY">水平滚动条控件的滚动范围是</font><font FACE="Times New Roman" SIZE="3">0 </font><font SIZE="3">— </font><font FACE="Times New Roman" SIZE="3">50</font><font SIZE="3">．在滚动条的左边有一个静态正文控件用来动态反映当前滚动框的位置．</p>
+        </font><font FACE="Times New Roman" SIZE="3">
+      </blockquote>
+    </blockquote>
+    <p ALIGN="center"></font><img src="T6_1.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/T6_1.gif" alt="T6_1.tif (122740 bytes)" WIDTH="456" HEIGHT="250"><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">6.1 
+    CtrlTest</font><font SIZE="3">程序</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">首先，让我们用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">建立一个基于对话框的</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">应用程序．这一过程很简单，先将新建的工程命名为</font><font FACE="Times New Roman" SIZE="3">CtrlTest</font><font SIZE="3">，然后在</font><font FACE="Times New Roman" SIZE="3">MFC AppWizard</font><font SIZE="3">对话框的第一步中选择</font><font FACE="Times New Roman" SIZE="3">Dialog based</font><font SIZE="3">就行了．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">AppWizard</font><font SIZE="3">会自动建立一个用于应用程序主窗口的对话框模板</font><font FACE="Times New Roman" SIZE="3">IDD_CTRLTEST_DIALOG</font><font SIZE="3">及其对应的对话框类</font><font FACE="Times New Roman" SIZE="3">CCtrlTestDlg</font><font SIZE="3">．对该对话框的使用与普通对话框并没有什么不同，只不过在程序启动后对话框会自动显示出来，而当用户关闭对话框后，应用程序也就终止了．如果读者观察</font><font FACE="Times New Roman" SIZE="3">CCtrlTestApp:: InitInstance</font><font SIZE="3">函数就会发现，该函数调用</font><font FACE="Times New Roman" SIZE="3">DoModal</font><font SIZE="3">来显示一个</font><font FACE="Times New Roman" SIZE="3">CCtrlTestDlg</font><font SIZE="3">对话框，并使</font><font FACE="Times New Roman" SIZE="3">m_pMainWnd</font><font SIZE="3">指针指向</font><font FACE="Times New Roman" SIZE="3">CCtrlTestDlg</font><font SIZE="3">对象，从而使该对话框成为程序的主窗口．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接下来，需要设计</font><font FACE="Times New Roman" SIZE="3">IDD_CTRLTEST_DIALOG</font><font SIZE="3">对话框模板．请读者将该模板上除</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮以外的控件都删除掉，将</font><font FACE="Times New Roman" SIZE="3">OK</font><font SIZE="3">按钮的标题改为</font><font FACE="Times New Roman" SIZE="3">Cl&amp;ose</font><font SIZE="3">，并去掉该按钮的</font><font FACE="Times New Roman" SIZE="3">Default button</font><font SIZE="3">（缺省按钮）属性．当用户在对话框内按回车键时，会激活缺省按钮，一般应该把用来确认用户输入操作的按钮设计成缺省按钮．在本例中，显然应该把</font><font FACE="Times New Roman" SIZE="3">Add</font><font SIZE="3">按钮设计成缺省按钮，而不是</font><font FACE="Times New Roman" SIZE="3">Close</font><font SIZE="3">按钮．这样，用户在</font><font FACE="Times New Roman" SIZE="3">Input</font><font SIZE="3">组合框中输入字符串后，按回车键就可以将该串加入到</font><font FACE="Times New Roman" SIZE="3">List</font><font SIZE="3">列表框中．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">请读者根据图</font><font FACE="Times New Roman" SIZE="3">6.1</font><font SIZE="3">和表</font><font FACE="Times New Roman" SIZE="3">6.18</font><font SIZE="3">，向</font><font FACE="Times New Roman" SIZE="3">IDD_CTRLTEST_DIALOG</font><font SIZE="3">对话框模板中加入测试用的控件．</p>
+    <p><b>　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.18</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><b>控件类型</b></font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><b>ID</b></font></td>
+        <td WIDTH="26%"><b><font SIZE="3">标题</font><font FACE="Times New Roman" SIZE="3">(Caption)</font></b></td>
+        <td WIDTH="35%"><font SIZE="3"><b>其它属性</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">静态正文</font></td>
+        <td WIDTH="21%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Input:</font></td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">组合框</font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_COMBOBOX</font></td>
+        <td WIDTH="26%">　</td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">去掉</font><font FACE="Times New Roman" SIZE="3">Sort</font><font SIZE="3">属性．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">命令按钮</font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_ADD</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">&amp;Add</font></td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">选择</font><font FACE="Times New Roman" SIZE="3">Default button</font><font SIZE="3">属性．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">静态正文</font></td>
+        <td WIDTH="21%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">List:</font></td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">列表框</font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_LISTBOX</font></td>
+        <td WIDTH="26%">　</td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">Selection</font><font SIZE="3">栏中选择</font><font FACE="Times New Roman" SIZE="3">Extended</font><font SIZE="3">，并去掉</font><font FACE="Times New Roman" SIZE="3">Sort</font><font SIZE="3">属性．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">命令按钮</font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_DELETE</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">&amp;Delete</font></td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">静态正文</font></td>
+        <td WIDTH="21%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">History of 
+        SELCHANGE</font></td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">编辑框</font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_MULTIEDIT</font></td>
+        <td WIDTH="26%">　</td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">选择</font><font FACE="Times New Roman" SIZE="3">Multi-line</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">Vertical scroll</font><font SIZE="3">，</font><font FACE="Times New Roman" SIZE="3">AutoVScroll</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">Want return</font><font SIZE="3">属性．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">命令按钮</font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_CLEAR</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">&amp;Clear</font></td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">静态正文</font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_INDICATOR</font></td>
+        <td WIDTH="26%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省．</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="18%"><font SIZE="3"><p ALIGN="JUSTIFY">滚动条</font></td>
+        <td WIDTH="21%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_SCROLLBAR</font></td>
+        <td WIDTH="26%">　</td>
+        <td WIDTH="35%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省．</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接着，利用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">CCtrlTestDlg</font><font SIZE="3">类加入成员变量，如表</font><font FACE="Times New Roman" SIZE="3">6.19</font><font SIZE="3">所示，这些成员变量都是控件对象．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.19 CCtrlTestDlg</font><font SIZE="3">类的成员变量</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="33%"><b><font SIZE="3"><p ALIGN="JUSTIFY">控件</font><font FACE="Times New Roman" SIZE="3">ID</font></b></td>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">变量类型</b></font></td>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">变量名</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_COMBOBOX</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CComboBox</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_ComboBox</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_LISTBOX</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CListBox</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_ListBox</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_MULTIEDIT</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CEdit</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_MultiEdit</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_INDICATOR</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CStatic</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_Indicator</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_SCROLLBAR</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CScrollBar</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_ScrollBar</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">接下来，用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">CCtrlTestDlg</font><font SIZE="3">类加入控件通知消息处理函数，如表</font><font FACE="Times New Roman" SIZE="3">6.20</font><font SIZE="3">所示．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">6.20 CCtrlTestDlg</font><font SIZE="3">的控件通知消息处理函数</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">Object IDS</b></font></td>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">Messages</b></font></td>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">Member 
+        functions</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_ADD</font></td>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BN_CLICKED</font></td>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">OnAdd</font><font SIZE="3">（缺省名）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_DELETE</font></td>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BN_CLICKED</font></td>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">OnDelete</font><font SIZE="3">（缺省名）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_CLEAR</font></td>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BN_CLICKED</font></td>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">OnClear</font><font SIZE="3">（缺省名）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_COMBOBOX</font></td>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CBN_SELCHANGE</font></td>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">OnSelchangeCombobox</font><font SIZE="3">（缺省名）</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="31%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CCtrlTestDlg</font></td>
+        <td WIDTH="32%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">WM_HSCROLL</font></td>
+        <td WIDTH="38%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">OnHScroll</font><font SIZE="3">（缺省名）</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">最后，请读者按清单</font><font FACE="Times New Roman" SIZE="3">6.1</font><font SIZE="3">修改源代码，限于篇幅，这里仅列出需要手工修改的那一部分．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">6.1 CCtrlTestDlg</font><font SIZE="3">类的部分源代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// CtrlTestDlg.cpp : implementation file</p>
+    <p ALIGN="JUSTIFY">//</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#define MAX_HISTORY 5</p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">BOOL CCtrlTestDlg::OnInitDialog()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . . . . .</b></p>
+    <p ALIGN="JUSTIFY">// TODO: Add extra initialization here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_ScrollBar.SetScrollRange(0,50);</p>
+    <p ALIGN="JUSTIFY">m_Indicator.SetWindowText(&quot;0&quot;);</p>
+    <p ALIGN="JUSTIFY">m_ComboBox.SetFocus(); //</font><font SIZE="3">使组合框获得输入焦点</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return <b>FALSE; // </font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">以表明为某一控件设置了输入焦点</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CCtrlTestDlg::OnAdd() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your control notification handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int i;</p>
+    <p ALIGN="JUSTIFY">CString str;</p>
+    <p ALIGN="JUSTIFY">m_ComboBox.GetWindowText(str);</p>
+    <p ALIGN="JUSTIFY">m_ListBox.AddString(str);</p>
+    <p ALIGN="JUSTIFY">i=m_ComboBox.FindString(-1,str);</p>
+    <p ALIGN="JUSTIFY">if(i&gt;=0)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_ComboBox.DeleteString(i);</p>
+    <p ALIGN="JUSTIFY">m_ComboBox.InsertString(0,str); //</font><font SIZE="3">将匹配项移到</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">位置</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">else</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_ComboBox.InsertString(0,str);</p>
+    <p ALIGN="JUSTIFY">if(m_ComboBox.GetCount()&gt;MAX_HISTORY)</p>
+    <p ALIGN="JUSTIFY">m_ComboBox.DeleteString(m_ComboBox.GetCount()-1); //</font><font SIZE="3">删除旧的项</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CCtrlTestDlg::OnClear() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your control notification handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_MultiEdit.SetSel(0,-1);</p>
+    <p ALIGN="JUSTIFY">m_MultiEdit.ReplaceSel(&quot;&quot;);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CCtrlTestDlg::OnDelete() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your control notification handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int i,count;</p>
+    <p ALIGN="JUSTIFY">int *pBuffer;</p>
+    <p ALIGN="JUSTIFY">count=m_ListBox.GetSelCount();</p>
+    <p ALIGN="JUSTIFY">if(count&lt;=0)return;</p>
+    <p ALIGN="JUSTIFY">pBuffer=new int[count];</p>
+    <p ALIGN="JUSTIFY">m_ListBox.GetSelItems(count,pBuffer);</p>
+    <p ALIGN="JUSTIFY">for(i=count-1;i&gt;=0;i--) //</font><font SIZE="3">倒序删除选择项</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_ListBox.DeleteString(pBuffer[i]);</p>
+    <p ALIGN="JUSTIFY">delete pBuffer;</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CCtrlTestDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
+    pScrollBar) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your message handler code here and/or call default</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int nScrollMin,nScrollMax,nScrollPos;</p>
+    <p ALIGN="JUSTIFY">int nPageSize;</p>
+    <p ALIGN="JUSTIFY">CString str;</p>
+    <p ALIGN="JUSTIFY">if(&amp;m_ScrollBar!=pScrollBar)return;</p>
+    <p ALIGN="JUSTIFY">nScrollPos=m_ScrollBar.GetScrollPos();</p>
+    <p ALIGN="JUSTIFY">m_ScrollBar.GetScrollRange(&amp;nScrollMin,&amp;nScrollMax);</p>
+    <p ALIGN="JUSTIFY">nPageSize=(nScrollMax-nScrollMin)/10; //</font><font SIZE="3">指定页长</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">switch(nSBCode)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">case SB_LEFT:</p>
+    <p ALIGN="JUSTIFY">nScrollPos=nScrollMin;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case SB_RIGHT:</p>
+    <p ALIGN="JUSTIFY">nScrollPos=nScrollMax;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case SB_LINELEFT:</p>
+    <p ALIGN="JUSTIFY">nScrollPos-=1;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case SB_LINERIGHT:</p>
+    <p ALIGN="JUSTIFY">nScrollPos+=1;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case SB_PAGELEFT:</p>
+    <p ALIGN="JUSTIFY">nScrollPos-=nPageSize;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case SB_PAGERIGHT:</p>
+    <p ALIGN="JUSTIFY">nScrollPos+=nPageSize;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case SB_THUMBPOSITION:</p>
+    <p ALIGN="JUSTIFY">nScrollPos=nPos; //</font><font SIZE="3">由参数</font><font FACE="Times New Roman" SIZE="3">nPos</font><font SIZE="3">获取滚动框的位置</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case SB_THUMBTRACK:</p>
+    <p ALIGN="JUSTIFY">nScrollPos=nPos; //</font><font SIZE="3">由参数</font><font FACE="Times New Roman" SIZE="3">nPos</font><font SIZE="3">获取滚动框的位置</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">default:;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">if(nScrollPos&lt;nScrollMin)nScrollPos=nScrollMin;</p>
+    <p ALIGN="JUSTIFY">if(nScrollPos&gt;nScrollMax)nScrollPos=nScrollMax;</p>
+    <p ALIGN="JUSTIFY">if(nScrollPos!=m_ScrollBar.GetScrollPos())</p>
+    <p ALIGN="JUSTIFY">m_ScrollBar.SetScrollPos(nScrollPos); //</font><font SIZE="3">设置滚动框的新位置</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str.Format(&quot;%d&quot;,nScrollPos);</p>
+    <p ALIGN="JUSTIFY">m_Indicator.SetWindowText(str); //</font><font SIZE="3">更新静态正文</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CDialog::OnHScroll(nSBCode, nPos, pScrollBar);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CCtrlTestDlg::OnSelchangeCombobox() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your control notification handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int length=m_MultiEdit.GetWindowTextLength();</p>
+    <p ALIGN="JUSTIFY">CString str;</p>
+    <p ALIGN="JUSTIFY">m_MultiEdit.SetSel(-1,0);</p>
+    <p ALIGN="JUSTIFY">m_MultiEdit.SetSel(length,length); //</font><font SIZE="3">移动插入符到编辑正文的末尾</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_ComboBox.GetLBText(m_ComboBox.GetCurSel(),str);</p>
+    <p ALIGN="JUSTIFY">str+=&quot; selected\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY">m_MultiEdit.ReplaceSel(str);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">成员函数中，对一些控件进行了初始化，包括设置滚动条的范围，将静态正文的显示置为 
+    “</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">”，以及使组合框获得输入焦点．注意，缺省时，</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，而新版的函数返回了</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">．如果</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">返回</font><font FACE="Times New Roman" SIZE="3">TRUE</font><font SIZE="3">，那么</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">将使</font><font FACE="Times New Roman" SIZE="3">tab</font><font SIZE="3">顺序最靠前的可输入控件获得输入焦点，如果返回</font><font FACE="Times New Roman" SIZE="3">FALSE</font><font SIZE="3">，则表明在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">函数中人为地使某个控件获得输入焦点，函数返回后系统就不会再设置输入焦点了．有时，只要合理的安排了控件的</font><font FACE="Times New Roman" SIZE="3">tab</font><font SIZE="3">顺序，就不必在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">中人为设置输入焦点．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当用户点击</font><font FACE="Times New Roman" SIZE="3">Add</font><font SIZE="3">按钮或按回车键后，成员函数</font><font FACE="Times New Roman" SIZE="3">OnAdd</font><font SIZE="3">被调用．该函数将组合框的编辑框中的字符串加入到</font><font FACE="Times New Roman" SIZE="3">List</font><font SIZE="3">列表框的末尾，并将该字符串存入到记事列表框中．这时函数会判断，如果在记事列表中没有匹配的项，则把字符串插入</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">位置，并在必要时删除最老的列表项，在本例中，记事列表框最多可以容纳</font><font FACE="Times New Roman" SIZE="3">5</font><font SIZE="3">项；如果在记事列表中有匹配的项，那么就把该项移到</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">位置．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当用户点击</font><font FACE="Times New Roman" SIZE="3">Delete</font><font SIZE="3">按钮时，成员函数</font><font FACE="Times New Roman" SIZE="3">OnDelete</font><font SIZE="3">被调用，该函数根据</font><font FACE="Times New Roman" SIZE="3">CComboBox::GetSelCount</font><font SIZE="3">获得选择项的数目，并根据这个数目动态创建一个整型数组以存放选择项的索引．然后，调用</font><font FACE="Times New Roman" SIZE="3">CComboBox::GetSelItems</font><font SIZE="3">来获取选择项的索引．最后，把这些选择项删除．注意，这里是倒序删除的，如果按顺序删除，则会使选择项的索引产生错位．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">成员函数</font><font FACE="Times New Roman" SIZE="3">OnSelchangeCombobox</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">Input</font><font SIZE="3">组合框的</font><font FACE="Times New Roman" SIZE="3">CBN_SELCHANGE</font><font SIZE="3">消息的处理函数．该函数先把多行编辑框的插入符移到编辑正文的末尾，然后从插入符处加入一行形如＂</font><font FACE="Times New Roman" SIZE="3">XXXX selected</font><font SIZE="3">＂的字符串，以表明用户从记事列表框中新选择了哪个列表项．值得一提的是，上一章的</font><font FACE="Times New Roman" SIZE="3">Register</font><font SIZE="3">程序是用</font><font FACE="Times New Roman" SIZE="3">SetWindowText</font><font SIZE="3">来在编辑正文中插入新的正文的，此方法有一个缺点，就是不能把插入符滚动到新修改过的地方．在本例中，插入编辑正文的方法是先调用</font><font FACE="Times New Roman" SIZE="3">CEdit::SetSel</font><font SIZE="3">移动插入符到指定位置（必要时要滚动以使该位置可见），然后再调用</font><font FACE="Times New Roman" SIZE="3">CEdit::ReplaceSel</font><font SIZE="3">插入新的正文，这样做的好处是编辑框总是滚动到新修改过的地方，从而使得新修改过的地方总是可见的．</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">对滚动条控件的测试是在</font><font FACE="Times New Roman" SIZE="3">OnHScroll</font><font SIZE="3">成员函数中完成的．该函数是对话框也即父窗口对水平滚动条控件产生的</font><font FACE="Times New Roman" SIZE="3">WM_HSCROLL</font><font SIZE="3">消息的处理函数．该函数负责移动滚动框并及时更新静态正文的显示以反映滚动框的当前位置．在函数的开头，首先判断是不是</font><font FACE="Times New Roman" SIZE="3">m_ScrollBar</font><font SIZE="3">滚动条发来的消息，这是因为可能会有几个滚动条控件．在该函数中有一个大的</font><font FACE="Times New Roman" SIZE="3">switch</font><font SIZE="3">分枝语句，用来获取滚动框的新位置．需要指出的是，对于</font><font FACE="Times New Roman" SIZE="3">SB_THUMBPOSITION</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">SB_THUMBTRACK</font><font SIZE="3">这两种情况，应该从</font><font FACE="Times New Roman" SIZE="3">OnHScroll</font><font SIZE="3">函数的</font><font FACE="Times New Roman" SIZE="3">nPos</font><font SIZE="3">参数中获取滚动框的新位置．对于</font><font FACE="Times New Roman" SIZE="3">SB_THUMBTRACK</font><font SIZE="3">，不要企图用</font><font FACE="Times New Roman" SIZE="3">CScrollBar::GetScrollPos</font><font SIZE="3">来获取滚动框的新位置，因为该函数不能正确返回拖动时的滚动框位置．另一个要注意的问题是</font><font FACE="Times New Roman" SIZE="3">Windows</font><font SIZE="3">本身不会自动地使滚动框移动到新位置上，所以需要在</font><font FACE="Times New Roman" SIZE="3">OnHScroll</font><font SIZE="3">中调用</font><font FACE="Times New Roman" SIZE="3">CScrollBar::SetScrollPos</font><font SIZE="3">来移动滚动框．</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap6.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6.htm">上一页</a></td>
+        <td><p align="right"><a href="chap6_2.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap6/chap6_2.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

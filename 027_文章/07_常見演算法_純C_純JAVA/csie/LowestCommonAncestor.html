@@ -1,0 +1,191 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Lowest Common Ancestor</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Lowest Common Ancestor: Dynamic Programming</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">Lowest Common Ancestor<br>（Least Common Ancestor）（Nearest Common Ancestor）</p>
+<p>一棵有根樹，樹上兩點的共同祖先當中，離根最遠、深度最深的那一個共同祖先，常簡稱為LCA。</p>
+<img src="LowestCommonAncestor1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LowestCommonAncestor1.png">
+<p class="t">演算法</p>
+<p>求LCA的演算法相當多元，此處先介紹其中一種：求出樹上所有點對的LCA。</p>
+<p>知道x與y的LCA，也就知道x的小孩與y的小孩的LCA了。遞迴公式如下：</p>
+<pre>
+LCA(x, y) =
+ { x                   , if x = y
+ { x                   , if x = parent(y)
+ { y                   , if y = parent(x)
+ { LCA(parent(x), y)   , otherwise
+ { LCA(x, parent(y))   , otherwise
+</pre>
+<pre>
+LCA(x, y) =
+ { x                   , if x = y or x = parent(y)
+ { LCA(parent(x), y)   , otherwise
+</pre>
+<p>時間複雜度是O(V^2)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Lowest Common Ancestor: Tarjan's Algorithm</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>運用DFS遍歷順序，配合Disjoint-sets Forest，把已經拜訪過的點，依照層級聚合起來，方便找到LCA。</p>
+<p>用來求出所有點對的LCA。亦得求出部分點對的LCA，必須預先知道是哪些點對，排好順序以利實作。</p>
+<img src="LowestCommonAncestor2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LowestCommonAncestor2.png">
+<textarea t="樹上所有點對的LCA（adjacency matrix）">
+bool adj[9][9];	// adjacency matrix，儲存一棵樹。
+bool visit[9];	// DFS當下已經拜訪過的點
+int lca[9][9];	// 所有兩點之間的LCA
+
+// 最多兩步
+int find(int x)
+{
+	return x == p[x] ? x : (p[x] = find(p[x]));
+}
+
+int DFS(int x)
+{
+	if (visit[x]) return;
+	visit[x] = true;
+
+	// 計算LCA
+	for (int y=0; y<9; ++y)
+		if (visit[y])
+			lca[x][y] = lca[y][x] = find(y);
+
+	// DFS
+	for (int y=0; y<9; ++y)
+		if (adj[x][y])
+		{
+			DFS(y);
+			p[y] = x;	// union(y, x)，並讓x是樹根。
+		}
+}
+
+void demo()
+{
+	for (int i=0; i<9; ++i) p[i] = i;
+
+	for (int i=0; i<9; ++i) visit[i] = false;
+	DFS(0);	// 假設樹根為0
+
+	int x, y;
+	while (cin >> x >> y)
+		cout << "x點與y點的LCA是" << lca[x][y];
+}
+</textarea>
+<p class="t">時間複雜度</p>
+<p>分成三部份討論：</p>
+<p>一、DFS：端看樹的資料結構。使用adjacency matrix，時間複雜度是O(V^2)；使用adjacency lists，時間複雜度是O(V+E)。</p>
+<p>二、union：直接考慮p[]的存取次數，總共是O(V)。</p>
+<p>三、find：求出所有點對的LCA，每次find最多存取兩次p[]，總共是O(V^2)。求出部分點對的LCA，p[]的存取次數只降不升，最多是O(V^2)，最少是O(1)。</p>
+<p>宏觀來看，合併連成一線、沒有分枝的邊，以樹根作為起點的各種單源最短路徑的長度總和，就是p[]的存取次數上限。</p>
+<p>總時間複雜度是O(V^2)。</p>
+<p class="e">ICPC 2045</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Lowest Common Ancestor: Preprocessing + 倍增搜尋</p>
+<p class="r">程度★★　難度★★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>預先算好每個節點的上一輩父親、上兩輩父親、上四輩父親、……，再以二分搜尋找到LCA。</p>
+<p>輩分太高，超出樹根時，可將祖先直接設定成樹根，比較容易實作程式碼。</p>
+<p>建立需時O(VlogV)，查詢需時O(logV)。</p>
+<textarea>
+bool adj[9][9];			// adjaceny matrix，儲存一棵樹。
+int tin[9], tout[9], t = 0;
+int a[9][log2(9/2)];	// 每個節點的上一輩父親、
+						// 上兩輩父親、上四輩父親、……。
+
+void DFS(int x, int px)
+{
+	tin[x] = t++;
+
+	a[x][0] = px;	// 上一輩父親
+	for (int i=1; 1<<i < N/2; i++)
+		a[x][i] = a[a[x][i-1]][i-1];
+
+	for (int y=0; y<N; y++)
+		if (adj[x][y] && y != px)
+			DFS(y, x);
+
+	tout[x] = t++;
+}
+
+// x是y的祖先、x等於y。
+bool ancestor(int x, int y)
+{
+	return tin[x] <= tin[y] && tout[x] >= tout[y];
+}
+
+int log2(int n)
+{
+	int i = 0;
+	while (1<<i <= n) i++;
+	return i-1;
+}
+
+int LCA(int x, int y)
+{
+	if (ancestor(x, y)) return x;
+	if (ancestor(y, x)) return y;
+
+	// 二分搜尋找到LCA。不斷上升逼近之。
+	for (int i=log2(N/2); i>=0; i--)
+		if (!ancestor(a[x][i], y))
+			x = a[x][i];
+	return a[x][0];
+}
+
+void demo()
+{
+	t = 0;
+	DFS(0, 0);	// 假設樹根為0。令樹根的祖先是自己。
+
+	int x, y;
+	while (cin >> x >> y)
+		cout << "x點與y點的LCA是" << LCA(x, y);
+}
+</textarea>
+<p class="e">ICPC 5061</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Lowest Common Ancestor: Range Minimum Query</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">以RMQ作為模型</p>
+<p>「<a href="Sequence.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Sequence.html">Range Minimum Query</a>」最後提到：以DFS遍歷，記下每個節點的到訪次序（作為索引值）、深度（作為元素值），LCA問題就轉換成±1RMQ問題。建立需時O(V)，查詢需時O(1)。</p>
+<p>±1RMQ極難實作，亦可採用普通的RMQ。使用Sparse Table、偽線段樹等資料結構，建立需時O(VlogV)，查詢需時O(logV)。</p>
+<p class="t">直接修改Sparse Table</p>
+<p>運用Sparse Table的精神，求得每個節點的上一輩父親、上兩輩父親、上四輩父親、……。跟先前介紹的方法如出一轍，然而過程更加麻煩。建立需時O(VlogV)，查詢需時O(logV)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Lowest Common Ancestor: Heavy-Light Decomposition</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p>請參考「<a href="DynamicTree.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/DynamicTree.html">Heavy-Light Decomposition</a>」。建立需時O(V)，查詢需時O(logV)。</p>
+<p>在±1RMQ極難實作的情況下，Heavy-Light Decomposition是時間複雜度最低的LCA演算法。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Lowest Common Ancestor: Graph Traversal（Under Construction!）</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">Lowest Common Ancestor</p>
+<p>一張有向無環圖，圖上兩點的共同祖先當中，離起點最遠、深度最深的那一個共同祖先。可能有許多個。</p>
+<img src="LowestCommonAncestor3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LowestCommonAncestor3.png">
+<p class="t">演算法</p>
+<p>求出有向無環圖上所有點對的LCA。</p>
+<pre>
+一、每個點作為起點，逆向Graph Traversal，找出每個點的祖先們。
+　　（或者以拓樸順序逐個刪點，更新祖先列表。）
+二、每個點對找出共同祖先，深度最深的共同祖先就是LCA。
+</pre>
+<p>時間複雜度分成兩部份討論：</p>
+<p>一、V次Graph Traversal的時間。圖的資料結構為adjacency matrix，時間複雜度為O(V^3)；圖的資料結構為adjacency list，時間複雜度為O(V*(V+E))，或者簡單寫作O(VE)。</p>
+<p>二、求出一個點對的LCA需時O(V)，總共O(V^2)個點對，時間複雜度為O(V^3)。</p>
+<p>總時間複雜度為O(V^3)。</p>
+<p class="t">演算法</p>
+<p><a href="javascript:if(confirm('http://www.dcs.warwick.ac.uk/~czumaj/PUBLICATIONS/DRAFTS/LCA-Max-witness.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.dcs.warwick.ac.uk/~czumaj/PUBLICATIONS/DRAFTS/LCA-Max-witness.pdf'" tppabs="http://www.dcs.warwick.ac.uk/~czumaj/PUBLICATIONS/DRAFTS/LCA-Max-witness.pdf" class="l">http://www.dcs.warwick.ac.uk/~czumaj/PUBLICATIONS/DRAFTS/LCA-Max-witness.pdf</a></p>
+<p class="e">UVa 11457</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>

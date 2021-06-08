@@ -1,0 +1,751 @@
+<html>
+
+<head>
+<title>12.4 一个通信演示程序</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body link="#3973DE" alink="#3973DE">
+<font SIZE="5"><b><div align="center"><center>
+
+<table border="0" width="615" cellspacing="0" cellpadding="0">
+  <tr>
+    </b><td><div align="center"><center><table border="0" width="615" cellpadding="0" cellspacing="0" height="20">
+      <tr>
+        <td width="377" bgcolor="#15397D" height="20"></td>
+        <td width="238" bgcolor="#000000" height="20"><p align="right"></font><span style="text-decoration: none"><a href="javascript:if(confirm('http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm'" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/index.htm"><font color="#FFFFFF">电脑报Visual 
+        C++网络教程</font></a></span></td>
+      </tr>
+    </table>
+    </center></div><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="CENTER"></b></font><font color="#3973DE" FACE="Times New Roman" SIZE="3">12. 4 </font><font SIZE="3" color="#3973DE">一个通信演示程序</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">为了使读者更好地掌握本章的概念，这里举一个具体实例来说明问题。如图</font><font FACE="Times New Roman" SIZE="3">12.1</font><font SIZE="3">所示，例子程序名为</font><font FACE="Times New Roman" SIZE="3">Terminal</font><font SIZE="3">，是一个简单的</font><font FACE="Times New Roman" SIZE="3">TTY</font><font SIZE="3">终端仿真程序。读者可以用该程序打开一个串行口，该程序会把用户的键盘输入发送给串行口，并把从串口接收到的字符显示在视图中。用户通过选择</font><font FACE="Times New Roman" SIZE="3">File-&gt;Connect</font><font SIZE="3">命令来打开串行口，选择</font><font FACE="Times New Roman" SIZE="3">File-&gt;Disconnect</font><font SIZE="3">命令则关闭串行口。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T12_1.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap12/T12_1.gif" alt="T12_1.tif (174388 bytes)" WIDTH="452" HEIGHT="322"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">12.1 
+    Terminal</font><font SIZE="3">终端仿真程序</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">当用户选择</font><font FACE="Times New Roman" SIZE="3">File-&gt;Settings...</font><font SIZE="3">命令时，会弹出一个</font><font FACE="Times New Roman" SIZE="3">Communication settings</font><font SIZE="3">对话框，如图</font><font FACE="Times New Roman" SIZE="3">12.2</font><font SIZE="3">所示。该对话框主要用来设置串行口，包括端口、波特率、每字节位数、校验、停止位数和流控制。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3"><img src="T12_2.gif" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap12/T12_2.gif" alt="T12_2.tif (92960 bytes)" WIDTH="339" HEIGHT="244"></font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="center"></font><font SIZE="3">图</font><font FACE="Times New Roman" SIZE="3">12.2 
+    Communication settings</font><font SIZE="3">对话框</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">通过该对话框也可以设置</font><font FACE="Times New Roman" SIZE="3">TTY</font><font SIZE="3">终端仿真的属性，如果选择</font><font FACE="Times New Roman" SIZE="3">New Line</font><font SIZE="3">（自动换行），那么每当从串口读到回车符</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">‘</font><font FACE="Times New Roman" SIZE="3">\r</font><font SIZE="3">’</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">时，视图中的正文就会换行，否则，只有在读到换行符</font><font FACE="Times New Roman" SIZE="3">(</font><font SIZE="3">‘</font><font FACE="Times New Roman" SIZE="3">\n</font><font SIZE="3">’</font><font FACE="Times New Roman" SIZE="3">)</font><font SIZE="3">时才会换行。如果选择</font><font FACE="Times New Roman" SIZE="3">Local echo</font><font SIZE="3">（本地回显），那么发送的字符会在视图中显示出来。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">终端仿真程序的特点是数据的传输没有规律。因为键盘输入速度有限，所以发送的数据量较小，但接收的数据源是不确定的，所以有可能会有大量数据高速涌入的情况发生。根据</font><font FACE="Times New Roman" SIZE="3">Terminal</font><font SIZE="3">的这些特性，我们在程序中创建了一个辅助工作者线程专门来监视串行口的输入。由于写入串行口的数据量不大，不会太费时，所以在主线程中完成写端口的任务是可以的，不必另外创建线程。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">现在就让我们开始工作。请读者按下面几步进行：</p>
+    <blockquote>
+      <blockquote>
+        <p ALIGN="JUSTIFY">用</font><font FACE="Times New Roman" SIZE="3">AppWizard</font><font SIZE="3">建立一个名为</font><font FACE="Times New Roman" SIZE="3">Terminal</font><font SIZE="3">的</font><font FACE="Times New Roman" SIZE="3">MFC</font><font SIZE="3">应用程序。在</font><font FACE="Times New Roman" SIZE="3">MFC AppWizard</font><font SIZE="3">对话框的第</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">步选择</font><font FACE="Times New Roman" SIZE="3">Single document</font><font SIZE="3">，在第</font><font FACE="Times New Roman" SIZE="3">4</font><font SIZE="3">步去掉</font><font FACE="Times New Roman" SIZE="3">Docking toolbar</font><font SIZE="3">的选择，在第</font><font FACE="Times New Roman" SIZE="3">6</font><font SIZE="3">步把</font><font FACE="Times New Roman" SIZE="3">CTerminalView</font><font SIZE="3">的基类改为</font><font FACE="Times New Roman" SIZE="3">CEditView</font><font SIZE="3">。</p>
+        <p ALIGN="JUSTIFY">在</font><font FACE="Times New Roman" SIZE="3">Terminal</font><font SIZE="3">工程的资源视图中打开</font><font FACE="Times New Roman" SIZE="3">IDR_MAINFRAME</font><font SIZE="3">菜单资源。去掉</font><font FACE="Times New Roman" SIZE="3">Edit</font><font SIZE="3">菜单和</font><font FACE="Times New Roman" SIZE="3">View</font><font SIZE="3">菜单，并去掉</font><font FACE="Times New Roman" SIZE="3">File</font><font SIZE="3">菜单中除</font><font FACE="Times New Roman" SIZE="3">Exit</font><font SIZE="3">以外的所有菜单项。然后在</font><font FACE="Times New Roman" SIZE="3">File</font><font SIZE="3">菜单中加入三个菜单项，如表</font><font FACE="Times New Roman" SIZE="3">12.5</font><font SIZE="3">所示。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">12.5 </font><font SIZE="3">新菜单项</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="50%"><font SIZE="3"><b><p ALIGN="JUSTIFY">标题</b></font></td>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">ID</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Settings...</font></td>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_FILE_SETTINGS</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Connect</font></td>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_FILE_CONNECT</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Disconnect</font></td>
+        <td WIDTH="50%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">ID_FILE_DISCONNECT</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">CTerminalDoc</font><font SIZE="3">类创建三个与上表菜单消息对应的命令处理函数，使用缺省的函数名。为</font><font FACE="Times New Roman" SIZE="3">ID_FILE_CONNECT</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">ID_FILE_DISCONNECT</font><font SIZE="3">命令创建命令更新处理函数。另外，用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为该类加入</font><font FACE="Times New Roman" SIZE="3">CanCloseFrame</font><font SIZE="3">成员函数。</p>
+        <p ALIGN="JUSTIFY">用</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">CTerminalView</font><font SIZE="3">类创建</font><font FACE="Times New Roman" SIZE="3">OnChar</font><font SIZE="3">函数，该函数用来把用户键入的字符向串行口输出。</p>
+        <p ALIGN="JUSTIFY">新建一个对话框模板资源，令其</font><font FACE="Times New Roman" SIZE="3">ID</font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">IDD_COMSETTINGS</font><font SIZE="3">。请按图</font><font FACE="Times New Roman" SIZE="3">12.2</font><font SIZE="3">和表</font><font FACE="Times New Roman" SIZE="3">12.6</font><font SIZE="3">设计对话框模板。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">12.6 </font><font SIZE="3">通信设置对话框中的主要控件</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="526">
+      <tr>
+        <td WIDTH="29%"><font SIZE="3"><b><p ALIGN="JUSTIFY">控件</b></font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><b><p ALIGN="JUSTIFY">ID</b></font></td>
+        <td WIDTH="44%"><font SIZE="3"><b><p ALIGN="JUSTIFY">属性设置</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Base options</font><font SIZE="3">组框</font></td>
+        <td WIDTH="26%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="44%"><font SIZE="3"><p ALIGN="JUSTIFY">标题为</font><font FACE="Times New Roman" SIZE="3">Base options</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Port</font><font SIZE="3">组合框</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_PORT</font></td>
+        <td WIDTH="44%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Drop List</font><font SIZE="3">，不选</font><font FACE="Times New Roman" SIZE="3">Sort</font><font SIZE="3">，初始列表为</font><font FACE="Times New Roman" SIZE="3">COM1</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">COM2</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">COM3</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">COM4</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Baud rate</font><font SIZE="3">组合框</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_BAUD</font></td>
+        <td WIDTH="44%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Drop List</font><font SIZE="3">，不选</font><font FACE="Times New Roman" SIZE="3">Sort</font><font SIZE="3">，初始列表为</font><font FACE="Times New Roman" SIZE="3">300</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">600</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">1200</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">2400</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">9600</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">14400</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">19200</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">38400</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">57600</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Data bits</font><font SIZE="3">组合框</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_DATABITS</font></td>
+        <td WIDTH="44%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Drop List</font><font SIZE="3">，不选</font><font FACE="Times New Roman" SIZE="3">Sort</font><font SIZE="3">，初列表为</font><font FACE="Times New Roman" SIZE="3">5</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">6</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">7</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">8</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Parity</font><font SIZE="3">组合框</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_PARITY</font></td>
+        <td WIDTH="44%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Drop List</font><font SIZE="3">，不选</font><font FACE="Times New Roman" SIZE="3">Sort</font><font SIZE="3">，初列表为</font><font FACE="Times New Roman" SIZE="3">None</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">Even</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">Odd</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Stop bits</font><font SIZE="3">组合框</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_STOPBITS</font></td>
+        <td WIDTH="44%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Drop List</font><font SIZE="3">，不选</font><font FACE="Times New Roman" SIZE="3">Sort</font><font SIZE="3">，初列表为</font><font FACE="Times New Roman" SIZE="3">1</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">1.5</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">2</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Flow control</font><font SIZE="3">组框</font></td>
+        <td WIDTH="26%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="44%"><font SIZE="3"><p ALIGN="JUSTIFY">标题为</font><font FACE="Times New Roman" SIZE="3">Flow control</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">None</font><font SIZE="3">单选按钮</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_FLOWCTRL</font></td>
+        <td WIDTH="44%"><font SIZE="3"><p ALIGN="JUSTIFY">标题为</font><font FACE="Times New Roman" SIZE="3">None</font><font SIZE="3">，选择</font><font FACE="Times New Roman" SIZE="3">Group</font><font SIZE="3">属性</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">RTS/CTS</font><font SIZE="3">单选按钮</font></td>
+        <td WIDTH="26%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="44%"><font SIZE="3"><p ALIGN="JUSTIFY">标题为</font><font FACE="Times New Roman" SIZE="3">RTS/CTS</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">XON/XOFF</font><font SIZE="3">单选按钮</font></td>
+        <td WIDTH="26%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="44%"><font SIZE="3"><p ALIGN="JUSTIFY">标题为</font><font FACE="Times New Roman" SIZE="3">XON/XOFF</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">TTY options</font><font SIZE="3">组框</font></td>
+        <td WIDTH="26%"><font SIZE="3"><p ALIGN="JUSTIFY">缺省</font></td>
+        <td WIDTH="44%"><font SIZE="3"><p ALIGN="JUSTIFY">标题为</font><font FACE="Times New Roman" SIZE="3">TTY options</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">New line</font><font SIZE="3">检查框</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_NEWLINE</font></td>
+        <td WIDTH="44%"><font SIZE="3"><p ALIGN="JUSTIFY">标题为</font><font FACE="Times New Roman" SIZE="3">New line</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="29%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">Local echo</font><font SIZE="3">检查框</font></td>
+        <td WIDTH="26%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_ECHO</font></td>
+        <td WIDTH="44%"><font SIZE="3"><p ALIGN="JUSTIFY">标题为</font><font FACE="Times New Roman" SIZE="3">Local echo</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">打开</font><font FACE="Times New Roman" SIZE="3">ClassWizard</font><font SIZE="3">，为</font><font FACE="Times New Roman" SIZE="3">IDD_COMSETTINGS</font><font SIZE="3">模板创建一个名为</font><font FACE="Times New Roman" SIZE="3">CSetupDlg</font><font SIZE="3">的对话框类。为该类加入</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">成员函数，并按表</font><font FACE="Times New Roman" SIZE="3">12.7</font><font SIZE="3">加入数据成员。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="CENTER">表</font><font FACE="Times New Roman" SIZE="3">12.7 CSetupDlg</font><font SIZE="3">类的数据成员</font></b></p>
+    <table BORDER="1" CELLSPACING="1" CELLPADDING="1" WIDTH="579">
+      <tr>
+        <td WIDTH="33%"><b><font SIZE="3"><p ALIGN="JUSTIFY">控件</font><font FACE="Times New Roman" SIZE="3">ID</font></b></td>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">变量名</b></font></td>
+        <td WIDTH="33%"><font SIZE="3"><b><p ALIGN="JUSTIFY">数据类型</b></font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_BAND</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_sBaud</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CString</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_DATABITS</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_sDataBits</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CString</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_ECHO</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_bEcho</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_FLOWCTRL</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_nFlowCtrl</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_NEWLINE</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_bNewLine</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">BOOL</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_PARITY</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_nParity</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_PORT</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_sPort</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">CString</font></td>
+      </tr>
+      <tr>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">IDC_STOPBITS</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">m_nStopBits</font></td>
+        <td WIDTH="33%"><font FACE="Times New Roman" SIZE="3"><p ALIGN="JUSTIFY">int</font></td>
+      </tr>
+    </table>
+    <p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <blockquote>
+      <blockquote>
+        </font><font SIZE="3"><p ALIGN="JUSTIFY">按清单</font><font FACE="Times New Roman" SIZE="3">12.6</font><font SIZE="3">、</font><font FACE="Times New Roman" SIZE="3">12.7</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">12.8</font><font SIZE="3">修改程序。清单</font><font FACE="Times New Roman" SIZE="3">12.6</font><font SIZE="3">列出了</font><font FACE="Times New Roman" SIZE="3">CTerminalDoc</font><font SIZE="3">类的部分代码，清单</font><font FACE="Times New Roman" SIZE="3">12.7</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CTerminalView</font><font SIZE="3">的部分代码，清单</font><font FACE="Times New Roman" SIZE="3">12.8</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CSetupDlg</font><font SIZE="3">类的部分代码。在本例中使用了</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息。虽然在</font><font FACE="Times New Roman" SIZE="3">Win32</font><font SIZE="3">中，</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息已经取消，系统自己不会产生该消息，但</font><font FACE="Times New Roman" SIZE="3">Visual C++</font><font SIZE="3">对该消息的定义依然保留。考虑到使用习惯，</font><font FACE="Times New Roman" SIZE="3">Terminal</font><font SIZE="3">程序辅助线程通过发送该消息来通知视图有通信事件发生。</p>
+        </font>
+      </blockquote>
+    </blockquote>
+    <p><b><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">12.6 CTerminalDoc</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TerminalDoc.h : interface of the CTerminalDoc class</p>
+    <p ALIGN="JUSTIFY">//</p>
+    <p ALIGN="JUSTIFY">/////////////////////////////////////////////////////////////////////////////</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#define MAXBLOCK 2048</p>
+    <p ALIGN="JUSTIFY">#define XON 0x11</p>
+    <p ALIGN="JUSTIFY">#define XOFF 0x13</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">UINT CommProc(LPVOID pParam);</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">class CTerminalDoc : public CDocument</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">protected: // create from serialization only</p>
+    <p ALIGN="JUSTIFY">CTerminalDoc();</p>
+    <p ALIGN="JUSTIFY">DECLARE_DYNCREATE(CTerminalDoc)</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Attributes</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CWinThread* m_pThread; // </font><font SIZE="3">代表辅助线程</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">volatile BOOL m_bConnected;</p>
+    <p ALIGN="JUSTIFY">volatile HWND m_hTermWnd;</p>
+    <p ALIGN="JUSTIFY">volatile HANDLE m_hPostMsgEvent; // </font><font SIZE="3">用于</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息的事件对象</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">OVERLAPPED m_osRead, m_osWrite; // </font><font SIZE="3">用于重叠读</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">写</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">volatile HANDLE m_hCom; // </font><font SIZE="3">串行口句柄</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">int m_nBaud;</p>
+    <p ALIGN="JUSTIFY">int m_nDataBits;</p>
+    <p ALIGN="JUSTIFY">BOOL m_bEcho;</p>
+    <p ALIGN="JUSTIFY">int m_nFlowCtrl;</p>
+    <p ALIGN="JUSTIFY">BOOL m_bNewLine;</p>
+    <p ALIGN="JUSTIFY">int m_nParity;</p>
+    <p ALIGN="JUSTIFY">CString m_sPort;</p>
+    <p ALIGN="JUSTIFY">int m_nStopBits;</p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// Operations</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL ConfigConnection();</p>
+    <p ALIGN="JUSTIFY">BOOL OpenConnection();</p>
+    <p ALIGN="JUSTIFY">void CloseConnection();</p>
+    <p ALIGN="JUSTIFY">DWORD ReadComm(char *buf,DWORD dwLength);</p>
+    <p ALIGN="JUSTIFY">DWORD WriteComm(char *buf,DWORD dwLength);</b></p>
+    <p ALIGN="JUSTIFY">// Overrides</p>
+    <p ALIGN="JUSTIFY"><b>. . .</b></p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">/////////////////////////////////////////////////////////////////////////////</p>
+    <p ALIGN="JUSTIFY">// TerminalDoc.cpp : implementation of the CTerminalDoc class</p>
+    <p ALIGN="JUSTIFY">//</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">#include &quot;SetupDlg.h&quot;</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CTerminalDoc::CTerminalDoc()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: add one-time construction code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_bConnected=FALSE;</p>
+    <p ALIGN="JUSTIFY">m_pThread=NULL;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">m_nBaud = 9600;</p>
+    <p ALIGN="JUSTIFY">m_nDataBits = 8;</p>
+    <p ALIGN="JUSTIFY">m_bEcho = FALSE;</p>
+    <p ALIGN="JUSTIFY">m_nFlowCtrl = 0;</p>
+    <p ALIGN="JUSTIFY">m_bNewLine = FALSE;</p>
+    <p ALIGN="JUSTIFY">m_nParity = 0;</p>
+    <p ALIGN="JUSTIFY">m_sPort = &quot;COM2&quot;;</p>
+    <p ALIGN="JUSTIFY">m_nStopBits = 0;</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CTerminalDoc::~CTerminalDoc()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(m_bConnected)</p>
+    <p ALIGN="JUSTIFY">CloseConnection();</p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">删除事件句柄</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(m_hPostMsgEvent)</p>
+    <p ALIGN="JUSTIFY">CloseHandle(m_hPostMsgEvent);</p>
+    <p ALIGN="JUSTIFY">if(m_osRead.hEvent)</p>
+    <p ALIGN="JUSTIFY">CloseHandle(m_osRead.hEvent);</p>
+    <p ALIGN="JUSTIFY">if(m_osWrite.hEvent)</p>
+    <p ALIGN="JUSTIFY">CloseHandle(m_osWrite.hEvent);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CTerminalDoc::OnNewDocument()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if (!CDocument::OnNewDocument())</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">((CEditView*)m_viewList.GetHead())-&gt;SetWindowText(NULL);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TODO: add reinitialization code here</p>
+    <p ALIGN="JUSTIFY">// (SDI documents will reuse this document)</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">为</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息创建事件对象，手工重置，初始化为有信号的</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if((m_hPostMsgEvent=CreateEvent(NULL, TRUE, TRUE, NULL))==NULL)</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">memset(&amp;m_osRead, 0, sizeof(OVERLAPPED));</p>
+    <p ALIGN="JUSTIFY">memset(&amp;m_osWrite, 0, sizeof(OVERLAPPED));</p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">为重叠读创建事件对象，手工重置，初始化为无信号的</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if((m_osRead.hEvent=CreateEvent(NULL, TRUE, FALSE, NULL))==NULL)</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">为重叠写创建事件对象，手工重置，初始化为无信号的</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if((m_osWrite.hEvent=CreateEvent(NULL, TRUE, FALSE, NULL))==NULL)</p>
+    <p ALIGN="JUSTIFY">return FALSE;</b></p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CTerminalDoc::OnFileConnect() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(!OpenConnection())</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(&quot;Can't open connection&quot;);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CTerminalDoc::OnFileDisconnect() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CloseConnection(); </b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CTerminalDoc::OnUpdateFileConnect(CCmdUI* pCmdUI) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command update UI handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pCmdUI-&gt;Enable(!m_bConnected);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CTerminalDoc::OnUpdateFileDisconnect(CCmdUI* pCmdUI) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command update UI handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">pCmdUI-&gt;Enable(m_bConnected);</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">打开并配置串行口，建立工作者线程</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CTerminalDoc::OpenConnection()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">COMMTIMEOUTS TimeOuts;</p>
+    <p ALIGN="JUSTIFY">POSITION firstViewPos;</p>
+    <p ALIGN="JUSTIFY">CView *pView;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">firstViewPos=GetFirstViewPosition();</p>
+    <p ALIGN="JUSTIFY">pView=GetNextView(firstViewPos);</p>
+    <p ALIGN="JUSTIFY">m_hTermWnd=pView-&gt;GetSafeHwnd();</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(m_bConnected)</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">m_hCom=CreateFile(m_sPort, GENERIC_READ | GENERIC_WRITE, 0, NULL,</p>
+    <p ALIGN="JUSTIFY">OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, </p>
+    <p ALIGN="JUSTIFY">NULL); // </font><font SIZE="3">重叠方式</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(m_hCom==INVALID_HANDLE_VALUE)</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">SetupComm(m_hCom,MAXBLOCK,MAXBLOCK);</p>
+    <p ALIGN="JUSTIFY">SetCommMask(m_hCom, EV_RXCHAR);</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">把间隔超时设为最大，把总超时设为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">将导致</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">立即返回并完成操作</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">TimeOuts.ReadIntervalTimeout=MAXDWORD; </p>
+    <p ALIGN="JUSTIFY">TimeOuts.ReadTotalTimeoutMultiplier=0; </p>
+    <p ALIGN="JUSTIFY">TimeOuts.ReadTotalTimeoutConstant=0; </p>
+    <p ALIGN="JUSTIFY">/* </font><font SIZE="3">设置写超时以指定</font><font FACE="Times New Roman" SIZE="3">WriteComm</font><font SIZE="3">成员函数中的</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetOverlappedResult</font><font SIZE="3">函数的等待时间</font><font FACE="Times New Roman" SIZE="3">*/</p>
+    <p ALIGN="JUSTIFY">TimeOuts.WriteTotalTimeoutMultiplier=50; </p>
+    <p ALIGN="JUSTIFY">TimeOuts.WriteTotalTimeoutConstant=2000;</p>
+    <p ALIGN="JUSTIFY">SetCommTimeouts(m_hCom, &amp;TimeOuts);</p>
+    <p ALIGN="JUSTIFY">if(ConfigConnection())</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_pThread=AfxBeginThread(CommProc, this, THREAD_PRIORITY_NORMAL, </p>
+    <p ALIGN="JUSTIFY">0, CREATE_SUSPENDED, NULL); // </font><font SIZE="3">创建并挂起线程</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(m_pThread==NULL)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CloseHandle(m_hCom);</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">else</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_bConnected=TRUE;</p>
+    <p ALIGN="JUSTIFY">m_pThread-&gt;ResumeThread(); // </font><font SIZE="3">恢复线程运行</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">else</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CloseHandle(m_hCom);</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">return TRUE;</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">结束工作者线程，关闭串行口</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CTerminalDoc::CloseConnection()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if(!m_bConnected) return;</p>
+    <p ALIGN="JUSTIFY">m_bConnected=FALSE;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">结束</font><font FACE="Times New Roman" SIZE="3">CommProc</font><font SIZE="3">线程中</font><font FACE="Times New Roman" SIZE="3">WaitSingleObject</font><font SIZE="3">函数的等待</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetEvent(m_hPostMsgEvent); </p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">结束</font><font FACE="Times New Roman" SIZE="3">CommProc</font><font SIZE="3">线程中</font><font FACE="Times New Roman" SIZE="3">WaitCommEvent</font><font SIZE="3">的等待</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetCommMask(m_hCom, 0); </p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">//</font><font SIZE="3">等待辅助线程终止</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">WaitForSingleObject(m_pThread-&gt;m_hThread, INFINITE);</p>
+    <p ALIGN="JUSTIFY">m_pThread=NULL;</p>
+    <p ALIGN="JUSTIFY">CloseHandle(m_hCom);</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">让用户设置串行口</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CTerminalDoc::OnFileSettings() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your command handler code here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSetupDlg dlg;</p>
+    <p ALIGN="JUSTIFY">CString str;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">dlg.m_bConnected=m_bConnected;</p>
+    <p ALIGN="JUSTIFY">dlg.m_sPort=m_sPort;</p>
+    <p ALIGN="JUSTIFY">str.Format(&quot;%d&quot;,m_nBaud);</p>
+    <p ALIGN="JUSTIFY">dlg.m_sBaud=str;</p>
+    <p ALIGN="JUSTIFY">str.Format(&quot;%d&quot;,m_nDataBits);</p>
+    <p ALIGN="JUSTIFY">dlg.m_sDataBits=str;</p>
+    <p ALIGN="JUSTIFY">dlg.m_nParity=m_nParity;</p>
+    <p ALIGN="JUSTIFY">dlg.m_nStopBits=m_nStopBits;</p>
+    <p ALIGN="JUSTIFY">dlg.m_nFlowCtrl=m_nFlowCtrl;</p>
+    <p ALIGN="JUSTIFY">dlg.m_bEcho=m_bEcho;</p>
+    <p ALIGN="JUSTIFY">dlg.m_bNewLine=m_bNewLine;</p>
+    <p ALIGN="JUSTIFY">if(dlg.DoModal()==IDOK)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">m_sPort=dlg.m_sPort;</p>
+    <p ALIGN="JUSTIFY">m_nBaud=atoi(dlg.m_sBaud);</p>
+    <p ALIGN="JUSTIFY">m_nDataBits=atoi(dlg.m_sDataBits);</p>
+    <p ALIGN="JUSTIFY">m_nParity=dlg.m_nParity;</p>
+    <p ALIGN="JUSTIFY">m_nStopBits=dlg.m_nStopBits;</p>
+    <p ALIGN="JUSTIFY">m_nFlowCtrl=dlg.m_nFlowCtrl;</p>
+    <p ALIGN="JUSTIFY">m_bEcho=dlg.m_bEcho;</p>
+    <p ALIGN="JUSTIFY">m_bNewLine=dlg.m_bNewLine;</p>
+    <p ALIGN="JUSTIFY">if(m_bConnected)</p>
+    <p ALIGN="JUSTIFY">if(!ConfigConnection())</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(&quot;Can't realize the settings!&quot;);</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">配置串行口</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CTerminalDoc::ConfigConnection()</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">DCB dcb;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(!GetCommState(m_hCom, &amp;dcb))</p>
+    <p ALIGN="JUSTIFY">return FALSE;</p>
+    <p ALIGN="JUSTIFY">dcb.fBinary=TRUE;</p>
+    <p ALIGN="JUSTIFY">dcb.BaudRate=m_nBaud; // </font><font SIZE="3">波特率</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">dcb.ByteSize=m_nDataBits; // </font><font SIZE="3">每字节位数</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">dcb.fParity=TRUE;</p>
+    <p ALIGN="JUSTIFY">switch(m_nParity) // </font><font SIZE="3">校验设置</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">case 0: dcb.Parity=NOPARITY;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case 1: dcb.Parity=EVENPARITY;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case 2: dcb.Parity=ODDPARITY;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">default:;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">switch(m_nStopBits) // </font><font SIZE="3">停止位</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">case 0: dcb.StopBits=ONESTOPBIT;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case 1: dcb.StopBits=ONE5STOPBITS;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case 2: dcb.StopBits=TWOSTOPBITS;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">default:;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">硬件流控制设置</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">dcb.fOutxCtsFlow=m_nFlowCtrl==1;</p>
+    <p ALIGN="JUSTIFY">dcb.fRtsControl=m_nFlowCtrl==1?</p>
+    <p ALIGN="JUSTIFY">RTS_CONTROL_HANDSHAKE:RTS_CONTROL_ENABLE;</p>
+    <p ALIGN="JUSTIFY">// XON/XOFF</font><font SIZE="3">流控制设置</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">dcb.fInX=dcb.fOutX=m_nFlowCtrl==2;</p>
+    <p ALIGN="JUSTIFY">dcb.XonChar=XON;</p>
+    <p ALIGN="JUSTIFY">dcb.XoffChar=XOFF;</p>
+    <p ALIGN="JUSTIFY">dcb.XonLim=50;</p>
+    <p ALIGN="JUSTIFY">dcb.XoffLim=50;</p>
+    <p ALIGN="JUSTIFY">return SetCommState(m_hCom, &amp;dcb);</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">从串行口输入缓冲区中读入指定数量的字符</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DWORD CTerminalDoc::ReadComm(char *buf,DWORD dwLength)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">DWORD length=0;</p>
+    <p ALIGN="JUSTIFY">COMSTAT ComStat;</p>
+    <p ALIGN="JUSTIFY">DWORD dwErrorFlags;</p>
+    <p ALIGN="JUSTIFY">ClearCommError(m_hCom,&amp;dwErrorFlags,&amp;ComStat);</p>
+    <p ALIGN="JUSTIFY">length=min(dwLength, ComStat.cbInQue);</p>
+    <p ALIGN="JUSTIFY">ReadFile(m_hCom,buf,length,&amp;length,&amp;m_osRead);</p>
+    <p ALIGN="JUSTIFY">return length;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">将指定数量的字符从串行口输出</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">DWORD CTerminalDoc::WriteComm(char *buf,DWORD dwLength)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">BOOL fState;</p>
+    <p ALIGN="JUSTIFY">DWORD length=dwLength;</p>
+    <p ALIGN="JUSTIFY">COMSTAT ComStat;</p>
+    <p ALIGN="JUSTIFY">DWORD dwErrorFlags;</p>
+    <p ALIGN="JUSTIFY">ClearCommError(m_hCom,&amp;dwErrorFlags,&amp;ComStat);</p>
+    <p ALIGN="JUSTIFY">fState=WriteFile(m_hCom,buf,length,&amp;length,&amp;m_osWrite);</p>
+    <p ALIGN="JUSTIFY">if(!fState){</p>
+    <p ALIGN="JUSTIFY">if(GetLastError()==ERROR_IO_PENDING)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">GetOverlappedResult(m_hCom,&amp;m_osWrite,&amp;length,TRUE);// </font><font SIZE="3">等待</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">else</p>
+    <p ALIGN="JUSTIFY">length=0;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">return length;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">工作者线程，负责监视串行口</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">UINT CommProc(LPVOID pParam)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">OVERLAPPED os;</p>
+    <p ALIGN="JUSTIFY">DWORD dwMask, dwTrans;</p>
+    <p ALIGN="JUSTIFY">COMSTAT ComStat;</p>
+    <p ALIGN="JUSTIFY">DWORD dwErrorFlags;</p>
+    <p ALIGN="JUSTIFY">CTerminalDoc *pDoc=(CTerminalDoc*)pParam;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">memset(&amp;os, 0, sizeof(OVERLAPPED));</p>
+    <p ALIGN="JUSTIFY">os.hEvent=CreateEvent(NULL, TRUE, FALSE, NULL);</p>
+    <p ALIGN="JUSTIFY">if(os.hEvent==NULL)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">AfxMessageBox(&quot;Can't create event object!&quot;);</p>
+    <p ALIGN="JUSTIFY">return (UINT)-1;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">while(pDoc-&gt;m_bConnected)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">ClearCommError(pDoc-&gt;m_hCom,&amp;dwErrorFlags,&amp;ComStat);</p>
+    <p ALIGN="JUSTIFY">if(ComStat.cbInQue)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">无限等待</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息被处理完</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">WaitForSingleObject(pDoc-&gt;m_hPostMsgEvent, INFINITE);</p>
+    <p ALIGN="JUSTIFY">ResetEvent(pDoc-&gt;m_hPostMsgEvent);</p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">通知视图</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">PostMessage(pDoc-&gt;m_hTermWnd, WM_COMMNOTIFY, EV_RXCHAR, 0);</p>
+    <p ALIGN="JUSTIFY">continue;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">dwMask=0;</p>
+    <p ALIGN="JUSTIFY">if(!WaitCommEvent(pDoc-&gt;m_hCom, &amp;dwMask, &amp;os)) // </font><font SIZE="3">重叠操作</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">if(GetLastError()==ERROR_IO_PENDING)</p>
+    <p ALIGN="JUSTIFY">// </font><font SIZE="3">无限等待重叠操作结果</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetOverlappedResult(pDoc-&gt;m_hCom, &amp;os, &amp;dwTrans, TRUE);</p>
+    <p ALIGN="JUSTIFY">else</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CloseHandle(os.hEvent);</p>
+    <p ALIGN="JUSTIFY">return (UINT)-1;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">CloseHandle(os.hEvent);</p>
+    <p ALIGN="JUSTIFY">return 0;</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CTerminalDoc::CanCloseFrame(CFrameWnd* pFrame) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your specialized code here and/or call the base class</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">SetModifiedFlag(FALSE); // </font><font SIZE="3">将文档的修改标志设置成未修改</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return CDocument::CanCloseFrame(pFrame);</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">毫无疑问，</font><font FACE="Times New Roman" SIZE="3">CTerminalDoc</font><font SIZE="3">类是研究重点。该类负责</font><font FACE="Times New Roman" SIZE="3">Terminal</font><font SIZE="3">的通信任务，主要包括设置通信参数、打开和关闭串行口、建立和终止辅助工作线程、用辅助线程监视串行口等等。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">在</font><font FACE="Times New Roman" SIZE="3">CTerminalDoc</font><font SIZE="3">类的头文件中，有些变量是用</font><font FACE="Times New Roman" SIZE="3">volatile</font><font SIZE="3">关键字声明的。当两个线程都要用到某一个变量且该变量的值会被改变时，应该用</font><font FACE="Times New Roman" SIZE="3">volatile</font><font SIZE="3">声明，该关键字的作用是防止优化编译器把变量从内存装入</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">寄存器中。如果变量被装入寄存器，那么两个线程有可能一个使用内存中的变量，一个使用寄存器中的变量，这会造成程序的错误执行。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">成员</font><font FACE="Times New Roman" SIZE="3">m_bConnected</font><font SIZE="3">用来表明当前是否存在一个通信连接。</font><font FACE="Times New Roman" SIZE="3">m_hTermWnd</font><font SIZE="3">用来保存是视图的窗口句柄。</font><font FACE="Times New Roman" SIZE="3">m_hPostMsgEvent</font><font SIZE="3">事件对象用于</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息的允许和禁止。</font><font FACE="Times New Roman" SIZE="3">m_pThread</font><font SIZE="3">用来指向</font><font FACE="Times New Roman" SIZE="3">AfxBeginThread</font><font SIZE="3">创建的</font><font FACE="Times New Roman" SIZE="3">CWinThread</font><font SIZE="3">对象，以便对线程进行控制。</font><font FACE="Times New Roman" SIZE="3">OVERLAPPED</font><font SIZE="3">结构</font><font FACE="Times New Roman" SIZE="3">m_osRead</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">m_osWrite</font><font SIZE="3">用于串行口的重叠读</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">写，程序应该为它们的</font><font FACE="Times New Roman" SIZE="3">hEvent</font><font SIZE="3">成员创建事件句柄。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CTerminalDoc</font><font SIZE="3">类的构造函数主要完成一些通信参数的初始化工作。</font><font FACE="Times New Roman" SIZE="3">OnNewDocument</font><font SIZE="3">成员函数创建了三个事件对象，</font><font FACE="Times New Roman" SIZE="3">CTerminalDoc</font><font SIZE="3">的析构函数关闭串行口并删除事件对象句柄。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">OnFileSettings</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">File-&gt;Settings...</font><font SIZE="3">的命令处理函数，该函数弹出一个</font><font FACE="Times New Roman" SIZE="3">CSetupDlg</font><font SIZE="3">对话框来设置通信参数。实际的设置工作由</font><font FACE="Times New Roman" SIZE="3">ConfigConnection</font><font SIZE="3">函数完成，在</font><font FACE="Times New Roman" SIZE="3">OpenConnection</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">OnFileSettings</font><font SIZE="3">中都会调用该函数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">OpenConnection</font><font SIZE="3">负责打开串行口并建立辅助工作线程，当用户选择了</font><font FACE="Times New Roman" SIZE="3">File-&gt;Connect</font><font SIZE="3">命令时，消息处理函数</font><font FACE="Times New Roman" SIZE="3">OnFileConnect</font><font SIZE="3">将调用该函数。该函数调用</font><font FACE="Times New Roman" SIZE="3">CreateFile</font><font SIZE="3">以重叠方式打开指定的串行口并把返回的句柄保存在</font><font FACE="Times New Roman" SIZE="3">m_hCom</font><font SIZE="3">成员中。接着，函数对</font><font FACE="Times New Roman" SIZE="3">m_hCom</font><font SIZE="3">通信设备进行各种设置。需要注意的是对超时的设定，将读间隔超时设置为</font><font FACE="Times New Roman" SIZE="3">MAXDWORD</font><font SIZE="3">并使其它读超时参数为</font><font FACE="Times New Roman" SIZE="3">0</font><font SIZE="3">会导致</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">函数立即完成操作并返回，而不管读入了多少字符。设置超时就规定了</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">函数的等待时间，因此有必要将写超时设置成适当的值，这样如果不能完成写串口的任务，</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">函数会在超过规定超时后结束等待并报告实际传输的字符数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">如果对</font><font FACE="Times New Roman" SIZE="3">m_hCom</font><font SIZE="3">设置成功，则函数会建立一个辅助线程并暂时将其挂起。在最后，调用</font><font FACE="Times New Roman" SIZE="3">CWinThread:: ResumeThread</font><font SIZE="3">使线程开始运行。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">OpenConnection</font><font SIZE="3">调用成功后，线程函数</font><font FACE="Times New Roman" SIZE="3">CommProc</font><font SIZE="3">就开始工作。该函数的主体是一个</font><font FACE="Times New Roman" SIZE="3">while</font><font SIZE="3">循环，在该循环内，混合了两种方法监视串行口输入的方法。先是调用</font><font FACE="Times New Roman" SIZE="3">ClearCommError</font><font SIZE="3">函数查询输入缓冲区中是否有字符，如果有，就向视图发送</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息通知其接收字符。如果没有，则调用</font><font FACE="Times New Roman" SIZE="3">WaitCommEvent</font><font SIZE="3">函数监视</font><font FACE="Times New Roman" SIZE="3">EV_RXCHAR</font><font SIZE="3">通信事件，该函数执行重叠操作，紧接着调用的</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">函数无限等待通信事件，如果</font><font FACE="Times New Roman" SIZE="3">EV_RXCHAR</font><font SIZE="3">事件发生（串口收到字符并放入输入缓冲区中），那么函数就结束等待。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">上述两种方法的混合使用兼顾了线程的效率和可靠性。如果只用</font><font FACE="Times New Roman" SIZE="3">ClearCommError</font><font SIZE="3">函数，则辅助线程将不断耗费</font><font FACE="Times New Roman" SIZE="3">CPU</font><font SIZE="3">时间来查询，效率较低。如果只用</font><font FACE="Times New Roman" SIZE="3">WaitCommEvent</font><font SIZE="3">来监视，那么由于该函数对输入缓冲区中已有的字符不会产生</font><font FACE="Times New Roman" SIZE="3">EV_RXCHAR</font><font SIZE="3">事件，因此在通信速率较高时，会造成数据的延误和丢失。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">注意到辅助线程用</font><font FACE="Times New Roman" SIZE="3">m_PostMsgEvent</font><font SIZE="3">事件对象来同步</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息的发送。在发送消息之前，</font><font FACE="Times New Roman" SIZE="3">WaitForSingleObject</font><font SIZE="3">函数无限等待</font><font FACE="Times New Roman" SIZE="3">m_PostMsgEvent</font><font SIZE="3">对象，</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">的消息处理函数</font><font FACE="Times New Roman" SIZE="3">CTerminalView::OnCommNotify</font><font SIZE="3">在返回时会把该对象置为有信号，因此，如果</font><font FACE="Times New Roman" SIZE="3">WaitForSingleObject</font><font SIZE="3">函数返回，则说明上一个</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息已被处理完，这时才能发下一个消息，在发消息前还要调用</font><font FACE="Times New Roman" SIZE="3">ResetEvent</font><font SIZE="3">把</font><font FACE="Times New Roman" SIZE="3">m_PostMsgEvent</font><font SIZE="3">对象置为无信号的，以供下次使用。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">由于</font><font FACE="Times New Roman" SIZE="3">PostMessage</font><font SIZE="3">函数在消息队列中放入消息后会立即返回，所以如果不采取上述措施，那么辅助线程可能在主线程未处理之前重复发出</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息，这会降低系统的效率。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">可能有读者会问，为什么不用</font><font FACE="Times New Roman" SIZE="3">SendMessage</font><font SIZE="3">？该函数在发送的消息被处理完毕后才返回，这样不就不用考虑同步问题了吗？是的，本例中也可以使用</font><font FACE="Times New Roman" SIZE="3">SendMessage</font><font SIZE="3">，但该函数会阻塞辅助线程的执行直到消息处理完毕，这会降低效率。如果用</font><font FACE="Times New Roman" SIZE="3">PostMessage</font><font SIZE="3">，那么在函数立即返回后线程还可以干别的事情，因此，考虑到效率问题，这里使用了</font><font FACE="Times New Roman" SIZE="3">PostMessage</font><font SIZE="3">而不是</font><font FACE="Times New Roman" SIZE="3">SendMessage</font><font SIZE="3">。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">函数</font><font FACE="Times New Roman" SIZE="3">ReadComm</font><font SIZE="3">和</font><font FACE="Times New Roman" SIZE="3">WriteComm</font><font SIZE="3">分别用来从</font><font FACE="Times New Roman" SIZE="3">m_hCom</font><font SIZE="3">通信设备中读</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">写指定数量的字符。</font><font FACE="Times New Roman" SIZE="3">ReadComm</font><font SIZE="3">函数很简单，由于对读超时的特殊设定，</font><font FACE="Times New Roman" SIZE="3">ReadFile</font><font SIZE="3">函数会立即返回并完成操作，并在</font><font FACE="Times New Roman" SIZE="3">length</font><font SIZE="3">变量中报告实际读入的字符数。此时，没有必要调用等待函数或</font><font FACE="Times New Roman" SIZE="3">GetOverlappedResult</font><font SIZE="3">。在</font><font FACE="Times New Roman" SIZE="3">WriteComm</font><font SIZE="3">中，调用</font><font FACE="Times New Roman" SIZE="3">GerOverlappedResult</font><font SIZE="3">来等待操作结果，直到超时发生。不管是否超时，该函数在结束等待后都会报告实际的传输字符数。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CloseConnection</font><font SIZE="3">函数的主要任务是终止辅助线程并关闭</font><font FACE="Times New Roman" SIZE="3">m_hCom</font><font SIZE="3">通信设备。为了终止线程，该函数设置了一系列信号，以结束辅助线程中的等待和循环，然后调用</font><font FACE="Times New Roman" SIZE="3">WaitForSingleObject</font><font SIZE="3">等待线程结束。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">12.7 CTerminalView</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TerminalView.h : interface of the CTerminalView class</p>
+    <p ALIGN="JUSTIFY">/////////////////////////////////////////////////////////////////////////////</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">class CTerminalView : public CEditView</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY"><b>. . .</p>
+    <p ALIGN="JUSTIFY">afx_msg LRESULT OnCommNotify(WPARAM wParam, LPARAM lParam);</b></p>
+    <p ALIGN="JUSTIFY">DECLARE_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TerminalView.cpp : implementation of the CTerminalView class</p>
+    <p ALIGN="JUSTIFY">//</p>
+    <p ALIGN="JUSTIFY">BEGIN_MESSAGE_MAP(CTerminalView, CEditView)</p>
+    <p ALIGN="JUSTIFY"><b>. . .</p>
+    <p ALIGN="JUSTIFY">ON_MESSAGE(WM_COMMNOTIFY, OnCommNotify)</b></p>
+    <p ALIGN="JUSTIFY">END_MESSAGE_MAP()</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">LRESULT CTerminalView::OnCommNotify(WPARAM wParam, LPARAM lParam)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">char buf[MAXBLOCK/4];</p>
+    <p ALIGN="JUSTIFY">CString str;</p>
+    <p ALIGN="JUSTIFY">int nLength, nTextLength;</p>
+    <p ALIGN="JUSTIFY">CTerminalDoc* pDoc=GetDocument();</p>
+    <p ALIGN="JUSTIFY">CEdit&amp; edit=GetEditCtrl();</p>
+    <p ALIGN="JUSTIFY">if(!pDoc-&gt;m_bConnected || </p>
+    <p ALIGN="JUSTIFY">(wParam &amp; EV_RXCHAR)!=EV_RXCHAR) // </font><font SIZE="3">是否是</font><font FACE="Times New Roman" SIZE="3">EV_RXCHAR</font><font SIZE="3">事件</font><font FACE="Times New Roman" SIZE="3">?</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">SetEvent(pDoc-&gt;m_hPostMsgEvent); // </font><font SIZE="3">允许发送下一个</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return 0L;</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">nLength=pDoc-&gt;ReadComm(buf,100);</p>
+    <p ALIGN="JUSTIFY">if(nLength)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">nTextLength=edit.GetWindowTextLength();</p>
+    <p ALIGN="JUSTIFY">edit.SetSel(nTextLength,nTextLength); //</font><font SIZE="3">移动插入光标到正文末尾</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">for(int i=0;i&lt;nLength;i++)</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">switch(buf[i])</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">case '\r': // </font><font SIZE="3">回车</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(!pDoc-&gt;m_bNewLine) </p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case '\n': // </font><font SIZE="3">换行</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str+=&quot;\r\n&quot;;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case '\b': // </font><font SIZE="3">退格</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">edit.SetSel(-1, 0);</p>
+    <p ALIGN="JUSTIFY">edit.ReplaceSel(str);</p>
+    <p ALIGN="JUSTIFY">nTextLength=edit.GetWindowTextLength();</p>
+    <p ALIGN="JUSTIFY">edit.SetSel(nTextLength-1,nTextLength);</p>
+    <p ALIGN="JUSTIFY">edit.ReplaceSel(&quot;&quot;); //</font><font SIZE="3">回退一个字符</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">str=&quot;&quot;;</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">case '\a': // </font><font SIZE="3">振铃 </font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">MessageBeep((UINT)-1);</p>
+    <p ALIGN="JUSTIFY">break;</p>
+    <p ALIGN="JUSTIFY">default : </p>
+    <p ALIGN="JUSTIFY">str+=buf[i];</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">edit.SetSel(-1, 0);</p>
+    <p ALIGN="JUSTIFY">edit.ReplaceSel(str); // </font><font SIZE="3">向编辑视图中插入收到的字符</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY">SetEvent(pDoc-&gt;m_hPostMsgEvent); // </font><font SIZE="3">允许发送下一个</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">return 0L;</p>
+    <p ALIGN="JUSTIFY">}</b></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">void CTerminalView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">// TODO: Add your message handler code here and/or call default</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CTerminalDoc* pDoc=GetDocument();</p>
+    <p ALIGN="JUSTIFY">char c=(char)nChar;</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">if(!pDoc-&gt;m_bConnected)return;</p>
+    <p ALIGN="JUSTIFY">pDoc-&gt;WriteComm(&amp;c, 1);</p>
+    <p ALIGN="JUSTIFY">if(pDoc-&gt;m_bEcho) </b></p>
+    <p ALIGN="JUSTIFY">CEditView::OnChar(nChar, nRepCnt, nFlags); // </font><font SIZE="3">本地回显</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">}</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font></b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CTerminalView</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">CEditView</font><font SIZE="3">的派生类，利用</font><font FACE="Times New Roman" SIZE="3">CEditView</font><font SIZE="3">的编辑功能，可以大大简化程序的设计。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">OnChar</font><font SIZE="3">函数对</font><font FACE="Times New Roman" SIZE="3">WM_CHAR</font><font SIZE="3">消息进行处理，它调用</font><font FACE="Times New Roman" SIZE="3">CTerminalDoc::WriteComm</font><font SIZE="3">把用户键入的字符从串行口输出。如果设置了</font><font FACE="Times New Roman" SIZE="3">Local echo</font><font SIZE="3">，那么就调用</font><font FACE="Times New Roman" SIZE="3">CEditView::OnChar</font><font SIZE="3">把字符输出到视图中。</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">OnCommNotify</font><font SIZE="3">是</font><font FACE="Times New Roman" SIZE="3">WM_COMMNOTIFY</font><font SIZE="3">消息的处理函数。该函数调用</font><font FACE="Times New Roman" SIZE="3">CTerminalDoc::ReadComm</font><font SIZE="3">从串行口输入缓冲区中读入字符并把它们输出到编辑视图中。在输出前，函数会对一些特殊字符进行处理。如果读者对控制编辑视图的代码不太明白，那么请参见</font><font FACE="Times New Roman" SIZE="3">6.1.4</font><font SIZE="3">。在函数返回时，要调用</font><font FACE="Times New Roman" SIZE="3">SetEvent</font><font SIZE="3">把</font><font FACE="Times New Roman" SIZE="3">m_hPostMsgEvent</font><font SIZE="3">置为有信号。</font><b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</p>
+    <p ALIGN="JUSTIFY">清单</font><font FACE="Times New Roman" SIZE="3">12.8 CSetupDlg</font><font SIZE="3">类的部分代码</font></b><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// SetupDlg.h : header file</p>
+    <p ALIGN="JUSTIFY">//</p>
+    <p ALIGN="JUSTIFY">class CSetupDlg : public CDialog</p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">. . .</p>
+    <p ALIGN="JUSTIFY">public:</p>
+    <p ALIGN="JUSTIFY">BOOL m_bConnected;</p>
+    <p ALIGN="JUSTIFY">. . .</b></p>
+    <p ALIGN="JUSTIFY">};</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// SetupDlg.cpp : implementation file</p>
+    <p ALIGN="JUSTIFY">//</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">BOOL CSetupDlg::OnInitDialog() </p>
+    <p ALIGN="JUSTIFY">{</p>
+    <p ALIGN="JUSTIFY">CDialog::OnInitDialog();</p>
+    <p ALIGN="JUSTIFY"></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">// TODO: Add extra initialization here</p>
+    <p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">GetDlgItem(IDC_PORT)-&gt;EnableWindow(!m_bConnected);</b></p>
+    <p ALIGN="JUSTIFY">return TRUE; // return TRUE unless you set the focus to a control</p>
+    <p ALIGN="JUSTIFY">// EXCEPTION: OCX Property Pages should return FALSE</p>
+    <p ALIGN="JUSTIFY">}</p>
+    <b><p ALIGN="JUSTIFY"></b></font><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+    <p ALIGN="JUSTIFY">CSetupDlg</font><font SIZE="3">的主要任务是配置通信参数。在</font><font FACE="Times New Roman" SIZE="3">OnInitDialog</font><font SIZE="3">函数中，要根据当前是否连接来允许</font><font FACE="Times New Roman" SIZE="3">/</font><font SIZE="3">禁止</font><font FACE="Times New Roman" SIZE="3">Port</font><font SIZE="3">组合框。因为在打开一个连接后，显然不能随便改变端口。</font><font FACE="Times New Roman" SIZE="3"></p>
+    </font><div align="center"><center><table border="0" cellpadding="0" cellspacing="0" width="615">
+      <tr>
+        <td><a href="chap12_3.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap12/chap12_3.htm">上一页</a></td>
+        <td><p align="right"><a href="chap12_5.htm" tppabs="http://www.lzu.edu.cn/netteach/jiaochen/vc++5.0/vc++5.0/chap12/chap12_5.htm">下一页</a></td>
+      </tr>
+    </table>
+    </center></div><font SIZE="5"><hr noshade color="#3973DE" size="1">
+    <p align="center"></font><font size="2" color="#000000">本教程由<a href="javascript:if(confirm('http://vcdynasty.yeah.net/  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://vcdynasty.yeah.net/'" tppabs="http://vcdynasty.yeah.net/">Visual C++王朝（Where programmers come together）</a>协助制作<br>
+    未经许可，请勿以任何形式复制</font></td>
+    <b>
+  </tr>
+</table>
+</center></div>
+
+<p ALIGN="CENTER"></b><font SIZE="5">　</font><font FACE="Times New Roman" SIZE="5"></p>
+</font><font FACE="Times New Roman" SIZE="3">
+
+<p></font><b><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+</font></b>
+
+<p><font SIZE="3">　</font><font FACE="Times New Roman" SIZE="3"></p>
+
+<p></font>　</p>
+</body>
+</html>

@@ -1,0 +1,620 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab720{\fonttbl{\f0\fswiss MS Sans Serif;}{\f1\froman\fcharset2 Symbol;}{\f2\fmodern Courier New;}}
+{\colortbl\red0\green0\blue0;}
+\deflang1033\pard\plain\f2\fs20 Chapter 6 Dialog Box
+\par 
+\par Dialog box is very common for all types of applications, it is used in almost every program. Usually a dialog box is built from resources: we design everything in the dialog template, then use a CDialog derived class to implement it. We can call function CDialog::DoModal() to invoke the dialog box, use member variables to access the common controls, and add message handlers to process mouse or keyboard related events.
+\par 
+\par In this chapter we will discuss some topics on customizing normal dialog boxes. By using the methods introduced in this chapter, we are able to make our dialog boxes more user friendly.
+\par 
+\par 6.1\tab Modeless Dialog Box
+\par 
+\par Modal and Modeless Dialog Box
+\par There are two types of dialog boxes in Windows( system: modal dialog box and modeless dialog box.
+\par 
+\par A modal dialog box does not allow the user to switch away from it after it is invoked. We must first dismiss the dialog box before switching to any other window.
+\par 
+\par It is very easy to implement a modal dialog box: first create a dialog box template, then derive a new class from class CDialog; next we can use the new class to declare a variable which can be used to call function CDialog::DoModal(). Please note that when deriving the new class, we must make sure that it contains the ID of the dialog template. 
+\par We can check this by looking at the class definition. By default, there should be a member IDD that is assigned the ID of dialog template:
+\par 
+\par ......
+\par     //\{\{AFX_DATA(CMLDialog)
+\par     enum \{ IDD = IDD_DIALOG \};
+\par     //\}\}AFX_DATA
+\par ......
+\par 
+\par If no ID is assigned to this member, the dialog box will not be created correctly.
+\par 
+\par A modeless dialog box allows the user to switch to other windows without dismissing it first. Because of this, the variable used to implement the modeless dialog box should not go out of scope in the dialog box's lifetime. Usually we need to use member variable declared in the class to create modeless dialog box rather than using a local variable.
+\par 
+\par We can not call function CDialog::DoModal() to implement modeless dialog box, because this function is designed solely for modal dialog box. The correct functions that should be used for modeless dialog box are CDialog::Create(...) and CWnd::ShowWindow(...).
+\par 
+\par The following shows the prototypes of function CDialog::Create(...):
+\par 
+\par BOOL CDialog::Create(UINT nIDTemplate, CWnd* pParentWnd = NULL);
+\par BOOL CDialog::Create(LPCTSTR lpszTemplateName, CWnd* pParentWnd = NULL);
+\par 
+\par Both versions of this function have two parameters, the first of which is the template ID (either an integer ID or a string ID), the second is a CWnd type pointer which specifies the parent window of the dialog box.
+\par 
+\par Function CWnd::ShowWindow(...) has the following format:
+\par 
+\par BOOL CWnd::ShowWindow(int nCmdShow);
+\par 
+\par It has only one parameter, which can be set to SW_HIDE, SW_MINIMIZE, SW_SHOW... and so on to display the window in different styles.
+\par 
+\par For example, if class CMyDialog is derived from CDialog, and the dialog template ID is IDD_DIALOG, we can declare a variable m_dlg in any class (for example, CDocument) then do the following in a member function to implement a modeless dialog box:
+\par 
+\par m_dlg.Create(IDD_DIALOG);
+\par m_dlg.ShowWindow(SW_SHOW);
+\par 
+\par Sample
+\par 
+\par Sample 6.1\\DB demonstrates how to implement modeless dialog box. It is a standard SDI application created by Application Wizard. To make the modeless creation procedure simpler, a member function DoModeless() is implemented in the derived class so that it can be used just like function CDialog:: DoModal().
+\par 
+\par Please note that when the user clicks "OK" or "Cancel" button to dismiss the dialog box, the window will become hidden rather than being destroyed. The window will be destroyed only when the variable goes out of scope (e.g. when we use delete keyword to release the buffers if they are allocated by new key word, or after function returns if the variable is declared locally). So even after the dialog box is closed by clicking "OK" or "Cancel" button, it still can be restored by calling function CWind::ShowWindow(...) using SW_SHOW parameter.\
+\
+
+\par In the sample application, a dialog template IDD_DIALOG_MODELESS is prepared for modeless dialog box implementation. A new class CMLDialog is derived from CDialog, and a CWnd type pointer m_pParent along with a member function DoModeless() are declared in the class:
+\par 
+\par (Code omitted)
+\par 
+\par The constructor of CMLDialog is modified as follows:
+\par 
+\par CMLDialog::CMLDialog(CWnd* pParent /*=NULL*/)
+\par \tab : CDialog(CMLDialog::IDD, pParent)
+\par \{
+\par     //\{\{AFX_DATA_INIT(CMLDialog)
+\par     //\}\}AFX_DATA_INIT
+\par     m_pParent=pParent;
+\par \}
+\par 
+\par When we implement a modal dialog box using class CDialog, the parent window needs to be specified only in the constructor. When calling CDialog::Create(...) to implement a modeless dialog box, we need to specify the parent window again even if it has been passed to the constructor. To let function DoModeless() has the same format with function CDialog::DoModal(), we store the pointer to the parent window in variable CMLDialog::m_pParent so that it can be used later in function DoModeless(). In the sample, function CMLDialog::DoModeless() is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Since this function could be called after the dialog box has been invoked, first we need to check if a valid window has been created by calling function CWnd::GetSafeHwnd(). If the returned value is NULL, the window has not been created yet. In this case, we should call function CDialog::Create(...) to create the window. If the returned value is not NULL, there are two possibilities: the window may be currently active or hidden. We can call function CWnd::IsWindowVisible() to check the dialog box's visual state. If the dialog box is hidden, we should call CWnd::ShowWindow(...) to activate it.
+\par In the sample, a command Dialog Box | Modeless is added to the mainframe menu IDR_MAINFRAME, whose ID is ID_DIALOGBOX_MODELESS. Also, a WM_COMMAND message handler is added for this command through using Class Wizard, and the corresponding member function is CDBDoc::OnDialogboxModeless(). The following is its implementation:
+\par 
+\par void CDBDoc::OnDialogboxModeless() 
+\par \{
+\par     m_dlgModeless.DoModeless();
+\par \}
+\par 
+\par With the new class, it is equally easy to implement a modeless or modal dialog box. The only difference between creating two type of dialog boxes is that for modeless dialog box, the variable can not be declared locally.
+\par 
+\par 6.2\tab Property Sheet
+\par 
+\par Property sheet provides a very nice user interface, it allows several dialog templates to be integrated together, and the user can switch among them by using tab control. This is especially useful if there are many common controls that need to be included in a single dialog template.
+\par 
+\par Because property sheet is very similar to dialog box, we can create a dialog box then change it to property sheet. The reason for creating property sheet this way is because currently Developer Studio does not support direct implementation of property sheet.
+\par 
+\par In MFC, there are two classes that should be used to implement property sheet: CPropertySheet and CPropertyPage. The former class is used to create a frame window that contains tab control, the second class is used to implement each single page.
+\par 
+\par To implement a property sheet, we first need to derive a class from CPropertySheet, then declare one or more CPropertyPage type member variables within it. Each variable will be associated with a dialog template. Because CPropertyPage is derived from class CDialog, all the public and protected members of CDialog are accessible in the member functions of CPropertyPage.
+\par 
+\par Sample 6.1-1\\DB demonstrates how to create application based on property sheet. First it is generated as a dialog based application by using Application Wizard (the default classes are CDBApp and CDBDlg), then the base class of CDBDlg is changed from CDialog to CPropertySheet. Since class CPropertySheet does not have member IDD to store the dialog template ID, we need to delete the following line from class CDBDlg:
+\par 
+\par enum \{ IDD = IDD_DIALOG_DB \};
+\par 
+\par The default dialog box template IDD_DIALOG_DB will not be used, so it is also deleted from the application resources. The following is the modified class:
+\par 
+\par (Code omitted)
+\par 
+\par We also need to find all the keyword CDialog in the implementation file of CDBDlg and change them to CPropertySheet. The changes should happen in the following functions: the constructor of CDBDlg, function DoDataExchange(...), OnInitDialog(), OnSysCommand(...), OnPaint(...), and message mapping macros.
+\par 
+\par Next we need to create each single page. The procedure of creating a property page is the same with creating a dialog box, except that when adding new class for a dialog box template, we must derive it from class CPropertyPage. In the sample, three dialog templates are added to the application, their IDs are ID_DIALOG_PAGE1, ID_DIALOG_PAGE2 and ID_DIALOG_PAGE3 respectively. Three classes CPage1, CPage2 and CPage3 are also added through using Class Wizard, which are all derived from CPropertyPage. When doing this, we need to provide the ID of the corresponding dialog template.
+\par 
+\par In class CDBDlg, a new member variable is declared for each page:
+\par 
+\par (Code omitted)
+\par 
+\par The pages should be added in the constructor of CPropertySheet by calling function CPropertySheet::AddPage(...). The following is how each page is added in the sample:
+\par 
+\par (Code omitted)
+\par 
+\par Function CPropertySheet::AddPage(...) has only one parameter, it is a pointer to CPropertyPage type object.
+\par 
+\par These are the necessary steps for implementing property sheet. For each property page, we can also add message handlers for the controls, the procedure of which is the same with that of a standalone dialog box.
+\par 
+\par By default, the property sheet will be implemented in "tab" mode: there will be a tab control in the property sheet, which can be used to select property pages. The property sheet can also be implemented  in "wizard" mode, in which case tab control will be replaced by two buttons (labeled with "Previous" and "Next"). In this mode, the pages can only be selected sequentially through button clickings. 
+\par 
+\par To enable wizard mode, all we need to do is calling function CPropertySheet:: SetWizardMode()after all the pages have been added. For example, if we want to enable wizard mode in the sample, we should implement the constructor of CDBDlg as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Sample 6.2-2\\DB is the same with sample 6.2-1\\DB, except that the property sheet is implemented in wizard mode.
+\par 
+\par If we need to implement a property sheet dialog box in an SDI or MDI application, most of the steps are still the same. We can start by creating a new CPropertySheet based class, then adding dialog templates and CPropertyPage based classes, using them to declare new variables in CPropertySheet derived class, calling function CPropertySheet::AddPage(...) in its constructor. We can call function CPropertySheet::DoModal() at anytime to invoke the property sheet.
+\par 
+\par 6.3\tab Modeless Property Sheet
+\par 
+\par Because property sheet is very similar to dialog box, implementation of modeless property sheet is also similar to that of modeless dialog box: when invoking the property sheet dialog box, instead of calling function CPropertySheet::DoModal(), we need to call CPropertySheet::Create(...) and CWnd:: ShwoWindow(...). We can use exactly the same method discussed in section 6.1 to implement modeless property sheet.
+\par 
+\par Sample 6.3\\DB demonstrates how to implement modeless property sheet. It is a standard SDI application generated by Application Wizard. A command Property Sheet | Modeless is added to mainframe menu IDR_MAINFRAME, whose ID is ID_PROPERTYSHEET_MODELESS. A WM_COMMAND message handler is also added for this command, and the corresponding function is CDBDoc::OnPropertysheetModeless().
+\par 
+\par A new class CMLPropertySheet is defined to implement modeless property sheet, whose base class is CPropertySheet. Like what we did in sample 6.1\\DB, function DoModeless() is declared in class CMLPropertySheet, which can be used to invoke the property sheet.
+\par 
+\par Three dialog box templates IDD_DIALOG_PAGE1, IDD_DIALOG_PAGE2 and IDD_DIALOG_PAGE3 are created to implement property pages. Also three new classes CPage1, CPage2 and CPage3 are derived from CPropertyPage. A CWnd type pointer m_pParentWnd and three other member variables declared by CPage1, CPage2 and CPage3 are added to class CMLPropertySheet. The following is the modified class:
+\par 
+\par (Code omitted)
+\par 
+\par In the constructor of CMLPropertySheet, we need to store the address of parent window to m_pParentWnd and add the property pages. The constructor of CPropertySheet has two versions, and we need to override both of them:
+\par 
+\par (Code omitted)
+\par 
+\par Next, function CMLPropertySheet::DoModeless() is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Everything is the same with that of sample 6.1\\DB, except that here we need to call function CPropertySheet::Create(...) instead of CDialog::Create(...).
+\par By now class CMLPropertySheet is ready for use. We can declare a CMLPropertySheet type pointer in class CDBDoc:
+\par 
+\par (Code omitted)
+\par 
+\par The constructor and destructor of class CDBDoc are modified to initialize and release the buffers if necessary:
+\par 
+\par (Code omitted)
+\par 
+\par It is possible that the variable is not initialized when the application is closed, so we need to check if m_ptrDlg is NULL before deleting it.
+\par Finally, function CDBDoc::OnPropertysheetModeless() is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par If m_ptrDlg is NULL, we need to initialize it. Then we call CMLPropertySheet::DoModless() each time the Property Sheet | Modeless command is executed. This member function will take care everything so there is no need for us to check the current state of the property sheet and implement different operations.
+\par 
+\par 6.4\tab Sizes
+\par 
+\par In this section we are going to discuss some window sizes that is important for dialog boxes.
+\par 
+\par Initial Size
+\par 
+\par The initial size is the dimension of a dialog box when it first pops up. By default, a dialog box's initial size is determined from the font used by the dialog box and the size of its dialog template. If we want to make change to its initial size, we can call either CWnd::SetWindowPos(...) or CWnd::MoveWindow(...) within function CDialog::OnInitDialog(). The difference between above two functions is that CWnd:: SetWindowPos(...) allows us to change a window's X-Y position and Z-order, while CWnd::MoveWindow(...) allows us to move the window only in the X-Y plane.
+\par 
+\par Dialog Box Unit
+\par 
+\par When creating a dialog template, we can read its dimension in the status bar of Developer Studio (Figure 6-1). However this size is measured in dialog box unit rather than screen pixels. This means if we create a dialog template with a size of 100(100 (measured in dialog box unit), its actual size will not be 100 pixel ( 100 pixel. For any dialog template, its horizontal base unit is equal to the average width of the characters that is used by the template, and its vertical base unit is equal to the height of the font. The dialog box is measured by the base units: each horizontal base unit is equal to 4 horizontal dialog units and each vertical base unit is equal to 8 vertical dialog units. This is a very complex calculation, fortunately in class CDialog there is a member function CDialog::MapDialogRect(...) that can be used to implement the dimension conversion so we do not need to calculate the details. 
+\par 
+\par If we want the initial size of a dialog box to be exactly the same with its template size, we need to call function CDialog::MapDialogRect(...) to convert its template size to screen pixels then call CWnd:: MoveWindow(...) to resize the dialog box before it is displayed.
+\par 
+\par Tracking Size and Maximized Size
+\par 
+\par There are two types of tracking sizes: minimum tracking size and maximum tracking size, which correspond to limit sizes that can be set to a window by dragging one of its resizable border. The maximized size of a window is the size when it is in the maximized state (when a window is maximized, it doesn't have to take up the whole screen). There is no "minimized size" here because when a window is minimized, it will become an icon.
+\par 
+\par These sizes can all be customized. To provide user defined sizes, we can override function CWnd:: OnGetMinMaxInfo(...), which will be called when any of the above sizes is needed by the system. We can provide our own sizes within the overridden function.
+\par Function CWnd::OnGetMinMaxInfo(...) has the following format:
+\par 
+\par afx_msg void CWnd::OnGetMinMaxInfo(MINMAXINFO *lpMMI);
+\par 
+\par It is the handler of WM_GETMINMAXINFO message.
+\par 
+\par Whenever the system needs to know the tracking sizes or maximized size of a window, it sends a WM_GETMINMAXINFO message to it. In MFC, this message is handled by function CWnd:: OnGetMinMaxInfo(...). The input parameter of this function is a MINMAXINFO type pointer, if we want to customize the default implementation, we can change the members of MINMAXINFO. Structure MINMAXINFO is defined as follows:
+\par 
+\par typedef struct tagMINMAXINFO \{
+\par     POINT ptReserved;
+\par     POINT ptMaxSize;
+\par     POINT ptMaxPosition;
+\par     POINT ptMinTrackSize;
+\par     POINT ptMaxTrackSize;
+\par \} MINMAXINFO;
+\par 
+\par Here members ptMinTrackSize and ptMaxTrackSize specify the minimum and maximum tracking sizes, ptMaxSize specifies maximized size, and ptMaxPosition specifies the upper-left corner position of a window when it is first maximized.
+\par 
+\par Sample
+\par 
+\par Sample 6.4\\DB demonstrates how to customize these sizes. It is a dialog based application created from Application Wizard. In the sample, the dialog's minimum tracking size is set to its dialog template size. Also, the maximum tracking size and the maximized size are customized.
+\par 
+\par To let the dialog box be able to maximize and minimize, we must set the two styles: "Minimize Box", "Maximize Box". To let it be able to resize, we must also set "Resizing" style (Figure 6-2).
+\par 
+\par In the sample, message handler of WM_GETMINMAXINFO is added through using Class Wizard. The function is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Here MIN_X_SIZE and MIN_Y_SIZE are defined as the dialog template size that is read from Developer Studio when the dialog resource is being edited. Because this size is the client area size of the dialog box (when a dialog box is created, caption bar, borders will be added), we need to add the dimensions of caption bar and border in order to make the dialog size exactly the same with its template size. The dimensions of caption bar and border can be retrieved by calling API function ::GetSystemMetrics(...) with appropriate parameters passed to it. This function allows us to retrieve many system configuration settings. The following is the function prototype and a list of commonly used parameters:
+\par 
+\par int ::GetSystemMetrics(int nIndex);
+\par 
+\par (Table omitted)
+\par 
+\par In the sample, the maximized size of the dialog is set to 1/4 of the desk top screen size. When the application is first maximized, it will be positioned at top-left corner (0, 0).
+\par 
+\par The dialog box's initial size is set in function CDialog::OnInitDialog():
+\par 
+\par (Code omitted)
+\par 
+\par The dialog box's initial size is a little bigger than its minimum tracking size.
+\par 
+\par The above sizes are not unique to dialog boxes. In fact, any window has the above sizes, and can be customized with the same method.
+\par 
+\par 6.5\tab Customizing Dialog Box Background
+\par 
+\par Background Drawing
+\par 
+\par Generally all dialog boxes have a gray background. Sometimes it is more desirable to change dialog box's background to a custom color, or, we may want to paint the background using a repeated pattern. To customize a dialog box's background, we need to handle message WM_ERASEBKGND, and draw the custom background after receiving this message. All classes that are derived from CWnd will inherit function CWnd::OnEraseBkgnd(...), which has the following format:
+\par 
+\par BOOL CWnd::OnEraseBkgnd(CDC *pDC) 
+\par \{
+\par \}
+\par 
+\par Here, pointer  pDC can be used to draw anything on the target window. For example, we can create solid brush and paint the background with a custom color, or we can create pattern brush, and paint the background with certain pattern. Of course, bitmap can also be used here: we can draw our own bitmap repeatedly until all of the dialog box area is covered by the bitmap patterns.
+\par 
+\par Sample
+\par 
+\par Sampel 6.5\\DB demonstrates background customization. It is a standard dialog-based application generated from Application Wizard. In the sample, instead of using a uniform color, the dialog box paints its background with a bitmap image (Figure 6-3).
+\par 
+\par Because WM_ERASEBKGND is not listed as a dialog box message, first we need to customize the filter settings for this application. We can do this by invoking Class Wizard, clicking "Class Info" tab then changing the default setting in combo box "Message Filter" from "Dialog" to "Window". By going back to "Message maps" page now, we can find WM_ERASEBKGND in "Message" window, and add a message handler for it. The function name should be CDBDlg::OnEraseBkgnd(...).
+\par 
+\par In the sample, a bitmap resource IDB_BITMAP_DLGBGD is added to the application, which will be used to draw the background of the dialog box. In function CDBDlg::OnEraseBkgnd(...), this bitmap is painted repeatedly until all dialog box area is covered by it:
+\par 
+\par (Code omitted)
+\par 
+\par First function CBitmap::LoadBitmap(...) is called to load the bitmap resource, then its dimension is retrieved by calling function CBitmap::GetBitmap(...). Next, function CWnd::GetClientRect(...) is called to obtain the size of the client area of the dialog box. Then we calculate the number of loops required to repeat drawing in both horizontal and vertical directions in order to cover all the client area. The results are stored in two local variables nHor and nVer. Then, a memory DC is created, and the bitmap image is selected into this DC. Next, function CDC::BitBlt(...) is called enough times to paint the bitmap to different locations of the dialog box. Finally a TRUE value is returned to prevent the background from being updated by the default implementation.
+\par 
+\par Changing the Background of Common Controls
+\par 
+\par If the dialog box includes some other common controls such as edit box, list box, check box or radio button, we will see the undesirable effect: the background of these controls is still painted with the default color, and this makes the appearance of the dialog box not harmonic.
+\par 
+\par To change the background color of the common controls, we need to handle message WM_CTLCOLOR. The message handler can be added through using Class Wizard, and the default member function looks like the following:
+\par 
+\par HBRUSH CDBDlg::OnCtlColor(CDC *pDC, CWnd *pWnd, UINT nCtlColor) 
+\par \{
+\par     return CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+\par \}
+\par 
+\par This function has three parameters. The first parameter is a pointer to the device context of the target window; the second is a pointer to the common control contained in the dialog box whose background is to be customized; the third parameter specifies the control type, which could be CTLCOLOR_BTN, CTLCOLOR_EDIT, CTLCOLOR_LISTBOX..., indicating that the control is a button, an edit box, a list box, and so on.
+\par 
+\par We can return a brush handle that can be used to paint the background of the control. We can also let the control to have a transparent background, in this case we must return a NULL brush handle.
+\par 
+\par In order to demonstrate how to customize the background of the common controls, in the sample, an edit box, a check box, two radio buttons, a static text, a scroll bar, a list box and a simple combo box are added to the application. Also, WM_CTLCOLOR message handler is added and the corresponding function CDBDlg::OnCtlColor(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Stock Objects
+\par 
+\par In the above implementation, the background of different controls is painted using different brushes: the button and static control have a transparent background; the background of the list box and scroll bar is painted with a gray brush; the background of the message box is painted with a light gray brush. Here, all the brushes are obtained through calling function ::GetStockObject(...) rather than being created by ourselves. 
+\par In Windows(, there are a lot of predefined stock objects that can be used. These objects include brushes, pens, fonts and palette. The predefined brushes include white brush, black brush, gray brush, light gray brush, dark gray brush, and null (hollow) brush.
+\par 
+\par Function ::GetStockObject(...) will return a GDI object handle (a brush handle in our sample). If we attach the returned handle to a GDI object, we must detach it instead of deleting the object when it is no longer useful.
+\par 
+\par Text Foreground and Background
+\par 
+\par Now the edit box, static control and list box all have transparent background. But these controls also contain text. Since a character also has both foreground and background areas (Figure 6-4), if we don't set the text's drawing mode, its background area may be drawn with an undesirable color (Figure 6-5).
+\par 
+\par (Figure 6-4, 6-5 omitted)
+\par 
+\par We can call function CDC::SetBkMode(...) and use TRANSPARENT flag to set transparent background drawing mode for text, otherwise it will be drawn with the default background color.
+\par 
+\par The background of a 3-D looking pushdown button can not be changed this way. Also, if we include drop down or drop list combo box, the background color of its list box will not be customized by this method because it is not created as the child window of the dialog box. To modify it, we need to derive new class from CComboBox and override its OnCtlColor(...) member function.
+\par 
+\par 6.6\tab Resizing the Form View
+\par 
+\par Form view is very similar to a dialog box. Usually we create form view from a dialog box template, which can contain all the standard common controls. While they are similar, a form view is usually created with a document/view structure, and has some properties that a standard dialog box lacks. For example, a form view will be automatically implemented with scroll bars. If the window size becomes smaller than the size of the dialog template, scroll bars will automatically be activated. They can be scrolled to allow the user to see the hidden part of the dialog.
+\par 
+\par Since a form view is usually resizable, we sometimes need to move and resize the common controls contained in the form view to make its appearance well balanced. For example, if we have an edit box embedded in the form view, instead of fixing its size, we may want to adjust it dynamically according to the dimension of the form view. This is usually a desired feature of form view because it will make the controls and the window well balanced.
+\par 
+\par Coordinates Conversion
+\par 
+\par Every window can be moved and resized by calling function CWnd::MoveWindow(...) or CWnd:: SetWindowPos(...). Also, a window's size and position can be retrieved by calling function CWnd:: GetClientRect(...) and CWnd::GetWindowRect(...). The points retrieved using the former function are measured in the client window's coordinate system, and the points retrieved from the latter function are measured in the screen (desktop) coordinate system. To convert coordinates from one system to another, we can call function CWnd::MapWindowPoints(...) or CWnd::ScreenToClient(...).
+\par 
+\par For example, if there are two windows: window A and window B, which are attached two CWnd type variables wndA and wndB. If we want to know the size and position of window A measured in window B's coordinate system, we can first obtain the size and position of window A in its local coordinate system, and then convert them to window B system as follows:
+\par 
+\par wndA.GetClientRect(rect);
+\par wndA.MapWindowPoints(&wndB, rect);
+\par 
+\par Or we can find the position and size of window A in the screen coordinate system, and call CWnd:: ScreenToClient(...) to convert them to window B's coordinate system:
+\par 
+\par wndA.GetWindowRect(rect);
+\par wndB.ScreenToClient(rect);
+\par 
+\par Sample
+\par 
+\par When the user resizes a window, a WM_SIZE message will be sent to that window. We can handle this message to resize and move the controls contained in the dialog template.
+\par 
+\par Sample 6.6\\DB demonstrates how to resize the common controls contained in the form view dynamically. It is a standard SDI application generated from the Application Wizard. When generating the application, CFormView is selected as the base class of the view in the last step. After the application is generated, the following controls are added to the dialog template: an edit box, a static group control, two buttons. The IDs of these controls are IDC_EDIT, IDC_STATIC_GRP, IDC_BUTTON_A and IDC_BUTTON_B respectively.
+\par 
+\par If we compile and execute the application at this point, the application will behave awkwardly because if we resize the window, the sizes/positions of the controls will not change, this may make the window not well balanced (Figure 6-6).
+\par 
+\par We need to remember the original sizes and positions of the embedded controls and base their new sizes and positions on them. In the sample, four CRect type variables are declared in class CDBView for this purpose:
+\par 
+\par (Code omitted)
+\par 
+\par Also, a Boolean type variable m_bSizeAvailable is added to indicate if the original positions and sizes of the controls have been recorded.
+\par 
+\par There is no OnInitDialog() member function for class CFormView. The similar one is CView:: OnInitialUpdate(). This function is called when the view is first created and is about to be displayed. We can record the positions and sizes of the controls in this function.
+\par 
+\par Variable m_bSizeAvailable is initialized to FALSE in the constructor of class CDBView:
+\par 
+\par CDBView::CDBView()
+\par \tab : CFormView(CDBView::IDD)
+\par \{
+\par     //\{\{AFX_DATA_INIT(CDBView)
+\par     //\}\}AFX_DATA_INIT
+\par     m_bSizeAvailable=FALSE;
+\par \}
+\par 
+\par Member function OnInitialUpdate() can be added to class CDBView through using Class Wizard. In the sample, this function is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par Here we call function CWnd::GetWindowRect(...) and CWnd::ScreenToClient(...) several times to retrieve the sizes and positions of all the controls in the dialog template.
+\par The handler of message WM_SIZE can also be added through using Class Wizard. The following is the implementation of this member function in the sample:
+\par 
+\par (Code omitted)
+\par 
+\par The new horizontal and vertical sizes of the client window (CDBView) is passed through parameters cx and cy. First we create a rectangle whose dimension is equal to the dimension of the dialog template. Then we compare its horizontal size to cx, and vertical size to cy. If cx is greater than the template's horizontal size, we move button A and button B in the horizontal direction, increase the horizontal size of edit box and static group control. If cx is not greater than the template's horizontal size, we put button A and button B to their original positions, set the horizontal sizes of edit box and static group control to their initial horizontal sizes (this is why we need to know each control's initial size and position). The same thing is done for vertical sizes. Finally, function CWnd::MoveWindow(...) is called to carry out the resize and reposition.
+\par 
+\par With the above implementation, the form view will have a well balanced appearance all the time.
+\par 
+\par 6.7\tab Tool Tips
+\par 
+\par Tool Tip Implementation
+\par 
+\par Tool tip is a very nice feature, it gives the user quick hint on the functionality of a control. In MFC, tool bar is implemented with automatic tool tip feature: if we add a string whose ID is the same with a control's ID, that string will be used to implement the tool tip for that control. For dialog box, we also want the tool tip to be implemented in a similar way.
+\par 
+\par In a dialog box, all the controls (except static ones) can be enabled to display tool tips. The procedure of enabling tool tips is very simple: first call function CWnd::EnableToolTips(...) in the dialog box's initialization stage, then handle message TTN_NEEDTEXT. This message is sent to obtain a tool tip text for a specific control. The message handler has the following format:
+\par 
+\par OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
+\par \{
+\par     TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
+\par     UINT nID =pNMHDR->idFrom;
+\par ......
+\par \}
+\par 
+\par Here the first parameter id indicates the window that sent this notification, which is useless to us. The second parameter is a NMHDR type pointer, which must be cast to TOOLTIPTEXT type in order to process a tool tip notification. Structure TOOLTIPTEXT has the following format:
+\par 
+\par typedef struct \{
+\par     NMHDR     hdr;
+\par     LPTSTR    lpszText;
+\par     WCHAR     szText[80];
+\par     HINSTANCE hinst;
+\par     UINT      uflags;
+\par \} TOOLTIPTEXT, FAR *LPTOOLTIPTEXT;
+\par 
+\par The ID of the target control (whose tool tip text is being retrieved) can be obtained from member hdr. From this ID we can obtain the resource string that is prepared for the tool tip. There are three ways to provide a tool tip string: 1) Prepare our own buffer that contains the tool tip text and assign the buffer's address to member lpszText. 2) Copy the tool tip text directly to member szText. 3) Stores the tool tip text in a string resource, assign its ID to member lpszText. In the last case, we need to assign member hinst the instance handle of the application, which can be obtained from function AfxGetResourceHandle(). Member uflsgs indicates if the control is a window or not.
+\par 
+\par Recall when we create tool bars and dialog bars in the first chapter, tool tips were all implemented in a very simple way: we provide a string resource whose ID is exactly the same with the control ID, and everything else will be handled automatically. When handling message TOOLTIPTEXT for dialog box, we can also let the tool tip be implemented in a similar way. In order to do this, we can assign the resource ID of the control to member lpszText and the application instance handle to member hinst. If there exists a string resource whose ID is the same with the control ID, that string will be used to implement the tool tip. Otherwise, nothing will be displayed because the string can not be found. 
+\par 
+\par Sample 
+\par 
+\par Sample 6.7\\DB demonstrates how to implement tool tips for the controls contained in a dialog box. It is based on sample 6.6\\DB, with tool tips enabled for the following three controls: ID_EDIT, ID_BUTTON_A and ID_BUTTON_B (Although sample 6.6\\DB is a form view based application, the tool tip implementation is the same with that of a dialog box).
+\par 
+\par Three string resources are added to the application, whose IDs are IDC_EDIT, IDC_BUTTON_A and IDC_BUTTON_B. They will be used to implement tool tips for the corresponding edit box and buttons. In function CDBView::OnInitialUpdate(), the tool tips are enabled as follows
+\par 
+\par void CDBView::OnInitialUpdate() 
+\par \{
+\par ......
+\par     EnableToolTips(TRUE);
+\par \}
+\par 
+\par Message handler of TTN_NEEDTEXT must be added manually. First we need to declare a member function OnToolTipNotify() in class CDBView:
+\par 
+\par (Code omitted)
+\par 
+\par Then, message mapping macros should be added to the implementation file:
+\par 
+\par BEGIN_MESSAGE_MAP(CDBView, CFormView)
+\par ......
+\par     ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnToolTipNotify)
+\par END_MESSAGE_MAP()
+\par 
+\par Here, TTN_NEEDTEXT is sent through message WM_NOTIFY. Macro ON_NOTIFY_EX allows more than one object to process the specified message. If we use this macro, our message handler must return TRUE if the message is processed. If we do not process the message, we must return FALSE so that other objects can continue to process this message. Please note that in the above message mapping, the second parameter should always be 0.
+\par 
+\par Member function CDBView::OnToolTipNotify(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par First the ID of the control is obtained. If the control is a window, this ID will be a valid handle. We can retrieve the control's resource ID by calling fucntion ::GetDlgCtrlID(...). Next, the resource ID is assigned to member lpszText, and the application's instance handle is assigned to member hinst.
+\par 
+\par With this method, we can only implement a tool tip which contains maximum of 80 characters. To  implement longer tool tips, we need to provide our own buffer and assign its address to member lpszText. In this case, we do not need to assign the application's instance handle to member hinst.
+\par 
+\par After adding the above implementation, we can just add string resources whose IDs are the same with the resource IDs of the controls. By doing this, the tool tip will automatically implemented for them.
+\par 
+\par 6.8\tab Tool Bar and Status Bar in Dialog Box
+\par 
+\par By default, the dialog box does not support tool bar and status bar implementation. Because a dialog box can contain various intuitive controls, it is often not necessary to implement extra tool bar and status bar. But sometimes the tool bar and status bar are helpful, especially when we want to implement a row of buttons with the same size. In this case, we can also easily implement the tool tips and flybys on the status bar.
+\par 
+\par Frame Window
+\par 
+\par In a standard SDI or MDI application, tool bar and status bar can be implemented by declaring CToolBar and CStatusBar type variables in class CMainFrame (They will be created in function CMainFrame::OnCreate(...)). In a dialog-based application, the frame window is the dialog box itself, so we need to embed CToolBar and CStatusBar type variables in the CDialog derived class and create them in function CDialog::OnInitDialog().
+\par 
+\par However, unlike CFrameWnd, class CDialog is not specially designed to work together with status bar and tool bar, so it lacks some features that are owned by class CFrameWnd: first, it does not support automatic tool tip implementation, so we have to write TTN_NEEDTEXT message handler for displaying tool tips; second, it does not support flyby implementation, so we also need to add other message handlers in order to enable flybys.
+\par 
+\par Flyby Related Messages
+\par 
+\par In MFC, there are two un-documented messages that are used for flyby implementation. When a flyby text for certain control needs to be displayed, the frame window will receive message WM_SETMESSAGESTRING. Also, when a flyby needs to be removed, the frame window will receive another message: WM_POPMESSAGESTRING.
+\par 
+\par Tool Bar Resource
+\par 
+\par Sample 6.8-1\\DB demonstrates how to implement tool bar and status bar in a dialog based application. The sample is generated by Application Wizard, with a tool bar resource IDD_DB_DIALOG added later on. This ID is the same with the dialog template ID, which is convenient for tool bar implementation.
+\par 
+\par The tool bar contains four buttons, whose IDs are ID_BUTTON_YELLOW, ID_BUTTON_GREEN, ID_BUTTON_RED and ID_BUTTON_BLUE, and they are painted with yellow, green, red and blue colors respectively. Four string resources are also added to the application, they will be used to implement tool tips and flybys:
+\par 
+\par (Table omitted)
+\par 
+\par The sub-string before character '\\n' will be used to implement flyby, and the sub-string after that will be used to implement tool tip. We will see that by letting the control and the string resource share a same ID, it is easier for us to implement both flybys and tool tips.
+\par 
+\par New CToolBar and CStatusBar type variables are declared in class CDBDlg:
+\par 
+\par class CDBDlg : public CDialog
+\par \{
+\par ......
+\par protected:
+\par ......
+\par     CStatusBar m_wndStatusBar;
+\par     CToolBar m_wndToolBar;
+\par ......
+\par \};
+\par 
+\par Status Bar
+\par 
+\par A status bar is divided into several panes, each pane displays a different type of information. We can create as many panes as we like. When implementing a status bar, we must provide each pane with an ID. We can use these IDs to access each individual pane, and output text or graphic objects. Usually these IDs are stored in a global integer array. In the sample, the following array is declared for the status bar:
+\par 
+\par static UINT indicators[] =
+\par \{
+\par     AFX_IDS_IDLEMESSAGE,
+\par     IDS_MESSAGE
+\par \};
+\par 
+\par The status bar will have only two panes. Usually the first pane of the status bar is used to display flybys (In the idle state, "Ready" will be displayed in it). One property of status bar is that if we implement a string resource whose ID is the same with the ID of a pane contained in a status bar, the string will be automatically displayed in it when the application is idle. So here we can add two string resources whose IDs are AFX_IDS_IDLEMESSAGE and IDS_MESSAGE respectively. Since Developer Studio does not allow us to add a string resource starting with "AFX_", we may copy this string resource from any standard SDI application (An SDI application has string resource AFX_IDS_IDLEMESSAGE if it is generated by Application Wizard).
+\par 
+\par Adding Control Bars to Dialog Box
+\par 
+\par In function CDBDlg::OnInitDialog(), the following code is added for creating both tool bar and status bar:
+\par 
+\par (Code omitted)
+\par 
+\par Here, the procedure of creating the tool bar and status bar is almost the same with what we need to do for a standard SDI and MDI application in function CMainFrame::OnCreate(). The difference is that when implementing them in a dialog box, there is no need to set docking/floating properties for the control bars.
+\par 
+\par Function CWnd::RepositionBars(...) is also called to calculate the position of control bars then and reposition them according to the dimension of the client area. If we do not call this function, the status bar and tool bar may be randomly placed and thus can not be seen. When calling this function, we can use AFX_IDW_CNTROLBAR_FIRST and AFX_IDW_CONTROLBAR_LAST instead of providing actual IDs of the control bars.
+\par 
+\par Resizing the Client Area to Accommodate Control Bars
+\par 
+\par By compiling the and executing the application at this point, we will see that the dialog box is implemented with a tool bar and a status bar. The problem is: they occupy the client area without resizing the dialog box. If a control happens to be placed to the top or the bottom of the dialog template, it might overlap one of the control bars.
+\par 
+\par To solve this problem, we need to resize the dialog box and move the common controls to leave room for both tool bar and status bar.
+\par 
+\par Function CWnd::RepositionBars(...) has the following format:
+\par 
+\par void CWnd::RepositionBars
+\par (
+\par     UINT nIDFirst, UINT nIDLast, UINT nIDLeftOver, UINT nFlag=CWnd::reposDefault,
+\par     LPRECT lpRectParam=NULL, LPCRECT lpRectClient=NULL
+\par );
+\par 
+\par The function has six parameters, among them, nFlag, lprectParam and lpRectClient all have default values. When we called this function in the previous step, all the default values were used. This will pass CWnd::reposDefault to parameter nFlag, which will cause the default layout to be performed. If we pass CWnd::reposQuery to parameter nFlag, we can prepare a CRect type object and pass its address to lpRectParam to receive the new client area dimension (The client area is calculated with the consideration of control bars, their sizes are deducted from the original dimension of the client area). This operation will not let the layout be actually carried out. Based on the retrieved size, we can adjust the size of the dialog box and move the controls so that we can  leave enough room to accommodate the tool bar and the status bar.
+\par 
+\par The following is the updated implementation of function CDBDlg::OnInitDialog():
+\par 
+\par (Code omitted)
+\par 
+\par First function CWnd::GetClientRect() is called and the dimension of client window is stored in rectOld. After the control bars are created, we call function CWnd::RepositionBars(...) and use flag CWnd::reposQuery to obtain the new layout dimension with the consideration of two control bars. The new layout dimension is stored in variable rectNew. The offset is calculated by deducting rectOld from rectNew. To access all the controls in the dialog box, we first call CWnd::GetWindow(...) using GW_CHILD flag to obtain the first child window of the dialog box, then call CWnd::GetNextWindow() repeatedly to find all the other child windows. Each child window is moved according to the offset dimension. Finally the dialog box is resized by calling function CWnd::RepositionBars(...) using the default parameters.
+\par 
+\par Tool Tip and Flyby Implementation
+\par 
+\par We need to add message handler for TTN_NEEDTEXT notification in order to implement tool tips. Also, we need to handle WM_SETMESSAGESTRING and WM_POPMESSAGESTRING in order to implement flybys on the status bar.
+\par 
+\par In the sample, three new message handlers are added to class CDBDlg:
+\par 
+\par (Code omitted)
+\par 
+\par Function CDBDlg::OnTooltipText(...) will be used to handle TTN_NEEDTEXT message, CDBDlg:: OnSetMessageString(...) and CDBDlg::OnPopMessageString(...) will be used to handle WM_SETMESSAGESTRING and WM_POPMESSAGESTRING respectively.
+\par 
+\par Message mapping macros are added to the implementation file as follows:
+\par 
+\par (Code omitted)
+\par 
+\par First the target window handle is obtained from idFrom member of structure NMHDR, and the ID of the button is retrieved by calling function ::GetDlgCtrlID(...). Then a string with the same ID is loaded from the resource into a CString type variable, and the sub-string after the '\\n' character is copied into szText member of structure TOOLTIPTEXT. The sub-string before this character will be used to implement flyby.
+\par The rest two functions are implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par The control ID is sent through WPAMAM parameter of the message, so in the first function, we just use this ID to load a string from the resource, and display it in the first pane of the status bar by calling function CStatusBar::SetPaneText(...). For the second function, if there is no pop up message, we just return 0. Otherwise we call the first function to display an appropriate message.
+\par 
+\par Implementing Control Bars for Dialog Boxes Implemented in SDI or MDI Applications
+\par 
+\par We may think that by using the form view, it would be much easier for us to add tool bar and status bar to dialog box. So what's the meaning to implement them by ourselves? First a form view based application is implemented with document/view structure, and a pure dialog based application has fewer classes (only CWinApp and CDialog). Second, if we have a dialog box implemented in an SDI or MDI application, it is difficult for us to implement it as a form view.
+\par 
+\par Sample 6.8-2\\DB demonstrates how to implement control bars for a dialog box contained in an SDI or MDI application. It is a standard SDI application generated by Application Wizard. First a dialog template IDD_DIALOG is added to the application, and a new CDialog based class CBarDialog is created through using Class Wizard. Like what we did in sample 6.8-1\\DB, variables m_wndStatusBar and m_wndToolBar are declared in class CBarDialog, function CBarDialog::OnInitDialog() is modified to create the status bar and tool bar, and three message handlers are implemented for TTN_NEEDTEXT, WM_SETMESSAGESTRING and WM_POPMESSAGESTRING.
+\par 
+\par A new command Dialog | Bar Dialog is added to mainframe menu IDR_MAINFRM, whose command ID is ID_DIALOG_BARDIALOG. Its WM_COMMAND message handler can be added through using Class Wizard, in the sample, this handler is CDBDoc::OnDialogBardialog().
+\par Function CDBDoc::OnDialogBardialog() can be implemented as follows:
+\par 
+\par void CDBDoc::OnDialogBardialog() 
+\par \{
+\par     CBarDialog dlg;
+\par \tab 
+\par     dlg.DoModal();
+\par \}
+\par 
+\par If we do this, the tool bar and the status bar will be added to the dialog box. Also, the tool tips will work. However, there will be no flyby displayed in the status bar.
+\par 
+\par Problem
+\par 
+\par The reason for this is that when the application tries to display a flyby on the status bar, it will always try to put it on the status bar of the top-most parent window, which is the mainframe window in an SDI or MDI application. If the top-most window is inactive, the flyby will not be displayed.
+\par 
+\par When we invoke a modal dialog box, the mainframe window will always be inactivated. This is the reason why the flyby will be displayed neither on the status bar of the dialog box nor on the status bar of the mainframe window.
+\par 
+\par Work Around
+\par 
+\par One fix to this problem is to override the member function that is used to display the flyby. If we study the source code of class CControlBar, we will find that the flyby display is implemented as follows: after the mouse cursor enters the tool bar, a timer with time out period of 300 millisecond will be started. When this timer times out, the application checks to see if the cursor is still within the tool bar. If so, it kills the timer, starts another timer with a time out period of 200 millisecond.  Next, it finds out the ID of the control that is under the mouse cursor and sends WM_SETMESSAGESTRING message to the mainframe window (if it is active).
+\par 
+\par The time out event is handled by function CControlBar::OnTimer(), we can override it and send WM_SETMESSAGESTRING message to the dialog box window.
+\par 
+\par The following is the original implementation of function CControlBar::OnTimer():
+\par 
+\par (Code omitted)
+\par 
+\par Note that in the above code fragment, function CWnd::GetTopLevelParent() is used to obtain the window where flyby should be displayed. If we replace it with CWnd::GetParent(), everything will be fixed.
+\par 
+\par Overriding CToolBar::OnTimer(...)
+\par 
+\par In the sample a new class CDlgToolBar is added to the application, whose base class is CToolBar. Within the new class, function OnTimer(...) is declared to override the default implementation:
+\par 
+\par (Code omitted)
+\par 
+\par Function CDlgToolBar::OnTimer(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par This is just a copy of function CControlBar::OnTimer(...), except that here function CWnd:: GetTopLevelParent() is replaced by CWnd::GetParent().
+\par 
+\par An Alternate Solution
+\par 
+\par But this is not the best solution. Because the current implementation of function CControlBar:: OnTimer(...) is not guaranteed to remain unchanged in the future, there is a possibility that the above implementation will become incompatible with future versions of MFC.
+\par 
+\par The best solution is to set our own timer and simulate the default behavior of control bar. We can bypass all the implementation in the base class and set up our own 300 millisecond timer when the mouse cursor first enters the tool bar. When this timer times out, we check if the cursor is still within the tool bar. If so, we kill the timer and set another 200 millisecond timer. Whenever the timer times out, we check the position of mouse cursor and send WM_SETMESSAGESTRING message to the window that contains the tool bar.
+\par 
+\par Sample 6.8-3\\DB demonstrates this method. It is based on sample 6.8-2\\DB, with the WM_TIMER message handler removed from the application.
+\par 
+\par To detect mouse movement, we need to override function CWnd::PreTranslateMessage(...). Also, two timer IDs are defined to set timers:
+\par 
+\par #define ID_TIMER_DLGCHECK\tab 500
+\par #define ID_TIMER_DLGWAIT\tab 501
+\par 
+\par The above IDs can be any integers. A Boolean type variable m_bTimerOn is declared in class CDlgToolBar. It will be used to indicate if the timer is currently enabled or not.
+\par Variable m_bTimerOn is initialized in the constructor:
+\par 
+\par CDlgToolBar::CDlgToolBar():CToolBar()
+\par \{
+\par     m_bTimerOn=FALSE;
+\par \}
+\par 
+\par Function CDlgToolDar::PreTranslateMessage(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par If the message is WM_MOUSEMOVE and the timer is off, this indicates that the mouse cursor has just entered the tool bar. We need to set timer ID_TIMER_DLGWAIT. Also, we need to set flag m_bTimerOn to TRUE.
+\par 
+\par Function CDlgToolBar::OnTimer(...) is implemented as follows:
+\par 
+\par (Code omitted)
+\par 
+\par We call function ::GetCursorPos(...) to retrieve the current mouse cursor position, then call function CWnd::ScreenToClient(...) to convert it to the tool bar coordinate system. 
+\par Next we call CWnd:: OnToolHitTest(...) to obtain the control ID of the button, then send WM_SETMESSAGESTRING message to the parent of the control bar. In case the current timer is ID_TIMER_DLGWAIT, we kill it and set timer ID_TIMER_DLGCHECK with a time out period of 200 millisecond. If the mouse cursor is not within the toolbar, this indicates that it has just been moved outside the control bar. In this case, we need to send message WM_POPMESSAGESTRING to the parent window, then kill the timer.
+\par With this implementation, the flybys will work as if they were implemented in a standard control bar.
+\par 
+\par Summary:
+\par 
+\par 1)  To implement modeless dialog box, we need to declare CDialog type member variable and call CDialog::Create(...) instead of function CDialog::DoModal(). 
+\par 
+\par 2)  When a modeless dialog box is dismissed, the window becomes hidden rather than being destroyed. So if the user invoke the dialog again, we need to call function CWnd::ShowWindow(...) to activate the window rather than create it again.
+\par 
+\par 3)  We can decide the visual state of a window by calling function CWnd::IsWindowVisible(...).
+\par 
+\par 4)  Property sheet can be implemented as follows: 1) Derive a class from CPropertySheet. 
+\par 5)  Add dialog template for each property page. 3) Implement a CPropertyPage derived class for each dialog template created in step 2). 4) Use the classes created in step 3) to declare variables in the class derived from CPropertySheet. 5) In the constructor of CPropertySheet derived class, call CPropertySheet:: AddPage(...) for each page.
+\par 
+\par 6)  A property sheet can have either standard style or wizard style. To enable wizard style, we need to call function CPropertySheet::SetWizardMode().
+\par 
+\par 7)  To convert a dialog template dimension (measured in dialog box unit) to its actual screen size (measured in screen pixels), we need to call function CDialog::MapDialogRect(...).
+\par 
+\par 8)  Tracking sizes and maximized size of a window can be set by handling message WM_GETMINMAXINFO.
+\par 
+\par 9)  The background of a window can be customized by handling message WM_ERASEBKGND.
+\par 
+\par 10)  The background of controls contained in a dialog box can be customized by handling message WM_CTLCOLOR. When handling this message, we can provide a NULL (hollow) brush to make the background transparent.
+\par 
+\par 11)  Tool tips can be added for controls contained in a dialog box by calling function CWnd::EnableToolTips(...) and handling notification TTN_NEEDTEXT.
+\par 
+\par 12)  Tool bar and status bar can also be implemented in a dialog box. We must move the controls contained in the dialog box to accommodate the control bars. Also, we need to handle messages TTN_NEEDTEXT, WM_SETMESSAGESTRING and WM_POPMESSAGESTRING in order to implement tool tips and flybys.
+\par 
+\par }
+ 

@@ -1,0 +1,889 @@
+﻿<html lang="zh-TW"><head><meta charset="UTF-8" /><link rel="stylesheet" href="style.css" tppabs="http://www.csie.ntnu.edu.tw/~u91029/style.css" />
+<title>演算法筆記 - Path</title></head><body>
+<div class="a"><div class="h">
+<p class="b">Path</p>
+<p class="r">程度★　難度★</p>
+</div><div class="c">
+<p class="t">「圖」與「道路地圖」</p>
+<p>把一張圖想像成道路地圖，把圖上的點想像成地點，把圖上的邊想像成道路，把權重想像成道路的長度。若兩點之間以邊相連，表示兩個地點之間有一條道路，道路的長度是邊的權重。</p>
+<img src="Path1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path1.png">
+<p>有時候為了應付特殊情況，邊的權重可以是零或者負數，也不必真正照著圖上各點的地理位置來計算權重。別忘記「圖」是用來記錄關聯的東西，並不是真正的地圖。</p>
+<p class="t">Walk / Circuit</p>
+<p>在圖上任取兩點，分別作為起點和終點，我們可以規劃出許多條由起點到終點的路線。這些路線可以經過其他點，也可以來來回回的繞圈子。一條路線，就是一條「途徑」。</p>
+<img src="Path2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path2.png">
+<p>如果起點到終點是不相通的，那麼就不會存在起點到終點的途徑。如果起點和終點一樣，那麼就存在途徑，途徑是一個點、零條邊。</p>
+<img src="Path3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path3.png">
+<p>途徑也有權重。途徑經過的每一條邊，沿路加總權重，就是途徑的權重（通常只加總邊的權重，而不考慮點的權重）。途徑的權重，可以想像成途徑的總長度。</p>
+<img src="Path4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path4.png">
+<p>至於頭尾相接的途徑則稱作「回路」。</p>
+<p class="t">Trail / Circuit</p>
+<p>一條途徑，沒有重複地經過同樣的邊，就稱做「跡」。</p>
+<img src="Path5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path5.png">
+<p>至於頭尾相接的跡，沒有特別命名，可稱作「回路」。</p>
+<p class="t">Path / Cycle</p>
+<p>一條途徑，沒有重複地經過同樣的點（與邊），就稱做「路徑」。</p>
+<img src="Path6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Path6.png">
+<p>至於頭尾相接的路徑則稱作「環」。</p>
+<p>【註：關於這些名詞，每個人的定義方式都略有差異，詳見<a href="javascript:if(confirm('http://planetmath.org/encyclopedia/OpenWalk.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://planetmath.org/encyclopedia/OpenWalk.html'" tppabs="http://planetmath.org/encyclopedia/OpenWalk.html">http://planetmath.org/encyclopedia/OpenWalk.html</a>】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Shortest Path</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">Shortest Walk</p>
+<p>「最短途徑」是兩點之間權重最小的途徑。最短途徑不見得是邊最少、點最少的途徑。</p>
+<p>「最短途徑」也可能不存在。兩點之間不連通、不存在途徑的時候，就沒有最短途徑。</p>
+<img src="ShortestPath1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath1.png">
+<p class="t">Shortest Path</p>
+<p>「最短路徑」和最短途徑相仿，差異在於路徑不可重複經過同樣的點和邊。</p>
+<p class="t">Shortest Walk與Shortest Path</p>
+<p>權重為負值的環，稱作「負環（Negative Cycle）」。</p>
+<img src="ShortestPath2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath2.png">
+<p>當一張圖有負環，只要不斷去繞行負環，「最短途徑」的長度將是無限短。</p>
+<p>當一張圖沒有負環，「最短途徑」等於「最短路徑」。</p>
+<img src="ShortestPath3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath3.png">
+<p>一條途徑重複經過同一條邊、同一個點，一定會讓途徑變長。由此可知：沒有負環的情況下，「最短途徑」等於「最短路徑」，決不會經過同樣的邊、同樣的點。</p>
+<p>當一張圖有負環時，最短途徑無限短，我們不必再討論；當一張圖沒有負環時，最短途徑就是最短路徑，我們可以專心討論路徑、而非途徑。</p>
+<p class="t">Shortest Path Tree</p>
+<p>在圖上選定一個起點，由起點到圖上各點的最短路徑們，形成一棵有向樹，稱作「最短路徑樹」。由於最短路徑不見得只有一條，所以固定起點的最短路徑樹也不見得只有一種。</p>
+<p>最短路徑樹上的每一條最短路徑，都是由其它的最短路徑延展而得；截去末端之後，還是最短路徑。</p>
+<img src="ShortestPath4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath4.png">
+<p class="t">Shortest Path Graph【尚無正式稱呼】</p>
+<p>在圖上選定一個起點和終點，由起點到終點的所有最短路徑們，形成一張有向圖，稱作「最短路徑圖」，只有唯一一種。</p>
+<p>當圖上每一條邊的權重都是正數，最短路徑圖是有向無環圖（Directed Acyclic Graph, DAG）。</p>
+<img src="ShortestPath5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath5.png">
+<p class="t">兩點之間有多條邊</p>
+<p>當一張圖的兩點之間有多條邊，可以留下一條權重最小的邊。這麼做不影響最短路徑。</p>
+<img src="ShortestPath6.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath6.png">
+<p class="t">兩點之間沒有邊（兩點不相鄰）</p>
+<p>當一張圖的兩點之間沒有邊，可以補上一條權重無限大的邊。這麼做不影響最短路徑。</p>
+<img src="ShortestPath7.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath7.png">
+<p>當圖的資料結構為adjacency matrix時，任兩點之間都一定要有一個權重值。要找最短路徑，不相鄰的兩點之間，權重值必須設定為一個超大數字，當作無限大；不可設定為零，以免計算錯誤。</p>
+<p class="t">最短路徑無限長、無限短</p>
+<p>當起點無法到達終點，就沒有最短路徑了。這種情況常被解讀成：起點永遠走不到終點，導致最短路徑無限長。</p>
+<p>當圖上有負環，不斷去繞行負環，導致最短路徑無限短。</p>
+<p class="t">Relaxation</p>
+<p>最後介紹最短路徑演算法一個共通的重要概念「鬆弛」。</p>
+<p>尋找兩點之間的最短路徑時，最直觀的方式莫過於：先找一條路徑，然後再找其他路徑，看看會不會更短，並記住最短的一條。</p>
+<p>找更短的路徑並不困難。我們可以尋覓捷徑，以縮短路徑；也可以另闢蹊徑，取代原本的路徑。如此找下去，必會找到最短路徑。</p>
+<img src="ShortestPath8.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath8.png">
+<p>尋覓捷徑、另闢蹊徑的過程，可以以數學方式來描述：現在要找尋起點為s、終點為t的最短路徑，而且現在已經有一條由s到t的路徑，這條路徑上會依序經過a及b這兩點（可以是起點和終點）。我們可以找到一條新的捷徑，起點是a、終點是b的捷徑，以這條捷徑取代原本由a到b的這一小段路徑，讓路徑變短。</p>
+<img src="ShortestPath9.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/ShortestPath9.png">
+<p>找到捷徑以縮短原本路徑，便是Relaxation。</p>
+<p class="t">附錄</p>
+<p>最短路徑演算法的功能類型：</p>
+<pre>
+Point-to-Point Shortest Path，點到點最短路徑：
+給定起點、終點，求出起點到終點的最短路徑。一對一。
+
+Single Source Shortest Paths，單源最短路徑：
+給定起點，求出起點到圖上每一點的最短路徑。一對全。
+
+All Pairs Shortest Paths，全點對最短路徑：
+求出圖上所有兩點之間的最短路徑。全對全。
+</pre>
+<p>有向圖、最短路徑演算法的原理：</p>
+<pre>
+Label Setting：
+逐步設定每個點的最短路徑長度，一旦設定後就不再更改。
+負邊不適用。
+
+Label Correcting：
+設定某個點的最短路徑長度之後，之後仍可繼續修正，越修越美。
+整個過程就是不斷重新標記每個點的最短路徑長度。
+負邊適用。
+</pre>
+<p>無向圖、最短路徑演算法的原理：</p>
+<pre>
+當無向圖沒有負邊，尚可套用有向圖的演算法。
+當無向圖有負邊，則必須使用「<a href="Matching2.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Matching2.html">T-Join</a>」。
+</pre>
+<p>問題複雜度：</p>
+<pre>
+最短途徑：P問題。
+最短路徑：NP-Complete問題；當圖上沒有負環，才是P問題。
+最長途徑：每一條邊的權重添上負號，就變成最短途徑問題。
+最長路徑：每一條邊的權重添上負號，就變成最短路徑問題。
+
+古代人把walk叫做path、把path叫做simple path。
+早期文獻說shortest path是P問題，
+純粹是因為古代人與現代人用了不同的名詞定義。
+</pre>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths: Label Setting Algorithm</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>一張有向圖，選定一個起點，求出起點到圖上各點的最短路徑，即是最短路徑樹。但是限制是：圖上每一條邊的權重皆非負數。</p>
+<img src="LabelSettingAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LabelSettingAlgorithm1.png">
+<p class="t">想法</p>
+<p>當圖上每一條邊的權重皆非負數時，可以發現：每一條最短路徑，都是邊數更少、權重更小（也可能相同）的最短路徑的延伸。</p>
+<img src="LabelSettingAlgorithm2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LabelSettingAlgorithm2.png">
+<p>於是乎，建立最短路徑樹，可以從邊數最少、權重最小的最短路徑開始建立，然後逐步延伸拓展。換句話說，就是從距離起點最近的點和邊開始找起，然後逐步延伸拓展。先找到的點和邊，保證會是最短路徑樹上的點和邊。</p>
+<img src="LabelSettingAlgorithm3.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LabelSettingAlgorithm3.png">
+<p>也可以想成是，從目前形成的最短路徑樹之外，屢次找一個離起點最近的點，（連帶著邊）加入到最短路徑樹之中，直到圖上所有點都被加入為止。</p>
+<img src="LabelSettingAlgorithm4.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LabelSettingAlgorithm4.png">
+<p>整個演算法的過程，可看作是兩個集合此消彼長。不在樹上、離根最近的點，移之。</p>
+<img src="LabelSettingAlgorithm5.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LabelSettingAlgorithm5.png">
+<p>運用已知的最短路徑，求出其他的最短路徑。循序漸進、保證最佳，這是Greedy Method的概念。</p>
+<p class="t">演算法</p>
+<pre>
+1. 將起點加入到最短路徑樹。此時最短路徑樹只有起點。
+2. 重複下面這件事V-1次，將剩餘所有點加入到最短路徑樹。
+　甲、尋找一個目前不在最短路徑樹上而且離起點最近的點b。
+　乙、將b點加入到最短路徑樹。
+</pre>
+<p>運用Memoization，建立表格紀錄最短路徑長度，便容易求得不在樹上、離根最近的點。時間複雜度是O(V^3)。</p>
+<pre>
+令w[a][b]是a點到b點的距離（即是邊的權重）。
+令d[a]是起點到a點的最短路徑長度，起點設為零，其他點都是空的。
+
+1. 將起點加入到最短路徑樹。此時最短路徑樹只有起點。
+2. 重複下面這件事V-1次，將剩餘所有點加入到最短路徑樹。
+　甲、尋找一個目前不在最短路徑樹上而且離起點最近的點：
+　　　以窮舉方式，
+　　　找一個已在最短路徑樹上的點a，以及一個不在最短路徑樹上的點b，
+　　　讓d[a]+w[a][b]最小。
+　乙、將b點的最短路徑長度存入到d[b]之中。
+　丙、將b點（連同邊ab）加入到最短路徑樹。
+</pre>
+<p class="t">實作</p>
+<textarea t="一點到多點的最短路徑、找出最短路徑樹（adjacency matrix）">
+int w[9][9];	// 一張有權重的圖：adjacency matrix
+int d[9];		// 紀錄起點到圖上各個點的最短路徑長度
+int parent[9];	// 紀錄各個點在最短路徑樹上的父親是誰
+bool visit[9];	// 紀錄各個點是不是已在最短路徑樹之中
+
+void label_setting(int source)
+{
+	for (int i=0; i<100; i++) visit[i] = false;	// initialize
+
+	d[source] = 0;				// 設定起點的最短路徑長度
+	parent[source] = source;	// 設定起點是樹根（父親為自己）
+	visit[source] = true;		// 將起點加入到最短路徑樹
+
+	for (int k=0; k<9-1; k++)	// 將剩餘所有點加入到最短路徑樹
+	{
+		// 從既有的最短路徑樹，找出一條聯外而且是最短的邊
+		int a = -1, b = -1, min = 1e9;
+
+		// 找一個已在最短路徑樹上的點
+		for (int i=0; i<9; i++)
+			if (visit[i])
+				// 找一個不在最短路徑樹上的點
+				for (int j=0; j<9; j++)
+					if (!visit[j])
+						if (d[i] + w[i][j] < min)
+						{
+							a = i;	// 記錄這一條邊
+							b = j;
+							min = d[i] + w[i][j];
+						}
+
+		// 起點有連通的最短路徑都已找完
+		if (a == -1 || b == -1) break;
+//		// 不連通即是最短路徑長度無限長
+//		if (min == 1e9) break;
+
+		d[b] = min;			// 儲存由起點到b點的最短路徑長度
+		parent[b] = a;		// b點是由a點延伸過去的
+		visit[b] = true;	// 把b點加入到最短路徑樹之中
+	}
+}
+</textarea>
+<p class="t">Graph Traversal</p>
+<p>Label Setting Algorithm亦可看做是一種Graph Traversal，遍歷順序是先拜訪離樹根最近的點和邊。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths: Dijkstra's Algorithm</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">想法</p>
+<p>找不在樹上、離根最近的點，先前的方式是：窮舉樹上a點及非樹上b點，找出最小的d[a]+w[a][b]。整個過程重覆窮舉了許多邊。</p>
+<img src="Dijkstra'sAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Dijkstra'sAlgorithm1.png">
+<p>表格改為儲存d[a]+w[a][b]，就不必重覆窮舉邊了。每當一個a點加入最短路徑樹，就將d[a]+w[a][b]存入d[b]。找不在樹上、離根最近的點，就直接窮舉d[]表格，找出最小的d[b]。</p>
+<img src="Dijkstra'sAlgorithm2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/Dijkstra'sAlgorithm2.png">
+<p class="t">演算法</p>
+<pre>
+令w[a][b]是a點到b點的距離（即是邊的權重）。
+令d[a]是起點到a點的最短路徑長度，起點設為零，其他點都設為無限大。
+
+1. 重複下面這件事V次，以將所有點加入到最短路徑樹。
+　甲、尋找一個目前不在最短路徑樹上而且離起點最近的點：
+　　　直接搜尋d[]陣列裡頭的數值，來判斷離起點最近的點。
+　乙、將此點加入到最短路徑樹之中。
+　丙、令剛剛加入的點為a點，
+　　　以窮舉方式，找一個不在最短路徑樹上、且與a點相鄰的點b，
+　　　把d[a]+w[a][b]存入到d[b]當中。
+　　　因為要找最短路徑，所以儘可能紀錄越小的d[a]+w[a][b]。
+　　　（即是邊ab進行relaxation）
+</pre>
+<p>以Relaxation的角度來看，此演算法不斷以邊ab做為捷徑，讓起點到b點的路徑長度縮短為d[a]+w[a][b]。</p>
+<p class="t">時間複雜度</p>
+<p>分為兩個部分討論：</p>
+<p>甲、加入點、窮舉邊：每個點只加入一次，每條邊只窮舉一次，剛好等同於一次Graph Traversal的時間。</p>
+<p>乙、尋找下一個點：從大小為V的陣列當中尋找最小值，為O(V)；總共尋找了V次，為O(V^2)。</p>
+<p>甲乙相加就是整體的時間複雜度。圖的資料結構為adjacency matrix的話，便是O(V^2)；圖的資料結構為adjacency lists的話，還是O(V^2)。</p>
+<p class="t">實作</p>
+<textarea t="找出最短路徑樹（adjacency matrix）">
+int w[9][9];	// 一張有權重的圖
+int d[9];		// 紀錄起點到各個點的最短路徑長度
+int parent[9];	// 紀錄各個點在最短路徑樹上的父親是誰
+bool visit[9];	// 紀錄各個點是不是已在最短路徑樹之中
+
+void dijkstra(int source)
+{
+	for (int i=0; i<9; i++) visit[i] = false;	// initialize
+	for (int i=0; i<9; i++) d[i] = 1e9;
+
+	d[source] = 0;
+	parent[source] = source;
+
+	for (int k=0; k<9; k++)
+	{
+		int a = -1, b = -1, min = 1e9;
+		for (int i=0; i<9; i++)
+			if (!visit[i] && d[i] < min)
+			{
+				a = i;	// 記錄這一條邊
+				min = d[i];
+			}
+
+		if (a == -1) break;		// 起點有連通的最短路徑都已找完
+//		if (min == 1e9) break;	// 不連通即是最短路徑長度無限長
+		visit[a] = true;
+
+		// 以邊ab進行relaxation
+		for (b=0; b<9; b++)
+			if (!visit[b] && d[a] + w[a][b] < d[b])
+			{
+				d[b] = d[a] + w[a][b];
+				parent[b] = a;
+			}
+	}
+}
+</textarea>
+<textarea t="從最短路徑樹上找出最短路徑（adjacency matrix）">
+// 若要找出某一點的最短路徑，就可以利用parent陣列了。
+
+void find_path(int x)	// 印出由起點到x點的最短路徑
+{
+	if (x != parent[x])	// 先把之前的路徑都印出來
+		find_path(parent[x]);
+	cout << x << endl;	// 再把現在的位置印出來
+}
+</textarea>
+<textarea t="找出最短路徑樹（adjacency lists）">
+struct Element {int b, w;} lists[9];	// 一張有權重的圖
+int size[9];
+int d[9];
+int parent[9];
+bool visit[9];
+
+void dijkstra(int source)
+{
+	for (int i=0; i<9; i++) visit[i] = false;
+	for (int i=0; i<9; i++) d[i] = 1e9;
+
+	d[source] = 0;
+	parent[source] = source;
+
+	for (int k=0; k<9; k++)
+	{
+		int a = -1, b = -1, min = 1e9;
+		for (int i=0; i<100; i++)
+			if (!visit[i] && d[i] < min)
+			{
+				a = i;
+				min = d[i];
+			}
+
+		if (a == -1) break;
+		visit[a] = true;
+
+		for (int i=0; i<size[a]; i++)
+		{
+			int b = lists[a][i].b, w = lists[a][i].w;
+			if (!visit[b] && d[a] + w < d[b])
+			{
+				d[b] = d[a] + w;
+				parent[b] = a;
+			}
+		}
+	}
+}
+</textarea>
+<textarea t="找出最短路徑樹（edge list）">
+struct Edge {int a, b, w;};	// 紀錄一條邊的資訊
+Edge edges[13];
+int d[9];
+int parent[9];
+bool visit[9];
+
+void dijkstra(int source)
+{
+	for (int i=0; i<9; i++) visit[i] = false;
+	for (int i=0; i<9; i++) d[i] = 1e9;
+
+	d[source] = 0;
+	parent[source] = source;
+
+	for (int k=0; k<9; k++)
+	{
+		int a = -1, b = -1, min = 1e9;
+		for (int i=0; i<100; i++)
+			if (!visit[i] && d[i] < min)
+			{
+				a = i;
+				min = d[i];
+			}
+
+		if (a == -1) break;
+		visit[a] = true;
+
+		for (int i=0; i<13; i++)
+			if (edges[i].a == a)
+			{
+				int b = edges[i].b, w = edges[i].w;
+				if (!visit[b] && d[a] + w < d[b])
+				{
+					d[b] = d[a] + w;
+					parent[b] = a;
+				}
+			}
+	}
+}
+</textarea>
+<p class="t">延伸閱讀：Fibonacci Heap</p>
+<p>用特殊的資料結構可以加快這個演算法。建立V個元素的Fibonacci Heap，用其decrease key函式來實作relaxation，用其extract min函式來找出下一個點，可將時間複雜度降至O(E+VlogV)。</p>
+<p class="e">UVa 10801 10841 10278 10187 10039</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths: Label Setting Algorithm + Priority Queue</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>找不在樹上、離根最近的點，先前的方式是：窮舉樹上a點及非樹上b點，也就是窮舉從樹上到非樹上的邊ab，以找出最小的d[a]+w[a][b]。</p>
+<p>現在把d[a]+w[a][b]的值通通倒進Priority Queue。找不在樹上、離根最近的點，就從Priority Queue取出邊（與點）；每次relaxation就將邊（與點）塞入Priority Queue。</p>
+<img src="LabelSettingAlgorithmPQ.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LabelSettingAlgorithmPQ.png">
+<p>學過State Space Search的讀者，可以發現此演算法正是Uniform-cost Search，因此也有人說此演算法是考慮權重的BFS。</p>
+<textarea t="找出最短路徑樹（adjacency matrix）">
+// 要丟進Priority Queue的邊。
+// ab是邊，d是起點到b點可能的最短路徑長度。
+struct Edge {int a, b, d;};
+
+// C++ STL內建的Priority Queue是Max-Heap，
+// 而不是Min-Heap，故必須改寫一下比大小的函式。
+bool operator<(const Edge& e1, const Edge& e2)
+{
+	return e1.d > e2.d;
+}
+
+int w[9][9];
+int d[9];
+int parent[9];
+bool visit[9];
+
+void label_setting_with_priority_queue(int source)
+{
+	for (int i=0; i<9; i++) visit[i] = false;
+	for (int i=0; i<9; i++) d[i] = 1e9;
+
+	// C++ STL的Priority Queue。
+	priority_queue<Edge> PQ;
+
+	int a = source;
+	d[a] = 0;
+	parent[a] = 0;
+	visit[a] = true;
+
+	for (int i=0; i<9-1; i++)
+	{
+		// 比大小的工作，交由Priority Queue處理。
+		for (int b=0; b<9; b++)
+			if (!visit[b])
+				PQ.push( (Edge){a, b, d[a] + w[a][b]} );
+
+		// 找出下一個要加入到最短路徑樹的邊（與點）
+		Edge e = (Edge){-1, -1, 0};
+		while (!PQ.empty())
+		{
+			e = PQ.top();	PQ.pop();
+			if (!visit[e.b]) break;
+		}
+
+		// 起點有連通的最短路徑都已找完
+		if (e.a == -1 || e.b == -1) break;
+
+		a = e.b;
+		d[a] = e.d;
+		parent[a] = e.a;
+		visit[a] = true;
+	}
+}
+</textarea>
+<p class="t">時間複雜度：維護Priority Queue</p>
+<p>首先必須確認Priority Queue的大小。圖上每一條邊皆用於relaxation一次，所以Priority Queue前前後後一共塞入了E條邊，最多也只能取出E條邊。Priority Queue的大小為O(E)。</p>
+<p>塞入一條邊皆需時O(logE)，塞入E條邊皆需時O(ElogE)。取出亦如是。由此可知維護Priority Queue需時O(ElogE)。</p>
+<p>在最短路徑問題當中，如果兩點之間有多條邊，只要取權重比較小的邊來進行最短路徑演算法就行了。也就是說，兩點之間只會剩下一條邊。也就是說，邊的總數不會超過C{V,2} = V*(V-1)/2個。也就是說，上述的時間複雜度O(ElogE)，得改寫成O(Elog(V^2)) = O(2ElogV) = O(ElogV)。</p>
+<p>Priority Queue可以採用Binary Heap或Binomial Heap，時間複雜度都相同。</p>
+<p>當圖上每條邊的權重皆為正整數的情況下，Priority Queue亦得採用vEB Tree，時間複雜度下降成O(EloglogW)，其中W為最長的最短路徑長度。</p>
+<p class="t">時間複雜度</p>
+<p>一次Graph Traversal的時間，加上維護Priority Queue的時間。</p>
+<p>圖的資料結構為adjacency matrix的話，便是O(V^2 + ElogE)；圖的資料結構為adjacency lists的話，便是O(V+E + ElogE)。</p>
+<p>這個方法適用於圖上的邊非常少的情況。若是一般情況，使用Dijkstra's Algorithm會比較有效率，程式碼的結構也比較簡單。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths: Dijkstra's Algorithm + Priority Queue</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>時間複雜度與上一篇文章相同，然而效率較佳。</p>
+<pre>
+令w[a][b]是a點到b點的距離（即是邊的權重）。
+令d[a]是起點到a點的最短路徑長度，起點設為零，其他點都是空的。
+令PQ是一個存放點的Priority Queue，由小到大排序鍵值。
+
+1. 把起點放入PQ。
+2. 重複下面這件事，直到最短路徑樹完成為止：
+　甲、嘗試從PQ中取出一點a，點a必須是目前不在最短路徑樹上的點。
+　乙、將a點（連同其邊）加入最短路徑樹。
+　丙、將所有與a點相鄰且不在樹上的點的點b（連同邊ab）放入PQ，
+　　　設定鍵值為d[a] + w[a][b]，鍵值同時也存入d[b]，
+　　　但是會先檢查d[a] + w[a][b]是不是大於d[b]，
+　　　大於才放入PQ，鍵值才存入d[b]。
+　　　（此步驟即是以邊ab進行ralaxation。）
+</pre>
+<textarea t="找出最短路徑樹（adjacency matrix）">
+// 要丟進Priority Queue的點
+// b是點，d是可能的最短路徑長度。
+// a可以提出來，不必放在Node裡。
+struct Node {int b, d;};
+bool operator<(const Node& n1, const Node& n2) {return n1.d > n2.d;}
+
+int w[9][9];
+int d[9];
+int parent[9];
+bool visit[9];
+
+void dijkstra_with_priority_queue(int source)
+{
+	for (int i=0; i<9; i++) visit[i] = false;
+	for (int i=0; i<9; i++) d[i] = 1e9;
+
+	// C++ STL的Priority Queue
+	priority_queue<Node> PQ;
+
+	d[source] = 0;
+	parent[source] = source;
+	PQ.push((Node){source, d[source]});
+
+	for (int i=0; i<9; i++)
+	{
+		// 找出下一個要加入到最短路徑樹的點。
+		int a = -1;
+		while (!PQ.empty() && visit[a = PQ.top().b])
+			PQ.pop();	// 最後少pop一次，不過無妨。
+
+		if (a == -1) break;
+		visit[a] = true;
+
+		for (int b=0; b<9; b++)
+			if (!visit[b] && d[a] + w[a][b] < d[b])
+			{
+				d[b] = d[a] + w[a][b];
+				parent[b] = a;
+				// 交由Priority Queue比較大小
+				PQ.push( (Node){b, d[b]} );
+			}
+	}
+}
+</textarea>
+<p class="e">UVa 10278 10740 10986</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths: Dial's Algorithm</p>
+<p class="r">程度★★　難度★</p>
+</div><div class="c">
+<p class="t">演算法</p>
+<p>用Bucket Sort代替表格，把d[a]+w[a][b]的值通通拿去做Bucket Sort。用在每條邊的權重都是非負整數的圖。</p>
+<textarea t="找出最短路徑樹（adjacency matrix）">
+int w[9][9];
+int d[9];
+int parent[9];
+bool visit[9];
+
+// 建立500個bucket，每個bucket是一個queue。
+queue< pair<int,int> > bucket[500];
+
+void dial(int source)
+{
+	for (int i=0; i<9; i++) visit[i] = false;
+	for (int i=0; i<9; i++) d[i] = 1e9;
+	for (int i=0; i<500; i++) bucket[i].clear();
+
+	bucket[0].push( make_pair(source, source) );
+
+	for (int k=0, slot=0; k<9 && slot<500; k++)
+	{
+		while (slot < 500 && bucket[slot].empty()) slot++;
+		if (slot == 500) break;	// 起點有連通的最短路徑都已找完
+
+		int a = bucket[slot].front().first;
+		parent[a] = bucket[slot].front().second;
+		d[a] = slot;
+		visit[a] = true;
+		bucket[slot].pop();
+
+		for (int b=0; b<9; b++)
+			if (!visit[b])
+			{
+				int s = d[a] + w[a][b];
+				bucket[s].push( make_pair(b, a) );
+			}
+	}
+}
+</textarea>
+<p class="t">時間複雜度：進行Bucket Sort</p>
+<p>整個bucket最多放入E個點、拿出E個點，然後整個bucket讀過一遍，時間複雜度總共是O(E+W)，其中W為bucket的數目，也是最長的最短路徑長度。</p>
+<p>當圖上每條邊的權重不是整數時，時間複雜度是O(WV)。</p>
+<p class="t">時間複雜度</p>
+<p>一次Graph Traversal的時間，再加上Bucket Sort的時間。</p>
+<p>圖的資料結構為adjacency matrix的話，便是O(V^2 + W)；圖的資料結構為adjacency lists的話，便是O(V+E + W)。</p>
+<p>當圖上每條邊的權重不是整數時。圖的資料結構為adjacency matrix的話，便是O(V^2 + WV)；圖的資料結構為adjacency lists的話，便是O(V+E + WV)。</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths: Label Correcting Algorithm（Bellman-Ford Algorithm）</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">註記</p>
+<p><a href="javascript:if(confirm('http://www.walden-family.com/public/bf-history.pdf  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.walden-family.com/public/bf-history.pdf'" tppabs="http://www.walden-family.com/public/bf-history.pdf">http://www.walden-family.com/public/bf-history.pdf</a></p>
+<p>此演算法誤植情況相當嚴重，包括CLRS、維基百科，記載的並非原始版本。</p>
+<p>此演算法亦經由西南交通大学段凡丁《关于最短路径的SPFA快速算法》重新發現，於是中文網路出現了Shortest Path Faster Algorithm, SPFA的通俗稱呼，後來更有中文書籍不明就裡胡亂引用。學術上根本查無此稱呼。</p>
+<p>此演算法的貢獻者除了Bellman與Ford以外，其實還有另外一人Moore。按照論文發表的年代順序，Ford首先發現Label Correcting的技巧，但是沒有特別規定計算順序；Moore發現由起點開始，不斷朝鄰點擴展，是一個不錯的計算順序（等同使用queue）；Bellman發現此演算法可套用Dynamic Programming的思路，並證明每個點最多重新標記V-1次，演算法就可以結束。</p>
+<p>約五年後，Ford與Fulkerson改良此演算法，成為分散式演算法，後人稱作Distance-vector Routing，是知名的網路路由協定──即是CLRS、維基百科記載的版本。</p>
+<p class="t">用途</p>
+<p>一張有向圖，選定一個起點，求出起點到圖上各點的最短路徑，即是最短路徑樹。可以順便偵測圖上是否有負環，但是無法找出負環所在位置。</p>
+<p>圖上有負邊，就無法使用Label Setting Algorithm。不在樹上、離根最近的點，受負邊影響，不見得是最短路徑。</p>
+<p>圖上有負邊，則可以使用Label Correcting Algorithm。就算數值標記錯了，仍可修正。</p>
+<img src="LabelCorrectingAlgorithm1.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LabelCorrectingAlgorithm1.png">
+<p class="t">想法：求出最短路徑樹</p>
+<p>先前介紹relaxation說到：不斷尋找捷徑以縮短原本路徑，終會得到最短路徑。</p>
+<p>一條捷徑如果很長，就不好辦了。一條捷徑如果很長，可以拆解成一條一條的邊，並一一嘗試以這些邊作為捷徑。只要不斷重複嘗試，逐步更新最短路徑長度，一條一條的邊終會連接成一條完整的捷徑。這是Greedy Method的概念。</p>
+<img src="LabelCorrectingAlgorithm2.png" tppabs="http://www.csie.ntnu.edu.tw/~u91029/LabelCorrectingAlgorithm2.png">
+<p>從relaxation的角度來看：</p>
+<p>Label Setting Algorithm只有正邊、零邊，知道relaxation的正確順序，逐步設定每個點的最短路徑長度。</p>
+<p>Label Correcting Algorithm受負邊影響，不知道relaxation的正確順序，只好不斷尋找捷徑、不斷校正每個點的最短路徑長度，直到正確為止。</p>
+<p class="t">想法：偵測負環</p>
+<p>如果一張圖上面有負環，那麼建立一條經過負環的捷徑，便會讓路徑縮短一些；只要不斷地建立經過負環的捷徑，不斷地繞行負環，那麼路徑就會無限縮短下去，成為無限短。</p>
+<p>一條最短路徑最多只有V-1條邊。當一個點被標記超過V-1次，表示其最短路徑超過V-1條邊（讀者請自行推敲），必定經過負環！</p>
+<p class="t">演算法</p>
+<pre>
+令w[a][b]是a點到b點的距離（即是邊的權重）。
+令d[a]是起點到a點的最短路徑長度，起點設為零，其他點都設為無限大。
+
+一、重複下面這件事，直到圖上每一條邊都無法作為捷徑：
+　甲、找到一條可以作為捷徑的邊ab：d[a] + w[a][b] < d[b]。
+　乙、以邊ab來修正起點到b點的最短路徑：d[b] = d[a] + w[a][b]。
+　丙、如果b點被標記V次以上，表示圖上有負環。演算法立刻結束。
+</pre>
+<textarea t="找出最短路徑樹＋偵測負環">
+int w[9][9];	// 一張有權重的圖：adjacency matrix
+int d[9];		// 紀錄起點到各個點的最短路徑長度
+int parent[9];	// 紀錄各個點在最短路徑樹上的父親是誰
+int n[9];		// 記錄各個點被標記幾次，初始化為零。
+
+void label_correcting(int source)
+{
+	n[0...9-1] = 0;				// 初始化
+
+	d[source] = 0;				// 設定起點的最短路徑長度
+	parent[source] = source;	// 設定起點是樹根（父親為自己）
+	n[source]++;				// 起點被標記了一次
+
+	while (還能找到一條邊ab讓d[a] + w[a][b] < d[b])
+	{
+		d[b] = d[a] + w[a][b];	// 更新由起點到b點的最短路徑長度
+		parent[b] = a;			// b點是由a點延伸過去的
+		if (++n[b] >= 9) return;// 圖上有負環，最短路徑樹不存在！
+	}
+}
+</textarea>
+<p class="t">演算法</p>
+<p>想要亂槍打鳥、直接找到可以做為捷徑的邊，並不是那麼容易的。腳踏實地的方式是：一個點一旦被重新標記，就讓該點所有出邊嘗試做為捷徑，更新鄰點的最短路徑長度。</p>
+<pre>
+令w[a][b]是a點到b點的距離（即是邊的權重）。
+令d[a]是起點到a點的最短路徑長度，起點設為零，其他點都設為無限大。
+LIST是一個存放點的容器，可以是stack、queue、set、……。
+
+一、把起點放入LIST。
+二、重複下面這件事，直到LIST沒有東西為止：
+　甲、從LIST中取出一點，作為a點。
+　乙、找到一條可以作為捷徑的邊ab：d[a] + w[a][b] < d[b]。
+　丙、以邊ab來修正起點到b點的最短路徑：d[b] = d[a] + w[a][b]。
+　丁、將b點加到LIST當中。
+　戊、如果b點被標記V次以上，表示圖上有負環。演算法立刻結束。
+</pre>
+<textarea t="找出最短路徑樹＋偵測負環（adjacency matrix）">
+int w[9][9];	// 一張有權重的圖：adjacency matrix
+int d[9];		// 紀錄起點到各個點的最短路徑長度
+int parent[9];	// 紀錄各個點在最短路徑樹上的父親是誰
+int n[9];		// 記錄各個點被標記幾次，初始化為零。
+
+void label_correcting(int source)
+{
+	memset(n, 0, sizeof(n));	// 初始化
+
+	d[source] = 0;				// 設定起點的最短路徑長度
+	parent[source] = source;	// 設定起點是樹根（父親為自己）
+	n[source]++;				// 起點被標記了一次
+
+	queue<int> Q;				// 一個存放點的容器：queue
+	Q.push(source);				// 將起點放入容器當中
+	
+	while (!Q.empty())
+	{
+		int a = Q.front(); Q.pop();		// 從容器中取出一點，作為a點
+
+		for (int b=0; b<9 ++b)
+			if (d[a] + w[a][b] < d[b])
+			{
+				if (++n[b] >= 9) return;// 圖上有負環，最短路徑樹不存在
+
+				d[b] = d[a] + w[a][b];	// 修正起點到b點的最短路徑長度
+				parent[b] = a;			// b點是由a點延伸過去的
+				Q.push(b);				// 將b點放入容器當中
+			}
+	}
+}
+</textarea>
+<p>容器亦可改用Priority Queue，自行訂立一套優先順序，以加速演算法。Small Label First（SLF）、Large Label Last（LLL）都是不錯的選擇。</p>
+<p class="t">時間複雜度</p>
+<p>圖的資料結構為adjacency list的話：</p>
+<p>每當重新標記一個點，就讓該點所有出邊嘗試做為捷徑。每個點最多標記V次。</p>
+<p>每個點都標記一次時，需時O(V+E)。每個點都標記V次時，需時O(V*(V+E))，可簡單寫成O(VE)。因此總時間複雜度為O(VE)。</p>
+<p>實務上，每個點僅標記一至二次，平均時間複雜度為O(V+E)。效率極高。</p>
+<p>圖的資料結構為adjacency matrix的話，時間複雜度為O(V^3)。平均時間複雜度為O(V^2)。</p>
+<p class="e">UVa 10557 10682</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths: Distance-vector Routing（Distributed Bellman-Ford Algorithm）</p>
+<p class="r">程度★　難度★★</p>
+</div><div class="c">
+<p class="t">演算法：找出最短路徑樹</p>
+<p>圖上每一條邊依序（或同時）當作捷徑，進行relaxation。重覆V-1次。</p>
+<p>【待補圖片】</p>
+<pre>
+令w[a][b]是a點到b點的距離（即是邊的權重）。
+令d[a]是起點到a點的最短路徑長度，起點設為零，其他點都設為無限大。
+
+一、重複下面這件事V-1次：
+　甲、窮舉所有邊ab，
+　乙、找到所有可以作為捷徑的邊ab：d[a] + w[a][b] < d[b]。
+　丙、以邊ab來修正起點到b點的最短路徑：d[b] = d[a] + w[a][b]。
+</pre>
+<textarea t="找出最短路徑樹（adjacency matrix）">
+int w[9][9];	// 一張有權重的圖
+int d[9];		// 紀錄起點到各個點的最短路徑長度
+int parent[9];	// 紀錄各個點在最短路徑樹上的父親是誰
+
+void distance_vector(int source)
+{
+	for (int i=0; i<9; i++) d[i] = 1e9;	// initialize
+
+	d[source] = 0;				// 設定起點的最短路徑長度
+	parent[source] = source;	// 設定起點是樹根（父親為自己）
+
+	for (int i=0; i<9-1; i++)	// 重覆步驟V-1次
+		for (int a=0; a<9; ++a)	// 全部的邊都當作捷徑
+			for (int b=0; b<9; ++b)
+				if (d[a] + w[a][b] < d[b])
+				{
+					d[b] = d[a] + w[a][b];
+					parent[b] = a;
+				}
+}
+</textarea>
+<textarea t="找出最短路徑樹（adjacency lists）">
+struct Element {int v, w;} w[9];	// 一張有權重的圖
+int size[9];
+int d[9];
+int parent[9];
+
+void distance_vector(int source)
+{
+	for (int i=0; i<9; i++) d[i] = 1e9;
+
+	d[source] = 0;
+	parent[source] = source;
+
+	for (int i=0; i<9-1; i++)
+		for (int a=0; a<9; a++)
+			for (int j=0; j<size[a]; j++)
+			{
+				int b = w[a][j].b, w = w[a][j].w;
+				if (d[a] + w < d[b])
+				{
+					d[b] = d[a] + w;
+					parent[b] = a;
+				}
+			}
+}
+</textarea>
+<textarea t="找出最短路徑樹（edge list）">
+struct Edge {int a, b, w;};	// 紀錄一條邊的資訊
+Edge w[13];	// 將所有邊依序放進陣列之中，成為一張有權重的圖
+int d[9];
+int parent[9];
+
+void distance_vector(int source)
+{
+	for (int i=0; i<9; i++) d[i] = 1e9;
+
+	d[source] = 0;
+	parent[source] = source;
+
+	for (int i=0; i<9-1; i++)
+		for (int j=0; j<13; j++)
+		{
+			int a = w[j].a, b = w[j].b, w = w[j].w;
+			if  (d[a] + w < d[b])
+			{
+				d[b] = d[a] + w;
+				parent[b] = a;
+			}
+		}
+}
+</textarea>
+<p>時間複雜度：圖的資料結構為adjacency matrix的話，便是O(V^3)；圖的資料結構為adjacency lists的話，便是O(VE)。</p>
+<p>實際效率不如Label Correcting Algorithm。</p>
+<p class="t">演算法：偵測負環</p>
+<p>每個點已經標記了V-1次。若還能找到捷徑，使某個點變成標記V次，則有負環。</p>
+<p>只需一次Graph Traversal的時間，便能偵測負環。</p>
+<textarea t="偵測負環（adjacency matrix）">
+bool negative_cycle()
+{
+	for (int a=0; a<9; ++a)
+		for (int b=0; b<9; ++b)
+			if (d[a] + w[a][b] < d[b])
+				return true;
+	return false;
+}
+</textarea>
+<p class="e">UVa 558</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths: Scaling</p>
+<p class="r">程度★★　難度★★★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>一張有向圖，選定一個起點，求出起點到圖上各點的最短路徑，即是最短路徑樹。但是限制是：圖上每一條邊的權重皆非負數。但是限制是：圖上每一條邊的權重皆非負整數。</p>
+<p class="t">演算法（Gabow's Algorithm）</p>
+<p>詳細內容可參考CLRS習題24-4，此處僅略述。</p>
+<pre>
+重複以下步驟O(logC)次，每個步驟要求出當下的最短路徑：
+1. 令權重更加精細。
+2. 以上一步驟算得的最短路徑長度來調整權重。
+   並以調整後的權重求最短路徑，可用O(V+E)時間求得。
+   （調整過的權重剛好皆為非負數，且最短路徑長度都不會超過E。）
+3. 還原成正確的最短路徑長度。
+</pre>
+<p>Scaling的精髓，在於每次增加精細度後，必須有效率的修正前次與今次的誤差。此演算法巧妙運用調整權重的技術，確切找出前次與今次差異之處，而得以用O(E)時間修正誤差。</p>
+<p>上述O(V+E)求最短路徑的演算法，仍是運用Dijkstra's Algorithm「最近的點先找」概念，只是求法有點小改變。首先開個E+1條linked list，離起點距離為x的點，就放在第x條。只要依序掃描一遍所有的linked list，就可以求出最短路徑了。</p>
+<textarea>
+const int V = 9, E = 9 * 8 / 2;
+int w[9][9];	// 一張有權重的圖（adjacency matrix）
+int d[9];		// 紀錄起點到各個點的最短路徑長度  
+
+void shortest_path(int s)
+{
+	vector<int> list[E+1];
+	list[0].push_back(s);
+
+	for (int i=0; i<=E; ++i)
+		for (int j=0; j<list[i].size(); ++j)
+		{
+			int u = list[i][j];
+			if (d[u] is not filled)
+			{
+				d[u] = i;
+
+				// relaxation
+				for (int v=0; v<V; ++v)
+					if (d[v] is not filled && i + w[u][v] <= E)
+						list[i + w[u][v]].push_back(v);
+			}
+		}
+}
+</textarea>
+<p class="t">時間複雜度</p>
+<p>整個演算法共有O(logC)個步驟，C是整張圖權重最大的邊的權重。</p>
+<p>圖的資料結構為adjacency matrix的話，每一步驟需要O(V^2)時間，整體時間複雜度為O(V^2 * logC)；圖的資料結構為adjacency lists的話，每一步驟需要O(V+E)時間（簡單記為O(E)），整體時間複雜度為O(ElogC)。</p>
+<p class="t">計算最短路徑的長度（adjacency lists）</p>
+<p>【待補程式碼】</p>
+<p class="t">找出最短路徑樹（adjacency lists）</p>
+<p>【待補程式碼】</p>
+
+</div></div><div class="a"><div class="h">
+<p class="b">Single Source Shortest Paths in DAG: Topological Sort</p>
+<p class="r">程度★　難度★★★</p>
+</div><div class="c">
+<p class="t">用途</p>
+<p>一張有向無環圖（Directed Acyclic Graph, DAG），選定一個起點，求出起點到圖上各點的最短路徑，即是最短路徑樹。</p>
+<p class="t">演算法</p>
+<p>此演算法為Topological Sort加上Dynamic Programming，與Activity on Edge Network的演算法如出一轍，可參考本站文件「<a href="TopologicalSort.html" tppabs="http://www.csie.ntnu.edu.tw/~u91029/TopologicalSort.html">Topological Sort</a>」。</p>
+<p>一張圖經過Topological Sort之後，便可以確定圖上每一個點只會往排在後方的點走去（由排在前方的點走過來）。計算順序相當明確，因此可以利用Dynamic Programming來計算各條最短路徑。</p>
+<pre>
+1. 進行Topological Sort。
+2. 依照拓樸順序（或者逆序），對各點進行relaxation。
+</pre>
+<p>這個演算法可以看做是，每次都知道最小值在哪一點的Dijkstra's Algorithm。</p>
+<p class="t">時間複雜度</p>
+<p>時間複雜度約是兩次Graph Traversal的時間複雜度。圖的資料結構為adjacency matrix的話，便是O(V^2)；圖的資料結構為adjacency lists的話，便是O(V+E)。</p>
+<p class="t">找出最短路徑樹（adjacency matrix）</p>
+<textarea>
+bool w[9][9];	// adjacency matrix
+int topo[9];	// 經過拓樸排序後的順序
+int parent[9];	// 紀錄各個點在最短路徑樹上的父親是誰
+
+void shortest_path_tree(int source)
+{
+	for (int i=0; i<9; i++) visit[i] = false;
+	for (int i=0; i<9; i++) d[i] = 1e9;
+
+	// 找出起點是在拓樸排序中的哪一個位置
+	int p = 0;
+	while (p < 9 && topo[p] != source) p++;
+
+	// 計算最短路徑長度
+	d[p] = 0;		// 設定起點的最短路徑長度
+	parent[p] = p;	// 設定起點是樹根（父親為自己）
+
+	for (int i=p; i<9; ++i)	// 看看每一個點可連向哪些點
+		for (int j=i+1; j<9; ++j)
+		{
+			int a = topo[i], b = topo[j];
+			if (d[a] + w[a][b] < d[b])
+			{
+				d[b] = d[a] + w[a][b];
+				parent[b] = a;
+			}
+		}
+}
+</textarea>
+<p>迴圈的部分還有另一種寫法。</p>
+<textarea>
+	for (int j=p+1; j<9; ++j)	// 看看每一個點被哪些點連向
+		for (int i=0; i<j; ++i)
+		{
+			int a = topo[i], b = topo[j];
+			if (d[a] + w[a][b] < d[b])
+			{
+				d[b] = d[a] + w[a][b];
+				parent[b] = a;
+			}
+		}
+</textarea>
+<p class="e">UVa 10000 10166 10350 10917 1083 ICPC 4449</p>
+</div></div><script src="h.js" tppabs="http://www.csie.ntnu.edu.tw/~u91029/h.js"></script></body></html>
